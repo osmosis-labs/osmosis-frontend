@@ -52,7 +52,10 @@ export const PortfolioHistoricalChart = forwardRef(
     const { logEvent } = useAmplitudeAnalytics();
 
     return (
-      <section className="relative flex flex-col justify-between" ref={ref}>
+      <section
+        className="relative flex grow flex-col justify-between"
+        ref={ref}
+      >
         <div className={classNames("w-full", heightClassname)}>
           {/* <div className="w-full"> */}
           {error ? (
@@ -74,27 +77,25 @@ export const PortfolioHistoricalChart = forwardRef(
             />
           )}
         </div>
-        {!isChartMinimized && (
-          <div className="my-3 flex justify-between">
-            <PortfolioHistoricalRangeButtonGroup
-              priceRange={range}
-              setPriceRange={setRange}
-            />
-            <IconButton
-              className="py-0"
-              aria-label="Open main menu dropdown"
-              icon={
-                <Icon
-                  id="resize-minimize"
-                  className="text-osmoverse-200"
-                  height={16}
-                  width={16}
-                />
-              }
-              onClick={() => setIsChartMinimized(true)}
-            />
-          </div>
-        )}
+        <div className="my-3 flex justify-between">
+          <PortfolioHistoricalRangeButtonGroup
+            priceRange={range}
+            setPriceRange={setRange}
+          />
+          <IconButton
+            className="border border-osmoverse-700 py-0"
+            aria-label="Open main menu dropdown"
+            icon={
+              <Icon
+                id="resize-minimize"
+                className="text-osmoverse-200"
+                height={16}
+                width={16}
+              />
+            }
+            onClick={() => setIsChartMinimized(true)}
+          />
+        </div>
       </section>
     );
   }
@@ -103,27 +104,19 @@ export const PortfolioHistoricalChart = forwardRef(
 export const PortfolioHistoricalChartMinimized = ({
   data,
   isFetched,
-  setDataPoint,
-  resetDataPoint,
-  totalPriceChange,
   error,
-  setShowDate,
   showScales = true,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
-  setDataPoint: (point: DataPoint) => void;
-  resetDataPoint: () => void;
-  totalPriceChange: number;
   error: unknown;
-  setShowDate: (show: boolean) => void;
   showScales?: boolean;
 }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
-    <div className="h-[200px] w-full">
+    <div className="w-full grow ">
       {error ? (
         <div className="error-message flex h-full items-center justify-center">
           {t("errors.generic")}
@@ -133,12 +126,6 @@ export const PortfolioHistoricalChartMinimized = ({
       ) : (
         <HistoricalChart
           data={data as AreaData<Time>[]}
-          onPointerHover={(value, time) => {
-            setShowDate(true);
-            setDataPoint({ value, time });
-            logEvent([EventName.Portfolio.chartInteraction]);
-          }}
-          onPointerOut={resetDataPoint}
           showScales={showScales}
         />
       )}

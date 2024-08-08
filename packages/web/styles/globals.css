@@ -356,3 +356,16 @@
 .breakspaces {
   white-space-collapse: break-spaces;
 }
+
+.height-opacity-delay-enter {
+  transition-property: opacity, height;
+  transition-delay: 0s, 250ms;
+  /* transition-delay: 0s, 3000ms; */
+}
+
+.height-opacity-delay-leave {
+  transition-property: opacity, height;
+  /* transition-delay: 250ms, 0s; */
+  transition-delay: 0s, 250ms;
+  /* transition-delay: 3000ms, 0s; */
+}

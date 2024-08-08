@@ -139,18 +139,18 @@ export const AssetsOverview: FunctionComponent<
     if (isWalletLoading) return null;
 
     return (
-      <div className="flex w-full flex-col gap-4">
+      <div className="flex w-full flex-col">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <>
             <div className="flex justify-between">
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col">
                 <span className="body1 md:caption text-osmoverse-300">
                   {t("assets.totalBalance")}
                 </span>
 
                 <SkeletonLoader
                   className={classNames(
-                    isTotalValueFetched ? null : "h-14 w-48"
+                    isTotalValueFetched ? "mt-2" : "mt-2 h-14 w-48"
                   )}
                   isLoaded={isTotalValueFetched}
                 >
@@ -162,17 +162,20 @@ export const AssetsOverview: FunctionComponent<
                 </SkeletonLoader>
                 <Transition
                   show={!isChartMinimized}
-                  enter="transition ease-out duration-300"
-                  enterFrom="opacity-0 height-0"
-                  enterTo="opacity-100 height-full"
-                  leave="transition ease-out duration-300"
-                  leaveFrom="opacity-100 height-full"
-                  leaveTo="opacity-0 height-0"
+                  enter="transition-all ease-out duration-500"
+                  enterFrom="opacity-0 h-0"
+                  enterTo="opacity-100 h-8"
+                  leave="transition-all ease-out duration-500 delay-[250ms]"
+                  leaveFrom="opacity-100 h-8"
+                  leaveTo="opacity-0 h-0"
                   as="div"
+                  className="overflow-hidden"
                 >
                   <SkeletonLoader
                     className={classNames(
-                      isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
+                      isPortfolioOverTimeDataIsFetched
+                        ? "mt-2"
+                        : "mt-2 h-6 w-16"
                     )}
                     isLoaded={isPortfolioOverTimeDataIsFetched}
                   >
@@ -227,33 +230,33 @@ export const AssetsOverview: FunctionComponent<
               </div>
               <Transition
                 show={isChartMinimized}
-                enter="transition ease-out duration-300"
-                enterFrom="opacity-0 translate-x-full"
-                enterTo="opacity-100 translate-x-0"
-                leave="transition ease-out duration-300"
-                leaveFrom="opacity-100 translate-x-0"
-                leaveTo="opacity-0 translate-x-full"
+                enter="transition ease-out duration-500"
+                enterFrom="opacity-0"
+                enterTo="opacity-100"
+                leave="transition ease-out duration-500"
+                leaveFrom="opacity-100"
+                leaveTo="opacity-0"
+                className="max-w-[20rem] grow"
+                as="div"
               >
                 <div
-                  className="group relative h-full w-[320px] rounded-[20px] bg-osmoverse-850 bg-opacity-10"
+                  className="group relative flex h-[9.75rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                 >
-                  <div className="absolute top-3 left-3">
-                    <SkeletonLoader
-                      className={classNames(
-                        isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
-                      )}
-                      isLoaded={isPortfolioOverTimeDataIsFetched}
-                    >
-                      <PortfolioPerformance
-                        selectedDifference={selectedDifferencePricePretty}
-                        selectedPercentage={selectedPercentageRatePretty}
-                        formattedDate={formattedDate}
-                        showDate={showDate}
-                      />
-                    </SkeletonLoader>
-                  </div>
+                  <SkeletonLoader
+                    className={classNames(
+                      isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
+                    )}
+                    isLoaded={isPortfolioOverTimeDataIsFetched}
+                  >
+                    <PortfolioPerformance
+                      selectedDifference={selectedDifferencePricePretty}
+                      selectedPercentage={selectedPercentageRatePretty}
+                      formattedDate={formattedDate}
+                      showDate={showDate}
+                    />
+                  </SkeletonLoader>
                   <PortfolioHistoricalChartMinimized
                     showScales={false}
                     data={portfolioOverTimeData as AreaData<Time>[]}
@@ -281,8 +284,7 @@ export const AssetsOverview: FunctionComponent<
                     as="div"
                   >
                     <IconButton
-                      className="absolute bottom-2 right-2 z-50 bg-osmoverse-850 py-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                      aria-label="Open main menu dropdown"
+                      className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                       icon={
                         <Icon
                           id="resize-expand"
@@ -300,18 +302,28 @@ export const AssetsOverview: FunctionComponent<
 
             <Transition
               show={!isChartMinimized}
-              enter="transition-all ease-out duration-300"
+              enter="ease-out duration-500 height-opacity-delay-enter"
               enterFrom="h-0 opacity-0"
-              enterTo="h-[400px] opacity-100"
-              leave="transition-all ease-out duration-300"
-              leaveFrom="h-[400px] opacity-100"
+              enterTo="h-[468px] opacity-100"
+              leave="ease-out duration-500 height-opacity-delay-leave"
+              leaveFrom="h-[468px] opacity-100"
               leaveTo="h-0 opacity-0"
               as="div"
+              className="flex flex-col overflow-hidden"
+              // show={!isChartMinimized}
+              // enter="transition-all ease-out duration-300 height-opacity-delay-enter"
+              // enterFrom="h-0 opacity-0"
+              // enterTo="h-[400px] opacity-100"
+              // leave="transition-all ease-out duration-300 height-opacity-delay-leave"
+              // leaveFrom="h-[400px] opacity-100"
+              // leaveTo="h-0 opacity-0"
+              // as="div"
             >
               {(ref) => (
                 <PortfolioHistoricalChart
                   isChartMinimized={isChartMinimized}
-                  heightClassname="h-[400px]"
+                  // heightClassname="h-[400px]"
+                  heightClassname="grow pt-4"
                   ref={ref}
                   setIsChartMinimized={setIsChartMinimized}
                   data={portfolioOverTimeData as AreaData<Time>[]}
