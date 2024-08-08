@@ -142,8 +142,8 @@ export const AssetsOverview: FunctionComponent<
       <div className="flex w-full flex-col">
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <>
-            <div className="flex justify-between">
-              <div className="flex flex-col">
+            <header className="flex justify-between">
+              <div className="mr-6 flex flex-col">
                 <span className="body1 md:caption text-osmoverse-300">
                   {t("assets.totalBalance")}
                 </span>
@@ -187,7 +187,7 @@ export const AssetsOverview: FunctionComponent<
                     />
                   </SkeletonLoader>
                 </Transition>
-                <div className="flex items-center gap-3 py-3">
+                <div className="flex items-center gap-3 pt-6">
                   <Button
                     className="flex items-center gap-2 !rounded-full"
                     onClick={() => startBridge({ direction: "deposit" })}
@@ -240,7 +240,7 @@ export const AssetsOverview: FunctionComponent<
                 as="div"
               >
                 <div
-                  className="group relative flex h-[9.75rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
+                  className="group relative -mt-3 flex h-[11.25rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                 >
@@ -298,7 +298,7 @@ export const AssetsOverview: FunctionComponent<
                   </Transition>
                 </div>
               </Transition>
-            </div>
+            </header>
 
             <Transition
               show={!isChartMinimized}

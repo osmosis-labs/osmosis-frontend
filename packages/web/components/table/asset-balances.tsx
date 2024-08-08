@@ -299,7 +299,7 @@ export const AssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
