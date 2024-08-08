@@ -32,7 +32,11 @@ const Portfolio: NextPage = () => {
         title={t("seo.portfolio.title")}
         description={t("seo.portfolio.description")}
       />
-      {true ? <PortfolioPage /> : <AssetsPageV1 />}
+      {featureFlags.portfolioPageAndNewAssetsPage ? (
+        <PortfolioPage />
+      ) : (
+        <AssetsPageV1 />
+      )}
     </>
   );
 };
