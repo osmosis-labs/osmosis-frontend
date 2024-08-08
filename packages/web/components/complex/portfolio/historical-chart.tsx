@@ -23,13 +23,10 @@ export const PortfolioHistoricalChart = forwardRef(
       resetDataPoint,
       range,
       setRange,
-      totalPriceChange,
       error,
       setShowDate,
       setIsChartMinimized,
       showScales = true,
-      heightClassname = "h-full",
-      isChartMinimized,
     }: {
       data?: AreaData<Time>[];
       isFetched: boolean;
@@ -37,13 +34,10 @@ export const PortfolioHistoricalChart = forwardRef(
       resetDataPoint: () => void;
       range: Range;
       setRange: (range: Range) => void;
-      totalPriceChange: number;
       error: unknown;
       setShowDate: (show: boolean) => void;
       setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
       showScales?: boolean;
-      heightClassname: string;
-      isChartMinimized: boolean;
     },
     ref
   ) => {
@@ -56,7 +50,6 @@ export const PortfolioHistoricalChart = forwardRef(
         ref={ref}
       >
         <div className="w-full grow pt-4">
-          {/* <div className="w-full"> */}
           {error ? (
             <div className="error-message flex h-full items-center justify-center">
               {t("errors.generic")}
@@ -112,8 +105,6 @@ export const PortfolioHistoricalChartMinimized = ({
   showScales?: boolean;
 }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
-
   return (
     <div className="w-full grow">
       {error ? (

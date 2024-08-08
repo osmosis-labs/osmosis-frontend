@@ -357,12 +357,12 @@
   white-space-collapse: break-spaces;
 }
 
-.height-opacity-delay-enter {
+/* .height-opacity-delay-enter {
   transition-property: opacity, height;
-  transition-delay: 0s, 250ms;
+  transition-delay: 250ms, 0s;
 }
 
 .height-opacity-delay-leave {
   transition-property: opacity, height;
   transition-delay: 0s, 250ms;
-}
+} */

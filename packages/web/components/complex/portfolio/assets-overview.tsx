@@ -31,6 +31,8 @@ import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+const CHART_CONTAINER_HEIGHT = 468;
+
 const calculatePortfolioPerformance = (
   data: ChartPortfolioOverTimeResponse[] | undefined,
   dataPoint: DataPoint
@@ -139,7 +141,15 @@ export const AssetsOverview: FunctionComponent<
     if (isWalletLoading) return null;
 
     return (
-      <div className="flex w-full flex-col">
+      <div
+        className={classNames(
+          "relative flex w-full flex-col transition-all duration-[250ms]",
+          { "delay-[250ms]": isChartMinimized }
+        )}
+        style={{
+          marginBottom: isChartMinimized ? "" : `${CHART_CONTAINER_HEIGHT}px`,
+        }}
+      >
         {wallet && wallet.isWalletConnected && wallet.address ? (
           <>
             <header className="flex justify-between">
@@ -150,7 +160,7 @@ export const AssetsOverview: FunctionComponent<
 
                 <SkeletonLoader
                   className={classNames(
-                    isTotalValueFetched ? "mt-2" : "mt-2 h-14 w-48"
+                    `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
                   )}
                   isLoaded={isTotalValueFetched}
                 >
@@ -275,26 +285,19 @@ export const AssetsOverview: FunctionComponent<
 
             <Transition
               show={!isChartMinimized}
-              enter="ease-out duration-500 height-opacity-delay-enter"
-              enterFrom="h-0 opacity-0"
-              enterTo="h-[468px] opacity-100"
-              leave="ease-out duration-500 height-opacity-delay-leave"
-              leaveFrom="h-[468px] opacity-100"
-              leaveTo="h-0 opacity-0"
+              enter="ease-out duration-500 transition-opacity delay-[250ms]"
+              enterFrom="opacity-0"
+              enterTo="opacity-100"
+              leave="ease-out duration-[250ms] transition-opacity"
+              leaveFrom="opacity-100"
+              leaveTo=" opacity-0"
               as="div"
-              className="overflow-hidden"
-              // show={!isChartMinimized}
-              // enter="transition-all ease-out duration-300 height-opacity-delay-enter"
-              // enterFrom="h-0 opacity-0"
-              // enterTo="h-[400px] opacity-100"
-              // leave="transition-all ease-out duration-300 height-opacity-delay-leave"
-              // leaveFrom="h-[400px] opacity-100"
-              // leaveTo="h-0 opacity-0"
-              // as="div"
+              unmount={false}
+              appear={true}
+              className="absolute top-full w-full"
             >
               {(ref) => (
                 <PortfolioHistoricalChart
-                  isChartMinimized={isChartMinimized}
                   ref={ref}
                   setIsChartMinimized={setIsChartMinimized}
                   data={portfolioOverTimeData as AreaData<Time>[]}
@@ -302,7 +305,6 @@ export const AssetsOverview: FunctionComponent<
                   setDataPoint={setDataPoint}
                   range={range}
                   setRange={setRange}
-                  totalPriceChange={totalPriceChange}
                   error={error}
                   setShowDate={setShowDate}
                   resetDataPoint={() => {
