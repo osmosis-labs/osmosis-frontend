@@ -97,7 +97,6 @@ export const PortfolioPage: FunctionComponent = () => {
         }
       )}
     >
-      <CypherCard />
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
@@ -185,7 +184,9 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </TabGroup>
           </section>
-          <section className="w-full">
+          <section className="flex w-80 flex-col gap-3">
+            <CypherCard />
+
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}
