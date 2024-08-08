@@ -143,7 +143,7 @@ const AssetFieldsetInput = forwardRef<
 
   return (
     <div
-      className={`flex items-center overflow-visible`}
+      className="flex h-[73px] items-center overflow-visible"
       style={{
         fontSize,
       }}
