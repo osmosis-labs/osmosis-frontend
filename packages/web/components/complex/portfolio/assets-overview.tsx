@@ -24,7 +24,6 @@ import { DataPoint } from "~/components/complex/portfolio/types";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useFormatDate } from "~/components/transactions/transaction-utils";
 import { CustomClasses } from "~/components/types";
-import { IconButton } from "~/components/ui/button";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
@@ -235,10 +234,11 @@ export const AssetsOverview: FunctionComponent<
                 className="max-w-[20rem] grow"
                 as="div"
               >
-                <div
-                  className="group relative flex h-[11.25rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
+                <button
+                  className="group relative flex h-[11.25rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
+                  onClick={() => setIsChartMinimized(false)}
                 >
                   <PortfolioHistoricalChartMinimized
                     showScales={false}
@@ -256,7 +256,7 @@ export const AssetsOverview: FunctionComponent<
                       setShowDate(false);
                     }}
                   />
-                  <Transition
+                  {/* <Transition
                     show={isHovering}
                     enter="transition-opacity ease-out duration-100"
                     enterFrom="opacity-0"
@@ -265,21 +265,15 @@ export const AssetsOverview: FunctionComponent<
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
                     as="div"
-                  >
-                    <IconButton
-                      className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
-                      icon={
-                        <Icon
-                          id="resize-expand"
-                          className="text-osmoverse-200"
-                          height={16}
-                          width={16}
-                        />
-                      }
-                      onClick={() => setIsChartMinimized(false)}
-                    />
-                  </Transition>
-                </div>
+                  > */}
+                  <Icon
+                    id="resize-expand"
+                    className="absolute top-4 right-4 z-50 text-osmoverse-200"
+                    height={16}
+                    width={16}
+                  />
+                  {/* </Transition> */}
+                </button>
               </Transition>
             </header>
 

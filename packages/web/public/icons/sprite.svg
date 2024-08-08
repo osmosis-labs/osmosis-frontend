@@ -1519,7 +1519,7 @@
       />
     </symbol>
 
-    <symbol id="resize-expand" viewBox="0 0 16 16" fill="none">
+    <symbol id="resize-minimize" viewBox="0 0 16 16" fill="none">
       <g clip-path="url(#clip0_5137_31415)">
         <path
           fill-rule="evenodd"
@@ -1534,7 +1534,7 @@
         </clipPath>
       </defs>
     </symbol>
-    <symbol id="resize-minimize" viewBox="0 0 16 16" fill="none">
+    <symbol id="resize-expand" viewBox="0 0 16 16" fill="none">
       <g clip-path="url(#clip0_5137_28834)">
         <path
           fill-rule="evenodd"
