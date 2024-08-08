@@ -100,6 +100,7 @@ export const OrderHistory = observer(() => {
     count: rows.length,
     estimateSize: () => 84,
     paddingStart: -220,
+    paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
@@ -189,10 +190,10 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-auto">
+    <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
       <table className="relative min-w-[1152px] table-auto" ref={listRef}>
         {!isLoading && (
-          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
+          <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
             <tr
               className={classNames(
                 "grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]",
