@@ -211,48 +211,57 @@ export const AssetsOverview: FunctionComponent<
                   </Button>
                 </div>
               </div>
-              {/* <Transition
+              <Transition
                 show={isChartMinimized}
-                enter="transition-all ease-out duration-300"
-                enterFrom="h-0 opacity-0"
-                enterTo="h-full opacity-100"
-                leave="transition-all ease-out duration-300"
-                leaveFrom="h-full opacity-100"
-                leaveTo="h-0 opacity-0"
-              > */}
-              <div className="relative h-full w-[320px] max-w-[320px]">
-                <PortfolioHistoricalChartMinimized
-                  showScales={false}
-                  data={portfolioOverTimeData as AreaData<Time>[]}
-                  isFetched={isPortfolioOverTimeDataIsFetched}
-                  setDataPoint={setDataPoint}
-                  totalPriceChange={totalPriceChange}
-                  error={error}
-                  setShowDate={setShowDate}
-                  resetDataPoint={() => {
-                    setDataPoint({
-                      time: dayjs().unix() as Time,
-                      value: +totalValue.toDec().toString(),
-                    });
-                    setShowDate(false);
-                  }}
-                />
-                <IconButton
-                  className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0"
-                  aria-label="Open main menu dropdown"
-                  icon={
-                    <Icon
-                      id="resize-expand"
-                      className="text-osmoverse-200"
-                      height={16}
-                      width={16}
+                enter="transition ease-out duration-300"
+                enterFrom="opacity-0 translate-x-full"
+                enterTo="opacity-100 translate-x-0"
+                leave="transition ease-out duration-300"
+                leaveFrom="opacity-100 translate-x-0"
+                leaveTo="opacity-0 translate-x-full"
+              >
+                <div className="relative h-full w-[320px]">
+                  <PortfolioHistoricalChartMinimized
+                    showScales={false}
+                    data={portfolioOverTimeData as AreaData<Time>[]}
+                    isFetched={isPortfolioOverTimeDataIsFetched}
+                    setDataPoint={setDataPoint}
+                    totalPriceChange={totalPriceChange}
+                    error={error}
+                    setShowDate={setShowDate}
+                    resetDataPoint={() => {
+                      setDataPoint({
+                        time: dayjs().unix() as Time,
+                        value: +totalValue.toDec().toString(),
+                      });
+                      setShowDate(false);
+                    }}
+                  />
+                  <Transition
+                    show={isChartMinimized}
+                    enter="transition-all ease-out duration-300"
+                    enterFrom="opacity-0 translate-y-full"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition-all ease-out duration-300"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 translate-y-full"
+                  >
+                    <IconButton
+                      className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0"
+                      aria-label="Open main menu dropdown"
+                      icon={
+                        <Icon
+                          id="resize-expand"
+                          className="text-osmoverse-200"
+                          height={16}
+                          width={16}
+                        />
+                      }
+                      onClick={() => setIsChartMinimized(false)}
                     />
-                  }
-                  onClick={() => setIsChartMinimized((prev) => !prev)}
-                />
-              </div>
-
-              {/* </Transition> */}
+                  </Transition>
+                </div>
+              </Transition>
             </div>
 
             <Transition

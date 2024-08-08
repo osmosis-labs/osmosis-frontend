@@ -106,7 +106,7 @@ export const PortfolioHistoricalChart = forwardRef(
                   width={16}
                 />
               }
-              onClick={() => setIsChartMinimized((prev) => !prev)}
+              onClick={() => setIsChartMinimized(true)}
             />
           </div>
         )}
