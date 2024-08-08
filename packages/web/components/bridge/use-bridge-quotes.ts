@@ -30,7 +30,7 @@ const refetchInterval = 30 * 1000; // 30 seconds
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
 /** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
