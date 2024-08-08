@@ -227,6 +227,14 @@ export const AssetsOverview: FunctionComponent<
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                 >
+                  <div className="absolute top-3 left-3">
+                    <PortfolioPerformance
+                      selectedDifference={selectedDifferencePricePretty}
+                      selectedPercentage={selectedPercentageRatePretty}
+                      formattedDate={formattedDate}
+                      showDate={showDate}
+                    />
+                  </div>
                   <PortfolioHistoricalChartMinimized
                     showScales={false}
                     data={portfolioOverTimeData as AreaData<Time>[]}
@@ -245,12 +253,13 @@ export const AssetsOverview: FunctionComponent<
                   />
                   <Transition
                     show={isHovering}
-                    enter="transition-all ease-out duration-300"
+                    enter="transition-opacity ease-out duration-100"
                     enterFrom="opacity-0"
                     enterTo="opacity-100"
-                    leave="transition-all ease-out duration-300"
+                    leave="transition-opacity ease-in duration-100"
                     leaveFrom="opacity-100"
                     leaveTo="opacity-0"
+                    as="div"
                   >
                     <IconButton
                       className="absolute bottom-2 right-2 z-50 bg-osmoverse-850 py-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"

@@ -83,7 +83,7 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const { logEvent } = useAmplitudeAnalytics();
 
-  const [isChartMinimized, setIsChartMinimized] = useState(false);
+  const [isChartMinimized, setIsChartMinimized] = useState(true);
 
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
