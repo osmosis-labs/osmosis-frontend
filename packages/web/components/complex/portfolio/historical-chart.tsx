@@ -41,6 +41,7 @@ export const PortfolioHistoricalChart = forwardRef(
       error,
       setShowDate,
       setIsChartMinimized,
+      showScales = true,
     }: {
       data?: AreaData<Time>[];
       isFetched: boolean;
@@ -52,6 +53,7 @@ export const PortfolioHistoricalChart = forwardRef(
       error: unknown;
       setShowDate: (show: boolean) => void;
       setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+      showScales?: boolean;
     },
     ref
   ) => {
@@ -78,6 +80,7 @@ export const PortfolioHistoricalChart = forwardRef(
               }}
               style={getChartStyle(totalPriceChange)}
               onPointerOut={resetDataPoint}
+              showScales={showScales}
             />
           )}
         </div>

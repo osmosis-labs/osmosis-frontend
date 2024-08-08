@@ -70,14 +70,36 @@ interface HistoricalChartProps {
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
   style?: Style;
+  showScales?: boolean;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
-  const { data = [], onPointerHover, onPointerOut, style = "neutral" } = props;
+  const {
+    data = [],
+    onPointerHover,
+    onPointerOut,
+    style = "neutral",
+    showScales = true,
+  } = props;
+
+  const options = showScales
+    ? {}
+    : {
+        rightPriceScale: {
+          visible: false,
+        },
+        leftPriceScale: {
+          visible: false,
+        },
+        timeScale: {
+          visible: false,
+        },
+      };
 
   return (
     <Chart
       Controller={AreaChartController}
+      options={options}
       series={[
         {
           type: "Area",
