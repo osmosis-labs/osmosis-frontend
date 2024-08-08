@@ -224,11 +224,8 @@
       "approveInWallet": "在钱包中批准",
       "enterAddress": "{network}地址",
       "errors": {
-        "reconnectWallet": "重新连接 {walletName}",
-        "wrongNetworkInWallet": "在 {walletName} 中网络错误",
         "seeRequest": "在{walletName}中查看请求",
-        "invalidAddress": "无效地址",
-        "missingAddress": "缺少地址"
+        "invalidAddress": "无效地址"
       },
       "from": "从",
       "loading": "加载中",
@@ -414,6 +411,7 @@
     "txTimedOutError": "交易超时。请重试。",
     "insufficientFee": "余额不足，无法支付交易费用。请添加资金以继续。",
     "noData": "没有数据",
+    "noOrderbook": "暂无订单簿",
     "uhOhSomethingWentWrong": "哦，出问题了",
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
     "startAgain": "重新开始"
@@ -450,7 +448,6 @@
     "pools": "资金池",
     "stake": "质押",
     "store": "应用",
-    "swap": "兑换",
     "vote": "投票",
     "featureRequests": "功能请求",
     "trade": "专业交易",
@@ -801,9 +798,11 @@
     "MAX": "最大",
     "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
     "pool": "资金池 #{id}",
-    "priceImpact": "价格影响",
+    "priceImpact": "市场影响",
     "routerTooltipFee": "费用",
     "routerTooltipSpreadFactor": "扩频因子",
+    "showDetails": "显示详细资料",
+    "hideDetails": "隐藏",
     "continueAnyway": "无论如何继续",
     "warning": {
       "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",
@@ -815,7 +814,17 @@
       "title": "交易设置"
     },
     "title": "兑换",
-    "dynamicSpreadFactor": "动态的"
+    "dynamicSpreadFactor": "动态的",
+    "gas": {
+      "oneClickTradingError": "目前无法估算网络费用。如果费用超出您的 1-Click Trading 网络费用限额，您将能够继续在钱包中进行手动批准。",
+      "error": "目前无法估算网络费用。在批准交易之前，请先检查钱包中的网络费用。",
+      "gasEstimationError": "网络费用无法估算",
+      "unknown": "未知",
+      "additionalNetworkFee": "额外网络费用"
+    },
+    "noRoutes": "未找到任何路线",
+    "route": "路线",
+    "routes": "路线"
   },
   "walletSelect": {
     "gettingStarted": "入门",
@@ -1191,7 +1200,9 @@
     "viewOnExplorer": "在资源管理器中查看",
     "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。",
     "noPriceData": "价格数据不可用",
-    "viewAll": "查看全部"
+    "viewAll": "查看全部",
+    "history": "历史",
+    "orders": "命令"
   },
   "date": {
     "earlierToday": "今天早些时候",
@@ -1201,5 +1212,105 @@
   "pagination": {
     "older": "较旧",
     "newer": "较新"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "命令",
+        "amount": "数量",
+        "price": "价格",
+        "orderPlaced": "订单已下",
+        "status": "地位"
+      },
+      "emptyState": {
+        "title": "暂无近期订单",
+        "subtitle": "您的交易订单历史记录将显示在这里。",
+        "connectTitle": "连接您的钱包以查看您的订单历史记录",
+        "connectSubtitle": "您过去在 Osmosis 上的限价订单将显示在这里。"
+      }
+    },
+    "aboveMarket": {
+      "title": "限制价格高于市场价格",
+      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+    },
+    "belowMarket": {
+      "title": "限制价格低于市场价格",
+      "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
+    },
+    "enterAnAmountTo": "输入金额",
+    "sell": "卖",
+    "buy": "买",
+    "pay": "支付",
+    "open": "打开",
+    "filled": "填充",
+    "claimable": "可索偿",
+    "claimAndClose": "认领并关闭",
+    "accept": "接受",
+    "cancelled": "取消",
+    "cancel": "取消",
+    "daysAgo": "{days}天前",
+    "hoursAgo": "{hours}小时前",
+    "buyWith": "使用{coinA}或{coinB}购买",
+    "orderHistory": "订单历史",
+    "tradeAnotherAssetOr": "将另一种资产交易为{coinA}或{coinB}",
+    "tradeAnotherAsset": "用{coinDenom}交易另一种资产",
+    "sellAnAsset": "出售资产",
+    "swapAnAsset": "交换资产",
+    "of": "的",
+    "insufficientFunds": "不充足的资金",
+    "startTrading": "开始交易",
+    "tradeFees": "交易费（订单成交时）",
+    "youNeed": "你需要",
+    "stablecoin": "稳定币",
+    "quoteUpdated": "报价已更新",
+    "fundsOsmosisToBuyAssets": "Osmosis 上的资金用于购买资产。",
+    "chooseAnOption": "选择一个选项以继续。",
+    "lowerSlippageToleranceRecommended": "建议降低滑动公差。",
+    "tryHigherSlippage": "尝试更高的最大滑动容忍度。",
+    "reviewTrade": "回顾贸易",
+    "errors": {
+      "noAssetAvailable": "您在 Osmosis 上没有任何{coinName}资金可供交易。选择一个选项以继续。",
+      "tradeMayResultInLossOfValue": "您的交易可能会导致重大价值损失",
+      "tradeMayNotExecuted": "您的交易可能无法执行"
+    },
+    "transferFromAnotherNetwork": "从其他网络或钱包转移",
+    "whatIsOrderClaim": {
+      "title": "什么是订单索取？",
+      "description": "在大多数情况下，当限价订单成交时，资金会自动添加到您的余额中。但在极少数情况下，必须手动从已成交的订单中领取资金。<inlang-LineFeed><inlang-LineFeed>此认领流程涉及批准您钱包中所有未认领的已完成订单的单笔交易，这会产生象征性的网络费用。"
+    },
+    "whatIsAStablecoin": {
+      "title": "什么是稳定币？",
+      "description": "稳定币是一种加密货币，其价值与另一种资产（例如法定货币或黄金）挂钩，以保持稳定的价格。在 Osmosis 上，用于购买和出售资产的主要稳定币是 USDC 和 USDT。"
+    },
+    "claimAll": "索取全部",
+    "addFunds": "增加资金",
+    "selectAnAssetTo": {
+      "buy": "选择要购买的资产",
+      "sell": "选择要出售的资产"
+    },
+    "payWith": "使用。。。支付",
+    "receive": "收到",
+    "swapFromAnotherAsset": "从另一项资产交换",
+    "connectYourWallet": "连接你的钱包",
+    "toSeeYourBalances": "查看你的余额",
+    "searchAssets": "搜索资产",
+    "marketPrice": "市场价",
+    "below": "以下",
+    "above": "多于",
+    "currentPrice": "时价",
+    "whenDenomPriceIs": "当{denom}价格为",
+    "orderType": "订单类型",
+    "confirm": "确认",
+    "market": "市场",
+    "limit": "限制",
+    "trade": "贸易",
+    "swapToAnotherAsset": "转换为其他资产",
+    "invalidPrice": "价格无效",
+    "unavailable": "不适用于{denom}",
+    "orderHistoryHeaders": {
+      "past": "过去的",
+      "pending": "待办的",
+      "filled": "已填写订单并领取"
+    }
   }
 }

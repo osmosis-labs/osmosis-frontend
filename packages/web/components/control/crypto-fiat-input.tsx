@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {
@@ -7,10 +8,12 @@ import {
   useEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 
 import { Icon } from "~/components/assets";
 import { ScaledCurrencyInput } from "~/components/input/scaled-currency-input";
+import { SkeletonLoader } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
@@ -27,15 +30,17 @@ export const CryptoFiatInput: FunctionComponent<{
   setIsMax?: (nextValue: boolean) => void;
   canSetMax?: boolean;
   transferGasCost: CoinPretty | undefined;
-  transferGasChain: { prettyName: string };
+  transferGasChain: { prettyName: string } | undefined;
 
-  assetPrice: PricePretty;
-  assetWithBalance: {
-    denom: string;
-    address: string;
-    decimals: number;
-    amount: CoinPretty;
-  };
+  assetPrice: PricePretty | undefined;
+  assetWithBalance:
+    | {
+        denom: string;
+        address: string;
+        decimals: number;
+        amount: CoinPretty;
+      }
+    | undefined;
 
   cryptoInput?: string;
   onChangeCryptoInput?: (value: string) => void;
@@ -91,37 +96,52 @@ export const CryptoFiatInput: FunctionComponent<{
     onChange: setIsMaxProp,
   });
 
-  const inputValue = new PricePretty(
-    assetPrice.fiatCurrency,
-    new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
-  );
+  /**
+   * If the asset price is not available, set the pending ratio update to true
+   * so that the ratio is updated once the asset price is available.
+   */
+  const [pendingRatioUpdate, setPendingRatioUpdate] = useState(false);
 
-  const inputCoin = useMemo(
-    () =>
-      new CoinPretty(
-        {
-          coinDecimals: assetWithBalance.decimals,
-          coinDenom: assetWithBalance.denom,
-          coinMinimalDenom: assetWithBalance.address,
-        },
-        cryptoInputRaw === ""
-          ? new Dec(0)
-          : new Dec(cryptoInputRaw || "0").mul(
-              DecUtils.getTenExponentN(assetWithBalance.decimals)
-            )
-      ),
-    [assetWithBalance, cryptoInputRaw]
-  );
+  const inputValue = useMemo(() => {
+    if (!assetPrice?.fiatCurrency) return;
+    return new PricePretty(
+      assetPrice.fiatCurrency,
+      new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
+    );
+  }, [assetPrice?.fiatCurrency, fiatInputRaw]);
+
+  const inputCoin = useMemo(() => {
+    if (!assetWithBalance) return;
+    return new CoinPretty(
+      {
+        coinDecimals: assetWithBalance.decimals,
+        coinDenom: assetWithBalance.denom,
+        coinMinimalDenom: assetWithBalance.address,
+      },
+      cryptoInputRaw === ""
+        ? new Dec(0)
+        : new Dec(cryptoInputRaw || "0").mul(
+            DecUtils.getTenExponentN(assetWithBalance.decimals)
+          )
+    );
+  }, [assetWithBalance, cryptoInputRaw]);
 
   const hasSubtractedAmount = useMemo(() => {
+    if (!inputCoin || !assetWithBalance) return false;
     return isMax && inputCoin.toDec().lt(assetWithBalance.amount.toDec());
-  }, [assetWithBalance.amount, inputCoin, isMax]);
+  }, [assetWithBalance, inputCoin, isMax]);
 
-  const onInput = useCallback(
-    (type: "fiat" | "crypto") => (value: string) => {
-      let nextValue = value;
-      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
-
+  const onUpdateRatio = useCallback(
+    ({
+      type,
+      assetPrice,
+      nextValue,
+    }: {
+      type: "fiat" | "crypto";
+      assetPrice: PricePretty;
+      nextValue: string;
+    }) => {
+      setPendingRatioUpdate(false);
       if (type === "fiat") {
         // Update the crypto amount based on the fiat amount
         const priceInFiat = assetPrice.toDec();
@@ -158,17 +178,62 @@ export const CryptoFiatInput: FunctionComponent<{
             : trimPlaceholderZeros(nextFiatAmount.toString())
         );
       }
+    },
+    [setCryptoInputRaw, setFiatInputRaw]
+  );
+
+  const onInput = useCallback(
+    (type: "fiat" | "crypto") => (value: string) => {
+      let nextValue = value;
+      if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
+
+      if (assetPrice && assetWithBalance) {
+        onUpdateRatio({
+          assetPrice,
+          nextValue,
+          type,
+        });
+      } else {
+        /**
+         * If the asset price is not available, set the pending ratio update to true
+         * so that the ratio is updated once the asset price is available.
+         */
+        setPendingRatioUpdate(true);
+      }
 
       type === "fiat"
         ? setFiatInputRaw(nextValue)
         : setCryptoInputRaw(nextValue);
     },
-    [assetPrice, setCryptoInputRaw, setFiatInputRaw]
+    [
+      assetPrice,
+      assetWithBalance,
+      setFiatInputRaw,
+      setCryptoInputRaw,
+      onUpdateRatio,
+    ]
   );
+
+  useEffect(() => {
+    if (pendingRatioUpdate && assetWithBalance && assetPrice) {
+      onUpdateRatio({
+        assetPrice,
+        nextValue: fiatInputRaw,
+        type: currentUnit,
+      });
+    }
+  }, [
+    assetPrice,
+    assetWithBalance,
+    currentUnit,
+    fiatInputRaw,
+    onUpdateRatio,
+    pendingRatioUpdate,
+  ]);
 
   // Subtract gas cost and adjust input when selecting max amount
   useEffect(() => {
-    if (isMax && canSetMax) {
+    if (isMax && canSetMax && assetWithBalance?.amount && inputCoin) {
       if (transferGasCost) {
         let maxTransferAmount = new Dec(0);
 
@@ -199,12 +264,12 @@ export const CryptoFiatInput: FunctionComponent<{
       }
     }
   }, [
-    isMax,
-    transferGasCost,
-    assetWithBalance.amount,
-    inputCoin,
-    onInput,
+    assetWithBalance?.amount,
     canSetMax,
+    inputCoin,
+    isMax,
+    onInput,
+    transferGasCost,
   ]);
 
   const insufficientFunds = isInsufficientBal || isInsufficientFee;
@@ -237,7 +302,7 @@ export const CryptoFiatInput: FunctionComponent<{
           >
             {currentUnit === "fiat" ? (
               <ScaledCurrencyInput
-                fiatSymbol={assetPrice.symbol}
+                fiatSymbol={assetPrice?.symbol ?? DEFAULT_VS_CURRENCY.symbol}
                 inputRef={inputRef}
                 value={fiatInputRaw}
                 onChange={(value) => {
@@ -246,7 +311,8 @@ export const CryptoFiatInput: FunctionComponent<{
                   // Prevent the user from entering more decimals than fiat supports
                   if (
                     value.split(".")[1]?.length >
-                    assetPrice.fiatCurrency.maxDecimals
+                    (assetPrice?.fiatCurrency.maxDecimals ??
+                      DEFAULT_VS_CURRENCY.maxDecimals)
                   ) {
                     return;
                   }
@@ -265,7 +331,10 @@ export const CryptoFiatInput: FunctionComponent<{
               >
                 <span>
                   {inputValue
-                    .maxDecimals(assetPrice.fiatCurrency.maxDecimals)
+                    ?.maxDecimals(
+                      assetPrice?.fiatCurrency.maxDecimals ??
+                        DEFAULT_VS_CURRENCY.maxDecimals
+                    )
                     .toString()}
                 </span>
                 <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
@@ -284,43 +353,54 @@ export const CryptoFiatInput: FunctionComponent<{
               }) translateY(${currentUnit === "crypto" ? -50 : 120}%)`,
             }}
           >
-            {currentUnit === "crypto" ? (
-              <ScaledCurrencyInput
-                coinDenom={inputCoin.denom}
-                inputRef={inputRef}
-                classes={{
-                  ticker: "ml-1 text-osmoverse-500",
-                }}
-                value={cryptoInputRaw}
-                onChange={(value) => {
-                  setIsMax(false);
-                  // Prevent the user from entering more decimals than the asset supports
-                  if (
-                    value.toString().split(".")[1]?.length >
-                    assetWithBalance.decimals
-                  ) {
-                    return;
-                  }
-                  onInput("crypto")(value);
-                }}
-              />
-            ) : (
-              <button
-                className={classNames(
-                  "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
-                  isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
-                )}
-                onClick={() => {
-                  setCurrentUnit("crypto");
-                }}
-              >
-                <span>
-                  {trimPlaceholderZeros(inputCoin?.toDec().toString(2) ?? "0")}{" "}
-                  {inputCoin.denom}
-                </span>
-                <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
-              </button>
-            )}
+            <SkeletonLoader
+              className="min-w-[280px]"
+              isLoaded={!!assetWithBalance}
+            >
+              {currentUnit === "crypto" ? (
+                <ScaledCurrencyInput
+                  coinDenom={inputCoin?.denom}
+                  inputRef={inputRef}
+                  classes={{
+                    ticker: "ml-1 text-osmoverse-500",
+                  }}
+                  value={cryptoInputRaw}
+                  onChange={(value) => {
+                    if (!assetWithBalance) {
+                      console.warn("Asset with balance is not available");
+                      return;
+                    }
+                    setIsMax(false);
+                    // Prevent the user from entering more decimals than the asset supports
+                    if (
+                      value.toString().split(".")[1]?.length >
+                      assetWithBalance.decimals
+                    ) {
+                      return;
+                    }
+                    onInput("crypto")(value);
+                  }}
+                />
+              ) : (
+                <button
+                  className={classNames(
+                    "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
+                    isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
+                  )}
+                  onClick={() => {
+                    setCurrentUnit("crypto");
+                  }}
+                >
+                  <span>
+                    {trimPlaceholderZeros(
+                      inputCoin?.toDec().toString(2) ?? "0"
+                    )}{" "}
+                    {inputCoin?.denom}
+                  </span>
+                  <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
+                </button>
+              )}
+            </SkeletonLoader>
           </div>
         </div>
 
@@ -333,8 +413,8 @@ export const CryptoFiatInput: FunctionComponent<{
               </p>
               <p className="caption text-osmoverse-300">
                 {t("transfer.feesReserved", {
-                  assetName: assetWithBalance.denom,
-                  networkName: transferGasChain.prettyName,
+                  assetName: assetWithBalance?.denom ?? "",
+                  networkName: transferGasChain?.prettyName ?? "",
                 })}
               </p>
             </div>
@@ -342,6 +422,7 @@ export const CryptoFiatInput: FunctionComponent<{
         >
           <button
             onClick={() => {
+              if (!assetWithBalance) return;
               if (isMax) {
                 onInput("crypto")("0");
                 setIsMax(false);
@@ -363,7 +444,9 @@ export const CryptoFiatInput: FunctionComponent<{
                   !isMax,
               }
             )}
-            disabled={assetWithBalance.amount.toDec().isZero()}
+            disabled={
+              !assetWithBalance || assetWithBalance.amount.toDec().isZero()
+            }
           >
             {t("transfer.max")}
           </button>

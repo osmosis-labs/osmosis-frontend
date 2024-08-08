@@ -76,3 +76,11 @@ export function addCommasToNumber(number: string | number): string {
 export function removeCommasFromNumber(number: string): string {
   return number.replace(/,/g, "");
 }
+
+export function countDecimals(value: string) {
+  const split = value.split(".");
+  if (split.length > 1) {
+    return split[1].length;
+  }
+  return 0;
+}

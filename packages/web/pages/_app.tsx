@@ -1,5 +1,5 @@
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -15,10 +15,13 @@ import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { ComponentType, useMemo } from "react";
-import { FunctionComponent } from "react";
-import { ReactNode } from "react";
-import { useEffect } from "react";
+import {
+  ComponentType,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
@@ -135,6 +138,14 @@ const MainLayoutWrapper: FunctionComponent<{
     onClose: onCloseLeavingOsmosisToLevana,
   } = useDisclosure();
 
+  useEffect(() => {
+    if (flags.limitOrders && flags._isInitialized) {
+      document.body.classList.add("!bg-osmoverse-1000");
+    } else {
+      document.body.classList.remove("!bg-osmoverse-1000");
+    }
+  }, [flags.limitOrders, flags._isInitialized]);
+
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
@@ -195,7 +206,7 @@ const MainLayoutWrapper: FunctionComponent<{
 
     let menuItems: (MainLayoutMenu | null)[] = [
       {
-        label: t("menu.swap"),
+        label: t("limitOrders.trade"),
         link: "/",
         icon: <Icon id="trade" className="h-6 w-6" />,
         selectionTest: /\/$/,

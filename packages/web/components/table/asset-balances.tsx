@@ -67,6 +67,7 @@ export const AssetBalancesTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
   // State
 
@@ -308,7 +309,10 @@ export const AssetBalancesTable: FunctionComponent<{
         className={classNames(
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
+          {
+            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
+          }
         )}
       >
         <thead>

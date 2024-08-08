@@ -168,11 +168,25 @@ const bitcoinChainSchema = z.object({
   chainType: z.literal("bitcoin"),
 });
 
+const tronChainSchema = z.object({
+  /**
+   * 728126428
+   */
+  chainId: z.number(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("tron"),
+});
+
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   cosmosChainSchema,
   evmChainSchema,
   solanaChainSchema,
   bitcoinChainSchema,
+  tronChainSchema,
 ]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;

@@ -1,13 +1,15 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
+import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags, useNavBar } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -18,6 +20,44 @@ export type PreviousTrade = {
 
 const Home = () => {
   const featureFlags = useFeatureFlags();
+  if (!featureFlags._isInitialized) return null;
+  return featureFlags.limitOrders ? <HomeNew /> : <HomeV1 />;
+};
+
+const HomeNew = () => {
+  const featureFlags = useFeatureFlags();
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
+  });
+
+  useNavBar({ title: " " });
+
+  return (
+    <main className="relative flex h-full overflow-auto pb-2 pt-8">
+      <div className="fixed inset-0 h-full w-full overflow-y-scroll bg-cover xl:static">
+        <div className="relative h-full w-full xl:hidden">
+          <Image
+            src="/images/osmosis-home-bg-alt.svg"
+            alt=""
+            width={1544}
+            height={720}
+            className="absolute bottom-0 max-h-[720px] w-full"
+          />
+        </div>
+        <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center">
+          <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-mobile-header md:w-full md:px-5">
+            {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+            <TradeTool page="Swap Page" />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+const HomeV1 = () => {
+  const featureFlags = useFeatureFlags();
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
@@ -26,7 +66,7 @@ const Home = () => {
   });
 
   return (
-    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+    <main className="relative flex h-full items-center overflow-auto py-2">
       <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"

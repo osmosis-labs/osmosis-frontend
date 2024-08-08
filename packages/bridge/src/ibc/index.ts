@@ -213,14 +213,27 @@ export class IbcBridgeProvider implements BridgeProvider {
   }
 
   /**
-   * Gets gas asset from asset list, attempting to match the coinMinimalDenom or counterparty denom.
+   * Gets gas asset from asset list or chain list, attempting to match the coinMinimalDenom or chainSuggestionDenom.
    * @returns gas bridge asset, or undefined if not found.
    */
   async getGasAsset(
     fromChainId: string,
     denom: string
   ): Promise<BridgeAsset | undefined> {
-    // check the asset list
+    // try to get asset list fee asset first, or otherwise the chain fee currency
+    const assetListAsset = this.ctx.assetLists
+      .flatMap(({ assets }) => assets)
+      .find((asset) => asset.coinMinimalDenom);
+
+    if (assetListAsset) {
+      return {
+        address: assetListAsset.coinMinimalDenom,
+        denom: assetListAsset.symbol,
+        decimals: assetListAsset.decimals,
+        coinGeckoId: assetListAsset.coingeckoId,
+      };
+    }
+
     const chains = await this.getChains();
     const chain = chains.find((c) => c.chain_id === fromChainId);
     const feeCurrency = chain?.feeCurrencies.find(
@@ -366,7 +379,7 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain?.chainType === "evm" || toChain?.chainType === "evm") {
+    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "cosmos") {
       return undefined;
     }
 

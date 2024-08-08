@@ -224,11 +224,8 @@
       "approveInWallet": "Approuver dans le portefeuille",
       "enterAddress": "Adresse {network}",
       "errors": {
-        "reconnectWallet": "Reconnecter {walletName}",
-        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
         "seeRequest": "Voir la demande dans {walletName}",
-        "invalidAddress": "Adresse invalide",
-        "missingAddress": "Adresse manquante"
+        "invalidAddress": "Adresse invalide"
       },
       "from": "De",
       "loading": "Chargement",
@@ -414,6 +411,7 @@
     "txTimedOutError": "La transaction a expiré. Veuillez réessayer.",
     "insufficientFee": "Solde insuffisant pour les frais de transaction. Veuillez ajouter des fonds pour continuer.",
     "noData": "Pas de données",
+    "noOrderbook": "Pas de carnet de commandes pour la paire",
     "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
     "startAgain": "Recommencer"
@@ -450,7 +448,6 @@
     "pools": "Bassins",
     "stake": "Stake",
     "store": "Applications",
-    "swap": "Échanger",
     "vote": "Voter",
     "featureRequests": "Requêtes de nouvelles fonctionnalités",
     "trade": "Commerce professionnel",
@@ -801,9 +798,11 @@
     "MAX": "MAX",
     "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "pool": "Bassin n°{id}",
-    "priceImpact": "Impact du prix",
+    "priceImpact": "Impact sur le marché",
     "routerTooltipFee": "Frais",
     "routerTooltipSpreadFactor": "Facteur de propagation",
+    "showDetails": "Afficher les détails",
+    "hideDetails": "Cacher",
     "continueAnyway": "Continuer quand même",
     "warning": {
       "exceedsSpendLimit": "Cet échange dépasse votre limite de dépenses restantes pour le trading en 1 clic.",
@@ -815,7 +814,17 @@
       "title": "Paramètres de transaction"
     },
     "title": "Échanger",
-    "dynamicSpreadFactor": "Dynamique"
+    "dynamicSpreadFactor": "Dynamique",
+    "gas": {
+      "oneClickTradingError": "Les frais de réseau ne peuvent pas être estimés pour le moment. Si les frais dépassent la limite des frais de votre réseau 1-Click Trading, vous pourrez procéder à une approbation manuelle dans votre portefeuille.",
+      "error": "Les frais de réseau ne peuvent pas être estimés pour le moment. Vérifiez les frais de réseau dans votre portefeuille avant d'approuver la transaction.",
+      "gasEstimationError": "Les frais de réseau ne peuvent pas être estimés",
+      "unknown": "Inconnu",
+      "additionalNetworkFee": "Frais de réseau supplémentaires"
+    },
+    "noRoutes": "Aucun itinéraire trouvé",
+    "route": "itinéraire",
+    "routes": "itinéraires"
   },
   "walletSelect": {
     "gettingStarted": "Commencer",
@@ -1191,7 +1200,9 @@
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
     "noPriceData": "Données de prix indisponibles",
-    "viewAll": "Voir tout"
+    "viewAll": "Voir tout",
+    "history": "Histoire",
+    "orders": "Ordres"
   },
   "date": {
     "earlierToday": "Plus tôt aujourd'hui",
@@ -1201,5 +1212,105 @@
   "pagination": {
     "older": "Plus vieux",
     "newer": "Plus récent"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "Commande",
+        "amount": "Montant",
+        "price": "Prix",
+        "orderPlaced": "Commande passée",
+        "status": "Statut"
+      },
+      "emptyState": {
+        "title": "Aucune commande récente",
+        "subtitle": "L’historique de vos commandes commerciales apparaîtra ici.",
+        "connectTitle": "Connectez votre portefeuille pour voir l'historique de vos commandes",
+        "connectSubtitle": "Vos ordres limités passés sur Osmosis apparaîtront ici."
+      }
+    },
+    "aboveMarket": {
+      "title": "Prix limite au-dessus du prix du marché",
+      "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
+    },
+    "belowMarket": {
+      "title": "Prix limite en dessous du prix du marché",
+      "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
+    },
+    "enterAnAmountTo": "Entrez un montant à",
+    "sell": "Vendre",
+    "buy": "Acheter",
+    "pay": "Payer",
+    "open": "Ouvrir",
+    "filled": "Rempli",
+    "claimable": "Réclamable",
+    "claimAndClose": "Réclamez et clôturez",
+    "accept": "Accepter",
+    "cancelled": "Annulé",
+    "cancel": "Annuler",
+    "daysAgo": "{days} il y a 4 jours",
+    "hoursAgo": "{hours} il y a h",
+    "buyWith": "Achetez avec {coinA} ou {coinB}",
+    "orderHistory": "Historique des commandes",
+    "tradeAnotherAssetOr": "Échangez un autre actif contre {coinA} ou {coinB}",
+    "tradeAnotherAsset": "Échangez un autre actif contre {coinDenom}",
+    "sellAnAsset": "Vendre un actif",
+    "swapAnAsset": "Échanger un actif",
+    "of": "de",
+    "insufficientFunds": "Fonds insuffisants",
+    "startTrading": "Commencer à trader",
+    "tradeFees": "Frais de transaction (lorsque la commande est exécutée)",
+    "youNeed": "Vous avez besoin",
+    "stablecoin": "pièce stable",
+    "quoteUpdated": "Devis mis à jour",
+    "fundsOsmosisToBuyAssets": "fonds sur Osmosis pour acheter des actifs.",
+    "chooseAnOption": "Choisissez une option pour continuer.",
+    "lowerSlippageToleranceRecommended": "Une tolérance de glissement plus faible est recommandée.",
+    "tryHigherSlippage": "Essayez une tolérance de glissement maximale plus élevée.",
+    "reviewTrade": "Revoir le commerce",
+    "errors": {
+      "noAssetAvailable": "Vous n'avez aucun fonds {coinName} sur Osmosis avec lequel échanger. Choisissez une option pour continuer.",
+      "tradeMayResultInLossOfValue": "Votre transaction peut entraîner une perte de valeur importante",
+      "tradeMayNotExecuted": "Votre transaction pourrait ne pas être exécutée"
+    },
+    "transferFromAnotherNetwork": "Transfert depuis un autre réseau ou portefeuille",
+    "whatIsOrderClaim": {
+      "title": "Qu'est-ce qu'une réclamation de commande ?",
+      "description": "Dans la majorité des cas, lorsqu'un ordre limité est exécuté, les fonds sont automatiquement ajoutés à votre solde. Cependant, dans de rares cas, les fonds doivent être réclamés manuellement à partir de la commande exécutée.<inlang-LineFeed>\nCe processus de réclamation consiste à approuver une seule transaction dans votre portefeuille pour toutes les commandes exécutées non réclamées, ce qui entraîne des frais de réseau nominaux."
+    },
+    "whatIsAStablecoin": {
+      "title": "Qu’est-ce qu’un stablecoin ?",
+      "description": "Les Stablecoins sont un type de crypto-monnaie dont la valeur est liée à un autre actif, comme une monnaie fiduciaire ou de l'or, pour maintenir un prix stable. Sur Osmosis, les principales pièces stables pour l'achat et la vente d'actifs sont l'USDC et l'USDT."
+    },
+    "claimAll": "Réclamez tout",
+    "addFunds": "Ajouter des fonds",
+    "selectAnAssetTo": {
+      "buy": "Sélectionnez un actif à acheter",
+      "sell": "Sélectionnez un actif à vendre"
+    },
+    "payWith": "Payer avec",
+    "receive": "Recevoir",
+    "swapFromAnotherAsset": "Échanger depuis un autre actif",
+    "connectYourWallet": "Connectez votre portefeuille",
+    "toSeeYourBalances": "pour voir vos soldes",
+    "searchAssets": "Rechercher des ressources",
+    "marketPrice": "prix du marché",
+    "below": "ci-dessous",
+    "above": "au-dessus de",
+    "currentPrice": "prix actuel",
+    "whenDenomPriceIs": "Lorsque le prix {denom} est",
+    "orderType": "Type de commande",
+    "confirm": "Confirmer",
+    "market": "Marché",
+    "limit": "Limite",
+    "trade": "Commerce",
+    "swapToAnotherAsset": "Échanger vers un autre actif",
+    "invalidPrice": "Prix invalide",
+    "unavailable": "Indisponible pour {denom}",
+    "orderHistoryHeaders": {
+      "past": "Passé",
+      "pending": "En attente",
+      "filled": "Commandes exécutées à réclamer"
+    }
   }
 }

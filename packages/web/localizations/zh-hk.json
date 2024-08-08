@@ -224,11 +224,8 @@
       "approveInWallet": "在錢包中批准",
       "enterAddress": "{network}位址",
       "errors": {
-        "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
         "seeRequest": "在{walletName}中查看請求",
-        "invalidAddress": "無效地址",
-        "missingAddress": "缺少地址"
+        "invalidAddress": "無效地址"
       },
       "from": "從",
       "loading": "載入中",
@@ -414,6 +411,7 @@
     "txTimedOutError": "交易超時。請重試。",
     "insufficientFee": "餘額不足，無法支付交易費用。請添加資金以繼續。",
     "noData": "沒有數據",
+    "noOrderbook": "沒有配對訂單簿",
     "uhOhSomethingWentWrong": "呃哦，出了點問題",
     "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
     "startAgain": "重新開始"
@@ -450,7 +448,6 @@
     "pools": "流動性池",
     "stake": "質押",
     "store": "應用",
-    "swap": "兌換",
     "vote": "投票",
     "featureRequests": "功能請求",
     "trade": "專業交易",
@@ -801,9 +798,11 @@
     "MAX": "全部",
     "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",
     "pool": "流動性池 #{id}",
-    "priceImpact": "價格影響",
+    "priceImpact": "市場影響",
     "routerTooltipFee": "費",
     "routerTooltipSpreadFactor": "擴頻因子",
+    "showDetails": "顯示詳細資料",
+    "hideDetails": "隱藏",
     "continueAnyway": "無論如何繼續",
     "warning": {
       "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
@@ -815,7 +814,17 @@
       "title": "兌換設定"
     },
     "title": "兌換",
-    "dynamicSpreadFactor": "動態的"
+    "dynamicSpreadFactor": "動態的",
+    "gas": {
+      "oneClickTradingError": "目前無法估計網路費用。如果費用超過您的一鍵交易網路費用限額，您將能夠在錢包中進行手動批准。",
+      "error": "目前無法估計網路費用。在批准交易之前，請檢查錢包中的網路費用。",
+      "gasEstimationError": "網路費用無法估算",
+      "unknown": "未知",
+      "additionalNetworkFee": "額外網路費"
+    },
+    "noRoutes": "沒有找到路線",
+    "route": "路線",
+    "routes": "路線"
   },
   "walletSelect": {
     "gettingStarted": "入門",
@@ -1191,7 +1200,9 @@
     "viewOnExplorer": "在資源管理器上查看",
     "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
     "noPriceData": "價格數據不可用",
-    "viewAll": "看全部"
+    "viewAll": "看全部",
+    "history": "歷史",
+    "orders": "命令"
   },
   "date": {
     "earlierToday": "今天早些時候",
@@ -1201,5 +1212,105 @@
   "pagination": {
     "older": "年長的",
     "newer": "較新"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "命令",
+        "amount": "數量",
+        "price": "價格",
+        "orderPlaced": "訂單已下",
+        "status": "地位"
+      },
+      "emptyState": {
+        "title": "最近沒有訂單",
+        "subtitle": "您的交易訂單歷史記錄將顯示在這裡。",
+        "connectTitle": "連接您的錢包以查看您的訂單歷史記錄",
+        "connectSubtitle": "您過去在 Osmosis 上的限價訂單將顯示在此。"
+      }
+    },
+    "aboveMarket": {
+      "title": "限價高於市場價格",
+      "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
+    },
+    "belowMarket": {
+      "title": "限制價格低於市場價格",
+      "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
+    },
+    "enterAnAmountTo": "輸入金額至",
+    "sell": "賣",
+    "buy": "買",
+    "pay": "支付",
+    "open": "打開",
+    "filled": "填充",
+    "claimable": "可索賠",
+    "claimAndClose": "索賠並關閉",
+    "accept": "接受",
+    "cancelled": "取消",
+    "cancel": "取消",
+    "daysAgo": "{days}天前",
+    "hoursAgo": "{hours}前",
+    "buyWith": "使用{coinA}或{coinB}購買",
+    "orderHistory": "訂單歷史",
+    "tradeAnotherAssetOr": "將另一種資產交易為{coinA}或{coinB}",
+    "tradeAnotherAsset": "將另一種資產交易為{coinDenom}",
+    "sellAnAsset": "出售資產",
+    "swapAnAsset": "交換資產",
+    "of": "的",
+    "insufficientFunds": "不充足的資金",
+    "startTrading": "開始交易",
+    "tradeFees": "交易費用（訂單成交時）",
+    "youNeed": "你需要",
+    "stablecoin": "穩定幣",
+    "quoteUpdated": "報價已更新",
+    "fundsOsmosisToBuyAssets": "Osmosis 上的資金用於購買資產。",
+    "chooseAnOption": "選擇一個選項繼續。",
+    "lowerSlippageToleranceRecommended": "建議採用較低的滑移容差。",
+    "tryHigherSlippage": "嘗試更高的最大滑動容差。",
+    "reviewTrade": "審查交易",
+    "errors": {
+      "noAssetAvailable": "您在 Osmosis 上沒有任何可用於交易的{coinName}資金。選擇一個選項繼續。",
+      "tradeMayResultInLossOfValue": "您的交易可能會導致重大價值損失",
+      "tradeMayNotExecuted": "您的交易可能無法執行"
+    },
+    "transferFromAnotherNetwork": "從另一個網路或錢包轉賬",
+    "whatIsOrderClaim": {
+      "title": "什麼是訂單索賠？",
+      "description": "在大多數情況下，當限價訂單被執行時，資金會自動加到您的餘額中。但在極少數情況下，必須從已執行的訂單中手動領取資金。<inlang-LineFeed><inlang-LineFeed>此認領過程涉及批准您錢包中所有無人認領的已完成訂單的單筆交易，這會產生象徵性的網路費用。"
+    },
+    "whatIsAStablecoin": {
+      "title": "什麼是穩定幣？",
+      "description": "穩定幣是一種加密貨幣，其價值與另一種資產（例如法定貨幣或黃金）掛鉤，以維持穩定的價格。在 Osmosis 上，買賣資產的主要穩定幣是 USDC 和 USDT。"
+    },
+    "claimAll": "索取全部",
+    "addFunds": "增加資金",
+    "selectAnAssetTo": {
+      "buy": "選擇要購買的資產",
+      "sell": "選擇要出售的資產"
+    },
+    "payWith": "使用。",
+    "receive": "收到",
+    "swapFromAnotherAsset": "從另一種資產交換",
+    "connectYourWallet": "連接你的錢包",
+    "toSeeYourBalances": "查看您的餘額",
+    "searchAssets": "搜尋資產",
+    "marketPrice": "市價",
+    "below": "以下",
+    "above": "多於",
+    "currentPrice": "時價",
+    "whenDenomPriceIs": "當{denom}價格為",
+    "orderType": "訂單類型",
+    "confirm": "確認",
+    "market": "市場",
+    "limit": "限制",
+    "trade": "貿易",
+    "swapToAnotherAsset": "交換到另一種資產",
+    "invalidPrice": "價格無效",
+    "unavailable": "不適用於{denom}",
+    "orderHistoryHeaders": {
+      "past": "過去的",
+      "pending": "待辦的",
+      "filled": "已填寫訂單以領取"
+    }
   }
 }

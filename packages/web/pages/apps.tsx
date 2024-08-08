@@ -91,7 +91,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   }, [width]);
 
   return (
-    <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col p-8 pt-4 md:gap-8 md:p-4">
       <NextSeo
         title={t("seo.apps.title")}
         description={t("seo.apps.description")}

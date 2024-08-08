@@ -2,10 +2,10 @@
 import { BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
+import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
-import { SwapPage } from "../pages/swap-page";
 import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Swap feature", () => {
@@ -14,7 +14,7 @@ test.describe("Test Swap feature", () => {
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
-  let swapPage: SwapPage;
+  let swapPage: TradePage;
   let USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
   let ATOM =
@@ -45,7 +45,7 @@ test.describe("Test Swap feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new SwapPage(context.pages()[0]);
+    swapPage = new TradePage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();

@@ -120,7 +120,7 @@ jobs:
           BASE_URL: ${{ matrix.base-url }}
         run: |
           cd packages/web
-          npx playwright test -g "Test Select Swap Pair feature"
+          npx playwright test pools
       - name: upload test results
         if: failure()
         id: e2e-test-results
