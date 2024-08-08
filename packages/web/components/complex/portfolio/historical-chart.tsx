@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import classNames from "classnames";
 import { AreaData, Time } from "lightweight-charts";
@@ -15,19 +14,6 @@ import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useTranslation } from "~/hooks";
-
-const getChartStyle = (
-  difference: number
-): "bullish" | "bearish" | "neutral" => {
-  const percentageDec = new Dec(difference);
-  if (percentageDec.isPositive()) {
-    return "bullish";
-  } else if (percentageDec.isNegative()) {
-    return "bearish";
-  } else {
-    return "neutral";
-  }
-};
 
 export const PortfolioHistoricalChart = forwardRef(
   (
@@ -83,7 +69,6 @@ export const PortfolioHistoricalChart = forwardRef(
                 setDataPoint({ value, time });
                 logEvent([EventName.Portfolio.chartInteraction]);
               }}
-              style={getChartStyle(totalPriceChange)}
               onPointerOut={resetDataPoint}
               showScales={showScales}
             />
@@ -153,7 +138,6 @@ export const PortfolioHistoricalChartMinimized = ({
             setDataPoint({ value, time });
             logEvent([EventName.Portfolio.chartInteraction]);
           }}
-          style={getChartStyle(totalPriceChange)}
           onPointerOut={resetDataPoint}
           showScales={showScales}
         />

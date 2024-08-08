@@ -160,19 +160,30 @@ export const AssetsOverview: FunctionComponent<
                     <h3>{totalDisplayValue?.toString()}</h3>
                   )}
                 </SkeletonLoader>
-                <SkeletonLoader
-                  className={classNames(
-                    isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
-                  )}
-                  isLoaded={isPortfolioOverTimeDataIsFetched}
+                <Transition
+                  show={!isChartMinimized}
+                  enter="transition ease-out duration-300"
+                  enterFrom="opacity-0 height-0"
+                  enterTo="opacity-100 height-full"
+                  leave="transition ease-out duration-300"
+                  leaveFrom="opacity-100 height-full"
+                  leaveTo="opacity-0 height-0"
+                  as="div"
                 >
-                  <PortfolioPerformance
-                    selectedDifference={selectedDifferencePricePretty}
-                    selectedPercentage={selectedPercentageRatePretty}
-                    formattedDate={formattedDate}
-                    showDate={showDate}
-                  />
-                </SkeletonLoader>
+                  <SkeletonLoader
+                    className={classNames(
+                      isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
+                    )}
+                    isLoaded={isPortfolioOverTimeDataIsFetched}
+                  >
+                    <PortfolioPerformance
+                      selectedDifference={selectedDifferencePricePretty}
+                      selectedPercentage={selectedPercentageRatePretty}
+                      formattedDate={formattedDate}
+                      showDate={showDate}
+                    />
+                  </SkeletonLoader>
+                </Transition>
                 <div className="flex items-center gap-3 py-3">
                   <Button
                     className="flex items-center gap-2 !rounded-full"
