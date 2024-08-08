@@ -54,7 +54,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   tfmProTradingNavbarButton: true,
   positionRoi: true,
   swapToolSimulateFee: false,
-  portfolioPageAndNewAssetsPage: true,
+  portfolioPageAndNewAssetsPage: false,
   newAssetsPage: true,
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,

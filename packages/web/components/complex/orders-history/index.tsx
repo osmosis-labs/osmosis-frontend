@@ -336,7 +336,7 @@ const TableGroupHeader = ({
     <tr style={style}>
       <h6 className="pb-4 pt-8">
         {t(`limitOrders.orderHistoryHeaders.${group}`)}
-      </h6>{" "}
+      </h6>
     </tr>
   );
 };
