@@ -1,5 +1,4 @@
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
-import classNames from "classnames";
 import { AreaData, Time } from "lightweight-charts";
 import { forwardRef } from "react";
 
@@ -53,10 +52,10 @@ export const PortfolioHistoricalChart = forwardRef(
 
     return (
       <section
-        className="relative flex grow flex-col justify-between"
+        className="relative flex h-[468px] flex-col justify-between"
         ref={ref}
       >
-        <div className={classNames("w-full", heightClassname)}>
+        <div className="w-full grow pt-4">
           {/* <div className="w-full"> */}
           {error ? (
             <div className="error-message flex h-full items-center justify-center">
@@ -116,7 +115,7 @@ export const PortfolioHistoricalChartMinimized = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
-    <div className="w-full grow ">
+    <div className="w-full grow">
       {error ? (
         <div className="error-message flex h-full items-center justify-center">
           {t("errors.generic")}

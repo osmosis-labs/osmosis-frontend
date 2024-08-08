@@ -309,7 +309,7 @@ export const AssetsOverview: FunctionComponent<
               leaveFrom="h-[468px] opacity-100"
               leaveTo="h-0 opacity-0"
               as="div"
-              className="flex flex-col overflow-hidden"
+              className="overflow-hidden"
               // show={!isChartMinimized}
               // enter="transition-all ease-out duration-300 height-opacity-delay-enter"
               // enterFrom="h-0 opacity-0"
@@ -322,8 +322,6 @@ export const AssetsOverview: FunctionComponent<
               {(ref) => (
                 <PortfolioHistoricalChart
                   isChartMinimized={isChartMinimized}
-                  // heightClassname="h-[400px]"
-                  heightClassname="grow pt-4"
                   ref={ref}
                   setIsChartMinimized={setIsChartMinimized}
                   data={portfolioOverTimeData as AreaData<Time>[]}
