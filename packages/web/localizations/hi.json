@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "एक्सप्लोरर पर देखें",
     "launchAlert": "वर्तमान में केवल व्यापार इतिहास प्रदर्शित किया जाता है। जल्द ही अधिक लेनदेन प्रकारों के लिए सहायता उपलब्ध होगी।",
     "noPriceData": "मूल्य डेटा उपलब्ध नहीं है",
-    "viewAll": "सभी को देखें"
+    "viewAll": "सभी को देखें",
+    "history": "इतिहास",
+    "orders": "आदेश"
   },
   "date": {
     "earlierToday": "आज पहले",
@@ -1257,7 +1259,6 @@
     "of": "का",
     "insufficientFunds": "अपर्याप्त कोष",
     "startTrading": "व्यापार शुरू करें",
-    "filledOrdersToClaim": "दावा करने के लिए भरे गए ऑर्डर",
     "tradeFees": "व्यापार शुल्क (ऑर्डर भरने पर)",
     "youNeed": "आप की जरूरत है",
     "stablecoin": "स्थिर मुद्रा",
@@ -1305,6 +1306,11 @@
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
     "invalidPrice": "अमान्य मूल्य",
-    "unavailable": "{denom} के लिए अनुपलब्ध"
+    "unavailable": "{denom} के लिए अनुपलब्ध",
+    "orderHistoryHeaders": {
+      "past": "अतीत",
+      "pending": "लंबित",
+      "filled": "दावा करने के लिए भरे गए ऑर्डर"
+    }
   }
 }

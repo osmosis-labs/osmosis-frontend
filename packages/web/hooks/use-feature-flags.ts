@@ -30,7 +30,8 @@ export type AvailableFlags =
   | "newDepositWithdrawFlow"
   | "oneClickTrading"
   | "limitOrders"
-  | "advancedChart";
+  | "advancedChart"
+  | "cypherCard";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -63,6 +64,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   advancedChart: false,
   _isInitialized: false,
   _isClientIDPresent: false,
+  cypherCard: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =

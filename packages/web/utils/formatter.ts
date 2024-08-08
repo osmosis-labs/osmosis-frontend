@@ -375,3 +375,28 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   const split = formattedPrice.split(".");
   return split[0] + "." + split[1].slice(0, maxDecimals);
 }
+
+export function calcFontSize(numChars: number, isMobile: boolean): string {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        9: "48px",
+        15: "38px",
+        24: "32px",
+        100: "16px",
+      }
+    : {
+        7: "48px",
+        12: "38px",
+        16: "28px",
+        33: "24px",
+        100: "16px",
+      };
+
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "48px";
+}

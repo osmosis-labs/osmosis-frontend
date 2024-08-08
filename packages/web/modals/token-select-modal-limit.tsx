@@ -1,11 +1,9 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { debounce } from "debounce";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
-  ChangeEvent,
   FunctionComponent,
   useCallback,
   useMemo,
@@ -253,11 +251,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                         autoFocus
                         value={searchValue}
                         onKeyDown={searchBarKeyDown}
-                        onChange={debounce(
-                          (e: ChangeEvent<HTMLInputElement>) =>
-                            onSearch(e.target.value),
-                          300
-                        )}
+                        onChange={(e) => onSearch(e.target.value)}
                         placeholder={t("limitOrders.searchAssets")}
                         className="h-6 w-full bg-transparent text-base leading-6 placeholder:tracking-[0.5px] placeholder:text-osmoverse-500"
                       />

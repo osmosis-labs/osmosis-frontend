@@ -45,7 +45,11 @@ import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  calcFontSize,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -360,6 +364,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
                     }}
+                    data-testid="trade-input-swap"
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -369,6 +374,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("from")
                     }
+                    data-testid="token-in"
                   />
                 </div>
                 <AssetFieldsetFooter>
@@ -437,6 +443,19 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                             "opacity-50": isSwapToolLoading,
                           }
                         )}
+                        style={{
+                          fontSize: swapState.quote
+                            ? calcFontSize(
+                                formatPretty(swapState.quote.amount.toDec(), {
+                                  minimumSignificantDigits: 6,
+                                  maximumSignificantDigits: 6,
+                                  maxDecimals: 10,
+                                  notation: "standard",
+                                }).length,
+                                isMobile
+                              )
+                            : undefined,
+                        }}
                       >
                         {swapState.quote?.amount
                           ? formatPretty(swapState.quote.amount.toDec(), {
@@ -457,6 +476,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("to")
                     }
+                    data-testid="token-out"
                   />
                 </div>
                 <AssetFieldsetFooter>
@@ -550,6 +570,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   setShowSwapReviewModal(true);
                 }}
                 className="w-full"
+                data-testid="trade-button-swap"
               >
                 <h6>
                   {account?.walletStatus === WalletStatus.Connected ||

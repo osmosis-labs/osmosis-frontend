@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "Vizualizare pe explorer",
     "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
     "noPriceData": "Datele de preț nu sunt disponibile",
-    "viewAll": "A vedea tot"
+    "viewAll": "A vedea tot",
+    "history": "Istorie",
+    "orders": "Comenzi"
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
@@ -1257,7 +1259,6 @@
     "of": "de",
     "insufficientFunds": "Fonduri insuficiente",
     "startTrading": "Începeți să tranzacționați",
-    "filledOrdersToClaim": "Comenzi completate pentru revendicare",
     "tradeFees": "Taxe de tranzacționare (când comanda este completată)",
     "youNeed": "Ai nevoie",
     "stablecoin": "stablecoin",
@@ -1305,6 +1306,11 @@
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
     "invalidPrice": "Preț nevalid",
-    "unavailable": "Indisponibil pentru {denom}"
+    "unavailable": "Indisponibil pentru {denom}",
+    "orderHistoryHeaders": {
+      "past": "Trecut",
+      "pending": "In asteptarea",
+      "filled": "Comenzi completate pentru revendicare"
+    }
   }
 }

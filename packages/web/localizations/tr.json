@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "Explorer'da görüntüle",
     "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
     "noPriceData": "Fiyat verileri mevcut değil",
-    "viewAll": "Hepsini gör"
+    "viewAll": "Hepsini gör",
+    "history": "Tarih",
+    "orders": "Emirler"
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
@@ -1257,7 +1259,6 @@
     "of": "ile ilgili",
     "insufficientFunds": "Yetersiz bakiye",
     "startTrading": "Ticarete başla",
-    "filledOrdersToClaim": "Talep edilecek siparişler tamamlandı",
     "tradeFees": "Ticaret ücretleri (sipariş tamamlandığında)",
     "youNeed": "ihtiyacın var",
     "stablecoin": "stabilcoin",
@@ -1305,6 +1306,11 @@
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
     "invalidPrice": "Geçersiz fiyat",
-    "unavailable": "{denom} için kullanılamıyor"
+    "unavailable": "{denom} için kullanılamıyor",
+    "orderHistoryHeaders": {
+      "past": "Geçmiş",
+      "pending": "Askıda olması",
+      "filled": "Talep edilecek siparişler tamamlandı"
+    }
   }
 }

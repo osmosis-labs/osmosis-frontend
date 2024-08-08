@@ -42,9 +42,7 @@ export class TradePage extends BasePage {
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
-    this.exchangeRate = page.locator(
-      '//div[@data-headlessui-state]//span[@class="body2 text-osmoverse-300"]'
-    );
+    this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
     this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
@@ -199,11 +197,13 @@ export class TradePage extends BasePage {
       // we expect that after 1 second token filter is displayed.
       await this.page.waitForTimeout(1000);
       await this.page.getByPlaceholder("Search").fill(from);
-      const fromLocator = this.page.locator(
-        "//div/button[@data-testid='token-select-asset']//span[.='" +
-          from +
-          "']"
-      );
+      const fromLocator = this.page
+        .locator(
+          "//div/button[@data-testid='token-select-asset']//span[.='" +
+            from +
+            "']"
+        )
+        .first();
       await fromLocator.click();
     }
 
@@ -212,8 +212,11 @@ export class TradePage extends BasePage {
       // we expect that after 1 second token filter is displayed.
       await this.page.waitForTimeout(1000);
       await this.page.getByPlaceholder("Search").fill(to);
+
       const toLocator = this.page.locator(
-        "//div/button[@data-testid='token-select-asset']//span[.='" + to + "']"
+        "//div/button[@data-testid='token-select-asset']//span[@ class='subtitle2 text-osmoverse-400' and .='" +
+          to +
+          "']"
       );
       await toLocator.click();
     }
@@ -258,16 +261,14 @@ export class TradePage extends BasePage {
   }
 
   async showSwapInfo() {
-    const swapInfo = this.page.locator(
-      '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
-    );
+    const swapInfo = this.page.locator("//button//span[.='Show details']");
     await swapInfo.click();
     console.log("Price Impact: " + (await this.getPriceInpact()));
   }
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]'
     );
     return await priceInpactSpan.textContent();
   }

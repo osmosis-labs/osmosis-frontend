@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "مشاهده در اکسپلورر",
     "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
     "noPriceData": "اطلاعات قیمت در دسترس نیست",
-    "viewAll": "مشاهده همه"
+    "viewAll": "مشاهده همه",
+    "history": "تاریخ",
+    "orders": "سفارشات"
   },
   "date": {
     "earlierToday": "اوایل امروز",
@@ -1257,7 +1259,6 @@
     "of": "از",
     "insufficientFunds": "بودجه ناکافی",
     "startTrading": "تجارت را شروع کنید",
-    "filledOrdersToClaim": "سفارشات تکمیل شده برای ادعا",
     "tradeFees": "هزینه های تجارت (در صورت تکمیل سفارش)",
     "youNeed": "تو نیاز داری",
     "stablecoin": "استیبل کوین",
@@ -1305,6 +1306,11 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
-    "unavailable": "برای {denom} در دسترس نیست"
+    "unavailable": "برای {denom} در دسترس نیست",
+    "orderHistoryHeaders": {
+      "past": "گذشته",
+      "pending": "انتظار",
+      "filled": "سفارشات تکمیل شده برای ادعا"
+    }
   }
 }

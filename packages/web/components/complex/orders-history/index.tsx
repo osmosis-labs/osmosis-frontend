@@ -69,6 +69,7 @@ export const OrderHistory = observer(() => {
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching,
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 10,
@@ -96,9 +97,10 @@ export const OrderHistory = observer(() => {
   );
 
   const rowVirtualizer = useWindowVirtualizer({
-    count: hasNextPage ? rows.length + 1 : rows.length,
+    count: rows.length,
     estimateSize: () => 84,
     paddingStart: -220,
+    paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
   });
@@ -106,7 +108,7 @@ export const OrderHistory = observer(() => {
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
-      disabled: isLoading || orders.length === 0,
+      disabled: isLoading || orders.length === 0 || isRefetching,
     });
 
   const claimOrders = useCallback(async () => {
@@ -188,13 +190,13 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col">
-      <table className="relative table-auto" ref={listRef}>
+    <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
+      <table className="relative min-w-[1152px] table-auto" ref={listRef}>
         {!isLoading && (
-          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
+          <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
             <tr
               className={classNames(
-                "grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]",
+                "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px]",
                 {
                   "!bg-osmoverse-1000": featureFlags.limitOrders,
                 }
@@ -202,11 +204,14 @@ export const OrderHistory = observer(() => {
             >
               {headers.map((header) => (
                 <th key={header} className="!px-0">
-                  <small className="body2">
-                    {t(`limitOrders.historyTable.columns.${header}`)}
-                  </small>
+                  {header !== "amount" && (
+                    <small className="body2">
+                      {t(`limitOrders.historyTable.columns.${header}`)}
+                    </small>
+                  )}
                 </th>
               ))}
+              <th />
             </tr>
           </thead>
         )}
@@ -222,8 +227,6 @@ export const OrderHistory = observer(() => {
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
 
-              if (!row) return;
-
               const style = {
                 position: "absolute",
                 top: 0,
@@ -233,10 +236,13 @@ export const OrderHistory = observer(() => {
                 transform: `translateY(${virtualRow.start}px)`,
               };
 
+              if (!row)
+                return <tr key={`${virtualRow.index}`} style={style as any} />;
+
               if (typeof row === "string") {
                 return (
                   <TableGroupHeader
-                    key={`header-${row}`}
+                    key={`${virtualRow.index}`}
                     group={row}
                     style={style}
                     filledOrdersCount={filledOrdersCount}
@@ -248,10 +254,10 @@ export const OrderHistory = observer(() => {
               const order = row as MappedLimitOrder;
               return (
                 <TableOrderRow
-                  key={`order-${order.order_id}`}
+                  key={`${virtualRow.index}`}
                   order={order}
                   style={style}
-                  refetch={async () => refetch()}
+                  refetch={refetch}
                 />
               );
             })
@@ -296,7 +302,7 @@ const TableGroupHeader = ({
           <div className="flex w-full items-end justify-between pr-4">
             <div className="relative flex items-end gap-3 pt-5">
               <div className="flex items-center gap-2 pb-3">
-                <h6>{t("limitOrders.filledOrdersToClaim")}</h6>
+                <h6>{t("limitOrders.orderHistoryHeaders.filled")}</h6>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
                   <span className="caption">{filledOrdersCount}</span>
                 </div>
@@ -331,7 +337,11 @@ const TableGroupHeader = ({
 
   return (
     <tr style={style}>
-      <h6 className="pb-4 pt-8">{t(`limitOrders.${group}`)}</h6>{" "}
+      <h6 className="pb-4 pt-8">
+        {group === "pending"
+          ? t("limitOrders.orderHistoryHeaders.pending")
+          : t("limitOrders.orderHistoryHeaders.past")}
+      </h6>
     </tr>
   );
 };
@@ -408,13 +418,19 @@ const TableOrderRow = memo(
       }
     })();
     return (
-      <tr style={style} className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
-        <td className="flex items-center !px-0 !text-left">
-          <small className="subtitle1">
-            {order_direction === "bid"
-              ? t("limitOrders.buy")
-              : t("limitOrders.sell")}
-          </small>
+      <tr style={style} className="grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px]">
+        <td className="flex items-center justify-center !px-0 !text-left">
+          <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
+            <Icon
+              id="coins"
+              width={24}
+              height={24}
+              className={classNames("h-6 w-6", {
+                "text-rust-400": order_direction === "ask",
+                "text-bullish-400": order_direction === "bid",
+              })}
+            />
+          </div>
         </td>
         <td className="!px-0 !text-left">
           <div className="flex items-center gap-4">

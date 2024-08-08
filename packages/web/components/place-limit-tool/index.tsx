@@ -72,7 +72,11 @@ const transformAmount = (value: string, decimalCount = 18) => {
 };
 
 // Certain errors we do not wish to show on the button
-const NON_DISPLAY_ERRORS = ["errors.zeroAmount", "errors.emptyAmount"];
+const NON_DISPLAY_ERRORS = [
+  "errors.zeroAmount",
+  "errors.emptyAmount",
+  "errors.generic",
+];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({ page, refetchOrders }: PlaceLimitToolProps) => {
@@ -468,6 +472,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 ref={inputRef}
                 inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
+                data-testid={`trade-input-${type}`}
               />
               <AssetFieldsetTokenSelector
                 page={page}
@@ -481,6 +486,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isFetchingNextPageAssets={
                   swapState.marketState.isFetchingNextPageAssets
                 }
+                data-testid="token-in"
               />
             </div>
             <AssetFieldsetFooter>
@@ -567,6 +573,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
+                data-testid={`trade-button-${tab}-${type}`}
               >
                 <h6>{buttonText}</h6>
               </Button>

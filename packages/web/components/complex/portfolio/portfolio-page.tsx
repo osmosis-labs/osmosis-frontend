@@ -1,6 +1,7 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
@@ -15,6 +16,7 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDimension,
+  useFeatureFlags,
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
@@ -22,11 +24,14 @@ import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { CypherCard } from "./cypher-card";
+
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   useAmplitudeAnalytics({
@@ -86,7 +91,14 @@ export const PortfolioPage: FunctionComponent = () => {
   const [isChartMinimized, setIsChartMinimized] = useState(true);
 
   return (
-    <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main
+      className={classNames(
+        "mx-auto flex w-full max-w-container flex-col gap-8 p-8 pt-4 md:gap-8 md:p-4",
+        {
+          "bg-osmoverse-900": !featureFlags.limitOrders,
+        }
+      )}
+    >
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
@@ -176,7 +188,9 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </TabGroup>
           </section>
-          <section className="w-full">
+          <section className="flex w-80 flex-col gap-3">
+            {featureFlags.cypherCard && <CypherCard />}
+
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}
