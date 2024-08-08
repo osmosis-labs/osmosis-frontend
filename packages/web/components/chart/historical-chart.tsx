@@ -36,9 +36,9 @@ const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
       break;
     case "neutral":
     default:
-      lineColor = theme.colors.wosmongton[300];
-      topColor = theme.colors.osmoverse[700];
-      bottomColor = theme.colors.osmoverse[850];
+      lineColor = theme.colors.wosmongton[400];
+      topColor = "rgba(70, 42, 223, 0.2)";
+      bottomColor = "rgba(165, 19, 153, 0.01)";
       crosshairMarkerBorderColor = theme.colors.osmoverse[900];
       break;
   }

@@ -235,7 +235,7 @@ export const AssetsOverview: FunctionComponent<
                 as="div"
               >
                 <button
-                  className="group relative flex h-[11.25rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
+                  className="group relative flex h-[11.25rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-900"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                   onClick={() => setIsChartMinimized(false)}
@@ -268,7 +268,7 @@ export const AssetsOverview: FunctionComponent<
                   > */}
                   <Icon
                     id="resize-expand"
-                    className="absolute top-4 right-4 z-50 text-osmoverse-200"
+                    className="absolute top-4 right-4 z-50 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                     height={16}
                     width={16}
                   />

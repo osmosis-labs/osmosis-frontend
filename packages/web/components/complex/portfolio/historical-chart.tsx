@@ -79,7 +79,7 @@ export const PortfolioHistoricalChart = forwardRef(
             aria-label="Open main menu dropdown"
             icon={
               <Icon
-                id="resize-expand"
+                id="resize-minimize"
                 className="text-osmoverse-200"
                 height={16}
                 width={16}
