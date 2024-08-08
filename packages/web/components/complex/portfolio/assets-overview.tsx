@@ -223,7 +223,7 @@ export const AssetsOverview: FunctionComponent<
                 leaveTo="opacity-0 translate-x-full"
               >
                 <div
-                  className="group relative h-full w-[320px]"
+                  className="group relative h-full w-[320px] rounded-[20px] bg-osmoverse-850 bg-opacity-10"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                 >
