@@ -137,6 +137,7 @@ export const AssetsOverview: FunctionComponent<
     const [isHovering, setIsHovering] = useState(false);
 
     if (isWalletLoading) return null;
+
     return (
       <div className="flex w-full flex-col gap-4">
         {wallet && wallet.isWalletConnected && wallet.address ? (
@@ -228,12 +229,19 @@ export const AssetsOverview: FunctionComponent<
                   onMouseLeave={() => setIsHovering(false)}
                 >
                   <div className="absolute top-3 left-3">
-                    <PortfolioPerformance
-                      selectedDifference={selectedDifferencePricePretty}
-                      selectedPercentage={selectedPercentageRatePretty}
-                      formattedDate={formattedDate}
-                      showDate={showDate}
-                    />
+                    <SkeletonLoader
+                      className={classNames(
+                        isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
+                      )}
+                      isLoaded={isPortfolioOverTimeDataIsFetched}
+                    >
+                      <PortfolioPerformance
+                        selectedDifference={selectedDifferencePricePretty}
+                        selectedPercentage={selectedPercentageRatePretty}
+                        formattedDate={formattedDate}
+                        showDate={showDate}
+                      />
+                    </SkeletonLoader>
                   </div>
                   <PortfolioHistoricalChartMinimized
                     showScales={false}

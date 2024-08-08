@@ -177,7 +177,7 @@ export const HistoricalChartHeader: FunctionComponent<{
   );
 };
 
-export const HistoricalChartSkeleton = () => {
+export const HistoricalChartSkeleton = ({ showScales = true }) => {
   return (
     <div className="flex h-full w-full flex-1 flex-row gap-3">
       <div className="flex flex-1 flex-col items-end justify-end">
@@ -224,7 +224,21 @@ export const HistoricalChartSkeleton = () => {
           </defs>
         </svg>
 
-        <div className="flex w-full flex-row justify-between py-3">
+        {showScales && (
+          <div className="flex w-full flex-row justify-between py-3">
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+          </div>
+        )}
+      </div>
+
+      {showScales && (
+        <div className="flex flex-col justify-between pb-7 pt-2">
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
@@ -233,17 +247,7 @@ export const HistoricalChartSkeleton = () => {
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
         </div>
-      </div>
-
-      <div className="flex flex-col justify-between pb-7 pt-2">
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-      </div>
+      )}
     </div>
   );
 };
