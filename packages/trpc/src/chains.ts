@@ -98,6 +98,8 @@ export const chainsRouter = createTRPCRouter({
               color: solanaChain.color,
             };
           }
+
+          throw new Error(`Chain with ID ${chainId} not found`);
         }
       }
     ),

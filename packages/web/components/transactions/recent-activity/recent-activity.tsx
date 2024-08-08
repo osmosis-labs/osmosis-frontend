@@ -109,7 +109,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
           className="text-osmoverse-400"
           label={t("portfolio.seeAll")}
           ariaLabel={t("portfolio.seeAll")}
-          size="sm"
+          size="md"
         />
       </div>
       <div className="flex w-full flex-col">
