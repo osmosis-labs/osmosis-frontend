@@ -24,6 +24,8 @@ import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { CypherCard } from "./cypher-card";
+
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
@@ -95,6 +97,7 @@ export const PortfolioPage: FunctionComponent = () => {
         }
       )}
     >
+      <CypherCard />
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
