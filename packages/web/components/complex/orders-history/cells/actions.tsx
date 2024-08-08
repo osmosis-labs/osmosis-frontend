@@ -1,6 +1,6 @@
 import { MappedLimitOrder } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
 import { t } from "~/hooks";
@@ -45,6 +45,17 @@ const ClaimAndCloseButton = observer(
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const [claiming, setClaiming] = useState(false);
 
+    /**
+     * As virtualizer uses the row index to render/derender row elements,
+     * we need to reset the claiming state when the order_id changes.
+     *
+     * Otherwise, the claiming state will be stuck to the previous order_id,
+     * and the button will be disabled even when the order_id has changed.
+     */
+    useEffect(() => {
+      setClaiming(false);
+    }, [order.order_id]);
+
     const claimAndClose = useCallback(async () => {
       if (!account) {
         console.error(
@@ -82,6 +93,11 @@ const ClaimAndCloseButton = observer(
         await refetch();
       } catch (error) {
         console.error(error);
+        /**
+         * This row will eventually become a past order unless the transaction
+         * errors. To avoid the button becoming enabled again we only setClaiming
+         * to false when the transaction errors.
+         */
         setClaiming(false);
       }
     }, [account, order, refetch]);
@@ -113,6 +129,17 @@ const CancelButton = observer(
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const [cancelling, setCancelling] = useState(false);
 
+    /**
+     * As virtualizer uses the row index to render/derender row elements,
+     * we need to reset the cancelling state when the order_id changes.
+     *
+     * Otherwise, the cancelling state will be stuck to the previous order_id,
+     * and the button will be disabled even when the order_id has changed.
+     */
+    useEffect(() => {
+      setCancelling(false);
+    }, [order.order_id]);
+
     const cancel = useCallback(async () => {
       if (!account) {
         console.error("Attempted to cancel orders without wallet connected");
@@ -137,6 +164,11 @@ const CancelButton = observer(
         await refetch();
       } catch (error) {
         console.error(error);
+        /**
+         * This row will eventually become a past order unless the transaction
+         * errors. To avoid the button becoming enabled again we only setCancelling
+         * to false when the transaction errors.
+         */
         setCancelling(false);
       }
     }, [account, order, refetch]);
