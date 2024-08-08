@@ -24,6 +24,8 @@ import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { CypherCard } from "./cypher-card";
+
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
   const { bridgeAsset } = useBridge();
@@ -182,7 +184,9 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </TabGroup>
           </section>
-          <section className="w-full">
+          <section className="flex w-80 flex-col gap-3">
+            {featureFlags.cypherCard && <CypherCard />}
+
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}
