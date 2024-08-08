@@ -212,7 +212,7 @@ export const AssetsOverview: FunctionComponent<
                     <span className="subtitle1">{t("portfolio.buy")}</span>
                   </Button>
                   <Button
-                    className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200"
+                    className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:!bg-osmoverse-800"
                     onClick={() => startBridge({ direction: "withdraw" })}
                     disabled={totalValue && totalValue.toDec().isZero()}
                   >
@@ -235,7 +235,7 @@ export const AssetsOverview: FunctionComponent<
                 as="div"
               >
                 <button
-                  className="group relative flex h-[11.25rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-900"
+                  className="group relative flex h-[12.5rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-900"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                   onClick={() => setIsChartMinimized(false)}
@@ -244,17 +244,7 @@ export const AssetsOverview: FunctionComponent<
                     showScales={false}
                     data={portfolioOverTimeData as AreaData<Time>[]}
                     isFetched={isPortfolioOverTimeDataIsFetched}
-                    setDataPoint={setDataPoint}
-                    totalPriceChange={totalPriceChange}
                     error={error}
-                    setShowDate={setShowDate}
-                    resetDataPoint={() => {
-                      setDataPoint({
-                        time: dayjs().unix() as Time,
-                        value: +totalValue.toDec().toString(),
-                      });
-                      setShowDate(false);
-                    }}
                   />
                   {/* <Transition
                     show={isHovering}
