@@ -365,7 +365,7 @@ export function ExpectedRate(
     inQuoteAssetPrice = new Dec(1).quo(inBaseOutQuoteSpotPrice);
 
     return (
-      <span>
+      <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
         {formatPretty(inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
@@ -379,7 +379,7 @@ export function ExpectedRate(
     inQuoteAssetPrice = inBaseOutQuoteSpotPrice;
 
     return (
-      <span>
+      <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
         {formatPretty(inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
@@ -430,7 +430,7 @@ export function ExpectedRate(
   }
 
   return (
-    <span>
+    <span data-testid="token-price">
       1 {baseAsset} ≈{" "}
       {formatPretty(inQuoteAssetPrice, {
         minimumSignificantDigits: 6,
