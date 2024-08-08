@@ -1,7 +1,7 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent, useCallback, useState } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -83,6 +83,8 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const { logEvent } = useAmplitudeAnalytics();
 
+  const [isChartMinimized, setIsChartMinimized] = useState(false);
+
   return (
     <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
       <section className="flex gap-5" ref={overviewRef}>
@@ -91,6 +93,8 @@ export const PortfolioPage: FunctionComponent = () => {
             totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
           }
           isTotalValueFetched={isTotalValueFetched}
+          isChartMinimized={isChartMinimized}
+          setIsChartMinimized={setIsChartMinimized}
         />
       </section>
 

@@ -2,16 +2,16 @@ import { Dec } from "@keplr-wallet/unit";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { AreaData, Time } from "lightweight-charts";
 
-// import { Icon } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import {
   HistoricalChart,
   HistoricalChartSkeleton,
 } from "~/components/chart/historical-chart";
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
+import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
-// import { IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 const getChartStyle = (
@@ -27,6 +27,8 @@ const getChartStyle = (
   }
 };
 
+import { Transition } from "@headlessui/react";
+
 export const PortfolioHistoricalChart = ({
   data,
   isFetched,
@@ -37,6 +39,8 @@ export const PortfolioHistoricalChart = ({
   totalPriceChange,
   error,
   setShowDate,
+  isChartMinimized,
+  setIsChartMinimized,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
@@ -47,52 +51,64 @@ export const PortfolioHistoricalChart = ({
   totalPriceChange: number;
   error: unknown;
   setShowDate: (show: boolean) => void;
+  isChartMinimized: boolean;
+  setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
   const { t } = useTranslation();
-
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
-    <section className="relative flex flex-col justify-between">
-      <div className="h-[400px] w-full xl:h-[476px]">
-        {error ? (
-          <div className="error-message flex h-full items-center justify-center">
-            {t("errors.generic")}
-          </div>
-        ) : !isFetched ? (
-          <HistoricalChartSkeleton />
-        ) : (
-          <HistoricalChart
-            data={data as AreaData<Time>[]}
-            onPointerHover={(value, time) => {
-              setShowDate(true);
-              setDataPoint({ value, time });
-              logEvent([EventName.Portfolio.chartInteraction]);
-            }}
-            style={getChartStyle(totalPriceChange)}
-            onPointerOut={resetDataPoint}
-          />
-        )}
-      </div>
-      <div className="my-3 flex justify-between">
-        <PortfolioHistoricalRangeButtonGroup
-          priceRange={range}
-          setPriceRange={setRange}
-        />
-        {/* TODO - will handle in other PR */}
-        {/* <IconButton
-          className="border border-osmoverse-700 py-0"
-          aria-label="Open main menu dropdown"
-          icon={
-            <Icon
-              id="resize"
-              className="text-osmoverse-200"
-              height={16}
-              width={16}
+    <Transition
+      show={!isChartMinimized}
+      enter="transition-all ease-out duration-300"
+      enterFrom="h-0 opacity-0"
+      enterTo="h-[400px] opacity-100"
+      leave="transition-all ease-out duration-300"
+      leaveFrom="h-[400px] opacity-100"
+      leaveTo="h-0 opacity-0"
+    >
+      <section className="relative flex flex-col justify-between">
+        <div className="h-[400px] w-full xl:h-[476px]">
+          {/* <div className="w-full"> */}
+          {error ? (
+            <div className="error-message flex h-full items-center justify-center">
+              {t("errors.generic")}
+            </div>
+          ) : !isFetched ? (
+            <HistoricalChartSkeleton />
+          ) : (
+            <HistoricalChart
+              data={data as AreaData<Time>[]}
+              onPointerHover={(value, time) => {
+                setShowDate(true);
+                setDataPoint({ value, time });
+                logEvent([EventName.Portfolio.chartInteraction]);
+              }}
+              style={getChartStyle(totalPriceChange)}
+              onPointerOut={resetDataPoint}
             />
-          }
-        /> */}
-      </div>
-    </section>
+          )}
+        </div>
+        <div className="my-3 flex justify-between">
+          <PortfolioHistoricalRangeButtonGroup
+            priceRange={range}
+            setPriceRange={setRange}
+          />
+          <IconButton
+            className="border border-osmoverse-700 py-0"
+            aria-label="Open main menu dropdown"
+            icon={
+              <Icon
+                id="resize"
+                className="text-osmoverse-200"
+                height={16}
+                width={16}
+              />
+            }
+            onClick={() => setIsChartMinimized((prev) => !prev)}
+          />
+        </div>
+      </section>
+    </Transition>
   );
 };
