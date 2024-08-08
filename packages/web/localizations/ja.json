@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "エクスプローラーで見る",
     "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "noPriceData": "価格データは利用できません",
-    "viewAll": "すべて表示"
+    "viewAll": "すべて表示",
+    "history": "歴史",
+    "orders": "注文"
   },
   "date": {
     "earlierToday": "本日",
@@ -1305,6 +1307,11 @@
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
     "invalidPrice": "無効な価格",
-    "unavailable": "{denom}では利用できません"
+    "unavailable": "{denom}では利用できません",
+    "orderHistoryHeaders": {
+      "past": "過去",
+      "pending": "保留中",
+      "filled": "請求する注文を完了"
+    }
   }
 }

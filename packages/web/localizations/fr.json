@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
     "noPriceData": "Données de prix indisponibles",
-    "viewAll": "Voir tout"
+    "viewAll": "Voir tout",
+    "history": "Histoire",
+    "orders": "Ordres"
   },
   "date": {
     "earlierToday": "Plus tôt aujourd'hui",
@@ -1305,6 +1307,11 @@
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
     "invalidPrice": "Prix invalide",
-    "unavailable": "Indisponible pour {denom}"
+    "unavailable": "Indisponible pour {denom}",
+    "orderHistoryHeaders": {
+      "past": "Passé",
+      "pending": "En attente",
+      "filled": "Commandes exécutées à réclamer"
+    }
   }
 }

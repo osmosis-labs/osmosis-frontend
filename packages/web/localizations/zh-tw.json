@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "在資源管理器上查看",
     "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
     "noPriceData": "價格數據不可用",
-    "viewAll": "看全部"
+    "viewAll": "看全部",
+    "history": "歷史",
+    "orders": "命令"
   },
   "date": {
     "earlierToday": "今天早些時候",
@@ -1305,6 +1307,11 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "invalidPrice": "價格無效",
-    "unavailable": "不適用於{denom}"
+    "unavailable": "不適用於{denom}",
+    "orderHistoryHeaders": {
+      "past": "過去的",
+      "pending": "待辦的",
+      "filled": "已填寫訂單以領取"
+    }
   }
 }

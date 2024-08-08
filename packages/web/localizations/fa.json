@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "مشاهده در اکسپلورر",
     "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
     "noPriceData": "اطلاعات قیمت در دسترس نیست",
-    "viewAll": "مشاهده همه"
+    "viewAll": "مشاهده همه",
+    "history": "تاریخ",
+    "orders": "سفارشات"
   },
   "date": {
     "earlierToday": "اوایل امروز",
@@ -1305,6 +1307,11 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
-    "unavailable": "برای {denom} در دسترس نیست"
+    "unavailable": "برای {denom} در دسترس نیست",
+    "orderHistoryHeaders": {
+      "past": "گذشته",
+      "pending": "انتظار",
+      "filled": "سفارشات تکمیل شده برای ادعا"
+    }
   }
 }

@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
     "launchAlert": "હાલમાં માત્ર વેપાર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
     "noPriceData": "કિંમત ડેટા ઉપલબ્ધ નથી",
-    "viewAll": "બધુજ જુઓ"
+    "viewAll": "બધુજ જુઓ",
+    "history": "ઇતિહાસ",
+    "orders": "ઓર્ડર"
   },
   "date": {
     "earlierToday": "આજેવહેલા",
@@ -1305,6 +1307,11 @@
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
     "invalidPrice": "અમાન્ય કિંમત",
-    "unavailable": "{denom} માટે અનુપલબ્ધ"
+    "unavailable": "{denom} માટે અનુપલબ્ધ",
+    "orderHistoryHeaders": {
+      "past": "ભૂતકાળ",
+      "pending": "બાકી છે",
+      "filled": "દાવો કરવાના આદેશો ભર્યા"
+    }
   }
 }
