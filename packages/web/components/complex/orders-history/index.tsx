@@ -69,6 +69,7 @@ export const OrderHistory = observer(() => {
     isFetchingNextPage,
     hasNextPage,
     refetch,
+    isRefetching
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 10,
@@ -106,7 +107,7 @@ export const OrderHistory = observer(() => {
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
-      disabled: isLoading || orders.length === 0,
+      disabled: isLoading || orders.length === 0 || isRefetching,
     });
 
   const claimOrders = useCallback(async () => {
