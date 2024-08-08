@@ -118,12 +118,11 @@ const AssetFieldsetInput = forwardRef<
 >(({ inputPrefix, inputValue, onInputChange, outputValue, ...rest }, ref) => {
   const { isMobile } = useWindowSize(Breakpoint.sm);
   const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
-
   return (
     <div
-      className="flex h-[72px] flex-1 items-center overflow-visible font-h3 sm:h-[48px]"
+      className="flex h-[72px] flex-1 items-center overflow-visible text-h3 font-h3 sm:h-[48px] sm:text-[30px] sm:font-h5"
       style={{
-        fontSize,
+        fontSize: !!inputValue ? fontSize : undefined,
       }}
     >
       {inputPrefix}

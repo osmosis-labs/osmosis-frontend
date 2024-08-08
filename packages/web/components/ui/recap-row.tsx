@@ -17,7 +17,7 @@ export function RecapRow({
         className
       )}
     >
-      <span className="text-osmoverse-300">{left}</span>
+      <span className="sm:caption text-osmoverse-300">{left}</span>
       {right}
     </div>
   );

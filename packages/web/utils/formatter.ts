@@ -389,7 +389,6 @@ export function calcFontSize(numChars: number, isMobile: boolean): string {
         16: "28px",
         33: "24px",
       };
-
   for (const [key, value] of Object.entries(sizeMapping)) {
     if (numChars <= Number(key)) {
       return value;
