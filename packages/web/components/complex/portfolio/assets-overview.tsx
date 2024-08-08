@@ -256,12 +256,14 @@ export const AssetsOverview: FunctionComponent<
                     leaveTo="opacity-0"
                     as="div"
                   > */}
-                  <Icon
-                    id="resize-expand"
-                    className="absolute top-4 right-4 z-50 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                    height={16}
-                    width={16}
-                  />
+                  <div className="absolute z-50 h-full w-full">
+                    <Icon
+                      id="resize-expand"
+                      className="absolute top-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                      height={16}
+                      width={16}
+                    />
+                  </div>
                   {/* </Transition> */}
                 </button>
               </Transition>
