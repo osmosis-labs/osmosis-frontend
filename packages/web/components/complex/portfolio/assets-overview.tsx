@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { Fragment, FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -235,25 +235,38 @@ export const AssetsOverview: FunctionComponent<
               </Transition>
             </div>
 
-            <PortfolioHistoricalChart
-              isChartMinimized={isChartMinimized}
-              setIsChartMinimized={setIsChartMinimized}
-              data={portfolioOverTimeData as AreaData<Time>[]}
-              isFetched={isPortfolioOverTimeDataIsFetched}
-              setDataPoint={setDataPoint}
-              range={range}
-              setRange={setRange}
-              totalPriceChange={totalPriceChange}
-              error={error}
-              setShowDate={setShowDate}
-              resetDataPoint={() => {
-                setDataPoint({
-                  time: dayjs().unix() as Time,
-                  value: +totalValue.toDec().toString(),
-                });
-                setShowDate(false);
-              }}
-            />
+            <Transition
+              show={!isChartMinimized}
+              enter="transition-all ease-out duration-300"
+              enterFrom="h-0 opacity-0"
+              enterTo="h-[400px] opacity-100"
+              leave="transition-all ease-out duration-300"
+              leaveFrom="h-[400px] opacity-100"
+              leaveTo="h-0 opacity-0"
+              as="div"
+            >
+              {(ref) => (
+                <PortfolioHistoricalChart
+                  ref={ref}
+                  setIsChartMinimized={setIsChartMinimized}
+                  data={portfolioOverTimeData as AreaData<Time>[]}
+                  isFetched={isPortfolioOverTimeDataIsFetched}
+                  setDataPoint={setDataPoint}
+                  range={range}
+                  setRange={setRange}
+                  totalPriceChange={totalPriceChange}
+                  error={error}
+                  setShowDate={setShowDate}
+                  resetDataPoint={() => {
+                    setDataPoint({
+                      time: dayjs().unix() as Time,
+                      value: +totalValue.toDec().toString(),
+                    });
+                    setShowDate(false);
+                  }}
+                />
+              )}
+            </Transition>
           </>
         ) : (
           <GetStartedWithOsmosis />

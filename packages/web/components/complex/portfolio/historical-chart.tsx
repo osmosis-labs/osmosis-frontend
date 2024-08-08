@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { AreaData, Time } from "lightweight-charts";
+import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
 import {
@@ -27,47 +28,38 @@ const getChartStyle = (
   }
 };
 
-import { Transition } from "@headlessui/react";
+export const PortfolioHistoricalChart = forwardRef(
+  (
+    {
+      data,
+      isFetched,
+      setDataPoint,
+      resetDataPoint,
+      range,
+      setRange,
+      totalPriceChange,
+      error,
+      setShowDate,
+      setIsChartMinimized,
+    }: {
+      data?: AreaData<Time>[];
+      isFetched: boolean;
+      setDataPoint: (point: DataPoint) => void;
+      resetDataPoint: () => void;
+      range: Range;
+      setRange: (range: Range) => void;
+      totalPriceChange: number;
+      error: unknown;
+      setShowDate: (show: boolean) => void;
+      setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+    },
+    ref
+  ) => {
+    const { t } = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
 
-export const PortfolioHistoricalChart = ({
-  data,
-  isFetched,
-  setDataPoint,
-  resetDataPoint,
-  range,
-  setRange,
-  totalPriceChange,
-  error,
-  setShowDate,
-  isChartMinimized,
-  setIsChartMinimized,
-}: {
-  data?: AreaData<Time>[];
-  isFetched: boolean;
-  setDataPoint: (point: DataPoint) => void;
-  resetDataPoint: () => void;
-  range: Range;
-  setRange: (range: Range) => void;
-  totalPriceChange: number;
-  error: unknown;
-  setShowDate: (show: boolean) => void;
-  isChartMinimized: boolean;
-  setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
-  const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
-
-  return (
-    <Transition
-      show={!isChartMinimized}
-      enter="transition-all ease-out duration-300"
-      enterFrom="h-0 opacity-0"
-      enterTo="h-[400px] opacity-100"
-      leave="transition-all ease-out duration-300"
-      leaveFrom="h-[400px] opacity-100"
-      leaveTo="h-0 opacity-0"
-    >
-      <section className="relative flex flex-col justify-between">
+    return (
+      <section className="relative flex flex-col justify-between" ref={ref}>
         <div className="h-[400px] w-full xl:h-[476px]">
           {/* <div className="w-full"> */}
           {error ? (
@@ -109,6 +101,6 @@ export const PortfolioHistoricalChart = ({
           />
         </div>
       </section>
-    </Transition>
-  );
-};
+    );
+  }
+);
