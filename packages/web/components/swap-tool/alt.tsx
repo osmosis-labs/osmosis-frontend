@@ -45,7 +45,11 @@ import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  calcFontSize,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -439,6 +443,19 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                             "opacity-50": isSwapToolLoading,
                           }
                         )}
+                        style={{
+                          fontSize: swapState.quote
+                            ? calcFontSize(
+                                formatPretty(swapState.quote.amount.toDec(), {
+                                  minimumSignificantDigits: 6,
+                                  maximumSignificantDigits: 6,
+                                  maxDecimals: 10,
+                                  notation: "standard",
+                                }).length,
+                                isMobile
+                              )
+                            : undefined,
+                        }}
                       >
                         {swapState.quote?.amount
                           ? formatPretty(swapState.quote.amount.toDec(), {
