@@ -9,7 +9,7 @@ export const CypherCard = () => {
       target="_blank"
       rel="noopener noreferrer"
     >
-      <div className="min-h-16 flex w-full flex-1 items-center gap-4 rounded-2xl bg-osmoverse-850 py-3 px-4">
+      <div className="flex h-[4.5rem] w-full flex-1 items-center gap-4 rounded-2xl bg-osmoverse-850 py-3 px-4">
         <div className="mr-3 flex h-12 w-12 flex-col items-center justify-center rounded-xl bg-osmoverse-800">
           <Icon id="cypher-card" />
         </div>
