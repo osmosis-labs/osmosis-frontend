@@ -87,59 +87,42 @@ export const TransferRow: FunctionComponent<Activity> = ({
     </div>
   ) : null;
 
-  const rightComponent =
-    transfer?.direction === "withdraw" ? (
-      <>
-        <FallbackImg
-          alt={transfer?.amount.denom}
-          src={transfer?.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
-          height={32}
-          width={32}
-        />
-        <Icon
-          id="arrow-right"
-          width={16}
-          height={16}
-          className="my-[8px] mx-[4px] text-osmoverse-500"
-        />
-        <ChainLogo
-          prettyName={chainData?.prettyName}
-          color={chainData?.color}
-          logoUri={chainData?.relativeLogoUrl}
-          size="md"
-        />
-      </>
-    ) : (
-      <>
-        <ChainLogo
-          prettyName={chainData?.prettyName}
-          color={chainData?.color}
-          logoUri={chainData?.relativeLogoUrl}
-          size="md"
-        />
-        <Icon
-          id="arrow-right"
-          width={16}
-          height={16}
-          className="my-[8px] mx-[4px] text-osmoverse-500"
-        />
-        <FallbackImg
-          alt={transfer?.amount.denom}
-          src={transfer?.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
-          height={32}
-          width={32}
-        />
-      </>
-    );
+  const rightComponent = [
+    <FallbackImg
+      key="fallback-img"
+      alt={transfer?.amount.denom}
+      src={transfer?.amount.currency.coinImageUrl}
+      fallbacksrc="/icons/question-mark.svg"
+      height={32}
+      width={32}
+    />,
+    <Icon
+      key="icon-arrow-right"
+      id="arrow-right"
+      width={16}
+      height={16}
+      className="my-[8px] mx-[4px] text-osmoverse-500"
+    />,
+    <ChainLogo
+      key="chain-logo"
+      prettyName={chainData?.prettyName}
+      color={chainData?.color}
+      logoUri={chainData?.relativeLogoUrl}
+      size="md"
+    />,
+  ];
+
+  const orderedRightComponent =
+    transfer?.direction === "withdraw"
+      ? rightComponent
+      : rightComponent.reverse();
 
   return (
     <RecentActivityRow
       status={status}
       title={title}
       leftComponent={leftComponent}
-      rightComponent={rightComponent}
+      rightComponent={<>{orderedRightComponent}</>}
     />
   );
 };
