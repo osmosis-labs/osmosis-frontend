@@ -360,6 +360,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
                     }}
+                    data-testid="trade-input-swap"
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
