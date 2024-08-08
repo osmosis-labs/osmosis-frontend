@@ -185,7 +185,7 @@ export const PortfolioPage: FunctionComponent = () => {
             </TabGroup>
           </section>
           <section className="flex w-80 flex-col gap-3">
-            <CypherCard />
+            {featureFlags.cypherCard && <CypherCard />}
 
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
