@@ -197,6 +197,7 @@ const AssetFieldsetTokenSelector = ({
   hasNextPageAssets,
   isFetchingNextPageAssets,
   page = "Swap Page",
+  ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -238,6 +239,7 @@ const AssetFieldsetTokenSelector = ({
             openSelect();
           }
         }}
+        {...rest}
       >
         <div className="flex items-center gap-3">
           {selectedCoinImageUrl && (

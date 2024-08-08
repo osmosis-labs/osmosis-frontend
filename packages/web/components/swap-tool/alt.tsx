@@ -370,6 +370,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("from")
                     }
+                    data-testid="token-in"
                   />
                 </div>
                 <AssetFieldsetFooter>
@@ -458,6 +459,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("to")
                     }
+                    data-testid="token-out"
                   />
                 </div>
                 <AssetFieldsetFooter>
