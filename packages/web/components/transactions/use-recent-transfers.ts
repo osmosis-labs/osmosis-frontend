@@ -32,6 +32,15 @@ export function useRecentTransfers(address?: string): RecentTransfer[] {
     return [];
   }
 
+  console.log(
+    "Transfer History Store: ",
+    transferHistoryStore.getHistoriesByAccount(address)
+  );
+  console.log(
+    "IBC Transfer History Store: ",
+    ibcTransferHistoryStore.getHistoriesAndUncommitedHistoriesByAccount(address)
+  );
+
   // reconcile histories from IBC and non-IBC history stores
   return transferHistoryStore
     .getHistoriesByAccount(address)

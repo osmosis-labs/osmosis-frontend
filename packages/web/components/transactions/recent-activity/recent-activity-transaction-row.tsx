@@ -33,8 +33,8 @@ interface Activity {
     amount: CoinPretty;
     value?: PricePretty;
   };
-  toChainId?: string;
-  fromChainId?: string;
+  toChainId?: string | number;
+  fromChainId?: string | number;
 }
 
 export const RecentActivityRow: FunctionComponent<{
@@ -64,21 +64,23 @@ export const TransferRow: FunctionComponent<Activity> = ({
   const findChainNameOrId =
     transfer?.direction === "withdraw" ? toChainId : fromChainId;
 
-  const { data: chainData } = api.edge.chains.getChain.useQuery(
+  const { data: chainData } = api.edge.chains.getChainDisplayInfo.useQuery(
     {
-      findChainNameOrId: findChainNameOrId || "",
+      chainId: "bitcoin",
     },
     {
-      useErrorBoundary: true,
+      useErrorBoundary: false,
     }
   );
+
+  // console.log("chainDataEVM: ", chainDataEVM);
 
   const text = transfer?.direction === "withdraw" ? "to" : "from";
 
   const leftComponent = transfer ? (
     <div className="caption flex gap-1 text-osmoverse-300">
       {formatPretty(transfer.amount, { maxDecimals: 6 })} {text}{" "}
-      {chainData?.pretty_name}
+      {chainData?.prettyName}
     </div>
   ) : null;
 
@@ -99,18 +101,18 @@ export const TransferRow: FunctionComponent<Activity> = ({
           className="my-[8px] mx-[4px] text-osmoverse-500"
         />
         <ChainLogo
-          prettyName={chainData?.pretty_name}
+          prettyName={chainData?.prettyName}
           color={undefined}
-          logoUri={chainData?.logoURIs?.svg}
+          logoUri={chainData?.relativeLogoUrl}
           size="md"
         />
       </>
     ) : (
       <>
         <ChainLogo
-          prettyName={chainData?.pretty_name}
+          prettyName={chainData?.prettyName}
           color={undefined}
-          logoUri={chainData?.logoURIs?.svg}
+          logoUri={chainData?.relativeLogoUrl}
           size="md"
         />
         <Icon
