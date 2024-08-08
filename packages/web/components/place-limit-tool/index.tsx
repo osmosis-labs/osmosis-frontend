@@ -568,6 +568,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isLoading={isButtonLoading}
                 loadingText={<h6>{t("assets.transfer.loading")}</h6>}
                 onClick={() => setReviewOpen(true)}
+                data-testid={`trade-button-${tab}-${type}`}
               >
                 <h6>{buttonText}</h6>
               </Button>

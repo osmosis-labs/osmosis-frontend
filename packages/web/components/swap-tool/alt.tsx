@@ -551,6 +551,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   setShowSwapReviewModal(true);
                 }}
                 className="w-full"
+                data-testid="trade-button-swap"
               >
                 <h6>
                   {account?.walletStatus === WalletStatus.Connected ||
