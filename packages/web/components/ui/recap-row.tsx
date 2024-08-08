@@ -13,7 +13,7 @@ export function RecapRow({
   return (
     <div
       className={classNames(
-        "body2 flex h-8 w-full items-center justify-between",
+        "flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]",
         className
       )}
     >
