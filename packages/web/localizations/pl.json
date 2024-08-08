@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "Zobacz w eksploratorze",
     "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
     "noPriceData": "Dane cenowe niedostępne",
-    "viewAll": "Pokaż wszystkie"
+    "viewAll": "Pokaż wszystkie",
+    "history": "Historia",
+    "orders": "Zamówienia"
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
@@ -1257,7 +1259,6 @@
     "of": "z",
     "insufficientFunds": "Niewystarczające środki",
     "startTrading": "Zacznij handlować",
-    "filledOrdersToClaim": "Wypełnione zamówienia do odbioru",
     "tradeFees": "Opłaty handlowe (po zrealizowaniu zamówienia)",
     "youNeed": "Potrzebujesz",
     "stablecoin": "moneta stabilna",
@@ -1305,6 +1306,11 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
     "invalidPrice": "Nieprawidłowa cena",
-    "unavailable": "Niedostępne dla {denom}"
+    "unavailable": "Niedostępne dla {denom}",
+    "orderHistoryHeaders": {
+      "past": "Przeszłość",
+      "pending": "Aż do",
+      "filled": "Wypełnione zamówienia do odbioru"
+    }
   }
 }

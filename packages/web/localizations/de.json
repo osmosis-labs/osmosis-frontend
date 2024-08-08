@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
     "noPriceData": "Preisdaten nicht verfügbar",
-    "viewAll": "Alle ansehen"
+    "viewAll": "Alle ansehen",
+    "history": "Geschichte",
+    "orders": "Aufträge"
   },
   "date": {
     "earlierToday": "Heute früh",
@@ -1257,7 +1259,6 @@
     "of": "von",
     "insufficientFunds": "Unzureichende Mittel",
     "startTrading": "Mit dem handel beginnen",
-    "filledOrdersToClaim": "Ausgeführte Bestellungen zum Einfordern",
     "tradeFees": "Handelsgebühren (bei Auftragsausführung)",
     "youNeed": "Du brauchst",
     "stablecoin": "stabile Münze",
@@ -1305,6 +1306,11 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
     "invalidPrice": "Ungültiger Preis",
-    "unavailable": "Nicht verfügbar für {denom}"
+    "unavailable": "Nicht verfügbar für {denom}",
+    "orderHistoryHeaders": {
+      "past": "Vergangenheit",
+      "pending": "Ausstehend",
+      "filled": "Ausgeführte Bestellungen zum Einfordern"
+    }
   }
 }

@@ -96,7 +96,11 @@ export const TransactionContent = ({
                       "text-osmoverse-500": defaultTab !== tab,
                     })}
                   >
-                    {t(`orderHistory.${defaultTab}`)}
+                    {t(
+                      defaultTab === "history"
+                        ? "transactions.history"
+                        : "transactions.orders"
+                    )}
                   </h5>
                 </Tab>
               ))}

@@ -350,7 +350,6 @@ export const useOrderbookClaimableOrders = ({
     },
     {
       enabled: !!userAddress && addresses.length > 0 && !disabled,
-      refetchInterval: 2000,
       refetchOnMount: true,
     }
   );

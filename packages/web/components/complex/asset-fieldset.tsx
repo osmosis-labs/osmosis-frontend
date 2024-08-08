@@ -21,6 +21,7 @@ import {
 } from "~/hooks";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
+import { calcFontSize } from "~/utils/formatter";
 
 const AssetFieldset = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex flex-col">{children}</div>
@@ -100,31 +101,6 @@ const AssetFieldsetHeaderBalance = observer(
   }
 );
 
-const calcFontSize = (numChars: number, isMobile: boolean): string => {
-  const sizeMapping: { [key: number]: string } = isMobile
-    ? {
-        9: "48px",
-        15: "38px",
-        24: "32px",
-        100: "16px",
-      }
-    : {
-        7: "48px",
-        12: "38px",
-        16: "28px",
-        33: "24px",
-        100: "16px",
-      };
-
-  for (const [key, value] of Object.entries(sizeMapping)) {
-    if (numChars <= Number(key)) {
-      return value;
-    }
-  }
-
-  return "48px";
-};
-
 interface AssetFieldsetInputProps {
   inputPrefix?: ReactNode;
   onInputChange?: ChangeEventHandler<HTMLInputElement>;
@@ -143,7 +119,7 @@ const AssetFieldsetInput = forwardRef<
 
   return (
     <div
-      className={`flex items-center overflow-visible`}
+      className="flex h-[73px] items-center overflow-visible"
       style={{
         fontSize,
       }}

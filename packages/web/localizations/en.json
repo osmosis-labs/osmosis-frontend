@@ -1200,7 +1200,9 @@
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
     "noPriceData": "Price data unavailable",
-    "viewAll": "View all"
+    "viewAll": "View all",
+    "history": "History",
+    "orders": "Orders"
   },
   "date": {
     "earlierToday": "Earlier today",
@@ -1257,7 +1259,6 @@
     "of": "of",
     "insufficientFunds": "Insufficient balance",
     "startTrading": "Start trading",
-    "filledOrdersToClaim": "Filled orders to claim",
     "tradeFees": "Trade fees (when order filled)",
     "youNeed": "You need",
     "stablecoin": "stablecoin",
@@ -1305,6 +1306,11 @@
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
     "invalidPrice": "Invalid price",
-    "unavailable": "Unavailable for {denom}"
+    "unavailable": "Unavailable for {denom}",
+    "orderHistoryHeaders": {
+      "past": "Past",
+      "pending": "Pending",
+      "filled": "Filled orders to claim"
+    }
   }
 }
