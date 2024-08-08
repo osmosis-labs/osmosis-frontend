@@ -160,33 +160,19 @@ export const AssetsOverview: FunctionComponent<
                     <h3>{totalDisplayValue?.toString()}</h3>
                   )}
                 </SkeletonLoader>
-                <Transition
-                  show={!isChartMinimized}
-                  enter="transition-all ease-out duration-500"
-                  enterFrom="opacity-0 h-0"
-                  enterTo="opacity-100 h-8"
-                  leave="transition-all ease-out duration-500 delay-[250ms]"
-                  leaveFrom="opacity-100 h-8"
-                  leaveTo="opacity-0 h-0"
-                  as="div"
-                  className="overflow-hidden"
+                <SkeletonLoader
+                  className={classNames(
+                    isPortfolioOverTimeDataIsFetched ? "mt-2" : "mt-2 h-6 w-16"
+                  )}
+                  isLoaded={isPortfolioOverTimeDataIsFetched}
                 >
-                  <SkeletonLoader
-                    className={classNames(
-                      isPortfolioOverTimeDataIsFetched
-                        ? "mt-2"
-                        : "mt-2 h-6 w-16"
-                    )}
-                    isLoaded={isPortfolioOverTimeDataIsFetched}
-                  >
-                    <PortfolioPerformance
-                      selectedDifference={selectedDifferencePricePretty}
-                      selectedPercentage={selectedPercentageRatePretty}
-                      formattedDate={formattedDate}
-                      showDate={showDate}
-                    />
-                  </SkeletonLoader>
-                </Transition>
+                  <PortfolioPerformance
+                    selectedDifference={selectedDifferencePricePretty}
+                    selectedPercentage={selectedPercentageRatePretty}
+                    formattedDate={formattedDate}
+                    showDate={showDate}
+                  />
+                </SkeletonLoader>
                 <div className="flex items-center gap-3 pt-6">
                   <Button
                     className="flex items-center gap-2 !rounded-full"
@@ -240,23 +226,10 @@ export const AssetsOverview: FunctionComponent<
                 as="div"
               >
                 <div
-                  className="group relative -mt-3 flex h-[11.25rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
+                  className="group relative flex h-[11.25rem] w-full flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-850"
                   onMouseEnter={() => setIsHovering(true)}
                   onMouseLeave={() => setIsHovering(false)}
                 >
-                  <SkeletonLoader
-                    className={classNames(
-                      isPortfolioOverTimeDataIsFetched ? null : "h-6 w-16"
-                    )}
-                    isLoaded={isPortfolioOverTimeDataIsFetched}
-                  >
-                    <PortfolioPerformance
-                      selectedDifference={selectedDifferencePricePretty}
-                      selectedPercentage={selectedPercentageRatePretty}
-                      formattedDate={formattedDate}
-                      showDate={showDate}
-                    />
-                  </SkeletonLoader>
                   <PortfolioHistoricalChartMinimized
                     showScales={false}
                     data={portfolioOverTimeData as AreaData<Time>[]}
