@@ -136,7 +136,7 @@ interface AssetFieldsetInputProps {
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(({ inputPrefix, inputValue, onInputChange, outputValue }, ref) => {
+>(({ inputPrefix, inputValue, onInputChange, outputValue, ...rest }, ref) => {
   const { isMobile } = useWindowSize();
 
   const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
@@ -157,6 +157,7 @@ const AssetFieldsetInput = forwardRef<
             placeholder="0"
             onChange={onInputChange}
             value={inputValue}
+            {...rest}
           />
         </div>
       )}

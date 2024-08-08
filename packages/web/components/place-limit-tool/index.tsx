@@ -468,6 +468,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 ref={inputRef}
                 inputValue={inputValue}
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
+                data-testid={`trade-input-${type}`}
               />
               <AssetFieldsetTokenSelector
                 page={page}
