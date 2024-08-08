@@ -134,6 +134,8 @@ export const AssetsOverview: FunctionComponent<
       new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
       totalValue?.toString();
 
+    const [isHovering, setIsHovering] = useState(false);
+
     if (isWalletLoading) return null;
     return (
       <div className="flex w-full flex-col gap-4">
@@ -220,7 +222,11 @@ export const AssetsOverview: FunctionComponent<
                 leaveFrom="opacity-100 translate-x-0"
                 leaveTo="opacity-0 translate-x-full"
               >
-                <div className="relative h-full w-[320px]">
+                <div
+                  className="group relative h-full w-[320px]"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
                   <PortfolioHistoricalChartMinimized
                     showScales={false}
                     data={portfolioOverTimeData as AreaData<Time>[]}
@@ -238,16 +244,16 @@ export const AssetsOverview: FunctionComponent<
                     }}
                   />
                   <Transition
-                    show={isChartMinimized}
+                    show={isHovering}
                     enter="transition-all ease-out duration-300"
-                    enterFrom="opacity-0 translate-y-full"
-                    enterTo="opacity-100 translate-y-0"
+                    enterFrom="opacity-0"
+                    enterTo="opacity-100"
                     leave="transition-all ease-out duration-300"
-                    leaveFrom="opacity-100 translate-y-0"
-                    leaveTo="opacity-0 translate-y-full"
+                    leaveFrom="opacity-100"
+                    leaveTo="opacity-0"
                   >
                     <IconButton
-                      className="absolute bottom-2 right-2 z-50 border border-osmoverse-700 bg-osmoverse-850 py-0"
+                      className="absolute bottom-2 right-2 z-50 bg-osmoverse-850 py-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
                       aria-label="Open main menu dropdown"
                       icon={
                         <Icon

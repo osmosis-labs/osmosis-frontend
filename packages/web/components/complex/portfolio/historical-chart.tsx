@@ -96,7 +96,7 @@ export const PortfolioHistoricalChart = forwardRef(
               setPriceRange={setRange}
             />
             <IconButton
-              className="border border-osmoverse-700 py-0"
+              className="py-0"
               aria-label="Open main menu dropdown"
               icon={
                 <Icon
