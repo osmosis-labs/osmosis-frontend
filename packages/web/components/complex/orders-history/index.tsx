@@ -101,7 +101,6 @@ export const OrderHistory = observer(() => {
     paddingStart: -220,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
-    initialOffset: listRef.current?.offsetTop ?? 0,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
