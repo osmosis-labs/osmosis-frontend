@@ -75,28 +75,33 @@ export const orderbookRouter = createTRPCRouter({
             chainList: ctx.chainList,
           });
 
-          const promises = contractAddresses.map(
-            async (contractOsmoAddress: string) => {
-              const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-                orderbookAddress: contractOsmoAddress,
-                chainList: ctx.chainList,
-                assetLists: ctx.assetLists,
-              });
-              const orders = await getOrderbookActiveOrders({
+          const promises = contractAddresses.map(async (contractOsmoAddress: string) => {
+            const { quoteAsset, baseAsset } = await getOrderbookDenoms({
+              orderbookAddress: contractOsmoAddress,
+              chainList: ctx.chainList,
+              assetLists: ctx.assetLists,
+            });
+
+            const [orders, historicalOrdersForContract] = await Promise.all([
+              getOrderbookActiveOrders({
                 orderbookAddress: contractOsmoAddress,
                 userOsmoAddress: userOsmoAddress,
                 chainList: ctx.chainList,
                 baseAsset,
                 quoteAsset,
-              });
-              const historicalOrdersForContract = historicalOrders.filter(
-                (o) => o.orderbookAddress === contractOsmoAddress
-              );
-              return [...orders, ...historicalOrdersForContract];
-            }
-          );
+              }),
+              Promise.resolve(
+                historicalOrders.filter((o) => o.orderbookAddress === contractOsmoAddress)
+              ),
+            ]);
 
-          const ordersByContracts = await Promise.all(promises);
+            return [...orders, ...historicalOrdersForContract];
+          });
+
+          const results = await Promise.allSettled(promises);
+          const ordersByContracts = results
+            .filter((result): result is PromiseFulfilledResult<MappedLimitOrder[]> => result.status === "fulfilled")
+            .map((result) => result.value);
           const allOrders = ordersByContracts.flat();
           return allOrders.sort(defaultSortOrders);
         },
