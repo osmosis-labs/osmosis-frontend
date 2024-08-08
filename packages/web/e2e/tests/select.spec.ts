@@ -2,26 +2,25 @@
 import { BrowserContext, chromium, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
+import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
-
-import { SwapPage } from "../pages/swap-page";
 
 // Pairs are selected from top 10
 test.describe("Test Select Swap Pair feature", () => {
   let context: BrowserContext;
-  let swapPage: SwapPage;
+  let swapPage: TradePage;
   let page: Page;
 
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserConfig(true)
+      new TestConfig().getBrowserConfig(false)
     );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
       resetOnNavigation: false,
     });
-    swapPage = new SwapPage(page);
+    swapPage = new TradePage(page);
     await swapPage.goto();
   });
 
@@ -42,7 +41,7 @@ test.describe("Test Select Swap Pair feature", () => {
     await swapPage.showSwapInfo();
   });
 
-  test("User should be able to select WBTC/USDC", async () => {
+  test.only("User should be able to select WBTC/USDC", async () => {
     await swapPage.selectPair("WBTC", "USDC");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();

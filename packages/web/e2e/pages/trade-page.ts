@@ -258,16 +258,14 @@ export class TradePage extends BasePage {
   }
 
   async showSwapInfo() {
-    const swapInfo = this.page.locator(
-      '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
-    );
+    const swapInfo = this.page.locator("//button//span[.='Show details']");
     await swapInfo.click();
     console.log("Price Impact: " + (await this.getPriceInpact()));
   }
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]'
     );
     return await priceInpactSpan.textContent();
   }
