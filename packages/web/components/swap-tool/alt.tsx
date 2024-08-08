@@ -360,6 +360,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
                     }}
+                    data-testid="trade-input-swap"
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -369,6 +370,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("from")
                     }
+                    data-testid="token-in"
                   />
                 </div>
                 <AssetFieldsetFooter>
@@ -457,6 +459,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("to")
                     }
+                    data-testid="token-out"
                   />
                 </div>
                 <AssetFieldsetFooter>
@@ -550,6 +553,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   setShowSwapReviewModal(true);
                 }}
                 className="w-full"
+                data-testid="trade-button-swap"
               >
                 <h6>
                   {account?.walletStatus === WalletStatus.Connected ||
