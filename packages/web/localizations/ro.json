@@ -224,11 +224,8 @@
       "approveInWallet": "Aprobați în portofel",
       "enterAddress": "Adresa {network}",
       "errors": {
-        "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}",
         "seeRequest": "Vezi solicitarea în {walletName}",
-        "invalidAddress": "Adresă invalidă",
-        "missingAddress": "Adresa lipsă"
+        "invalidAddress": "Adresă invalidă"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -414,6 +411,7 @@
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
     "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
     "noData": "Nu există date",
+    "noOrderbook": "Fără carnet de comandă pentru pereche",
     "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
     "startAgain": "Incepe din nou"
@@ -450,7 +448,6 @@
     "pools": "Pool-uri",
     "stake": "Actiuni",
     "store": "Aplicații",
-    "swap": "Schimba",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
     "trade": "Pro Trading",
@@ -801,9 +798,11 @@
     "MAX": "MAXIM",
     "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Impact pret",
+    "priceImpact": "Impactul pieței",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Factorul de răspândire",
+    "showDetails": "Arata detaliile",
+    "hideDetails": "Ascunde",
     "continueAnyway": "Continua oricum",
     "warning": {
       "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
@@ -815,7 +814,17 @@
       "title": "Setari tranzactie"
     },
     "title": "Schimb",
-    "dynamicSpreadFactor": "Dinamic"
+    "dynamicSpreadFactor": "Dinamic",
+    "gas": {
+      "oneClickTradingError": "Taxa de rețea nu poate fi estimată în acest moment. Dacă taxa depășește limita taxei de rețea de tranzacționare cu 1 clic, veți putea continua cu aprobarea manuală în portofel.",
+      "error": "Taxa de rețea nu poate fi estimată în acest moment. Verificați taxele de rețea în portofel înainte de a aproba tranzacția.",
+      "gasEstimationError": "Taxa de rețea nu poate fi estimată",
+      "unknown": "Necunoscut",
+      "additionalNetworkFee": "Taxă suplimentară de rețea"
+    },
+    "noRoutes": "Nu au fost găsite rute",
+    "route": "traseu",
+    "routes": "trasee"
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",
@@ -1191,7 +1200,9 @@
     "viewOnExplorer": "Vizualizare pe explorer",
     "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
     "noPriceData": "Datele de preț nu sunt disponibile",
-    "viewAll": "A vedea tot"
+    "viewAll": "A vedea tot",
+    "history": "Istorie",
+    "orders": "Comenzi"
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
@@ -1201,5 +1212,105 @@
   "pagination": {
     "older": "Mai batran",
     "newer": "Mai nou"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "Ordin",
+        "amount": "Cantitate",
+        "price": "Preț",
+        "orderPlaced": "Comandă plasată",
+        "status": "stare"
+      },
+      "emptyState": {
+        "title": "Fără comenzi recente",
+        "subtitle": "Istoricul comenzilor dvs. comerciale va apărea aici.",
+        "connectTitle": "Conectați-vă portofelul pentru a vedea istoricul comenzilor",
+        "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici."
+      }
+    },
+    "aboveMarket": {
+      "title": "Preț limită peste prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "belowMarket": {
+      "title": "Preț limită sub prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "enterAnAmountTo": "Introduceți o sumă la",
+    "sell": "Vinde",
+    "buy": "Cumpără",
+    "pay": "A plati",
+    "open": "Deschis",
+    "filled": "Umplut",
+    "claimable": "Revendicabil",
+    "claimAndClose": "Revendicați și închideți",
+    "accept": "Accept",
+    "cancelled": "Anulat",
+    "cancel": "Anulare",
+    "daysAgo": "{days} zi în urmă",
+    "hoursAgo": "{hours} h în urmă",
+    "buyWith": "Cumpărați cu {coinA} sau {coinB}",
+    "orderHistory": "Istoric comenzi",
+    "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
+    "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
+    "sellAnAsset": "Vinde un activ",
+    "swapAnAsset": "Schimbați un activ",
+    "of": "de",
+    "insufficientFunds": "Fonduri insuficiente",
+    "startTrading": "Începeți să tranzacționați",
+    "tradeFees": "Taxe de tranzacționare (când comanda este completată)",
+    "youNeed": "Ai nevoie",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "Citat actualizat",
+    "fundsOsmosisToBuyAssets": "fonduri pe Osmosis pentru a cumpăra active.",
+    "chooseAnOption": "Alegeți o opțiune pentru a continua.",
+    "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
+    "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
+    "reviewTrade": "Examinați comerțul",
+    "errors": {
+      "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
+      "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",
+      "tradeMayNotExecuted": "Este posibil ca tranzacția dvs. să nu fie executată"
+    },
+    "transferFromAnotherNetwork": "Transfer din altă rețea sau portofel",
+    "whatIsOrderClaim": {
+      "title": "Ce este revendicarea ordinului?",
+      "description": "În majoritatea cazurilor, atunci când un ordin limită este completat, fondurile sunt adăugate automat la soldul dvs. Cu toate acestea, în unele cazuri rare, fondurile trebuie solicitate manual din comanda completată.<inlang-LineFeed>\nAcest proces de revendicare implică aprobarea unei singure tranzacții în portofel pentru toate comenzile completate nerevendicate care implică o taxă de rețea nominală."
+    },
+    "whatIsAStablecoin": {
+      "title": "Ce este o monedă stabilă?",
+      "description": "Monedele stabile sunt un tip de criptomonedă a cărui valoare este legată de un alt activ, cum ar fi o monedă fiat sau aurul, pentru a menține un preț stabil. Pe Osmosis, principalele monede stabile pentru cumpărarea și vânzarea de active sunt USDC și USDT."
+    },
+    "claimAll": "Revendica totul",
+    "addFunds": "Adăuga fonduri",
+    "selectAnAssetTo": {
+      "buy": "Selectați un activ de cumpărat",
+      "sell": "Selectați un activ pentru a vinde"
+    },
+    "payWith": "Plateste cu",
+    "receive": "A primi",
+    "swapFromAnotherAsset": "Schimbați de la un alt activ",
+    "connectYourWallet": "Conectați-vă portofelul",
+    "toSeeYourBalances": "pentru a vă vedea soldurile",
+    "searchAssets": "Căutați active",
+    "marketPrice": "pretul din magazin",
+    "below": "de mai jos",
+    "above": "de mai sus",
+    "currentPrice": "pretul curent",
+    "whenDenomPriceIs": "Când prețul {denom} este",
+    "orderType": "Tip de comandă",
+    "confirm": "A confirma",
+    "market": "Piaţă",
+    "limit": "Limită",
+    "trade": "Comerț",
+    "swapToAnotherAsset": "Schimbați cu un alt activ",
+    "invalidPrice": "Preț nevalid",
+    "unavailable": "Indisponibil pentru {denom}",
+    "orderHistoryHeaders": {
+      "past": "Trecut",
+      "pending": "In asteptarea",
+      "filled": "Comenzi completate pentru revendicare"
+    }
   }
 }

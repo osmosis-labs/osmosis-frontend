@@ -7,8 +7,9 @@ import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
+import { EventName } from "~/config";
 import { MultiLanguageT } from "~/hooks";
-import { useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
 const COLORS: Record<AllocationOptions, string[]> = {
   all: [
@@ -52,6 +53,8 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
 }> = ({ allocation }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
 
@@ -81,7 +84,13 @@ export const Allocation: FunctionComponent<{
         <>
           <div className="my-4">
             <AllocationTabs
-              setTab={(option) => setSelectedOption(option)}
+              setTab={(option) => {
+                setSelectedOption(option);
+                logEvent([
+                  EventName.Portfolio.allocationClicked,
+                  { allocationType: option },
+                ]);
+              }}
               activeTab={selectedOption}
             />
           </div>

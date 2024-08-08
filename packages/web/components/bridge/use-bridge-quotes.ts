@@ -30,7 +30,7 @@ const refetchInterval = 30 * 1000; // 30 seconds
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
 /** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
@@ -689,19 +689,6 @@ export const useBridgeQuotes = ({
   const isWrongEvmChainSelected =
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
-  let buttonErrorMessage: string | undefined;
-  if (!fromAddress) {
-    buttonErrorMessage = t("assets.transfer.errors.missingAddress");
-  } else if (!isEvmWalletConnected && fromChain?.chainType === "evm") {
-    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: evmConnector?.name ?? "EVM Wallet",
-    });
-  } else if (isWrongEvmChainSelected) {
-    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: evmConnector?.name ?? "EVM Wallet",
-    });
-  }
-
   let errorBoxMessage: { heading: string; description: string } | undefined;
   if (isInsufficientFee) {
     errorBoxMessage = {
@@ -767,9 +754,7 @@ export const useBridgeQuotes = ({
     Boolean(selectedQuote);
 
   let buttonText: string;
-  if (buttonErrorMessage) {
-    buttonText = buttonErrorMessage;
-  } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
+  if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
   } else {
     buttonText =
@@ -796,7 +781,6 @@ export const useBridgeQuotes = ({
 
     txButtonText,
     buttonText,
-    buttonErrorMessage,
     errorBoxMessage,
     warningBoxMessage,
 

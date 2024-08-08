@@ -31,10 +31,17 @@ import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import { SwapTool } from "~/components/swap-tool";
+import { SwapToolProps } from "~/components/swap-tool/alt";
+import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useAssetInfoConfig,
+  useFeatureFlags,
+  useNavBar,
+  useTranslation,
+} from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
@@ -67,6 +74,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
   ({ tweets }) => {
     const { t } = useTranslation();
     const router = useRouter();
+    const featureFlags = useFeatureFlags();
 
     const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
 
@@ -80,6 +88,17 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       coinGeckoId
     );
 
+    const swapToolProps: SwapToolProps = useMemo(
+      () => ({
+        fixedWidth: true,
+        useQueryParams: false,
+        useOtherCurrencies: true,
+        initialSendTokenDenom: asset.coinDenom === "USDC" ? "OSMO" : "USDC",
+        initialOutTokenDenom: asset.coinDenom,
+        page: "Token Info Page",
+      }),
+      [asset.coinDenom]
+    );
     useAmplitudeAnalytics({
       onLoadEvent: [
         EventName.TokenInfo.pageViewed,
@@ -125,15 +144,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       [assetInfoConfig]
     );
 
-    const SwapTool_ = (
-      <SwapTool
-        fixedWidth
-        useQueryParams={false}
-        useOtherCurrencies={true}
-        initialSendTokenDenom={asset.coinDenom === "USDC" ? "OSMO" : "USDC"}
-        initialOutTokenDenom={asset.coinDenom}
-        page="Token Info Page"
-      />
+    const SwapTool_ = featureFlags.limitOrders ? (
+      <TradeTool page="Token Info Page" swapToolProps={swapToolProps} />
+    ) : (
+      <SwapTool {...swapToolProps} page="Token Info Page" />
     );
 
     return (

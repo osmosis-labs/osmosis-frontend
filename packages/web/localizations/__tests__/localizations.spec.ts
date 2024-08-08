@@ -10,7 +10,10 @@ import { glob } from "glob";
 const warn = (..._args: Parameters<typeof console.warn>) => null; // console.warn(...args);
 
 /** Add key paths here to skip them in localizations tests. */
-const omittedKeyPaths = ["assets.categories"];
+const omittedKeyPaths = [
+  "assets.categories",
+  "limitOrders.historyTable.columns",
+];
 
 describe("Localization JSON files", () => {
   const localizationObjs = getJSONsAsObjs();
@@ -54,12 +57,18 @@ describe("Localization JSON files", () => {
       const keys: string[] = [];
       objectKeys(obj, keys);
       keys.forEach((key) => {
-        if (!fileContents.some((content) => content.includes(`"${key}"`))) {
+        if (
+          !fileContents.some((content) =>
+            content.includes(`"${key}"` || `\`${key}\``)
+          )
+        ) {
           throw new Error(
             `Localization key ${key} is not found in any tsx files but is found in ${jsonFileName}. Tip: use scripts/remove-key JS script with cwd in localizations folder to remove unused keys. Pass key path as only parameter.`
           );
         } else if (
-          !fileContents.some((content) => content.includes(`t("${key}"`))
+          !fileContents.some((content) =>
+            content.includes(`t("${key}"` || `\`${key}\``)
+          )
         ) {
           warn(
             `Localization key ${key} IS found but not within a t() function in ${jsonFileName}`

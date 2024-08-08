@@ -9,6 +9,8 @@ import {
 } from "~/components/chart/historical-chart";
 import { PortfolioHistoricalRangeButtonGroup } from "~/components/complex/portfolio/historical-range-button-group";
 import { DataPoint } from "~/components/complex/portfolio/types";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 // import { IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
@@ -48,6 +50,8 @@ export const PortfolioHistoricalChart = ({
 }) => {
   const { t } = useTranslation();
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
     <section className="relative flex flex-col justify-between">
       <div className="h-[400px] w-full xl:h-[476px]">
@@ -63,6 +67,7 @@ export const PortfolioHistoricalChart = ({
             onPointerHover={(value, time) => {
               setShowDate(true);
               setDataPoint({ value, time });
+              logEvent([EventName.Portfolio.chartInteraction]);
             }}
             style={getChartStyle(totalPriceChange)}
             onPointerOut={resetDataPoint}

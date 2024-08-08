@@ -1,6 +1,7 @@
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import classNames from "classnames";
 import { FunctionComponent, useCallback } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
@@ -11,7 +12,14 @@ import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { RecentTransfers } from "~/components/transactions/recent-transfers";
-import { useDimension, useTranslation, useWalletSelect } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useDimension,
+  useFeatureFlags,
+  useTranslation,
+  useWalletSelect,
+} from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -21,7 +29,12 @@ export const PortfolioPage: FunctionComponent = () => {
   const { bridgeAsset } = useBridge();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Portfolio.pageViewed],
+  });
 
   const { data: totalValueData, isFetched: isTotalValueFetched } =
     api.edge.assets.getUserAssetsTotal.useQuery(
@@ -71,8 +84,17 @@ export const PortfolioPage: FunctionComponent = () => {
     [bridgeAsset]
   );
 
+  const { logEvent } = useAmplitudeAnalytics();
+
   return (
-    <main className="mx-auto flex w-full max-w-container flex-col gap-8 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main
+      className={classNames(
+        "mx-auto flex w-full max-w-container flex-col gap-8 p-8 pt-4 md:gap-8 md:p-4",
+        {
+          "bg-osmoverse-900": !featureFlags.limitOrders,
+        }
+      )}
+    >
       <section className="flex gap-5" ref={overviewRef}>
         <AssetsOverview
           totalValue={
@@ -85,9 +107,18 @@ export const PortfolioPage: FunctionComponent = () => {
       {wallet && wallet.isWalletConnected && wallet.address ? (
         <>
           <section className="w-full py-3">
-            <Tab.Group>
-              <Tab.List className="flex gap-6" ref={tabsRef}>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+            <TabGroup>
+              <TabList className="flex gap-6" ref={tabsRef}>
+                <Tab
+                  disabled={userHasNoAssets}
+                  className="disabled:opacity-80"
+                  onClick={() => {
+                    logEvent([
+                      EventName.Portfolio.tabClicked,
+                      { section: "Your assets" },
+                    ]);
+                  }}
+                >
                   {({ selected }) => (
                     <h6
                       className={!selected ? "text-osmoverse-500" : undefined}
@@ -96,7 +127,16 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
+                <Tab
+                  disabled={userHasNoAssets}
+                  className="disabled:opacity-80"
+                  onClick={() => {
+                    logEvent([
+                      EventName.Portfolio.tabClicked,
+                      { section: "Your positions" },
+                    ]);
+                  }}
+                >
                   {({ selected }) => (
                     <h6
                       className={!selected ? "text-osmoverse-500" : undefined}
@@ -114,7 +154,7 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-              </Tab.List>
+              </TabList>
               {!isTotalValueFetched ? (
                 <div className="mx-auto my-6 w-fit">
                   <Spinner />
@@ -122,25 +162,25 @@ export const PortfolioPage: FunctionComponent = () => {
               ) : userHasNoAssets ? (
                 <UserZeroBalanceTableSplash />
               ) : (
-                <Tab.Panels className="py-6">
-                  <Tab.Panel>
+                <TabPanels className="py-6">
+                  <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}
                       onDeposit={onDeposit}
                       onWithdraw={onWithdraw}
                     />
-                  </Tab.Panel>
-                  <Tab.Panel>
+                  </TabPanel>
+                  <TabPanel>
                     <UserPositionsSection address={wallet.address} />
-                  </Tab.Panel>
-                  <Tab.Panel>
+                  </TabPanel>
+                  <TabPanel>
                     <section>
                       <RecentTransfers />
                     </section>
-                  </Tab.Panel>
-                </Tab.Panels>
+                  </TabPanel>
+                </TabPanels>
               )}
-            </Tab.Group>
+            </TabGroup>
           </section>
           <section className="w-full">
             {!isLoadingAllocation && !userHasNoAssets && (

@@ -59,6 +59,10 @@ module.exports = {
         900: "#140F34",
         1000: "#090524",
       },
+      "osmoverse-alpha": {
+        800: "#3E386A",
+        850: "#3C356D4A",
+      },
       ammelia: {
         300: "#E196DB",
         400: "#D779CF",
@@ -172,7 +176,7 @@ module.exports = {
       "gradient-dummy-notifications":
         "linear-gradient(0deg, #282750 0%, rgba(40, 39, 80, 0.00) 100%)",
       "gradient-token-details-shadow":
-        "linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);",
+        "linear-gradient(0deg, #090524 6.87%, rgba(20, 15, 52, 0) 100%);",
       "gradient-scrollable-allocation-list":
         "linear-gradient(0deg, #201B43 20%, rgba(20, 15, 52, 0) 100%);",
       "gradient-scrollable-allocation-list-reverse":

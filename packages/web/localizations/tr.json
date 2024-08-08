@@ -224,11 +224,8 @@
       "approveInWallet": "Cüzdanda onayla",
       "enterAddress": "{network} adresi",
       "errors": {
-        "reconnectWallet": "{walletName} tekrar bağlan",
-        "wrongNetworkInWallet": "{walletName} cüzdanda ağ hatası",
         "seeRequest": "{walletName}'deki talebi gör",
-        "invalidAddress": "Geçersiz adres",
-        "missingAddress": "Eksik Adres"
+        "invalidAddress": "Geçersiz adres"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
@@ -414,6 +411,7 @@
     "txTimedOutError": "İşlem zaman aşımına uğradı. Lütfen tekrar deneyiniz.",
     "insufficientFee": "İşlem ücretleri için yeterli bakiye yok. Devam etmek için lütfen para ekleyin.",
     "noData": "Veri yok",
+    "noOrderbook": "Çift için Sipariş Defteri Yok",
     "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
     "startAgain": "Tekrar başla"
@@ -450,7 +448,6 @@
     "pools": "Havuzlar",
     "stake": "Stake",
     "store": "Uygulamalar",
-    "swap": "Takas",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
     "trade": "Profesyonel Ticaret",
@@ -801,9 +798,11 @@
     "MAX": "MAKS.",
     "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
     "pool": "Havuz #{id}",
-    "priceImpact": "Fiyata Etki",
+    "priceImpact": "Pazar Etkisi",
     "routerTooltipFee": "Ücret",
     "routerTooltipSpreadFactor": "Yayılma Faktörü",
+    "showDetails": "Detayları göster",
+    "hideDetails": "Saklamak",
     "continueAnyway": "Her halükarda devam et",
     "warning": {
       "exceedsSpendLimit": "Bu takas, Tek Tıklamayla Ticaret için kalan harcama limitinizi aşıyor.",
@@ -815,7 +814,17 @@
       "title": "İşlem Ayarları"
     },
     "title": "Takas",
-    "dynamicSpreadFactor": "Dinamik"
+    "dynamicSpreadFactor": "Dinamik",
+    "gas": {
+      "oneClickTradingError": "Ağ ücreti şu anda tahmin edilemiyor. Ücret, Tek Tıkla Ticaret ağ ücreti limitinizi aşarsa, cüzdanınızda manuel onay işlemine devam edebileceksiniz.",
+      "error": "Ağ ücreti şu anda tahmin edilemiyor. İşlemi onaylamadan önce cüzdanınızdaki ağ ücretlerini inceleyin.",
+      "gasEstimationError": "Ağ ücreti tahmin edilemiyor",
+      "unknown": "Bilinmeyen",
+      "additionalNetworkFee": "Ek ağ ücreti"
+    },
+    "noRoutes": "Rota bulunamadı",
+    "route": "rota",
+    "routes": "rotalar"
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",
@@ -1191,7 +1200,9 @@
     "viewOnExplorer": "Explorer'da görüntüle",
     "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
     "noPriceData": "Fiyat verileri mevcut değil",
-    "viewAll": "Hepsini gör"
+    "viewAll": "Hepsini gör",
+    "history": "Tarih",
+    "orders": "Emirler"
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",
@@ -1201,5 +1212,105 @@
   "pagination": {
     "older": "Daha eski",
     "newer": "Daha yeni"
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "Emir",
+        "amount": "Miktar",
+        "price": "Fiyat",
+        "orderPlaced": "Sipariş Verildi",
+        "status": "Durum"
+      },
+      "emptyState": {
+        "title": "Yeni sipariş yok",
+        "subtitle": "Ticari sipariş geçmişiniz burada görünecektir.",
+        "connectTitle": "Sipariş geçmişinizi görmek için cüzdanınızı bağlayın",
+        "connectSubtitle": "Osmosis'teki geçmiş limit emirleriniz burada görünecektir."
+      }
+    },
+    "aboveMarket": {
+      "title": "Piyasa fiyatının üzerinde limit fiyat",
+      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+    },
+    "belowMarket": {
+      "title": "Limit fiyatı piyasa fiyatının altında",
+      "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
+    },
+    "enterAnAmountTo": "Bir miktar girin",
+    "sell": "Satmak",
+    "buy": "Satın almak",
+    "pay": "Ödemek",
+    "open": "Açık",
+    "filled": "Dolu",
+    "claimable": "Hak talebinde bulunulabilir",
+    "claimAndClose": "Talep et ve kapat",
+    "accept": "Kabul etmek",
+    "cancelled": "İptal edildi",
+    "cancel": "İptal etmek",
+    "daysAgo": "{days} gün önce",
+    "hoursAgo": "{hours} saat önce",
+    "buyWith": "{coinA} veya {coinB} ile satın alın",
+    "orderHistory": "Sipariş Geçmişi",
+    "tradeAnotherAssetOr": "{coinA} veya {coinB} ile başka bir varlıkla işlem yapın",
+    "tradeAnotherAsset": "{coinDenom} ile başka bir varlığı takas edin",
+    "sellAnAsset": "Bir varlık satmak",
+    "swapAnAsset": "Bir varlığı takas etme",
+    "of": "ile ilgili",
+    "insufficientFunds": "Yetersiz bakiye",
+    "startTrading": "Ticarete başla",
+    "tradeFees": "Ticaret ücretleri (sipariş tamamlandığında)",
+    "youNeed": "ihtiyacın var",
+    "stablecoin": "stabilcoin",
+    "quoteUpdated": "Teklif güncellendi",
+    "fundsOsmosisToBuyAssets": "varlık satın almak için Osmosis'e fon sağlıyor.",
+    "chooseAnOption": "Devam etmek için bir seçenek seçin.",
+    "lowerSlippageToleranceRecommended": "Daha düşük bir kayma toleransı tavsiye edilir.",
+    "tryHigherSlippage": "Daha yüksek bir maksimum kayma toleransı deneyin.",
+    "reviewTrade": "Ticareti inceleyin",
+    "errors": {
+      "noAssetAvailable": "Osmosis'te ticaret yapabileceğiniz {coinName} fonunuz yok. Devam etmek için bir seçenek seçin.",
+      "tradeMayResultInLossOfValue": "Ticaretiniz önemli değer kaybına neden olabilir",
+      "tradeMayNotExecuted": "İşleminiz gerçekleştirilemeyebilir"
+    },
+    "transferFromAnotherNetwork": "Başka bir ağdan veya cüzdandan aktarma",
+    "whatIsOrderClaim": {
+      "title": "Sipariş talebi nedir?",
+      "description": "Çoğu durumda, bir limit emri yerine getirildiğinde fonlar otomatik olarak bakiyenize eklenir. Ancak bazı nadir durumlarda, fonların doldurulan siparişten manuel olarak talep edilmesi gerekir.<inlang-LineFeed>\nBu hak talebinde bulunma süreci, nominal bir ağ ücreti gerektiren tüm talep edilmemiş doldurulmuş siparişler için cüzdanınızda tek bir işlemin onaylanmasını içerir."
+    },
+    "whatIsAStablecoin": {
+      "title": "Stablecoin nedir?",
+      "description": "Stablecoin'ler, sabit bir fiyatı korumak için değeri fiat para birimi veya altın gibi başka bir varlığa sabitlenen bir tür kripto para birimidir. Osmosis'te varlık alım ve satımında kullanılan başlıca stablecoin'ler USDC ve USDT'dir."
+    },
+    "claimAll": "Tümünü talep edin",
+    "addFunds": "Fon Ekle",
+    "selectAnAssetTo": {
+      "buy": "Satın almak için bir varlık seçin",
+      "sell": "Satılacak bir varlık seçin"
+    },
+    "payWith": "İle ödemek",
+    "receive": "Almak",
+    "swapFromAnotherAsset": "Başka bir varlıktan takas",
+    "connectYourWallet": "Cüzdanınızı bağlayın",
+    "toSeeYourBalances": "bakiyenizi görmek için",
+    "searchAssets": "Varlıkları arayın",
+    "marketPrice": "Market fiyatı",
+    "below": "altında",
+    "above": "üstünde",
+    "currentPrice": "Mevcut fiyat",
+    "whenDenomPriceIs": "{denom} fiyatı şu olduğunda",
+    "orderType": "Sipariş türü",
+    "confirm": "Onaylamak",
+    "market": "Pazar",
+    "limit": "Sınır",
+    "trade": "Ticaret",
+    "swapToAnotherAsset": "Başka bir varlığa geç",
+    "invalidPrice": "Geçersiz fiyat",
+    "unavailable": "{denom} için kullanılamıyor",
+    "orderHistoryHeaders": {
+      "past": "Geçmiş",
+      "pending": "Askıda olması",
+      "filled": "Talep edilecek siparişler tamamlandı"
+    }
   }
 }
