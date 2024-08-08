@@ -336,7 +336,11 @@ const TableGroupHeader = ({
   return (
     <tr style={style}>
       <h6 className="pb-4 pt-8">
-        {t(`limitOrders.orderHistoryHeaders.${group}`)}
+        {t(
+          group === "pending"
+            ? "limitOrders.orderHistoryHeaders.pending"
+            : `limitOrders.orderHistoryHeaders.past`
+        )}
       </h6>
     </tr>
   );
