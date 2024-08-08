@@ -298,9 +298,7 @@ const TableGroupHeader = ({
           <div className="flex w-full items-end justify-between pr-4">
             <div className="relative flex items-end gap-3 pt-5">
               <div className="flex items-center gap-2 pb-3">
-                <h6>
-                  {t("limitOrders.orderHistoryHeaders.filledOrdersToClaim")}
-                </h6>
+                <h6>{t("limitOrders.orderHistoryHeaders.filled")}</h6>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
                   <span className="caption">{filledOrdersCount}</span>
                 </div>
@@ -336,11 +334,9 @@ const TableGroupHeader = ({
   return (
     <tr style={style}>
       <h6 className="pb-4 pt-8">
-        {t(
-          group === "pending"
-            ? "limitOrders.orderHistoryHeaders.pending"
-            : `limitOrders.orderHistoryHeaders.past`
-        )}
+        {group === "pending"
+          ? t("limitOrders.orderHistoryHeaders.pending")
+          : t("limitOrders.orderHistoryHeaders.past")}
       </h6>
     </tr>
   );
