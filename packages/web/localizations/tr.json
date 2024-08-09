@@ -146,7 +146,6 @@
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
-      "pendingWithdraw": "Geri çekilme bekleniyor",
       "successDeposit": "Yatırıldı",
       "successWithdraw": "Geri çekildi",
       "failDeposit": "Para yatırma işlemi başarısız oldu",
