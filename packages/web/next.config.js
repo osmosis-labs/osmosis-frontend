@@ -74,6 +74,7 @@ const config = {
         // replacing it with a no-op breaks build, so we can at least replace it with a lighter weight version for now.
         // ideally this becomes replaced with an API-compatible no-op.
         bip39: path.resolve(__dirname, "../../node_modules/bip39-light"),
+        "bn.js": path.resolve(__dirname, "node_modules/bn.js"),
       },
     };
 
