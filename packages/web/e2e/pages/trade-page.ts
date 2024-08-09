@@ -97,6 +97,7 @@ export class TradePage extends BasePage {
   }
 
   async setLimitPrice(price: string) {
+    console.log(`Set Order Limit Price to: ${price}`);
     await this.limitPrice.fill(price, { timeout: 2000 });
   }
 

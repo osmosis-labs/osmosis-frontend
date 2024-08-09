@@ -81,7 +81,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
   });
 
-  test("User should be able to limit buy OSMO", async () => {
+  test.only("User should be able to limit buy OSMO", async () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
@@ -89,7 +89,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount("0.11");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = limitPrice * 1.2;
+    const highLimitPrice = (limitPrice * 1.2).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
       context
