@@ -28,8 +28,6 @@ jobs:
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -71,8 +69,6 @@ jobs:
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -147,8 +143,6 @@ jobs:
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -192,8 +186,6 @@ jobs:
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
-        with:
-          ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

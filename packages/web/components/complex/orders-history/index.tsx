@@ -196,7 +196,7 @@ export const OrderHistory = observer(() => {
           <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
             <tr
               className={classNames(
-                "grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]",
+                "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px]",
                 {
                   "!bg-osmoverse-1000": featureFlags.limitOrders,
                 }
@@ -204,11 +204,14 @@ export const OrderHistory = observer(() => {
             >
               {headers.map((header) => (
                 <th key={header} className="!px-0">
-                  <small className="body2">
-                    {t(`limitOrders.historyTable.columns.${header}`)}
-                  </small>
+                  {header !== "amount" && (
+                    <small className="body2">
+                      {t(`limitOrders.historyTable.columns.${header}`)}
+                    </small>
+                  )}
                 </th>
               ))}
+              <th />
             </tr>
           </thead>
         )}
@@ -415,13 +418,19 @@ const TableOrderRow = memo(
       }
     })();
     return (
-      <tr style={style} className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
-        <td className="flex items-center !px-0 !text-left">
-          <small className="subtitle1">
-            {order_direction === "bid"
-              ? t("limitOrders.buy")
-              : t("limitOrders.sell")}
-          </small>
+      <tr style={style} className="grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px]">
+        <td className="flex items-center justify-center !px-0 !text-left">
+          <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
+            <Icon
+              id="coins"
+              width={24}
+              height={24}
+              className={classNames("h-6 w-6", {
+                "text-rust-400": order_direction === "ask",
+                "text-bullish-400": order_direction === "bid",
+              })}
+            />
+          </div>
         </td>
         <td className="!px-0 !text-left">
           <div className="flex items-center gap-4">

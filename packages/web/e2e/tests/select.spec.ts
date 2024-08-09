@@ -2,13 +2,15 @@
 import { BrowserContext, chromium, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
+import { SwapPage } from "~/e2e/pages/swap-page";
 import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
 
 // Pairs are selected from top 10
 test.describe("Test Select Swap Pair feature", () => {
   let context: BrowserContext;
-  let swapPage: TradePage;
+  let swapPage: SwapPage | TradePage;
+  const USE_TRADE: boolean = process.env.USE_TRADE === "use";
   let page: Page;
 
   test.beforeAll(async () => {
@@ -20,7 +22,12 @@ test.describe("Test Select Swap Pair feature", () => {
     await page.coverage.startJSCoverage({
       resetOnNavigation: false,
     });
-    swapPage = new TradePage(page);
+    if (USE_TRADE) {
+      swapPage = new TradePage(page);
+    } else {
+      swapPage = new SwapPage(page);
+    }
+
     await swapPage.goto();
   });
 
