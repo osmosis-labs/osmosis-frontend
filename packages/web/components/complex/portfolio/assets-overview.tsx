@@ -263,26 +263,23 @@ export const AssetsOverview: FunctionComponent<
             appear={true}
             className="absolute top-full w-full"
           >
-            {(ref) => (
-              <PortfolioHistoricalChart
-                ref={ref}
-                setIsChartMinimized={setIsChartMinimized}
-                data={portfolioOverTimeData as AreaData<Time>[]}
-                isFetched={isPortfolioOverTimeDataIsFetched}
-                setDataPoint={setDataPoint}
-                range={range}
-                setRange={setRange}
-                error={error}
-                setShowDate={setShowDate}
-                resetDataPoint={() => {
-                  setDataPoint({
-                    time: dayjs().unix() as Time,
-                    value: +totalValue.toDec().toString(),
-                  });
-                  setShowDate(false);
-                }}
-              />
-            )}
+            <PortfolioHistoricalChart
+              setIsChartMinimized={setIsChartMinimized}
+              data={portfolioOverTimeData as AreaData<Time>[]}
+              isFetched={isPortfolioOverTimeDataIsFetched}
+              setDataPoint={setDataPoint}
+              range={range}
+              setRange={setRange}
+              error={error}
+              setShowDate={setShowDate}
+              resetDataPoint={() => {
+                setDataPoint({
+                  time: dayjs().unix() as Time,
+                  value: +totalValue.toDec().toString(),
+                });
+                setShowDate(false);
+              }}
+            />
           </Transition>
         </>
       ) : (
