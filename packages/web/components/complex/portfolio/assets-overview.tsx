@@ -234,7 +234,6 @@ export const AssetsOverview: FunctionComponent<
                 onClick={() => setIsChartMinimized(false)}
               >
                 <PortfolioHistoricalChartMinimized
-                  showScales={false}
                   data={portfolioOverTimeData as AreaData<Time>[]}
                   isFetched={isPortfolioOverTimeDataIsFetched}
                   error={error}

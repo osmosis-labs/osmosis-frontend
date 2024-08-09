@@ -26,7 +26,6 @@ export const PortfolioHistoricalChart = forwardRef(
       error,
       setShowDate,
       setIsChartMinimized,
-      showScales = true,
     }: {
       data?: AreaData<Time>[];
       isFetched: boolean;
@@ -37,7 +36,6 @@ export const PortfolioHistoricalChart = forwardRef(
       error: unknown;
       setShowDate: (show: boolean) => void;
       setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-      showScales?: boolean;
     },
     ref
   ) => {
@@ -65,7 +63,6 @@ export const PortfolioHistoricalChart = forwardRef(
                 logEvent([EventName.Portfolio.chartInteraction]);
               }}
               onPointerOut={resetDataPoint}
-              showScales={showScales}
             />
           )}
         </div>
@@ -97,12 +94,10 @@ export const PortfolioHistoricalChartMinimized = ({
   data,
   isFetched,
   error,
-  showScales = true,
 }: {
   data?: AreaData<Time>[];
   isFetched: boolean;
   error: unknown;
-  showScales?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
@@ -114,10 +109,7 @@ export const PortfolioHistoricalChartMinimized = ({
       ) : !isFetched ? (
         <HistoricalChartSkeleton showScales={false} />
       ) : (
-        <HistoricalChart
-          data={data as AreaData<Time>[]}
-          showScales={showScales}
-        />
+        <HistoricalChart data={data as AreaData<Time>[]} hideScales />
       )}
     </div>
   );

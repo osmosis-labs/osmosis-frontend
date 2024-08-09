@@ -70,7 +70,7 @@ interface HistoricalChartProps {
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
   style?: Style;
-  showScales?: boolean;
+  hideScales?: boolean;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
@@ -79,12 +79,11 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
     onPointerHover,
     onPointerOut,
     style = "neutral",
-    showScales = true,
+    hideScales = false,
   } = props;
 
-  const options = showScales
-    ? {}
-    : {
+  const options = hideScales
+    ? {
         rightPriceScale: {
           visible: false,
         },
@@ -94,7 +93,8 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
         timeScale: {
           visible: false,
         },
-      };
+      }
+    : {};
 
   return (
     <Chart
