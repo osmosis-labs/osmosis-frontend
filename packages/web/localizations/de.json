@@ -1238,6 +1238,8 @@
       "description": "Wenn Sie fortfahren, wird Ihre Bestellung als Marktorder zum Marktpreis bearbeitet."
     },
     "enterAnAmountTo": "Geben Sie einen Betrag ein, um",
+    "toSell": "Verkaufen",
+    "toBuy": "Kaufen",
     "sell": "Verkaufen",
     "buy": "Kaufen",
     "pay": "Zahlen",

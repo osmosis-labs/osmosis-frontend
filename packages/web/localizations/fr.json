@@ -1238,6 +1238,8 @@
       "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
     },
     "enterAnAmountTo": "Entrez un montant à",
+    "toSell": "à vendre",
+    "toBuy": "acheter",
     "sell": "Vendre",
     "buy": "Acheter",
     "pay": "Payer",

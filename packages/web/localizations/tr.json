@@ -1238,6 +1238,8 @@
       "description": "Devam etmeniz halinde emriniz piyasa fiyatı üzerinden piyasa emri olarak işleme alınacaktır."
     },
     "enterAnAmountTo": "Bir miktar girin",
+    "toSell": "satmak",
+    "toBuy": "satın almak",
     "sell": "Satmak",
     "buy": "Satın almak",
     "pay": "Ödemek",
