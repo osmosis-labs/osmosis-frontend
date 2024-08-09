@@ -238,16 +238,6 @@ export const AssetsOverview: FunctionComponent<
                   isFetched={isPortfolioOverTimeDataIsFetched}
                   error={error}
                 />
-                {/* <Transition
-                    show={isHovering}
-                    enter="transition-opacity ease-out duration-100"
-                    enterFrom="opacity-0"
-                    enterTo="opacity-100"
-                    leave="transition-opacity ease-in duration-100"
-                    leaveFrom="opacity-100"
-                    leaveTo="opacity-0"
-                    as="div"
-                  > */}
                 <div className="absolute z-50 h-full w-full">
                   <Icon
                     id="resize-expand"
@@ -256,7 +246,6 @@ export const AssetsOverview: FunctionComponent<
                     width={16}
                   />
                 </div>
-                {/* </Transition> */}
               </button>
             </Transition>
           </header>

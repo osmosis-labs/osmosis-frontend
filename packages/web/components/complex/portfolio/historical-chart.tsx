@@ -14,7 +14,22 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useTranslation } from "~/hooks";
 
-export const PortfolioHistoricalChart = forwardRef(
+interface PortfolioHistoricalChartProps {
+  data?: AreaData<Time>[];
+  isFetched: boolean;
+  setDataPoint: (point: DataPoint) => void;
+  resetDataPoint: () => void;
+  range: Range;
+  setRange: (range: Range) => void;
+  error: unknown;
+  setShowDate: (show: boolean) => void;
+  setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export const PortfolioHistoricalChart = forwardRef<
+  HTMLElement,
+  PortfolioHistoricalChartProps
+>(
   (
     {
       data,
@@ -26,17 +41,7 @@ export const PortfolioHistoricalChart = forwardRef(
       error,
       setShowDate,
       setIsChartMinimized,
-    }: {
-      data?: AreaData<Time>[];
-      isFetched: boolean;
-      setDataPoint: (point: DataPoint) => void;
-      resetDataPoint: () => void;
-      range: Range;
-      setRange: (range: Range) => void;
-      error: unknown;
-      setShowDate: (show: boolean) => void;
-      setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
-    },
+    }: PortfolioHistoricalChartProps,
     ref
   ) => {
     const { t } = useTranslation();

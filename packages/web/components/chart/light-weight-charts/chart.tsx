@@ -146,7 +146,6 @@ const defaultOptionsWithSeries = (
   series?: Series[]
 ): DeepPartial<TimeChartOptions> => ({
   ...defaultOptions,
-
   timeScale: {
     ...defaultOptions.timeScale,
     tickMarkFormatter: (timePoint: Time, tickMarkType: TickMarkType) => {
