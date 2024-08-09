@@ -1237,6 +1237,8 @@
       "description": "如果您继续，您的订单将按市场价格作为市价订单处理。"
     },
     "enterAnAmountTo": "输入金额",
+    "toSell": "出售",
+    "toBuy": "购买",
     "sell": "卖",
     "buy": "买",
     "pay": "支付",

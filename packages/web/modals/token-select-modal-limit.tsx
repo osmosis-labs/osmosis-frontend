@@ -26,7 +26,7 @@ import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 interface TokenSelectModalLimitProps {
   isOpen: boolean;
@@ -202,9 +202,9 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
             isOpen={isOpen}
             onRequestClose={onClose}
             hideCloseButton
-            className="!max-h-[90vh] w-[512px] self-start rounded-5xl !p-0"
+            className="!max-h-[90vh] w-[512px] self-start rounded-5xl !p-0 sm:!m-0 sm:h-full sm:!max-h-[100vh] sm:!rounded-none"
           >
-            <div className="flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-850">
+            <div className="flex h-full w-full flex-col overflow-hidden bg-osmoverse-850">
               <div className="relative flex min-h-[80px] items-center justify-center p-4">
                 <h6>{headerTitle}</h6>
                 <button
@@ -333,16 +333,16 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                           >
                             <div
                               className={classNames(
-                                "flex w-full items-center justify-between text-left",
+                                "flex w-full min-w-0 items-center justify-between text-left",
                                 {
                                   "opacity-40":
                                     !shouldShowUnverifiedAssets && !isVerified,
                                 }
                               )}
                             >
-                              <div className="flex items-center gap-4">
+                              <div className="flex min-w-0 items-center gap-4">
                                 {coinImageUrl && (
-                                  <div className="h-12 w-12 rounded-full">
+                                  <div className="h-12 w-12 shrink-0 rounded-full">
                                     <Image
                                       src={coinImageUrl}
                                       alt={`${coinDenom} icon`}
@@ -352,32 +352,41 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                     />
                                   </div>
                                 )}
-                                <div className="flex flex-col">
-                                  <span className="subtitle1">{coinName}</span>
-                                  <span className="subtitle2 text-osmoverse-400">
+                                <div className="flex flex-col gap-1 overflow-hidden">
+                                  <span className="subtitle1 truncate">
+                                    {coinName}
+                                  </span>
+                                  <span className="body2 text-osmoverse-400">
                                     {coinDenom}
                                   </span>
                                 </div>
                               </div>
 
                               {isWalletConnected && !hideBalances && (
-                                <div className="flex flex-col items-end gap-1">
-                                  <p
-                                    className={classNames(
-                                      "text-osmoverse-400",
-                                      {
-                                        "text-white-full": usdValue,
-                                      }
-                                    )}
-                                  >
-                                    {formatPretty(
-                                      usdValue ??
-                                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
-                                    )}
-                                  </p>
+                                <div className="flex shrink-0 flex-col items-end gap-1">
+                                  {usdValue && (
+                                    <p
+                                      className={classNames(
+                                        "text-osmoverse-400",
+                                        {
+                                          "text-white-full": usdValue,
+                                        }
+                                      )}
+                                    >
+                                      {formatFiatPrice(
+                                        usdValue ??
+                                          new PricePretty(
+                                            DEFAULT_VS_CURRENCY,
+                                            0
+                                          )
+                                      )}
+                                    </p>
+                                  )}
                                   {amount && (
                                     <span className="body2 text-osmoverse-300">
-                                      {formatPretty(amount).split(" ")[0]}
+                                      {amount
+                                        ? formatPretty(amount).split(" ")[0]
+                                        : "0"}
                                     </span>
                                   )}
                                 </div>

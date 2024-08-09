@@ -431,9 +431,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
                     outputValue={
-                      <h3
+                      <span
                         className={classNames(
-                          "whitespace-nowrap transition-opacity",
+                          "whitespace-nowrap text-h3 font-h3 transition-opacity sm:text-[30px] sm:font-h5",
                           swapState.quote?.amount.toDec().isPositive() &&
                             !swapState.inAmountInput.isTyping &&
                             !swapState.isQuoteLoading
@@ -451,7 +451,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                                   maximumSignificantDigits: 6,
                                   maxDecimals: 10,
                                   notation: "standard",
-                                }).length,
+                                }).replace(/[,\.]/g, "").length,
                                 isMobile
                               )
                             : undefined,
@@ -465,7 +465,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                               notation: "standard",
                             })
                           : "0"}
-                      </h3>
+                      </span>
                     }
                   />
                   <AssetFieldsetTokenSelector

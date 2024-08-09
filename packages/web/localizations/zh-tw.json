@@ -1237,6 +1237,8 @@
       "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
     },
     "enterAnAmountTo": "輸入金額至",
+    "toSell": "出售",
+    "toBuy": "買",
     "sell": "賣",
     "buy": "買",
     "pay": "支付",

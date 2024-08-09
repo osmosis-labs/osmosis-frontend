@@ -87,7 +87,7 @@ export const TradeDetails = observer(
             >
               <div ref={details} className="flex w-full flex-col">
                 <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-                <div className="flex h-8 w-full items-center justify-between">
+                <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
                   <SkeletonLoader
                     isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                   >
@@ -101,9 +101,12 @@ export const TradeDetails = observer(
                         )}
                         <span
                           onClick={() => setOutAsBase(!outAsBase)}
-                          className={classNames("body2 text-osmoverse-300", {
-                            "animate-pulse": inPriceFetching || isLoading,
-                          })}
+                          className={classNames(
+                            "body2 sm:caption py-1 text-osmoverse-300",
+                            {
+                              "animate-pulse": inPriceFetching || isLoading,
+                            }
+                          )}
                         >
                           {swapState?.inBaseOutQuoteSpotPrice &&
                             ExpectedRate(swapState, outAsBase, treatAsStable)}
@@ -137,14 +140,14 @@ export const TradeDetails = observer(
                             height={16}
                           />
                         )}
-                        <span className="body2 text-wosmongton-300">
+                        <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
                           {open ? t("swap.hideDetails") : t("swap.showDetails")}
                         </span>
                       </div>
                     </GenericDisclaimer>
                   </Disclosure.Button>
                 </div>
-                <Disclosure.Panel className="body2 flex flex-col text-osmoverse-300">
+                <Disclosure.Panel className="body2 sm:caption flex flex-col text-osmoverse-300">
                   {type === "market" ? (
                     <RecapRow
                       left={
@@ -175,7 +178,8 @@ export const TradeDetails = observer(
                                 "text-bullish-400": !isPriceImpactHigh,
                               })}
                             >
-                              -{formatPretty(priceImpact ?? new Dec(0))}
+                              {!priceImpact?.toDec().isZero() && "~"}
+                              {formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>
                         </GenericDisclaimer>
@@ -273,12 +277,12 @@ export const TradeDetails = observer(
                                   </>
                                 }
                               >
-                                <span className="body2 text-osmoverse-300">
+                                <span className="body2 sm:caption text-osmoverse-300">
                                   {t("swap.autoRouter")}
                                 </span>
                               </GenericDisclaimer>
                               <div className="flex items-center gap-1 text-wosmongton-300">
-                                <span className="body2">
+                                <span className="body2 sm:caption">
                                   {!!routes && routes.length > 0 ? (
                                     <>
                                       {routes?.length}{" "}
@@ -295,10 +299,8 @@ export const TradeDetails = observer(
                                 {!!routes && routes.length > 0 && (
                                   <Icon
                                     id="chevron-down"
-                                    width={16}
-                                    height={16}
                                     className={classNames(
-                                      "transition-transform",
+                                      "h-[7px] w-3 text-wosmongton-200 transition-transform",
                                       {
                                         "rotate-180": open,
                                       }
