@@ -1,41 +1,13 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
-import { ChainLogo } from "~/components/assets/chain-logo";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
-import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
 
 export type TransactionStatus = "pending" | "success" | "failed";
 type Effect = "swap" | "deposit" | "withdraw";
 
-interface Activity {
-  isSelected?: boolean;
-  status: TransactionStatus;
-  effect: Effect;
-  title: {
-    [key in TransactionStatus]: string;
-  };
-  tokenConversion?: {
-    tokenIn: {
-      amount: CoinPretty;
-      value?: PricePretty;
-    };
-    tokenOut: {
-      amount: CoinPretty;
-      value?: PricePretty;
-    };
-  };
-  transfer?: {
-    direction: "deposit" | "withdraw";
-    amount: CoinPretty;
-    value?: PricePretty;
-  };
-  toChainId?: string | number;
-  fromChainId?: string | number;
-}
+import { Transaction } from "@osmosis-labs/server";
 
 export const RecentActivityRow: FunctionComponent<{
   status: TransactionStatus;
@@ -54,83 +26,7 @@ export const RecentActivityRow: FunctionComponent<{
   );
 };
 
-export const TransferRow: FunctionComponent<Activity> = ({
-  status,
-  title,
-  transfer,
-  toChainId,
-  fromChainId,
-}) => {
-  const { t } = useTranslation();
-
-  const chainId =
-    (transfer?.direction === "withdraw" ? toChainId : fromChainId) || "";
-
-  const { data: chainData } = api.edge.chains.getChainDisplayInfo.useQuery(
-    {
-      chainId,
-    },
-    {
-      useErrorBoundary: false,
-    }
-  );
-
-  const text =
-    transfer?.direction === "withdraw"
-      ? t("portfolio.to")
-      : t("portfolio.from");
-
-  const leftComponent = transfer ? (
-    <div className="caption flex gap-1 text-osmoverse-300">
-      {formatPretty(transfer.amount, { maxDecimals: 6 })} {text}{" "}
-      {chainData?.prettyName}
-    </div>
-  ) : null;
-
-  const rightComponentList = [
-    <FallbackImg
-      key="fallback-img"
-      alt={transfer?.amount.denom}
-      src={transfer?.amount.currency.coinImageUrl}
-      fallbacksrc="/icons/question-mark.svg"
-      height={32}
-      width={32}
-    />,
-    <Icon
-      key="icon-arrow-right"
-      id="arrow-right"
-      width={16}
-      height={16}
-      className="my-[8px] mx-[4px] text-osmoverse-500"
-    />,
-    <ChainLogo
-      key="chain-logo"
-      prettyName={chainData?.prettyName}
-      color={chainData?.color}
-      logoUri={chainData?.relativeLogoUrl}
-      size="md"
-    />,
-  ];
-
-  const rightComponent = (
-    <>
-      {transfer?.direction === "withdraw"
-        ? rightComponentList
-        : rightComponentList.reverse()}
-    </>
-  );
-
-  return (
-    <RecentActivityRow
-      status={status}
-      title={title}
-      leftComponent={leftComponent}
-      rightComponent={rightComponent}
-    />
-  );
-};
-
-export const SwapRow: FunctionComponent<Activity> = ({
+export const SwapRow: FunctionComponent<Transaction> = ({
   status,
   title,
   tokenConversion,

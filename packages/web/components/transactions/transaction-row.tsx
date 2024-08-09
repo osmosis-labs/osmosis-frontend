@@ -14,7 +14,7 @@ export type TransactionStatus = "pending" | "success" | "failed";
 
 type Effect = "swap" | "deposit" | "withdraw";
 
-interface Transaction {
+export interface Transaction {
   isSelected?: boolean;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
