@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import { Fragment, FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
