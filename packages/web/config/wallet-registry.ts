@@ -155,6 +155,15 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     features: [],
   },
   {
+    ...CosmosKitWalletList["okto-extension"],
+    logo: "/wallets/okto.png",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("@cosmos-kit/okto-extension").then((m) => m.OktoExtensionWallet),
+    windowPropertyName: "okto",
+    features: ["notifications"],
+  },
+  {
     ...CosmosKitWalletList["okxwallet-extension"],
     logo: "/wallets/okx.png",
     lazyInstall: () =>
