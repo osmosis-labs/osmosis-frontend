@@ -100,7 +100,7 @@ export const PortfolioHistoricalChartMinimized = ({
           {t("errors.generic")}
         </div>
       ) : !isFetched ? (
-        <HistoricalChartSkeleton showScales={false} />
+        <HistoricalChartSkeleton hideScales />
       ) : (
         <HistoricalChart data={data as AreaData<Time>[]} hideScales />
       )}

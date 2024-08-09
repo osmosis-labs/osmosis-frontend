@@ -177,7 +177,7 @@ export const HistoricalChartHeader: FunctionComponent<{
   );
 };
 
-export const HistoricalChartSkeleton = ({ showScales = true }) => {
+export const HistoricalChartSkeleton = ({ hideScales = false }) => {
   return (
     <div className="flex h-full w-full flex-1 flex-row gap-3">
       <div className="flex flex-1 flex-col items-end justify-end">
@@ -224,7 +224,7 @@ export const HistoricalChartSkeleton = ({ showScales = true }) => {
           </defs>
         </svg>
 
-        {showScales && (
+        {!hideScales && (
           <div className="flex w-full flex-row justify-between py-3">
             <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
             <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
@@ -237,7 +237,7 @@ export const HistoricalChartSkeleton = ({ showScales = true }) => {
         )}
       </div>
 
-      {showScales && (
+      {!hideScales && (
         <div className="flex flex-col justify-between pb-7 pt-2">
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
