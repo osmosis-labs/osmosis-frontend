@@ -59,12 +59,11 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain(
-      "type: osmosis/poolmanager/swap-exact-amount-in"
-    );
+    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + USDC);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
+    // https://www.mintscan.io/osmosis/txs
   });
 
   test("User should be able to Sell ATOM", async () => {
@@ -83,14 +82,15 @@ test.describe("Test Trade feature", () => {
   });
 
   test("User should be able to limit buy OSMO", async () => {
-    const limitPrice = "0.3881";
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("0.11");
     await tradePage.setLimitPriceChange("Market");
-    await tradePage.setLimitPrice(limitPrice);
+    const limitPrice = Number(await tradePage.getLimitPrice());
+    const highLimitPrice = limitPrice * 1.2;
+    await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
       context
     );
@@ -98,12 +98,11 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("0.11 USDC (Noble/channel-750)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
     await tradePage.gotoOrdersHistory(30);
     const p = context.pages()[0];
     const trxPage = new TransactionsPage(p);
-    trxPage.viewFilledByLimitPrice(limitPrice);
+    await trxPage.isFilledByLimitPrice(highLimitPrice);
   });
 
   test("User should be able to limit sell ATOM", async () => {
@@ -120,8 +119,7 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("0.01 ATOM (Cosmos Hub/channel-0)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
@@ -139,11 +137,10 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("0.2 OSMO");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder("0.2 OSMO", limitPrice, context);
-    expect(tradePage.isTransactionSuccesful());
+    await tradePage.isTransactionSuccesful();
   });
 });

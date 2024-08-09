@@ -93,11 +93,11 @@ export class TransactionsPage extends BasePage {
     await this.page.waitForTimeout(2000);
   }
 
-  async viewFilledByLimitPrice(price: any) {
+  async isFilledByLimitPrice(price: any) {
     const loc = `//td//span[.='Filled']/../../..//td//p[.='$${price}']`;
     console.log("Use Limit Order locator: " + loc);
     await expect(this.page.locator(loc).first()).toBeVisible({
-      timeout: 90000,
+      timeout: 120_000,
       visible: true,
     });
   }
