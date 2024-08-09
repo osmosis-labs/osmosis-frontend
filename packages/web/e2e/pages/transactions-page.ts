@@ -7,9 +7,11 @@ export class TransactionsPage extends BasePage {
   readonly transactionRow: Locator;
   readonly viewExplorerLink: Locator;
   readonly closeTransactionBtn: Locator;
+  readonly page: Page;
 
   constructor(page: Page) {
     super(page);
+    this.page = page;
     this.transactionRow = page.locator('//div/p[.="Swapped"]');
     this.viewExplorerLink = page.locator('//a/span["View on explorer"]/..');
     this.closeTransactionBtn = page.getByLabel("Close").nth(1);
@@ -55,6 +57,13 @@ export class TransactionsPage extends BasePage {
     return trxUrl;
   }
 
+  async takeScreenshot(name: string) {
+    await this.page.screenshot({
+      path: `screenshot-transactions-${name}.png`,
+      fullPage: true,
+    });
+  }
+
   async cancelLimitOrder(
     amount: string,
     price: string,
@@ -82,5 +91,14 @@ export class TransactionsPage extends BasePage {
     expect(msgContentAmount).toContain("cancel_limit");
     // wait for trx confirmation
     await this.page.waitForTimeout(2000);
+  }
+
+  async isFilledByLimitPrice(price: any) {
+    const loc = `//td//span[.='Filled']/../../..//td//p[.='$${price}']`;
+    console.log("Use Limit Order locator: " + loc);
+    await expect(this.page.locator(loc).first()).toBeVisible({
+      timeout: 120_000,
+      visible: true,
+    });
   }
 }
