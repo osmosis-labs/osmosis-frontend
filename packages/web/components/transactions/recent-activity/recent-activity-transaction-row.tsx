@@ -12,14 +12,11 @@ export const RecentActivityRow: FunctionComponent<{
   title: { [key in TransactionStatus]: string };
   leftComponent: JSX.Element | null;
   rightComponent: JSX.Element | null;
-}> = ({ status, title, leftComponent, rightComponent }) => {
+}> = ({ leftComponent, rightComponent }) => {
   return (
-    <div className="-mx-2 flex justify-between gap-4 rounded-2xl p-2">
-      <div className="flex flex-col">
-        <p className="subtitle1 text-osmoverse-100">{title[status]}</p>
-        {leftComponent}
-      </div>
-      <div className="flex items-center justify-end">{rightComponent}</div>
+    <div className="-mx-2 flex justify-between gap-4 p-2">
+      {leftComponent}
+      {rightComponent}
     </div>
   );
 };
@@ -32,19 +29,22 @@ export const SwapRow: FunctionComponent<TransactionRowTransaction> = ({
   const { t } = useTranslation();
 
   const leftComponent = tokenConversion ? (
-    <div className="caption flex gap-1 text-osmoverse-300">
-      {displayFiatPrice(tokenConversion.tokenIn?.value, "", t)}{" "}
-      {tokenConversion.tokenOut.amount.denom}{" "}
-      <Icon id="arrow-right" width={14} height={14} />{" "}
-      {tokenConversion.tokenIn.amount.denom}
+    <div className="flex flex-col gap-0.5">
+      <p className="body2 text-white-full">{title[status]}</p>
+      <div className="caption flex items-center gap-1 text-osmoverse-300">
+        {displayFiatPrice(tokenConversion.tokenIn?.value, "", t)}{" "}
+        {tokenConversion.tokenOut.amount.denom}{" "}
+        <Icon id="arrow-right" width={14} height={14} />{" "}
+        {tokenConversion.tokenIn.amount.denom}
+      </div>
     </div>
   ) : null;
 
   const rightComponent = tokenConversion ? (
     <div className="flex items-center justify-end">
       <FallbackImg
-        alt={tokenConversion.tokenIn.amount.denom}
-        src={tokenConversion.tokenIn.amount.currency.coinImageUrl}
+        alt={tokenConversion.tokenOut.amount.denom}
+        src={tokenConversion.tokenOut.amount.currency.coinImageUrl}
         fallbacksrc="/icons/question-mark.svg"
         height={32}
         width={32}
@@ -56,8 +56,8 @@ export const SwapRow: FunctionComponent<TransactionRowTransaction> = ({
         className="my-[8px] mx-[4px] text-osmoverse-500"
       />
       <FallbackImg
-        alt={tokenConversion.tokenOut.amount.denom}
-        src={tokenConversion.tokenOut.amount.currency.coinImageUrl}
+        alt={tokenConversion.tokenIn.amount.denom}
+        src={tokenConversion.tokenIn.amount.currency.coinImageUrl}
         fallbacksrc="/icons/question-mark.svg"
         height={32}
         width={32}

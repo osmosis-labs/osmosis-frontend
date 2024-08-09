@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useTranslation, useWalletSelect } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -28,7 +28,6 @@ const RecentActivitySkeleton = () => {
 // v1 includes top 5 transactions from transaction history
 export const RecentActivity: FunctionComponent = observer(() => {
   const { accountStore } = useStore();
-  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -54,17 +53,17 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between py-3">
+      <div className="flex cursor-pointer items-center justify-between gap-3 py-3">
         <h6>{t("portfolio.recentActivity")}</h6>
         <LinkButton
           href="/transactions"
-          className="text-osmoverse-400"
+          className="-mx-2 text-osmoverse-400"
           label={t("portfolio.seeAll")}
           ariaLabel={t("portfolio.seeAll")}
           size="md"
         />
       </div>
-      <div className="flex w-full flex-col">
+      <div className="flex flex-col justify-between self-stretch py-2">
         {isGetTransactionsLoading ? (
           <RecentActivitySkeleton />
         ) : topActivity?.length === 0 ? (
