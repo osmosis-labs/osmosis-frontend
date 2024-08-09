@@ -64,7 +64,6 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex flex-col justify-between self-stretch py-2">
-        <RecentActivitySkeleton />
         {isGetTransactionsLoading ? (
           <RecentActivitySkeleton />
         ) : topActivity?.length === 0 ? (
