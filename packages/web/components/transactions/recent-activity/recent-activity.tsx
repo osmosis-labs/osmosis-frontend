@@ -1,4 +1,3 @@
-import { FormattedTransaction } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
@@ -10,14 +9,6 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { SwapRow } from "./recent-activity-transaction-row";
-
-type ActivityType = "transaction" | "recentTransfer";
-
-interface MergedActivityMetadata {
-  type: ActivityType;
-  compareDate: Date;
-  compareTxHash: string;
-}
 
 const ACTIVITY_LIMIT = 5;
 
@@ -43,7 +34,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   const { t } = useTranslation();
 
-  const { data: transactionsData, isFetching: isGetTransactionsFetching } =
+  const { data: transactionsData, isLoading: isGetTransactionsLoading } =
     api.edge.transactions.getTransactions.useQuery(
       {
         address: wallet?.address || "",
@@ -55,11 +46,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
       }
     );
 
-  const isLoading = isWalletLoading || isGetTransactionsFetching;
-
   const { transactions } = transactionsData ?? {
     transactions: [],
-    hasNextPage: false,
   };
 
   const topActivity = transactions.slice(0, ACTIVITY_LIMIT);
@@ -77,44 +65,36 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex w-full flex-col">
-        {isLoading ? (
+        {isGetTransactionsLoading ? (
           <RecentActivitySkeleton />
         ) : topActivity?.length === 0 ? (
           <NoTransactionsSplash variant="transactions" />
         ) : (
           topActivity.map((activity) => {
-            const recentTransactionActivity = activity as FormattedTransaction &
-              MergedActivityMetadata;
-
             return (
               <SwapRow
-                key={recentTransactionActivity.id}
+                key={activity.id}
                 title={{
                   pending: t("transactions.swapping"),
                   success: t("transactions.swapped"),
                   failed: t("transactions.swapFailed"),
                 }}
                 effect="swap"
-                status={
-                  recentTransactionActivity.code === 0 ? "success" : "failed"
-                }
+                status={activity.code === 0 ? "success" : "failed"}
                 tokenConversion={{
                   tokenIn: {
                     amount:
-                      recentTransactionActivity?.metadata?.[0]?.value?.[0]
-                        ?.txInfo?.tokenIn?.token,
+                      activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn
+                        ?.token,
                     value:
-                      recentTransactionActivity?.metadata?.[0]?.value?.[0]
-                        ?.txInfo?.tokenIn?.usd,
+                      activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn?.usd,
                   },
                   tokenOut: {
                     amount:
-                      recentTransactionActivity?.metadata?.[0]?.value?.[0]
-                        ?.txInfo?.tokenOut?.token,
+                      activity?.metadata?.[0]?.value?.[0]?.txInfo?.tokenOut
+                        ?.token,
 
-                    value:
-                      recentTransactionActivity.metadata[0].value[0].txInfo
-                        .tokenOut.usd,
+                    value: activity.metadata[0].value[0].txInfo.tokenOut.usd,
                   },
                 }}
               />
