@@ -1,11 +1,12 @@
 import { DecUtils } from "@keplr-wallet/unit";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { t } from "~/hooks";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
 import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
@@ -51,29 +52,43 @@ export const EstimatedTimeRow: FunctionComponent<{
 export const ProviderFeesRow: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   isRefetchingQuote: boolean;
-}> = ({ selectedQuote, isRefetchingQuote }) => (
-  <QuoteDetailRow
-    label={t("transfer.providerFees")}
-    isLoading={isRefetchingQuote}
-  >
-    {selectedQuote.transferFee.toDec().isZero() ? (
-      <p className="text-bullish-400">{t("transfer.free")}</p>
-    ) : (
-      <p className="text-osmoverse-100">
-        {selectedQuote.transferFeeFiat ? (
-          <>
-            {selectedQuote.transferFeeFiat.toString()}{" "}
-            <span className="text-osmoverse-300">
-              ({selectedQuote.transferFee.maxDecimals(4).toString()})
+}> = ({ selectedQuote, isRefetchingQuote }) => {
+  const gasElement = `${trimPlaceholderZeros(
+    selectedQuote.transferFee.hideDenom(true).maxDecimals(4).toString()
+  )} ${shorten(selectedQuote.transferFee.denom, {
+    prefixLength: 8,
+    suffixLength: 3,
+  })}`;
+
+  return (
+    <QuoteDetailRow
+      label={t("transfer.providerFees")}
+      isLoading={isRefetchingQuote}
+    >
+      {selectedQuote.transferFee.toDec().isZero() ? (
+        <p className="text-bullish-400">{t("transfer.free")}</p>
+      ) : (
+        <p className="text-osmoverse-100">
+          {selectedQuote.transferFeeFiat ? (
+            <>
+              {selectedQuote.transferFeeFiat.toString()}{" "}
+              <span
+                title={selectedQuote.transferFee.maxDecimals(4).toString()}
+                className="text-osmoverse-300"
+              >
+                ({gasElement})
+              </span>
+            </>
+          ) : (
+            <span title={selectedQuote.transferFee.maxDecimals(4).toString()}>
+              {gasElement}
             </span>
-          </>
-        ) : (
-          selectedQuote.transferFee.maxDecimals(4).toString()
-        )}
-      </p>
-    )}
-  </QuoteDetailRow>
-);
+          )}
+        </p>
+      )}
+    </QuoteDetailRow>
+  );
+};
 
 export const NetworkFeeRow: FunctionComponent<{
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
@@ -104,9 +119,23 @@ export const NetworkFeeRow: FunctionComponent<{
             ? selectedQuote.gasCostFiat.toString()
             : selectedQuote.gasCost?.maxDecimals(4).toString()}
           {selectedQuote.gasCostFiat && selectedQuote.gasCost ? (
-            <span className="text-osmoverse-300">{` (${selectedQuote.gasCost
-              .maxDecimals(4)
-              .toString()})`}</span>
+            <span
+              title={selectedQuote.gasCost.maxDecimals(4).toString()}
+              className="text-osmoverse-300"
+            >
+              {" "}
+              (
+              {trimPlaceholderZeros(
+                selectedQuote.gasCost.hideDenom(true).maxDecimals(4).toString()
+              )}{" "}
+              <span>
+                {shorten(selectedQuote.gasCost.denom, {
+                  prefixLength: 8,
+                  suffixLength: 3,
+                })}
+              </span>
+              )
+            </span>
           ) : (
             ""
           )}
@@ -145,11 +174,27 @@ export const ExpectedOutputRow: FunctionComponent<{
     <p className={warnUserOfSlippage ? "text-rust-300" : "text-osmoverse-100"}>
       {selectedQuote.expectedOutputFiat.toString()}{" "}
       <span
+        title={selectedQuote.expectedOutput
+          .maxDecimals(4)
+          .trim(true)
+          .toString()}
         className={classNames({
           "text-osmoverse-300": !warnUserOfSlippage,
         })}
       >
-        ({selectedQuote.expectedOutput.maxDecimals(4).trim(true).toString()})
+        (
+        {trimPlaceholderZeros(
+          selectedQuote.expectedOutput
+            .maxDecimals(4)
+            .trim(true)
+            .hideDenom(true)
+            .toString()
+        )}{" "}
+        {shorten(selectedQuote.expectedOutput.denom, {
+          prefixLength: 8,
+          suffixLength: 3,
+        })}
+        )
       </span>
     </p>
   </QuoteDetailRow>
