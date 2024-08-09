@@ -146,7 +146,6 @@
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
-      "pendingDeposit": "Pending deposit",
       "pendingWithdraw": "Pending withdraw",
       "successDeposit": "Deposited",
       "successWithdraw": "Withdrew",
