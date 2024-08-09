@@ -131,6 +131,7 @@ jobs:
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test pools select

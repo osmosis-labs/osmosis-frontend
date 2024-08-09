@@ -2,25 +2,32 @@
 import { BrowserContext, chromium, Page, test } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
+import { SwapPage } from "~/e2e/pages/swap-page";
 import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
 
 // Pairs are selected from top 10
 test.describe("Test Select Swap Pair feature", () => {
   let context: BrowserContext;
-  let swapPage: TradePage;
+  let swapPage: SwapPage | TradePage;
+  const USE_TRADE: boolean = process.env.USE_TRADE === "use";
   let page: Page;
 
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserConfig(true)
+      new TestConfig().getBrowserConfig(false)
     );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
       resetOnNavigation: false,
     });
-    swapPage = new TradePage(page);
+    if (USE_TRADE) {
+      swapPage = new TradePage(page);
+    } else {
+      swapPage = new SwapPage(page);
+    }
+
     await swapPage.goto();
   });
 
@@ -35,7 +42,7 @@ test.describe("Test Select Swap Pair feature", () => {
   });
 
   // Price Impact-54.768% -> no liquidity
-  test("User should be able to select nBTC/USDC", async () => {
+  test.only("User should be able to select nBTC/USDC", async () => {
     await swapPage.goto();
     await swapPage.selectPair("nBTC", "USDC");
     await swapPage.enterAmount("0.01");
