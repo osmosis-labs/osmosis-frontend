@@ -14,14 +14,14 @@ const ACTIVITY_LIMIT = 5;
 
 const RecentActivitySkeleton = () => {
   return (
-    <div className="flex w-full flex-col gap-4">
+    <>
       {Array.from({ length: 5 }).map((_, index) => (
-        <div key={index} className="flex w-full justify-between">
-          <Skeleton className="h-10 w-1/3 " />
-          <Skeleton className="h-10 w-1/5" />
+        <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
+          <Skeleton className="h-9 w-1/3 " />
+          <Skeleton className="h-9 w-1/5" />
         </div>
       ))}
-    </div>
+    </>
   );
 };
 
@@ -64,6 +64,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex flex-col justify-between self-stretch py-2">
+        <RecentActivitySkeleton />
         {isGetTransactionsLoading ? (
           <RecentActivitySkeleton />
         ) : topActivity?.length === 0 ? (
