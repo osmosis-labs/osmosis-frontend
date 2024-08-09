@@ -16,7 +16,7 @@ test.describe("Test Select Swap Pair feature", () => {
   test.beforeAll(async () => {
     context = await chromium.launchPersistentContext(
       "",
-      new TestConfig().getBrowserConfig(false)
+      new TestConfig().getBrowserConfig(true)
     );
     page = context.pages()[0];
     await page.coverage.startJSCoverage({
@@ -42,7 +42,7 @@ test.describe("Test Select Swap Pair feature", () => {
   });
 
   // Price Impact-54.768% -> no liquidity
-  test.only("User should be able to select nBTC/USDC", async () => {
+  test("User should be able to select nBTC/USDC", async () => {
     await swapPage.goto();
     await swapPage.selectPair("nBTC", "USDC");
     await swapPage.enterAmount("0.01");
