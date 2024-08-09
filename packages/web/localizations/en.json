@@ -326,7 +326,11 @@
     "pooled": "Pooled",
     "other": "Other",
     "all": "All",
-    "assets": "Assets"
+    "assets": "Assets",
+    "recentActivity": "Recent activity",
+    "seeAll": "See all",
+    "to": "to",
+    "from": "from"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -1180,8 +1184,8 @@
     "buttonCancel": "Cancel"
   },
   "transactions": {
-    "noRecent": "No recent transfers",
-    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here.",
+    "noRecent": "No recent transactions",
+    "recentShownHere": "Swaps, deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
     "connectToSee": "Connect to see your transaction history",

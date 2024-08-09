@@ -11,7 +11,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { RecentTransfers } from "~/components/transactions/recent-transfers";
+import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -147,15 +147,6 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                  {({ selected }) => (
-                    <h6
-                      className={!selected ? "text-osmoverse-500" : undefined}
-                    >
-                      {t("portfolio.recentTransfers")}
-                    </h6>
-                  )}
-                </Tab>
               </TabList>
               {!isTotalValueFetched ? (
                 <div className="mx-auto my-6 w-fit">
@@ -175,21 +166,20 @@ export const PortfolioPage: FunctionComponent = () => {
                   <TabPanel>
                     <UserPositionsSection address={wallet.address} />
                   </TabPanel>
-                  <TabPanel>
-                    <section>
-                      <RecentTransfers />
-                    </section>
-                  </TabPanel>
                 </TabPanels>
               )}
             </TabGroup>
           </section>
+
           <section className="flex w-80 flex-col gap-3">
             {featureFlags.cypherCard && <CypherCard />}
 
             {!isLoadingAllocation && !userHasNoAssets && (
               <Allocation allocation={allocation} />
             )}
+            <div className="flex-1">
+              <RecentActivity />
+            </div>
           </section>
         </>
       ) : isWalletLoading ? null : (
