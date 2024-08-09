@@ -325,7 +325,11 @@
     "pooled": "جمع شده",
     "other": "دیگر",
     "all": "همه",
-    "assets": "دارایی های"
+    "assets": "دارایی های",
+    "recentActivity": "فعالیت اخیر",
+    "seeAll": "همه را ببینید",
+    "to": "به",
+    "from": "از"
   },
   "buyTokens": "خرید توکن",
   "components": {

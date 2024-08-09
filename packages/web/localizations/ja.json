@@ -325,7 +325,11 @@
     "pooled": "プール",
     "other": "他の",
     "all": "全て",
-    "assets": "資産"
+    "assets": "資産",
+    "recentActivity": "最近のアクティビティ",
+    "seeAll": "すべて見る",
+    "to": "に",
+    "from": "から"
   },
   "buyTokens": "トークンを購入する",
   "components": {

@@ -325,7 +325,11 @@
     "pooled": "Połączone",
     "other": "Inny",
     "all": "Wszystko",
-    "assets": "Aktywa"
+    "assets": "Aktywa",
+    "recentActivity": "Ostatnia aktywność",
+    "seeAll": "Zobacz wszystko",
+    "to": "Do",
+    "from": "z"
   },
   "buyTokens": "Kup tokeny",
   "components": {

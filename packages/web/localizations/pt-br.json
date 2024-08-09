@@ -325,7 +325,11 @@
     "pooled": "Agrupados",
     "other": "Outro",
     "all": "Todos",
-    "assets": "Ativos"
+    "assets": "Ativos",
+    "recentActivity": "Atividade recente",
+    "seeAll": "Ver tudo",
+    "to": "para",
+    "from": "de"
   },
   "buyTokens": "Comprar tokens",
   "components": {

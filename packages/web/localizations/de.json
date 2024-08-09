@@ -325,7 +325,11 @@
     "pooled": "Gepoolt",
     "other": "Andere",
     "all": "Alle",
-    "assets": "Vermögenswerte"
+    "assets": "Vermögenswerte",
+    "recentActivity": "Letzte Aktivität",
+    "seeAll": "Alles sehen",
+    "to": "Zu",
+    "from": "aus"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

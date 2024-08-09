@@ -325,7 +325,11 @@
     "pooled": "匯集",
     "other": "其他",
     "all": "全部",
-    "assets": "資產"
+    "assets": "資產",
+    "recentActivity": "最近的活動",
+    "seeAll": "看全部",
+    "to": "到",
+    "from": "從"
   },
   "buyTokens": "購買代幣",
   "components": {

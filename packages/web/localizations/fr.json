@@ -325,7 +325,11 @@
     "pooled": "Regroupé",
     "other": "Autre",
     "all": "Tous",
-    "assets": "Actifs"
+    "assets": "Actifs",
+    "recentActivity": "Activité récente",
+    "seeAll": "Tout voir",
+    "to": "à",
+    "from": "depuis"
   },
   "buyTokens": "Acheter jetons",
   "components": {

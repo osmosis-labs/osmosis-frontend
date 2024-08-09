@@ -325,7 +325,11 @@
     "pooled": "जमा",
     "other": "अन्य",
     "all": "सभी",
-    "assets": "संपत्ति"
+    "assets": "संपत्ति",
+    "recentActivity": "हाल की गतिविधि",
+    "seeAll": "सभी देखें",
+    "to": "को",
+    "from": "से"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {

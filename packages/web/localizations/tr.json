@@ -325,7 +325,11 @@
     "pooled": "havuzlanmış",
     "other": "Diğer",
     "all": "Tüm",
-    "assets": "Varlıklar"
+    "assets": "Varlıklar",
+    "recentActivity": "Son aktivite",
+    "seeAll": "Tümünü gör",
+    "to": "ile",
+    "from": "itibaren"
   },
   "buyTokens": "jeton satın al",
   "components": {

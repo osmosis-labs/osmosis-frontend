@@ -325,7 +325,11 @@
     "pooled": "પૂલ",
     "other": "અન્ય",
     "all": "બધા",
-    "assets": "અસ્કયામતો"
+    "assets": "અસ્કયામતો",
+    "recentActivity": "તાજેતરની પ્રવૃત્તિ",
+    "seeAll": "બધા જુઓ",
+    "to": "થી",
+    "from": "થી"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {

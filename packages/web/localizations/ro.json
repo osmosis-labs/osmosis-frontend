@@ -325,7 +325,11 @@
     "pooled": "Adunate",
     "other": "Alte",
     "all": "Toate",
-    "assets": "Active"
+    "assets": "Active",
+    "recentActivity": "Activitate recentă",
+    "seeAll": "Vezi toate",
+    "to": "la",
+    "from": "din"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
