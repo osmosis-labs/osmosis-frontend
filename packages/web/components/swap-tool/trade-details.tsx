@@ -87,7 +87,7 @@ export const TradeDetails = observer(
             >
               <div ref={details} className="flex w-full flex-col">
                 <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
-                <div className="flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]">
+                <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
                   <SkeletonLoader
                     isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                   >
@@ -102,7 +102,7 @@ export const TradeDetails = observer(
                         <span
                           onClick={() => setOutAsBase(!outAsBase)}
                           className={classNames(
-                            "body2 sm:caption text-osmoverse-300",
+                            "body2 sm:caption py-1 text-osmoverse-300",
                             {
                               "animate-pulse": inPriceFetching || isLoading,
                             }
@@ -140,7 +140,7 @@ export const TradeDetails = observer(
                             height={16}
                           />
                         )}
-                        <span className="body2 sm:caption text-wosmongton-300">
+                        <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
                           {open ? t("swap.hideDetails") : t("swap.showDetails")}
                         </span>
                       </div>
@@ -178,7 +178,8 @@ export const TradeDetails = observer(
                                 "text-bullish-400": !isPriceImpactHigh,
                               })}
                             >
-                              -{formatPretty(priceImpact ?? new Dec(0))}
+                              {!priceImpact?.toDec().isZero() && "~"}
+                              {formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>
                         </GenericDisclaimer>

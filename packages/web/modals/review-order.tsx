@@ -87,7 +87,6 @@ export function ReviewOrder({
   isBeyondOppositePrice = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
@@ -204,7 +203,7 @@ export function ReviewOrder({
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="w-[512px] rounded-2xl !p-0"
+      className="w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
     >
       <div className="flex h-auto w-full flex-col bg-osmoverse-850">
         <div className="relative flex h-20 items-center justify-center p-4">
@@ -222,7 +221,7 @@ export function ReviewOrder({
           })}
         >
           {orderType === "limit" && tab !== "swap" && (
-            <div className="sm:subtitle2 flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
+            <div className="sm:caption flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 min-w-10 items-center justify-center">
                   {(tab === "buy" && !isBeyondOppositePrice) ||
@@ -441,7 +440,7 @@ export function ReviewOrder({
                       <div className="flex items-center justify-end">
                         <div
                           className={classNames(
-                            "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all",
+                            "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
                             {
                               "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2":
                                 isEditingSlippage,
