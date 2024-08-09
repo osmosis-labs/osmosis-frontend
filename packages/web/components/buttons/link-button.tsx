@@ -10,22 +10,24 @@ export function LinkButton({
   ariaLabel,
   href,
   className: optionalClassNames,
+  size = "default",
 }: {
   label: string;
-  icon: ReactElement;
+  icon?: ReactElement;
   ariaLabel: string;
   href: string;
   className?: string;
+  size?: "sm" | "md" | "default";
 }) {
   return (
-    <Button asChild variant="ghost">
+    <Button asChild variant="ghost" size={size}>
       <Link
         href={href}
         passHref
         aria-label={ariaLabel}
         className={`flex flex-row gap-2 ${optionalClassNames ?? ""}`}
       >
-        {icon}
+        {icon && icon}
         <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
           {label}
         </p>
