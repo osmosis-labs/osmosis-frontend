@@ -2,7 +2,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useCallback, useState } from "react";
+import { FunctionComponent, useCallback } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -87,8 +87,6 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const { logEvent } = useAmplitudeAnalytics();
 
-  const [isChartMinimized, setIsChartMinimized] = useState(true);
-
   return (
     <main
       className={classNames(
@@ -104,8 +102,6 @@ export const PortfolioPage: FunctionComponent = () => {
             totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
           }
           isTotalValueFetched={isTotalValueFetched}
-          isChartMinimized={isChartMinimized}
-          setIsChartMinimized={setIsChartMinimized}
         />
       </section>
 
