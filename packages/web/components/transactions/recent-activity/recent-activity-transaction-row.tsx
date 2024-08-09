@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
-import { TransactionRowTransaction } from "~/components/transactions/transaction-row";
+import { TransactionRow } from "~/components/transactions/transaction-row";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 
@@ -21,7 +21,7 @@ export const RecentActivityRow: FunctionComponent<{
   );
 };
 
-export const SwapRow: FunctionComponent<TransactionRowTransaction> = ({
+export const SwapRow: FunctionComponent<TransactionRow> = ({
   status,
   title,
   tokenConversion,
