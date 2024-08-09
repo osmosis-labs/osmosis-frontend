@@ -1241,6 +1241,8 @@
       "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
     },
     "enterAnAmountTo": "Wpisz kwotę do",
+    "toSell": "sprzedać",
+    "toBuy": "kupić",
     "sell": "Sprzedać",
     "buy": "Kupić",
     "pay": "Płacić",

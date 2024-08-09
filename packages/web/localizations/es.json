@@ -1241,6 +1241,8 @@
       "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
     },
     "enterAnAmountTo": "Introduzca una cantidad a",
+    "toSell": "vender",
+    "toBuy": "comprar",
     "sell": "Vender",
     "buy": "Comprar",
     "pay": "Pagar",

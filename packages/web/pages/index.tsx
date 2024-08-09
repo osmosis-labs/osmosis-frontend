@@ -45,8 +45,8 @@ const HomeNew = () => {
             className="absolute bottom-0 max-h-[720px] w-full"
           />
         </div>
-        <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center">
-          <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-mobile-header md:w-full md:px-5">
+        <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center md:top-0">
+          <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
             <TradeTool page="Swap Page" />
           </div>

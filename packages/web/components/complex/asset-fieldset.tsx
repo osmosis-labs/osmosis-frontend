@@ -14,6 +14,7 @@ import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName, EventPage } from "~/config";
 import {
+  Breakpoint,
   useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
@@ -24,7 +25,7 @@ import { useStore } from "~/stores";
 import { calcFontSize } from "~/utils/formatter";
 
 const AssetFieldset = ({ children }: PropsWithChildren<unknown>) => (
-  <div className="flex flex-col">{children}</div>
+  <>{children}</>
 );
 
 const AssetFieldsetHeader = ({ children }: PropsWithChildren<unknown>) => (
@@ -77,20 +78,22 @@ const AssetFieldsetHeaderBalance = observer(
             </button>
           ) : (
             <>
-              <span className="body2 text-osmoverse-300">
+              <span className="body2 sm:caption text-right text-osmoverse-300">
                 {availableBalance} {t("pool.available").toLowerCase()}
               </span>
               {onMax && (
                 <button
                   type="button"
-                  className="flex items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1.5 px-3 disabled:pointer-events-none disabled:opacity-50"
+                  className="flex h-8 items-center justify-center gap-1 rounded-5xl border border-osmoverse-700 py-1 px-3 disabled:pointer-events-none disabled:opacity-50"
                   onClick={onMax}
                   disabled={isMaxButtonDisabled}
                 >
                   {isLoadingMaxButton && (
                     <Spinner className="!h-2.5 !w-2.5 text-wosmongton-300" />
                   )}
-                  <span className="body2 text-wosmongton-300">Max</span>
+                  <span className="body2 sm:caption text-wosmongton-300">
+                    Max
+                  </span>
                 </button>
               )}
             </>
@@ -113,36 +116,35 @@ const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
 >(({ inputPrefix, inputValue, onInputChange, outputValue, ...rest }, ref) => {
-  const { isMobile } = useWindowSize();
-
+  const { isMobile } = useWindowSize(Breakpoint.sm);
   const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
-
   return (
     <div
-      className="flex h-[73px] items-center overflow-visible"
+      className="flex h-[72px] flex-1 items-center overflow-visible text-h3 font-h3 sm:h-[48px] sm:text-[30px] sm:font-h5"
       style={{
-        fontSize,
+        fontSize: !!inputValue ? fontSize : undefined,
       }}
     >
       {inputPrefix}
       {outputValue || (
-        <div className="transiiton-all w-full origin-left overflow-visible">
-          <input
-            ref={ref}
-            className={`text-[${fontSize}] w-full bg-transparent font-h3 placeholder:text-osmoverse-600`}
-            placeholder="0"
-            onChange={onInputChange}
-            value={inputValue}
-            {...rest}
-          />
-        </div>
+        <input
+          ref={ref}
+          className="w-full flex-1 bg-transparent placeholder:text-osmoverse-600"
+          style={{
+            font: "inherit",
+          }}
+          placeholder="0"
+          onChange={onInputChange}
+          value={inputValue}
+          {...rest}
+        />
       )}
     </div>
   );
 });
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
-  <div className="flex h-12 w-full items-center justify-between pb-4">
+  <div className="flex h-12 w-full items-start justify-between pb-4">
     {children}
   </div>
 );
@@ -177,6 +179,7 @@ const AssetFieldsetTokenSelector = ({
 }: TokenSelectProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+  const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const {
     isOpen: isSelectOpen,
@@ -202,7 +205,7 @@ const AssetFieldsetTokenSelector = ({
     <>
       <button
         type="button"
-        className="flex items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800"
+        className="flex max-w-[50%] items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800 sm:px-3"
         onClick={(e) => {
           if (onSelectorClick) return onSelectorClick();
 
@@ -217,23 +220,23 @@ const AssetFieldsetTokenSelector = ({
         }}
         {...rest}
       >
-        <div className="flex items-center gap-3">
-          {selectedCoinImageUrl && (
-            <Image
-              src={selectedCoinImageUrl}
-              alt={`${selectedCoinDenom} image`}
-              width={40}
-              height={40}
-              className="h-10 min-w-10 rounded-full"
-            />
-          )}
-          <h5 className="max-w-[125px] truncate">{selectedCoinDenom}</h5>
-        </div>
+        {selectedCoinImageUrl && (
+          <Image
+            src={selectedCoinImageUrl}
+            alt={`${selectedCoinDenom} image`}
+            width={isMobile ? 24 : 40}
+            height={isMobile ? 24 : 40}
+            className="h-10 w-10 rounded-full sm:h-6 sm:w-6"
+          />
+        )}
+        <span className="ml-2 truncate text-h5 font-h5 sm:ml-1 sm:text-h6 sm:font-h6">
+          {selectedCoinDenom}
+        </span>
         <div className="flex h-6 w-6 items-center justify-center">
           <Icon
             id="chevron-down"
-            width={16}
-            height={16}
+            width={isMobile ? 12 : 16}
+            height={isMobile ? 12 : 16}
             className="text-osmoverse-400"
           />
         </div>

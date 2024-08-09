@@ -39,7 +39,7 @@ import { usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
@@ -408,15 +408,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return t(swapState.error);
       }
     }, [swapState.error, t]);
-
     return (
       <>
-        <div className="flex flex-col">
+        <div>
           <AssetFieldset>
             <AssetFieldsetHeader>
               <AssetFieldsetHeaderLabel>
                 <span
-                  className={classNames("body2 text-osmoverse-300", {
+                  className={classNames("body2 sm:caption text-osmoverse-300", {
                     "text-rust-400": errorDisplay,
                   })}
                 >
@@ -425,9 +424,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   ) : (
                     <>
                       {t("limitOrders.enterAnAmountTo")}{" "}
-                      {orderDirection === "bid"
-                        ? t("portfolio.buy").toLowerCase()
-                        : t("limitOrders.sell").toLowerCase()}
+                      <span className="sm:hidden">
+                        {orderDirection === "bid"
+                          ? t("limitOrders.toBuy").toLowerCase()
+                          : t("limitOrders.toSell").toLowerCase()}
+                      </span>
                     </>
                   )}
                 </span>
@@ -436,12 +437,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 availableBalance={
                   tab === "buy"
                     ? swapState.quoteAsset?.usdValue &&
-                      formatPretty(swapState.quoteAsset?.usdValue, {
-                        minimumSignificantDigits: 6,
-                        maximumSignificantDigits: 6,
-                        maxDecimals: 10,
-                        notation: "standard",
-                      })
+                      formatFiatPrice(swapState.quoteAsset?.usdValue)
                     : swapState.baseTokenBalance &&
                       formatPretty(swapState.baseTokenBalance.toDec(), {
                         minimumSignificantDigits: 6,
@@ -455,7 +451,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 showAddFundsButton={!hasFunds}
               />
             </AssetFieldsetHeader>
-            <div className="flex items-center justify-between py-3">
+            <div className="flex items-center justify-between py-3 ">
               <AssetFieldsetInput
                 page={page}
                 inputPrefix={
@@ -492,7 +488,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             <AssetFieldsetFooter>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
+                className="inline-flex min-h-[2rem] flex-1 items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
@@ -510,10 +506,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   />
                 )}
                 <span
-                  className={classNames("body2 h-5 transition-opacity", {
-                    "text-osmoverse-300": type === "market",
-                    "text-wosmongton-300": type === "limit",
-                  })}
+                  className={classNames(
+                    "body2 sm:caption transition-opacity sm:my-px sm:py-2",
+                    {
+                      "text-osmoverse-300": type === "market",
+                      "text-wosmongton-300": type === "limit",
+                    }
+                  )}
                 >
                   {focused === "token" && <span>$</span>}
                   {trimPlaceholderZeros(

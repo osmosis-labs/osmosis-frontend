@@ -1240,7 +1240,9 @@
       "title": "Limit price below market price",
       "description": "If you proceed your order may be filled at an undesirable price."
     },
-    "enterAnAmountTo": "Enter an amount to",
+    "enterAnAmountTo": "Enter an amount",
+    "toSell": "to sell",
+    "toBuy": "to buy",
     "sell": "Sell",
     "buy": "Buy",
     "pay": "Pay",

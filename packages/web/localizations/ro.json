@@ -1241,6 +1241,8 @@
       "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
     },
     "enterAnAmountTo": "Introduceți o sumă la",
+    "toSell": "a vinde",
+    "toBuy": "să cumpere",
     "sell": "Vinde",
     "buy": "Cumpără",
     "pay": "A plati",

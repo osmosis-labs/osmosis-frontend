@@ -14,7 +14,12 @@ import {
   AssetLists,
   MainnetAssetSymbols,
 } from "~/config/generated/asset-lists";
-import { useDisclosure, useTranslation } from "~/hooks";
+import {
+  Breakpoint,
+  useDisclosure,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
 import { useStore } from "~/stores";
@@ -184,39 +189,35 @@ export const PriceSelector = memo(() => {
     onOpen: openAddFundsModal,
   } = useDisclosure();
 
+  const { isMobile } = useWindowSize(Breakpoint.sm);
+
   return (
     <>
       <Menu as="div" className="relative inline-block">
         {({ open }) => (
           <>
             <Menu.Button className="flex items-center justify-between">
-              <div className="flex w-full items-center justify-between">
+              <div className="flex flex-1 items-center justify-between">
                 {quoteAsset && (
-                  <div
-                    className={classNames(
-                      "flex items-center gap-1 transition-opacity"
-                    )}
-                  >
-                    <span className="body2 whitespace-nowrap text-osmoverse-300">
+                  <div className="flex items-center gap-1 transition-opacity sm:gap-0">
+                    <span className="body2 sm:caption whitespace-nowrap text-osmoverse-300">
                       {tab === "buy"
                         ? t("limitOrders.payWith")
                         : t("limitOrders.receive")}
                     </span>
-                    <div className="flex items-center gap-2 py-1 pl-1 pr-3">
+                    <div className="flex items-center gap-2 py-1 pl-1 pr-3 sm:gap-1 sm:py-1.5">
                       {quoteAsset.logoURIs && (
-                        <div className="h-6 w-6 shrink-0 rounded-full md:h-7 md:w-7">
-                          <Image
-                            src={
-                              quoteAsset.logoURIs.svg ||
-                              quoteAsset.logoURIs.png ||
-                              ""
-                            }
-                            alt={`${quoteAsset.symbol} icon`}
-                            width={24}
-                            height={24}
-                            priority
-                          />
-                        </div>
+                        <Image
+                          src={
+                            quoteAsset.logoURIs.svg ||
+                            quoteAsset.logoURIs.png ||
+                            ""
+                          }
+                          alt={`${quoteAsset.symbol} icon`}
+                          width={isMobile ? 20 : 24}
+                          height={isMobile ? 20 : 24}
+                          priority
+                        />
                       )}
                       <span className="md:caption body2 text-left">
                         {quoteAsset.symbol}
