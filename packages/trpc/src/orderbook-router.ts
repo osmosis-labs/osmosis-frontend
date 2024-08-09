@@ -69,12 +69,6 @@ export const orderbookRouter = createTRPCRouter({
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-          const historicalOrders = await getOrderbookHistoricalOrders({
-            userOsmoAddress: input.userOsmoAddress,
-            assetLists: ctx.assetLists,
-            chainList: ctx.chainList,
-          });
-
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
               const { quoteAsset, baseAsset } = await getOrderbookDenoms({
@@ -89,11 +83,15 @@ export const orderbookRouter = createTRPCRouter({
                 baseAsset,
                 quoteAsset,
               });
-              const historicalOrdersForContract = historicalOrders.filter(
-                (o) => o.orderbookAddress === contractOsmoAddress
-              );
-              return [...orders, ...historicalOrdersForContract];
+              return orders;
             }
+          );
+          promises.push(
+            getOrderbookHistoricalOrders({
+              userOsmoAddress: input.userOsmoAddress,
+              assetLists: ctx.assetLists,
+              chainList: ctx.chainList,
+            })
           );
 
           const ordersByContracts = await Promise.all(promises);
