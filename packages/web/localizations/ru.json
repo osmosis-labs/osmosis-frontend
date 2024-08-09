@@ -321,9 +321,7 @@
     "all": "Все",
     "assets": "Ресурсы",
     "recentActivity": "Недавняя активность",
-    "seeAll": "Смотреть все",
-    "to": "к",
-    "from": "от"
+    "seeAll": "Смотреть все"
   },
   "buyTokens": "Купить токены",
   "components": {

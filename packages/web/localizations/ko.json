@@ -321,9 +321,7 @@
     "all": "모두",
     "assets": "자산",
     "recentActivity": "최근 활동",
-    "seeAll": "모두 보기",
-    "to": "에게",
-    "from": "~에서"
+    "seeAll": "모두 보기"
   },
   "buyTokens": "토큰 구매",
   "components": {

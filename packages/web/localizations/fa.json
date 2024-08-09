@@ -321,9 +321,7 @@
     "all": "همه",
     "assets": "دارایی های",
     "recentActivity": "فعالیت اخیر",
-    "seeAll": "همه را ببینید",
-    "to": "به",
-    "from": "از"
+    "seeAll": "همه را ببینید"
   },
   "buyTokens": "خرید توکن",
   "components": {

@@ -321,9 +321,7 @@
     "all": "Todo",
     "assets": "Activos",
     "recentActivity": "Actividad reciente",
-    "seeAll": "Ver todo",
-    "to": "a",
-    "from": "de"
+    "seeAll": "Ver todo"
   },
   "buyTokens": "Comprar fichas",
   "components": {

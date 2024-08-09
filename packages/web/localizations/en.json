@@ -321,9 +321,7 @@
     "all": "All",
     "assets": "Assets",
     "recentActivity": "Recent activity",
-    "seeAll": "See all",
-    "to": "to",
-    "from": "from"
+    "seeAll": "See all"
   },
   "buyTokens": "Buy tokens",
   "components": {

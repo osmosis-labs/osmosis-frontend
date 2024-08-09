@@ -321,9 +321,7 @@
     "all": "Tüm",
     "assets": "Varlıklar",
     "recentActivity": "Son aktivite",
-    "seeAll": "Tümünü gör",
-    "to": "ile",
-    "from": "itibaren"
+    "seeAll": "Tümünü gör"
   },
   "buyTokens": "jeton satın al",
   "components": {

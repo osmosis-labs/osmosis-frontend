@@ -321,9 +321,7 @@
     "all": "Alle",
     "assets": "Vermögenswerte",
     "recentActivity": "Letzte Aktivität",
-    "seeAll": "Alles sehen",
-    "to": "Zu",
-    "from": "aus"
+    "seeAll": "Alles sehen"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

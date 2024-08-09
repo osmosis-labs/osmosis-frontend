@@ -321,9 +321,7 @@
     "all": "全て",
     "assets": "資産",
     "recentActivity": "最近のアクティビティ",
-    "seeAll": "すべて見る",
-    "to": "に",
-    "from": "から"
+    "seeAll": "すべて見る"
   },
   "buyTokens": "トークンを購入する",
   "components": {

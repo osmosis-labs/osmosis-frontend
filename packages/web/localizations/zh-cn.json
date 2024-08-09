@@ -321,9 +321,7 @@
     "all": "全部",
     "assets": "资产",
     "recentActivity": "最近活动",
-    "seeAll": "查看全部",
-    "to": "到",
-    "from": "从"
+    "seeAll": "查看全部"
   },
   "buyTokens": "购买代币",
   "components": {

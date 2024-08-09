@@ -321,9 +321,7 @@
     "all": "Tous",
     "assets": "Actifs",
     "recentActivity": "Activité récente",
-    "seeAll": "Tout voir",
-    "to": "à",
-    "from": "depuis"
+    "seeAll": "Tout voir"
   },
   "buyTokens": "Acheter jetons",
   "components": {
