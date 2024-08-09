@@ -187,7 +187,7 @@ export const CryptoFiatInput: FunctionComponent<{
       let nextValue = value;
       if (!isValidNumericalRawInput(nextValue) && nextValue !== "") return;
 
-      if (assetPrice) {
+      if (assetPrice && assetWithBalance) {
         onUpdateRatio({
           assetPrice,
           nextValue,
@@ -205,11 +205,17 @@ export const CryptoFiatInput: FunctionComponent<{
         ? setFiatInputRaw(nextValue)
         : setCryptoInputRaw(nextValue);
     },
-    [onUpdateRatio, assetPrice, setFiatInputRaw, setCryptoInputRaw]
+    [
+      assetPrice,
+      assetWithBalance,
+      setFiatInputRaw,
+      setCryptoInputRaw,
+      onUpdateRatio,
+    ]
   );
 
   useEffect(() => {
-    if (pendingRatioUpdate && assetPrice) {
+    if (pendingRatioUpdate && assetWithBalance && assetPrice) {
       onUpdateRatio({
         assetPrice,
         nextValue: fiatInputRaw,
@@ -218,6 +224,7 @@ export const CryptoFiatInput: FunctionComponent<{
     }
   }, [
     assetPrice,
+    assetWithBalance,
     currentUnit,
     fiatInputRaw,
     onUpdateRatio,

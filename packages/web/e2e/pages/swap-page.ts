@@ -185,14 +185,14 @@ export class SwapPage extends BasePage {
       '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
     );
     await swapInfo.click();
-    console.log("Price Impact: " + (await this.getPriceInpact()));
+    console.log("Market Impact: " + (await this.getPriceInpact()));
   }
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Price Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+      '//span[.="Market Impact"]/../span[contains(@class,"text-osmoverse-200")]'
     );
-    return await priceInpactSpan.textContent();
+    return await priceInpactSpan.textContent({ timeout: 4000 });
   }
 
   async takeScreenshot(name: string) {

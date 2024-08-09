@@ -30,7 +30,7 @@ const refetchInterval = 30 * 1000; // 30 seconds
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
 /** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
@@ -315,7 +315,9 @@ export const useBridgeQuotes = ({
 
     const bestQuote = quoteResults_
       // only those that have fetched
-      .filter((quoteResult) => Boolean(quoteResult.isFetched))
+      .filter(
+        (quoteResult) => Boolean(quoteResult.isFetched) && !quoteResult.isError
+      )
       // Sort by response time. The fastest and highest quality quote will be first.
       .sort((a, b) => {
         // This means the quote is for a basic IBC transfer:

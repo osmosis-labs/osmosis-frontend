@@ -110,7 +110,7 @@ jobs:
   preview-pools-and-select-pair-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -131,6 +131,7 @@ jobs:
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test pools select
