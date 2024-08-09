@@ -161,8 +161,6 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     lazyInstall: () =>
       import("@cosmos-kit/okto-extension").then((m) => m.OktoExtensionWallet),
     windowPropertyName: "okto",
-    // stakeUrl: "https://cosmos.leapwallet.io/transact/stake/plain?chain=osmosis",
-    // governanceUrl: "https://cosmos.leapwallet.io/portfolio/gov?chain=osmosis",
     features: ["notifications"],
   },
   {
