@@ -104,6 +104,7 @@ function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
       <PriceChange
         priceChange={asset.priceChange24h}
         overrideTextClasses="body2"
+        className="h-fit"
       />
     ) : null,
   };
