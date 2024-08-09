@@ -54,7 +54,6 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     borderVisible: false,
     ticksVisible: false,
     entireTextOnly: true,
-    // visible: false, // Hide the right price scale
     scaleMargins: {
       top: 0.25,
       bottom: 0.1,
@@ -65,7 +64,6 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     borderVisible: false,
     ticksVisible: false,
     entireTextOnly: true,
-    // visible: true, // Hide the left price scale
     scaleMargins: {
       top: 0.25,
       bottom: 0.1,
@@ -108,7 +106,6 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
     },
   },
   timeScale: {
-    // visible: false, // Hide the time scale
     timeVisible: true,
     secondsVisible: false,
     lockVisibleTimeRangeOnResize: true,
@@ -149,17 +146,9 @@ const defaultOptionsWithSeries = (
   series?: Series[]
 ): DeepPartial<TimeChartOptions> => ({
   ...defaultOptions,
-  leftPriceScale: {
-    ...defaultOptions.leftPriceScale,
-    // visible: false,
-  },
-  rightPriceScale: {
-    ...defaultOptions.rightPriceScale,
-    // visible: false,
-  },
+
   timeScale: {
     ...defaultOptions.timeScale,
-    // visible: false,
     tickMarkFormatter: (timePoint: Time, tickMarkType: TickMarkType) => {
       const formatOptions: Intl.DateTimeFormatOptions = {};
 
