@@ -451,7 +451,7 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
     )}
     {priceChange24h ? (
       <PriceChange
-        className="justify-start"
+        className="h-fit justify-start"
         overrideTextClasses="body2"
         priceChange={priceChange24h}
       />
