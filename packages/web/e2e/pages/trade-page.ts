@@ -40,7 +40,7 @@ export class TradePage extends BasePage {
       '//div/button[contains(@class, "ease-bounce")]'
     );
     this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
-    this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
+    this.trxSuccessful = page.getByText("Transaction Successful");
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
     this.inputAmount = page.locator(
@@ -230,8 +230,9 @@ export class TradePage extends BasePage {
 
   async isTransactionSuccesful(delay: number = 7) {
     console.log("Wait for a transaction success for 7 seconds.");
-    return await this.trxSuccessful.isVisible({
+    await expect(this.trxSuccessful).toBeVisible({
       timeout: delay * 1000,
+      visible: true,
     });
   }
 

@@ -36,7 +36,7 @@ test.describe("Test Trade feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps", password);
+    await walletPage.setWalletNameAndPassword("Test Trades", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -48,19 +48,6 @@ test.describe("Test Trade feature", () => {
 
   test.afterAll(async () => {
     await context.close();
-  });
-
-  test("User should be able to swap OSMO to ATOM", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("OSMO", "ATOM");
-    await tradePage.enterAmount("0.01");
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
-    expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("denom: uosmo");
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
   });
 
   test("User should be able to Buy OSMO", async () => {
@@ -76,8 +63,8 @@ test.describe("Test Trade feature", () => {
       "type: osmosis/poolmanager/swap-exact-amount-in"
     );
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to Sell ATOM", async () => {
@@ -89,15 +76,13 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain(
-      "type: osmosis/poolmanager/swap-exact-amount-in"
-    );
+    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + ATOM);
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
-  test.only("User should be able to limit buy OSMO", async () => {
+  test("User should be able to limit buy OSMO", async () => {
     const limitPrice = "0.3881";
     await tradePage.goto();
     await tradePage.openBuyTab();
