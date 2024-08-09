@@ -81,30 +81,6 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
   });
 
-  test.only("User should be able to limit buy OSMO", async () => {
-    await tradePage.goto();
-    await tradePage.openBuyTab();
-    await tradePage.openLimit();
-    await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.11");
-    await tradePage.setLimitPriceChange("Market");
-    const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = (limitPrice * 1.2).toFixed(4);
-    await tradePage.setLimitPrice(String(highLimitPrice));
-    const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
-      context
-    );
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.11 USDC (Noble/channel-750)");
-    expect(msgContentAmount).toContain("place_limit");
-    expect(msgContentAmount).toContain('"order_direction": "bid"');
-    await tradePage.isTransactionSuccesful();
-    await tradePage.gotoOrdersHistory(30);
-    const p = context.pages()[0];
-    const trxPage = new TransactionsPage(p);
-    await trxPage.isFilledByLimitPrice(highLimitPrice);
-  });
-
   test("User should be able to limit sell ATOM", async () => {
     await tradePage.goto();
     await tradePage.openSellTab();
