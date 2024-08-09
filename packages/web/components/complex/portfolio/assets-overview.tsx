@@ -113,11 +113,8 @@ export const AssetsOverview: FunctionComponent<
     }
   );
 
-  const {
-    selectedDifferencePricePretty,
-    selectedPercentageRatePretty,
-    totalPriceChange,
-  } = calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
+  const { selectedDifferencePricePretty, selectedPercentageRatePretty } =
+    calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
 
   const formattedDate = dataPoint.time
     ? formatDate(dayjs.unix(dataPoint.time as number).format("YYYY-MM-DD"))
@@ -127,7 +124,6 @@ export const AssetsOverview: FunctionComponent<
     new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
 
-  const [isHovering, setIsHovering] = useState(false);
   const [isChartMinimized, setIsChartMinimized] = useState(true);
 
   if (isWalletLoading) return null;
@@ -229,8 +225,6 @@ export const AssetsOverview: FunctionComponent<
             >
               <button
                 className="group relative flex h-[12.5rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-900"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
                 onClick={() => setIsChartMinimized(false)}
               >
                 <PortfolioHistoricalChartMinimized
