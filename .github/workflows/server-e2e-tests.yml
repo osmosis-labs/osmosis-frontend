@@ -52,7 +52,7 @@ jobs:
 
       - name: Run Tests
         id: tests
-        run: yarn test:e2e --filter=server
+        run: yarn test:e2e --filter=@osmosis-labs/server
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}

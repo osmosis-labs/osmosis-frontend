@@ -31,4 +31,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Lint ${{ matrix.package }} package
-        run: yarn lint --filter=${{ matrix.package }}
+        run: yarn lint --filter=@osmosis-labs/${{ matrix.package }}

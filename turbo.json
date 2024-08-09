@@ -1,6 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "tasks": {
     "build": {
       "outputs": [
         "build/**",
@@ -12,15 +12,33 @@
         "public/tokens/generated/**",
         "tsconfig.tsbuildinfo"
       ],
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {},
     "lint:fix": {},
-    "dev": { "persistent": true },
-    "start": { "dependsOn": ["build"] },
-    "clean": { "cache": false },
-    "test": { "dependsOn": ["^build"] },
-    "test:e2e": { "dependsOn": ["^build"] },
+    "dev": {
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "test:e2e": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
     "analyze": {}
   }
 }
