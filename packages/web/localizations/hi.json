@@ -146,8 +146,6 @@
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
-      "successDeposit": "जमा किया",
-      "successWithdraw": "वापस ले लिया",
       "failDeposit": "जमा विफल",
       "failWithdraw": "निकासी विफल",
       "connectionError": "संपर्क त्रुटि"

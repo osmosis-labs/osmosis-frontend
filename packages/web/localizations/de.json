@@ -146,8 +146,6 @@
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
-      "successDeposit": "Hinterlegt",
-      "successWithdraw": "Zurückgezogen",
       "failDeposit": "Einzahlung fehlgeschlagen",
       "failWithdraw": "Auszahlung fehlgeschlagen",
       "connectionError": "Verbindungsfehler"

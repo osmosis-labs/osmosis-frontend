@@ -146,8 +146,6 @@
       "refunded": "Rambursat",
       "success": "Succes",
       "title": "Istoric Transferuri",
-      "successDeposit": "Depunere reușită",
-      "successWithdraw": "Retragere reușită",
       "failDeposit": "Depunere nereușită",
       "failWithdraw": "Retragere nereușită",
       "connectionError": "Eroare de conexiune"

@@ -146,8 +146,6 @@
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",
-      "successDeposit": "입금됨",
-      "successWithdraw": "철수",
       "failDeposit": "입금 실패",
       "failWithdraw": "출금 실패",
       "connectionError": "연결 오류"

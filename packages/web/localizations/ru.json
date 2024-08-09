@@ -146,8 +146,6 @@
       "refunded": "Возвращено",
       "success": "Успех",
       "title": "История трансферов",
-      "successDeposit": "Депонированный",
-      "successWithdraw": "Снял",
       "failDeposit": "Депозит не выполнен",
       "failWithdraw": "Вывести не удалось",
       "connectionError": "Ошибка подключения"
