@@ -1,32 +1,40 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "../../../../env";
+import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
-import { queryPools } from "../../../../queries/sidecar";
+import { queryPools, SQSAprData } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
-import { Pool, PoolType } from "../index";
+import { Pool, PoolIncentives, PoolIncentiveType, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/**
+ * Pools that are excluded from showing external boost incentives APRs.
+ */
+const ExcludedExternalBoostPools: string[] =
+  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
   assetLists,
   poolIds,
   minLiquidityUsd,
+  withMarketIncetives: withMarketIncentives,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
+  withMarketIncetives?: boolean;
 }): Promise<Pool[]> {
   return cachified({
     cache: poolsCache,
@@ -37,7 +45,11 @@ export function getPoolsFromSidecar({
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () =>
-          queryPools({ poolIds, minLiquidityCap: minLiquidityUsd?.toString() }),
+          queryPools({
+            poolIds,
+            minLiquidityCap: minLiquidityUsd?.toString(),
+            withMarketIncentives: withMarketIncentives,
+          }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
@@ -74,6 +86,8 @@ function makePoolFromSidecarPool({
   // to ease integrations.
   if (!reserveCoins && !IS_TESTNET) return;
 
+  const pool_id = getPoolIdFromChainPool(sidecarPool.chain_model);
+
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
     type: getPoolTypeFromChainPool(sidecarPool.chain_model),
@@ -86,7 +100,104 @@ function makePoolFromSidecarPool({
       DEFAULT_VS_CURRENCY,
       sidecarPool.liquidity_cap
     ),
+
+    marketIncentives: getMarketincentivesData(pool_id, sidecarPool.apr_data),
   };
+}
+
+function getMarketincentivesData(
+  pool_id: string,
+  apr?: SQSAprData
+): PoolIncentives {
+  let totalUpper = maybeMakeRatePretty(apr?.total_apr.upper ?? 0);
+  let totalLower = maybeMakeRatePretty(apr?.total_apr.lower ?? 0);
+  const swapFeeUpper = maybeMakeRatePretty(apr?.swap_fees.upper ?? 0);
+  const swapFeeLower = maybeMakeRatePretty(apr?.swap_fees.lower ?? 0);
+  const superfluidUpper = maybeMakeRatePretty(apr?.superfluid.upper ?? 0);
+  const superfluidLower = maybeMakeRatePretty(apr?.superfluid.lower ?? 0);
+  const osmosisUpper = maybeMakeRatePretty(apr?.osmosis.upper ?? 0);
+  const osmosisLower = maybeMakeRatePretty(apr?.osmosis.lower ?? 0);
+  let boostUpper = maybeMakeRatePretty(apr?.boost.upper ?? 0);
+  let boostLower = maybeMakeRatePretty(apr?.boost.lower ?? 0);
+
+  // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
+  if (
+    ExcludedExternalBoostPools.includes(pool_id) &&
+    totalUpper &&
+    totalLower &&
+    boostUpper &&
+    boostLower
+  ) {
+    totalUpper = new RatePretty(totalUpper.toDec().sub(totalUpper.toDec()));
+    totalLower = new RatePretty(totalLower.toDec().sub(totalLower.toDec()));
+    boostUpper = undefined;
+    boostLower = undefined;
+  }
+
+  // add list of incentives that are defined
+  const incentiveTypes: PoolIncentiveType[] = [];
+  if (superfluidUpper && superfluidLower) incentiveTypes.push("superfluid");
+  if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
+  if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+  if (
+    !superfluidUpper &&
+    !superfluidLower &&
+    !osmosisUpper &&
+    !osmosisLower &&
+    !boostUpper &&
+    !boostLower
+  )
+    incentiveTypes.push("none");
+  const hasBreakdownData =
+    totalUpper ||
+    totalLower ||
+    swapFeeUpper ||
+    swapFeeLower ||
+    superfluidUpper ||
+    superfluidLower ||
+    osmosisUpper ||
+    osmosisLower ||
+    boostUpper ||
+    boostLower;
+
+  const aprFormatted = {
+    aprBreakdown: hasBreakdownData
+      ? {
+          total: {
+            upper: totalUpper,
+            lower: totalLower,
+          },
+          swapFee: {
+            upper: swapFeeUpper,
+            lower: swapFeeLower,
+          },
+          superfluid: {
+            upper: superfluidUpper,
+            lower: superfluidLower,
+          },
+          osmosis: {
+            upper: osmosisUpper,
+            lower: osmosisLower,
+          },
+          boost: {
+            upper: boostUpper,
+            lower: boostLower,
+          },
+        }
+      : undefined,
+    incentiveTypes,
+  };
+
+  return aprFormatted;
+}
+
+function maybeMakeRatePretty(value: number): RatePretty | undefined {
+  // numia will return 0 or null if the APR is not applicable, so return undefined to indicate that
+  if (value === 0 || value === null) {
+    return undefined;
+  }
+
+  return new RatePretty(new Dec(value).quo(new Dec(100)));
 }
 
 function getPoolIdFromChainPool(

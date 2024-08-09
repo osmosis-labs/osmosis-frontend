@@ -12,7 +12,6 @@ import {
   getUserPools,
   getUserSharePools,
   IncentivePoolFilterSchema,
-  isIncentivePoolFiltered,
   maybeCachePaginatedItems,
   PoolFilterSchema,
 } from "@osmosis-labs/server";
@@ -110,34 +109,32 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const [pools, incentives, marketMetrics] = await Promise.all([
+            const [pools, marketMetrics] = await Promise.all([
               getPools({
                 ...ctx,
                 search,
                 minLiquidityUsd,
                 types,
                 denoms,
+                withMarketIncetives: true,
               }),
-              getCachedPoolIncentivesMap(),
               getCachedPoolMarketMetricsMap(),
             ]);
 
             const marketIncentivePools = pools
               .map((pool) => {
-                const incentivesForPool = incentives.get(pool.id);
                 const metricsForPool = marketMetrics.get(pool.id) ?? {};
 
-                const isIncentiveFiltered =
-                  incentivesForPool &&
-                  isIncentivePoolFiltered(incentivesForPool, {
-                    incentiveTypes,
-                  });
-
-                if (isIncentiveFiltered) return;
+                const {
+                  marketIncentives: { aprBreakdown, incentiveTypes } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
+                  ...restPool // Get the rest of the properties of pool excluding marketIncentives
+                } = pool;
 
                 return {
-                  ...pool,
-                  ...incentivesForPool,
+                  ...restPool,
+                  aprBreakdown,
+                  incentiveTypes,
+
                   ...metricsForPool,
                 };
               })
