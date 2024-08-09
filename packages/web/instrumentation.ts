@@ -2,6 +2,6 @@ import { registerOTel } from "@vercel/otel";
 
 export function register() {
   registerOTel({
-    serviceName: "osmosis-frontend",
+    serviceName: process.env.NEXT_PUBLIC_VERCEL_URL ?? "osmosis-frontend",
   });
 }
