@@ -67,7 +67,7 @@ export const Allocation: FunctionComponent<{
   const selectedList = allocation[selectedOption];
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col py-3">
       <div
         className="flex cursor-pointer items-center justify-between py-3"
         onClick={() => setIsOpen(!isOpen)}

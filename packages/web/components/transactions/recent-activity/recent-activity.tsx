@@ -53,7 +53,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
   const topActivity = transactions.slice(0, ACTIVITY_LIMIT);
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col py-3">
       <div className="flex cursor-pointer items-center justify-between py-3">
         <h6>{t("portfolio.recentActivity")}</h6>
         <LinkButton

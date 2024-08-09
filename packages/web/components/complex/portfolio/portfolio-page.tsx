@@ -170,17 +170,17 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </TabGroup>
           </section>
-
-          <section className="flex w-80 flex-col gap-3">
-            {featureFlags.cypherCard && <CypherCard />}
-
-            {!isLoadingAllocation && !userHasNoAssets && (
-              <Allocation allocation={allocation} />
-            )}
-            <div className="flex-1">
+          <aside className="flex w-full gap-16">
+            <div className="flex grow flex-col">
               <RecentActivity />
             </div>
-          </section>
+            <div className="min-w-80 flex w-80 flex-col">
+              {featureFlags.cypherCard && <CypherCard />}
+              {!isLoadingAllocation && !userHasNoAssets && (
+                <Allocation allocation={allocation} />
+              )}
+            </div>
+          </aside>
         </>
       ) : isWalletLoading ? null : (
         <WalletDisconnectedSplash />
