@@ -79,6 +79,9 @@ const config = {
 
     return config;
   },
+  experimental: {
+    instrumentationHook: true,
+  },
 };
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
