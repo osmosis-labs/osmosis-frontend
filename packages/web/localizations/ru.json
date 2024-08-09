@@ -146,8 +146,6 @@
       "refunded": "Возвращено",
       "success": "Успех",
       "title": "История трансферов",
-      "failDeposit": "Депозит не выполнен",
-      "failWithdraw": "Вывести не удалось",
       "connectionError": "Ошибка подключения"
     },
     "ibcTransfer": {

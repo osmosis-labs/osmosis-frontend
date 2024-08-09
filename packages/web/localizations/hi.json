@@ -146,8 +146,6 @@
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
-      "failDeposit": "जमा विफल",
-      "failWithdraw": "निकासी विफल",
       "connectionError": "संपर्क त्रुटि"
     },
     "ibcTransfer": {

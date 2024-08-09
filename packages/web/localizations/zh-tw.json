@@ -146,8 +146,6 @@
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",
-      "failDeposit": "存款失敗",
-      "failWithdraw": "提現失敗",
       "connectionError": "連線錯誤"
     },
     "ibcTransfer": {

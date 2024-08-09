@@ -146,8 +146,6 @@
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
-      "failDeposit": "Deposit failed",
-      "failWithdraw": "Withdraw failed",
       "connectionError": "Connection error"
     },
     "ibcTransfer": {

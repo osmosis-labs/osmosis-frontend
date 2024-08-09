@@ -146,8 +146,6 @@
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
-      "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu",
       "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {

@@ -146,8 +146,6 @@
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
-      "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen",
       "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {

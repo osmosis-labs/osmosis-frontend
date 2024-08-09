@@ -146,8 +146,6 @@
       "refunded": "Rambursat",
       "success": "Succes",
       "title": "Istoric Transferuri",
-      "failDeposit": "Depunere nereușită",
-      "failWithdraw": "Retragere nereușită",
       "connectionError": "Eroare de conexiune"
     },
     "ibcTransfer": {

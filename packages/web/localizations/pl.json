@@ -146,8 +146,6 @@
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
-      "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się",
       "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {

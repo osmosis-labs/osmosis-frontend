@@ -146,8 +146,6 @@
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",
-      "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود",
       "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {

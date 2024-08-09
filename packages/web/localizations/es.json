@@ -146,8 +146,6 @@
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
-      "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido",
       "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
