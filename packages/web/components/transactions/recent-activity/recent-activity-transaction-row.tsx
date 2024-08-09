@@ -1,13 +1,11 @@
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
+import { TransactionRowTransaction } from "~/components/transactions/transaction-row";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { useTranslation } from "~/hooks";
 
 export type TransactionStatus = "pending" | "success" | "failed";
-type Effect = "swap" | "deposit" | "withdraw";
-
-import { Transaction } from "@osmosis-labs/server";
 
 export const RecentActivityRow: FunctionComponent<{
   status: TransactionStatus;
@@ -26,7 +24,7 @@ export const RecentActivityRow: FunctionComponent<{
   );
 };
 
-export const SwapRow: FunctionComponent<Transaction> = ({
+export const SwapRow: FunctionComponent<TransactionRowTransaction> = ({
   status,
   title,
   tokenConversion,

@@ -271,7 +271,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange1h && (
-            <PriceChange className="justify-end" priceChange={priceChange1h} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange1h}
+            />
           ),
       }),
       columnHelper.accessor((row) => row, {
@@ -292,7 +295,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange24h && (
-            <PriceChange className="justify-end" priceChange={priceChange24h} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange24h}
+            />
           ),
       }),
       columnHelper.accessor((row) => row, {
@@ -313,7 +319,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange7d && (
-            <PriceChange className="justify-end" priceChange={priceChange7d} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange7d}
+            />
           ),
       }),
       columnHelper.accessor(

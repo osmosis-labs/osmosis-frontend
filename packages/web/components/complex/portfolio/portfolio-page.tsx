@@ -91,13 +91,13 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <main
       className={classNames(
-        "mx-auto flex w-full max-w-container flex-col gap-8 p-8 pt-4 md:gap-8 md:p-4",
+        "mx-auto flex w-full max-w-container flex-col p-8 pt-4 md:p-4",
         {
           "bg-osmoverse-900": !featureFlags.limitOrders,
         }
       )}
     >
-      <section className="flex gap-5" ref={overviewRef}>
+      <section className="flex py-3" ref={overviewRef}>
         <AssetsOverview
           totalValue={
             totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
@@ -110,10 +110,10 @@ export const PortfolioPage: FunctionComponent = () => {
         <>
           <section className="w-full py-3">
             <TabGroup>
-              <TabList className="flex gap-6" ref={tabsRef}>
+              <TabList className="-mx-4 flex" ref={tabsRef}>
                 <Tab
                   disabled={userHasNoAssets}
-                  className="disabled:opacity-80"
+                  className="py-3 px-4 disabled:opacity-80"
                   onClick={() => {
                     logEvent([
                       EventName.Portfolio.tabClicked,
@@ -131,7 +131,7 @@ export const PortfolioPage: FunctionComponent = () => {
                 </Tab>
                 <Tab
                   disabled={userHasNoAssets}
-                  className="disabled:opacity-80"
+                  className="py-3 px-4 disabled:opacity-80 "
                   onClick={() => {
                     logEvent([
                       EventName.Portfolio.tabClicked,
@@ -155,7 +155,7 @@ export const PortfolioPage: FunctionComponent = () => {
               ) : userHasNoAssets ? (
                 <UserZeroBalanceTableSplash />
               ) : (
-                <TabPanels className="py-6">
+                <TabPanels>
                   <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}

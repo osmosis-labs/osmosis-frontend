@@ -315,9 +315,7 @@ export const useBridgeQuotes = ({
 
     const bestQuote = quoteResults_
       // only those that have fetched
-      .filter(
-        (quoteResult) => Boolean(quoteResult.isFetched) && !quoteResult.isError
-      )
+      .filter((quoteResult) => Boolean(quoteResult.isFetched))
       // Sort by response time. The fastest and highest quality quote will be first.
       .sort((a, b) => {
         // This means the quote is for a basic IBC transfer:
