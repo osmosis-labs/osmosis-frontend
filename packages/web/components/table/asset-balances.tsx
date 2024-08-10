@@ -3,7 +3,6 @@ import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
-  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -170,7 +169,7 @@ export const AssetBalancesTable: FunctionComponent<{
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
   // Define columns
-  const columns = useMemo<ColumnDef<AssetRow, any>[]>(() => {
+  const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
     return [
       columnHelper.accessor((row) => row, {
@@ -434,29 +433,31 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      <div className="flex items-center justify-between gap-4 py-2 px-4">
-        <p
-          className={classNames("body1 grow text-osmoverse-300", {
-            invisible: !hideDust,
-          })}
-        >
-          {t("portfolio.hidden")} ({hiddenDustCount})
-        </p>
-        <Button
-          onClick={() => setHideDust((prev) => !prev)}
-          className="gap-2 !py-2 !px-4"
-          variant="outline"
-          size="lg-full"
-        >
-          {hideDust ? t("portfolio.show") : t("portfolio.hide")}
-          <Icon
-            id="chevron-down"
-            className={classNames("h-4 w-4 transition-transform", {
-              "rotate-180": !hideDust,
+      {filteredAssetsData.length > 0 && (
+        <div className="flex items-center justify-between gap-4 py-2 px-4">
+          <p
+            className={classNames("body1 grow text-osmoverse-300", {
+              invisible: !hideDust,
             })}
-          />
-        </Button>
-      </div>
+          >
+            {t("portfolio.hidden")} ({hiddenDustCount})
+          </p>
+          <Button
+            onClick={() => setHideDust((prev) => !prev)}
+            className="gap-2 !py-2 !px-4"
+            variant="outline"
+            size="lg-full"
+          >
+            {hideDust ? t("portfolio.show") : t("portfolio.hide")}
+            <Icon
+              id="chevron-down"
+              className={classNames("h-4 w-4 transition-transform", {
+                "rotate-180": !hideDust,
+              })}
+            />
+          </Button>
+        </div>
+      )}
       {noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
