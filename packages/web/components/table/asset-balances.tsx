@@ -419,7 +419,6 @@ export const AssetBalancesTable: FunctionComponent<{
               </tr>
             );
           })}
-
           {isFetchingNextPage && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -434,14 +433,13 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-
       <div className="flex items-center justify-between gap-4 py-2 px-4">
         <p
           className={classNames("body1 grow text-osmoverse-300", {
             invisible: !hideDust,
           })}
         >
-          Hidden ({hiddenDustCount})
+          {t("portfolio.hidden")} ({hiddenDustCount})
         </p>
         <Button
           onClick={() => setHideDust((prev) => !prev)}
@@ -449,7 +447,7 @@ export const AssetBalancesTable: FunctionComponent<{
           variant="outline"
           size="lg-full"
         >
-          {hideDust ? "Show" : "Hide"}
+          {hideDust ? t("portfolio.show") : t("portfolio.hide")}
           <Icon
             id="chevron-down"
             className={classNames("h-4 w-4 transition-transform", {
@@ -458,7 +456,6 @@ export const AssetBalancesTable: FunctionComponent<{
           />
         </Button>
       </div>
-
       {noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
