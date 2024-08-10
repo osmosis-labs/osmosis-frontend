@@ -113,7 +113,10 @@ export const TradeDetails = observer(
                         >
                           {swapState?.inBaseOutQuoteSpotPrice && (
                             <SkeletonLoader
-                              isLoaded={!swapState.inAmountInput.isTyping}
+                              isLoaded={
+                                type !== "market" ||
+                                !swapState.inAmountInput.isTyping
+                              }
                             >
                               {ExpectedRate(
                                 swapState,
