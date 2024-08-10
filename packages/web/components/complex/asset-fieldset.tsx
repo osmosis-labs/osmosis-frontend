@@ -200,7 +200,7 @@ const AssetFieldsetTokenSelector = ({
     ]);
     onOriginalSelect?.(tokenDenom);
   };
-
+  console.log(selectableAssets?.length);
   return (
     <>
       <button
