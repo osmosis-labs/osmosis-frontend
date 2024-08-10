@@ -3,6 +3,7 @@ import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
   CellContext,
+  ColumnDef,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -169,7 +170,7 @@ export const AssetBalancesTable: FunctionComponent<{
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
   // Define columns
-  const columns = useMemo(() => {
+  const columns = useMemo<ColumnDef<AssetRow, any>[]>(() => {
     const columnHelper = createColumnHelper<AssetRow>();
     return [
       columnHelper.accessor((row) => row, {
