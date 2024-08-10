@@ -1307,6 +1307,8 @@
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
     "invalidPrice": "Preț nevalid",
+    "priceTooLow": "Pret prea mic",
+    "priceTooHigh": "Pret prea mare",
     "unavailable": "Indisponibil pentru {denom}",
     "orderHistoryHeaders": {
       "past": "Trecut",

@@ -1307,6 +1307,8 @@
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
     "invalidPrice": "अमान्य मूल्य",
+    "priceTooLow": "कीमत बहुत कम है",
+    "priceTooHigh": "कीमत बहुत अधिक है",
     "unavailable": "{denom} के लिए अनुपलब्ध",
     "orderHistoryHeaders": {
       "past": "अतीत",

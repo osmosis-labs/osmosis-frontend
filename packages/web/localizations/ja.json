@@ -1307,6 +1307,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
     "invalidPrice": "無効な価格",
+    "priceTooLow": "価格が低すぎる",
+    "priceTooHigh": "価格が高すぎる",
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",

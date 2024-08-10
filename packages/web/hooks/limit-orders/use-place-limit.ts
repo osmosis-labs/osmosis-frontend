@@ -497,9 +497,9 @@ export const usePlaceLimit = ({
     insufficientFunds,
     isMarket,
     marketState.error,
-    priceState.isValidPrice,
     paymentTokenValue,
     orderbookError,
+    priceState.priceError,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {

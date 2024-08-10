@@ -1307,6 +1307,8 @@
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
     "invalidPrice": "Geçersiz fiyat",
+    "priceTooLow": "Fiyat çok düşük",
+    "priceTooHigh": "Fiyat çok yüksek",
     "unavailable": "{denom} için kullanılamıyor",
     "orderHistoryHeaders": {
       "past": "Geçmiş",

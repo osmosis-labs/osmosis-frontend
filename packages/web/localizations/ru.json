@@ -1307,6 +1307,8 @@
     "trade": "Торговля",
     "swapToAnotherAsset": "Обмен на другой актив",
     "invalidPrice": "Неверная цена",
+    "priceTooLow": "Цена слишком низкая",
+    "priceTooHigh": "Цена слишком высока",
     "unavailable": "Недоступно для {denom}",
     "orderHistoryHeaders": {
       "past": "Прошлое",
