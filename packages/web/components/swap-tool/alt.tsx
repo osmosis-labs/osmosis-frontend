@@ -374,6 +374,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("from")
                     }
+                    isLoadingSelectAssets={swapState.isLoadingSelectAssets}
                     data-testid="token-in"
                   />
                 </div>
@@ -476,6 +477,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("to")
                     }
+                    isLoadingSelectAssets={swapState.isLoadingSelectAssets}
                     data-testid="token-out"
                   />
                 </div>

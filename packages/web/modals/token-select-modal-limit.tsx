@@ -15,10 +15,12 @@ import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import {
+  Breakpoint,
   useFilteredData,
   useTranslation,
   useWalletSelect,
   useWindowKeyActions,
+  useWindowSize,
 } from "~/hooks";
 import { useDraggableScroll } from "~/hooks/use-draggable-scroll";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
@@ -64,7 +66,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       assetQueryInput,
     }) => {
       const { t } = useTranslation();
-
+      const { isMobile } = useWindowSize(Breakpoint.sm);
       const { userSettings, accountStore } = useStore();
       const { onOpenWalletSelect } = useWalletSelect();
       const recommendedAssets = useRecommendedAssets();
@@ -248,7 +250,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                       </div>
                       <input
                         ref={searchBoxRef}
-                        autoFocus
+                        autoFocus={!isMobile}
                         value={searchValue}
                         onKeyDown={searchBarKeyDown}
                         onChange={(e) => onSearch(e.target.value)}

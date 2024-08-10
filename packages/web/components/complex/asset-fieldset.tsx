@@ -160,6 +160,7 @@ interface TokenSelectProps {
   fetchNextPageAssets?: () => void;
   hasNextPageAssets?: boolean;
   isFetchingNextPageAssets?: boolean;
+  isLoadingSelectAssets?: boolean;
   page?: EventPage;
 }
 
@@ -175,6 +176,7 @@ const AssetFieldsetTokenSelector = ({
   hasNextPageAssets,
   isFetchingNextPageAssets,
   page = "Swap Page",
+  isLoadingSelectAssets,
   ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
@@ -200,7 +202,7 @@ const AssetFieldsetTokenSelector = ({
     ]);
     onOriginalSelect?.(tokenDenom);
   };
-  console.log(selectableAssets?.length);
+
   return (
     <>
       <button
@@ -256,6 +258,7 @@ const AssetFieldsetTokenSelector = ({
           fetchNextPageAssets={fetchNextPageAssets}
           hasNextPageAssets={hasNextPageAssets}
           isFetchingNextPageAssets={isFetchingNextPageAssets}
+          isLoadingSelectAssets={isLoadingSelectAssets}
         />
       )}
     </>

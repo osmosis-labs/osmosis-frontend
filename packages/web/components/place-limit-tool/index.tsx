@@ -482,6 +482,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isFetchingNextPageAssets={
                   swapState.marketState.isFetchingNextPageAssets
                 }
+                isLoadingSelectAssets={
+                  swapState.marketState.isLoadingSelectAssets
+                }
                 data-testid="token-in"
               />
             </div>
