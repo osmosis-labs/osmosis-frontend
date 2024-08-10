@@ -325,7 +325,10 @@
     "pooled": "풀링됨",
     "other": "다른",
     "all": "모두",
-    "assets": "자산"
+    "assets": "자산",
+    "show": "보여주다",
+    "hide": "숨다",
+    "hidden": "숨겨진"
   },
   "buyTokens": "토큰 구매",
   "components": {

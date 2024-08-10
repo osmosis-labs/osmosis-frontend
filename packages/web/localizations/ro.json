@@ -325,7 +325,10 @@
     "pooled": "Adunate",
     "other": "Alte",
     "all": "Toate",
-    "assets": "Active"
+    "assets": "Active",
+    "show": "Spectacol",
+    "hide": "Ascunde",
+    "hidden": "Ascuns"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
