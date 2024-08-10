@@ -136,6 +136,7 @@ const AssetFieldsetInput = forwardRef<
           placeholder="0"
           onChange={onInputChange}
           value={inputValue}
+          inputMode="numeric"
           {...rest}
         />
       )}
