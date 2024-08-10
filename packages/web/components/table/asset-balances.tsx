@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
@@ -52,6 +53,8 @@ type AssetRow =
 type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
+
+const DUST_THRESHOLD = new Dec(0.01);
 
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -143,11 +146,27 @@ export const AssetBalancesTable: FunctionComponent<{
       },
     }
   );
+
+  const [hideDust, setHideDust] = useState(false);
+
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
-  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
+
+  const filteredAssetsData = useMemo(() => {
+    return assetsData
+      .map((asset) => {
+        const isDust = asset?.usdValue?.toDec()?.lte(DUST_THRESHOLD);
+        if (hideDust && isDust) return null;
+        return asset;
+      })
+      .filter((asset) => asset !== null);
+  }, [assetsData, hideDust]);
+
+  const hiddenDustCount = assetsData.length - filteredAssetsData.length;
+
+  const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -227,7 +246,7 @@ export const AssetBalancesTable: FunctionComponent<{
   }, [columns, width]);
 
   const table = useReactTable({
-    data: assetsData,
+    data: filteredAssetsData,
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
@@ -400,6 +419,7 @@ export const AssetBalancesTable: FunctionComponent<{
               </tr>
             );
           })}
+
           {isFetchingNextPage && (
             <tr>
               <td className="!text-center" colSpan={collapsedColumns.length}>
@@ -414,6 +434,31 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+
+      <div className="flex items-center justify-between gap-4 py-2 px-4">
+        <p
+          className={classNames("body1 grow text-osmoverse-300", {
+            invisible: !hideDust,
+          })}
+        >
+          Hidden ({hiddenDustCount})
+        </p>
+        <Button
+          onClick={() => setHideDust((prev) => !prev)}
+          className="gap-2 !py-2 !px-4"
+          variant="outline"
+          size="lg-full"
+        >
+          {hideDust ? "Show" : "Hide"}
+          <Icon
+            id="chevron-down"
+            className={classNames("h-4 w-4 transition-transform", {
+              "rotate-180": !hideDust,
+            })}
+          />
+        </Button>
+      </div>
+
       {noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
