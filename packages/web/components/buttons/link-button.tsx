@@ -27,7 +27,7 @@ export function LinkButton({
         aria-label={ariaLabel}
         className={`flex flex-row gap-2 ${optionalClassNames ?? ""}`}
       >
-        {icon && icon}
+        {icon}
         <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
           {label}
         </p>
