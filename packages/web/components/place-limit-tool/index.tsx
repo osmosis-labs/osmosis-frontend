@@ -177,13 +177,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
-        (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee)) &&
+        swapState.marketState.isQuoteLoading &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
-      swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.isQuoteLoading,
       swapState.marketState.error,
     ]);

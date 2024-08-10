@@ -104,12 +104,24 @@ export const TradeDetails = observer(
                           className={classNames(
                             "body2 sm:caption py-1 text-osmoverse-300",
                             {
-                              "animate-pulse": inPriceFetching || isLoading,
+                              "animate-pulse":
+                                inPriceFetching ||
+                                isLoading ||
+                                swapState?.inAmountInput.isTyping,
                             }
                           )}
                         >
-                          {swapState?.inBaseOutQuoteSpotPrice &&
-                            ExpectedRate(swapState, outAsBase, treatAsStable)}
+                          {swapState?.inBaseOutQuoteSpotPrice && (
+                            <SkeletonLoader
+                              isLoaded={!swapState.inAmountInput.isTyping}
+                            >
+                              {ExpectedRate(
+                                swapState,
+                                outAsBase,
+                                treatAsStable
+                              )}
+                            </SkeletonLoader>
+                          )}
                         </span>
                       </div>
                     </GenericDisclaimer>
