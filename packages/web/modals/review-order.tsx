@@ -449,6 +449,7 @@ export function ReviewOrder({
                         >
                           <AutosizeInput
                             type="text"
+                            inputMode="numeric"
                             minWidth={30}
                             placeholder={
                               slippageConfig?.defaultManualSlippage + "%"
