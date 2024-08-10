@@ -32,6 +32,7 @@ interface TradeDetailsProps {
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
+  priceOverride?: PricePretty;
   tab?: "buy" | "sell";
 }
 
@@ -43,6 +44,7 @@ export const TradeDetails = observer(
     type,
     makerFee,
     tab,
+    priceOverride,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
     const routesVisDisclosure = useDisclosure();
@@ -121,7 +123,8 @@ export const TradeDetails = observer(
                               {ExpectedRate(
                                 swapState,
                                 outAsBase,
-                                treatAsStable
+                                treatAsStable,
+                                priceOverride
                               )}
                             </SkeletonLoader>
                           )}
@@ -365,7 +368,9 @@ export function Closer({
 export function ExpectedRate(
   swapState: ReturnType<typeof useSwap>,
   outAsBase: boolean,
-  treatAsStable: string | undefined = undefined
+  treatAsStable: string | undefined = undefined,
+  // Used for Limit inputs to override the price display
+  priceOverride?: PricePretty
 ) {
   var inBaseOutQuoteSpotPrice =
     swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
@@ -384,7 +389,7 @@ export function ExpectedRate(
     return (
       <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
-        {formatPretty(inQuoteAssetPrice, {
+        {formatPretty(priceOverride?.toDec() ?? inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
         })}{" "}
       </span>
@@ -398,7 +403,7 @@ export function ExpectedRate(
     return (
       <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
-        {formatPretty(inQuoteAssetPrice, {
+        {formatPretty(priceOverride?.toDec() ?? inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
         })}{" "}
       </span>

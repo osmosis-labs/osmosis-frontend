@@ -585,6 +585,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             makerFee={swapState.makerFee}
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
+            priceOverride={
+              type === "limit" ? swapState.priceState.priceFiat : undefined
+            }
           />
         </div>
         <ReviewOrder
