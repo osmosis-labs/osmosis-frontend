@@ -377,11 +377,13 @@ export const AssetBalancesTable: FunctionComponent<{
             </tr>
           )}
           {virtualRows.map((virtualRow) => {
-            const pushUrl = `/assets/${
-              rows?.[virtualRow.index].original?.coinDenom ?? ""
-            }?ref=portfolio`;
+            const pushUrl = rows?.[virtualRow.index]?.original?.coinDenom
+              ? `/assets/${
+                  rows?.[virtualRow.index]?.original?.coinDenom ?? ""
+                }?ref=portfolio`
+              : "/assets/?ref=portfolio";
             const unverified =
-              !rows?.[virtualRow.index].original?.isVerified &&
+              !rows?.[virtualRow.index]?.original?.isVerified &&
               !showUnverifiedAssets;
 
             return (
