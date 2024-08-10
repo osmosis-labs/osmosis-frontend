@@ -191,7 +191,7 @@ export const OrderHistory = observer(() => {
 
   return (
     <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
-      <table className="relative min-w-[1152px] table-auto" ref={listRef}>
+      <table className="relative min-w-[900px] table-auto" ref={listRef}>
         {!isLoading && (
           <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
             <tr

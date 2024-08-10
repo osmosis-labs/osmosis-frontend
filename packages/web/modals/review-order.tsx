@@ -606,7 +606,7 @@ export function ReviewOrder({
                 }
               />
             </div>
-            {isBeyondOppositePrice && (
+            {isBeyondOppositePrice && orderType === "limit" && (
               <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                 <Icon
                   id="alert-triangle"
