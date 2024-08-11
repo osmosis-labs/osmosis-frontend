@@ -69,34 +69,53 @@ export const orderbookRouter = createTRPCRouter({
           const { contractAddresses, userOsmoAddress } = input;
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-          const promises = contractAddresses.map(
-            async (contractOsmoAddress: string) => {
-              const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-                orderbookAddress: contractOsmoAddress,
-                chainList: ctx.chainList,
-                assetLists: ctx.assetLists,
-              });
-              const orders = await getOrderbookActiveOrders({
-                orderbookAddress: contractOsmoAddress,
-                userOsmoAddress: userOsmoAddress,
-                chainList: ctx.chainList,
-                baseAsset,
-                quoteAsset,
-              });
-              return orders;
-            }
-          );
-          promises.push(
-            getOrderbookHistoricalOrders({
-              userOsmoAddress: input.userOsmoAddress,
-              assetLists: ctx.assetLists,
-              chainList: ctx.chainList,
-            })
-          );
 
-          const ordersByContracts = await Promise.all(promises);
-          const allOrders = ordersByContracts.flat();
-          return allOrders.sort(defaultSortOrders);
+          const chunk = (arr: any[], size: number) => {
+            const result = [];
+            for (let i = 0; i < arr.length; i += size) {
+              result.push(arr.slice(i, i + size));
+            }
+            return result;
+          };
+
+          const chunkedAddresses = chunk(contractAddresses, 8);
+
+          const ordersByContracts: MappedLimitOrder[] = [];
+          for (let i = 0; i < chunkedAddresses.length; i++) {
+            const contractOsmoAddresses = chunkedAddresses[i];
+            const orderPromises = contractOsmoAddresses.map(
+              async (contractOsmoAddress: string) => {
+                const { quoteAsset, baseAsset } = await getOrderbookDenoms({
+                  orderbookAddress: contractOsmoAddress,
+                  chainList: ctx.chainList,
+                  assetLists: ctx.assetLists,
+                });
+                const orders = await getOrderbookActiveOrders({
+                  orderbookAddress: contractOsmoAddress,
+                  userOsmoAddress: userOsmoAddress,
+                  chainList: ctx.chainList,
+                  baseAsset,
+                  quoteAsset,
+                });
+                return orders;
+              }
+            );
+            if (i === chunkedAddresses.length - 1) {
+              orderPromises.push(
+                getOrderbookHistoricalOrders({
+                  userOsmoAddress: input.userOsmoAddress,
+                  assetLists: ctx.assetLists,
+                  chainList: ctx.chainList,
+                })
+              );
+            }
+            const newOrders = await Promise.all(orderPromises);
+            ordersByContracts.push(...newOrders.flat().flat());
+          }
+
+          // const ordersByContracts = await Promise.all(promises);
+
+          return ordersByContracts.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
           input.userOsmoAddress
