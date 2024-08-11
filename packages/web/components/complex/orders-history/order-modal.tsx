@@ -89,9 +89,11 @@ const OrderDetails = observer(
             </div>
           );
         case "cancelled":
-          <div className="flex items-center justify-between">
-            <span className="text-osmoverse-300">Cancelled</span>
-          </div>;
+          return (
+            <div className="flex items-center justify-between">
+              <span className="text-osmoverse-300">Cancelled</span>
+            </div>
+          );
         case "filled":
           return <span className="body2 text-bullish-300">Claimable</span>;
         case "fullyClaimed":
@@ -142,10 +144,10 @@ const OrderDetails = observer(
           undefined
         );
         // await refetch();
+        onRequestClose();
       } catch (error) {
         console.error(error);
         setBroadcasting(false);
-        onRequestClose();
       }
     }, [account, order, onRequestClose]);
 
