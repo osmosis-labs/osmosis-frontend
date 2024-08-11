@@ -31,6 +31,8 @@ export function makeDelegateToValidatorSetMsg({
   );
 }
 
+makeDelegateToValidatorSetMsg.gas = 500_000 as const;
+
 export function makeWithdrawDelegationRewardsMsg({
   delegator,
 }: MsgWithdrawDelegationRewards) {

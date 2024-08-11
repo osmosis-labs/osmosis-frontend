@@ -48,6 +48,8 @@ export function makeCreatePositionMsg({
   );
 }
 
+makeCreatePositionMsg.gas = 3_000_000 as const;
+
 export function makeCollectSpreadRewardsMsg({
   positionIds,
   sender,

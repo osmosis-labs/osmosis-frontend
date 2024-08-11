@@ -19,6 +19,8 @@ export function makeJoinPoolMsg({
   });
 }
 
+makeJoinPoolMsg.shareCoinDecimals = 18;
+
 export function makeJoinSwapExternAmountInMsg({
   poolId,
   sender,
@@ -35,6 +37,8 @@ export function makeJoinSwapExternAmountInMsg({
   );
 }
 
+makeJoinSwapExternAmountInMsg.shareCoinDecimals = 18;
+
 export function makeExitPoolMsg({
   poolId,
   sender,
@@ -48,3 +52,5 @@ export function makeExitPoolMsg({
     tokenOutMins,
   });
 }
+
+makeExitPoolMsg.shareCoinDecimals = 18 as const;
