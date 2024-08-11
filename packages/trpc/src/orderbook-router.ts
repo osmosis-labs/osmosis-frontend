@@ -78,10 +78,12 @@ export const orderbookRouter = createTRPCRouter({
             return result;
           };
 
-          const chunkedAddresses = chunk(contractAddresses, 8);
+          const chunkedAddresses = chunk(contractAddresses, 4);
 
+          const before = Date.now();
           const ordersByContracts: MappedLimitOrder[] = [];
           for (let i = 0; i < chunkedAddresses.length; i++) {
+            const beforeLoop = Date.now();
             const contractOsmoAddresses = chunkedAddresses[i];
             const orderPromises = contractOsmoAddresses.map(
               async (contractOsmoAddress: string) => {
@@ -111,7 +113,10 @@ export const orderbookRouter = createTRPCRouter({
             }
             const newOrders = await Promise.all(orderPromises);
             ordersByContracts.push(...newOrders.flat().flat());
+            console.log(`time-${i}`, Date.now() - beforeLoop);
           }
+
+          console.log("time", Date.now() - before);
 
           // const ordersByContracts = await Promise.all(promises);
 
