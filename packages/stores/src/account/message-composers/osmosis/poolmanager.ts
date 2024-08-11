@@ -1,4 +1,5 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
+import { MsgSwapExactAmountOut } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
 import { Currency } from "@osmosis-labs/types";
 
 /**
@@ -74,6 +75,22 @@ export function makeSwapExactAmountInMsg({
         amount: tokenIn.amount.toString(),
       },
       tokenOutMinAmount,
+    }
+  );
+}
+
+export function makeSwapExactAmountOutMsg({
+  sender,
+  routes,
+  tokenInMaxAmount,
+  tokenOut,
+}: MsgSwapExactAmountOut) {
+  return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut(
+    {
+      sender,
+      routes,
+      tokenInMaxAmount,
+      tokenOut,
     }
   );
 }

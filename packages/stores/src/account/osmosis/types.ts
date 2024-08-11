@@ -1,41 +1,57 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
-
 import {
   makeAddAuthenticatorMsg,
+  makeAddToConcentratedLiquiditySuperfluidPositionMsg,
+  makeAddToPositionMsg,
+  makeBeginUnlockingMsg,
+  makeCollectIncentivesMsg,
+  makeCollectSpreadRewardsMsg,
+  makeCreateBalancerPoolMsg,
+  makeCreateConcentratedPoolMsg,
+  makeCreateFullRangePositionAndSuperfluidDelegateMsg,
+  makeCreatePositionMsg,
+  makeCreateStableswapPoolMsg,
+  makeDelegateToValidatorSetMsg,
+  makeExitPoolMsg,
+  makeJoinPoolMsg,
+  makeJoinSwapExternAmountInMsg,
+  makeLockAndSuperfluidDelegateMsg,
+  makeLockTokensMsg,
   makeRemoveAuthenticatorMsg,
+  makeSetValidatorSetPreferenceMsg,
   makeSplitRoutesSwapExactAmountInMsg,
+  makeSuperfluidDelegateMsg,
+  makeSuperfluidUnbondLockMsg,
+  makeSuperfluidUndelegateMsg,
   makeSwapExactAmountInMsg,
-} from "../message-composers";
+  makeSwapExactAmountOutMsg,
+  makeUndelegateFromRebalancedValidatorSetMsg,
+  makeUndelegateFromValidatorSetMsg,
+  makeWithdrawDelegationRewardsMsg,
+  makeWithdrawPositionMsg,
+} from "../message-composers/osmosis";
 import { createMsgOpts } from "../utils";
 
 export const osmosisMsgOpts = createMsgOpts({
   createBalancerPool: {
-    messageComposer:
-      osmosis.gamm.poolmodels.balancer.v1beta1.MessageComposer.withTypeUrl
-        .createBalancerPool,
+    messageComposer: makeCreateBalancerPoolMsg,
   },
   createStableswapPool: {
-    messageComposer:
-      osmosis.gamm.poolmodels.stableswap.v1beta1.MessageComposer.withTypeUrl
-        .createStableswapPool,
+    messageComposer: makeCreateStableswapPoolMsg,
   },
   createConcentratedPool: {
-    messageComposer:
-      osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1
-        .MessageComposer.withTypeUrl.createConcentratedPool,
+    messageComposer: makeCreateConcentratedPoolMsg,
   },
   joinPool: {
     shareCoinDecimals: 18,
-    messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool,
+    messageComposer: makeJoinPoolMsg,
   },
   joinSwapExternAmountIn: {
     shareCoinDecimals: 18,
-    messageComposer:
-      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinSwapExternAmountIn,
+    messageComposer: makeJoinSwapExternAmountInMsg,
   },
   exitPool: {
     shareCoinDecimals: 18,
-    messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
+    messageComposer: makeExitPoolMsg,
   },
   splitRouteSwapExactAmountIn: {
     messageComposer: makeSplitRoutesSwapExactAmountInMsg,
@@ -44,116 +60,69 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer: makeSwapExactAmountInMsg,
   },
   swapExactAmountOut: {
-    messageComposer:
-      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
-        .swapExactAmountOut,
+    messageComposer: makeSwapExactAmountOutMsg,
   },
   lockTokens: {
-    messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.lockTokens,
+    messageComposer: makeLockTokensMsg,
   },
   superfluidDelegate: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
+    messageComposer: makeSuperfluidDelegateMsg,
   },
   lockAndSuperfluidDelegate: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
+    messageComposer: makeLockAndSuperfluidDelegateMsg,
   },
   beginUnlocking: {
-    messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.beginUnlocking,
+    messageComposer: makeBeginUnlockingMsg,
   },
   superfluidUndelegate: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUndelegate,
+    messageComposer: makeSuperfluidUndelegateMsg,
   },
   superfluidUnbondLock: {
-    // Gas per msg
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUnbondLock,
+    messageComposer: makeSuperfluidUnbondLockMsg,
   },
   unlockPeriodLock: {
-    // Gas per msg
     gas: 140000,
   },
-  unPoolWhitelistedPool: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.unPoolWhitelistedPool,
-  },
   clCreatePosition: {
-    messageComposer:
-      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-        .createPosition,
+    messageComposer: makeCreatePositionMsg,
     gas: 3_000_000,
   },
   clCreateSuperfluidPosition: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl
-        .createFullRangePositionAndSuperfluidDelegate,
+    messageComposer: makeCreateFullRangePositionAndSuperfluidDelegateMsg,
   },
   clCollectPositionsSpreadRewards: {
-    messageComposer:
-      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-        .collectSpreadRewards,
+    messageComposer: makeCollectSpreadRewardsMsg,
   },
   clCollectPositionsIncentivesRewards: {
-    messageComposer:
-      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-        .collectIncentives,
-  },
-  unlockAndMigrateSharesToFullRangeConcentratedPosition: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl
-        .unlockAndMigrateSharesToFullRangeConcentratedPosition,
-  },
-  unbondAndConvertAndStake: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl.unbondConvertAndStake,
+    messageComposer: makeCollectIncentivesMsg,
   },
   clWithdrawPosition: {
-    messageComposer:
-      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-        .withdrawPosition,
+    messageComposer: makeWithdrawPositionMsg,
   },
   clAddToConcentratedPosition: {
-    messageComposer:
-      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
-        .addToPosition,
+    messageComposer: makeAddToPositionMsg,
   },
   clAddToConcentatedSuperfluidPosition: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl
-        .addToConcentratedLiquiditySuperfluidPosition,
+    messageComposer: makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   },
   clCreateAndSuperfluidDelegatePosition: {
-    messageComposer:
-      osmosis.superfluid.MessageComposer.withTypeUrl
-        .createFullRangePositionAndSuperfluidDelegate,
+    messageComposer: makeCreateFullRangePositionAndSuperfluidDelegateMsg,
   },
   undelegateFromValidatorSet: {
-    messageComposer:
-      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
-        .undelegateFromValidatorSet,
+    messageComposer: makeUndelegateFromValidatorSetMsg,
   },
   delegateToValidatorSet: {
     gas: 500000,
-    messageComposer:
-      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
-        .delegateToValidatorSet,
+    messageComposer: makeDelegateToValidatorSetMsg,
   },
   withdrawDelegationRewards: {
-    messageComposer:
-      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
-        .withdrawDelegationRewards,
+    messageComposer: makeWithdrawDelegationRewardsMsg,
   },
   setValidatorSetPreference: {
-    messageComposer:
-      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
-        .setValidatorSetPreference,
+    messageComposer: makeSetValidatorSetPreferenceMsg,
   },
   undelegateFromRebalancedValidatorSet: {
-    messageComposer:
-      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
-        .undelegateFromRebalancedValidatorSet,
+    messageComposer: makeUndelegateFromRebalancedValidatorSetMsg,
   },
   addAuthenticator: {
     messageComposer: makeAddAuthenticatorMsg,
