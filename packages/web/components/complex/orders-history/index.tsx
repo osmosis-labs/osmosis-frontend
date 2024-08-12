@@ -114,7 +114,7 @@ export const OrderHistory = observer(() => {
     paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
-    paddingStart: isMediumScreen ? 0 : 45,
+    paddingStart: 45,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
@@ -216,7 +216,7 @@ export const OrderHistory = observer(() => {
         ref={listRef}
       >
         {!isLoading && (
-          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000 md:hidden">
+          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
             <tr
               className={classNames(
                 {
@@ -246,7 +246,7 @@ export const OrderHistory = observer(() => {
           </thead>
         )}
         <tbody
-          className="min-h-[200px] bg-transparent xl:overflow-visible"
+          className="bg-transparent xl:overflow-visible"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
