@@ -3,7 +3,6 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
-  getOrderbookDenoms,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
@@ -12,7 +11,7 @@ import {
   maybeCachePaginatedItems,
   OrderStatus,
 } from "@osmosis-labs/server";
-import { z } from "zod";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
@@ -58,73 +57,53 @@ export const orderbookRouter = createTRPCRouter({
       };
     }),
   getAllOrders: publicProcedure
-    .input(
-      GetInfiniteLimitOrdersInputSchema.merge(
-        z.object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
-      )
-    )
+    .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
-          const { contractAddresses, userOsmoAddress } = input;
+          const { userOsmoAddress } = input;
+          const pools = await getOrderbookPools();
+          const contractAddresses = pools.map((p) => p.contractAddress);
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
+          const promises = contractAddresses.map(
+            async (contractOsmoAddress: string) => {
+              const { baseDenom, quoteDenom } = pools.find(
+                (p) => p.contractAddress === contractOsmoAddress
+              )!;
 
-          const chunk = (arr: any[], size: number) => {
-            const result = [];
-            for (let i = 0; i < arr.length; i += size) {
-              result.push(arr.slice(i, i + size));
+              const quoteAsset = getAssetFromAssetList({
+                coinMinimalDenom: quoteDenom,
+                assetLists: ctx.assetLists,
+              });
+              const baseAsset = getAssetFromAssetList({
+                coinMinimalDenom: baseDenom,
+                assetLists: ctx.assetLists,
+              });
+              const orders = await getOrderbookActiveOrders({
+                orderbookAddress: contractOsmoAddress,
+                userOsmoAddress: userOsmoAddress,
+                chainList: ctx.chainList,
+                baseAsset,
+                quoteAsset,
+              });
+              return orders;
             }
-            return result;
-          };
+          );
+          promises.push(
+            getOrderbookHistoricalOrders({
+              userOsmoAddress: input.userOsmoAddress,
+              assetLists: ctx.assetLists,
+              chainList: ctx.chainList,
+            })
+          );
 
-          const chunkedAddresses = chunk(contractAddresses, 4);
+          const ordersByContracts = await Promise.all(promises);
+          const allOrders = ordersByContracts.flat();
 
-          const before = Date.now();
-          const ordersByContracts: MappedLimitOrder[] = [];
-          for (let i = 0; i < chunkedAddresses.length; i++) {
-            const beforeLoop = Date.now();
-            const contractOsmoAddresses = chunkedAddresses[i];
-            const orderPromises = contractOsmoAddresses.map(
-              async (contractOsmoAddress: string) => {
-                const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-                  orderbookAddress: contractOsmoAddress,
-                  chainList: ctx.chainList,
-                  assetLists: ctx.assetLists,
-                });
-                const orders = await getOrderbookActiveOrders({
-                  orderbookAddress: contractOsmoAddress,
-                  userOsmoAddress: userOsmoAddress,
-                  chainList: ctx.chainList,
-                  baseAsset,
-                  quoteAsset,
-                });
-                return orders;
-              }
-            );
-            if (i === chunkedAddresses.length - 1) {
-              orderPromises.push(
-                getOrderbookHistoricalOrders({
-                  userOsmoAddress: input.userOsmoAddress,
-                  assetLists: ctx.assetLists,
-                  chainList: ctx.chainList,
-                })
-              );
-            }
-            const newOrders = await Promise.all(orderPromises);
-            ordersByContracts.push(...newOrders.flat().flat());
-            console.log(`time-${i}`, Date.now() - beforeLoop);
-          }
-
-          console.log("time", Date.now() - before);
-
-          // const ordersByContracts = await Promise.all(promises);
-
-          return ordersByContracts.sort(defaultSortOrders);
+          return allOrders.sort(defaultSortOrders);
         },
-        cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
-          input.userOsmoAddress
-        }`,
+        cacheKey: `all-active-orders-${input.userOsmoAddress}`,
         ttl: 2000,
         cursor: input.cursor,
         limit: input.limit,
@@ -147,19 +126,27 @@ export const orderbookRouter = createTRPCRouter({
       };
     }),
   getClaimableOrders: publicProcedure
-    .input(
-      z
-        .object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
-        .required()
-        .and(UserOsmoAddressSchema.required())
-    )
+    .input(UserOsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
-      const { contractAddresses, userOsmoAddress } = input;
+      const { userOsmoAddress } = input;
+      const pools = await getOrderbookPools();
+      const contractAddresses = pools.map((p) => p.contractAddress);
+
+      if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
+        return [];
+
       const promises = contractAddresses.map(
         async (contractOsmoAddress: string) => {
-          const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-            orderbookAddress: contractOsmoAddress,
-            chainList: ctx.chainList,
+          const { baseDenom, quoteDenom } = pools.find(
+            (p) => p.contractAddress === contractOsmoAddress
+          )!;
+
+          const quoteAsset = getAssetFromAssetList({
+            coinMinimalDenom: quoteDenom,
+            assetLists: ctx.assetLists,
+          });
+          const baseAsset = getAssetFromAssetList({
+            coinMinimalDenom: baseDenom,
             assetLists: ctx.assetLists,
           });
           const orders = await getOrderbookActiveOrders({
