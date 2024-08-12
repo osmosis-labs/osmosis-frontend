@@ -60,11 +60,7 @@ const DUST_THRESHOLD = new Dec(0.01);
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-  /** Memoized function for handling deposits from table row. */
-  onDeposit: (coinDenom: string) => void;
-  /** Memoized function for handling withdrawals from table row. */
-  onWithdraw: (coinDenom: string) => void;
-}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
+}> = observer(({ tableTopPadding = 0 }) => {
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
