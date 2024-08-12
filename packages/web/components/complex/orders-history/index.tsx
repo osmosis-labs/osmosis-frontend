@@ -295,14 +295,14 @@ export const OrderHistory = observer(() => {
             })
           )}
         </tbody>
+        <Intersection
+          onVisible={() => {
+            if (hasNextPage && !isFetchingNextPage && !isLoading) {
+              fetchNextPage();
+            }
+          }}
+        />
       </table>
-      <Intersection
-        onVisible={() => {
-          if (hasNextPage && !isFetchingNextPage && !isLoading) {
-            fetchNextPage();
-          }
-        }}
-      />
       {isLargeScreen && (
         <OrderModal
           order={selectedOrder}

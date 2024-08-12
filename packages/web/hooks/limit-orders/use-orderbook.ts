@@ -294,7 +294,7 @@ export const useOrderbookAllActiveOrders = ({
       refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
-      keepPreviousData: true,
+      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
