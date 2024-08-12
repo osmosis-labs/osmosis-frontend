@@ -189,7 +189,7 @@ const OrderDetails = observer(
     return (
       <div
         className={classNames(
-          "top-[4.5rem] flex w-full flex-col overflow-y-auto border-osmoverse-700 bg-osmoverse-900 xl:bg-osmoverse-850 xl:!py-6 xl:!px-8 sm:top-0 sm:h-full sm:!h-full sm:rounded-none"
+          "flex w-full flex-col overflow-y-auto border-osmoverse-700 bg-osmoverse-900 xl:bg-osmoverse-850 xl:!py-6 xl:!px-8 sm:top-0 sm:rounded-none"
         )}
       >
         {!isModal && (
