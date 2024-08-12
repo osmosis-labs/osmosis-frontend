@@ -181,9 +181,11 @@ export class TradePage extends BasePage {
     // we expect that after 1 second token filter is displayed.
     await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(to);
-    const toLocator = this.page.locator(
-      `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
-    );
+    const toLocator = this.page
+      .locator(
+        `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
+      )
+      .first();
     await toLocator.click();
     // we expect that after 2 seconds exchange rate is populated.
     await this.page.waitForTimeout(2000);
