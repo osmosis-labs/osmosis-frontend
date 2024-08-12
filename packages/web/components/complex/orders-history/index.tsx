@@ -81,7 +81,7 @@ export const OrderHistory = observer(() => {
     isRefetching,
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
-    pageSize: 10,
+    pageSize: 20,
   });
 
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
@@ -110,6 +110,8 @@ export const OrderHistory = observer(() => {
     estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
+    scrollMargin: listRef.current?.offsetTop ?? 0,
+    paddingStart: isMobile ? 46 : 84,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
@@ -256,7 +258,9 @@ export const OrderHistory = observer(() => {
                 left: 0,
                 width: "100%",
                 height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                transform: `translateY(${
+                  virtualRow.start - rowVirtualizer.options.scrollMargin
+                }px)`,
               };
 
               if (!row)
@@ -332,7 +336,7 @@ const TableGroupHeader = ({
           <div className="flex w-full items-end justify-between pr-4">
             <div className="relative flex items-end gap-3 pt-5">
               <div className="flex items-center gap-2 pb-3">
-                <span className="text-h6 font-h6">
+                <span className="md:subtitle1 text-h6 font-h6">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
@@ -371,7 +375,7 @@ const TableGroupHeader = ({
 
   return (
     <tr style={style} className="md:flex md:items-end">
-      <span className="md:body2 pb-4 pt-8 text-h6 font-h6 md:pb-2 md:pt-4">
+      <span className="md:subtitle1 pb-4 pt-8 text-h6 font-h6 md:pb-2 md:pt-4">
         {group === "pending"
           ? t("limitOrders.orderHistoryHeaders.pending")
           : t("limitOrders.orderHistoryHeaders.past")}
