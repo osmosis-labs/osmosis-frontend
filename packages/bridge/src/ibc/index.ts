@@ -149,7 +149,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainId: params.toChain.chainId.toString(),
     });
 
-    const { typeUrl, value: msg } = makeIBCTransferMsg({
+    const { typeUrl, value: msg } = await makeIBCTransferMsg({
       receiver: params.toAddress,
       sender: params.fromAddress,
       sourceChannel,

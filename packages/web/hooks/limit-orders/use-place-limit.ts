@@ -524,7 +524,7 @@ export const usePlaceLimit = ({
     error: limitGasError,
   } = useEstimateTxFees({
     chainId: accountStore.osmosisChainId,
-    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
+    messages: encodedMsg && !isMarket ? async () => [await encodedMsg] : [],
     enabled: shouldEstimateLimitGas,
   });
 

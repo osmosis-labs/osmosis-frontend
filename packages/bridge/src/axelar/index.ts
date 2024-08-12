@@ -594,7 +594,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         );
       }
 
-      const { typeUrl, value: msg } = makeIBCTransferMsg({
+      const { typeUrl, value: msg } = await makeIBCTransferMsg({
         receiver: depositAddress,
         sender: fromAddress,
         sourceChannel: ibcTransferMethod.chain.channelId,

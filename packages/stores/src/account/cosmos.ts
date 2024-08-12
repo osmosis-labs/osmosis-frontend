@@ -115,7 +115,7 @@ export class CosmosAccountImpl {
       destinationInfo.network
     ).version.toString();
 
-    const msg = makeIBCTransferMsg({
+    const msg = await makeIBCTransferMsg({
       sourcePort: channel.portId,
       sourceChannel: channel.channelId,
       token: {

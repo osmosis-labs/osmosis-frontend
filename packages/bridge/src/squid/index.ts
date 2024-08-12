@@ -545,7 +545,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             : { destinationAddress: ibcData.msg.receiver }
         );
 
-        const { typeUrl, value: msg } = makeIBCTransferMsg({
+        const { typeUrl, value: msg } = await makeIBCTransferMsg({
           memo: ibcData.msg.memo,
           receiver: ibcData.msg.receiver,
           sender: ibcData.msg.sender,
@@ -578,7 +578,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           };
         };
 
-        const { typeUrl, value: msg } = makeExecuteCosmwasmContractMsg({
+        const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
           sender: fromAddress,
           contract: cosmwasmData.msg.wasm.contract,
           msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),

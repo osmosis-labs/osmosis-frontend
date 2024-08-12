@@ -142,7 +142,7 @@ export class OsmosisAccountImpl {
       });
     }
 
-    const msg = makeCreateBalancerPoolMsg({
+    const msg = await makeCreateBalancerPoolMsg({
       futurePoolGovernor: "24h",
       poolAssets,
       sender: this.address,
@@ -204,7 +204,7 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = makeCreateConcentratedPoolMsg({
+    const msg = await makeCreateConcentratedPoolMsg({
       denom0,
       denom1,
       sender: this.address,
@@ -310,7 +310,7 @@ export class OsmosisAccountImpl {
       sortedScalingFactors.push(BigInt(scalingFactor.toString()));
     });
 
-    const msg = makeCreateStableswapPoolMsg({
+    const msg = await makeCreateStableswapPoolMsg({
       sender: this.address,
       futurePoolGovernor: "24h",
       scalingFactors: sortedScalingFactors,
@@ -424,7 +424,7 @@ export class OsmosisAccountImpl {
               };
             });
 
-        const msg = makeJoinPoolMsg({
+        const msg = await makeJoinPoolMsg({
           poolId: BigInt(poolId),
           sender: this.address,
           shareOutAmount: new Dec(shareOutAmount)
@@ -546,7 +546,7 @@ export class OsmosisAccountImpl {
           .mul(outRatio)
           .truncate();
 
-        const msg = makeJoinSwapExternAmountInMsg({
+        const msg = await makeJoinSwapExternAmountInMsg({
           poolId: BigInt(poolId),
           sender: this.address,
           tokenIn: {
@@ -649,7 +649,7 @@ export class OsmosisAccountImpl {
     let msg;
     if (superfluidValidatorAddress) {
       // send superfluid delegate version (full range only)
-      msg = makeCreateFullRangePositionAndSuperfluidDelegateMsg({
+      msg = await makeCreateFullRangePositionAndSuperfluidDelegateMsg({
         valAddr: superfluidValidatorAddress,
         coins: sortedCoins,
         poolId: BigInt(poolId),
@@ -712,7 +712,7 @@ export class OsmosisAccountImpl {
       }
 
       // create position message with custom price range
-      msg = makeCreatePositionMsg({
+      msg = await makeCreatePositionMsg({
         poolId: BigInt(poolId),
         lowerTick: BigInt(lowerTick.toString()),
         upperTick: BigInt(upperTick.toString()),
@@ -797,7 +797,7 @@ export class OsmosisAccountImpl {
           .toString(),
       }));
 
-    const msg = makeCreatePositionMsg({
+    const msg = await makeCreatePositionMsg({
       poolId: BigInt(poolId),
       lowerTick: BigInt(minTick.toString()),
       upperTick: BigInt(maxTick.toString()),
@@ -849,7 +849,7 @@ export class OsmosisAccountImpl {
     if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
     if (!poolId) throw new Error("No pool ID found");
 
-    const withdrawPositionMsg = makeWithdrawPositionMsg({
+    const withdrawPositionMsg = await makeWithdrawPositionMsg({
       positionId: BigInt(positionId),
       sender: this.address,
       liquidityAmount: fullLiquidityAmount.toString(),
@@ -859,7 +859,7 @@ export class OsmosisAccountImpl {
       throw new Error("No assets found in position");
 
     const createAndSfDelegateMsg =
-      makeCreateFullRangePositionAndSuperfluidDelegateMsg({
+      await makeCreateFullRangePositionAndSuperfluidDelegateMsg({
         poolId: BigInt(poolId),
         coins: [
           queryPosition.baseAsset.toCoin(),
@@ -933,7 +933,7 @@ export class OsmosisAccountImpl {
       queryDelegatedPositions.delegatedPositionIds.includes(positionId);
 
     const msg = isSuperfluidStaked
-      ? makeAddToConcentratedLiquiditySuperfluidPositionMsg({
+      ? await makeAddToConcentratedLiquiditySuperfluidPositionMsg({
           positionId: BigInt(positionId),
           sender: this.address,
           tokenDesired0: {
@@ -945,7 +945,7 @@ export class OsmosisAccountImpl {
             amount: amount1WithSlippage,
           },
         })
-      : makeAddToPositionMsg({
+      : await makeAddToPositionMsg({
           amount0: coin0.amount,
           amount1: coin1.amount,
           positionId: BigInt(positionId),
@@ -1011,7 +1011,7 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = makeWithdrawPositionMsg({
+    const msg = await makeWithdrawPositionMsg({
       liquidityAmount: liquidityAmount.toString(),
       positionId: BigInt(positionId),
       sender: this.address,
@@ -1075,11 +1075,11 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const spreadRewardsMsg = makeCollectSpreadRewardsMsg({
+    const spreadRewardsMsg = await makeCollectSpreadRewardsMsg({
       positionIds: positionIdsWithSpreadRewards.map((val) => BigInt(val)),
       sender: this.address,
     });
-    const incentiveRewardsMsg = makeCollectIncentivesMsg({
+    const incentiveRewardsMsg = await makeCollectIncentivesMsg({
       positionIds: positionIdsWithIncentiveRewards.map((val) => BigInt(val)),
       sender: this.address,
     });
@@ -1159,7 +1159,7 @@ export class OsmosisAccountImpl {
     signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = makeSplitRoutesSwapExactAmountInMsg({
+    const msg = await makeSplitRoutesSwapExactAmountInMsg({
       routes,
       tokenIn,
       tokenOutMinAmount,
@@ -1231,7 +1231,7 @@ export class OsmosisAccountImpl {
     signOptions?: SignOptions & { fee?: StdFee },
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = makeSwapExactAmountInMsg({
+    const msg = await makeSwapExactAmountInMsg({
       pools,
       tokenIn,
       tokenOutMinAmount,
@@ -1309,7 +1309,7 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-        const msg = makeSwapExactAmountOutMsg({
+        const msg = await makeSwapExactAmountOutMsg({
           sender: this.address,
           tokenInMaxAmount,
           tokenOut: {
@@ -1415,7 +1415,7 @@ export class OsmosisAccountImpl {
           };
         });
 
-    const msg = makeExitPoolMsg({
+    const msg = await makeExitPoolMsg({
       poolId: BigInt(poolId),
       sender: this.address,
       shareInAmount: new Dec(shareInAmount)
@@ -1476,7 +1476,7 @@ export class OsmosisAccountImpl {
       };
     });
 
-    const msg = makeLockTokensMsg({
+    const msg = await makeLockTokensMsg({
       owner: this.address,
       coins: primitiveTokens,
       duration: Duration.fromPartial({
@@ -1524,13 +1524,15 @@ export class OsmosisAccountImpl {
   ) {
     if (lockIds.length === 0) throw new Error("No locks to delegate");
 
-    const msgs = lockIds.map((lockId) => {
-      return makeSuperfluidDelegateMsg({
-        sender: this.address,
-        lockId: BigInt(lockId),
-        valAddr: validatorAddress,
-      });
-    });
+    const msgs = await Promise.all(
+      lockIds.map(async (lockId) => {
+        return await makeSuperfluidDelegateMsg({
+          sender: this.address,
+          lockId: BigInt(lockId),
+          valAddr: validatorAddress,
+        });
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1587,7 +1589,7 @@ export class OsmosisAccountImpl {
       };
     });
 
-    const msg = makeLockAndSuperfluidDelegateMsg({
+    const msg = await makeLockAndSuperfluidDelegateMsg({
       sender: this.address,
       coins: primitiveTokens,
       valAddr: validatorAddress,
@@ -1637,13 +1639,15 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msgs = lockIds.map((lockId) => {
-      return makeBeginUnlockingMsg({
-        owner: this.address,
-        ID: BigInt(lockId),
-        coins: [],
-      });
-    });
+    const msgs = await Promise.all(
+      lockIds.map(async (lockId) => {
+        return makeBeginUnlockingMsg({
+          owner: this.address,
+          ID: BigInt(lockId),
+          coins: [],
+        });
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1688,11 +1692,12 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msgs = locks.reduce((msgs, lock) => {
+    const msgs = await locks.reduce(async (msgsPromise, lock) => {
+      const msgs = await msgsPromise;
       if (!lock.isSynthetic) {
         // normal unlock
         msgs.push(
-          makeBeginUnlockingMsg({
+          await makeBeginUnlockingMsg({
             owner: this.address,
             ID: BigInt(lock.lockId),
             coins: [],
@@ -1701,18 +1706,18 @@ export class OsmosisAccountImpl {
       } else {
         // unbond and unlock
         msgs.push(
-          makeSuperfluidUndelegateMsg({
+          await makeSuperfluidUndelegateMsg({
             sender: this.address,
             lockId: BigInt(lock.lockId),
           }),
-          makeSuperfluidUnbondLockMsg({
+          await makeSuperfluidUnbondLockMsg({
             sender: this.address,
             lockId: BigInt(lock.lockId),
           })
         );
       }
       return msgs;
-    }, [] as EncodeObject[]);
+    }, Promise.resolve([] as EncodeObject[]));
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1779,7 +1784,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "undelegateFromValidatorSet",
       [
-        makeUndelegateFromRebalancedValidatorSetMsg({
+        await makeUndelegateFromRebalancedValidatorSetMsg({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
@@ -1829,7 +1834,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "undelegateFromValidatorSet",
       [
-        makeUndelegateFromValidatorSetMsg({
+        await makeUndelegateFromValidatorSetMsg({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
@@ -1879,7 +1884,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "delegateToValidatorSet",
       [
-        makeDelegateToValidatorSetMsg({
+        await makeDelegateToValidatorSetMsg({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
@@ -1924,7 +1929,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "withdrawDelegationRewards",
       [
-        makeWithdrawDelegationRewardsMsg({
+        await makeWithdrawDelegationRewardsMsg({
           delegator: this.address,
         }),
       ],
@@ -1974,7 +1979,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "setValidatorSetPreference",
       [
-        makeSetValidatorSetPreferenceMsg({
+        await makeSetValidatorSetPreferenceMsg({
           delegator: this.address,
           preferences: validators.map((validator) => ({
             weight,
@@ -2029,15 +2034,17 @@ export class OsmosisAccountImpl {
         "Please provide 1 or more validator address to set as preference"
       );
 
-    const setValidatorSetPreferenceMsg = makeSetValidatorSetPreferenceMsg({
-      delegator: this.address,
-      preferences: validators.map((validator) => ({
-        weight,
-        valOperAddress: validator,
-      })),
-    });
+    const setValidatorSetPreferenceMsg = await makeSetValidatorSetPreferenceMsg(
+      {
+        delegator: this.address,
+        preferences: validators.map((validator) => ({
+          weight,
+          valOperAddress: validator,
+        })),
+      }
+    );
 
-    const setDelegateToValidatorSetMsg = makeDelegateToValidatorSetMsg({
+    const setDelegateToValidatorSetMsg = await makeDelegateToValidatorSetMsg({
       delegator: this.address,
       coin: {
         denom: coin.denom.coinMinimalDenom,
@@ -2091,11 +2098,13 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const withdrawDelegationRewardsMsg = makeWithdrawDelegationRewardsMsg({
-      delegator: this.address,
-    });
+    const withdrawDelegationRewardsMsg = await makeWithdrawDelegationRewardsMsg(
+      {
+        delegator: this.address,
+      }
+    );
 
-    const delegateToValidatorSetMsg = makeDelegateToValidatorSetMsg({
+    const delegateToValidatorSetMsg = await makeDelegateToValidatorSetMsg({
       delegator: this.address,
       coin: {
         denom: coin.denom.coinMinimalDenom,
@@ -2160,7 +2169,10 @@ export class OsmosisAccountImpl {
         sender: this.address,
       })
     );
-    const msgs = [...removeAuthenticatorMsgs, ...addAuthenticatorMsgs];
+    const msgs = await Promise.all([
+      ...removeAuthenticatorMsgs,
+      ...addAuthenticatorMsgs,
+    ]);
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -2199,12 +2211,14 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const addAuthenticatorMsgs = authenticators.map((authenticator) =>
-      makeAddAuthenticatorMsg({
-        type: authenticator.type,
-        data: authenticator.data,
-        sender: this.address,
-      })
+    const addAuthenticatorMsgs = await Promise.all(
+      authenticators.map((authenticator) =>
+        makeAddAuthenticatorMsg({
+          type: authenticator.type,
+          data: authenticator.data,
+          sender: this.address,
+        })
+      )
     );
 
     await this.base.signAndBroadcast(
@@ -2241,7 +2255,7 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const removeAuthenticatorMsg = makeRemoveAuthenticatorMsg({
+    const removeAuthenticatorMsg = await makeRemoveAuthenticatorMsg({
       id: id,
       sender: this.address,
     });

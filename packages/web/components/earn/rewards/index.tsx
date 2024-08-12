@@ -45,18 +45,18 @@ export const EarnRewards = ({
 
     if (!account) return;
 
-    filteredUnclaimedRewards.forEach(({ id, platform }) => {
+    for (const { id, platform } of filteredUnclaimedRewards) {
       switch (platform) {
         case "Osmosis":
           messages.push(
-            makeWithdrawDelegationRewardsMsg({
+            await makeWithdrawDelegationRewardsMsg({
               delegator: account.address ?? "",
             })
           );
           break;
         case "Quasar":
           messages.push(
-            makeExecuteCosmwasmContractMsg({
+            await makeExecuteCosmwasmContractMsg({
               contract: id,
               msg: Buffer.from(
                 JSON.stringify({
@@ -72,7 +72,7 @@ export const EarnRewards = ({
           break;
         case "Levana":
           messages.push(
-            makeExecuteCosmwasmContractMsg({
+            await makeExecuteCosmwasmContractMsg({
               contract: id.split("-")[0], // this strips the -x|lp part of the contract id
               msg: Buffer.from(
                 JSON.stringify({
@@ -85,7 +85,7 @@ export const EarnRewards = ({
           );
           break;
       }
-    });
+    }
 
     try {
       await accountStore.signAndBroadcast(

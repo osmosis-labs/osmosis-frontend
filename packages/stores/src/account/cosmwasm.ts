@@ -79,7 +79,7 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const msg = makeExecuteCosmwasmContractMsg({
+    const msg = await makeExecuteCosmwasmContractMsg({
       sender: this.address,
       contract: contractAddress,
       msg: obj,
@@ -117,14 +117,16 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const mappedMsgs = msgs.map(({ msg, funds, contractAddress }) => {
-      return makeExecuteCosmwasmContractMsg({
-        sender: this.address,
-        contract: contractAddress,
-        msg,
-        funds,
-      });
-    });
+    const mappedMsgs = await Promise.all(
+      msgs.map(async ({ msg, funds, contractAddress }) => {
+        return await makeExecuteCosmwasmContractMsg({
+          sender: this.address,
+          contract: contractAddress,
+          msg,
+          funds,
+        });
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,

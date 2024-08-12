@@ -131,8 +131,8 @@ export const OneClickTradingSettings = ({
   const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
     useEstimateTxFees({
       messages: oneClickTradingInfo
-        ? [
-            makeRemoveAuthenticatorMsg({
+        ? async () => [
+            await makeRemoveAuthenticatorMsg({
               id: BigInt(oneClickTradingInfo.authenticatorId),
               sender: oneClickTradingInfo.userOsmoAddress,
             }),

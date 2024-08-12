@@ -1,8 +1,9 @@
-import { ibc } from "@osmosis-labs/proto-codecs";
 import { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/v1beta1/coin";
 import { Height } from "@osmosis-labs/proto-codecs/build/codegen/ibc/core/client/v1/client";
 
-export function makeIBCTransferMsg({
+import { getIbcCodec } from "../codec";
+
+export async function makeIBCTransferMsg({
   sourcePort,
   sourceChannel,
   token,
@@ -35,19 +36,22 @@ export function makeIBCTransferMsg({
   /** optional memo */
   memo: string;
 }) {
-  return ibc.applications.transfer.v1.MessageComposer.withTypeUrl.transfer({
-    sourcePort,
-    sourceChannel,
-    token,
-    receiver,
-    sender,
-    // Revision number can be undefined, but our proto makes it required
-    // so we need to cast it to Partial<Height> to make it optional
-    // @ts-expect-error
-    timeoutHeight,
-    timeoutTimestamp,
-    memo,
-  });
+  const ibcCodec = await getIbcCodec();
+  return ibcCodec.applications.transfer.v1.MessageComposer.withTypeUrl.transfer(
+    {
+      sourcePort,
+      sourceChannel,
+      token,
+      receiver,
+      sender,
+      // Revision number can be undefined, but our proto makes it required
+      // so we need to cast it to Partial<Height> to make it optional
+      // @ts-expect-error
+      timeoutHeight,
+      timeoutTimestamp,
+      memo,
+    }
+  );
 }
 
 makeIBCTransferMsg.gas = 250_000;

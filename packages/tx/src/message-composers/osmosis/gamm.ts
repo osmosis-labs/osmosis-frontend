@@ -1,16 +1,18 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
 import {
   MsgExitPool,
   MsgJoinPool,
   MsgJoinSwapExternAmountIn,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
 
-export function makeJoinPoolMsg({
+import { getOsmosisCodec } from "../../codec";
+
+export async function makeJoinPoolMsg({
   poolId,
   sender,
   shareOutAmount,
   tokenInMaxs,
 }: MsgJoinPool) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool({
     poolId,
     sender,
@@ -21,12 +23,13 @@ export function makeJoinPoolMsg({
 
 makeJoinPoolMsg.shareCoinDecimals = 18;
 
-export function makeJoinSwapExternAmountInMsg({
+export async function makeJoinSwapExternAmountInMsg({
   poolId,
   sender,
   tokenIn,
   shareOutMinAmount,
 }: MsgJoinSwapExternAmountIn) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinSwapExternAmountIn(
     {
       poolId,
@@ -39,12 +42,13 @@ export function makeJoinSwapExternAmountInMsg({
 
 makeJoinSwapExternAmountInMsg.shareCoinDecimals = 18;
 
-export function makeExitPoolMsg({
+export async function makeExitPoolMsg({
   poolId,
   sender,
   shareInAmount,
   tokenOutMins,
 }: MsgExitPool) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool({
     poolId,
     sender,

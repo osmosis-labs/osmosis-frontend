@@ -1,7 +1,10 @@
-import { cosmwasm } from "@osmosis-labs/proto-codecs";
 import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
 
-export function makeExecuteCosmwasmContractMsg<Obj extends Record<any, any>>({
+import { getCosmwasmCodec } from "../codec";
+
+export async function makeExecuteCosmwasmContractMsg<
+  Obj extends Record<any, any>
+>({
   sender,
   contract,
   msg,
@@ -12,6 +15,7 @@ export function makeExecuteCosmwasmContractMsg<Obj extends Record<any, any>>({
   msg: Obj;
   funds: Coin[];
 }) {
+  const cosmwasm = await getCosmwasmCodec();
   return cosmwasm.wasm.v1.MessageComposer.withTypeUrl.executeContract({
     sender,
     contract,

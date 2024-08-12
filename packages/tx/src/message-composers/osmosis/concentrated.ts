@@ -1,4 +1,3 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
 import { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/poolmodel/concentrated/v1beta1/tx";
 import {
   MsgAddToPosition,
@@ -8,13 +7,16 @@ import {
   MsgWithdrawPosition,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/v1beta1/tx";
 
-export function makeCreateConcentratedPoolMsg({
+import { getOsmosisCodec } from "../../codec";
+
+export async function makeCreateConcentratedPoolMsg({
   denom0,
   denom1,
   sender,
   spreadFactor,
   tickSpacing,
 }: MsgCreateConcentratedPool) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MessageComposer.withTypeUrl.createConcentratedPool(
     {
       denom0,
@@ -26,7 +28,7 @@ export function makeCreateConcentratedPoolMsg({
   );
 }
 
-export function makeCreatePositionMsg({
+export async function makeCreatePositionMsg({
   poolId,
   sender,
   lowerTick,
@@ -35,6 +37,7 @@ export function makeCreatePositionMsg({
   tokenMinAmount0,
   tokenMinAmount1,
 }: MsgCreatePosition) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl.createPosition(
     {
       poolId,
@@ -50,10 +53,11 @@ export function makeCreatePositionMsg({
 
 makeCreatePositionMsg.gas = 3_000_000 as const;
 
-export function makeCollectSpreadRewardsMsg({
+export async function makeCollectSpreadRewardsMsg({
   positionIds,
   sender,
 }: MsgCollectSpreadRewards) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl.collectSpreadRewards(
     {
       positionIds,
@@ -62,10 +66,11 @@ export function makeCollectSpreadRewardsMsg({
   );
 }
 
-export function makeCollectIncentivesMsg({
+export async function makeCollectIncentivesMsg({
   positionIds,
   sender,
 }: MsgCollectIncentives) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl.collectIncentives(
     {
       positionIds,
@@ -74,11 +79,12 @@ export function makeCollectIncentivesMsg({
   );
 }
 
-export function makeWithdrawPositionMsg({
+export async function makeWithdrawPositionMsg({
   positionId,
   sender,
   liquidityAmount,
 }: MsgWithdrawPosition) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl.withdrawPosition(
     {
       positionId,
@@ -88,7 +94,7 @@ export function makeWithdrawPositionMsg({
   );
 }
 
-export function makeAddToPositionMsg({
+export async function makeAddToPositionMsg({
   positionId,
   sender,
   amount0,
@@ -96,6 +102,7 @@ export function makeAddToPositionMsg({
   tokenMinAmount0,
   tokenMinAmount1,
 }: MsgAddToPosition) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl.addToPosition(
     {
       positionId,

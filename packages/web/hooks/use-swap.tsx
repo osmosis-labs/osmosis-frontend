@@ -210,7 +210,10 @@ export function useSwap(
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quote?.messages,
+    messages: async () => {
+      const msgs = await quote?.messages;
+      return msgs ? Promise.all(msgs) : [];
+    },
     enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
@@ -274,7 +277,7 @@ export function useSwap(
           const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages: quote.messages,
+                messages: await Promise.all(quote.messages),
               }))
             : false;
 
@@ -812,7 +815,11 @@ export function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quoteForCurrentBalance?.messages,
+    messages: async () => {
+      const messages = await quoteForCurrentBalance?.messages;
+      if (!messages) return [];
+      return Promise.all(messages);
+    },
     enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,

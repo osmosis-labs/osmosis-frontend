@@ -1,4 +1,3 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
 import {
   MsgDelegateToValidatorSet,
   MsgSetValidatorSetPreference,
@@ -7,10 +6,13 @@ import {
   MsgWithdrawDelegationRewards,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/valsetpref/v1beta1/tx";
 
-export function makeUndelegateFromValidatorSetMsg({
+import { getOsmosisCodec } from "../../codec";
+
+export async function makeUndelegateFromValidatorSetMsg({
   delegator,
   coin,
 }: MsgUndelegateFromValidatorSet) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl.undelegateFromValidatorSet(
     {
       delegator,
@@ -19,10 +21,11 @@ export function makeUndelegateFromValidatorSetMsg({
   );
 }
 
-export function makeDelegateToValidatorSetMsg({
+export async function makeDelegateToValidatorSetMsg({
   delegator,
   coin,
 }: MsgDelegateToValidatorSet) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl.delegateToValidatorSet(
     {
       delegator,
@@ -33,9 +36,10 @@ export function makeDelegateToValidatorSetMsg({
 
 makeDelegateToValidatorSetMsg.gas = 500_000 as const;
 
-export function makeWithdrawDelegationRewardsMsg({
+export async function makeWithdrawDelegationRewardsMsg({
   delegator,
 }: MsgWithdrawDelegationRewards) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl.withdrawDelegationRewards(
     {
       delegator,
@@ -43,10 +47,11 @@ export function makeWithdrawDelegationRewardsMsg({
   );
 }
 
-export function makeSetValidatorSetPreferenceMsg({
+export async function makeSetValidatorSetPreferenceMsg({
   delegator,
   preferences,
 }: MsgSetValidatorSetPreference) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl.setValidatorSetPreference(
     {
       delegator,
@@ -55,10 +60,11 @@ export function makeSetValidatorSetPreferenceMsg({
   );
 }
 
-export function makeUndelegateFromRebalancedValidatorSetMsg({
+export async function makeUndelegateFromRebalancedValidatorSetMsg({
   delegator,
   coin,
 }: MsgUndelegateFromRebalancedValidatorSet) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl.undelegateFromRebalancedValidatorSet(
     {
       delegator,

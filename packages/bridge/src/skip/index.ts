@@ -485,7 +485,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         }[];
       };
 
-      const { typeUrl, value: msg } = makeExecuteCosmwasmContractMsg({
+      const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
         sender: cosmwasmData.sender,
         contract: cosmwasmData.contract,
         msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
@@ -510,7 +510,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           : { destinationAddress: messageData.receiver }
       );
 
-      const { typeUrl, value } = makeIBCTransferMsg({
+      const { typeUrl, value } = await makeIBCTransferMsg({
         sourcePort: messageData.source_port,
         sourceChannel: messageData.source_channel,
         token: {
