@@ -21,7 +21,7 @@ export async function makeJoinPoolMsg({
   });
 }
 
-makeJoinPoolMsg.shareCoinDecimals = 18;
+makeJoinPoolMsg.shareCoinDecimals = 18 as const;
 
 export async function makeJoinSwapExternAmountInMsg({
   poolId,

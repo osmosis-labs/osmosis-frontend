@@ -301,7 +301,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     // Unmount the previous wallet manager.
     await this._walletManager.onUnmounted();
     this._createWalletManager(this._wallets);
-    return this._walletManager as NonNullable<typeof this._walletManager>;
+    return this._walletManager;
   }
 
   get walletManager() {
