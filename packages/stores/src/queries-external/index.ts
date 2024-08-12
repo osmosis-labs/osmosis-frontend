@@ -21,4 +21,4 @@ export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
 export const COINGECKO_API_DEFAULT_BASEURL =
   "https://coingecko.osmosis.zone/api";
 
-export const NUMIA_INDEXER_BASEURL = "https://public-osmosis-api.numia.xyz";
+export const NUMIA_INDEXER_BASEURL = "https://public-osmosis-api.numia.dev";
