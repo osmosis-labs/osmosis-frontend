@@ -321,7 +321,10 @@
     "all": "All",
     "assets": "Assets",
     "recentActivity": "Recent activity",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "show": "Show",
+    "hide": "Hide",
+    "hidden": "Hidden"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "Trade",
     "swapToAnotherAsset": "Swap to another asset",
     "invalidPrice": "Invalid price",
+    "priceTooLow": "Price too low",
+    "priceTooHigh": "Price too high",
     "unavailable": "Unavailable for {denom}",
     "orderHistoryHeaders": {
       "past": "Past",

@@ -321,7 +321,10 @@
     "all": "Todo",
     "assets": "Activos",
     "recentActivity": "Actividad reciente",
-    "seeAll": "Ver todo"
+    "seeAll": "Ver todo",
+    "show": "Espectáculo",
+    "hide": "Esconder",
+    "hidden": "Oculto"
   },
   "buyTokens": "Comprar fichas",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "Comercio",
     "swapToAnotherAsset": "Cambiar a otro activo",
     "invalidPrice": "Precio no válido",
+    "priceTooLow": "Precio demasiado bajo",
+    "priceTooHigh": "Precio demasiado alto",
     "unavailable": "No disponible para {denom}",
     "orderHistoryHeaders": {
       "past": "Pasado",

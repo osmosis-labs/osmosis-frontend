@@ -32,6 +32,7 @@ interface TradeDetailsProps {
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
+  priceOverride?: PricePretty;
   tab?: "buy" | "sell";
 }
 
@@ -43,6 +44,7 @@ export const TradeDetails = observer(
     type,
     makerFee,
     tab,
+    priceOverride,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
     const routesVisDisclosure = useDisclosure();
@@ -104,12 +106,28 @@ export const TradeDetails = observer(
                           className={classNames(
                             "body2 sm:caption py-1 text-osmoverse-300",
                             {
-                              "animate-pulse": inPriceFetching || isLoading,
+                              "animate-pulse":
+                                inPriceFetching ||
+                                isLoading ||
+                                swapState?.inAmountInput.isTyping,
                             }
                           )}
                         >
-                          {swapState?.inBaseOutQuoteSpotPrice &&
-                            ExpectedRate(swapState, outAsBase, treatAsStable)}
+                          {swapState?.inBaseOutQuoteSpotPrice && (
+                            <SkeletonLoader
+                              isLoaded={
+                                type !== "market" ||
+                                !swapState.inAmountInput.isTyping
+                              }
+                            >
+                              {ExpectedRate(
+                                swapState,
+                                outAsBase,
+                                treatAsStable,
+                                priceOverride
+                              )}
+                            </SkeletonLoader>
+                          )}
                         </span>
                       </div>
                     </GenericDisclaimer>
@@ -350,7 +368,9 @@ export function Closer({
 export function ExpectedRate(
   swapState: ReturnType<typeof useSwap>,
   outAsBase: boolean,
-  treatAsStable: string | undefined = undefined
+  treatAsStable: string | undefined = undefined,
+  // Used for Limit inputs to override the price display
+  priceOverride?: PricePretty
 ) {
   var inBaseOutQuoteSpotPrice =
     swapState?.inBaseOutQuoteSpotPrice?.toDec() ?? new Dec(1);
@@ -369,7 +389,7 @@ export function ExpectedRate(
     return (
       <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
-        {formatPretty(inQuoteAssetPrice, {
+        {formatPretty(priceOverride?.toDec() ?? inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
         })}{" "}
       </span>
@@ -383,7 +403,7 @@ export function ExpectedRate(
     return (
       <span data-testid="token-price">
         1 {baseAsset} ≈{" $"}
-        {formatPretty(inQuoteAssetPrice, {
+        {formatPretty(priceOverride?.toDec() ?? inQuoteAssetPrice, {
           ...getPriceExtendedFormatOptions(inQuoteAssetPrice),
         })}{" "}
       </span>

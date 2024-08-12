@@ -321,7 +321,10 @@
     "all": "બધા",
     "assets": "અસ્કયામતો",
     "recentActivity": "તાજેતરની પ્રવૃત્તિ",
-    "seeAll": "બધા જુઓ"
+    "seeAll": "બધા જુઓ",
+    "show": "બતાવો",
+    "hide": "છુપાવો",
+    "hidden": "છુપાયેલ"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
     "invalidPrice": "અમાન્ય કિંમત",
+    "priceTooLow": "કિંમત ખૂબ ઓછી છે",
+    "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
     "unavailable": "{denom} માટે અનુપલબ્ધ",
     "orderHistoryHeaders": {
       "past": "ભૂતકાળ",

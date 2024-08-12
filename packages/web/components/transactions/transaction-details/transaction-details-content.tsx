@@ -90,7 +90,7 @@ export const TransactionDetailsContent = ({
         "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
         "bg-osmoverse-900": !featureFlags.limitOrders,
-        "bg-osmoverse-1000": featureFlags.limitOrders,
+        "bg-osmoverse-1000 sm:bg-osmoverse-850": featureFlags.limitOrders,
       })}
     >
       <div className="flex flex-col px-4 pb-8 md:p-0">

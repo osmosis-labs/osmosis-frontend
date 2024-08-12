@@ -321,7 +321,10 @@
     "all": "全部",
     "assets": "资产",
     "recentActivity": "最近活动",
-    "seeAll": "查看全部"
+    "seeAll": "查看全部",
+    "show": "展示",
+    "hide": "隐藏",
+    "hidden": "隐"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "贸易",
     "swapToAnotherAsset": "转换为其他资产",
     "invalidPrice": "价格无效",
+    "priceTooLow": "价格太低",
+    "priceTooHigh": "价格太高",
     "unavailable": "不适用于{denom}",
     "orderHistoryHeaders": {
       "past": "过去的",

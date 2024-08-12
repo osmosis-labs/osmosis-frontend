@@ -191,7 +191,7 @@ export const OrderHistory = observer(() => {
 
   return (
     <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
-      <table className="relative min-w-[1152px] table-auto" ref={listRef}>
+      <table className="relative min-w-[900px] table-auto" ref={listRef}>
         {!isLoading && (
           <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
             <tr
@@ -474,6 +474,9 @@ const TableOrderRow = memo(
               </p>
               <div className="inline-flex items-center gap-2">
                 <span>
+                  {order_direction === "bid"
+                    ? t("limitOrders.buy")
+                    : t("limitOrders.sell")}{" "}
                   {formatFiatPrice(
                     new PricePretty(
                       DEFAULT_VS_CURRENCY,

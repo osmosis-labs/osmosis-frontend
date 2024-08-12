@@ -321,7 +321,10 @@
     "all": "Toate",
     "assets": "Active",
     "recentActivity": "Activitate recentă",
-    "seeAll": "Vezi toate"
+    "seeAll": "Vezi toate",
+    "show": "Spectacol",
+    "hide": "Ascunde",
+    "hidden": "Ascuns"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "Comerț",
     "swapToAnotherAsset": "Schimbați cu un alt activ",
     "invalidPrice": "Preț nevalid",
+    "priceTooLow": "Pret prea mic",
+    "priceTooHigh": "Pret prea mare",
     "unavailable": "Indisponibil pentru {denom}",
     "orderHistoryHeaders": {
       "past": "Trecut",

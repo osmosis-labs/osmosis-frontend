@@ -321,7 +321,10 @@
     "all": "全部",
     "assets": "資產",
     "recentActivity": "最近的活動",
-    "seeAll": "看全部"
+    "seeAll": "看全部",
+    "show": "展示",
+    "hide": "隱藏",
+    "hidden": "隱"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "invalidPrice": "價格無效",
+    "priceTooLow": "價格太低",
+    "priceTooHigh": "價格太高",
     "unavailable": "不適用於{denom}",
     "orderHistoryHeaders": {
       "past": "過去的",

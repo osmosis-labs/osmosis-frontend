@@ -321,7 +321,10 @@
     "all": "全て",
     "assets": "資産",
     "recentActivity": "最近のアクティビティ",
-    "seeAll": "すべて見る"
+    "seeAll": "すべて見る",
+    "show": "見せる",
+    "hide": "隠れる",
+    "hidden": "隠れた"
   },
   "buyTokens": "トークンを購入する",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
     "invalidPrice": "無効な価格",
+    "priceTooLow": "価格が低すぎる",
+    "priceTooHigh": "価格が高すぎる",
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",

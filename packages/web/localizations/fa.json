@@ -321,7 +321,10 @@
     "all": "همه",
     "assets": "دارایی های",
     "recentActivity": "فعالیت اخیر",
-    "seeAll": "همه را ببینید"
+    "seeAll": "همه را ببینید",
+    "show": "نمایش دهید",
+    "hide": "پنهان کردن",
+    "hidden": "پنهان شده است"
   },
   "buyTokens": "خرید توکن",
   "components": {
@@ -1303,6 +1306,8 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
+    "priceTooLow": "قیمت خیلی پایین",
+    "priceTooHigh": "قیمت خیلی بالاست",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",
