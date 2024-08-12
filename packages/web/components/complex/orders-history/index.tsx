@@ -54,9 +54,10 @@ function groupOrdersByStatus(orders: MappedLimitOrder[]) {
 
 const headers = ["order", "amount", "price", "orderPlaced", "status"];
 const mdHeaders = ["order", "status"];
+const lgHeaders = ["order", "orderPlaced", "status"];
 
 const gridClasses =
-  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr]";
+  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
 export const OrderHistory = observer(() => {
   const { logEvent } = useAmplitudeAnalytics({
@@ -69,6 +70,7 @@ export const OrderHistory = observer(() => {
   const listRef = useRef<HTMLTableElement>(null);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
+  const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
   const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
 
   const {
@@ -111,7 +113,7 @@ export const OrderHistory = observer(() => {
     paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
-    paddingStart: isMobile ? 46 : 84,
+    paddingStart: 45,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
@@ -143,10 +145,10 @@ export const OrderHistory = observer(() => {
 
   const onOrderSelect = useCallback(
     (order: MappedLimitOrder) => {
-      if (!isMobile) return;
+      if (!isLargeScreen) return;
       setSelectedOrder(order);
     },
-    [isMobile]
+    [isLargeScreen]
   );
 
   if (showConnectWallet) {
@@ -209,7 +211,7 @@ export const OrderHistory = observer(() => {
   return (
     <div className="mt-3 flex flex-col overflow-x-scroll">
       <table
-        className="relative min-w-[900px] table-auto md:min-w-[100vw]"
+        className="relative min-w-[900px] table-auto xl:min-w-[100%]"
         ref={listRef}
       >
         {!isLoading && (
@@ -219,7 +221,8 @@ export const OrderHistory = observer(() => {
                 {
                   "!bg-osmoverse-1000": featureFlags.limitOrders,
                 },
-                gridClasses
+                gridClasses,
+                "xl:pl-4"
               )}
             >
               {headers.map((header) => (
@@ -227,6 +230,7 @@ export const OrderHistory = observer(() => {
                   key={header}
                   className={classNames("!px-0", {
                     "md:hidden": !mdHeaders.includes(header),
+                    "xl:hidden": !lgHeaders.includes(header),
                   })}
                 >
                   {header !== "amount" && (
@@ -236,7 +240,7 @@ export const OrderHistory = observer(() => {
                   )}
                 </th>
               ))}
-              {!isMobile && <th />}
+              {!isLargeScreen && <th />}
             </tr>
           </thead>
         )}
@@ -299,7 +303,7 @@ export const OrderHistory = observer(() => {
           }
         }}
       />
-      {isMobile && (
+      {isLargeScreen && (
         <OrderModal
           order={selectedOrder}
           onRequestClose={() => setSelectedOrder(undefined)}
@@ -331,16 +335,16 @@ const TableGroupHeader = ({
 
   if (group === "filled") {
     return (
-      <tr style={style} className="md:flex md:items-end">
+      <tr style={style} className="flex items-center">
         <td colSpan={5} className="!p-0">
           <div className="flex w-full items-end justify-between pr-4">
             <div className="relative flex items-end gap-3 pt-5">
               <div className="flex items-center gap-2 pb-3">
-                <span className="md:subtitle1 text-h6 font-h6">
+                <span className="sm:subtitle1 text-h6 font-h6">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="md:body2 pb-4 pt-8 text-h6 font-h6 md:flex md:items-end md:pb-2 md:pt-4">
+                  <span className="md:body2 pb-4 pt-8 text-h6 font-h6">
                     {filledOrdersCount}
                   </span>
                 </div>
@@ -374,8 +378,8 @@ const TableGroupHeader = ({
   }
 
   return (
-    <tr style={style} className="md:flex md:items-end">
-      <span className="md:subtitle1 pb-4 pt-8 text-h6 font-h6 md:pb-2 md:pt-4">
+    <tr style={style} className="flex items-center">
+      <span className="sm:subtitle1 py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
         {group === "pending"
           ? t("limitOrders.orderHistoryHeaders.pending")
           : t("limitOrders.orderHistoryHeaders.past")}
@@ -460,10 +464,13 @@ const TableOrderRow = memo(
     return (
       <tr
         style={style}
-        className={gridClasses}
+        className={classNames(
+          gridClasses,
+          "xl:items-center xl:py-3 xl:pl-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900"
+        )}
         onClick={() => onOrderSelect(order)}
       >
-        <td className="flex items-center justify-center !px-0 !text-left md:hidden">
+        <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
           <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
             <Icon
               id="coins"
@@ -476,8 +483,8 @@ const TableOrderRow = memo(
             />
           </div>
         </td>
-        <td className="!px-0 !text-left">
-          <div className="flex items-center gap-4">
+        <td className="!px-0 !text-left xl:!py-0">
+          <div className="flex items-center">
             <div className="flex flex-col gap-1">
               <p
                 className={classNames(
@@ -548,7 +555,7 @@ const TableOrderRow = memo(
             </div>
           </div>
         </td>
-        <td className="!px-0 !text-left md:hidden">
+        <td className="!px-0 !text-left xl:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">
               {baseAsset?.symbol} · {t("limitOrders.limit")}
@@ -560,13 +567,13 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left md:hidden">
+        <td className="!px-0 !text-left xl:!py-0  md:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
         </td>
-        <td className="!px-0 !text-left">
+        <td className="!px-0 !text-left  xl:!py-0">
           <div className="flex flex-col gap-1">
             {statusComponent}
             <span
@@ -585,7 +592,7 @@ const TableOrderRow = memo(
             </span>
           </div>
         </td>
-        <td className="flex w-[150px] items-center justify-end !px-0 !text-left md:hidden">
+        <td className="flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden">
           <ActionsCell order={order} refetch={refetch} />
         </td>
       </tr>
