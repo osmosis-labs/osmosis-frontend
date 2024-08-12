@@ -44,7 +44,7 @@ export class TradePage extends BasePage {
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
     this.inputAmount = page.locator(
-      "//div[contains(@class, 'transiiton-all')]/input[@placeholder]"
+      "//input[contains(@data-testid, 'trade-input')]"
     );
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
@@ -91,7 +91,7 @@ export class TradePage extends BasePage {
   }
 
   async setLimitPriceChange(change: string) {
-    const locator = `//span[@class="body2" and .="${change}"]`;
+    const locator = `//button/span[contains(@class, "body2") and .="${change}"]`;
     await this.page.locator(locator).click();
     await this.page.waitForTimeout(1000);
   }
@@ -167,58 +167,28 @@ export class TradePage extends BasePage {
     const tokenLocator = "//div//button[@type]//img[@alt]";
     const fromToken = this.page.locator(tokenLocator).nth(0);
     const toToken = this.page.locator(tokenLocator).nth(1);
-
-    let fromTokenText = await fromToken.innerText();
-    let toTokenText = await toToken.innerText();
-    console.log("Current pair: " + fromTokenText + " / " + toTokenText);
-
-    if (fromTokenText == from && toTokenText == to) {
-      console.log(
-        "Current pair: " + fromTokenText + toTokenText + " is already matching."
-      );
-      return;
-    }
-
-    if (fromTokenText == to && toTokenText == from) {
-      await this.flipTokenPair();
-      console.log(
-        "Current pair: " + fromTokenText + toTokenText + " is fliped."
-      );
-      return;
-    }
-
-    if (from == toTokenText || to == fromTokenText) {
-      await this.flipTokenPair();
-    }
-
-    if (fromTokenText != from && toTokenText != from) {
-      await fromToken.click();
-      // we expect that after 1 second token filter is displayed.
-      await this.page.waitForTimeout(1000);
-      await this.page.getByPlaceholder("Search").fill(from);
-      const fromLocator = this.page
-        .locator(
-          "//div/button[@data-testid='token-select-asset']//span[.='" +
-            from +
-            "']"
-        )
-        .first();
-      await fromLocator.click();
-    }
-
-    if (toTokenText != to && fromTokenText != to) {
-      await toToken.click();
-      // we expect that after 1 second token filter is displayed.
-      await this.page.waitForTimeout(1000);
-      await this.page.getByPlaceholder("Search").fill(to);
-
-      const toLocator = this.page.locator(
-        "//div/button[@data-testid='token-select-asset']//span[@ class='subtitle2 text-osmoverse-400' and .='" +
-          to +
-          "']"
-      );
-      await toLocator.click();
-    }
+    // Select From Token
+    await fromToken.click();
+    // we expect that after 1 second token filter is displayed.
+    await this.page.waitForTimeout(1000);
+    await this.page.getByPlaceholder("Search").fill(from);
+    const fromLocator = this.page
+      .locator(
+        `//div/button[@data-testid='token-select-asset']//span[.='${from}']`
+      )
+      .first();
+    await fromLocator.click();
+    // Select To Token
+    await toToken.click();
+    // we expect that after 1 second token filter is displayed.
+    await this.page.waitForTimeout(1000);
+    await this.page.getByPlaceholder("Search").fill(to);
+    const toLocator = this.page
+      .locator(
+        `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
+      )
+      .first();
+    await toLocator.click();
     // we expect that after 2 seconds exchange rate is populated.
     await this.page.waitForTimeout(2000);
     expect(await this.getExchangeRate()).toContain(from);
