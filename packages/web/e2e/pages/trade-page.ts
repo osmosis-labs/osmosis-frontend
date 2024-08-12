@@ -91,7 +91,7 @@ export class TradePage extends BasePage {
   }
 
   async setLimitPriceChange(change: string) {
-    const locator = `//span[@class="body2" and .="${change}"]`;
+    const locator = `//button/span[contains(@class, "body2") and .="${change}"]`;
     await this.page.locator(locator).click();
     await this.page.waitForTimeout(1000);
   }
