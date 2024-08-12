@@ -209,7 +209,7 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-x-scroll">
+    <div className="mt-3 flex flex-col overflow-x-scroll xl:!overflow-auto">
       <table
         className="relative min-w-[900px] table-auto xl:min-w-[100%]"
         ref={listRef}
@@ -245,13 +245,13 @@ export const OrderHistory = observer(() => {
           </thead>
         )}
         <tbody
-          className="min-h-[100px] bg-transparent"
+          className="min-h-[200px] bg-transparent"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center py-10">
+            <tr className="flex items-center justify-center py-10">
               <Spinner className="!h-10 !w-10" />
-            </div>
+            </tr>
           ) : (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];

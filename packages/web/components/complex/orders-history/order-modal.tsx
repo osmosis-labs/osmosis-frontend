@@ -189,7 +189,7 @@ const OrderDetails = observer(
     return (
       <div
         className={classNames(
-          "top-[4.5rem] flex w-full flex-col overflow-y-auto border-osmoverse-700 bg-osmoverse-900 xl:!py-2 xl:!px-4 sm:top-0 sm:h-full sm:!h-full sm:rounded-none sm:bg-osmoverse-850"
+          "top-[4.5rem] flex w-full flex-col overflow-y-auto border-osmoverse-700 bg-osmoverse-900 xl:!py-8 xl:!px-8 sm:top-0 sm:h-full sm:!h-full sm:rounded-none sm:bg-osmoverse-850"
         )}
       >
         {!isModal && (
@@ -311,7 +311,7 @@ const OrderDetails = observer(
           <div className={classNames("flex flex-col py-3")}>
             <RecapRow
               className="py-3"
-              left={<span className="body2">Price</span>}
+              left={<span className="subtitle1">Price</span>}
               right={
                 <div className="sm:body2 flex items-center justify-center">
                   {formatPretty(
@@ -326,14 +326,14 @@ const OrderDetails = observer(
             />
             <RecapRow
               className="py-3"
-              left={<span className="body2">Status</span>}
+              left={<span className="subtitle1">Status</span>}
               right={statusComponent}
             />
             {(order?.status === "open" ||
               order?.status === "partiallyFilled") && (
               <RecapRow
                 className="py-3"
-                left={<span className="body2">Percent Filled</span>}
+                left={<span className="subtitle1">Percent Filled</span>}
                 right={
                   <span className="body2 text-osmoverse-300">
                     <OrderProgressBar order={order!} />
@@ -352,6 +352,19 @@ const OrderDetails = observer(
               className="body2 sm:caption !rounded-2xl"
             >
               <span className="text-h6 font-h6">{buttonText}</span>
+            </Button>
+          </div>
+        )}
+        {!!order && !!order.placed_tx && (
+          <div className="flex items-center justify-center gap-3 pt-3">
+            <Button mode="secondary" className="body2 sm:caption !rounded-2xl">
+              <a
+                rel="noopener noreferrer"
+                target="_blank"
+                href={`https://www.mintscan.io/osmosis/txs/${order.placed_tx}`}
+              >
+                <span>{t("transactions.viewOnExplorer")} &#x2197;</span>
+              </a>
             </Button>
           </div>
         )}
