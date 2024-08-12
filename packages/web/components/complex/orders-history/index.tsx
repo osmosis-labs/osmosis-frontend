@@ -71,6 +71,7 @@ export const OrderHistory = observer(() => {
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
+  const { isMobile: isMediumScreen } = useWindowSize(Breakpoint.md);
   const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
 
   const {
@@ -113,7 +114,7 @@ export const OrderHistory = observer(() => {
     paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
-    paddingStart: 45,
+    paddingStart: isMediumScreen ? 0 : 45,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
@@ -209,28 +210,28 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-x-scroll xl:!overflow-auto">
+    <div className="mt-3 flex flex-col overflow-x-scroll xl:overflow-visible">
       <table
         className="relative min-w-[900px] table-auto xl:min-w-[100%]"
         ref={listRef}
       >
         {!isLoading && (
-          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
+          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000 md:hidden">
             <tr
               className={classNames(
                 {
                   "!bg-osmoverse-1000": featureFlags.limitOrders,
                 },
-                gridClasses,
-                "xl:pl-4"
+                gridClasses
               )}
             >
               {headers.map((header) => (
                 <th
                   key={header}
-                  className={classNames("!px-0", {
+                  className={classNames("flex !px-0", {
                     "md:hidden": !mdHeaders.includes(header),
                     "xl:hidden": !lgHeaders.includes(header),
+                    "xl:justify-end": isLargeScreen && header === "status",
                   })}
                 >
                   {header !== "amount" && (
@@ -245,7 +246,7 @@ export const OrderHistory = observer(() => {
           </thead>
         )}
         <tbody
-          className="min-h-[200px] bg-transparent"
+          className="min-h-[200px] bg-transparent xl:overflow-visible"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
@@ -259,7 +260,7 @@ export const OrderHistory = observer(() => {
               const style = {
                 position: "absolute",
                 top: 0,
-                left: 0,
+                left: "0",
                 width: "100%",
                 height: `${virtualRow.size}px`,
                 transform: `translateY(${
@@ -283,6 +284,8 @@ export const OrderHistory = observer(() => {
               }
 
               const order = row as MappedLimitOrder;
+              // style.left = isLargeScreen ? "rem" : "0";
+              style.width = isLargeScreen ? "calc(100% + 2rem)" : "100%";
               return (
                 <TableOrderRow
                   key={`${virtualRow.index}`}
@@ -466,7 +469,7 @@ const TableOrderRow = memo(
         style={style}
         className={classNames(
           gridClasses,
-          "xl:items-center xl:py-3 xl:pl-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900"
+          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900"
         )}
         onClick={() => onOrderSelect(order)}
       >
@@ -483,7 +486,7 @@ const TableOrderRow = memo(
             />
           </div>
         </td>
-        <td className="!px-0 !text-left xl:!py-0">
+        <td className="!px-0 !text-left">
           <div className="flex items-center">
             <div className="flex flex-col gap-1">
               <p
@@ -574,7 +577,7 @@ const TableOrderRow = memo(
           </div>
         </td>
         <td className="!px-0 !text-left  xl:!py-0">
-          <div className="flex flex-col gap-1">
+          <div className="xl: flex flex-col gap-1 xl:items-end xl:justify-end">
             {statusComponent}
             <span
               className={classNames(
