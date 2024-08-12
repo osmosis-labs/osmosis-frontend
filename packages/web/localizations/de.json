@@ -1307,6 +1307,8 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
     "invalidPrice": "Ungültiger Preis",
+    "priceTooLow": "Preis zu niedrig",
+    "priceTooHigh": "Preis zu hoch",
     "unavailable": "Nicht verfügbar für {denom}",
     "orderHistoryHeaders": {
       "past": "Vergangenheit",

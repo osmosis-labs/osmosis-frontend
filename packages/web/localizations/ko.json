@@ -1307,6 +1307,8 @@
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
     "invalidPrice": "잘못된 가격",
+    "priceTooLow": "가격이 너무 낮음",
+    "priceTooHigh": "가격이 너무 비싸요",
     "unavailable": "{denom} 에는 사용할 수 없습니다.",
     "orderHistoryHeaders": {
       "past": "과거",

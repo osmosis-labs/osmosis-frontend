@@ -1307,6 +1307,8 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
+    "priceTooLow": "قیمت خیلی پایین",
+    "priceTooHigh": "قیمت خیلی بالاست",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",

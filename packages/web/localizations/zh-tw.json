@@ -1307,6 +1307,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "invalidPrice": "價格無效",
+    "priceTooLow": "價格太低",
+    "priceTooHigh": "價格太高",
     "unavailable": "不適用於{denom}",
     "orderHistoryHeaders": {
       "past": "過去的",
