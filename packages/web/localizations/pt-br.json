@@ -325,7 +325,10 @@
     "pooled": "Agrupados",
     "other": "Outro",
     "all": "Todos",
-    "assets": "Ativos"
+    "assets": "Ativos",
+    "show": "Mostrar",
+    "hide": "Esconder",
+    "hidden": "Escondido"
   },
   "buyTokens": "Comprar tokens",
   "components": {

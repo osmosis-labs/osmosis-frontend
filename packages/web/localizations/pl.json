@@ -325,7 +325,10 @@
     "pooled": "Połączone",
     "other": "Inny",
     "all": "Wszystko",
-    "assets": "Aktywa"
+    "assets": "Aktywa",
+    "show": "Pokazywać",
+    "hide": "Ukrywać",
+    "hidden": "Ukryty"
   },
   "buyTokens": "Kup tokeny",
   "components": {

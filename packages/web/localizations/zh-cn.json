@@ -325,7 +325,10 @@
     "pooled": "池化",
     "other": "其他",
     "all": "全部",
-    "assets": "资产"
+    "assets": "资产",
+    "show": "展示",
+    "hide": "隐藏",
+    "hidden": "隐"
   },
   "buyTokens": "购买代币",
   "components": {

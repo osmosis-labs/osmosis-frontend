@@ -325,7 +325,10 @@
     "pooled": "जमा",
     "other": "अन्य",
     "all": "सभी",
-    "assets": "संपत्ति"
+    "assets": "संपत्ति",
+    "show": "दिखाओ",
+    "hide": "छिपाना",
+    "hidden": "छिपा हुआ"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {

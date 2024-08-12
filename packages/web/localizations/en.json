@@ -325,7 +325,10 @@
     "pooled": "Pooled",
     "other": "Other",
     "all": "All",
-    "assets": "Assets"
+    "assets": "Assets",
+    "show": "Show",
+    "hide": "Hide",
+    "hidden": "Hidden"
   },
   "buyTokens": "Buy tokens",
   "components": {
