@@ -29,6 +29,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -218,24 +219,13 @@ export const AssetBalancesTable: FunctionComponent<{
         cell: ({ row: { original: asset } }) => (
           <AssetActionsCell
             {...asset}
-            onDeposit={onDeposit}
-            onWithdraw={onWithdraw}
-            onExternalTransferUrl={setExternalUrl}
             showUnverifiedAssetsSetting={showUnverifiedAssets}
             confirmUnverifiedAsset={setVerifiedAsset}
           />
         ),
       }),
     ];
-  }, [
-    sortKey,
-    sortDirection,
-    showUnverifiedAssets,
-    onDeposit,
-    onWithdraw,
-    setSortKey,
-    t,
-  ]);
+  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -509,9 +499,6 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
 );
 
 export const AssetActionsCell: AssetCellComponent<{
-  onDeposit: (coinDenom: string) => void;
-  onWithdraw: (coinDenom: string) => void;
-  onExternalTransferUrl: (url: string) => void;
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;
@@ -523,24 +510,13 @@ export const AssetActionsCell: AssetCellComponent<{
   amount,
   transferMethods,
   counterparty,
-  onDeposit,
-  onWithdraw,
-  onExternalTransferUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
 }) => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
-  // if it's the first transfer method it's considered the preferred method
-  // the new d/w flow handles this, so we only need to check for the old flow
-  const externalTransfer =
-    Boolean(transferMethods.length) &&
-    transferMethods[0].type === "external_interface" &&
-    !featureFlags.newDepositWithdrawFlow
-      ? transferMethods[0]
-      : undefined;
+  const { bridgeAsset } = useBridge();
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 
@@ -559,43 +535,41 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       )}
-      {!needsActivation &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.depositUrl) {
-                onExternalTransferUrl(externalTransfer.depositUrl);
-              } else {
-                onDeposit(coinDenom);
+      <div className="flex gap-3">
+        {!needsActivation &&
+          Boolean(counterparty.length) &&
+          Boolean(transferMethods.length) && (
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={() =>
+                bridgeAsset({
+                  anyDenom: coinDenom,
+                  direction: "deposit",
+                })
               }
-            }}
-          >
-            <Icon className="m-auto " id="deposit" width={16} height={16} />
-          </button>
-        )}
-      {!needsActivation &&
-        amount?.toDec().isPositive() &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.withdrawUrl) {
-                onExternalTransferUrl(externalTransfer.withdrawUrl);
-              } else {
-                onWithdraw(coinDenom);
+            >
+              <Icon id="deposit" height={20} width={20} />
+            </Button>
+          )}
+        {!needsActivation &&
+          amount?.toDec().isPositive() &&
+          Boolean(counterparty.length) &&
+          Boolean(transferMethods.length) && (
+            <Button
+              size="icon"
+              variant="secondary"
+              onClick={() =>
+                bridgeAsset({
+                  anyDenom: coinDenom,
+                  direction: "withdraw",
+                })
               }
-            }}
-          >
-            <Icon className="m-auto" id="withdraw" width={16} height={16} />
-          </button>
-        )}
+            >
+              <Icon id="withdraw" height={20} width={20} />
+            </Button>
+          )}
+      </div>
     </div>
   );
 };
