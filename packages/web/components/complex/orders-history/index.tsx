@@ -108,10 +108,8 @@ export const OrderHistory = observer(() => {
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
     estimateSize: () => (isMobile ? 60 : 84),
-    paddingStart: -220,
     paddingEnd: 110,
     overscan: 10,
-    scrollMargin: listRef.current?.offsetTop ?? 0,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
