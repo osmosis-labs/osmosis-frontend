@@ -20,7 +20,6 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -28,7 +27,6 @@ import { CypherCard } from "./cypher-card";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
