@@ -159,8 +159,6 @@ export const PortfolioPage: FunctionComponent = () => {
                   <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}
-                      onDeposit={onDeposit}
-                      onWithdraw={onWithdraw}
                     />
                   </TabPanel>
                   <TabPanel>
