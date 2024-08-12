@@ -100,6 +100,7 @@ export const orderbookRouter = createTRPCRouter({
 
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
+
           return allOrders.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}`,

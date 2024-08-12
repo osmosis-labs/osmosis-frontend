@@ -29,7 +29,11 @@ import {
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatFiatPrice,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -315,13 +319,8 @@ export function ReviewOrder({
                 </div>
               </div>
               <div className="sm:subtitle2 flex flex-col items-end">
-                {formatPretty(
-                  inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0),
-                  {
-                    ...getPriceExtendedFormatOptions(
-                      inAmountFiat?.toDec() ?? new Dec(0)
-                    ),
-                  }
+                {formatFiatPrice(
+                  inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
                 )}
               </div>
             </div>
@@ -380,11 +379,10 @@ export function ReviewOrder({
                     >{`-${outputDifference}`}</span>
                   )}
                   <span className="sm:subtitle2">
-                    {formatPretty(expectedOutputFiat ?? new Dec(0), {
-                      ...getPriceExtendedFormatOptions(
-                        expectedOutputFiat?.toDec() ?? new Dec(0)
-                      ),
-                    })}
+                    {formatFiatPrice(
+                      expectedOutputFiat ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                    )}
                   </span>
                 </p>
               </div>

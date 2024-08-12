@@ -367,6 +367,10 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   const truncatedAmount = new Dec(
     parseFloat(price.toDec().toString()).toFixed(maxDecimals).toString()
   );
+
+  if (truncatedAmount.gte(new Dec(1000000000))) {
+    return ">$1B";
+  }
   const truncatedPrice = new PricePretty(price.fiatCurrency, truncatedAmount);
   const formattedPrice = formatPretty(truncatedPrice, {
     ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
