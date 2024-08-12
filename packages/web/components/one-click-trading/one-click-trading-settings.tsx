@@ -1,5 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";

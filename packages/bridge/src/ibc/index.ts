@@ -7,8 +7,8 @@ import {
 } from "@osmosis-labs/server";
 import {
   calcAverageBlockTimeMs,
-  cosmosMsgOpts,
   estimateGasFee,
+  makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import cachified from "cachified";
@@ -149,7 +149,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainId: params.toChain.chainId.toString(),
     });
 
-    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
+    const { typeUrl, value: msg } = makeIBCTransferMsg({
       receiver: params.toAddress,
       sender: params.fromAddress,
       sourceChannel,
@@ -175,7 +175,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&

@@ -1,7 +1,7 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
+import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { tError } from "~/components/localization";
@@ -249,7 +249,7 @@ export const usePlaceLimit = ({
   const encodedMsg = useMemo(() => {
     if (!placeLimitMsg) return;
 
-    return cosmwasmMsgOpts.executeWasm.messageComposer({
+    return makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
       msg: Buffer.from(JSON.stringify(placeLimitMsg)),

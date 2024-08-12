@@ -6,11 +6,11 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import type { RouterKey } from "@osmosis-labs/server";
+import { SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
-  SignOptions,
-} from "@osmosis-labs/stores";
+} from "@osmosis-labs/tx";
 import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,

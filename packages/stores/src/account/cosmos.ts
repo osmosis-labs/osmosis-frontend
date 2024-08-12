@@ -7,18 +7,15 @@ import {
   IQueriesStore,
   txEventsWithPreOnFulfill,
 } from "@osmosis-labs/keplr-stores";
-import deepmerge from "deepmerge";
-import Long from "long";
-import { DeepPartial } from "utility-types";
+import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 
 import {
   AccountStore,
   CosmwasmAccount,
   DeliverTxResponse,
   OsmosisAccount,
-} from "../../account";
-import { OsmosisQueries } from "../../queries";
-import { cosmosMsgOpts } from "./types";
+} from "../account";
+import { OsmosisQueries } from "../queries";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;
@@ -26,9 +23,6 @@ export interface CosmosAccount {
 
 export const CosmosAccount = {
   use(options: {
-    msgOptsCreator?: (
-      chainId: string
-    ) => DeepPartial<typeof cosmosMsgOpts> | undefined;
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
@@ -36,20 +30,12 @@ export const CosmosAccount = {
     chainId: string
   ) => CosmosAccount {
     return (base, chainGetter, chainId) => {
-      const msgOptsFromCreator = options.msgOptsCreator
-        ? options.msgOptsCreator(chainId)
-        : undefined;
-
       return {
         cosmos: new CosmosAccountImpl(
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          deepmerge<typeof cosmosMsgOpts, DeepPartial<typeof cosmosMsgOpts>>(
-            cosmosMsgOpts,
-            msgOptsFromCreator ? msgOptsFromCreator : {}
-          )
+          options.queriesStore
         ),
       };
     };
@@ -65,8 +51,7 @@ export class CosmosAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    readonly msgOpts: typeof cosmosMsgOpts
+    >
   ) {}
 
   private get address() {
@@ -74,13 +59,14 @@ export class CosmosAccountImpl {
   }
 
   /**
-   * Send a IBC transfer transaction.
+   * Send an IBC transfer transaction.
    *
-   * @param channel the channel to send the IBC transfer transaction.
-   * @param amount the amount to send.
-   * @param currency the currency to send.
-   * @param recipient the recipient address.
-   * @param onTxEvents the callback function to handle the transaction events.
+   * @param channel - The channel information for the IBC transfer.
+   * @param amount - The amount to send.
+   * @param currency - The currency to send.
+   * @param recipient - The recipient address.
+   * @param onTxEvents - Optional callback function or object to handle transaction events.
+   * @param memo - Optional memo to include with the transaction.
    */
   async sendIBCTransferMsg(
     channel: {
@@ -129,7 +115,7 @@ export class CosmosAccountImpl {
       destinationInfo.network
     ).version.toString();
 
-    const msg = this.msgOpts.ibcTransfer.messageComposer({
+    const msg = makeIBCTransferMsg({
       sourcePort: channel.portId,
       sourceChannel: channel.channelId,
       token: {
@@ -139,14 +125,8 @@ export class CosmosAccountImpl {
       receiver: recipient,
       sender: this.address,
       timeoutHeight: {
-        /**
-         * Omit the revision_number if the chain's version is 0.
-         * Sending the value as 0 will cause the transaction to fail.
-         */
         revisionNumber:
-          revisionNumber !== "0"
-            ? Long.fromString(revisionNumber)
-            : (undefined as any),
+          revisionNumber !== "0" ? BigInt(revisionNumber) : undefined,
         revisionHeight: BigInt(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
@@ -183,5 +163,3 @@ export class CosmosAccountImpl {
     );
   }
 }
-
-export * from "./types";

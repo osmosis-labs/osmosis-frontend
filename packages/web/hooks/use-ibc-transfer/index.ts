@@ -7,6 +7,7 @@ import {
   OsmosisAccount,
   UncommitedHistory,
 } from "@osmosis-labs/stores";
+import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { useCallback } from "react";
 import { useMount, usePrevious, useUpdateEffect } from "react-use";
 
@@ -71,9 +72,7 @@ export function useIbcTransfer({
   const feeConfig = useFakeFeeConfig(
     chainStore,
     isWithdraw ? chainId : counterpartyChainId,
-    isWithdraw
-      ? account?.cosmos.msgOpts.ibcTransfer.gas ?? 0
-      : counterpartyAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
+    makeIBCTransferMsg.gas ?? 0
   );
   const amountConfig = useAmountConfig(
     chainStore,

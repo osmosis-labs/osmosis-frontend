@@ -5,9 +5,9 @@ import {
   ibcProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import {
-  cosmosMsgOpts,
-  cosmwasmMsgOpts,
   estimateGasFee,
+  makeExecuteCosmwasmContractMsg,
+  makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
@@ -485,19 +485,18 @@ export class SkipBridgeProvider implements BridgeProvider {
         }[];
       };
 
-      const { typeUrl, value: msg } =
-        cosmwasmMsgOpts.executeWasm.messageComposer({
-          sender: cosmwasmData.sender,
-          contract: cosmwasmData.contract,
-          msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
-          funds: cosmwasmData.funds,
-        });
+      const { typeUrl, value: msg } = makeExecuteCosmwasmContractMsg({
+        sender: cosmwasmData.sender,
+        contract: cosmwasmData.contract,
+        msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
+        funds: cosmwasmData.funds,
+      });
 
       return {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg,
-        fallbackGasLimit: cosmwasmMsgOpts.executeWasm.gas,
+        fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
       };
     } else {
       // is an ibc transfer
@@ -511,7 +510,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           : { destinationAddress: messageData.receiver }
       );
 
-      const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
+      const { typeUrl, value } = makeIBCTransferMsg({
         sourcePort: messageData.source_port,
         sourceChannel: messageData.source_channel,
         token: {
@@ -530,7 +529,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg: value,
-        fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+        fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
   }

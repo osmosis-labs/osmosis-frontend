@@ -5,7 +5,7 @@ import type {
 import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { cosmosMsgOpts, estimateGasFee } from "@osmosis-labs/tx";
+import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -427,7 +427,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -594,21 +594,19 @@ export class AxelarBridgeProvider implements BridgeProvider {
         );
       }
 
-      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
-        {
-          receiver: depositAddress,
-          sender: fromAddress,
-          sourceChannel: ibcTransferMethod.chain.channelId,
-          sourcePort: "transfer",
-          timeoutTimestamp: "0" as any,
-          // @ts-ignore
-          timeoutHeight,
-          token: {
-            amount: fromAmount,
-            denom: fromAsset.address,
-          },
-        }
-      );
+      const { typeUrl, value: msg } = makeIBCTransferMsg({
+        receiver: depositAddress,
+        sender: fromAddress,
+        sourceChannel: ibcTransferMethod.chain.channelId,
+        sourcePort: "transfer",
+        timeoutTimestamp: "0" as any,
+        // @ts-ignore
+        timeoutHeight,
+        token: {
+          amount: fromAmount,
+          denom: fromAsset.address,
+        },
+      });
 
       return {
         type: "cosmos",
