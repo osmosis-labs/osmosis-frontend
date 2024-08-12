@@ -146,12 +146,6 @@
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
-      "pendingDeposit": "Ausstehende Einzahlung",
-      "pendingWithdraw": "Ausstehender Auszug",
-      "successDeposit": "Hinterlegt",
-      "successWithdraw": "Zurückgezogen",
-      "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen",
       "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "Andere",
     "all": "Alle",
     "assets": "Vermögenswerte",
+    "recentActivity": "Letzte Aktivität",
+    "seeAll": "Alles sehen",
     "show": "Zeigen",
     "hide": "Verstecken",
     "hidden": "Versteckt"

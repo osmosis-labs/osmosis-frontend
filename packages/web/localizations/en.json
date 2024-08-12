@@ -146,12 +146,6 @@
       "refunded": "Refunded",
       "success": "Success",
       "title": "Transfer History",
-      "pendingDeposit": "Pending deposit",
-      "pendingWithdraw": "Pending withdraw",
-      "successDeposit": "Deposited",
-      "successWithdraw": "Withdrew",
-      "failDeposit": "Deposit failed",
-      "failWithdraw": "Withdraw failed",
       "connectionError": "Connection error"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "Other",
     "all": "All",
     "assets": "Assets",
+    "recentActivity": "Recent activity",
+    "seeAll": "See all",
     "show": "Show",
     "hide": "Hide",
     "hidden": "Hidden"
@@ -1182,8 +1178,8 @@
     "buttonCancel": "Cancel"
   },
   "transactions": {
-    "noRecent": "No recent transfers",
-    "recentShownHere": "Deposits and withdrawals in the last 3 days on this device (between certain networks) will appear here.",
+    "noRecent": "No recent transactions",
+    "recentShownHere": "Recent swaps will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
     "connectToSee": "Connect to see your transaction history",

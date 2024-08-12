@@ -146,12 +146,6 @@
       "refunded": "Rambursat",
       "success": "Succes",
       "title": "Istoric Transferuri",
-      "pendingDeposit": "Depunere în așteptare",
-      "pendingWithdraw": "Retragere în așteptare",
-      "successDeposit": "Depunere reușită",
-      "successWithdraw": "Retragere reușită",
-      "failDeposit": "Depunere nereușită",
-      "failWithdraw": "Retragere nereușită",
       "connectionError": "Eroare de conexiune"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "Alte",
     "all": "Toate",
     "assets": "Active",
+    "recentActivity": "Activitate recentă",
+    "seeAll": "Vezi toate",
     "show": "Spectacol",
     "hide": "Ascunde",
     "hidden": "Ascuns"

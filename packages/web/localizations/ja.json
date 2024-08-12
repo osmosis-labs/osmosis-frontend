@@ -146,12 +146,6 @@
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",
-      "pendingDeposit": "保留中の入金",
-      "pendingWithdraw": "保留中の撤回",
-      "successDeposit": "寄託",
-      "successWithdraw": "撤退",
-      "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました",
       "connectionError": "接続エラー"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "他の",
     "all": "全て",
     "assets": "資産",
+    "recentActivity": "最近のアクティビティ",
+    "seeAll": "すべて見る",
     "show": "見せる",
     "hide": "隠れる",
     "hidden": "隠れた"

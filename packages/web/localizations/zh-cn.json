@@ -146,12 +146,6 @@
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
-      "pendingDeposit": "待存款",
-      "pendingWithdraw": "等待提款",
-      "successDeposit": "已存入",
-      "successWithdraw": "已退出",
-      "failDeposit": "存款失败",
-      "failWithdraw": "提现失败",
       "connectionError": "连接错误"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "其他",
     "all": "全部",
     "assets": "资产",
+    "recentActivity": "最近活动",
+    "seeAll": "查看全部",
     "show": "展示",
     "hide": "隐藏",
     "hidden": "隐"

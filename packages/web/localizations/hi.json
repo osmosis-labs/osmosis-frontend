@@ -146,12 +146,6 @@
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
-      "pendingDeposit": "लंबित जमा",
-      "pendingWithdraw": "लंबित निकासी",
-      "successDeposit": "जमा किया",
-      "successWithdraw": "वापस ले लिया",
-      "failDeposit": "जमा विफल",
-      "failWithdraw": "निकासी विफल",
       "connectionError": "संपर्क त्रुटि"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "अन्य",
     "all": "सभी",
     "assets": "संपत्ति",
+    "recentActivity": "हाल की गतिविधि",
+    "seeAll": "सभी देखें",
     "show": "दिखाओ",
     "hide": "छिपाना",
     "hidden": "छिपा हुआ"

@@ -146,12 +146,6 @@
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",
-      "pendingDeposit": "سپرده معلق",
-      "pendingWithdraw": "در انتظار برداشت",
-      "successDeposit": "سپرده شد",
-      "successWithdraw": "عقب نشینی کرد",
-      "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود",
       "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "دیگر",
     "all": "همه",
     "assets": "دارایی های",
+    "recentActivity": "فعالیت اخیر",
+    "seeAll": "همه را ببینید",
     "show": "نمایش دهید",
     "hide": "پنهان کردن",
     "hidden": "پنهان شده است"

@@ -146,12 +146,6 @@
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
-      "pendingDeposit": "Deposito pendiente",
-      "pendingWithdraw": "A la espera de Retiro",
-      "successDeposit": "Depositado",
-      "successWithdraw": "se retiró",
-      "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido",
       "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "Otro",
     "all": "Todo",
     "assets": "Activos",
+    "recentActivity": "Actividad reciente",
+    "seeAll": "Ver todo",
     "show": "Espectáculo",
     "hide": "Esconder",
     "hidden": "Oculto"

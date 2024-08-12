@@ -146,12 +146,6 @@
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
-      "pendingDeposit": "Bekleyen mevduat",
-      "pendingWithdraw": "Geri çekilme bekleniyor",
-      "successDeposit": "Yatırıldı",
-      "successWithdraw": "Geri çekildi",
-      "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu",
       "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
@@ -326,6 +320,8 @@
     "other": "Diğer",
     "all": "Tüm",
     "assets": "Varlıklar",
+    "recentActivity": "Son aktivite",
+    "seeAll": "Tümünü gör",
     "show": "Göstermek",
     "hide": "Saklamak",
     "hidden": "Gizlenmiş"

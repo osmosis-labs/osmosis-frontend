@@ -11,6 +11,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
+import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -169,13 +170,17 @@ export const PortfolioPage: FunctionComponent = () => {
               )}
             </TabGroup>
           </section>
-          <section className="flex w-80 flex-col gap-3">
-            {featureFlags.cypherCard && <CypherCard />}
-
-            {!isLoadingAllocation && !userHasNoAssets && (
-              <Allocation allocation={allocation} />
-            )}
-          </section>
+          <aside className="flex w-full gap-16">
+            <div className="flex grow flex-col">
+              <RecentActivity />
+            </div>
+            <div className="min-w-80 flex w-80 flex-col">
+              {featureFlags.cypherCard && <CypherCard />}
+              {!isLoadingAllocation && !userHasNoAssets && (
+                <Allocation allocation={allocation} />
+              )}
+            </div>
+          </aside>
         </>
       ) : isWalletLoading ? null : (
         <WalletDisconnectedSplash />
