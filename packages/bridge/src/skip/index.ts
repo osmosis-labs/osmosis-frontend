@@ -1,10 +1,6 @@
 import { fromBech32, toBech32 } from "@cosmjs/encoding";
 import { Registry } from "@cosmjs/proto-signing";
 import {
-  cosmwasmProtoRegistry,
-  ibcProtoRegistry,
-} from "@osmosis-labs/proto-codecs";
-import {
   estimateGasFee,
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
@@ -55,10 +51,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   readonly providerName = SkipBridgeProvider.ID;
 
   readonly skipClient: SkipApiClient;
-  protected protoRegistry = new Registry([
-    ...ibcProtoRegistry,
-    ...cosmwasmProtoRegistry,
-  ]);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
@@ -801,7 +794,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainList: this.ctx.chainList,
         body: {
           messages: [
-            this.protoRegistry.encodeAsAny({
+            (
+              await this.getProtoRegistry()
+            ).encodeAsAny({
               typeUrl: txData.msgTypeUrl,
               value: txData.msg,
             }),
@@ -903,6 +898,20 @@ export class SkipBridgeProvider implements BridgeProvider {
       console.error("failed to estimate gas:", err);
       return BigInt(0);
     }
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const { ibcProtoRegistry, cosmwasmProtoRegistry } = await import(
+        "@osmosis-labs/proto-codecs"
+      );
+      this.protoRegistry = new Registry([
+        ...ibcProtoRegistry,
+        ...cosmwasmProtoRegistry,
+      ]);
+    }
+
+    return this.protoRegistry;
   }
 
   async getExternalUrl({

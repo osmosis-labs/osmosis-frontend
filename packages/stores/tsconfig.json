@@ -4,7 +4,7 @@
     "outDir": "build",
     "declaration": true,
     "rootDir": "src",
-    "module": "ES6",
+    "module": "ESNext",
     "allowJs": true
   },
   "include": ["src/**/*"]

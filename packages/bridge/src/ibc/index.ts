@@ -1,5 +1,4 @@
 import { Registry } from "@cosmjs/proto-signing";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import {
   Chain,
   queryGeneratedChains,
@@ -31,7 +30,7 @@ export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
   readonly providerName = IbcBridgeProvider.ID;
 
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
@@ -168,7 +167,9 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: typeUrl,
             value: msg,
           }),
@@ -408,6 +409,14 @@ export class IbcBridgeProvider implements BridgeProvider {
       getFreshValue: () =>
         queryGeneratedChains({ zoneChainId: this.ctx.chainList[0].chain_id }),
     });
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const { ibcProtoRegistry } = await import("@osmosis-labs/proto-codecs");
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
   }
 }
 

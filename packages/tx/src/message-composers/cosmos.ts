@@ -1,5 +1,5 @@
-import { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/v1beta1/coin";
-import { Height } from "@osmosis-labs/proto-codecs/build/codegen/ibc/core/client/v1/client";
+import type { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/v1beta1/coin";
+import type { Height } from "@osmosis-labs/proto-codecs/build/codegen/ibc/core/client/v1/client";
 
 import { getIbcCodec } from "../codec";
 

@@ -1,4 +1,4 @@
-import {
+import type {
   MsgBeginUnlocking,
   MsgLockTokens,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";

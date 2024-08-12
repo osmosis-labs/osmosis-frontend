@@ -9,7 +9,6 @@ import {
 } from "@osmosis-labs/keplr-stores";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
-import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import {
   makeAddAuthenticatorMsg,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
@@ -1475,6 +1474,10 @@ export class OsmosisAccountImpl {
         denom: token.currency.coinMinimalDenom,
       };
     });
+
+    const { Duration } = await import(
+      "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration"
+    );
 
     const msg = await makeLockTokensMsg({
       owner: this.address,

@@ -1,4 +1,4 @@
-import { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/stableswap/v1beta1/tx";
+import type { MsgCreateStableswapPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/stableswap/v1beta1/tx";
 
 import { getOsmosisCodec } from "../../codec";
 

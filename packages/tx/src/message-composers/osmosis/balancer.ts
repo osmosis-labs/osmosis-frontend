@@ -1,4 +1,4 @@
-import { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/balancer/v1beta1/tx";
+import type { MsgCreateBalancerPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/balancer/v1beta1/tx";
 
 import { getOsmosisCodec } from "../../codec";
 

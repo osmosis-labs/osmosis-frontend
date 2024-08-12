@@ -1,5 +1,5 @@
-import { MsgSwapExactAmountOut } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
-import { Currency } from "@osmosis-labs/types";
+import type { MsgSwapExactAmountOut } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
+import type { Currency } from "@osmosis-labs/types";
 
 import { getOsmosisCodec } from "../../codec";
 

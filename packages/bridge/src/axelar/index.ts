@@ -4,7 +4,6 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
 import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
@@ -50,7 +49,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
   protected axelarChainId: string;
 
   protected readonly axelarScanBaseUrl: string;
@@ -420,7 +419,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: transactionData.msgTypeUrl,
             value: transactionData.msg,
           }),
@@ -805,6 +806,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     return this._assetTransferClient!;
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const { ibcProtoRegistry } = await import("@osmosis-labs/proto-codecs");
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
   }
 
   async getExternalUrl({

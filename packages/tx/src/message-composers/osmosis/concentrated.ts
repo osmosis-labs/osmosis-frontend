@@ -1,5 +1,5 @@
-import { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/poolmodel/concentrated/v1beta1/tx";
-import {
+import type { MsgCreateConcentratedPool } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/poolmodel/concentrated/v1beta1/tx";
+import type {
   MsgAddToPosition,
   MsgCollectIncentives,
   MsgCollectSpreadRewards,
