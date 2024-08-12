@@ -2,7 +2,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -20,7 +20,6 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -28,7 +27,6 @@ import { CypherCard } from "./cypher-card";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
@@ -70,21 +68,6 @@ export const PortfolioPage: FunctionComponent = () => {
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
-
-  // these useCallbacks are key to prevent unnecessary rerenders of page + table
-  // this prevents flickering
-  const onDeposit = useCallback(
-    (coinDenom: string) => {
-      bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
-    },
-    [bridgeAsset]
-  );
-  const onWithdraw = useCallback(
-    (coinDenom: string) => {
-      bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
-    },
-    [bridgeAsset]
-  );
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -159,8 +142,6 @@ export const PortfolioPage: FunctionComponent = () => {
                   <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}
-                      onDeposit={onDeposit}
-                      onWithdraw={onWithdraw}
                     />
                   </TabPanel>
                   <TabPanel>
