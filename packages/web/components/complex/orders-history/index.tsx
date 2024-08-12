@@ -207,7 +207,7 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
+    <div className="mt-3 flex flex-col overflow-x-scroll">
       <table
         className="relative min-w-[900px] table-auto md:min-w-[100vw]"
         ref={listRef}
