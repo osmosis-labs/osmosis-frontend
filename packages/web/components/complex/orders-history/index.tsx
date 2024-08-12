@@ -71,7 +71,6 @@ export const OrderHistory = observer(() => {
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize(Breakpoint.md);
   const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
-  const { isMobile: isMediumScreen } = useWindowSize(Breakpoint.md);
   const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
 
   const {
