@@ -43,7 +43,9 @@ export class TradePage extends BasePage {
     this.trxSuccessful = page.getByText("Transaction Successful");
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
-    this.inputAmount = page.locator("//input[@data-testid='trade-input-swap']");
+    this.inputAmount = page.locator(
+      "//input[contains(@data-testid, 'trade-input')]"
+    );
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
