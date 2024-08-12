@@ -4,7 +4,7 @@
     "outDir": "build",
     "declaration": true,
     "rootDir": "src",
-    "module": "ESNext",
+    "module": "esnext",
     "allowJs": true
   },
   "include": ["src/**/*"]
