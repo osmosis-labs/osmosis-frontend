@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
-import { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
+import type { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
+import type { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   BroadcastMode,
   ChainRecord,

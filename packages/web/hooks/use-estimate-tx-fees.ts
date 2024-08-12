@@ -1,4 +1,4 @@
-import { EncodeObject } from "@cosmjs/proto-signing";
+import type { EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {

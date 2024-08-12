@@ -1,4 +1,4 @@
-import { Coin } from "cosmjs-types/cosmos/base/v1beta1/coin";
+import type { Coin } from "@osmosis-labs/proto-codecs/build/codegen/cosmos/base/v1beta1/coin";
 
 import { getCosmwasmCodec } from "../codec";
 

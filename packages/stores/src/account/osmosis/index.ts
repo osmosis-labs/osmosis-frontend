@@ -1,5 +1,5 @@
-import { StdFee } from "@cosmjs/amino";
-import { EncodeObject } from "@cosmjs/proto-signing";
+import type { StdFee } from "@cosmjs/amino";
+import type { EncodeObject } from "@cosmjs/proto-signing";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {

@@ -2,7 +2,7 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
-import { Registry } from "@cosmjs/proto-signing";
+import type { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
@@ -810,7 +810,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async getProtoRegistry() {
     if (!this.protoRegistry) {
-      const { ibcProtoRegistry } = await import("@osmosis-labs/proto-codecs");
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
       this.protoRegistry = new Registry(ibcProtoRegistry);
     }
     return this.protoRegistry;

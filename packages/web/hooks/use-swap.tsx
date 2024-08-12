@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/amino";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,

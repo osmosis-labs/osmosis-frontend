@@ -1,5 +1,4 @@
-import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import { Registry } from "@cosmjs/proto-signing";
+import type { Registry } from "@cosmjs/proto-signing";
 import {
   estimateGasFee,
   makeExecuteCosmwasmContractMsg,
@@ -665,7 +664,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     fromChain: BridgeChain,
     toChain: BridgeChain
   ) {
-    const allSkipChains = await this.getChains();
+    const [{ fromBech32, toBech32 }, allSkipChains] = await Promise.all([
+      import("@cosmjs/encoding"),
+      this.getChains(),
+    ]);
 
     const sourceChain = allSkipChains.find((c) => c.chain_id === chainIDs[0]);
     if (!sourceChain) {
@@ -902,9 +904,11 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async getProtoRegistry() {
     if (!this.protoRegistry) {
-      const { ibcProtoRegistry, cosmwasmProtoRegistry } = await import(
-        "@osmosis-labs/proto-codecs"
-      );
+      const [{ ibcProtoRegistry, cosmwasmProtoRegistry }, { Registry }] =
+        await Promise.all([
+          import("@osmosis-labs/proto-codecs"),
+          import("@cosmjs/proto-signing"),
+        ]);
       this.protoRegistry = new Registry([
         ...ibcProtoRegistry,
         ...cosmwasmProtoRegistry,

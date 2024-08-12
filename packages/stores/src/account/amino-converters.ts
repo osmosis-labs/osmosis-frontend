@@ -1,5 +1,5 @@
-import { AminoMsgTransfer } from "@cosmjs/stargate";
-import { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
+import type { AminoMsgTransfer } from "@cosmjs/stargate";
+import type { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 
 let aminoConverters: Record<string, any>;
