@@ -85,19 +85,25 @@ const OrderDetails = observer(
         case "partiallyFilled":
           return (
             <div className="flex items-center justify-between">
-              <span className="text-osmoverse-300">Open</span>
+              <span className="body2 sm:caption text-osmoverse-300">Open</span>
             </div>
           );
         case "cancelled":
           return (
             <div className="flex items-center justify-between">
-              <span className="text-osmoverse-300">Cancelled</span>
+              <span className="body2 sm:caption text-osmoverse-300">
+                Cancelled
+              </span>
             </div>
           );
         case "filled":
-          return <span className="body2 text-bullish-300">Claimable</span>;
+          return (
+            <span className="body2 sm:caption text-bullish-300">Claimable</span>
+          );
         case "fullyClaimed":
-          return <span className="body2 text-bullish-400">Filled</span>;
+          return (
+            <span className="body2 sm:caption text-bullish-400">Filled</span>
+          );
         default:
           return;
       }
@@ -161,10 +167,12 @@ const OrderDetails = observer(
       }
 
       if (order?.status === "filled") {
-        return "Claim";
+        return "limitOrders.claim";
       }
 
-      return order?.status === "open" ? "Cancel" : "Claim and Close";
+      return order?.status === "open"
+        ? "limitOrders.cancel"
+        : "limitOrders.claimAndClose";
     }, [order]);
 
     const orderAmount = useMemo(() => {
@@ -186,10 +194,20 @@ const OrderDetails = observer(
       );
     }, [order]);
 
+    const [topText, bottomText] = useMemo(() => {
+      if (!order) return ["", ""];
+
+      if (order.status === "filled" || order.status === "fullyClaimed") {
+        return [t("limitOrders.sold"), t("transactions.bought")];
+      }
+
+      return [t("limitOrders.sell"), t("limitOrders.buy")];
+    }, [order]);
+
     return (
       <div
         className={classNames(
-          "flex w-full flex-col overflow-y-auto bg-osmoverse-900 xl:bg-osmoverse-850 xl:!py-6 xl:!px-8 sm:top-0 sm:rounded-none"
+          "flex w-full flex-col overflow-y-auto bg-osmoverse-900 xl:bg-osmoverse-850 xl:!py-6 xl:!px-8 sm:top-0 sm:rounded-none sm:!px-4"
         )}
       >
         {!isModal && (
@@ -237,14 +255,14 @@ const OrderDetails = observer(
                 />
               </div>
               <div className="flex flex-col">
-                <div className="subtitle1">{t("transactions.sold")}</div>
-                <div className="body1 text-osmoverse-300">
+                <div className="subtitle1 sm:body2">{topText}</div>
+                <div className="body1 sm:body2 text-osmoverse-300">
                   {tokenIn?.symbol}
                 </div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="subtitle1">
+              <div className="subtitle1 sm:body2">
                 {formatPretty(
                   new CoinPretty(
                     {
@@ -256,7 +274,9 @@ const OrderDetails = observer(
                   )
                 )}
               </div>
-              <div className="body1 text-osmoverse-300">{orderAmount}</div>
+              <div className="body1 sm:body2 text-osmoverse-300">
+                {orderAmount}
+              </div>
             </div>
           </div>
           <div className="flex h-10 w-14 items-center justify-center p-2">
@@ -280,14 +300,14 @@ const OrderDetails = observer(
                 />
               </div>
               <div className="flex flex-col">
-                <div className="subtitle1">{t("transactions.bought")}</div>
-                <div className="body1 text-osmoverse-300">
+                <div className="subtitle1 sm:body2">{bottomText}</div>
+                <div className="body1 sm:body2 text-osmoverse-300">
                   {tokenOut?.symbol}
                 </div>
               </div>
             </div>
             <div className="flex-end flex flex-col text-right">
-              <div className="subtitle1">
+              <div className="subtitle1 sm:body2">
                 {/* // TODO - clean this up to match tokenConversion */}
                 {formatPretty(
                   new CoinPretty(
@@ -300,7 +320,7 @@ const OrderDetails = observer(
                   )
                 )}
               </div>
-              <div className="body1 text-osmoverse-300">
+              <div className="body1 sm:body2 text-osmoverse-300">
                 {orderAmount !== "<$0.01" && "~"}
                 {orderAmount}
               </div>
@@ -310,10 +330,14 @@ const OrderDetails = observer(
         <div className="flex flex-col py-2 px-4">
           <div className={classNames("flex flex-col py-3")}>
             <RecapRow
-              className="py-3"
-              left={<span className="subtitle1">Price</span>}
+              className="sm:py-0"
+              left={
+                <span className="subtitle1 sm:caption">
+                  {t("limitOrders.price")}
+                </span>
+              }
               right={
-                <div className="sm:body2 flex items-center justify-center">
+                <div className="sm:caption body2 flex items-center justify-center">
                   {formatPretty(
                     new PricePretty(
                       DEFAULT_VS_CURRENCY,
@@ -325,18 +349,29 @@ const OrderDetails = observer(
               }
             />
             <RecapRow
-              className="py-3"
-              left={<span className="subtitle1">Status</span>}
+              className="sm:py-0"
+              left={
+                <span className="subtitle1 sm:caption">
+                  {t("limitOrders.status")}
+                </span>
+              }
               right={statusComponent}
             />
             {(order?.status === "open" ||
               order?.status === "partiallyFilled") && (
               <RecapRow
-                className="py-3"
-                left={<span className="subtitle1">Percent Filled</span>}
+                className="sm:py-0"
+                left={
+                  <span className="subtitle1 sm:caption">
+                    {t("limitOrders.percentFilled")}
+                  </span>
+                }
                 right={
                   <span className="body2 text-osmoverse-300">
-                    <OrderProgressBar order={order!} />
+                    <OrderProgressBar
+                      order={order!}
+                      totalPercentClassNames="xl:body1 sm:caption"
+                    />
                   </span>
                 }
               />
@@ -346,12 +381,14 @@ const OrderDetails = observer(
         {!!order && !!buttonText && (
           <div className="flex items-center justify-center gap-3 pt-3">
             <Button
-              mode="primary"
+              mode={
+                buttonText === "limitOrders.cancel" ? "secondary" : "primary"
+              }
               onClick={closeOrder}
               disabled={broadcasting}
               className="body2 sm:caption !rounded-2xl"
             >
-              <span className="text-h6 font-h6">{buttonText}</span>
+              <span className="text-h6 font-h6">{t(buttonText)}</span>
             </Button>
           </div>
         )}

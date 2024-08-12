@@ -525,7 +525,7 @@ const TableOrderRow = memo(
                   )}
                 </span>
               </p>
-              <div className="md:caption inline-flex items-center gap-2">
+              <div className="md:body2 inline-flex items-center gap-2">
                 <span>
                   {order_direction === "bid"
                     ? t("limitOrders.buy")
@@ -590,7 +590,7 @@ const TableOrderRow = memo(
                     status === "open" || status === "partiallyFilled",
                   "text-osmoverse-500": status === "cancelled",
                 },
-                "md:caption"
+                "md:body2"
               )}
             >
               {statusString}

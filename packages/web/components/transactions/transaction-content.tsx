@@ -96,7 +96,7 @@ export const TransactionContent = ({
                       {
                         "text-osmoverse-500": defaultTab !== tab,
                       },
-                      "sm:subtitle1 sm:subtitle1 text-h5 font-h5"
+                      "text-h5 font-h5 sm:text-h6"
                     )}
                   >
                     {t(
