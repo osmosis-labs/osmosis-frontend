@@ -146,12 +146,6 @@
       "refunded": "Возвращено",
       "success": "Успех",
       "title": "История трансферов",
-      "pendingDeposit": "Ожидается депозит",
-      "pendingWithdraw": "Ожидается вывод средств",
-      "successDeposit": "Депонированный",
-      "successWithdraw": "Снял",
-      "failDeposit": "Депозит не выполнен",
-      "failWithdraw": "Вывести не удалось",
       "connectionError": "Ошибка подключения"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "Объединенный",
     "other": "Другой",
     "all": "Все",
-    "assets": "Ресурсы"
+    "assets": "Ресурсы",
+    "recentActivity": "Недавняя активность",
+    "seeAll": "Смотреть все",
+    "show": "Показывать",
+    "hide": "Скрывать",
+    "hidden": "Скрытый"
   },
   "buyTokens": "Купить токены",
   "components": {

@@ -146,12 +146,6 @@
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",
-      "pendingDeposit": "입금 대기 중",
-      "pendingWithdraw": "출금 대기 중",
-      "successDeposit": "입금됨",
-      "successWithdraw": "철수",
-      "failDeposit": "입금 실패",
-      "failWithdraw": "출금 실패",
       "connectionError": "연결 오류"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "풀링됨",
     "other": "다른",
     "all": "모두",
-    "assets": "자산"
+    "assets": "자산",
+    "recentActivity": "최근 활동",
+    "seeAll": "모두 보기",
+    "show": "보여주다",
+    "hide": "숨다",
+    "hidden": "숨겨진"
   },
   "buyTokens": "토큰 구매",
   "components": {

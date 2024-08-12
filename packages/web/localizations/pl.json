@@ -146,12 +146,6 @@
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
-      "pendingDeposit": "Oczekujący depozyt",
-      "pendingWithdraw": "Oczekuje na wycofanie",
-      "successDeposit": "Zdeponowane",
-      "successWithdraw": "Wycofał się",
-      "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się",
       "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "Połączone",
     "other": "Inny",
     "all": "Wszystko",
-    "assets": "Aktywa"
+    "assets": "Aktywa",
+    "recentActivity": "Ostatnia aktywność",
+    "seeAll": "Zobacz wszystko",
+    "show": "Pokazywać",
+    "hide": "Ukrywać",
+    "hidden": "Ukryty"
   },
   "buyTokens": "Kup tokeny",
   "components": {
