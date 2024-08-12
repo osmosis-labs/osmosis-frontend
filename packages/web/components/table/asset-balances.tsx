@@ -504,8 +504,6 @@ export const AssetActionsCell: AssetCellComponent<{
   coinDenom,
   coinImageUrl,
   amount,
-  transferMethods,
-  counterparty,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
