@@ -474,6 +474,9 @@ const TableOrderRow = memo(
               </p>
               <div className="inline-flex items-center gap-2">
                 <span>
+                  {order_direction === "bid"
+                    ? t("limitOrders.buy")
+                    : t("limitOrders.sell")}{" "}
                   {formatFiatPrice(
                     new PricePretty(
                       DEFAULT_VS_CURRENCY,
