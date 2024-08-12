@@ -26,4 +26,5 @@ export type MappedLimitOrder = Omit<
   quoteAsset: ReturnType<typeof getAssetFromAssetList>;
   baseAsset: ReturnType<typeof getAssetFromAssetList>;
   placed_at: number;
+  placed_tx?: string;
 };

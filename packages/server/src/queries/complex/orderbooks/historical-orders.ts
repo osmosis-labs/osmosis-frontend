@@ -157,6 +157,7 @@ async function mapHistoricalToMapped(
       percentFilled: new Dec(1),
       totalFilled: parseInt(o.quantity),
       orderbookAddress: o.contract,
+      placed_tx: o.place_tx_hash,
     };
   });
 }

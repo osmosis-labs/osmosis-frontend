@@ -245,7 +245,7 @@ export const OrderHistory = observer(() => {
           </thead>
         )}
         <tbody
-          className="bg-transparent"
+          className="min-h-[100px] bg-transparent"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
