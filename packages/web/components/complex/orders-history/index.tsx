@@ -469,7 +469,7 @@ const TableOrderRow = memo(
         style={style}
         className={classNames(
           gridClasses,
-          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900"
+          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900 sm:[&>td]:!py-0"
         )}
         onClick={() => onOrderSelect(order)}
       >
