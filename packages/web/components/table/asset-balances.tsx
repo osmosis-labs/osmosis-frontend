@@ -536,39 +536,34 @@ export const AssetActionsCell: AssetCellComponent<{
         </Button>
       )}
       <div className="flex gap-3">
-        {!needsActivation &&
-          Boolean(counterparty.length) &&
-          Boolean(transferMethods.length) && (
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={() =>
-                bridgeAsset({
-                  anyDenom: coinDenom,
-                  direction: "deposit",
-                })
-              }
-            >
-              <Icon id="deposit" height={20} width={20} />
-            </Button>
-          )}
-        {!needsActivation &&
-          amount?.toDec().isPositive() &&
-          Boolean(counterparty.length) &&
-          Boolean(transferMethods.length) && (
-            <Button
-              size="icon"
-              variant="secondary"
-              onClick={() =>
-                bridgeAsset({
-                  anyDenom: coinDenom,
-                  direction: "withdraw",
-                })
-              }
-            >
-              <Icon id="withdraw" height={20} width={20} />
-            </Button>
-          )}
+        {!needsActivation && (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: coinDenom,
+                direction: "deposit",
+              })
+            }
+          >
+            <Icon id="deposit" height={20} width={20} />
+          </Button>
+        )}
+        {!needsActivation && amount?.toDec().isPositive() && (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: coinDenom,
+                direction: "withdraw",
+              })
+            }
+          >
+            <Icon id="withdraw" height={20} width={20} />
+          </Button>
+        )}
       </div>
     </div>
   );
