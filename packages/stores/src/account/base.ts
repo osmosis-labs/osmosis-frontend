@@ -123,22 +123,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     IPromiseBasedObservable<boolean>
   >();
 
-  private aminoTypes: AminoTypes | null = null;
-  private registry: Registry | null = null;
+  private _aminoTypes: AminoTypes | null = null;
+  private _registry: Registry | null = null;
 
   private async getAminoTypes() {
-    if (!this.aminoTypes) {
+    if (!this._aminoTypes) {
       const [{ AminoTypes }, aminoConverters] = await Promise.all([
         import("@cosmjs/stargate"),
         getAminoConverters(),
       ]);
-      this.aminoTypes = new AminoTypes(aminoConverters);
+      this._aminoTypes = new AminoTypes(aminoConverters);
     }
-    return this.aminoTypes;
+    return this._aminoTypes;
   }
 
   private async getRegistry() {
-    if (!this.registry) {
+    if (!this._registry) {
       const [
         {
           cosmosProtoRegistry,
@@ -152,14 +152,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         import("@cosmjs/proto-signing"),
       ]);
 
-      this.registry = new Registry([
+      this._registry = new Registry([
         ...cosmwasmProtoRegistry,
         ...cosmosProtoRegistry,
         ...ibcProtoRegistry,
         ...osmosisProtoRegistry,
       ]);
     }
-    return this.registry;
+    return this._registry;
   }
 
   /**
@@ -902,20 +902,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const [
       { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
-      { encodePubkey },
       { TxExtension },
       { fromBase64 },
       { Int53 },
-      { makeAuthInfoBytes, makeSignDoc },
+      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
+      { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
-      import("@cosmjs/proto-signing"),
       import(
         "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
       ),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
       import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
     ]);
 
     const pubkey = encodePubkey(
@@ -984,7 +984,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       new Uint8Array([...sig.r, ...sig.s])
     );
 
-    const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
     return TxRaw.fromPartial({
       bodyBytes: signDoc.bodyBytes,
       authInfoBytes: signDoc.authInfoBytes,
@@ -1039,16 +1038,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const [
       { encodeSecp256k1Pubkey },
-      { encodePubkey },
+      { encodePubkey, makeAuthInfoBytes },
       { fromBase64 },
       { Int53 },
-      { makeAuthInfoBytes },
+      { TxRaw },
+      { SignMode },
     ] = await Promise.all([
       import("@cosmjs/amino"),
       import("@cosmjs/proto-signing"),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
-      import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+      import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
     ]);
 
     const pubkey = encodePubkey(
@@ -1064,9 +1065,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     pubkey.typeUrl = pubKeyTypeUrl;
 
-    const { SignMode } = await import(
-      "cosmjs-types/cosmos/tx/signing/v1beta1/signing"
-    );
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const aminoTypes = await this.getAminoTypes();
     const msgs = messages.map((msg) => {
@@ -1102,7 +1100,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBodyBytes = this.registry?.encodeTxBody({
+    console.log(signDoc);
+
+    const registry = await this.getRegistry();
+    const signedTxBodyBytes = registry.encodeTxBody({
       messages: signed.msgs.map((msg) => {
         const res = aminoTypes.fromAmino(msg);
         // Include the 'memo' field again because the 'registry' omits it
@@ -1126,7 +1127,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       signMode
     );
 
-    const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
     return TxRaw.fromPartial({
       bodyBytes: signedTxBodyBytes,
       authInfoBytes: signedAuthInfoBytes,
@@ -1188,12 +1188,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       { fromBase64 },
       { Int53 },
       { makeAuthInfoBytes, makeSignDoc },
+      { TxRaw },
     ] = await Promise.all([
       import("@cosmjs/amino"),
       import("@cosmjs/proto-signing"),
       import("@cosmjs/encoding"),
       import("@cosmjs/math"),
       import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
     ]);
 
     const pubkey = encodePubkey(
@@ -1225,7 +1227,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo,
       },
     };
-    const txBodyBytes = this.registry?.encode(txBodyEncodeObject) as Uint8Array;
+
+    const registry = await this.getRegistry();
+    const txBodyBytes = registry.encode(txBodyEncodeObject) as Uint8Array;
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
@@ -1253,7 +1257,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
