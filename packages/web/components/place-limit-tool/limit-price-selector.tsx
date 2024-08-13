@@ -153,61 +153,68 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]"
         style={{ width: width + 40 }}
       />
-      <GenericDisclaimer
-        disabled={!swapState.priceState.isBeyondOppositePrice}
-        title={
-          <span className="caption">
-            {orderDirection === "bid"
-              ? t("limitOrders.aboveMarket.title")
-              : t("limitOrders.belowMarket.title")}
-          </span>
-        }
-        body={
-          <span className="text-caption text-osmoverse-300">
-            {orderDirection === "bid"
-              ? t("limitOrders.aboveMarket.description")
-              : t("limitOrders.belowMarket.description")}
-          </span>
-        }
-      >
-        <button
-          type="button"
-          className="body2 sm:caption inline-flex min-h-[32px] w-full items-center justify-start gap-1 text-left"
-          onClick={swapInputMode}
-          disabled={priceState.isLoading}
+      {!priceState.priceError ? (
+        <GenericDisclaimer
+          disabled={!swapState.priceState.isBeyondOppositePrice}
+          title={
+            <span className="caption">
+              {orderDirection === "bid"
+                ? t("limitOrders.aboveMarket.title")
+                : t("limitOrders.belowMarket.title")}
+            </span>
+          }
+          body={
+            <span className="text-caption text-osmoverse-300">
+              {orderDirection === "bid"
+                ? t("limitOrders.aboveMarket.description")
+                : t("limitOrders.belowMarket.description")}
+            </span>
+          }
         >
-          <span className="text-osmoverse-300">
-            {t("limitOrders.whenDenomPriceIs", {
-              denom: swapState.baseAsset?.coinDenom ?? "",
-            })}{" "}
-            <span
+          <button
+            type="button"
+            className="body2 sm:caption inline-flex min-h-[32px] w-full items-center justify-start gap-1 text-left"
+            onClick={swapInputMode}
+            disabled={priceState.isLoading}
+          >
+            <span className="text-osmoverse-300">
+              {t("limitOrders.whenDenomPriceIs", {
+                denom: swapState.baseAsset?.coinDenom ?? "",
+              })}{" "}
+              <span
+                className={classNames("text-wosmongton-300", {
+                  "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                })}
+              >
+                {priceLabel}
+              </span>{" "}
+              {inputMode === InputMode.Price &&
+                +swapState.priceState.manualPercentAdjusted > 0 && (
+                  <span
+                    className={classNames("text-wosmongton-300", {
+                      "text-rust-400":
+                        swapState.priceState.isBeyondOppositePrice,
+                    })}
+                  >
+                    {percentageSuffix}
+                  </span>
+                )}
+            </span>
+            <Icon
+              id="switch"
               className={classNames("text-wosmongton-300", {
                 "text-rust-400": swapState.priceState.isBeyondOppositePrice,
               })}
-            >
-              {priceLabel}
-            </span>{" "}
-            {inputMode === InputMode.Price &&
-              +swapState.priceState.manualPercentAdjusted > 0 && (
-                <span
-                  className={classNames("text-wosmongton-300", {
-                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                  })}
-                >
-                  {percentageSuffix}
-                </span>
-              )}
-          </span>
-          <Icon
-            id="switch"
-            className={classNames("text-wosmongton-300", {
-              "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-            })}
-            width={16}
-            height={16}
-          />
-        </button>
-      </GenericDisclaimer>
+              width={16}
+              height={16}
+            />
+          </button>
+        </GenericDisclaimer>
+      ) : (
+        <span className="body2 flex min-h-[2rem] items-center text-rust-400">
+          {t(priceState.priceError)}
+        </span>
+      )}
       <label className="flex w-full items-center justify-between">
         <div className="inline-flex items-end gap-1 py-3 text-h6 font-h6">
           <SkeletonLoader

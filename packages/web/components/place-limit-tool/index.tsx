@@ -75,7 +75,8 @@ const transformAmount = (value: string, decimalCount = 18) => {
 const NON_DISPLAY_ERRORS = [
   "errors.zeroAmount",
   "errors.emptyAmount",
-  "errors.generic",
+  "limitOrders.priceTooLow",
+  "limitOrders.priceTooHigh",
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
@@ -403,6 +404,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const errorDisplay = useMemo(() => {
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        if (swapState.error === "errors.generic") {
+          return t("errors.uhOhSomethingWentWrong");
+        }
         return t(swapState.error);
       }
     }, [swapState.error, t]);
