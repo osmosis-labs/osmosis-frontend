@@ -378,33 +378,39 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: balances, isLoading: isBalancesLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
+  const { data, isLoading: isBalancesLoading } =
+    api.edge.assets.getUserAssets.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
       {
         enabled: !!account?.address,
-        select: (balances) =>
-          balances.filter(
-            ({ denom }) =>
-              denom === baseAsset?.coinMinimalDenom ||
-              denom === quoteAsset?.coinMinimalDenom
+        select: ({ items }) =>
+          items.filter(
+            ({ coinMinimalDenom }) =>
+              coinMinimalDenom === baseAsset?.coinMinimalDenom ||
+              coinMinimalDenom === quoteAsset?.coinMinimalDenom
           ),
       }
     );
 
-  const quoteTokenBalance = useMemo(() => {
-    if (!balances) return;
+  const baseTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom === baseAsset?.coinMinimalDenom
+      )?.amount,
+    [data, baseAsset]
+  );
+  const quoteTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom === quoteAsset?.coinMinimalDenom
+      )?.amount,
+    [data, quoteAsset]
+  );
 
-    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, quoteAsset]);
-
-  const baseTokenBalance = useMemo(() => {
-    if (!balances) return;
-
-    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, baseAsset]);
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(

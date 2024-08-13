@@ -172,7 +172,9 @@ const OrderDetails = observer(
 
       return order?.status === "open"
         ? "limitOrders.cancel"
-        : "limitOrders.claimAndClose";
+        : order?.percentFilled > order?.percentClaimed
+        ? "limitOrders.claimAndClose"
+        : "limitOrders.close";
     }, [order]);
 
     const orderAmount = useMemo(() => {

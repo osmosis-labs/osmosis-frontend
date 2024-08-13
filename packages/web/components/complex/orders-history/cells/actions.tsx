@@ -110,7 +110,9 @@ const ClaimAndCloseButton = observer(
       >
         <span className="body2 flex items-center text-wosmongton-200">
           {claiming && <Spinner className="mr-2 h-2 w-2" />}
-          {t("limitOrders.claimAndClose")}
+          {order.percentFilled > order.percentClaimed
+            ? t("limitOrders.claimAndClose")
+            : t("limitOrders.close")}
         </span>
       </button>
     );
