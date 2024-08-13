@@ -44,7 +44,6 @@ import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
-  refetchOrders: () => Promise<any>;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {
@@ -80,7 +79,7 @@ const NON_DISPLAY_ERRORS = [
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ page, refetchOrders }: PlaceLimitToolProps) => {
+  ({ page }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -142,6 +141,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market" &&
         swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
       ) {
+        console.log("RESETTING");
         swapState.priceState.reset();
       }
     }, [swapState.priceState, type]);
@@ -611,7 +611,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();
-            refetchOrders();
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);

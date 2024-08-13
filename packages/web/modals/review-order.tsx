@@ -162,7 +162,8 @@ export function ReviewOrder({
   );
 
   useEffect(() => {
-    if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
+    if (limitSetPriceLock && orderType === "limit" && isOpen)
+      limitSetPriceLock(true);
   }, [limitSetPriceLock, isOpen, orderType]);
 
   const gasFeeError = useMemo(() => {
