@@ -1319,7 +1319,8 @@
       "pending": "Pending",
       "filled": "Filled orders to claim"
     },
-    "priceReaches": "If {denom} price reaches {price}"
+    "priceReaches": "If {denom} price reaches {price}",
+    "belowMinimumAmount": "Minimum limit order amount is {amount}"
   },
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least"

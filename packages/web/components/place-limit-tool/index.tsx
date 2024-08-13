@@ -35,7 +35,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { usePlaceLimit } from "~/hooks/limit-orders";
+import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
@@ -406,6 +406,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
         if (swapState.error === "errors.generic") {
           return t("errors.uhOhSomethingWentWrong");
+        }
+
+        if (swapState.error === "limitOrders.belowMinimumAmount") {
+          return t("limitOrders.belowMinimumAmount", {
+            amount: formatFiatPrice(
+              new PricePretty(DEFAULT_VS_CURRENCY, MIN_ORDER_VALUE)
+            ),
+          });
         }
         return t(swapState.error);
       }
