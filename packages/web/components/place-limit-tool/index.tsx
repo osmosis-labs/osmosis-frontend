@@ -493,10 +493,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   swapState.marketState.isFetchingNextPageAssets
                 }
                 isLoadingSelectAssets={
-                  // The getUserAssets query seems to return false to loading before finishing loading other pages
-                  // so we add a check to prevent the loading state from being shown when there are at most 1 page of assets
-                  swapState.marketState.isLoadingSelectAssets ||
-                  selectableBaseAssets.length <= 50
+                  swapState.marketState.isLoadingSelectAssets
                 }
                 data-testid="token-in"
               />
