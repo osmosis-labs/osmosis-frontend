@@ -10,6 +10,9 @@ export const createNextTrpcContext = (_opts: CreateNextContextOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,
+    opentelemetryServiceName:
+      process.env.NEXT_PUBLIC_VERCEL_URL ??
+      "fallback-osmosis-frontend-service-name",
   });
 };
 
@@ -18,5 +21,8 @@ export const createEdgeTrpcContext = (_opts: FetchCreateContextFnOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,
+    opentelemetryServiceName:
+      process.env.NEXT_PUBLIC_VERCEL_URL ??
+      "fallback-osmosis-frontend-service-name",
   });
 };
