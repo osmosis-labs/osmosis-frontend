@@ -1,10 +1,10 @@
 import { registerOTel } from "@vercel/otel";
 
+import { getOpentelemetryServiceName } from "~/utils/service-name";
+
 export function register() {
   registerOTel({
-    serviceName:
-      process.env.NEXT_PUBLIC_VERCEL_URL ??
-      "fallback-osmosis-frontend-service-name",
+    serviceName: getOpentelemetryServiceName(),
     instrumentationConfig: {
       fetch: {
         propagateContextUrls: ["*"],
