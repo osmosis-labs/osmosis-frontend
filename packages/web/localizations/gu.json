@@ -1318,6 +1318,10 @@
       "past": "ભૂતકાળ",
       "pending": "બાકી છે",
       "filled": "દાવો કરવાના આદેશો ભર્યા"
-    }
-  }
+    },
+    "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે",
+    "belowMinimumAmount": "{amount} ન્યૂનતમ"
+  },
+  "tradeFee": "વેપાર ફી",
+  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો"
 }

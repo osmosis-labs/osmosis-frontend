@@ -162,7 +162,8 @@ export function ReviewOrder({
   );
 
   useEffect(() => {
-    if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
+    if (limitSetPriceLock && orderType === "limit" && isOpen)
+      limitSetPriceLock(true);
   }, [limitSetPriceLock, isOpen, orderType]);
 
   const gasFeeError = useMemo(() => {
@@ -248,12 +249,15 @@ export function ReviewOrder({
                   )}
                 </div>
                 <span className="flex-1 text-osmoverse-300">
-                  If {baseDenom} price reaches{" "}
-                  {limitPriceFiat &&
-                    formatPretty(
-                      limitPriceFiat,
-                      getPriceExtendedFormatOptions(limitPriceFiat.toDec())
-                    )}
+                  {t("limitOrders.priceReaches", {
+                    denom: baseDenom ?? "",
+                    price: limitPriceFiat
+                      ? formatPretty(
+                          limitPriceFiat,
+                          getPriceExtendedFormatOptions(limitPriceFiat.toDec())
+                        )
+                      : "",
+                  })}
                 </span>
                 {percentAdjusted && (
                   <div className="flex items-center">
@@ -555,7 +559,7 @@ export function ReviewOrder({
               )}
               {orderType === "market" ? (
                 <RecapRow
-                  left="Receive at least"
+                  left={t("receiveAtLeast")}
                   right={
                     <span className="sm:caption">
                       {outAmountLessSlippage &&
@@ -584,7 +588,7 @@ export function ReviewOrder({
                 />
               ) : (
                 <RecapRow
-                  left="Trade fee"
+                  left={t("tradeFee")}
                   right={
                     <span className="sm:caption text-bullish-400">
                       {t("transfer.free")}
@@ -595,13 +599,11 @@ export function ReviewOrder({
               <RecapRow
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
-                  <>
-                    {!isGasLoading ? (
-                      GasEstimation
-                    ) : (
-                      <Skeleton className="h-5 w-16" />
-                    )}
-                  </>
+                  !isGasLoading ? (
+                    GasEstimation
+                  ) : (
+                    <Skeleton className="h-5 w-16" />
+                  )
                 }
               />
             </div>

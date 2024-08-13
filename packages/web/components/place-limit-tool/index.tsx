@@ -35,7 +35,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { usePlaceLimit } from "~/hooks/limit-orders";
+import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
@@ -44,7 +44,6 @@ import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
-  refetchOrders: () => Promise<any>;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {
@@ -75,11 +74,12 @@ const transformAmount = (value: string, decimalCount = 18) => {
 const NON_DISPLAY_ERRORS = [
   "errors.zeroAmount",
   "errors.emptyAmount",
-  "errors.generic",
+  "limitOrders.priceTooLow",
+  "limitOrders.priceTooHigh",
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ page, refetchOrders }: PlaceLimitToolProps) => {
+  ({ page }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -141,6 +141,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market" &&
         swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
       ) {
+        console.log("RESETTING");
         swapState.priceState.reset();
       }
     }, [swapState.priceState, type]);
@@ -403,6 +404,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const errorDisplay = useMemo(() => {
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        if (swapState.error === "errors.generic") {
+          return t("errors.uhOhSomethingWentWrong");
+        }
+
+        if (swapState.error === "limitOrders.belowMinimumAmount") {
+          return t("limitOrders.belowMinimumAmount", {
+            amount: formatFiatPrice(
+              new PricePretty(DEFAULT_VS_CURRENCY, MIN_ORDER_VALUE)
+            ),
+          });
+        }
         return t(swapState.error);
       }
     }, [swapState.error, t]);
@@ -481,7 +493,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   swapState.marketState.isFetchingNextPageAssets
                 }
                 isLoadingSelectAssets={
-                  swapState.marketState.isLoadingSelectAssets
+                  // The getUserAssets query seems to return false to loading before finishing loading other pages
+                  // so we add a check to prevent the loading state from being shown when there are at most 1 page of assets
+                  swapState.marketState.isLoadingSelectAssets ||
+                  selectableBaseAssets.length <= 50
                 }
                 data-testid="token-in"
               />
@@ -596,7 +611,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();
-            refetchOrders();
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);

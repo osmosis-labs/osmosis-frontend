@@ -1318,6 +1318,10 @@
       "past": "Прошлое",
       "pending": "В ожидании",
       "filled": "Выполненные заказы на претензии"
-    }
-  }
+    },
+    "priceReaches": "Если цена {denom} достигает {price}",
+    "belowMinimumAmount": "{amount} минимум"
+  },
+  "tradeFee": "Торговый сбор",
+  "receiveAtLeast": "Получите по крайней мере"
 }

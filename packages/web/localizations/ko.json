@@ -1318,6 +1318,10 @@
       "past": "과거",
       "pending": "보류 중",
       "filled": "주문이 채워져서 청구됩니다"
-    }
-  }
+    },
+    "priceReaches": "{denom} 가격 {price} 도달하면",
+    "belowMinimumAmount": "{amount} 최소"
+  },
+  "tradeFee": "거래 수수료",
+  "receiveAtLeast": "최소한 받다"
 }

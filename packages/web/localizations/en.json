@@ -1318,6 +1318,10 @@
       "past": "Past",
       "pending": "Pending",
       "filled": "Filled orders to claim"
-    }
-  }
+    },
+    "priceReaches": "If {denom} price reaches {price}",
+    "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeFee": "Trade fee",
+  "receiveAtLeast": "Receive at least"
 }

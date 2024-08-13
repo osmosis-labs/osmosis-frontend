@@ -29,6 +29,9 @@ function getNormalizationFactor(
 
 export type OrderDirection = "bid" | "ask";
 
+export const MIN_ORDER_VALUE =
+  process.env.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT ?? "";
+
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
   orderDirection: OrderDirection;
@@ -470,6 +473,7 @@ export const usePlaceLimit = ({
     priceState.reset();
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
+
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
@@ -492,6 +496,16 @@ export const usePlaceLimit = ({
       return priceState.priceError;
     }
 
+    if (
+      !isMarket &&
+      !!MIN_ORDER_VALUE &&
+      isValidNumericalRawInput(MIN_ORDER_VALUE) &&
+      !!paymentFiatValue &&
+      paymentFiatValue?.toDec().lt(new Dec(MIN_ORDER_VALUE))
+    ) {
+      return "limitOrders.belowMinimumAmount";
+    }
+
     return;
   }, [
     insufficientFunds,
@@ -500,6 +514,7 @@ export const usePlaceLimit = ({
     paymentTokenValue,
     orderbookError,
     priceState.priceError,
+    paymentFiatValue,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {
