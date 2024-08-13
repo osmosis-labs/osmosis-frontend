@@ -1319,7 +1319,8 @@
       "pending": "待办的",
       "filled": "已填写订单并领取"
     },
-    "priceReaches": "如果{denom}价格达到{price}"
+    "priceReaches": "如果{denom}价格达到{price}",
+    "belowMinimumAmount": "{amount}最小值"
   },
   "tradeFee": "交易费",
   "receiveAtLeast": "至少收到"

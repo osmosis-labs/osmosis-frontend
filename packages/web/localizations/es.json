@@ -1319,7 +1319,8 @@
       "pending": "Pendiente",
       "filled": "Pedidos completados para reclamar"
     },
-    "priceReaches": "Si el precio {denom} alcanza {price}"
+    "priceReaches": "Si el precio {denom} alcanza {price}",
+    "belowMinimumAmount": "{amount} mínimo"
   },
   "tradeFee": "Tarifa de comercio",
   "receiveAtLeast": "Recibir al menos"

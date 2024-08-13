@@ -1319,7 +1319,8 @@
       "pending": "In asteptarea",
       "filled": "Comenzi completate pentru revendicare"
     },
-    "priceReaches": "Dacă prețul {denom} atinge {price}"
+    "priceReaches": "Dacă prețul {denom} atinge {price}",
+    "belowMinimumAmount": "{amount} minim"
   },
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin"

@@ -1319,7 +1319,8 @@
       "pending": "保留中",
       "filled": "請求する注文を完了"
     },
-    "priceReaches": "{denom}価格が{price}に達した場合"
+    "priceReaches": "{denom}価格が{price}に達した場合",
+    "belowMinimumAmount": "{amount}最小"
   },
   "tradeFee": "取引手数料",
   "receiveAtLeast": "少なくとも受け取る"

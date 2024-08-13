@@ -1319,7 +1319,8 @@
       "pending": "लंबित",
       "filled": "दावा करने के लिए भरे गए ऑर्डर"
     },
-    "priceReaches": "यदि {denom} मूल्य {price} तक पहुँच जाता है"
+    "priceReaches": "यदि {denom} मूल्य {price} तक पहुँच जाता है",
+    "belowMinimumAmount": "{amount} न्यूनतम"
   },
   "tradeFee": "व्यापार शुल्क",
   "receiveAtLeast": "कम से कम प्राप्त करें"

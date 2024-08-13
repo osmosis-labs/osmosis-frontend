@@ -1320,7 +1320,7 @@
       "filled": "Filled orders to claim"
     },
     "priceReaches": "If {denom} price reaches {price}",
-    "belowMinimumAmount": "Minimum limit order amount is {amount}"
+    "belowMinimumAmount": "{amount} minimum"
   },
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least"
