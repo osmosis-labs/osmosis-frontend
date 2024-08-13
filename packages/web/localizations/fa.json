@@ -1318,6 +1318,9 @@
       "past": "گذشته",
       "pending": "انتظار",
       "filled": "سفارشات تکمیل شده برای ادعا"
-    }
-  }
+    },
+    "whenPriceReaches": "اگر قیمت {denom} به {price} برسد."
+  },
+  "tradeFee": "کارمزد تجارت",
+  "receiveAtLeast": "حداقل دریافت کنید"
 }

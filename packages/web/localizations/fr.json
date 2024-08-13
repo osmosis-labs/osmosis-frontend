@@ -1318,6 +1318,9 @@
       "past": "Passé",
       "pending": "En attente",
       "filled": "Commandes exécutées à réclamer"
-    }
-  }
+    },
+    "whenPriceReaches": "Si le prix {denom} atteint {price}"
+  },
+  "tradeFee": "Frais de transaction",
+  "receiveAtLeast": "Recevez au moins"
 }

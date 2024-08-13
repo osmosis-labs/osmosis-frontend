@@ -1318,6 +1318,9 @@
       "past": "Trecut",
       "pending": "In asteptarea",
       "filled": "Comenzi completate pentru revendicare"
-    }
-  }
+    },
+    "whenPriceReaches": "Dacă prețul {denom} atinge {price}"
+  },
+  "tradeFee": "Comision comercială",
+  "receiveAtLeast": "Primește cel puțin"
 }

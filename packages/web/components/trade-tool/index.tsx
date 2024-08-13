@@ -102,7 +102,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             }
           }, [page, swapToolProps, tab, refetch])}
         </div>
-        {wallet?.isWalletConnected && orders.length > 0 && (
+        {wallet?.isWalletConnected && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
             className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"

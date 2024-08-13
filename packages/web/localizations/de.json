@@ -1318,6 +1318,9 @@
       "past": "Vergangenheit",
       "pending": "Ausstehend",
       "filled": "Ausgeführte Bestellungen zum Einfordern"
-    }
-  }
+    },
+    "whenPriceReaches": "Wenn der Preis {denom} {price} erreicht"
+  },
+  "tradeFee": "Handelsgebühr",
+  "receiveAtLeast": "Erhalten Sie mindestens"
 }

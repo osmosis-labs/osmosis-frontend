@@ -1318,6 +1318,9 @@
       "past": "过去的",
       "pending": "待办的",
       "filled": "已填写订单并领取"
-    }
-  }
+    },
+    "whenPriceReaches": "如果{denom}价格达到{price}"
+  },
+  "tradeFee": "交易费",
+  "receiveAtLeast": "至少收到"
 }

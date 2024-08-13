@@ -1318,6 +1318,9 @@
       "past": "Geçmiş",
       "pending": "Askıda olması",
       "filled": "Talep edilecek siparişler tamamlandı"
-    }
-  }
+    },
+    "whenPriceReaches": "{denom} fiyatı {price} ulaşırsa"
+  },
+  "tradeFee": "Ticaret ücreti",
+  "receiveAtLeast": "En azından al"
 }
