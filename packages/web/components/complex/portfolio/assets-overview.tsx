@@ -124,12 +124,9 @@ export const AssetsOverview: FunctionComponent<
     new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
 
-  // const [isChartMinimized, setIsChartMinimized] = useState(true);
-  const [isChartMinimized, setIsChartMinimized] = useState(false);
+  const [isChartMinimized, setIsChartMinimized] = useState(true);
 
-  if (isWalletLoading) return null;
-
-  return (
+  return isWalletLoading ? null : (
     <div
       className={classNames(
         "relative flex w-full flex-col transition-all duration-[250ms]",
