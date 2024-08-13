@@ -1319,7 +1319,7 @@
       "pending": "В ожидании",
       "filled": "Выполненные заказы на претензии"
     },
-    "whenPriceReaches": "Если цена {denom} достигает {price}"
+    "priceReaches": "Если цена {denom} достигает {price}"
   },
   "tradeFee": "Торговый сбор",
   "receiveAtLeast": "Получите по крайней мере"

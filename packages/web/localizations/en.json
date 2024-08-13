@@ -1319,7 +1319,7 @@
       "pending": "Pending",
       "filled": "Filled orders to claim"
     },
-    "whenPriceReaches": "If {denom} price reaches {price}"
+    "priceReaches": "If {denom} price reaches {price}"
   },
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least"

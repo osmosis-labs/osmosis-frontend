@@ -1319,7 +1319,7 @@
       "pending": "待辦的",
       "filled": "已填寫訂單以領取"
     },
-    "whenPriceReaches": "如果{denom}價格達到{price}"
+    "priceReaches": "如果{denom}價格達到{price}"
   },
   "tradeFee": "交易費",
   "receiveAtLeast": "至少收到"

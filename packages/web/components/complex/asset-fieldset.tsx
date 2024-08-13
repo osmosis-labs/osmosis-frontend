@@ -183,7 +183,6 @@ const AssetFieldsetTokenSelector = ({
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const { isMobile } = useWindowSize(Breakpoint.sm);
-
   const {
     isOpen: isSelectOpen,
     onOpen: openSelect,

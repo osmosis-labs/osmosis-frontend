@@ -1319,7 +1319,7 @@
       "pending": "Aż do",
       "filled": "Wypełnione zamówienia do odbioru"
     },
-    "whenPriceReaches": "Jeśli cena {denom} osiągnie {price}"
+    "priceReaches": "Jeśli cena {denom} osiągnie {price}"
   },
   "tradeFee": "Opłata za handel",
   "receiveAtLeast": "Otrzymaj co najmniej"

@@ -1319,7 +1319,7 @@
       "pending": "Askıda olması",
       "filled": "Talep edilecek siparişler tamamlandı"
     },
-    "whenPriceReaches": "{denom} fiyatı {price} ulaşırsa"
+    "priceReaches": "{denom} fiyatı {price} ulaşırsa"
   },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al"

@@ -1319,7 +1319,7 @@
       "pending": "બાકી છે",
       "filled": "દાવો કરવાના આદેશો ભર્યા"
     },
-    "whenPriceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે"
+    "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે"
   },
   "tradeFee": "વેપાર ફી",
   "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો"
