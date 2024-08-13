@@ -81,6 +81,9 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure
+  /**
+   * Opentelemetry tRPC middleware that names the handling transaction after the called procedure.
+   */
   .use(async ({ path, rawInput, type, next, ctx }) => {
     const serviceName =
       ctx.opentelemetryServiceName ?? "fallback-osmosis-frontend-service-name";
@@ -138,10 +141,12 @@ export function localLink<TRouter extends AnyRouter>({
   router,
   assetLists,
   chainList,
+  opentelemetryServiceName,
 }: {
   router: TRouter;
   assetLists: AssetList[];
   chainList: Chain[];
+  opentelemetryServiceName: string | undefined;
 }): TRPCLink<TRouter> {
   return () =>
     ({ op }) =>
@@ -152,6 +157,7 @@ export function localLink<TRouter extends AnyRouter>({
             const caller = createCaller({
               assetLists,
               chainList,
+              opentelemetryServiceName,
             });
             try {
               // Attempt to execute the operation using the router's caller.
