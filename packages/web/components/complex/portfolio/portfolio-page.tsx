@@ -2,7 +2,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -11,7 +11,7 @@ import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
-import { RecentTransfers } from "~/components/transactions/recent-transfers";
+import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -20,13 +20,13 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+import { CypherCard } from "./cypher-card";
+
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
@@ -69,33 +69,18 @@ export const PortfolioPage: FunctionComponent = () => {
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
-  // these useCallbacks are key to prevent unnecessary rerenders of page + table
-  // this prevents flickering
-  const onDeposit = useCallback(
-    (coinDenom: string) => {
-      bridgeAsset({ anyDenom: coinDenom, direction: "deposit" });
-    },
-    [bridgeAsset]
-  );
-  const onWithdraw = useCallback(
-    (coinDenom: string) => {
-      bridgeAsset({ anyDenom: coinDenom, direction: "withdraw" });
-    },
-    [bridgeAsset]
-  );
-
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
     <main
       className={classNames(
-        "mx-auto flex w-full max-w-container flex-col gap-8 p-8 pt-4 md:gap-8 md:p-4",
+        "mx-auto flex w-full max-w-container flex-col p-8 pt-4 md:p-4",
         {
           "bg-osmoverse-900": !featureFlags.limitOrders,
         }
       )}
     >
-      <section className="flex gap-5" ref={overviewRef}>
+      <section className="flex py-3" ref={overviewRef}>
         <AssetsOverview
           totalValue={
             totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
@@ -108,10 +93,10 @@ export const PortfolioPage: FunctionComponent = () => {
         <>
           <section className="w-full py-3">
             <TabGroup>
-              <TabList className="flex gap-6" ref={tabsRef}>
+              <TabList className="-mx-4 flex" ref={tabsRef}>
                 <Tab
                   disabled={userHasNoAssets}
-                  className="disabled:opacity-80"
+                  className="py-3 px-4 disabled:opacity-80"
                   onClick={() => {
                     logEvent([
                       EventName.Portfolio.tabClicked,
@@ -129,7 +114,7 @@ export const PortfolioPage: FunctionComponent = () => {
                 </Tab>
                 <Tab
                   disabled={userHasNoAssets}
-                  className="disabled:opacity-80"
+                  className="py-3 px-4 disabled:opacity-80 "
                   onClick={() => {
                     logEvent([
                       EventName.Portfolio.tabClicked,
@@ -145,15 +130,6 @@ export const PortfolioPage: FunctionComponent = () => {
                     </h6>
                   )}
                 </Tab>
-                <Tab disabled={userHasNoAssets} className="disabled:opacity-80">
-                  {({ selected }) => (
-                    <h6
-                      className={!selected ? "text-osmoverse-500" : undefined}
-                    >
-                      {t("portfolio.recentTransfers")}
-                    </h6>
-                  )}
-                </Tab>
               </TabList>
               {!isTotalValueFetched ? (
                 <div className="mx-auto my-6 w-fit">
@@ -162,31 +138,30 @@ export const PortfolioPage: FunctionComponent = () => {
               ) : userHasNoAssets ? (
                 <UserZeroBalanceTableSplash />
               ) : (
-                <TabPanels className="py-6">
+                <TabPanels>
                   <TabPanel>
                     <AssetBalancesTable
                       tableTopPadding={overviewHeight + tabsHeight}
-                      onDeposit={onDeposit}
-                      onWithdraw={onWithdraw}
                     />
                   </TabPanel>
                   <TabPanel>
                     <UserPositionsSection address={wallet.address} />
                   </TabPanel>
-                  <TabPanel>
-                    <section>
-                      <RecentTransfers />
-                    </section>
-                  </TabPanel>
                 </TabPanels>
               )}
             </TabGroup>
           </section>
-          <section className="w-full">
-            {!isLoadingAllocation && !userHasNoAssets && (
-              <Allocation allocation={allocation} />
-            )}
-          </section>
+          <aside className="flex w-full gap-16">
+            <div className="flex grow flex-col">
+              <RecentActivity />
+            </div>
+            <div className="min-w-80 flex w-80 flex-col">
+              {featureFlags.cypherCard && <CypherCard />}
+              {!isLoadingAllocation && !userHasNoAssets && (
+                <Allocation allocation={allocation} />
+              )}
+            </div>
+          </aside>
         </>
       ) : isWalletLoading ? null : (
         <WalletDisconnectedSplash />

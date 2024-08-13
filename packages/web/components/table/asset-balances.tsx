@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
@@ -28,6 +29,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useBridge } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -53,14 +55,12 @@ type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
 
+const DUST_THRESHOLD = new Dec(0.01);
+
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-  /** Memoized function for handling deposits from table row. */
-  onDeposit: (coinDenom: string) => void;
-  /** Memoized function for handling withdrawals from table row. */
-  onWithdraw: (coinDenom: string) => void;
-}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
+}> = observer(({ tableTopPadding = 0 }) => {
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
@@ -143,11 +143,27 @@ export const AssetBalancesTable: FunctionComponent<{
       },
     }
   );
+
+  const [hideDust, setHideDust] = useState(false);
+
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
-  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
+
+  const filteredAssetsData = useMemo(() => {
+    return assetsData
+      .map((asset) => {
+        const isDust = asset?.usdValue?.toDec()?.lte(DUST_THRESHOLD);
+        if (hideDust && isDust) return null;
+        return asset;
+      })
+      .filter((asset) => asset !== null);
+  }, [assetsData, hideDust]);
+
+  const hiddenDustCount = assetsData.length - filteredAssetsData.length;
+
+  const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -199,24 +215,13 @@ export const AssetBalancesTable: FunctionComponent<{
         cell: ({ row: { original: asset } }) => (
           <AssetActionsCell
             {...asset}
-            onDeposit={onDeposit}
-            onWithdraw={onWithdraw}
-            onExternalTransferUrl={setExternalUrl}
             showUnverifiedAssetsSetting={showUnverifiedAssets}
             confirmUnverifiedAsset={setVerifiedAsset}
           />
         ),
       }),
     ];
-  }, [
-    sortKey,
-    sortDirection,
-    showUnverifiedAssets,
-    onDeposit,
-    onWithdraw,
-    setSortKey,
-    t,
-  ]);
+  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
@@ -227,7 +232,8 @@ export const AssetBalancesTable: FunctionComponent<{
   }, [columns, width]);
 
   const table = useReactTable({
-    data: assetsData,
+    data: filteredAssetsData,
+    // @ts-expect-error
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
@@ -299,7 +305,7 @@ export const AssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("assets.table.search")}
@@ -357,11 +363,13 @@ export const AssetBalancesTable: FunctionComponent<{
             </tr>
           )}
           {virtualRows.map((virtualRow) => {
-            const pushUrl = `/assets/${
-              rows[virtualRow.index].original.coinDenom
-            }?ref=portfolio`;
+            const pushUrl = rows?.[virtualRow.index]?.original?.coinDenom
+              ? `/assets/${
+                  rows?.[virtualRow.index]?.original?.coinDenom ?? ""
+                }?ref=portfolio`
+              : "/assets/?ref=portfolio";
             const unverified =
-              !rows[virtualRow.index].original.isVerified &&
+              !rows?.[virtualRow.index]?.original?.isVerified &&
               !showUnverifiedAssets;
 
             return (
@@ -414,6 +422,31 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {filteredAssetsData.length > 0 && (
+        <div className="flex items-center justify-between gap-4 py-2 px-4">
+          <p
+            className={classNames("body1 grow text-osmoverse-300", {
+              invisible: !hideDust,
+            })}
+          >
+            {t("portfolio.hidden")} ({hiddenDustCount})
+          </p>
+          <Button
+            onClick={() => setHideDust((prev) => !prev)}
+            className="gap-2 !py-2 !px-4"
+            variant="outline"
+            size="lg-full"
+          >
+            {hideDust ? t("portfolio.show") : t("portfolio.hide")}
+            <Icon
+              id="chevron-down"
+              className={classNames("h-4 w-4 transition-transform", {
+                "rotate-180": !hideDust,
+              })}
+            />
+          </Button>
+        </div>
+      )}
       {noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
@@ -451,7 +484,7 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
     )}
     {priceChange24h ? (
       <PriceChange
-        className="justify-start"
+        className="h-fit justify-start"
         overrideTextClasses="body2"
         priceChange={priceChange24h}
       />
@@ -462,9 +495,6 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
 );
 
 export const AssetActionsCell: AssetCellComponent<{
-  onDeposit: (coinDenom: string) => void;
-  onWithdraw: (coinDenom: string) => void;
-  onExternalTransferUrl: (url: string) => void;
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;
@@ -474,26 +504,13 @@ export const AssetActionsCell: AssetCellComponent<{
   coinDenom,
   coinImageUrl,
   amount,
-  transferMethods,
-  counterparty,
-  onDeposit,
-  onWithdraw,
-  onExternalTransferUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
 }) => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
-  // if it's the first transfer method it's considered the preferred method
-  // the new d/w flow handles this, so we only need to check for the old flow
-  const externalTransfer =
-    Boolean(transferMethods.length) &&
-    transferMethods[0].type === "external_interface" &&
-    !featureFlags.newDepositWithdrawFlow
-      ? transferMethods[0]
-      : undefined;
+  const { bridgeAsset } = useBridge();
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 
@@ -512,43 +529,36 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       )}
-      {!needsActivation &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.depositUrl) {
-                onExternalTransferUrl(externalTransfer.depositUrl);
-              } else {
-                onDeposit(coinDenom);
-              }
-            }}
+      <div className="flex gap-3">
+        {!needsActivation && (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: coinDenom,
+                direction: "deposit",
+              })
+            }
           >
-            <Icon className="m-auto " id="deposit" width={16} height={16} />
-          </button>
+            <Icon id="deposit" height={20} width={20} />
+          </Button>
         )}
-      {!needsActivation &&
-        amount?.toDec().isPositive() &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.withdrawUrl) {
-                onExternalTransferUrl(externalTransfer.withdrawUrl);
-              } else {
-                onWithdraw(coinDenom);
-              }
-            }}
+        {!needsActivation && amount?.toDec().isPositive() && (
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={() =>
+              bridgeAsset({
+                anyDenom: coinDenom,
+                direction: "withdraw",
+              })
+            }
           >
-            <Icon className="m-auto" id="withdraw" width={16} height={16} />
-          </button>
+            <Icon id="withdraw" height={20} width={20} />
+          </Button>
         )}
+      </div>
     </div>
   );
 };

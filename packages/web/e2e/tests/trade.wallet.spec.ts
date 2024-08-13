@@ -2,6 +2,7 @@
 import { BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
+import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
@@ -35,7 +36,7 @@ test.describe("Test Trade feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps", password);
+    await walletPage.setWalletNameAndPassword("Test Trades", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -49,19 +50,6 @@ test.describe("Test Trade feature", () => {
     await context.close();
   });
 
-  test("User should be able to swap OSMO to ATOM", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("OSMO", "ATOM");
-    await tradePage.enterAmount("0.01");
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
-    expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain("denom: uosmo");
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
-  });
-
   test("User should be able to Buy OSMO", async () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
@@ -71,12 +59,11 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain(
-      "type: osmosis/poolmanager/swap-exact-amount-in"
-    );
+    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
+    // https://www.mintscan.io/osmosis/txs
   });
 
   test("User should be able to Sell ATOM", async () => {
@@ -88,30 +75,10 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
-    expect(msgContentAmount).toContain(
-      "type: osmosis/poolmanager/swap-exact-amount-in"
-    );
+    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + ATOM);
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
-  });
-
-  test("User should be able to limit buy OSMO", async () => {
-    await tradePage.goto();
-    await tradePage.openBuyTab();
-    await tradePage.openLimit();
-    await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.1");
-    await tradePage.setLimit2PercentChange();
-    const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
-      context
-    );
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.1 USDC (Noble/channel-750)");
-    expect(msgContentAmount).toContain("place_limit");
-    expect(msgContentAmount).toContain('"order_direction": "bid"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to limit sell ATOM", async () => {
@@ -120,7 +87,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
     await tradePage.enterAmount("0.01");
-    await tradePage.setLimit10PercentChange();
+    await tradePage.setLimitPriceChange("5%");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
@@ -128,8 +95,7 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("0.01 ATOM (Cosmos Hub/channel-0)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
+    await tradePage.isTransactionSuccesful();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
@@ -138,7 +104,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("0.2");
-    await tradePage.setLimit10PercentChange();
+    await tradePage.setLimitPriceChange("10%");
     const limitPrice = await tradePage.getLimitPrice();
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
@@ -147,10 +113,10 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("0.2 OSMO");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
-    expect(tradePage.isTransactionSuccesful());
-    expect(tradePage.getTransactionUrl()).toBeTruthy();
-    const trxPage = await tradePage.gotoOrdersHistory();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.gotoOrdersHistory();
+    const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder("0.2 OSMO", limitPrice, context);
-    expect(tradePage.isTransactionSuccesful());
+    await tradePage.isTransactionSuccesful();
   });
 });

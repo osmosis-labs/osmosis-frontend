@@ -13,11 +13,11 @@ export function RecapRow({
   return (
     <div
       className={classNames(
-        "body2 flex h-8 w-full items-center justify-between",
+        "flex min-h-[2rem] w-full items-center justify-between sm:min-h-[1.5rem]",
         className
       )}
     >
-      <span className="text-osmoverse-300">{left}</span>
+      <span className="sm:caption text-osmoverse-300">{left}</span>
       {right}
     </div>
   );

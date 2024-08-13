@@ -91,11 +91,6 @@ export const usePlaceLimit = ({
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
 
-  const priceState = useLimitPrice({
-    orderDirection,
-    baseDenom: baseAsset?.coinMinimalDenom,
-  });
-
   const isMarket = useMemo(
     () => type === "market",
     //|| priceState.isBeyondOppositePrice
@@ -179,6 +174,12 @@ export const usePlaceLimit = ({
     );
   }, [baseAsset, quoteAsset]);
 
+  const priceState = useLimitPrice({
+    orderDirection,
+    baseDenom: baseAsset?.coinMinimalDenom,
+    normalizationFactor,
+  });
+
   /**
    * Determines the fiat amount the user will pay for their order.
    * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
@@ -214,7 +215,7 @@ export const usePlaceLimit = ({
   }, [paymentFiatValue, makerFee]);
 
   const placeLimitMsg = useMemo(() => {
-    if (isMarket) return;
+    if (isMarket || !priceState.isValidPrice) return;
 
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
 
@@ -243,6 +244,7 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     normalizationFactor,
     paymentTokenValue,
+    priceState.isValidPrice,
     isMarket,
   ]);
 
@@ -477,10 +479,6 @@ export const usePlaceLimit = ({
       return "limitOrders.insufficientFunds";
     }
 
-    if (!isMarket && !priceState.isValidPrice) {
-      return "limitOrders.invalidPrice";
-    }
-
     if (isMarket && marketState.error) {
       return tError(marketState.error)[0];
     }
@@ -490,14 +488,18 @@ export const usePlaceLimit = ({
       return "errors.zeroAmount";
     }
 
+    if (!isMarket && priceState.priceError) {
+      return priceState.priceError;
+    }
+
     return;
   }, [
     insufficientFunds,
     isMarket,
     marketState.error,
-    priceState.isValidPrice,
     paymentTokenValue,
     orderbookError,
+    priceState.priceError,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {
@@ -601,9 +603,11 @@ const MIN_TICK_PRICE = 0.000000000001;
 const useLimitPrice = ({
   orderDirection,
   baseDenom,
+  normalizationFactor,
 }: {
   orderDirection: OrderDirection;
   baseDenom?: string;
+  normalizationFactor?: Dec;
 }) => {
   const [priceLocked, setPriceLock] = useState(false);
 
@@ -620,6 +624,14 @@ const useLimitPrice = ({
 
   const [orderPrice, setOrderPrice] = useState("0");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
+
+  const minPrice = useMemo(() => {
+    return new Dec(MIN_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
+  }, [normalizationFactor]);
+
+  const maxPrice = useMemo(() => {
+    return new Dec(MAX_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
+  }, [normalizationFactor]);
 
   // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
@@ -666,12 +678,6 @@ const useLimitPrice = ({
       if (!isValidNumericalRawInput(price)) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
-
-      if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
-        price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
-      } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
-        price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
-      }
 
       const percentAdjusted = newPrice
         .quo(spotPrice)
@@ -755,14 +761,14 @@ const useLimitPrice = ({
     },
     [setManualPercentAdjusted, orderDirection, setPriceAsPercentageOfSpotPrice]
   );
-
   // Whether the user's manual order price is a valid price
   const isValidInputPrice =
     Boolean(orderPrice) &&
     orderPrice.length > 0 &&
     !new Dec(orderPrice).isZero() &&
-    new Dec(orderPrice).isPositive();
-
+    new Dec(orderPrice).isPositive() &&
+    new Dec(orderPrice).gte(minPrice) &&
+    new Dec(orderPrice).lte(maxPrice);
   // The current price. If the user has input a manual order price then that is used, otherwise we look at the percentage adjusted.
   // If the user has a percentage adjusted input we calculate the price relative to the spot price
   // given the current direction of the order.
@@ -819,7 +825,28 @@ const useLimitPrice = ({
     reset();
   }, [orderDirection, reset, baseDenom]);
 
-  const isValidPrice = isValidInputPrice || Boolean(spotPrice);
+  const isValidPrice =
+    isValidInputPrice ||
+    ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice));
+
+  const priceError = useMemo(() => {
+    if (price.lt(minPrice)) {
+      return "limitOrders.priceTooLow";
+    }
+
+    if (price.gt(maxPrice)) {
+      return "limitOrders.priceTooHigh";
+    }
+
+    if (
+      !(
+        isValidInputPrice ||
+        ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
+      )
+    ) {
+      return "limitOrders.invalidPrice";
+    }
+  }, [price, minPrice, maxPrice, isValidInputPrice, orderPrice, spotPrice]);
 
   return {
     spotPrice,
@@ -840,5 +867,6 @@ const useLimitPrice = ({
     setPriceLock,
     priceLocked,
     setPriceAsPercentageOfSpotPrice,
+    priceError,
   };
 };

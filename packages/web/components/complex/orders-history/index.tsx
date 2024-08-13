@@ -11,16 +11,19 @@ import React, { memo, useCallback, useMemo, useRef, useState } from "react";
 import { Icon } from "~/components/assets";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
+import { OrderModal } from "~/components/complex/orders-history/order-modal";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
+  Breakpoint,
   useAmplitudeAnalytics,
   useFeatureFlags,
   useTranslation,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
 import {
   useOrderbookAllActiveOrders,
@@ -50,6 +53,11 @@ function groupOrdersByStatus(orders: MappedLimitOrder[]) {
 }
 
 const headers = ["order", "amount", "price", "orderPlaced", "status"];
+const mdHeaders = ["order", "status"];
+const lgHeaders = ["order", "orderPlaced", "status"];
+
+const gridClasses =
+  "grid grid-cols-[80px_4fr_2fr_2fr_2fr_150px] md:grid-cols-[2fr_1fr] xl:grid-cols-[2fr_1fr_1fr]";
 
 export const OrderHistory = observer(() => {
   const { logEvent } = useAmplitudeAnalytics({
@@ -61,6 +69,9 @@ export const OrderHistory = observer(() => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const listRef = useRef<HTMLTableElement>(null);
   const { onOpenWalletSelect, isLoading: isWalletLoading } = useWalletSelect();
+  const { isMobile } = useWindowSize(Breakpoint.md);
+  const { isMobile: isLargeScreen } = useWindowSize(Breakpoint.xl);
+  const [selectedOrder, setSelectedOrder] = useState<MappedLimitOrder>();
 
   const {
     orders,
@@ -72,7 +83,7 @@ export const OrderHistory = observer(() => {
     isRefetching,
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
-    pageSize: 10,
+    pageSize: 20,
   });
 
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
@@ -98,11 +109,11 @@ export const OrderHistory = observer(() => {
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 84,
-    paddingStart: -220,
+    estimateSize: () => (isMobile ? 60 : 84),
     paddingEnd: 110,
     overscan: 10,
     scrollMargin: listRef.current?.offsetTop ?? 0,
+    paddingStart: 45,
   });
 
   const { claimAllOrders, count: filledOrdersCount } =
@@ -131,6 +142,14 @@ export const OrderHistory = observer(() => {
   }, [claimAllOrders, logEvent, refetch]);
 
   const showConnectWallet = !wallet?.isWalletConnected && !isWalletLoading;
+
+  const onOrderSelect = useCallback(
+    (order: MappedLimitOrder) => {
+      if (!isLargeScreen) return;
+      setSelectedOrder(order);
+    },
+    [isLargeScreen]
+  );
 
   if (showConnectWallet) {
     return (
@@ -190,36 +209,49 @@ export const OrderHistory = observer(() => {
   }
 
   return (
-    <div className="mt-3 flex flex-col overflow-y-clip overflow-x-scroll">
-      <table className="relative min-w-[1152px] table-auto" ref={listRef}>
+    <div className="mt-3 flex flex-col overflow-x-scroll xl:overflow-visible">
+      <table
+        className="relative min-w-[900px] table-auto xl:min-w-[100%]"
+        ref={listRef}
+      >
         {!isLoading && (
-          <thead className="border-b border-osmoverse-700  bg-osmoverse-1000">
+          <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
             <tr
               className={classNames(
-                "grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]",
                 {
                   "!bg-osmoverse-1000": featureFlags.limitOrders,
-                }
+                },
+                gridClasses
               )}
             >
               {headers.map((header) => (
-                <th key={header} className="!px-0">
-                  <small className="body2">
-                    {t(`limitOrders.historyTable.columns.${header}`)}
-                  </small>
+                <th
+                  key={header}
+                  className={classNames("flex !px-0", {
+                    "md:hidden": !mdHeaders.includes(header),
+                    "xl:hidden": !lgHeaders.includes(header),
+                    "xl:justify-end": isLargeScreen && header === "status",
+                  })}
+                >
+                  {header !== "amount" && (
+                    <small className="body2 sm:caption">
+                      {t(`limitOrders.historyTable.columns.${header}`)}
+                    </small>
+                  )}
                 </th>
               ))}
+              {!isLargeScreen && <th />}
             </tr>
           </thead>
         )}
         <tbody
-          className="bg-transparent"
+          className="bg-transparent xl:overflow-visible"
           style={{ height: `${rowVirtualizer.getTotalSize()}px` }}
         >
           {isLoading ? (
-            <div className="flex items-center justify-center py-10">
+            <tr className="flex items-center justify-center py-10">
               <Spinner className="!h-10 !w-10" />
-            </div>
+            </tr>
           ) : (
             rowVirtualizer.getVirtualItems().map((virtualRow) => {
               const row = rows[virtualRow.index];
@@ -227,10 +259,12 @@ export const OrderHistory = observer(() => {
               const style = {
                 position: "absolute",
                 top: 0,
-                left: 0,
+                left: "0",
                 width: "100%",
                 height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                transform: `translateY(${
+                  virtualRow.start - rowVirtualizer.options.scrollMargin
+                }px)`,
               };
 
               if (!row)
@@ -249,25 +283,34 @@ export const OrderHistory = observer(() => {
               }
 
               const order = row as MappedLimitOrder;
+              // style.left = isLargeScreen ? "rem" : "0";
+              style.width = isLargeScreen ? "calc(100% + 2rem)" : "100%";
               return (
                 <TableOrderRow
                   key={`${virtualRow.index}`}
                   order={order}
                   style={style}
                   refetch={refetch}
+                  onOrderSelect={onOrderSelect}
                 />
               );
             })
           )}
         </tbody>
+        <Intersection
+          onVisible={() => {
+            if (hasNextPage && !isFetchingNextPage && !isLoading) {
+              fetchNextPage();
+            }
+          }}
+        />
       </table>
-      <Intersection
-        onVisible={() => {
-          if (hasNextPage && !isFetchingNextPage && !isLoading) {
-            fetchNextPage();
-          }
-        }}
-      />
+      {isLargeScreen && (
+        <OrderModal
+          order={selectedOrder}
+          onRequestClose={() => setSelectedOrder(undefined)}
+        />
+      )}
     </div>
   );
 });
@@ -294,14 +337,18 @@ const TableGroupHeader = ({
 
   if (group === "filled") {
     return (
-      <tr className="h-[84px]">
+      <tr style={style} className="flex items-center">
         <td colSpan={5} className="!p-0">
           <div className="flex w-full items-end justify-between pr-4">
             <div className="relative flex items-end gap-3 pt-5">
               <div className="flex items-center gap-2 pb-3">
-                <h6>{t("limitOrders.orderHistoryHeaders.filled")}</h6>
+                <span className="sm:subtitle1 text-h6 font-h6">
+                  {t("limitOrders.orderHistoryHeaders.filled")}
+                </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="caption">{filledOrdersCount}</span>
+                  <span className="md:body2 pb-4 pt-8 text-h6 font-h6">
+                    {filledOrdersCount}
+                  </span>
                 </div>
               </div>
               <GenericDisclaimer
@@ -333,12 +380,12 @@ const TableGroupHeader = ({
   }
 
   return (
-    <tr style={style}>
-      <h6 className="pb-4 pt-8">
+    <tr style={style} className="flex items-center">
+      <span className="sm:subtitle1 py-4 text-h5 font-h5 sm:pb-2 sm:pt-4">
         {group === "pending"
           ? t("limitOrders.orderHistoryHeaders.pending")
           : t("limitOrders.orderHistoryHeaders.past")}
-      </h6>
+      </span>
     </tr>
   );
 };
@@ -348,10 +395,12 @@ const TableOrderRow = memo(
     order,
     style,
     refetch,
+    onOrderSelect,
   }: {
     order: MappedLimitOrder;
     style: Object;
     refetch: () => Promise<any>;
+    onOrderSelect: (order: MappedLimitOrder) => void;
   }) => {
     const { t } = useTranslation();
 
@@ -398,7 +447,7 @@ const TableOrderRow = memo(
           const hourDiff = dayjs(new Date()).diff(dayjs(placed_at), "h");
 
           return (
-            <span className="body2 text-osmoverse-300">
+            <span className="body2 md:caption text-osmoverse-300">
               {dayDiff > 0
                 ? t("limitOrders.daysAgo", {
                     days: dayDiff.toString(),
@@ -415,20 +464,33 @@ const TableOrderRow = memo(
       }
     })();
     return (
-      <tr style={style} className="grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1fr]">
-        <td className="flex items-center !px-0 !text-left">
-          <small className="subtitle1">
-            {order_direction === "bid"
-              ? t("limitOrders.buy")
-              : t("limitOrders.sell")}
-          </small>
+      <tr
+        style={style}
+        className={classNames(
+          gridClasses,
+          "xl:-mx-4 xl:items-center xl:overflow-visible xl:px-4 xl:hover:cursor-pointer xl:hover:bg-osmoverse-900 sm:[&>td]:!py-0"
+        )}
+        onClick={() => onOrderSelect(order)}
+      >
+        <td className="flex items-center justify-center !px-0 !text-left xl:hidden">
+          <div className="subtitle1 rounded-full bg-osmoverse-alpha-850 p-3">
+            <Icon
+              id="coins"
+              width={24}
+              height={24}
+              className={classNames("h-6 w-6", {
+                "text-rust-400": order_direction === "ask",
+                "text-bullish-400": order_direction === "bid",
+              })}
+            />
+          </div>
         </td>
         <td className="!px-0 !text-left">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             <div className="flex flex-col gap-1">
               <p
                 className={classNames(
-                  "body2 inline-flex w-fit items-center gap-1 text-osmoverse-300",
+                  "body2 md:caption inline-flex w-fit items-center gap-1 text-osmoverse-300",
                   { "flex-row-reverse": order_direction === "bid" }
                 )}
               >
@@ -463,8 +525,11 @@ const TableOrderRow = memo(
                   )}
                 </span>
               </p>
-              <div className="inline-flex items-center gap-2">
+              <div className="md:body2 inline-flex items-center gap-2">
                 <span>
+                  {order_direction === "bid"
+                    ? t("limitOrders.buy")
+                    : t("limitOrders.sell")}{" "}
                   {formatFiatPrice(
                     new PricePretty(
                       DEFAULT_VS_CURRENCY,
@@ -495,7 +560,7 @@ const TableOrderRow = memo(
             </div>
           </div>
         </td>
-        <td className="!px-0 !text-left">
+        <td className="!px-0 !text-left xl:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">
               {baseAsset?.symbol} · {t("limitOrders.limit")}
@@ -507,29 +572,32 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left">
+        <td className="!px-0 !text-left xl:!py-0  md:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
         </td>
-        <td className="!px-0 !text-left">
-          <div className="flex flex-col gap-1">
+        <td className="!px-0 !text-left  xl:!py-0">
+          <div className="xl: flex flex-col gap-1 xl:items-end xl:justify-end">
             {statusComponent}
             <span
-              className={classNames({
-                "text-bullish-400":
-                  status === "filled" || status === "fullyClaimed",
-                "text-osmoverse-300":
-                  status === "open" || status === "partiallyFilled",
-                "text-osmoverse-500": status === "cancelled",
-              })}
+              className={classNames(
+                {
+                  "text-bullish-400":
+                    status === "filled" || status === "fullyClaimed",
+                  "text-osmoverse-300":
+                    status === "open" || status === "partiallyFilled",
+                  "text-osmoverse-500": status === "cancelled",
+                },
+                "md:body2"
+              )}
             >
               {statusString}
             </span>
           </div>
         </td>
-        <td className="flex w-[150px] items-center justify-end !px-0 !text-left">
+        <td className="flex w-[150px] items-center justify-end !px-0 !text-left xl:hidden">
           <ActionsCell order={order} refetch={refetch} />
         </td>
       </tr>

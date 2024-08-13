@@ -1,5 +1,7 @@
 {
-  "404": { "title": "No encontrado" },
+  "404": {
+    "title": "No encontrado"
+  },
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
@@ -135,19 +137,15 @@
         "type": "Escribe",
         "withdraw": "Retirar"
       },
-      "errors": { "insufficientFee": "Tarifa insuficiente" },
+      "errors": {
+        "insufficientFee": "Tarifa insuficiente"
+      },
       "failed": "Fallida",
       "failedWithReason": "Fallida: {reason}",
       "pending": "Pendiente",
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
-      "pendingDeposit": "Deposito pendiente",
-      "pendingWithdraw": "A la espera de Retiro",
-      "successDeposit": "Depositado",
-      "successWithdraw": "se retiró",
-      "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido",
       "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
@@ -196,7 +194,11 @@
         "withdraw": "Retirar"
       },
       "search": "Buscar",
-      "sort": { "balance": "Balance", "network": "Red", "symbol": "Símbolo" },
+      "sort": {
+        "balance": "Balance",
+        "network": "Red",
+        "symbol": "Símbolo"
+      },
       "title": "Todos los activos",
       "withdrawButton": "Retirar",
       "activate": "Activar",
@@ -302,7 +304,6 @@
     "buy": "Comprar",
     "yourAssets": "Tus activos",
     "yourPositions": "Tus posiciones",
-    "recentTransfers": "Transferencias recientes",
     "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
     "yourLiquidityPools": "Tus fondos de liquidez",
     "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis.",
@@ -318,27 +319,41 @@
     "pooled": "agrupado",
     "other": "Otro",
     "all": "Todo",
-    "assets": "Activos"
+    "assets": "Activos",
+    "recentActivity": "Actividad reciente",
+    "seeAll": "Ver todo",
+    "show": "Espectáculo",
+    "hide": "Esconder",
+    "hidden": "Oculto"
   },
   "buyTokens": "Comprar fichas",
   "components": {
-    "cryptoFiatInput": { "insufficientFunds": "Fondos insuficientes" },
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fondos insuficientes"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
-    "incentive": { "title": "Tipos de incentivos" },
+    "incentive": {
+      "title": "Tipos de incentivos"
+    },
     "MAX": "Máximo",
-    "pool": { "title": "Tipos de piscinas" },
+    "pool": {
+      "title": "Tipos de piscinas"
+    },
     "searchTokens": "Buscar",
     "selectToken": {
       "title": "Seleccione un token",
       "unverifiedAsset": "Este activo no está verificado. Proceda con precaución.",
       "clickToActivate": "Haz clic para activar"
     },
-    "show": { "less": "Ver menos", "more": "Ver más" },
+    "show": {
+      "less": "Ver menos",
+      "more": "Ver más"
+    },
     "sort": {
       "mobileMenu": "Ordenar por",
       "SORT": "ORDENAR POR",
@@ -613,7 +628,9 @@
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "weightedPool": "Grupo ponderado"
     },
-    "externalIncentivized": { "TVL": "VTB" },
+    "externalIncentivized": {
+      "TVL": "VTB"
+    },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",
     "myPools": "Mis Piscinas",
@@ -750,7 +767,10 @@
     "bondedAmount": "Monto abonado",
     "buttonBond": "Abonar y Generar Interés",
     "choose": "Elija su validador superfluido",
-    "columns": { "commission": "Comisión", "validator": "Validador" },
+    "columns": {
+      "commission": "Comisión",
+      "validator": "Validador"
+    },
     "estimation": "Delegación superfluida estimada",
     "estimationInfo": "El valor de esta delegación fluctúa y se estima en función de la cantidad de OSMO en la piscina.",
     "estimationMobile": "Est. Delegación",
@@ -760,7 +780,10 @@
   },
   "swap": {
     "autoRouter": "Ruta",
-    "autoRouterToggle": { "hide": "Ocultar", "show": "Mostrar" },
+    "autoRouterToggle": {
+      "hide": "Ocultar",
+      "show": "Mostrar"
+    },
     "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
     "available": "Disponible",
     "button": "Intercambio",
@@ -1005,7 +1028,9 @@
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
     },
-    "pool": { "title": "Piscina #" },
+    "pool": {
+      "title": "Piscina #"
+    },
     "pools": {
       "title": "Piscinas de Osmosis",
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -1085,8 +1110,15 @@
     "availableToClaim": "disponible para reclamar",
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
-    "tokenFilterOptions": { "my": "Tus activos", "all": "Todos los activos" },
-    "rewardTypes": { "all": "Todo", "single": "Soltero", "multi": "Multi" },
+    "tokenFilterOptions": {
+      "my": "Tus activos",
+      "all": "Todos los activos"
+    },
+    "rewardTypes": {
+      "all": "Todo",
+      "single": "Soltero",
+      "multi": "Multi"
+    },
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
     "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
@@ -1170,9 +1202,15 @@
     "history": "Historia",
     "orders": "Pedidos"
   },
-  "date": { "earlierToday": "El día de hoy", "yesterday": "Ayer" },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer"
+  },
   "backToTop": "Volver arriba",
-  "pagination": { "older": "Más viejo", "newer": "Más nuevo" },
+  "pagination": {
+    "older": "Más viejo",
+    "newer": "Más nuevo"
+  },
   "limitOrders": {
     "historyTable": {
       "columns": {
@@ -1198,13 +1236,20 @@
       "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
     },
     "enterAnAmountTo": "Introduzca una cantidad a",
+    "toSell": "vender",
+    "toBuy": "comprar",
     "sell": "Vender",
+    "sold": "Vendido",
+    "percentFilled": "Porcentaje lleno",
+    "status": "Estado",
+    "price": "Precio",
     "buy": "Comprar",
     "pay": "Pagar",
     "open": "Abierto",
     "filled": "Completado",
     "claimable": "Reclamable",
     "claimAndClose": "Reclamar y cerrar",
+    "claim": "Afirmar",
     "accept": "Aceptar",
     "cancelled": "Cancelado",
     "cancel": "Cancelar",
@@ -1266,6 +1311,8 @@
     "trade": "Comercio",
     "swapToAnotherAsset": "Cambiar a otro activo",
     "invalidPrice": "Precio no válido",
+    "priceTooLow": "Precio demasiado bajo",
+    "priceTooHigh": "Precio demasiado alto",
     "unavailable": "No disponible para {denom}",
     "orderHistoryHeaders": {
       "past": "Pasado",

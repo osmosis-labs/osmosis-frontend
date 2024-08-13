@@ -11,7 +11,11 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -77,12 +81,16 @@ export const TransactionDetailsContent = ({
     failed: t("transactions.swapFailed"),
   };
 
+  const featureFlags = useFeatureFlags();
+
   return (
     <div
       className={classNames("flex flex-col overflow-y-auto", {
         // 4.5rem is the height of the navbar
         "sticky top-[4.5rem] ml-4 h-[calc(100vh_-_4.5rem)] w-[480px] border-osmoverse-700 bg-osmoverse-900 pl-4 pt-3":
           !isModal,
+        "bg-osmoverse-900": !featureFlags.limitOrders,
+        "bg-osmoverse-1000 xl:bg-osmoverse-850": featureFlags.limitOrders,
       })}
     >
       <div className="flex flex-col px-4 pb-8 md:p-0">

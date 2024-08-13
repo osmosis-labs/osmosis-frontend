@@ -285,7 +285,6 @@ export const useOrderbookAllActiveOrders = ({
     isRefetching,
   } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
     {
-      contractAddresses: addresses,
       userOsmoAddress: userAddress,
       limit: pageSize,
     },
@@ -295,7 +294,7 @@ export const useOrderbookAllActiveOrders = ({
       refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
-      keepPreviousData: true,
+      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -345,7 +344,6 @@ export const useOrderbookClaimableOrders = ({
     refetch,
   } = api.edge.orderbooks.getClaimableOrders.useQuery(
     {
-      contractAddresses: addresses,
       userOsmoAddress: userAddress,
     },
     {
