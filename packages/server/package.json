@@ -35,7 +35,6 @@
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
-    "@sentry/core": "^7.109.0",
     "@upstash/redis": "^1.31.5",
     "axios": "^0.27.2",
     "cachified": "^3.5.4",
@@ -51,8 +50,8 @@
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
     "jest-in-case": "^1.0.2",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.4.5"
+    "ts-jest": "^29.1.2",
+    "typescript": "5.4.5"
   },
   "lint-staged": {
     "*": [

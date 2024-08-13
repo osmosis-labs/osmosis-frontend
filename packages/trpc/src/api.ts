@@ -13,8 +13,6 @@ import { type AnyRouter, initTRPC } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
 import { ZodError } from "zod";
 
-import { trpcMiddleware } from "./middleware";
-
 /**
  * Pass asset lists and chain list to be used cas context in backend service.
  */
@@ -81,11 +79,11 @@ export const createTRPCRouter = t.router;
  * are logged in.
  */
 export const publicProcedure = t.procedure
-  .use(
-    trpcMiddleware({
-      attachRpcInput: true,
-    })
-  )
+  // .use(
+  //   trpcMiddleware({
+  //     attachRpcInput: true,
+  //   })
+  // )
   .use(async (opts) => {
     /**
      * Default timeout for all procedures
