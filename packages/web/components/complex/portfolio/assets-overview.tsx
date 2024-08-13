@@ -74,8 +74,8 @@ export const AssetsOverview: FunctionComponent<
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
-  const { isLoading: isWalletLoading } = useWalletSelect();
   const { startBridge, fiatRampSelection } = useBridge();
+  const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize();
   const formatDate = useFormatDate();
 
