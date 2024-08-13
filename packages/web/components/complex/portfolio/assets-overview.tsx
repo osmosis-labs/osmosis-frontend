@@ -74,8 +74,8 @@ export const AssetsOverview: FunctionComponent<
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
-  const { startBridge, fiatRampSelection } = useBridge();
   const { isLoading: isWalletLoading } = useWalletSelect();
+  const { startBridge, fiatRampSelection } = useBridge();
   const { isMobile } = useWindowSize();
   const formatDate = useFormatDate();
 
@@ -88,7 +88,7 @@ export const AssetsOverview: FunctionComponent<
     value: 0,
   });
 
-  const [range, setRange] = useState<Range>("1mo");
+  const [range, setRange] = useState<Range>("1d");
 
   const {
     data: portfolioOverTimeData,
@@ -124,7 +124,8 @@ export const AssetsOverview: FunctionComponent<
     new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
 
-  const [isChartMinimized, setIsChartMinimized] = useState(true);
+  // const [isChartMinimized, setIsChartMinimized] = useState(true);
+  const [isChartMinimized, setIsChartMinimized] = useState(false);
 
   if (isWalletLoading) return null;
 
