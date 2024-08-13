@@ -10,15 +10,17 @@ export function LinkButton({
   ariaLabel,
   href,
   className: optionalClassNames,
+  size = "default",
 }: {
   label: string;
-  icon: ReactElement;
+  icon?: ReactElement;
   ariaLabel: string;
   href: string;
   className?: string;
+  size?: "sm" | "md" | "default";
 }) {
   return (
-    <Button asChild variant="ghost">
+    <Button asChild variant="ghost" size={size}>
       <Link
         href={href}
         passHref

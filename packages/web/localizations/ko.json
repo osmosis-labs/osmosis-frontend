@@ -146,12 +146,6 @@
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",
-      "pendingDeposit": "입금 대기 중",
-      "pendingWithdraw": "출금 대기 중",
-      "successDeposit": "입금됨",
-      "successWithdraw": "철수",
-      "failDeposit": "입금 실패",
-      "failWithdraw": "출금 실패",
       "connectionError": "연결 오류"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "풀링됨",
     "other": "다른",
     "all": "모두",
-    "assets": "자산"
+    "assets": "자산",
+    "recentActivity": "최근 활동",
+    "seeAll": "모두 보기",
+    "show": "보여주다",
+    "hide": "숨다",
+    "hidden": "숨겨진"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "판매하다",
     "toBuy": "구매하다",
     "sell": "팔다",
+    "sold": "판매된",
+    "percentFilled": "채워진 비율",
+    "status": "상태",
+    "price": "가격",
     "buy": "구입하다",
     "pay": "지불하다",
     "open": "열려 있는",
     "filled": "채우는",
     "claimable": "청구 가능",
     "claimAndClose": "청구 및 종료",
+    "claim": "주장하다",
     "accept": "수용하다",
     "cancelled": "취소 된",
     "cancel": "취소",
@@ -1306,6 +1310,8 @@
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
     "invalidPrice": "잘못된 가격",
+    "priceTooLow": "가격이 너무 낮음",
+    "priceTooHigh": "가격이 너무 비싸요",
     "unavailable": "{denom} 에는 사용할 수 없습니다.",
     "orderHistoryHeaders": {
       "past": "과거",

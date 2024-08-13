@@ -3,7 +3,6 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
-  getOrderbookDenoms,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
@@ -12,7 +11,7 @@ import {
   maybeCachePaginatedItems,
   OrderStatus,
 } from "@osmosis-labs/server";
-import { z } from "zod";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
@@ -58,22 +57,27 @@ export const orderbookRouter = createTRPCRouter({
       };
     }),
   getAllOrders: publicProcedure
-    .input(
-      GetInfiniteLimitOrdersInputSchema.merge(
-        z.object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
-      )
-    )
+    .input(GetInfiniteLimitOrdersInputSchema)
     .query(async ({ input, ctx }) => {
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
-          const { contractAddresses, userOsmoAddress } = input;
+          const { userOsmoAddress } = input;
+          const pools = await getOrderbookPools();
+          const contractAddresses = pools.map((p) => p.contractAddress);
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
-              const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-                orderbookAddress: contractOsmoAddress,
-                chainList: ctx.chainList,
+              const { baseDenom, quoteDenom } = pools.find(
+                (p) => p.contractAddress === contractOsmoAddress
+              )!;
+
+              const quoteAsset = getAssetFromAssetList({
+                coinMinimalDenom: quoteDenom,
+                assetLists: ctx.assetLists,
+              });
+              const baseAsset = getAssetFromAssetList({
+                coinMinimalDenom: baseDenom,
                 assetLists: ctx.assetLists,
               });
               const orders = await getOrderbookActiveOrders({
@@ -96,11 +100,10 @@ export const orderbookRouter = createTRPCRouter({
 
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
+
           return allOrders.sort(defaultSortOrders);
         },
-        cacheKey: `all-active-orders-${input.contractAddresses.join(",")}-${
-          input.userOsmoAddress
-        }`,
+        cacheKey: `all-active-orders-${input.userOsmoAddress}`,
         ttl: 2000,
         cursor: input.cursor,
         limit: input.limit,
@@ -123,19 +126,27 @@ export const orderbookRouter = createTRPCRouter({
       };
     }),
   getClaimableOrders: publicProcedure
-    .input(
-      z
-        .object({ contractAddresses: z.array(z.string().startsWith("osmo")) })
-        .required()
-        .and(UserOsmoAddressSchema.required())
-    )
+    .input(UserOsmoAddressSchema.required())
     .query(async ({ input, ctx }) => {
-      const { contractAddresses, userOsmoAddress } = input;
+      const { userOsmoAddress } = input;
+      const pools = await getOrderbookPools();
+      const contractAddresses = pools.map((p) => p.contractAddress);
+
+      if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
+        return [];
+
       const promises = contractAddresses.map(
         async (contractOsmoAddress: string) => {
-          const { quoteAsset, baseAsset } = await getOrderbookDenoms({
-            orderbookAddress: contractOsmoAddress,
-            chainList: ctx.chainList,
+          const { baseDenom, quoteDenom } = pools.find(
+            (p) => p.contractAddress === contractOsmoAddress
+          )!;
+
+          const quoteAsset = getAssetFromAssetList({
+            coinMinimalDenom: quoteDenom,
+            assetLists: ctx.assetLists,
+          });
+          const baseAsset = getAssetFromAssetList({
+            coinMinimalDenom: baseDenom,
             assetLists: ctx.assetLists,
           });
           const orders = await getOrderbookActiveOrders({

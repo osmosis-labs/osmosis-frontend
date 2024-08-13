@@ -14,7 +14,7 @@ export type TransactionStatus = "pending" | "success" | "failed";
 
 type Effect = "swap" | "deposit" | "withdraw";
 
-interface Transaction {
+export interface TransactionRow {
   isSelected?: boolean;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
@@ -41,7 +41,7 @@ interface Transaction {
   onClick?: () => void;
 }
 
-export const TransactionRow: FunctionComponent<Transaction> = ({
+export const TransactionRow: FunctionComponent<TransactionRow> = ({
   isSelected = false,
   status,
   effect,
@@ -127,7 +127,7 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 /** UI for displaying one token being converted into another by this transaction. */
 const TokenConversion: FunctionComponent<
   { status: TransactionStatus; effect: Effect } & NonNullable<
-    Transaction["tokenConversion"]
+    TransactionRow["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => {
   const { t } = useTranslation();
@@ -199,7 +199,7 @@ const TokenConversion: FunctionComponent<
 export const TokenTransfer: FunctionComponent<
   {
     status: TransactionStatus;
-  } & NonNullable<Transaction["transfer"]>
+  } & NonNullable<TransactionRow["transfer"]>
 > = ({ status, direction, amount, value }) => (
   <div className="flex items-center gap-4">
     <FallbackImg

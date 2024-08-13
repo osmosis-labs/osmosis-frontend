@@ -94,7 +94,7 @@ export const OrderTypeSelector = () => {
         return (
           <GenericDisclaimer
             disabled={!disabled}
-            title={`Limit orders unavailable for ${base}`}
+            title={t("limitOrders.unavailable", { denom: base })}
             key={`order-type-selector-${id}`}
             containerClassName="!w-fit"
           >

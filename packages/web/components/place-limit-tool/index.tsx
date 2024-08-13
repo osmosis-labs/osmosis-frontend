@@ -177,13 +177,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
-        (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee)) &&
+        swapState.marketState.isQuoteLoading &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
-      swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.isQuoteLoading,
       swapState.marketState.error,
     ]);
@@ -482,6 +480,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isFetchingNextPageAssets={
                   swapState.marketState.isFetchingNextPageAssets
                 }
+                isLoadingSelectAssets={
+                  swapState.marketState.isLoadingSelectAssets
+                }
                 data-testid="token-in"
               />
             </div>
@@ -584,6 +585,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             makerFee={swapState.makerFee}
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
+            priceOverride={
+              type === "limit" ? swapState.priceState.priceFiat : undefined
+            }
           />
         </div>
         <ReviewOrder

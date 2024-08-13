@@ -146,12 +146,6 @@
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",
-      "pendingDeposit": "待定存款",
-      "pendingWithdraw": "待提款",
-      "successDeposit": "已存入",
-      "successWithdraw": "退出",
-      "failDeposit": "存款失敗",
-      "failWithdraw": "提現失敗",
       "connectionError": "連線錯誤"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "匯集",
     "other": "其他",
     "all": "全部",
-    "assets": "資產"
+    "assets": "資產",
+    "recentActivity": "最近的活動",
+    "seeAll": "看全部",
+    "show": "展示",
+    "hide": "隱藏",
+    "hidden": "隱"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "出售",
     "toBuy": "買",
     "sell": "賣",
+    "sold": "賣",
+    "percentFilled": "填充百分比",
+    "status": "地位",
+    "price": "價格",
     "buy": "買",
     "pay": "支付",
     "open": "打開",
     "filled": "填充",
     "claimable": "可索賠",
     "claimAndClose": "索賠並關閉",
+    "claim": "宣稱",
     "accept": "接受",
     "cancelled": "取消",
     "cancel": "取消",
@@ -1306,6 +1310,8 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "invalidPrice": "價格無效",
+    "priceTooLow": "價格太低",
+    "priceTooHigh": "價格太高",
     "unavailable": "不適用於{denom}",
     "orderHistoryHeaders": {
       "past": "過去的",

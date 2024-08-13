@@ -146,12 +146,6 @@
       "refunded": "İade Edildi",
       "success": "Başarılı",
       "title": "Transfer Geçmişi",
-      "pendingDeposit": "Bekleyen mevduat",
-      "pendingWithdraw": "Geri çekilme bekleniyor",
-      "successDeposit": "Yatırıldı",
-      "successWithdraw": "Geri çekildi",
-      "failDeposit": "Para yatırma işlemi başarısız oldu",
-      "failWithdraw": "Para çekme işlemi başarısız oldu",
       "connectionError": "Bağlantı hatası"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "havuzlanmış",
     "other": "Diğer",
     "all": "Tüm",
-    "assets": "Varlıklar"
+    "assets": "Varlıklar",
+    "recentActivity": "Son aktivite",
+    "seeAll": "Tümünü gör",
+    "show": "Göstermek",
+    "hide": "Saklamak",
+    "hidden": "Gizlenmiş"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "satmak",
     "toBuy": "satın almak",
     "sell": "Satmak",
+    "sold": "Satılmış",
+    "percentFilled": "Yüzde doluluk oranı",
+    "status": "Durum",
+    "price": "Fiyat",
     "buy": "Satın almak",
     "pay": "Ödemek",
     "open": "Açık",
     "filled": "Dolu",
     "claimable": "Hak talebinde bulunulabilir",
     "claimAndClose": "Talep et ve kapat",
+    "claim": "İddia",
     "accept": "Kabul etmek",
     "cancelled": "İptal edildi",
     "cancel": "İptal etmek",
@@ -1306,6 +1310,8 @@
     "trade": "Ticaret",
     "swapToAnotherAsset": "Başka bir varlığa geç",
     "invalidPrice": "Geçersiz fiyat",
+    "priceTooLow": "Fiyat çok düşük",
+    "priceTooHigh": "Fiyat çok yüksek",
     "unavailable": "{denom} için kullanılamıyor",
     "orderHistoryHeaders": {
       "past": "Geçmiş",

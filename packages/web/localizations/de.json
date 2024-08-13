@@ -146,12 +146,6 @@
       "refunded": "Erstattet",
       "success": "Erfolg",
       "title": "Übertragungsverlauf",
-      "pendingDeposit": "Ausstehende Einzahlung",
-      "pendingWithdraw": "Ausstehender Auszug",
-      "successDeposit": "Hinterlegt",
-      "successWithdraw": "Zurückgezogen",
-      "failDeposit": "Einzahlung fehlgeschlagen",
-      "failWithdraw": "Auszahlung fehlgeschlagen",
       "connectionError": "Verbindungsfehler"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "Gepoolt",
     "other": "Andere",
     "all": "Alle",
-    "assets": "Vermögenswerte"
+    "assets": "Vermögenswerte",
+    "recentActivity": "Letzte Aktivität",
+    "seeAll": "Alles sehen",
+    "show": "Zeigen",
+    "hide": "Verstecken",
+    "hidden": "Versteckt"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "Verkaufen",
     "toBuy": "Kaufen",
     "sell": "Verkaufen",
+    "sold": "Verkauft",
+    "percentFilled": "Prozent gefüllt",
+    "status": "Status",
+    "price": "Preis",
     "buy": "Kaufen",
     "pay": "Zahlen",
     "open": "Offen",
     "filled": "Gefüllt",
     "claimable": "Einforderbar",
     "claimAndClose": "Beanspruchen und schließen",
+    "claim": "Beanspruchen",
     "accept": "Akzeptieren",
     "cancelled": "Abgesagt",
     "cancel": "Stornieren",
@@ -1306,6 +1310,8 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Tauschen Sie gegen ein anderes Asset",
     "invalidPrice": "Ungültiger Preis",
+    "priceTooLow": "Preis zu niedrig",
+    "priceTooHigh": "Preis zu hoch",
     "unavailable": "Nicht verfügbar für {denom}",
     "orderHistoryHeaders": {
       "past": "Vergangenheit",

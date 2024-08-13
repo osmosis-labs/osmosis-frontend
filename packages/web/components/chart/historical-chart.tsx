@@ -46,7 +46,7 @@ const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
   return {
     lineColor,
     lineWidth: 2,
-    lineType: LineType.Curved,
+    lineType: LineType.Simple,
     topColor,
     bottomColor,
     priceLineVisible: false,

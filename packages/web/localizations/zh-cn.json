@@ -146,12 +146,6 @@
       "refunded": "退款",
       "success": "成功",
       "title": "转账记录",
-      "pendingDeposit": "待存款",
-      "pendingWithdraw": "等待提款",
-      "successDeposit": "已存入",
-      "successWithdraw": "已退出",
-      "failDeposit": "存款失败",
-      "failWithdraw": "提现失败",
       "connectionError": "连接错误"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "池化",
     "other": "其他",
     "all": "全部",
-    "assets": "资产"
+    "assets": "资产",
+    "recentActivity": "最近活动",
+    "seeAll": "查看全部",
+    "show": "展示",
+    "hide": "隐藏",
+    "hidden": "隐"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "出售",
     "toBuy": "购买",
     "sell": "卖",
+    "sold": "卖",
+    "percentFilled": "已填充百分比",
+    "status": "地位",
+    "price": "价格",
     "buy": "买",
     "pay": "支付",
     "open": "打开",
     "filled": "填充",
     "claimable": "可索偿",
     "claimAndClose": "认领并关闭",
+    "claim": "宣称",
     "accept": "接受",
     "cancelled": "取消",
     "cancel": "取消",
@@ -1306,6 +1310,8 @@
     "trade": "贸易",
     "swapToAnotherAsset": "转换为其他资产",
     "invalidPrice": "价格无效",
+    "priceTooLow": "价格太低",
+    "priceTooHigh": "价格太高",
     "unavailable": "不适用于{denom}",
     "orderHistoryHeaders": {
       "past": "过去的",

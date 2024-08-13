@@ -8,10 +8,12 @@ import { formatPretty } from "~/utils/formatter";
 
 interface OrderProgressBarProps {
   order: MappedLimitOrder;
+  totalPercentClassNames?: string;
 }
 
 export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
   order,
+  totalPercentClassNames,
 }) => {
   const { percentFilled, status } = order;
 
@@ -40,10 +42,13 @@ export const OrderProgressBar: React.FC<OrderProgressBarProps> = ({
     <ProgressBar
       segments={progressSegments}
       classNames="h-[8px] w-[64px]"
-      totalPercentClassNames={classNames({
-        "text-bullish-400": percentFilled.gt(new Dec(0)),
-        "text-osmoverse-500": !percentFilled.gt(new Dec(0)),
-      })}
+      totalPercentClassNames={classNames(
+        {
+          "text-bullish-400": percentFilled.gt(new Dec(0)),
+          "text-osmoverse-500": !percentFilled.gt(new Dec(0)),
+        },
+        totalPercentClassNames
+      )}
       totalPercent={formatPretty(roundedAmountFilled, {
         maxDecimals: 0,
       })}

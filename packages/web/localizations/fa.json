@@ -146,12 +146,6 @@
       "refunded": "بازگشت وجه",
       "success": "موفق",
       "title": "تاریخ چه انتقال",
-      "pendingDeposit": "سپرده معلق",
-      "pendingWithdraw": "در انتظار برداشت",
-      "successDeposit": "سپرده شد",
-      "successWithdraw": "عقب نشینی کرد",
-      "failDeposit": "سپرده گذاری انجام نشد",
-      "failWithdraw": "برداشت ناموفق بود",
       "connectionError": "خطای اتصال"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "جمع شده",
     "other": "دیگر",
     "all": "همه",
-    "assets": "دارایی های"
+    "assets": "دارایی های",
+    "recentActivity": "فعالیت اخیر",
+    "seeAll": "همه را ببینید",
+    "show": "نمایش دهید",
+    "hide": "پنهان کردن",
+    "hidden": "پنهان شده است"
   },
   "buyTokens": "خرید توکن",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "برای فروش",
     "toBuy": "برای خرید",
     "sell": "فروش",
+    "sold": "فروخته شد",
+    "percentFilled": "درصد پر شده",
+    "status": "وضعیت",
+    "price": "قیمت",
     "buy": "خرید کنید",
     "pay": "پرداخت",
     "open": "باز کن",
     "filled": "پر شده است",
     "claimable": "قابل ادعا",
     "claimAndClose": "ادعا کنید و ببندید",
+    "claim": "ادعا کنید",
     "accept": "تایید کنید",
     "cancelled": "لغو شد",
     "cancel": "لغو کنید",
@@ -1306,6 +1310,8 @@
     "trade": "تجارت",
     "swapToAnotherAsset": "تعویض به دارایی دیگر",
     "invalidPrice": "قیمت نامعتبر",
+    "priceTooLow": "قیمت خیلی پایین",
+    "priceTooHigh": "قیمت خیلی بالاست",
     "unavailable": "برای {denom} در دسترس نیست",
     "orderHistoryHeaders": {
       "past": "گذشته",

@@ -236,12 +236,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                   const value = e.target.value.trim();
                   swapState.priceState.setPrice(value);
                 }}
+                inputMode="decimal"
               />
             ) : (
               <>
                 {isPercentTooLarge && <span>{">"}</span>}
                 <AutosizeInput
                   type="text"
+                  inputMode="decimal"
                   extraWidth={0}
                   inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                   value={

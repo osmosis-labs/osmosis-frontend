@@ -146,12 +146,6 @@
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
-      "pendingDeposit": "Oczekujący depozyt",
-      "pendingWithdraw": "Oczekuje na wycofanie",
-      "successDeposit": "Zdeponowane",
-      "successWithdraw": "Wycofał się",
-      "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się",
       "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
@@ -325,7 +319,12 @@
     "pooled": "Połączone",
     "other": "Inny",
     "all": "Wszystko",
-    "assets": "Aktywa"
+    "assets": "Aktywa",
+    "recentActivity": "Ostatnia aktywność",
+    "seeAll": "Zobacz wszystko",
+    "show": "Pokazywać",
+    "hide": "Ukrywać",
+    "hidden": "Ukryty"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -1239,12 +1238,17 @@
     "toSell": "sprzedać",
     "toBuy": "kupić",
     "sell": "Sprzedać",
+    "sold": "Sprzedany",
+    "percentFilled": "Procent wypełnienia",
+    "status": "Status",
+    "price": "Cena",
     "buy": "Kupić",
     "pay": "Płacić",
     "open": "otwarty",
     "filled": "Wypełniony",
     "claimable": "Możliwość roszczenia",
     "claimAndClose": "Złóż wniosek i zamknij",
+    "claim": "Prawo",
     "accept": "Zaakceptować",
     "cancelled": "Odwołany",
     "cancel": "Anulować",
@@ -1306,6 +1310,8 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
     "invalidPrice": "Nieprawidłowa cena",
+    "priceTooLow": "Cena za niska",
+    "priceTooHigh": "Cena za wysoka",
     "unavailable": "Niedostępne dla {denom}",
     "orderHistoryHeaders": {
       "past": "Przeszłość",
