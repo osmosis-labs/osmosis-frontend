@@ -496,6 +496,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   swapState.marketState.isLoadingSelectAssets
                 }
                 data-testid="token-in"
+                setAssetQueryInput={swapState.marketState.setAssetsQueryInput}
+                assetQueryInput={swapState.marketState.assetsQueryInput}
               />
             </div>
             <AssetFieldsetFooter>

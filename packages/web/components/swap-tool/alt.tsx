@@ -369,7 +369,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
                     selectedCoinImageUrl={swapState.fromAsset?.coinImageUrl}
-                    isModalExternal
                     onSelectorClick={() =>
                       showTokenSelectRecommendedTokens &&
                       setOneTokenSelectOpen("from")
