@@ -38,6 +38,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
+import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -113,6 +114,7 @@ export function useSwap(
     useQueryParams,
     useOtherCurrencies,
     poolId: forceSwapInPoolId,
+    reverse: true,
   });
 
   const inAmountInput = useSwapAmountInput({
@@ -144,7 +146,7 @@ export function useSwap(
     !isWalletLoading &&
     quoteType === "out-given-in";
 
-  const outGivenInQuoteEnabled =
+  const inGivenOutQuoteEnabled =
     isToFromAssets &&
     Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
     outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
@@ -172,7 +174,7 @@ export function useSwap(
 
   const {
     data: inGivenOutQuote,
-    isLoading: isOGIQuoteLoading_,
+    isLoading: isInGivenOutQuoteLoading_,
     error: inGivenOutQuoteError,
   } = useQueryRouterBestQuote(
     {
@@ -182,19 +184,34 @@ export function useSwap(
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
-    outGivenInQuoteEnabled,
+    inGivenOutQuoteEnabled,
     ["sidecar"],
     "in-given-out"
   );
 
   useEffect(() => {
-    if (quoteType === "in-given-out" && inGivenOutQuote) {
-      inAmountInput.setAmount(inGivenOutQuote.amount.toDec().toString());
+    if (
+      quoteType === "in-given-out" &&
+      !isInGivenOutQuoteLoading_ &&
+      !outAmountInput.isTyping
+    ) {
+      inAmountInput.setAmount(
+        inGivenOutQuote && !inGivenOutQuoteError && !!outAmountInput.inputAmount
+          ? trimPlaceholderZeros(inGivenOutQuote.amount.toDec().toString())
+          : ""
+      );
     }
 
-    if (quoteType === "out-given-in" && quote) {
-      console.log("SETTING OUT AMOUNT", quote.amount.toDec().toString());
-      outAmountInput.setAmount(quote.amount.toDec().toString());
+    if (
+      quoteType === "out-given-in" &&
+      !isQuoteLoading_ &&
+      !inAmountInput.isTyping
+    ) {
+      outAmountInput.setAmount(
+        quote && !quoteError && !!inAmountInput.inputAmount
+          ? trimPlaceholderZeros(quote.amount.toDec().toString())
+          : ""
+      );
     }
 
     /**
@@ -202,11 +219,23 @@ export function useSwap(
      * from the inAmount/outAmount input states
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inGivenOutQuote, quote]);
+  }, [
+    quoteType,
+    inGivenOutQuote,
+    quote,
+    isQuoteLoading_,
+    isInGivenOutQuoteLoading_,
+    quoteError,
+    inGivenOutQuoteError,
+    inAmountInput.isTyping,
+    outAmountInput.isTyping,
+  ]);
 
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
+  const isQuoteLoading =
+    (isQuoteLoading_ && quoteQueryEnabled) ||
+    (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
 
   const {
     data: spotPriceQuote,
@@ -232,7 +261,8 @@ export function useSwap(
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
-    let error = quoteError;
+    let error =
+      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteError;
 
     // only show spot price error if there's no quote
     if (
@@ -253,6 +283,8 @@ export function useSwap(
     spotPriceQuoteError,
     inAmountInput.error,
     inAmountInput.isEmpty,
+    inGivenOutQuoteError,
+    quoteType,
   ]);
 
   const networkFeeQueryEnabled =
@@ -661,12 +693,14 @@ export function useSwapAssets({
   useQueryParams = true,
   useOtherCurrencies = true,
   poolId,
+  reverse = false,
 }: {
   initialFromDenom?: string;
   initialToDenom?: string;
   useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
   poolId?: string;
+  reverse?: boolean;
 } = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -678,7 +712,12 @@ export function useSwapAssets({
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
-  } = useToFromDenoms({ useQueryParams, initialFromDenom, initialToDenom });
+  } = useToFromDenoms({
+    useQueryParams,
+    initialFromDenom,
+    initialToDenom,
+    reverse,
+  });
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -935,10 +974,12 @@ export function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
+  reverse = false,
 }: {
   useQueryParams: boolean;
   initialFromDenom?: string;
   initialToDenom?: string;
+  reverse?: boolean;
 }) {
   /**
    * user query params as state source-of-truth
@@ -985,9 +1026,14 @@ export function useToFromDenoms({
     setToAssetState(temp);
   };
 
+  const fromAssetDenom = useQueryParams
+    ? fromDenomQueryParamStr
+    : fromAssetState;
+  const toAssetDenom = useQueryParams ? toDenomQueryParamStr : toAssetState;
+
   return {
-    fromAssetDenom: useQueryParams ? fromDenomQueryParamStr : fromAssetState,
-    toAssetDenom: useQueryParams ? toDenomQueryParamStr : toAssetState,
+    fromAssetDenom: reverse ? toAssetDenom : fromAssetDenom,
+    toAssetDenom: reverse ? fromAssetDenom : toAssetDenom,
     setFromAssetDenom: useQueryParams
       ? setFromDenomQueryParam
       : setFromAssetState,
@@ -1185,7 +1231,7 @@ function getSwapMessages({
   ];
 }
 
-type QuoteType = "out-given-in" | "in-given-out";
+export type QuoteType = "out-given-in" | "in-given-out";
 
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
@@ -1310,7 +1356,7 @@ function useQueryRouterBestQuote(
               preferredRouter: "sidecar",
             },
             {
-              enabled: true || (enabled && Boolean(availableRouterKeys.length)),
+              enabled: enabled && Boolean(availableRouterKeys.length),
 
               select: (quote) => {
                 return {

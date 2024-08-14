@@ -39,17 +39,13 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useSwap } from "~/hooks/use-swap";
+import { QuoteType, useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import {
-  calcFontSize,
-  formatPretty,
-  getPriceExtendedFormatOptions,
-} from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -90,6 +86,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
+    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
 
     const [_, setType] = useQueryState("type");
 
@@ -107,6 +104,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       useQueryParams,
       forceSwapInPoolId,
       maxSlippage: slippageConfig.slippage.toDec(),
+      quoteType,
     });
 
     if (swapState.fromAsset?.coinDenom === swapState.toAsset?.coinDenom) {
@@ -119,6 +117,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
+    const toAmountInputEl = useRef<HTMLInputElement | null>(null);
 
     const outputDifference = new RatePretty(
       swapState.inAmountInput?.fiatValue
@@ -295,7 +294,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       isSendingTx ||
       isWalletLoading ||
       (account?.walletStatus === WalletStatus.Connected &&
-        (swapState.inAmountInput.isEmpty ||
+        ((quoteType === "out-given-in" && swapState.inAmountInput.isEmpty) ||
+          (quoteType === "in-given-out" && swapState.outAmountInput.isEmpty) ||
           !Boolean(swapState.quote) ||
           isSwapToolLoading ||
           Boolean(swapState.error) ||
@@ -324,7 +324,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     </span>
                   </AssetFieldsetHeaderLabel>
                   <AssetFieldsetHeaderBalance
-                    onMax={() => swapState.inAmountInput.toggleMax()}
+                    onMax={() => {
+                      setQuoteType("out-given-in");
+                      swapState.inAmountInput.toggleMax();
+                      fromAmountInputEl.current?.focus();
+                    }}
                     availableBalance={
                       swapState.inAmountInput.balance &&
                       formatPretty(
@@ -360,11 +364,21 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     inputValue={swapState.inAmountInput.inputAmount}
                     onInputChange={(e) => {
                       e.preventDefault();
+
+                      setQuoteType("out-given-in");
                       if (e.target.value.length <= (isMobile ? 19 : 26)) {
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
+
+                      if (e.target.value.length === 0) {
+                        swapState.outAmountInput.setAmount("");
+                      }
                     }}
                     data-testid="trade-input-swap"
+                    wrapperClassNames={classNames({
+                      "opacity-50":
+                        quoteType === "in-given-out" && isSwapToolLoading,
+                    })}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -408,10 +422,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <button
                   className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
                   onClick={() => {
-                    const out = swapState.quote?.amount
-                      ? formatPretty(swapState.quote.amount.toDec())
-                      : "";
-                    swapState.inAmountInput.setAmount(out);
+                    // const out = swapState.quote?.amount
+                    //   ? formatPretty(swapState.quote.amount.toDec())
+                    //   : "";
+                    if (quoteType === "out-given-in") {
+                      swapState.inAmountInput.setAmount(
+                        swapState.outAmountInput.inputAmount
+                      );
+                    } else {
+                      swapState.outAmountInput.setAmount(
+                        swapState.inAmountInput.inputAmount
+                      );
+                    }
                     swapState.switchAssets();
                   }}
                 >
@@ -431,43 +453,24 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
-                    outputValue={
-                      <span
-                        className={classNames(
-                          "whitespace-nowrap text-h3 font-h3 transition-opacity sm:text-[30px] sm:font-h5",
-                          swapState.quote?.amount.toDec().isPositive() &&
-                            !swapState.inAmountInput.isTyping &&
-                            !swapState.isQuoteLoading
-                            ? "text-white-full"
-                            : "text-osmoverse-600",
-                          {
-                            "opacity-50": isSwapToolLoading,
-                          }
-                        )}
-                        style={{
-                          fontSize: swapState.quote
-                            ? calcFontSize(
-                                formatPretty(swapState.quote.amount.toDec(), {
-                                  minimumSignificantDigits: 6,
-                                  maximumSignificantDigits: 6,
-                                  maxDecimals: 10,
-                                  notation: "standard",
-                                }).replace(/[,\.]/g, "").length,
-                                isMobile
-                              )
-                            : undefined,
-                        }}
-                      >
-                        {swapState.quote?.amount
-                          ? formatPretty(swapState.quote.amount.toDec(), {
-                              minimumSignificantDigits: 6,
-                              maximumSignificantDigits: 6,
-                              maxDecimals: 10,
-                              notation: "standard",
-                            })
-                          : "0"}
-                      </span>
-                    }
+                    ref={toAmountInputEl}
+                    wrapperClassNames={classNames({
+                      "opacity-50":
+                        quoteType === "out-given-in" && isSwapToolLoading,
+                    })}
+                    inputValue={swapState.outAmountInput.inputAmount}
+                    onInputChange={(e) => {
+                      e.preventDefault();
+
+                      setQuoteType("in-given-out");
+                      if (e.target.value.length <= (isMobile ? 19 : 26)) {
+                        swapState.outAmountInput.setAmount(e.target.value);
+                      }
+
+                      if (e.target.value.length === 0) {
+                        swapState.inAmountInput.setAmount("");
+                      }
+                    }}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.toAsset?.coinDenom}
