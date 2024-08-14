@@ -18,6 +18,7 @@ import {
   useFeatureFlags,
   useTranslation,
   useWalletSelect,
+  useWindowSize,
 } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -30,6 +31,8 @@ export const PortfolioPage: FunctionComponent = () => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { width } = useWindowSize();
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
@@ -149,8 +152,8 @@ export const PortfolioPage: FunctionComponent = () => {
         </section>
       </main>
 
-      <aside className="flex w-[320px] min-w-[320px] flex-col 1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16">
-        <div className="w-full 1.5xl:w-[320px] 1.5xl:min-w-[320px]">
+      <aside className="flex w-[320px] min-w-[320px] flex-col 1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16 md:flex-col-reverse">
+        <div className="w-full 1.5xl:w-[320px] 1.5xl:min-w-[320px] md:w-full md:max-w-full">
           {featureFlags.cypherCard && <CypherCard />}
           {!isLoadingAllocation && !userHasNoAssets && (
             <Allocation allocation={allocation} />
