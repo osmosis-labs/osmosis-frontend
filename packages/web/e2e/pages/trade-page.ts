@@ -164,9 +164,12 @@ export class TradePage extends BasePage {
   async selectPair(from: string, to: string) {
     // Filter does not show already selected tokens
     console.log("Select pair " + from + " to " + to);
-    const tokenLocator = "//div//button//img[@alt]";
-    const fromToken = this.page.locator(tokenLocator).nth(0);
-    const toToken = this.page.locator(tokenLocator).nth(1);
+    const fromToken = this.page.locator(
+      "//div//button[@data-testid='token-in']//img[@alt]"
+    );
+    const toToken = this.page.locator(
+      "//div//button[@data-testid='token-out']//img[@alt]"
+    );
     // Select From Token
     await fromToken.click({ timeout: 4000 });
     // we expect that after 1 second token filter is displayed.
