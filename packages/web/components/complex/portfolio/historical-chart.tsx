@@ -64,7 +64,7 @@ export const PortfolioHistoricalChart = ({
               setPriceRange={setRange}
             />
             <IconButton
-              className="border border-osmoverse-700 py-0"
+              className="border border-osmoverse-700 py-0 md:hidden"
               aria-label="Open main menu dropdown"
               icon={
                 <Icon

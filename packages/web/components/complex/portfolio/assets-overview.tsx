@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
+import { useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -76,7 +77,7 @@ export const AssetsOverview: FunctionComponent<
   const { t } = useTranslation();
   const { startBridge, fiatRampSelection } = useBridge();
   const { isLoading: isWalletLoading } = useWalletSelect();
-  const { isMobile } = useWindowSize();
+  const { isMobile, width } = useWindowSize();
   const formatDate = useFormatDate();
 
   const address = wallet?.address ?? "";
@@ -125,6 +126,10 @@ export const AssetsOverview: FunctionComponent<
     totalValue?.toString();
 
   const [isChartMinimized, setIsChartMinimized] = useState(true);
+
+  useEffect(() => {
+    if (isMobile) setIsChartMinimized(false);
+  }, [isMobile, width]);
 
   return isWalletLoading ? null : (
     <div
