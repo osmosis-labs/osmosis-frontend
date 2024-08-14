@@ -99,11 +99,8 @@ export function calculatePercentAndFiatValues(
 
       return {
         key: assetFromAssetLists.coinDenom,
-        percentage: new RatePretty(new Dec(asset.cap_value).quo(totalCap)),
-        fiatValue: new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          new Dec(asset.cap_value)
-        ),
+        percentage: new RatePretty(asset.cap_value.quo(totalCap)),
+        fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
       };
     }
   );
@@ -111,8 +108,7 @@ export function calculatePercentAndFiatValues(
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
   const otherAmount = otherAssets.reduce(
-    (sum: Dec, asset: AccountCoinsResultDec) =>
-      sum.add(new Dec(asset.cap_value)),
+    (sum: Dec, asset: AccountCoinsResultDec) => sum.add(asset.cap_value),
     new Dec(0)
   );
 
