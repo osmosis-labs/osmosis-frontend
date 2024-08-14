@@ -7,6 +7,7 @@ import {
 import {
   NoRouteError,
   SplitTokenInQuote,
+  SplitTokenOutQuote,
   Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools/build/router";
@@ -103,7 +104,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     tokenOut: Token,
     tokenInDenom: string,
     forcePoolId?: string
-  ): Promise<SplitTokenInQuote> {
+  ): Promise<SplitTokenOutQuote> {
     const queryUrl = new URL("/router/quote", this.baseUrl.toString());
     queryUrl.searchParams.append(
       "tokenOut",
@@ -134,14 +135,16 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         tokenInFeeAmount: new Dec(amount_in).mul(swapFee).truncate(),
         split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
-          pools: pools.map(({ id, spread_factor, type, code_id }) => ({
-            id: id.toString(),
-            type: translatePoolTypeFromSidecar(type),
-            swapFee: new Dec(spread_factor),
-            codeId: code_id?.toString(),
-          })),
-          tokenInDenom: tokenInDenom,
-          tokenOutDenoms: pools.map(({ token_out_denom }) => token_out_denom),
+          pools: pools
+            .map(({ id, spread_factor, type, code_id }) => ({
+              id: id.toString(),
+              type: translatePoolTypeFromSidecar(type),
+              swapFee: new Dec(spread_factor),
+              codeId: code_id?.toString(),
+            }))
+            .reverse(),
+          tokenInDenoms: pools.map((p) => p.token_in_denom).reverse(),
+          tokenOutDenom: tokenOut.denom,
         })),
       };
     } catch (e) {

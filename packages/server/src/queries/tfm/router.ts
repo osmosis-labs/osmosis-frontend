@@ -2,6 +2,7 @@ import { Dec, Int } from "@keplr-wallet/unit";
 import {
   NoRouteError,
   SplitTokenInQuote,
+  SplitTokenOutQuote,
   Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools/build/router";
@@ -110,7 +111,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     _tokenOut: Token,
     _tokenInDenom: string,
     _forcePoolId?: string | undefined
-  ): Promise<SplitTokenInQuote> {
+  ): Promise<SplitTokenOutQuote> {
     throw new Error("TFM Router does not implement in given out");
   }
 

@@ -158,7 +158,7 @@ export function useSwap(
     quoteType === "in-given-out";
 
   const {
-    data: quote,
+    data: outGivenInQuote,
     isLoading: isQuoteLoading_,
     error: quoteError,
   } = useQueryRouterBestQuote(
@@ -188,6 +188,9 @@ export function useSwap(
     ["sidecar"],
     "in-given-out"
   );
+
+  const quote =
+    quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
 
   useEffect(() => {
     if (
@@ -512,7 +515,7 @@ export function useSwap(
     quote,
     useCallback(
       () =>
-        Boolean(quote?.amount.toDec().isPositive()) &&
+        Boolean(quote?.amountOut?.toDec().isPositive()) &&
         !quoteError &&
         !inAmountInput.isEmpty,
       [quote, quoteError, inAmountInput.isEmpty]
@@ -1414,6 +1417,21 @@ function useQueryRouterBestQuote(
     );
   }, [routerResults]);
 
+  const acceptedQuote = useMemo(() => {
+    if (!bestData) return;
+    return {
+      ...bestData,
+      amountIn:
+        quoteType === "out-given-in"
+          ? new CoinPretty(input.tokenIn, input.tokenInAmount)
+          : bestData.amount,
+      amountOut:
+        quoteType === "out-given-in"
+          ? bestData.amount
+          : new CoinPretty(input.tokenOut, input.tokenInAmount),
+    };
+  }, [bestData, quoteType, input.tokenInAmount, input.tokenIn, input.tokenOut]);
+
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
@@ -1432,7 +1450,7 @@ function useQueryRouterBestQuote(
   );
 
   return {
-    data: bestData,
+    data: acceptedQuote,
     isLoading: !isOneSuccessful,
     error: someError,
     numSucceeded,

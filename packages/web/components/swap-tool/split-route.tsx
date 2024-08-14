@@ -15,10 +15,17 @@ import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
 
-type Split =
+type SplitOutGivenIn =
   RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
-type Route = Split[number];
-type RouteWithPercentage = Route & { percentage?: RatePretty };
+type SplitInGivenOut =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"]["split"];
+type Split = SplitOutGivenIn | SplitInGivenOut;
+type Route = SplitOutGivenIn[number] | SplitInGivenOut[number];
+type RouteInGivenOut = SplitInGivenOut[number];
+type RouteOutGivenIn = SplitOutGivenIn[number];
+type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
+  percentage?: RatePretty;
+};
 
 export const SplitRoute: FunctionComponent<
   { split: Split } & Pick<UseDisclosureReturn, "isOpen" | "onToggle"> & {
@@ -92,10 +99,16 @@ export const RouteLane: FunctionComponent<{
   const { chainStore } = useStore();
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
-  const sendCurrency = osmosisChain.findCurrency(route.tokenInDenom);
-  const lastOutCurrency = osmosisChain.findCurrency(
-    route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
-  );
+  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
+    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
+    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
+  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
+    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
+    : osmosisChain.findCurrency(
+        (route as RouteOutGivenIn).tokenOutDenoms[
+          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+        ]
+      );
 
   if (!sendCurrency || !lastOutCurrency) return null;
 
@@ -146,7 +159,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const { t } = useTranslation();
   /** Share same tippy instance to handle animation */
   const [source, target] = useSingleton();
-
+  console.log("pools", pools);
   return (
     <>
       <Tooltip

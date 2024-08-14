@@ -50,7 +50,7 @@ export type SidecarInGivenOutQuoteResponse = {
       };
       spread_factor: string;
       taker_fee: string;
-      token_out_denom: string;
+      token_in_denom: string;
 
       /** Code ID, if a Cosmwasm pool. */
       code_id?: number;

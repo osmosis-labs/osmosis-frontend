@@ -55,6 +55,8 @@ export const TradeDetails = observer(
 
     const isInAmountEmpty =
       swapState?.inAmountInput.error instanceof EmptyAmountError;
+    const isOutAmountEmpty =
+      swapState?.outAmountInput.error instanceof EmptyAmountError;
 
     const isLoading =
       type === "market" &&
@@ -88,7 +90,10 @@ export const TradeDetails = observer(
               }}
             >
               <div ref={details} className="flex w-full flex-col">
-                <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
+                <Closer
+                  isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
+                  close={close}
+                />
                 <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
                   <SkeletonLoader
                     isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
@@ -109,7 +114,8 @@ export const TradeDetails = observer(
                               "animate-pulse":
                                 inPriceFetching ||
                                 isLoading ||
-                                swapState?.inAmountInput.isTyping,
+                                swapState?.inAmountInput.isTyping ||
+                                swapState?.outAmountInput.isTyping,
                             }
                           )}
                         >
@@ -117,7 +123,8 @@ export const TradeDetails = observer(
                             <SkeletonLoader
                               isLoaded={
                                 type !== "market" ||
-                                !swapState.inAmountInput.isTyping
+                                !swapState.inAmountInput.isTyping ||
+                                !swapState.outAmountInput.isTyping
                               }
                             >
                               {ExpectedRate(
@@ -136,7 +143,7 @@ export const TradeDetails = observer(
                     className={classNames(
                       "relative flex items-center justify-between py-1 transition-opacity"
                     )}
-                    disabled={isInAmountEmpty}
+                    disabled={isInAmountEmpty || isOutAmountEmpty}
                   >
                     <GenericDisclaimer
                       title="High price impact"
@@ -147,7 +154,7 @@ export const TradeDetails = observer(
                         className={classNames(
                           "flex items-center gap-2 transition-opacity",
                           {
-                            "opacity-0": isInAmountEmpty,
+                            "opacity-0": isInAmountEmpty || isOutAmountEmpty,
                           }
                         )}
                       >
@@ -274,7 +281,7 @@ export const TradeDetails = observer(
                     <Disclosure>
                       {({ open }) => {
                         const routes = swapState?.quote?.split;
-
+                        console.log(routes);
                         return (
                           <>
                             <Disclosure.Button className="flex h-8 w-full items-center justify-between">
@@ -418,7 +425,7 @@ export function ExpectedRate(
 
     if (
       swapState?.tokenOutFiatValue &&
-      swapState?.quote?.amount?.toDec().gt(new Dec(0))
+      swapState?.quote?.amountOut?.toDec().gt(new Dec(0))
     ) {
       inFiatPrice = new PricePretty(
         DEFAULT_VS_CURRENCY,
@@ -470,7 +477,8 @@ export function ExpectedRate(
 }
 
 type Split =
-  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
+  | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"]
+  | RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"]["split"];
 type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 

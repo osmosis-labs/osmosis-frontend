@@ -15,6 +15,7 @@ import {
   Quote,
   RoutablePool,
   SplitTokenInQuote,
+  SplitTokenOutQuote,
   Token,
   TokenOutGivenInRouter,
 } from "./types";
@@ -160,7 +161,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     _tokenOut: Token,
     _tokenInDenom: string,
     _forcePoolId?: string | undefined
-  ): Promise<SplitTokenInQuote> {
+  ): Promise<SplitTokenOutQuote> {
     throw new Error("TFM Router does not implement in given out");
   }
 

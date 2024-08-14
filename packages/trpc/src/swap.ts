@@ -1,5 +1,8 @@
 import { CoinPretty, Int, RatePretty } from "@keplr-wallet/unit";
-import type { SplitTokenInQuote } from "@osmosis-labs/pools";
+import type {
+  SplitTokenInQuote,
+  SplitTokenOutQuote,
+} from "@osmosis-labs/pools";
 import {
   availableRoutersSchema,
   captureIfError,
@@ -132,7 +135,7 @@ export const swapRouter = createTRPCRouter({
 
         return {
           ...quote,
-          split: makeDisplayableSplit(quote.split, ctx.assetLists),
+          split: makeDisplayableOutGivenInSplit(quote.split, ctx.assetLists),
           // supplementary data with display types
           name,
           timeMs,
@@ -170,6 +173,53 @@ function makeDisplayableSplit(
         getAsset({
           assetLists,
           anyDenom: tokenOutDenoms[index],
+        })
+      );
+
+      return {
+        id: pool_.id,
+        type,
+        spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
+        dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
+        inCurrency: inAsset,
+        outCurrency: outAsset,
+      };
+    });
+
+    return {
+      ...existingSplit,
+      pools: poolsWithInfos,
+    };
+  });
+}
+
+/** Get pool type, in, and out currency for displaying the route in detail. */
+function makeDisplayableOutGivenInSplit(
+  split: SplitTokenOutQuote["split"],
+  assetLists: AssetList[]
+) {
+  return split.map((existingSplit) => {
+    const { pools, tokenInDenoms, tokenOutDenom } = existingSplit;
+    const poolsWithInfos = pools.map((pool_, index) => {
+      let type: Pool["type"] = pool_.type as Pool["type"];
+
+      if (pool_?.codeId) {
+        type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
+      }
+
+      const inAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: tokenInDenoms[index],
+        })
+      );
+      const outAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom:
+            index === pools.length - 1
+              ? tokenOutDenom
+              : tokenInDenoms[index + 1],
         })
       );
 
