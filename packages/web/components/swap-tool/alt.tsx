@@ -261,7 +261,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
-    console.log(isSwapToolLoading);
+
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
