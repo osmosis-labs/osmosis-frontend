@@ -13,13 +13,13 @@ jobs:
     steps:
       - id: set-matrix
         run: |
-          echo "matrix={\"include\":[{\"test-proxy\":\"use\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"production-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"production-usa1\"}]}" >> "$GITHUB_OUTPUT"
+          echo "matrix={\"include\":[{\"test-proxy\":\"use\", \"server-url\":\"http://138.68.112.16:8888\", \"env\": \"prod-fra1\"}, {\"test-proxy\":\"use\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"prod-sgp1\"}, {\"test-proxy\":\"no\", \"server-url\":\"http://139.59.218.19:8888\", \"env\": \"prod-usa1\"}]}" >> "$GITHUB_OUTPUT"
 
   fe-quote-tests:
     timeout-minutes: 10
     name: ${{ matrix.env }}-fe-quote-tests
     needs: setup-matrix
-    runs-on: buildjet-4vcpu-ubuntu-2204
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix: ${{fromJson(needs.setup-matrix.outputs.matrix)}}
@@ -62,7 +62,7 @@ jobs:
 
   fe-swap-us-tests:
     timeout-minutes: 10
-    name: fe-swap-us-tests
+    name: prod-fe-swap-us-tests
     runs-on: macos-latest
     steps:
       - name: Echo IP
@@ -135,7 +135,7 @@ jobs:
 
   fe-swap-eu-tests:
     timeout-minutes: 10
-    name: fe-swap-eu-tests
+    name: prod-fe-swap-eu-tests
     needs: fe-swap-us-tests
     runs-on: macos-latest
     steps:
@@ -178,7 +178,7 @@ jobs:
 
   fe-swap-sg-tests:
     timeout-minutes: 10
-    name: fe-swap-sg-tests
+    name: prod-fe-swap-sg-tests
     needs: fe-swap-us-tests
     runs-on: macos-latest
     steps:

@@ -141,7 +141,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market" &&
         swapState.priceState.percentAdjusted.abs().gt(new Dec(0))
       ) {
-        console.log("RESETTING");
         swapState.priceState.reset();
       }
     }, [swapState.priceState, type]);
@@ -496,6 +495,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   swapState.marketState.isLoadingSelectAssets
                 }
                 data-testid="token-in"
+                setAssetQueryInput={swapState.marketState.setAssetsQueryInput}
+                assetQueryInput={swapState.marketState.assetsQueryInput}
               />
             </div>
             <AssetFieldsetFooter>
