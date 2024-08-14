@@ -79,7 +79,9 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <div
       className={classNames(
-        "mx-auto flex w-full max-w-container flex-row gap-12 p-8 pt-4 1.5xl:flex-col md:p-4",
+        "mx-auto flex w-full max-w-container flex-row gap-12 p-8 pt-4",
+        "1.5xl:flex-col",
+        "md:p-4",
         {
           "bg-osmoverse-900": !featureFlags.limitOrders,
         }
@@ -152,8 +154,20 @@ export const PortfolioPage: FunctionComponent = () => {
         </section>
       </main>
 
-      <aside className="flex w-[320px] min-w-[320px] flex-col 1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16 md:flex-col-reverse">
-        <div className="w-full 1.5xl:w-[320px] 1.5xl:min-w-[320px] md:w-full md:max-w-full">
+      <aside
+        className={classNames(
+          "flex w-[320px] min-w-[320px] flex-col",
+          "1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16",
+          "md:flex-col-reverse"
+        )}
+      >
+        <div
+          className={classNames(
+            "w-full",
+            "1.5xl:w-[320px] 1.5xl:min-w-[320px]",
+            "md:w-full md:max-w-full"
+          )}
+        >
           {featureFlags.cypherCard && <CypherCard />}
           {!isLoadingAllocation && !userHasNoAssets && (
             <Allocation allocation={allocation} />
