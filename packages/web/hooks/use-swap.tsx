@@ -515,6 +515,8 @@ export function useSwap(
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
+      quoteType,
+      outAmountInput,
     ]
   );
 
