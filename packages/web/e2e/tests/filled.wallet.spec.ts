@@ -49,13 +49,13 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.35");
+    await tradePage.enterAmount("2.99");
     await tradePage.setLimitPriceChange("2%");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.35 OSMO");
+    expect(msgContentAmount).toContain("2.99 OSMO");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
@@ -67,16 +67,16 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.55");
+    await tradePage.enterAmount("1.05");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = (limitPrice * 1.2).toFixed(4);
+    const highLimitPrice = (limitPrice * 1.1).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.55 USDC (Noble/channel-750)");
+    expect(msgContentAmount).toContain("1.05 USDC (Noble/channel-750)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
