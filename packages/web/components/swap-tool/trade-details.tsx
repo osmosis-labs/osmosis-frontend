@@ -281,7 +281,6 @@ export const TradeDetails = observer(
                     <Disclosure>
                       {({ open }) => {
                         const routes = swapState?.quote?.split;
-                        console.log(routes);
                         return (
                           <>
                             <Disclosure.Button className="flex h-8 w-full items-center justify-between">

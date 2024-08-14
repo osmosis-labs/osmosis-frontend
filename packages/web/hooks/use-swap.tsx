@@ -294,7 +294,7 @@ export function useSwap(
     featureFlags.swapToolSimulateFee &&
     !Boolean(precedentError) &&
     !isQuoteLoading &&
-    quoteQueryEnabled &&
+    (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
     Boolean(quote?.messages) &&
     Boolean(account?.address) &&
     inAmountInput.debouncedInAmount !== null &&
@@ -303,7 +303,11 @@ export function useSwap(
     inAmountInput.debouncedInAmount
       .toDec()
       .lte(inAmountInput.balance.toDec()) &&
-    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec());
+    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
+    outAmountInput.debouncedInAmount !== null &&
+    Boolean(outAmountInput.amount);
+
+  console.log(quote?.messages);
   const {
     data: networkFee,
     error: networkFeeError,
@@ -1082,18 +1086,25 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   };
 }
 
+type QuoteOutGivenIn =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"];
+type QuoteInGivenOut =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"];
+
+type RouteOutGivenIn = QuoteOutGivenIn["split"][number];
+type RouteInGivenOut = QuoteInGivenOut["split"][number];
+
 function getSwapTxParameters({
   coinAmount,
   maxSlippage,
   quote,
   fromAsset,
   toAsset,
+  quoteType = "out-given-in",
 }: {
   coinAmount: string;
   maxSlippage: Dec;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
+  quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
   fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;
@@ -1104,6 +1115,7 @@ function getSwapTxParameters({
       amount: CoinPretty;
       usdValue: PricePretty;
     }>;
+  quoteType?: QuoteType;
 }) {
   if (!quote) {
     throw new Error(
@@ -1135,9 +1147,26 @@ function getSwapTxParameters({
     for (let i = 0; i < route.pools.length; i++) {
       const pool = route.pools[i];
 
+      const tokenOutDenom = (() => {
+        if ((route as RouteOutGivenIn).tokenOutDenoms)
+          return (route as RouteOutGivenIn).tokenOutDenoms[i];
+        if (
+          (route as RouteInGivenOut).tokenInDenoms &&
+          i < (route as RouteInGivenOut).tokenInDenoms.length - 1
+        )
+          return (route as RouteInGivenOut).tokenInDenoms[i + 1];
+
+        if (
+          (route as RouteInGivenOut).tokenInDenoms &&
+          i === (route as RouteInGivenOut).tokenInDenoms.length - 1
+        )
+          return (route as RouteInGivenOut).tokenOutDenom;
+
+        throw new Error("No tokenOutDenoms or tokenInDenoms");
+      })();
       pools.push({
         id: pool.id,
-        tokenOutDenom: route.tokenOutDenoms[i],
+        tokenOutDenom,
       });
     }
 
@@ -1150,12 +1179,16 @@ function getSwapTxParameters({
   /** In amount converted to integer (remove decimals) */
   const tokenIn = {
     currency: fromAsset as Currency,
-    amount: coinAmount,
+    amount:
+      quoteType === "out-given-in"
+        ? coinAmount
+        : quote.amount.toDec().toString(),
   };
 
   /** Out amount with slippage included */
-  const tokenOutMinAmount = quote.amount
-    .toDec()
+  const tokenOutMinAmount = (
+    quoteType === "out-given-in" ? quote.amount.toDec() : new Dec(coinAmount)
+  )
     .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
     .mul(new Dec(1).sub(maxSlippage))
     .truncate()
@@ -1178,9 +1211,7 @@ function getSwapMessages({
 }: {
   coinAmount: string;
   maxSlippage: Dec | undefined;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
+  quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
   fromAsset: MinimalAsset &
     Partial<{
       amount: CoinPretty;

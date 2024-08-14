@@ -132,7 +132,6 @@ export const swapRouter = createTRPCRouter({
           ...ctx,
           anyDenom: tokenInDenom,
         });
-
         return {
           ...quote,
           split: makeDisplayableOutGivenInSplit(quote.split, ctx.assetLists),

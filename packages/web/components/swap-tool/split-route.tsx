@@ -159,7 +159,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
   const { t } = useTranslation();
   /** Share same tippy instance to handle animation */
   const [source, target] = useSingleton();
-  console.log("pools", pools);
+
   return (
     <>
       <Tooltip
