@@ -534,12 +534,13 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "deposit",
-              })
-            }
+              });
+            }}
           >
             <Icon id="deposit" height={20} width={20} />
           </Button>
@@ -548,12 +549,13 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "withdraw",
-              })
-            }
+              });
+            }}
           >
             <Icon id="withdraw" height={20} width={20} />
           </Button>
