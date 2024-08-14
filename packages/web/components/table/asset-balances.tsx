@@ -529,7 +529,7 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       )}
-      <div className="flex gap-3">
+      <div className="flex gap-3 md:hidden">
         {!needsActivation && (
           <Button
             size="icon"
