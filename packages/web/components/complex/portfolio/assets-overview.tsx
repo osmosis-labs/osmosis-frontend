@@ -88,7 +88,7 @@ export const AssetsOverview: FunctionComponent<
     value: 0,
   });
 
-  const [range, setRange] = useState<Range>("1mo");
+  const [range, setRange] = useState<Range>("1d");
 
   const {
     data: portfolioOverTimeData,
@@ -126,9 +126,7 @@ export const AssetsOverview: FunctionComponent<
 
   const [isChartMinimized, setIsChartMinimized] = useState(true);
 
-  if (isWalletLoading) return null;
-
-  return (
+  return isWalletLoading ? null : (
     <div
       className={classNames(
         "relative flex w-full flex-col transition-all duration-[250ms]",

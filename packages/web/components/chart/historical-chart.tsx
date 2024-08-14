@@ -179,8 +179,8 @@ export const HistoricalChartHeader: FunctionComponent<{
 
 export const HistoricalChartSkeleton = ({ hideScales = false }) => {
   return (
-    <div className="flex h-full w-full flex-1 flex-row gap-3">
-      <div className="flex flex-1 flex-col items-end justify-end">
+    <div className="flex h-full w-full grow flex-row gap-3">
+      <div className="flex grow flex-col items-end justify-end">
         <svg
           className="h-auto w-full animate-pulse"
           viewBox="0 0 700 346"
