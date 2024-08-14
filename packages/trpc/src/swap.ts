@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Int, RatePretty } from "@keplr-wallet/unit";
 import type { SplitTokenInQuote } from "@osmosis-labs/pools";
 import {
   availableRoutersSchema,
@@ -8,10 +8,6 @@ import {
   getRouters,
   Pool,
 } from "@osmosis-labs/server";
-import {
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSwapExactAmountInMsg,
-} from "@osmosis-labs/tx";
 import { AssetList } from "@osmosis-labs/types";
 import { z } from "zod";
 
@@ -26,12 +22,6 @@ export const swapRouter = createTRPCRouter({
         tokenOutDenom: z.string(),
         preferredRouter: availableRoutersSchema,
         forcePoolId: z.string().optional(),
-
-        /**
-         * Required to get swap messages for the user.
-         */
-        maxSlippage: z.string().optional(),
-        userOsmoAddress: z.string().optional(),
       })
     )
     .query(
@@ -42,8 +32,6 @@ export const swapRouter = createTRPCRouter({
           tokenOutDenom,
           preferredRouter,
           forcePoolId,
-          maxSlippage,
-          userOsmoAddress,
         },
         ctx,
       }) => {
@@ -76,7 +64,7 @@ export const swapRouter = createTRPCRouter({
           anyDenom: tokenOutDenom,
         });
 
-        const resultQuote = {
+        return {
           ...quote,
           split: makeDisplayableSplit(quote.split, ctx.assetLists),
           // supplementary data with display types
@@ -88,156 +76,9 @@ export const swapRouter = createTRPCRouter({
             : undefined,
           swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
         };
-
-        const swapMessages = await getSwapMessages({
-          quote: resultQuote,
-          tokenInCoinMinimalDenom: tokenInDenom,
-          tokenOutCoinDecimals: tokenOutAsset.coinDecimals,
-          maxSlippage,
-          coinAmount: tokenInAmount,
-          userOsmoAddress,
-        });
-
-        return { ...resultQuote, messages: swapMessages };
       }
     ),
 });
-
-export function getSwapTxParameters({
-  coinAmount,
-  maxSlippage,
-  quote,
-  tokenInCoinMinimalDenom,
-  tokenOutCoinDecimals,
-}: {
-  coinAmount: string;
-  maxSlippage: string;
-  quote:
-    | { split: ReturnType<typeof makeDisplayableSplit>; amount: CoinPretty }
-    | undefined;
-  tokenInCoinMinimalDenom: string;
-  tokenOutCoinDecimals: number;
-}) {
-  if (!quote) {
-    throw new Error(
-      "User input should be disabled if no route is found or is being generated"
-    );
-  }
-  if (!coinAmount) throw new Error("No input");
-  if (!tokenInCoinMinimalDenom) throw new Error("No from asset");
-  if (!tokenOutCoinDecimals) throw new Error("No to asset");
-
-  /**
-   * Prepare swap data
-   */
-
-  type Pool = {
-    id: string;
-    tokenOutDenom: string;
-  };
-  type Route = {
-    pools: Pool[];
-    tokenInAmount: string;
-  };
-
-  const routes: Route[] = [];
-
-  for (const route of quote.split) {
-    const pools: Pool[] = [];
-
-    for (let i = 0; i < route.pools.length; i++) {
-      const pool = route.pools[i];
-
-      pools.push({
-        id: pool.id,
-        tokenOutDenom: route.tokenOutDenoms[i],
-      });
-    }
-
-    routes.push({
-      pools: pools,
-      tokenInAmount: route.initialAmount.toString(),
-    });
-  }
-
-  /** In amount converted to integer (remove decimals) */
-  const tokenIn = {
-    coinMinimalDenom: tokenInCoinMinimalDenom,
-    amount: coinAmount,
-  };
-
-  /** Out amount with slippage included */
-  const tokenOutMinAmount = quote.amount
-    .toDec()
-    .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
-    .mul(new Dec(1).sub(new Dec(maxSlippage)))
-    .truncate()
-    .toString();
-
-  return {
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-  };
-}
-
-async function getSwapMessages({
-  coinAmount,
-  maxSlippage,
-  quote,
-  tokenInCoinMinimalDenom,
-  tokenOutCoinDecimals,
-  userOsmoAddress,
-}: {
-  coinAmount: string;
-  maxSlippage: string | undefined;
-  quote:
-    | { split: ReturnType<typeof makeDisplayableSplit>; amount: CoinPretty }
-    | undefined;
-  tokenInCoinMinimalDenom: string;
-  tokenOutCoinDecimals: number;
-  userOsmoAddress: string | undefined;
-}) {
-  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
-
-  let txParams: ReturnType<typeof getSwapTxParameters>;
-
-  try {
-    txParams = getSwapTxParameters({
-      coinAmount,
-      maxSlippage,
-      tokenInCoinMinimalDenom,
-      tokenOutCoinDecimals,
-      quote,
-    });
-  } catch {
-    return undefined;
-  }
-
-  const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-  const { pools } = routes[0];
-
-  if (routes.length < 1) {
-    throw new Error("Routes are empty");
-  }
-
-  return [
-    routes.length === 1
-      ? await makeSwapExactAmountInMsg({
-          pools,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        })
-      : await makeSplitRoutesSwapExactAmountInMsg({
-          routes,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        }),
-  ];
-}
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
 function makeDisplayableSplit(

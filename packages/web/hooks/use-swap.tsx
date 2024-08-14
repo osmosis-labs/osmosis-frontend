@@ -7,7 +7,10 @@ import {
 } from "@osmosis-labs/pools";
 import type { RouterKey } from "@osmosis-labs/server";
 import { SignOptions } from "@osmosis-labs/stores";
-import { getSwapTxParameters } from "@osmosis-labs/trpc";
+import {
+  makeSplitRoutesSwapExactAmountInMsg,
+  makeSwapExactAmountInMsg,
+} from "@osmosis-labs/tx";
 import { MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -19,6 +22,7 @@ import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
@@ -35,7 +39,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { api, RouterInputs } from "~/utils/trpc";
+import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
@@ -964,6 +968,142 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   };
 }
 
+function getSwapTxParameters({
+  coinAmount,
+  maxSlippage,
+  quote,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinDecimals,
+}: {
+  coinAmount: string;
+  maxSlippage: string;
+  quote:
+    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
+    | undefined;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinDecimals: number;
+}) {
+  if (!quote) {
+    throw new Error(
+      "User input should be disabled if no route is found or is being generated"
+    );
+  }
+  if (!coinAmount) throw new Error("No input");
+  if (!tokenInCoinMinimalDenom) throw new Error("No from asset");
+  if (!tokenOutCoinDecimals) throw new Error("No to asset");
+
+  /**
+   * Prepare swap data
+   */
+
+  type Pool = {
+    id: string;
+    tokenOutDenom: string;
+  };
+  type Route = {
+    pools: Pool[];
+    tokenInAmount: string;
+  };
+
+  const routes: Route[] = [];
+
+  for (const route of quote.split) {
+    const pools: Pool[] = [];
+
+    for (let i = 0; i < route.pools.length; i++) {
+      const pool = route.pools[i];
+
+      pools.push({
+        id: pool.id,
+        tokenOutDenom: route.tokenOutDenoms[i],
+      });
+    }
+
+    routes.push({
+      pools: pools,
+      tokenInAmount: route.initialAmount.toString(),
+    });
+  }
+
+  /** In amount converted to integer (remove decimals) */
+  const tokenIn = {
+    coinMinimalDenom: tokenInCoinMinimalDenom,
+    amount: coinAmount,
+  };
+
+  /** Out amount with slippage included */
+  const tokenOutMinAmount = quote.amount
+    .toDec()
+    .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
+    .mul(new Dec(1).sub(new Dec(maxSlippage)))
+    .truncate()
+    .toString();
+
+  return {
+    routes,
+    tokenIn,
+    tokenOutMinAmount,
+  };
+}
+
+async function getSwapMessages({
+  coinAmount,
+  maxSlippage,
+  quote,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinDecimals,
+  userOsmoAddress,
+}: {
+  coinAmount: string;
+  maxSlippage: string | undefined;
+  quote:
+    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
+    | undefined;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinDecimals: number;
+  userOsmoAddress: string | undefined;
+}) {
+  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
+
+  let txParams: ReturnType<typeof getSwapTxParameters>;
+
+  try {
+    txParams = getSwapTxParameters({
+      coinAmount,
+      maxSlippage,
+      tokenInCoinMinimalDenom,
+      tokenOutCoinDecimals,
+      quote,
+    });
+  } catch {
+    return undefined;
+  }
+
+  const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+  const { pools } = routes[0];
+
+  if (routes.length < 1) {
+    throw new Error("Routes are empty");
+  }
+
+  return [
+    routes.length === 1
+      ? await makeSwapExactAmountInMsg({
+          pools,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress,
+        })
+      : await makeSplitRoutesSwapExactAmountInMsg({
+          routes,
+          tokenIn,
+          tokenOutMinAmount,
+          userOsmoAddress,
+        }),
+  ];
+}
+
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
@@ -1023,8 +1163,6 @@ function useQueryRouterBestQuote(
           tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
           forcePoolId: input.forcePoolId,
           preferredRouter: key,
-          maxSlippage: input.maxSlippage?.toString(),
-          userOsmoAddress: account?.address,
         },
         {
           enabled: enabled && Boolean(availableRouterKeys.length),
@@ -1072,6 +1210,19 @@ function useQueryRouterBestQuote(
     );
   }, [routerResults]);
 
+  const { value: messages } = useAsync(async () => {
+    if (!bestData) return undefined;
+    const messages = await getSwapMessages({
+      quote: bestData,
+      tokenOutCoinDecimals: input.tokenOut.coinDecimals,
+      tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
+      maxSlippage: input.maxSlippage?.toString(),
+      coinAmount: input.tokenInAmount,
+      userOsmoAddress: account?.address,
+    });
+    return messages;
+  }, [bestData]);
+
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
@@ -1090,7 +1241,7 @@ function useQueryRouterBestQuote(
   );
 
   return {
-    data: bestData,
+    data: bestData ? { ...bestData, messages } : undefined,
     isLoading: !isOneSuccessful,
     error: someError,
     numSucceeded,
