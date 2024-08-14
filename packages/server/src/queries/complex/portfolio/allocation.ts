@@ -6,8 +6,8 @@ import { sort } from "@osmosis-labs/utils";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import { queryAllocation } from "../../../queries/data-services";
 import { Categories } from "../../../queries/data-services";
-import { AccountCoinsResult } from "../../../queries/data-services";
 import { getAsset } from "../assets";
+import { AccountCoinsResultDec } from "../sidecar/allocation";
 
 interface FormattedAllocation {
   key: string;
@@ -75,8 +75,15 @@ export function calculatePercentAndFiatValues(
   const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
 
+  const account_coins_result = (totalAssets?.account_coins_result || []).map(
+    (asset) => ({
+      ...asset,
+      cap_value: new Dec(asset.cap_value),
+    })
+  );
+
   const sortedAccountCoinsResults = sort(
-    totalAssets?.account_coins_result || [],
+    account_coins_result || [],
     "cap_value",
     "asc"
   );
@@ -84,7 +91,7 @@ export function calculatePercentAndFiatValues(
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
   const assets: FormattedAllocation[] = topCoinsResults.map(
-    (asset: AccountCoinsResult) => {
+    (asset: AccountCoinsResultDec) => {
       const assetFromAssetLists = getAsset({
         assetLists,
         anyDenom: asset.coin.denom,
@@ -104,7 +111,8 @@ export function calculatePercentAndFiatValues(
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
   const otherAmount = otherAssets.reduce(
-    (sum: Dec, asset: AccountCoinsResult) => sum.add(new Dec(asset.cap_value)),
+    (sum: Dec, asset: AccountCoinsResultDec) =>
+      sum.add(new Dec(asset.cap_value)),
     new Dec(0)
   );
 
