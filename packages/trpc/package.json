@@ -36,6 +36,7 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
     "@osmosis-labs/server": "^1.0.0",
+    "@osmosis-labs/tx": "^1.0.0",
     "@sentry/core": "^7.109.0",
     "@sentry/utils": "^7.109.0",
     "@trpc/client": "^10.45.1",

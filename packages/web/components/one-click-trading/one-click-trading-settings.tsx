@@ -11,6 +11,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useAsync } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
@@ -128,16 +129,17 @@ export const OneClickTradingSettings = ({
       }
     );
 
+  const { value: removeAuthenticatorMsg } = useAsync(async () => {
+    if (!oneClickTradingInfo) return;
+    return await makeRemoveAuthenticatorMsg({
+      id: BigInt(oneClickTradingInfo.authenticatorId),
+      sender: oneClickTradingInfo.userOsmoAddress,
+    });
+  }, [oneClickTradingInfo]);
+
   const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
     useEstimateTxFees({
-      messages: oneClickTradingInfo
-        ? async () => [
-            await makeRemoveAuthenticatorMsg({
-              id: BigInt(oneClickTradingInfo.authenticatorId),
-              sender: oneClickTradingInfo.userOsmoAddress,
-            }),
-          ]
-        : [],
+      messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
       chainId: chainStore.osmosis.chainId,
       enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
     });

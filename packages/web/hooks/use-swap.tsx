@@ -7,11 +7,8 @@ import {
 } from "@osmosis-labs/pools";
 import type { RouterKey } from "@osmosis-labs/server";
 import { SignOptions } from "@osmosis-labs/stores";
-import {
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSwapExactAmountInMsg,
-} from "@osmosis-labs/tx";
-import { Currency, MinimalAsset } from "@osmosis-labs/types";
+import { getSwapTxParameters } from "@osmosis-labs/trpc";
+import { MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -38,7 +35,7 @@ import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
+import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
@@ -210,10 +207,7 @@ export function useSwap(
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: async () => {
-      const msgs = await quote?.messages;
-      return msgs ? Promise.all(msgs) : [];
-    },
+    messages: quote?.messages,
     enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
@@ -260,9 +254,9 @@ export function useSwap(
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
-              maxSlippage,
-              fromAsset: swapAssets.fromAsset,
-              toAsset: swapAssets.toAsset,
+              maxSlippage: maxSlippage.toString(),
+              tokenInCoinMinimalDenom: swapAssets.fromAsset.coinMinimalDenom,
+              tokenOutCoinDecimals: swapAssets.toAsset.coinDecimals,
               quote,
             });
           } catch (e) {
@@ -277,7 +271,7 @@ export function useSwap(
           const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages: await Promise.all(quote.messages),
+                messages: quote.messages,
               }))
             : false;
 
@@ -815,11 +809,7 @@ export function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: async () => {
-      const messages = await quoteForCurrentBalance?.messages;
-      if (!messages) return [];
-      return Promise.all(messages);
-    },
+    messages: quoteForCurrentBalance?.messages,
     enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
@@ -974,165 +964,13 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   };
 }
 
-function getSwapTxParameters({
-  coinAmount,
-  maxSlippage,
-  quote,
-  fromAsset,
-  toAsset,
-}: {
-  coinAmount: string;
-  maxSlippage: Dec;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-}) {
-  if (!quote) {
-    throw new Error(
-      "User input should be disabled if no route is found or is being generated"
-    );
-  }
-  if (!coinAmount) throw new Error("No input");
-  if (!fromAsset) throw new Error("No from asset");
-  if (!toAsset) throw new Error("No to asset");
-
-  /**
-   * Prepare swap data
-   */
-
-  type Pool = {
-    id: string;
-    tokenOutDenom: string;
-  };
-  type Route = {
-    pools: Pool[];
-    tokenInAmount: string;
-  };
-
-  const routes: Route[] = [];
-
-  for (const route of quote.split) {
-    const pools: Pool[] = [];
-
-    for (let i = 0; i < route.pools.length; i++) {
-      const pool = route.pools[i];
-
-      pools.push({
-        id: pool.id,
-        tokenOutDenom: route.tokenOutDenoms[i],
-      });
-    }
-
-    routes.push({
-      pools: pools,
-      tokenInAmount: route.initialAmount.toString(),
-    });
-  }
-
-  /** In amount converted to integer (remove decimals) */
-  const tokenIn = {
-    currency: fromAsset as Currency,
-    amount: coinAmount,
-  };
-
-  /** Out amount with slippage included */
-  const tokenOutMinAmount = quote.amount
-    .toDec()
-    .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
-    .mul(new Dec(1).sub(maxSlippage))
-    .truncate()
-    .toString();
-
-  return {
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-  };
-}
-
-function getSwapMessages({
-  coinAmount,
-  maxSlippage,
-  quote,
-  fromAsset,
-  toAsset,
-  userOsmoAddress,
-}: {
-  coinAmount: string;
-  maxSlippage: Dec | undefined;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  userOsmoAddress: string | undefined;
-}) {
-  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
-
-  let txParams: ReturnType<typeof getSwapTxParameters>;
-
-  try {
-    txParams = getSwapTxParameters({
-      coinAmount,
-      maxSlippage,
-      fromAsset,
-      toAsset,
-      quote,
-    });
-  } catch {
-    return undefined;
-  }
-
-  const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-  const { pools } = routes[0];
-
-  if (routes.length < 1) {
-    throw new Error("Routes are empty");
-  }
-
-  return [
-    routes.length === 1
-      ? makeSwapExactAmountInMsg({
-          pools,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        })
-      : makeSplitRoutesSwapExactAmountInMsg({
-          routes,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        }),
-  ];
-}
-
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
-    "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
+    "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
     tokenIn: MinimalAsset &
       Partial<{
@@ -1185,23 +1023,11 @@ function useQueryRouterBestQuote(
           tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
           forcePoolId: input.forcePoolId,
           preferredRouter: key,
+          maxSlippage: input.maxSlippage?.toString(),
+          userOsmoAddress: account?.address,
         },
         {
           enabled: enabled && Boolean(availableRouterKeys.length),
-
-          select: (quote) => {
-            return {
-              ...quote,
-              messages: getSwapMessages({
-                quote,
-                toAsset: input.tokenOut,
-                fromAsset: input.tokenIn,
-                maxSlippage: input.maxSlippage,
-                coinAmount: input.tokenInAmount,
-                userOsmoAddress: account?.address,
-              }),
-            };
-          },
 
           // quotes should not be considered fresh for long, otherwise
           // the gas simulation will fail due to slippage and the user would see errors

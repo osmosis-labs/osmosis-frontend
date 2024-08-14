@@ -1,4 +1,4 @@
-import type { EncodeObject } from "@cosmjs/proto-signing";
+import { EncodeObject } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
@@ -11,7 +11,7 @@ import {
   SignOptions,
 } from "@osmosis-labs/stores";
 import { QuoteStdFee } from "@osmosis-labs/tx";
-import { isFunction, isNil } from "@osmosis-labs/utils";
+import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -79,7 +79,7 @@ export function useEstimateTxFees({
   signOptions,
   enabled = true,
 }: {
-  messages: EncodeObject[] | (() => Promise<EncodeObject[]>) | undefined;
+  messages: EncodeObject[] | undefined;
   chainId: string;
   enabled?: boolean;
   signOptions?: SignOptions;
@@ -91,17 +91,8 @@ export function useEstimateTxFees({
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
-    queryFn: async () => {
+    queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
-
-      if (isFunction(messages)) {
-        messages = await messages();
-      }
-
-      if (messages === undefined || messages.length === 0) {
-        throw new Error("Messages are undefined");
-      }
-
       return estimateTxFeesQueryFn({
         wallet,
         accountStore,
@@ -116,8 +107,8 @@ export function useEstimateTxFees({
     enabled:
       enabled &&
       !isNil(messages) &&
-      ((Array.isArray(messages) && messages.length > 0) ||
-        isFunction(messages)) &&
+      Array.isArray(messages) &&
+      messages.length > 0 &&
       wallet?.address !== undefined &&
       typeof wallet?.address === "string",
   });

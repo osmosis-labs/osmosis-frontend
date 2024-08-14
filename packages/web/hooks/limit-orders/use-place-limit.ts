@@ -3,6 +3,7 @@ import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage } from "~/config";
@@ -251,10 +252,10 @@ export const usePlaceLimit = ({
     isMarket,
   ]);
 
-  const encodedMsg = useMemo(() => {
+  const { value: encodedMsg } = useAsync(async () => {
     if (!placeLimitMsg) return;
 
-    return makeExecuteCosmwasmContractMsg({
+    return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
       msg: Buffer.from(JSON.stringify(placeLimitMsg)),
@@ -551,7 +552,7 @@ export const usePlaceLimit = ({
     error: limitGasError,
   } = useEstimateTxFees({
     chainId: accountStore.osmosisChainId,
-    messages: encodedMsg && !isMarket ? async () => [await encodedMsg] : [],
+    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
     enabled: shouldEstimateLimitGas,
   });
 

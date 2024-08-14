@@ -1,5 +1,4 @@
 import type { MsgSwapExactAmountOut } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
-import type { Currency } from "@osmosis-labs/types";
 
 import { getOsmosisCodec } from "../../codec";
 
@@ -22,7 +21,7 @@ export async function makeSplitRoutesSwapExactAmountInMsg({
     }[];
     tokenInAmount: string;
   }[];
-  tokenIn: { currency: Currency };
+  tokenIn: { coinMinimalDenom: string };
   tokenOutMinAmount: string;
   userOsmoAddress: string;
 }) {
@@ -37,7 +36,7 @@ export async function makeSplitRoutesSwapExactAmountInMsg({
         })),
         tokenInAmount: tokenInAmount,
       })),
-      tokenInDenom: tokenIn.currency.coinMinimalDenom,
+      tokenInDenom: tokenIn.coinMinimalDenom,
       tokenOutMinAmount,
     }
   );
@@ -59,7 +58,7 @@ export async function makeSwapExactAmountInMsg({
     id: string;
     tokenOutDenom: string;
   }[];
-  tokenIn: { currency: Currency; amount: string };
+  tokenIn: { coinMinimalDenom: string; amount: string };
   tokenOutMinAmount: string;
   userOsmoAddress: string;
 }) {
@@ -74,7 +73,7 @@ export async function makeSwapExactAmountInMsg({
         };
       }),
       tokenIn: {
-        denom: tokenIn.currency.coinMinimalDenom,
+        denom: tokenIn.coinMinimalDenom,
         amount: tokenIn.amount.toString(),
       },
       tokenOutMinAmount,

@@ -1152,7 +1152,7 @@ export class OsmosisAccountImpl {
       }[];
       tokenInAmount: string;
     }[],
-    tokenIn: { currency: Currency },
+    tokenIn: { coinMinimalDenom: string },
     tokenOutMinAmount: string,
     memo: string = "",
     signOptions?: SignOptions & { fee?: StdFee },
@@ -1180,8 +1180,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
-                bal.currency.coinMinimalDenom ===
-                  tokenIn.currency.coinMinimalDenom ||
+                bal.currency.coinMinimalDenom === tokenIn.coinMinimalDenom ||
                 routes
                   .flatMap(({ pools }) => pools)
                   .find(
@@ -1224,7 +1223,7 @@ export class OsmosisAccountImpl {
       id: string;
       tokenOutDenom: string;
     }[],
-    tokenIn: { currency: Currency; amount: string },
+    tokenIn: { coinMinimalDenom: string; amount: string },
     tokenOutMinAmount: string,
     memo: string = "",
     signOptions?: SignOptions & { fee?: StdFee },
@@ -1252,8 +1251,7 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((bal) => {
               if (
-                bal.currency.coinMinimalDenom ===
-                  tokenIn.currency.coinMinimalDenom ||
+                bal.currency.coinMinimalDenom === tokenIn.coinMinimalDenom ||
                 pools.find(
                   (pool) => pool.tokenOutDenom === bal.currency.coinMinimalDenom
                 )
