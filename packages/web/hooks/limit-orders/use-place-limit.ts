@@ -29,6 +29,9 @@ function getNormalizationFactor(
 
 export type OrderDirection = "bid" | "ask";
 
+export const MIN_ORDER_VALUE =
+  process.env.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT ?? "";
+
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
   orderDirection: OrderDirection;
@@ -375,33 +378,43 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: balances, isLoading: isBalancesLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
+  const { data, isLoading: isBalancesLoading } =
+    api.edge.assets.getUserAssets.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
       {
         enabled: !!account?.address,
-        select: (balances) =>
-          balances.filter(
-            ({ denom }) =>
-              denom === baseAsset?.coinMinimalDenom ||
-              denom === quoteAsset?.coinMinimalDenom
+        select: ({ items }) =>
+          items.filter(
+            ({ coinMinimalDenom }) =>
+              coinMinimalDenom.toLowerCase() ===
+                baseAsset?.coinMinimalDenom?.toLowerCase() ||
+              coinMinimalDenom.toLowerCase() ===
+                quoteAsset?.coinMinimalDenom?.toLowerCase()
           ),
       }
     );
 
-  const quoteTokenBalance = useMemo(() => {
-    if (!balances) return;
+  const baseTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          baseAsset?.coinMinimalDenom.toLowerCase()
+      )?.amount,
+    [data, baseAsset]
+  );
+  const quoteTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          quoteAsset?.coinMinimalDenom?.toLowerCase()
+      )?.amount,
+    [data, quoteAsset]
+  );
 
-    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, quoteAsset]);
-
-  const baseTokenBalance = useMemo(() => {
-    if (!balances) return;
-
-    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, baseAsset]);
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(
@@ -470,6 +483,7 @@ export const usePlaceLimit = ({
     priceState.reset();
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
+
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
@@ -492,6 +506,16 @@ export const usePlaceLimit = ({
       return priceState.priceError;
     }
 
+    if (
+      !isMarket &&
+      !!MIN_ORDER_VALUE &&
+      isValidNumericalRawInput(MIN_ORDER_VALUE) &&
+      !!paymentFiatValue &&
+      paymentFiatValue?.toDec().lt(new Dec(MIN_ORDER_VALUE))
+    ) {
+      return "limitOrders.belowMinimumAmount";
+    }
+
     return;
   }, [
     insufficientFunds,
@@ -500,6 +524,7 @@ export const usePlaceLimit = ({
     paymentTokenValue,
     orderbookError,
     priceState.priceError,
+    paymentFiatValue,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {

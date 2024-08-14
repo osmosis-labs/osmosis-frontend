@@ -1248,6 +1248,7 @@
     "filled": "پر شده است",
     "claimable": "قابل ادعا",
     "claimAndClose": "ادعا کنید و ببندید",
+    "close": "بستن",
     "claim": "ادعا کنید",
     "accept": "تایید کنید",
     "cancelled": "لغو شد",
@@ -1317,6 +1318,10 @@
       "past": "گذشته",
       "pending": "انتظار",
       "filled": "سفارشات تکمیل شده برای ادعا"
-    }
-  }
+    },
+    "priceReaches": "اگر قیمت {denom} به {price} برسد.",
+    "belowMinimumAmount": "حداقل {amount}"
+  },
+  "tradeFee": "کارمزد تجارت",
+  "receiveAtLeast": "حداقل دریافت کنید"
 }

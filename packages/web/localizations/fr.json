@@ -1248,6 +1248,7 @@
     "filled": "Rempli",
     "claimable": "Réclamable",
     "claimAndClose": "Réclamez et clôturez",
+    "close": "Fermer",
     "claim": "Réclamer",
     "accept": "Accepter",
     "cancelled": "Annulé",
@@ -1317,6 +1318,10 @@
       "past": "Passé",
       "pending": "En attente",
       "filled": "Commandes exécutées à réclamer"
-    }
-  }
+    },
+    "priceReaches": "Si le prix {denom} atteint {price}",
+    "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeFee": "Frais de transaction",
+  "receiveAtLeast": "Recevez au moins"
 }

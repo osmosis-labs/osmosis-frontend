@@ -1248,6 +1248,7 @@
     "filled": "Filled",
     "claimable": "Claimable",
     "claimAndClose": "Claim and close",
+    "close": "Close",
     "claim": "Claim",
     "accept": "Accept",
     "cancelled": "Cancelled",
@@ -1317,6 +1318,10 @@
       "past": "Past",
       "pending": "Pending",
       "filled": "Filled orders to claim"
-    }
-  }
+    },
+    "priceReaches": "If {denom} price reaches {price}",
+    "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeFee": "Trade fee",
+  "receiveAtLeast": "Receive at least"
 }

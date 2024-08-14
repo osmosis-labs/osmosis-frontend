@@ -1248,6 +1248,7 @@
     "filled": "채우는",
     "claimable": "청구 가능",
     "claimAndClose": "청구 및 종료",
+    "close": "닫다",
     "claim": "주장하다",
     "accept": "수용하다",
     "cancelled": "취소 된",
@@ -1317,6 +1318,10 @@
       "past": "과거",
       "pending": "보류 중",
       "filled": "주문이 채워져서 청구됩니다"
-    }
-  }
+    },
+    "priceReaches": "{denom} 가격 {price} 도달하면",
+    "belowMinimumAmount": "{amount} 최소"
+  },
+  "tradeFee": "거래 수수료",
+  "receiveAtLeast": "최소한 받다"
 }

@@ -1248,6 +1248,7 @@
     "filled": "Gefüllt",
     "claimable": "Einforderbar",
     "claimAndClose": "Beanspruchen und schließen",
+    "close": "Schließen",
     "claim": "Beanspruchen",
     "accept": "Akzeptieren",
     "cancelled": "Abgesagt",
@@ -1317,6 +1318,10 @@
       "past": "Vergangenheit",
       "pending": "Ausstehend",
       "filled": "Ausgeführte Bestellungen zum Einfordern"
-    }
-  }
+    },
+    "priceReaches": "Wenn der Preis {denom} {price} erreicht",
+    "belowMinimumAmount": "{amount} Minimum"
+  },
+  "tradeFee": "Handelsgebühr",
+  "receiveAtLeast": "Erhalten Sie mindestens"
 }

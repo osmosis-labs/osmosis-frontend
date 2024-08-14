@@ -1248,6 +1248,7 @@
     "filled": "Preenchido",
     "claimable": "Exigível",
     "claimAndClose": "Reivindique e feche",
+    "close": "Fechar",
     "claim": "Alegar",
     "accept": "Aceitar",
     "cancelled": "Cancelado",
@@ -1317,6 +1318,10 @@
       "past": "Passado",
       "pending": "Pendente",
       "filled": "Pedidos preenchidos para reivindicar"
-    }
-  }
+    },
+    "priceReaches": "Se o preço {denom} atingir {price}",
+    "belowMinimumAmount": "{amount} mínimo"
+  },
+  "tradeFee": "Taxa de negociação",
+  "receiveAtLeast": "Receba pelo menos"
 }

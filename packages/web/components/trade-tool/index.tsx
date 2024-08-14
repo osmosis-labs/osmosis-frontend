@@ -15,7 +15,6 @@ import {
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {
@@ -36,12 +35,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-
-    const { orders, refetch } = useOrderbookAllActiveOrders({
-      userAddress: wallet?.address ?? "",
-      pageSize: 10,
-      refetchInterval: 4000,
-    });
 
     useEffect(() => {
       switch (tab) {
@@ -74,21 +67,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return (
-                  <PlaceLimitTool
-                    key="tool-buy"
-                    page={page}
-                    refetchOrders={refetch}
-                  />
-                );
+                return <PlaceLimitTool key="tool-buy" page={page} />;
               case SwapToolTab.SELL:
-                return (
-                  <PlaceLimitTool
-                    key="tool-sell"
-                    page={page}
-                    refetchOrders={refetch}
-                  />
-                );
+                return <PlaceLimitTool key="tool-sell" page={page} />;
               case SwapToolTab.SWAP:
               default:
                 return (
@@ -100,9 +81,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   />
                 );
             }
-          }, [page, swapToolProps, tab, refetch])}
+          }, [page, swapToolProps, tab])}
         </div>
-        {wallet?.isWalletConnected && orders.length > 0 && (
+        {wallet?.isWalletConnected && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
             className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"

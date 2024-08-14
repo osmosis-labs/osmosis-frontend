@@ -40,15 +40,15 @@ export const PortfolioHistoricalChart = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   return (
-    <section className="relative flex h-[468px] flex-col justify-between">
-      <div className="w-full grow pt-4">
-        {error ? (
-          <div className="error-message flex h-full items-center justify-center">
-            {t("errors.generic")}
-          </div>
-        ) : !isFetched ? (
-          <HistoricalChartSkeleton />
-        ) : (
+    <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
+      {error ? (
+        <div className="error-message flex h-full items-center justify-center">
+          {t("errors.generic")}
+        </div>
+      ) : !isFetched ? (
+        <HistoricalChartSkeleton />
+      ) : (
+        <>
           <HistoricalChart
             data={data as AreaData<Time>[]}
             onPointerHover={(value, time) => {
@@ -58,27 +58,27 @@ export const PortfolioHistoricalChart = ({
             }}
             onPointerOut={resetDataPoint}
           />
-        )}
-      </div>
-      <div className="my-3 flex justify-between">
-        <PortfolioHistoricalRangeButtonGroup
-          priceRange={range}
-          setPriceRange={setRange}
-        />
-        <IconButton
-          className="border border-osmoverse-700 py-0"
-          aria-label="Open main menu dropdown"
-          icon={
-            <Icon
-              id="resize-minimize"
-              className="text-osmoverse-200"
-              height={16}
-              width={16}
+          <div className="my-3 flex justify-between">
+            <PortfolioHistoricalRangeButtonGroup
+              priceRange={range}
+              setPriceRange={setRange}
             />
-          }
-          onClick={() => setIsChartMinimized(true)}
-        />
-      </div>
+            <IconButton
+              className="border border-osmoverse-700 py-0"
+              aria-label="Open main menu dropdown"
+              icon={
+                <Icon
+                  id="resize-minimize"
+                  className="text-osmoverse-200"
+                  height={16}
+                  width={16}
+                />
+              }
+              onClick={() => setIsChartMinimized(true)}
+            />
+          </div>
+        </>
+      )}
     </section>
   );
 };

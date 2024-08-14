@@ -1248,6 +1248,7 @@
     "filled": "ભરેલ",
     "claimable": "દાવો કરવા યોગ્ય",
     "claimAndClose": "દાવો કરો અને બંધ કરો",
+    "close": "બંધ કરો",
     "claim": "દાવો કરો",
     "accept": "સ્વીકારો",
     "cancelled": "રદ કરેલ",
@@ -1317,6 +1318,10 @@
       "past": "ભૂતકાળ",
       "pending": "બાકી છે",
       "filled": "દાવો કરવાના આદેશો ભર્યા"
-    }
-  }
+    },
+    "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે",
+    "belowMinimumAmount": "{amount} ન્યૂનતમ"
+  },
+  "tradeFee": "વેપાર ફી",
+  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો"
 }

@@ -1248,6 +1248,7 @@
     "filled": "填充",
     "claimable": "可索賠",
     "claimAndClose": "索賠並關閉",
+    "close": "關閉",
     "claim": "宣稱",
     "accept": "接受",
     "cancelled": "取消",
@@ -1317,6 +1318,10 @@
       "past": "過去的",
       "pending": "待辦的",
       "filled": "已填寫訂單以領取"
-    }
-  }
+    },
+    "priceReaches": "如果{denom}價格達到{price}",
+    "belowMinimumAmount": "{amount}最小值"
+  },
+  "tradeFee": "交易費",
+  "receiveAtLeast": "至少收到"
 }

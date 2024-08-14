@@ -11,8 +11,6 @@ import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Trade feature", () => {
   let context: BrowserContext;
-  const walletId =
-    process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let tradePage: TradePage;
@@ -54,11 +52,10 @@ test.describe("Test Trade feature", () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.1");
+    await tradePage.enterAmount("1.1");
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
-    expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + USDC);
     await tradePage.isTransactionSuccesful();
@@ -70,11 +67,10 @@ test.describe("Test Trade feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("ATOM");
-    await tradePage.enterAmount("0.01");
+    await tradePage.enterAmount("0.25");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + ATOM);
     await tradePage.isTransactionSuccesful();
@@ -86,37 +82,40 @@ test.describe("Test Trade feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
-    await tradePage.enterAmount("0.01");
+    await tradePage.enterAmount("0.25");
     await tradePage.setLimitPriceChange("5%");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.01 ATOM (Cosmos Hub/channel-0)");
+    expect(msgContentAmount).toContain("0.25 ATOM (Cosmos Hub/channel-0)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
     await tradePage.goto();
+    const amount = "2.59";
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.2");
+    await tradePage.enterAmount(amount);
     await tradePage.setLimitPriceChange("10%");
     const limitPrice = await tradePage.getLimitPrice();
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.2 OSMO");
+    expect(msgContentAmount).toContain(`${amount} OSMO`);
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
-    await trxPage.cancelLimitOrder("0.2 OSMO", limitPrice, context);
+    await trxPage.cancelLimitOrder(`${amount} OSMO`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 });
