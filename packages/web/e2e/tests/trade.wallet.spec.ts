@@ -79,18 +79,25 @@ test.describe("Test Trade feature", () => {
 
   test("User should be able to limit sell ATOM", async () => {
     await tradePage.goto();
+    const amount = "0.25";
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
-    await tradePage.enterAmount("0.25");
+    await tradePage.enterAmount(amount);
     await tradePage.setLimitPriceChange("5%");
+    const limitPrice = await tradePage.getLimitPrice();
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.25 ATOM (Cosmos Hub/channel-0)");
+    expect(msgContentAmount).toContain(amount + " ATOM (Cosmos Hub/channel-0)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
+    await tradePage.gotoOrdersHistory();
+    const trxPage = new TransactionsPage(context.pages()[0]);
+    await trxPage.cancelLimitOrder(`${amount} ATOM`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -112,6 +119,7 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder(`${amount} OSMO`, limitPrice, context);
