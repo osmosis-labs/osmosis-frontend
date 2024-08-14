@@ -6,8 +6,8 @@ import { sort } from "@osmosis-labs/utils";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import { queryAllocation } from "../../../queries/data-services";
 import { Categories } from "../../../queries/data-services";
+import { AccountCoinsResultDec } from "../../../queries/sidecar/allocation";
 import { getAsset } from "../assets";
-import { AccountCoinsResultDec } from "../sidecar/allocation";
 
 interface FormattedAllocation {
   key: string;
