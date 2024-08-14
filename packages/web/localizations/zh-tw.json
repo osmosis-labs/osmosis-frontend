@@ -95,7 +95,8 @@
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
-    "goToPool": "前往泳池#{poolId}"
+    "goToPool": "前往泳池#{poolId}",
+    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。"
   },
   "copied": "複製了！",
   "app": {

@@ -95,7 +95,8 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동 #{poolId}"
+    "goToPool": "풀 번호로 이동 #{poolId}",
+    "errorFetchingPositions": "직책 세부 정보를 가져오지 못했습니다. 페이지를 새로 고침해 보세요. 문제가 지속되면 지원팀에 문의하세요."
   },
   "copied": "복사되었습니다!",
   "app": {

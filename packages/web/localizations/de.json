@@ -95,7 +95,8 @@
     "totalBalance": "Gesamtsaldo",
     "numPositions": "{numPositions} Positionen",
     "onePosition": "1 Position",
-    "goToPool": "Gehen Sie zu Pool #{poolId}"
+    "goToPool": "Gehen Sie zu Pool #{poolId}",
+    "errorFetchingPositions": "Positionsdetails konnten nicht abgerufen werden. Versuchen Sie, die Seite zu aktualisieren. Wenn das Problem weiterhin besteht, wenden Sie sich an den Support."
   },
   "copied": "Kopiert!",
   "app": {

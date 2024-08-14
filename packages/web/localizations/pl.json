@@ -95,7 +95,8 @@
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja",
-    "goToPool": "Idź do basenu #{poolId}"
+    "goToPool": "Idź do basenu #{poolId}",
+    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną."
   },
   "copied": "Skopiowano!",
   "app": {

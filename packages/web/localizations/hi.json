@@ -95,7 +95,8 @@
     "totalBalance": "कुल शेष",
     "numPositions": "{numPositions} पद",
     "onePosition": "1 पद",
-    "goToPool": "पूल # पर जाएँ #{poolId}"
+    "goToPool": "पूल # पर जाएँ #{poolId}",
+    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।"
   },
   "copied": "कॉपी किया गया!",
   "app": {
