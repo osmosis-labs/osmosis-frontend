@@ -388,8 +388,10 @@ export const usePlaceLimit = ({
         select: ({ items }) =>
           items.filter(
             ({ coinMinimalDenom }) =>
-              coinMinimalDenom === baseAsset?.coinMinimalDenom ||
-              coinMinimalDenom === quoteAsset?.coinMinimalDenom
+              coinMinimalDenom.toLowerCase() ===
+                baseAsset?.coinMinimalDenom?.toLowerCase() ||
+              coinMinimalDenom.toLowerCase() ===
+                quoteAsset?.coinMinimalDenom?.toLowerCase()
           ),
       }
     );
@@ -398,7 +400,8 @@ export const usePlaceLimit = ({
     () =>
       data?.find(
         ({ coinMinimalDenom }) =>
-          coinMinimalDenom === baseAsset?.coinMinimalDenom
+          coinMinimalDenom.toLowerCase() ===
+          baseAsset?.coinMinimalDenom.toLowerCase()
       )?.amount,
     [data, baseAsset]
   );
@@ -406,7 +409,8 @@ export const usePlaceLimit = ({
     () =>
       data?.find(
         ({ coinMinimalDenom }) =>
-          coinMinimalDenom === quoteAsset?.coinMinimalDenom
+          coinMinimalDenom.toLowerCase() ===
+          quoteAsset?.coinMinimalDenom?.toLowerCase()
       )?.amount,
     [data, quoteAsset]
   );
