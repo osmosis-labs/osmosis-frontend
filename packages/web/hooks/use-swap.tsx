@@ -306,7 +306,7 @@ export function useSwap(
     inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
     outAmountInput.debouncedInAmount !== null &&
     Boolean(outAmountInput.amount);
-  console.log(quote?.messages);
+
   const {
     data: networkFee,
     error: networkFeeError,

@@ -261,7 +261,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
-
+    console.log(isSwapToolLoading);
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
@@ -433,16 +433,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     // const out = swapState.quote?.amount
                     //   ? formatPretty(swapState.quote.amount.toDec())
                     //   : "";
-                    if (quoteType === "out-given-in") {
-                      swapState.inAmountInput.setAmount(
-                        swapState.outAmountInput.inputAmount
-                      );
-                    } else {
-                      swapState.outAmountInput.setAmount(
-                        swapState.inAmountInput.inputAmount
-                      );
-                    }
+                    const inAmount = swapState.inAmountInput.inputAmount;
+                    const outAmount = swapState.outAmountInput.inputAmount;
+
                     swapState.switchAssets();
+
+                    if (quoteType === "out-given-in") {
+                      setQuoteType("in-given-out");
+                      swapState.outAmountInput.setAmount(inAmount);
+                    } else {
+                      setQuoteType("out-given-in");
+                      swapState.inAmountInput.setAmount(outAmount);
+                    }
                   }}
                 >
                   <Icon
