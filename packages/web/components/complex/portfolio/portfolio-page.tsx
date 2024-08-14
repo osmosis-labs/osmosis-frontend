@@ -82,7 +82,7 @@ export const PortfolioPage: FunctionComponent = () => {
         }
       )}
     >
-      <main className="flex w-[752px] min-w-[752px] flex-col">
+      <main className="flex w-[752px] min-w-[752px] flex-col 1.5xl:min-w-full">
         <section className="flex py-3" ref={overviewRef}>
           <AssetsOverview
             totalValue={
@@ -149,11 +149,13 @@ export const PortfolioPage: FunctionComponent = () => {
         </section>
       </main>
 
-      <aside className="flex w-[320px] min-w-[320px] flex-col">
-        {featureFlags.cypherCard && <CypherCard />}
-        {!isLoadingAllocation && !userHasNoAssets && (
-          <Allocation allocation={allocation} />
-        )}
+      <aside className="flex w-[320px] min-w-[320px] flex-col 1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16">
+        <div className="w-full 1.5xl:w-[320px] 1.5xl:min-w-[320px]">
+          {featureFlags.cypherCard && <CypherCard />}
+          {!isLoadingAllocation && !userHasNoAssets && (
+            <Allocation allocation={allocation} />
+          )}
+        </div>
         <RecentActivity />
       </aside>
     </div>
