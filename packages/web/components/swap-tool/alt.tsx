@@ -172,9 +172,16 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
-        swapState.quote && swapState.toAsset
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
-          : undefined;
+        quoteType === "out-given-in"
+          ? swapState.quote
+            ? new IntPretty(
+                swapState.quote.amount.toDec().mul(oneMinusSlippage)
+              )
+            : undefined
+          : new IntPretty(
+              swapState.outAmountInput?.amount?.toDec().mul(oneMinusSlippage) ??
+                new Dec(0)
+            );
 
       // Compute out fiat amount less slippage
       const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
@@ -188,8 +195,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [
       slippageConfig.slippage,
       swapState.quote,
-      swapState.toAsset,
       swapState.tokenOutFiatValue,
+      quoteType,
+      swapState.outAmountInput,
     ]);
 
     // reivew swap modal

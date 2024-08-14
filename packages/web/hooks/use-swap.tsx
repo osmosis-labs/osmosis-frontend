@@ -306,7 +306,6 @@ export function useSwap(
     inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
     outAmountInput.debouncedInAmount !== null &&
     Boolean(outAmountInput.amount);
-
   console.log(quote?.messages);
   const {
     data: networkFee,
@@ -348,7 +347,7 @@ export function useSwap(
         async (resolve, reject) => {
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
-          if (!inAmountInput.amount)
+          if (!inAmountInput.amount || !outAmountInput.amount)
             return reject(new Error("Input amount is not specified."));
           if (!account)
             return reject(new Error("Account information is missing."));
@@ -360,11 +359,15 @@ export function useSwap(
           let txParams: ReturnType<typeof getSwapTxParameters>;
           try {
             txParams = getSwapTxParameters({
-              coinAmount: inAmountInput.amount.toCoin().amount,
+              coinAmount:
+                quoteType === "out-given-in"
+                  ? inAmountInput.amount.toCoin().amount
+                  : outAmountInput.amount.toCoin().amount,
               maxSlippage,
               fromAsset: swapAssets.fromAsset,
               toAsset: swapAssets.toAsset,
               quote,
+              quoteType,
             });
           } catch (e) {
             const error = e as Error;
@@ -1182,14 +1185,23 @@ function getSwapTxParameters({
     amount:
       quoteType === "out-given-in"
         ? coinAmount
-        : quote.amount.toDec().toString(),
+        : quote.amount
+            .toDec()
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(fromAsset.coinDecimals)
+            )
+            .truncate()
+            .toString(),
   };
 
   /** Out amount with slippage included */
   const tokenOutMinAmount = (
-    quoteType === "out-given-in" ? quote.amount.toDec() : new Dec(coinAmount)
+    quoteType === "out-given-in"
+      ? quote.amount
+          .toDec()
+          .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
+      : new Dec(coinAmount)
   )
-    .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
     .mul(new Dec(1).sub(maxSlippage))
     .truncate()
     .toString();
@@ -1208,6 +1220,7 @@ function getSwapMessages({
   fromAsset,
   toAsset,
   userOsmoAddress,
+  quoteType = "out-given-in",
 }: {
   coinAmount: string;
   maxSlippage: Dec | undefined;
@@ -1223,6 +1236,7 @@ function getSwapMessages({
       usdValue: PricePretty;
     }>;
   userOsmoAddress: string | undefined;
+  quoteType?: QuoteType;
 }) {
   if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
 
@@ -1235,6 +1249,7 @@ function getSwapMessages({
       fromAsset,
       toAsset,
       quote,
+      quoteType,
     });
   } catch {
     return undefined;
@@ -1402,6 +1417,7 @@ function useQueryRouterBestQuote(
                     maxSlippage: input.maxSlippage,
                     coinAmount: input.tokenInAmount,
                     userOsmoAddress: account?.address,
+                    quoteType: "in-given-out",
                   }),
                 };
               },
