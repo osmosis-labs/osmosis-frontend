@@ -16,6 +16,12 @@ export interface TokenOutGivenInRouter {
     tokenOutDenom: string,
     forcePoolId?: string
   ): Promise<SplitTokenInQuote>;
+  /** Route, with splits, given an out token and in denom. */
+  routeByTokenOut(
+    tokenOut: Token,
+    tokenInDenom: string,
+    forcePoolId?: string
+  ): Promise<SplitTokenInQuote>;
 }
 
 export interface RoutablePool {

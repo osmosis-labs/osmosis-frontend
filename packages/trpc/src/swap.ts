@@ -78,6 +78,72 @@ export const swapRouter = createTRPCRouter({
         };
       }
     ),
+  routeTokenInGivenOut: publicProcedure
+    .input(
+      z.object({
+        tokenInDenom: z.string(),
+        tokenOutAmount: z.string(),
+        tokenOutDenom: z.string(),
+        preferredRouter: availableRoutersSchema,
+        forcePoolId: z.string().optional(),
+      })
+    )
+    .query(
+      async ({
+        input: {
+          tokenInDenom,
+          tokenOutAmount,
+          tokenOutDenom,
+          preferredRouter,
+          forcePoolId,
+        },
+        ctx,
+      }) => {
+        const osmosisChainId = ctx.chainList[0].chain_id;
+
+        const routers = getRouters(
+          osmosisChainId,
+          ctx.assetLists,
+          ctx.chainList
+        );
+
+        const { name, router } = routers.find(
+          ({ name }) => name === preferredRouter
+        )!;
+
+        // send to router
+        const startTime = Date.now();
+
+        const quote = await router.routeByTokenOut(
+          {
+            denom: tokenOutDenom,
+            amount: new Int(tokenOutAmount),
+          },
+          tokenInDenom,
+          forcePoolId
+        );
+
+        const timeMs = Date.now() - startTime;
+
+        const tokenInAsset = getAsset({
+          ...ctx,
+          anyDenom: tokenInDenom,
+        });
+
+        return {
+          ...quote,
+          split: makeDisplayableSplit(quote.split, ctx.assetLists),
+          // supplementary data with display types
+          name,
+          timeMs,
+          amount: new CoinPretty(tokenInAsset, quote.amount),
+          priceImpactTokenOut: quote.priceImpactTokenOut
+            ? new RatePretty(quote.priceImpactTokenOut.abs())
+            : undefined,
+          swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
+        };
+      }
+    ),
 });
 
 /** Get pool type, in, and out currency for displaying the route in detail. */

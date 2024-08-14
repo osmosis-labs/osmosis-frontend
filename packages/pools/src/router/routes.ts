@@ -156,6 +156,14 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     return quote;
   }
 
+  async routeByTokenOut(
+    _tokenOut: Token,
+    _tokenInDenom: string,
+    _forcePoolId?: string | undefined
+  ): Promise<SplitTokenInQuote> {
+    throw new Error("TFM Router does not implement in given out");
+  }
+
   async getOptimizedRoutesByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string

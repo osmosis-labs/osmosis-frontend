@@ -62,6 +62,7 @@ type SwapOptions = {
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
+  quoteType?: QuoteType;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -88,6 +89,7 @@ export function useSwap(
     useOtherCurrencies = true,
     forceSwapInPoolId,
     maxSlippage,
+    quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const { chainStore, accountStore } = useStore();
@@ -105,11 +107,26 @@ export function useSwap(
     poolId: forceSwapInPoolId,
   });
 
+  const reverseSwapAssets = useSwapAssets({
+    initialFromDenom,
+    initialToDenom,
+    useQueryParams,
+    useOtherCurrencies,
+    poolId: forceSwapInPoolId,
+  });
+
   const inAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
   });
+
+  const outAmountInput = useSwapAmountInput({
+    forceSwapInPoolId,
+    maxSlippage,
+    swapAssets: reverseSwapAssets,
+  });
+
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
@@ -124,7 +141,20 @@ export function useSwap(
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading;
+    !isWalletLoading &&
+    quoteType === "out-given-in";
+
+  const outGivenInQuoteEnabled =
+    isToFromAssets &&
+    Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+    outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.toAsset?.coinMinimalDenom &&
+    outAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.toAsset?.coinMinimalDenom &&
+    !account?.txTypeInProgress &&
+    !isWalletLoading &&
+    quoteType === "in-given-out";
+
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -139,6 +169,41 @@ export function useSwap(
     },
     quoteQueryEnabled
   );
+
+  const {
+    data: inGivenOutQuote,
+    isLoading: isOGIQuoteLoading_,
+    error: inGivenOutQuoteError,
+  } = useQueryRouterBestQuote(
+    {
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
+      tokenInAmount: outAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    },
+    outGivenInQuoteEnabled,
+    ["sidecar"],
+    "in-given-out"
+  );
+
+  useEffect(() => {
+    if (quoteType === "in-given-out" && inGivenOutQuote) {
+      inAmountInput.setAmount(inGivenOutQuote.amount.toDec().toString());
+    }
+
+    if (quoteType === "out-given-in" && quote) {
+      console.log("SETTING OUT AMOUNT", quote.amount.toDec().toString());
+      outAmountInput.setAmount(quote.amount.toDec().toString());
+    }
+
+    /**
+     * We disable dependencies here to stop an infinite loop
+     * from the inAmount/outAmount input states
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inGivenOutQuote, quote]);
+
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
@@ -176,7 +241,7 @@ export function useSwap(
     )
       error = spotPriceQuoteError;
 
-    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+    const errorFromTrpc = makeRouterErrorFromTrpcError(error as any)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
@@ -480,6 +545,7 @@ export function useSwap(
   return {
     ...swapAssets,
     inAmountInput,
+    outAmountInput,
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
@@ -1119,6 +1185,8 @@ function getSwapMessages({
   ];
 }
 
+type QuoteType = "out-given-in" | "in-given-out";
+
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
@@ -1140,11 +1208,19 @@ function useQueryRouterBestQuote(
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
-  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[],
+  quoteType: QuoteType = "out-given-in"
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
+
+  if (
+    quoteType === "in-given-out" &&
+    (routerKeys.includes("legacy") || routerKeys.includes("tfm"))
+  ) {
+    throw new Error("In given out not implemented for legacy or tfm router");
+  }
 
   const availableRouterKeys: RouterKey[] = useMemo(
     () =>
@@ -1169,58 +1245,111 @@ function useQueryRouterBestQuote(
   );
 
   const trpcReact = createTRPCReact<AppRouter>();
-  const routerResults = trpcReact.useQueries((t) =>
-    availableRouterKeys.map((key) =>
-      t.local.quoteRouter.routeTokenOutGivenIn(
-        {
-          tokenInAmount: input.tokenInAmount,
-          tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-          tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-          forcePoolId: input.forcePoolId,
-          preferredRouter: key,
-        },
-        {
-          enabled: enabled && Boolean(availableRouterKeys.length),
 
-          select: (quote) => {
-            return {
-              ...quote,
-              messages: getSwapMessages({
-                quote,
-                toAsset: input.tokenOut,
-                fromAsset: input.tokenIn,
-                maxSlippage: input.maxSlippage,
-                coinAmount: input.tokenInAmount,
-                userOsmoAddress: account?.address,
-              }),
-            };
-          },
+  const routerResults =
+    quoteType === "out-given-in"
+      ? trpcReact.useQueries((t) =>
+          availableRouterKeys.map((key) =>
+            t.local.quoteRouter.routeTokenOutGivenIn(
+              {
+                tokenInAmount: input.tokenInAmount,
+                tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+                tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+                forcePoolId: input.forcePoolId,
+                preferredRouter: key,
+              },
+              {
+                enabled: enabled && Boolean(availableRouterKeys.length),
 
-          // quotes should not be considered fresh for long, otherwise
-          // the gas simulation will fail due to slippage and the user would see errors
-          staleTime: 5_000,
-          cacheTime: 5_000,
-          refetchInterval: 5_000,
+                select: (quote) => {
+                  return {
+                    ...quote,
+                    messages: getSwapMessages({
+                      quote,
+                      toAsset: input.tokenOut,
+                      fromAsset: input.tokenIn,
+                      maxSlippage: input.maxSlippage,
+                      coinAmount: input.tokenInAmount,
+                      userOsmoAddress: account?.address,
+                    }),
+                  };
+                },
 
-          // Disable retries, as useQueries
-          // will block successfull quotes from being returned
-          // if failed quotes are being returned
-          // until retry starts returning false.
-          // This causes slow UX even though there's a
-          // quote that the user can use.
-          retry: false,
+                // quotes should not be considered fresh for long, otherwise
+                // the gas simulation will fail due to slippage and the user would see errors
+                staleTime: 5_000,
+                cacheTime: 5_000,
+                refetchInterval: 5_000,
 
-          // prevent batching so that fast routers can
-          // return requests faster than the slowest router
-          trpc: {
-            context: {
-              skipBatch: true,
+                // Disable retries, as useQueries
+                // will block successfull quotes from being returned
+                // if failed quotes are being returned
+                // until retry starts returning false.
+                // This causes slow UX even though there's a
+                // quote that the user can use.
+                retry: false,
+
+                // prevent batching so that fast routers can
+                // return requests faster than the slowest router
+                trpc: {
+                  context: {
+                    skipBatch: true,
+                  },
+                },
+              }
+            )
+          )
+        )
+      : trpcReact.useQueries((t) => [
+          t.local.quoteRouter.routeTokenInGivenOut(
+            {
+              tokenOutAmount: input.tokenInAmount ?? "",
+              tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+              tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+              forcePoolId: input.forcePoolId,
+              preferredRouter: "sidecar",
             },
-          },
-        }
-      )
-    )
-  );
+            {
+              enabled: true || (enabled && Boolean(availableRouterKeys.length)),
+
+              select: (quote) => {
+                return {
+                  ...quote,
+                  messages: getSwapMessages({
+                    quote,
+                    toAsset: input.tokenOut,
+                    fromAsset: input.tokenIn,
+                    maxSlippage: input.maxSlippage,
+                    coinAmount: input.tokenInAmount,
+                    userOsmoAddress: account?.address,
+                  }),
+                };
+              },
+
+              // quotes should not be considered fresh for long, otherwise
+              // the gas simulation will fail due to slippage and the user would see errors
+              staleTime: 5_000,
+              cacheTime: 5_000,
+              refetchInterval: 5_000,
+
+              // Disable retries, as useQueries
+              // will block successfull quotes from being returned
+              // if failed quotes are being returned
+              // until retry starts returning false.
+              // This causes slow UX even though there's a
+              // quote that the user can use.
+              retry: false,
+
+              // prevent batching so that fast routers can
+              // return requests faster than the slowest router
+              trpc: {
+                context: {
+                  skipBatch: true,
+                },
+              },
+            }
+          ),
+        ]);
 
   // reduce the results' data to that with the highest out amount
   const bestData = useMemo(() => {
