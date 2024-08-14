@@ -30,7 +30,7 @@ test.describe("Test Filled Order feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Trades", password);
+    await walletPage.setWalletNameAndPassword("Test Filled Trades", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -50,7 +50,7 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("0.35");
-    await tradePage.setLimitPriceChange("5%");
+    await tradePage.setLimitPriceChange("2%");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
@@ -59,6 +59,7 @@ test.describe("Test Filled Order feature", () => {
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to limit buy OSMO", async () => {
@@ -66,7 +67,7 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.11");
+    await tradePage.enterAmount("0.55");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
     const highLimitPrice = (limitPrice * 1.2).toFixed(4);
@@ -75,10 +76,11 @@ test.describe("Test Filled Order feature", () => {
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("0.11 USDC (Noble/channel-750)");
+    expect(msgContentAmount).toContain("0.55 USDC (Noble/channel-750)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory(30);
     const p = context.pages()[0];
     const trxPage = new TransactionsPage(p);

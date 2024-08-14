@@ -96,6 +96,7 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
@@ -118,5 +119,6 @@ test.describe("Test Trade feature", () => {
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder("0.2 OSMO", limitPrice, context);
     await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 });

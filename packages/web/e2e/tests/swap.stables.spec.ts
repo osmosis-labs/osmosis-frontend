@@ -67,9 +67,8 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDCa);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC.eth.axl to USDC", async () => {
@@ -82,9 +81,8 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDCa);
     //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDT to USDC", async () => {
@@ -97,9 +95,8 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain(USDC);
     //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to USDT", async () => {
@@ -112,8 +109,7 @@ test.describe("Test Swap Stables feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     //expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain(allUSDT);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 });
