@@ -117,7 +117,7 @@ describe("Allocation Functions", () => {
   });
 
   describe("calculatePercentAndFiatValues", () => {
-    it("should calculate the correct asset percentages and fiat values", async () => {
+    it("should calculate the correct asset percentages and fiat values - Total Assets", async () => {
       const result = await calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
@@ -131,9 +131,9 @@ describe("Allocation Functions", () => {
 
       expect(result).toEqual([
         {
-          key: "CTK",
-          percentage: "50%",
           fiatValue: "$30",
+          percentage: "50%",
+          key: "CTK",
         },
         {
           key: "SAIL",
@@ -141,9 +141,9 @@ describe("Allocation Functions", () => {
           fiatValue: "$20",
         },
         {
+          fiatValue: "$10",
           key: "WOSMO",
           percentage: "16.666%",
-          fiatValue: "$10",
         },
         {
           key: "Other",
@@ -153,7 +153,7 @@ describe("Allocation Functions", () => {
       ]);
     });
 
-    it("should calculate the correct asset percentages and fiat values", async () => {
+    it("should calculate the correct asset percentages and fiat values - User Balances", async () => {
       const result = await calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
@@ -167,9 +167,9 @@ describe("Allocation Functions", () => {
 
       expect(result).toEqual([
         {
+          fiatValue: "$20",
           key: "SAIL",
           percentage: "200%",
-          fiatValue: "$20",
         },
         {
           key: "WOSMO",

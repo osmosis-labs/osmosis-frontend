@@ -85,7 +85,7 @@ export function calculatePercentAndFiatValues(
   const sortedAccountCoinsResults = sort(
     account_coins_result || [],
     "cap_value",
-    "asc"
+    "desc"
   );
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
