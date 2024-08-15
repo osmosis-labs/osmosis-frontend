@@ -78,8 +78,8 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <div
       className={classNames(
-        "flex w-full max-w-container flex-row gap-12 p-8 pt-4",
-        "1.5xl:flex-col",
+        "m-auto flex w-full max-w-container space-x-12 p-8 pt-4",
+        "1.5xl:flex-col 1.5xl:space-x-0",
         "md:p-4",
         {
           "bg-osmoverse-900": !featureFlags.limitOrders,

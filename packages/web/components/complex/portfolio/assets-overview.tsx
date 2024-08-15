@@ -26,7 +26,12 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { useFormatDate } from "~/components/transactions/transaction-utils";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
+import {
+  Breakpoint,
+  useTranslation,
+  useWalletSelect,
+  useWindowSize,
+} from "~/hooks";
 import { useBridge } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -128,7 +133,7 @@ export const AssetsOverview: FunctionComponent<
   const [isChartMinimized, setIsChartMinimized] = useState(true);
 
   useEffect(() => {
-    if (isMobile) setIsChartMinimized(false);
+    if (width < Breakpoint.lg) setIsChartMinimized(false);
   }, [isMobile, width]);
 
   return isWalletLoading ? null : (
@@ -145,7 +150,7 @@ export const AssetsOverview: FunctionComponent<
         <>
           <header className="flex justify-between">
             <div className="mr-6 flex flex-col">
-              <span className="body1 md:caption text-osmoverse-300">
+              <span className="body1 text-osmoverse-300">
                 {t("assets.totalBalance")}
               </span>
 
@@ -156,7 +161,7 @@ export const AssetsOverview: FunctionComponent<
                 isLoaded={isTotalValueFetched}
               >
                 {isMobile ? (
-                  <h5>{totalDisplayValue?.toString()}</h5>
+                  <h4>{totalDisplayValue?.toString()}</h4>
                 ) : (
                   <h3>{totalDisplayValue?.toString()}</h3>
                 )}
@@ -176,7 +181,7 @@ export const AssetsOverview: FunctionComponent<
               </SkeletonLoader>
               <div className="flex items-center gap-3 pt-6">
                 <Button
-                  className="subtitle-1 flex h-[48px] items-center gap-2 !rounded-full"
+                  className="flex h-[48px] !w-[125px] items-center gap-2 !rounded-full !p-0"
                   onClick={() => startBridge({ direction: "deposit" })}
                 >
                   <Icon id="deposit" height={16} width={16} />
@@ -185,7 +190,7 @@ export const AssetsOverview: FunctionComponent<
                   </div>
                 </Button>
                 <Button
-                  className="subtitle-1 group flex h-[48px] items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+                  className="group flex h-[48px] !w-[94px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
                   onClick={fiatRampSelection}
                 >
                   <CreditCardIcon
@@ -199,11 +204,16 @@ export const AssetsOverview: FunctionComponent<
                   <span className="subtitle1">{t("portfolio.buy")}</span>
                 </Button>
                 <Button
-                  className="subtitle-1  flex h-[48px] items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:!bg-osmoverse-800"
+                  className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
                   onClick={() => startBridge({ direction: "withdraw" })}
                   disabled={totalValue && totalValue.toDec().isZero()}
                 >
-                  <Icon id="withdraw" height={16} width={16} />
+                  <Icon
+                    id="withdraw"
+                    height={16}
+                    width={16}
+                    className="!h-4 !w-4"
+                  />
                   <div className="subtitle1">
                     {t("assets.table.withdrawButton")}
                   </div>
@@ -218,12 +228,11 @@ export const AssetsOverview: FunctionComponent<
               leave="transition ease-out duration-500"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
-              // className="max-w-[20rem] grow"
               className={classNames(
-                "mt-auto flex h-[156px] flex-col items-end",
-                "w-[344px] min-w-[344px]",
-                "xl:w-[383px] xl:min-w-[383px]",
-                "lg:w-[312px] lg:min-w-[312px]"
+                "mt-auto flex h-[156px] w-full flex-col items-end",
+                "w-full max-w-[344px]",
+                "xl:w-[383px] xl:max-w-[383px]",
+                "lg:w-[312px] lg:max-w-[312px]"
               )}
               as="div"
             >
