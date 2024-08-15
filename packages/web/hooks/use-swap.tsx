@@ -983,14 +983,14 @@ function getSwapTxParameters({
   tokenInCoinMinimalDenom: string;
   tokenOutCoinDecimals: number;
 }) {
-  if (!quote) {
+  if (isNil(quote)) {
     throw new Error(
       "User input should be disabled if no route is found or is being generated"
     );
   }
-  if (!coinAmount) throw new Error("No input");
-  if (!tokenInCoinMinimalDenom) throw new Error("No from asset");
-  if (!tokenOutCoinDecimals) throw new Error("No to asset");
+  if (isNil(coinAmount)) throw new Error("No input");
+  if (isNil(tokenInCoinMinimalDenom)) throw new Error("No from asset");
+  if (isNil(tokenOutCoinDecimals)) throw new Error("No to asset");
 
   /**
    * Prepare swap data
@@ -1221,7 +1221,14 @@ function useQueryRouterBestQuote(
       userOsmoAddress: account?.address,
     });
     return messages;
-  }, [bestData]);
+  }, [
+    account?.address,
+    bestData,
+    input.maxSlippage,
+    input.tokenIn.coinMinimalDenom,
+    input.tokenInAmount,
+    input.tokenOut.coinDecimals,
+  ]);
 
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
