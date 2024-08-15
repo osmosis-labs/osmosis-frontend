@@ -12,9 +12,7 @@
         "public/tokens/generated/**",
         "tsconfig.tsbuildinfo"
       ],
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
     },
     "lint": {},
     "lint:fix": {},
@@ -22,22 +20,16 @@
       "persistent": true
     },
     "start": {
-      "dependsOn": [
-        "build"
-      ]
+      "dependsOn": ["build"]
     },
     "clean": {
       "cache": false
     },
     "test": {
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
     },
     "test:e2e": {
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": ["^build"]
     },
     "analyze": {}
   }
