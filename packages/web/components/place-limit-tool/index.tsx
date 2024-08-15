@@ -99,12 +99,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [{ from, quote, tab, type }, set] = useQueryStates({
-      from: parseAsString.withDefault(
-        !!initialBaseDenom ? initialBaseDenom : "ATOM"
-      ),
-      quote: parseAsString.withDefault(
-        !!initialQuoteDenom ? initialQuoteDenom : "USDC"
-      ),
+      from: parseAsString.withDefault(initialBaseDenom || "ATOM"),
+      quote: parseAsString.withDefault(initialQuoteDenom || "USDC"),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,

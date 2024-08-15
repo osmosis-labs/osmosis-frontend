@@ -71,13 +71,11 @@ export const PriceSelector = memo(
     const [tab, setTab] = useQueryState("tab");
     const [quote] = useQueryState(
       "quote",
-      parseAsString.withDefault(
-        !!initialQuoteDenom ? initialQuoteDenom : "USDC"
-      )
+      parseAsString.withDefault(initialQuoteDenom || "USDC")
     );
     const [base, setBase] = useQueryState(
       "from",
-      parseAsString.withDefault(!!initialBaseDenom ? initialBaseDenom : "ATOM")
+      parseAsString.withDefault(initialBaseDenom || "ATOM")
     );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
