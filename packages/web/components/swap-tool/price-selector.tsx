@@ -35,7 +35,7 @@ const VALID_QUOTES: MainnetAssetSymbols[] = [
   "USDC.sol.wh",
   "USDC.eth.grv",
   "USDC.eth.wh",
-  "USDC.matic.axl",
+  "USDC.e.matic.axl",
   "USDC.avax.axl",
   "USDC.eth.axl",
   "USDT.eth.grv",
