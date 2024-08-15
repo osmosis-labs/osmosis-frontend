@@ -176,7 +176,7 @@ export const AssetsOverview: FunctionComponent<
               </SkeletonLoader>
               <div className="flex items-center gap-3 pt-6">
                 <Button
-                  className="flex items-center gap-2 !rounded-full"
+                  className="subtitle-1 flex h-[48px] items-center gap-2 !rounded-full"
                   onClick={() => startBridge({ direction: "deposit" })}
                 >
                   <Icon id="deposit" height={16} width={16} />
@@ -185,7 +185,7 @@ export const AssetsOverview: FunctionComponent<
                   </div>
                 </Button>
                 <Button
-                  className="group flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+                  className="subtitle-1 group flex h-[48px] items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
                   onClick={fiatRampSelection}
                 >
                   <CreditCardIcon
@@ -199,7 +199,7 @@ export const AssetsOverview: FunctionComponent<
                   <span className="subtitle1">{t("portfolio.buy")}</span>
                 </Button>
                 <Button
-                  className="flex items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:!bg-osmoverse-800"
+                  className="subtitle-1  flex h-[48px] items-center gap-2 !rounded-full !bg-osmoverse-825 text-wosmongton-200 hover:!bg-osmoverse-800"
                   onClick={() => startBridge({ direction: "withdraw" })}
                   disabled={totalValue && totalValue.toDec().isZero()}
                 >
@@ -218,11 +218,19 @@ export const AssetsOverview: FunctionComponent<
               leave="transition ease-out duration-500"
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
-              className="max-w-[20rem] grow"
+              // className="max-w-[20rem] grow"
+              className={classNames(
+                "mt-auto flex h-[156px] flex-col items-end",
+                "w-[344px] min-w-[344px]",
+                "xl:w-[383px] xl:min-w-[383px]",
+                "lg:w-[312px] lg:min-w-[312px]"
+              )}
               as="div"
             >
               <button
-                className="group relative flex h-[12.5rem] w-full cursor-pointer flex-col overflow-hidden rounded-[1.25rem] bg-opacity-10 pt-3 hover:bg-osmoverse-900"
+                className={classNames(
+                  "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
+                )}
                 onClick={() => setIsChartMinimized(false)}
               >
                 <PortfolioHistoricalChartMinimized

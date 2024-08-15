@@ -78,7 +78,7 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <div
       className={classNames(
-        "mx-auto flex w-full max-w-container flex-row gap-12 p-8 pt-4",
+        "flex w-full max-w-container flex-row gap-12 p-8 pt-4",
         "1.5xl:flex-col",
         "md:p-4",
         {
