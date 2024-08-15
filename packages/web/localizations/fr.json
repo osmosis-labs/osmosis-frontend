@@ -95,7 +95,8 @@
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #{poolId}"
+    "goToPool": "Aller à la piscine #{poolId}",
+    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support."
   },
   "copied": "Copié!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "Réinitialiser les filtres",
     "saveFilters": "Enregistrer les filtres",
     "rewards": "Récompenses",
-    "estimatedInYearlyRewards": "Estimé en récompenses annuelles",
     "availableToClaim": "disponible pour réclamer",
     "claimAllRewards": "Réclamez toutes les récompenses",
     "join": "Rejoindre",

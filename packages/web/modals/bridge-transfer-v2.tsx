@@ -9,6 +9,7 @@ import type {
   SourceChainTokenConfig,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { Currency } from "@osmosis-labs/types";
 import {
   AxelarSourceChain,
@@ -441,7 +442,7 @@ export const TransferContent: FunctionComponent<
   const feeConfig = useFakeFeeConfig(
     chainStore,
     osmosisChainId,
-    osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
+    makeIBCTransferMsg.gas ?? 0
   );
 
   // WITHDRAW

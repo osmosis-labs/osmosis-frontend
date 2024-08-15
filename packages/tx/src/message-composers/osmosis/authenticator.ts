@@ -1,6 +1,6 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
+import { getOsmosisCodec } from "../../codec";
 
-export function makeAddAuthenticatorMsg({
+export async function makeAddAuthenticatorMsg({
   type,
   data,
   sender,
@@ -9,6 +9,7 @@ export function makeAddAuthenticatorMsg({
   data: Uint8Array;
   sender: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.smartaccount.v1beta1.MessageComposer.withTypeUrl.addAuthenticator(
     {
       data,
@@ -18,13 +19,14 @@ export function makeAddAuthenticatorMsg({
   );
 }
 
-export function makeRemoveAuthenticatorMsg({
+export async function makeRemoveAuthenticatorMsg({
   id,
   sender,
 }: {
   id: bigint;
   sender: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.smartaccount.v1beta1.MessageComposer.withTypeUrl.removeAuthenticator(
     {
       id,

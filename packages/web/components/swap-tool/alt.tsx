@@ -545,8 +545,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   (account?.walletStatus === WalletStatus.Connected &&
                     (swapState.inAmountInput.isEmpty ||
                       !Boolean(swapState.quote) ||
+                      isSwapToolLoading ||
                       Boolean(swapState.error) ||
-                      account?.txTypeInProgress !== ""))
+                      (Boolean(swapState.networkFeeError) &&
+                        !swapState.hasOverSpendLimitError)))
                 }
                 isLoading={
                   /**
@@ -575,8 +577,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 data-testid="trade-button-swap"
               >
                 <h6>
-                  {account?.walletStatus === WalletStatus.Connected ||
-                  isSwapToolLoading
+                  {account?.walletStatus === WalletStatus.Connected
                     ? buttonText
                     : t("connectWallet")}
                 </h6>

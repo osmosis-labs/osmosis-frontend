@@ -16,14 +16,7 @@ import type { Chain } from "@osmosis-labs/types";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
-import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import type { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
 
 import { getSumTotalSpenderCoinsSpent } from "./events";
@@ -173,6 +166,11 @@ export async function generateCosmosUnsignedTx({
   });
 
   const sequence: number = parseSequenceFromAccount(account);
+  const [{ SignMode }, { TxBody, TxRaw, AuthInfo, SignerInfo, Fee }] =
+    await Promise.all([
+      import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
 
   // create placeholder transaction document
   const rawUnsignedTx = TxRaw.encode({

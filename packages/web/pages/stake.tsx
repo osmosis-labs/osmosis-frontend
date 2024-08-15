@@ -1,6 +1,7 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
 import { BondStatus } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -86,7 +87,7 @@ export const Staking: React.FC = observer(() => {
   const feeConfig = useFakeFeeConfig(
     chainStore,
     osmosisChainId,
-    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+    makeDelegateToValidatorSetMsg.gas || 0
   );
 
   // wallet balance

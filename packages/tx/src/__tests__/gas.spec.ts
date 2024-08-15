@@ -10,7 +10,7 @@ import {
   sendTxSimulate,
 } from "@osmosis-labs/server";
 import { ApiClientError } from "@osmosis-labs/utils";
-import { Any } from "cosmjs-types/google/protobuf/any";
+import type { Any } from "cosmjs-types/google/protobuf/any";
 
 import {
   getDefaultGasPrice,

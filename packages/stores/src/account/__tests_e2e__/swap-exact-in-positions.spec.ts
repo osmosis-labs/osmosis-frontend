@@ -568,7 +568,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         .sendSwapExactAmountInMsg(
           [{ id: queryPool!.id, tokenOutDenom }],
           {
-            currency: tokenInCurrency,
+            coinMinimalDenom: tokenInCurrency.coinMinimalDenom,
             amount: amountIn,
           },
           minAmountOut,

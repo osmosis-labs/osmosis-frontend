@@ -49,22 +49,25 @@ export const MyPositionCard: FunctionComponent<{
       }
     );
 
-  const { data: positionDetails, isLoading: isLoadingPositionDetails } =
-    api.local.concentratedLiquidity.getPositionDetails.useQuery(
-      {
-        position: position.position,
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: Boolean(account?.address),
+  const {
+    data: positionDetails,
+    isLoading: isLoadingPositionDetails,
+    isError: hasPositionDetailsError,
+  } = api.local.concentratedLiquidity.getPositionDetails.useQuery(
+    {
+      position: position.position,
+      userOsmoAddress: account?.address ?? "",
+    },
+    {
+      enabled: Boolean(account?.address),
 
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-      }
-    );
+      },
+    }
+  );
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -108,10 +111,12 @@ export const MyPositionCard: FunctionComponent<{
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
               <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
-                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
-                  {positionDetails?.spreadFactor.toString() ?? ""}{" "}
-                  {t("clPositions.spreadFactor")}
-                </span>
+                {!hasPositionDetailsError && (
+                  <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+                    {positionDetails?.spreadFactor.toString() ?? ""}{" "}
+                    {t("clPositions.spreadFactor")}
+                  </span>
+                )}
               </SkeletonLoader>
             </div>
             <SkeletonLoader
@@ -143,16 +148,18 @@ export const MyPositionCard: FunctionComponent<{
             value={formatPretty(currentValue)}
           />
           <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
-            <PositionDataGroup
-              label={t("pool.APR")}
-              value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
-                maxDecimals: 1,
-              })}
-              isSuperfluid={
-                Boolean(positionDetails?.superfluidData) &&
-                positionDetails?.status !== "outOfRange"
-              }
-            />
+            {!hasPositionDetailsError && (
+              <PositionDataGroup
+                label={t("pool.APR")}
+                value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
+                  maxDecimals: 1,
+                })}
+                isSuperfluid={
+                  Boolean(positionDetails?.superfluidData) &&
+                  positionDetails?.status !== "outOfRange"
+                }
+              />
+            )}
           </SkeletonLoader>
         </div>
       </div>
@@ -160,9 +167,11 @@ export const MyPositionCard: FunctionComponent<{
         <MyPositionCardExpandedSection
           poolId={poolId}
           position={props.position}
+          isLoadingPositionDetails={isLoadingPositionDetails}
           positionDetails={positionDetails}
           positionPerformance={positionPerformance}
           showLinkToPool={showLinkToPool}
+          hasPositionDetailsError={hasPositionDetailsError}
         />
       )}
     </div>

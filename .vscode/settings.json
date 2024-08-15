@@ -14,5 +14,6 @@
   "typescript.tsdk": "node_modules/typescript/lib",
   "search.exclude": {
     "build/": true
-  }
+  },
+  "cSpell.words": ["opentelemetry"]
 }

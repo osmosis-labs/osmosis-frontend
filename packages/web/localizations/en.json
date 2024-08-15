@@ -95,7 +95,8 @@
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
     "onePosition": "1 position",
-    "goToPool": "Go to pool #{poolId}"
+    "goToPool": "Go to pool #{poolId}",
+    "errorFetchingPositions": "Failed to fetch position details. Please try refreshing the page. If the problem persists, contact support."
   },
   "copied": "Copied!",
   "app": {
@@ -1111,7 +1112,6 @@
     "resetFilters": "Reset filters",
     "saveFilters": "Save filters",
     "rewards": "Rewards",
-    "estimatedInYearlyRewards": "Estimated in yearly rewards",
     "availableToClaim": "available to claim",
     "claimAllRewards": "Claim all rewards",
     "join": "Join",
