@@ -599,7 +599,7 @@ export function ReviewOrder({
               <RecapRow
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
-                  !isGasLoading ? (
+                  !(isGasLoading && !(!!gasAmount || !!gasError)) ? (
                     GasEstimation
                   ) : (
                     <Skeleton className="h-5 w-16" />
