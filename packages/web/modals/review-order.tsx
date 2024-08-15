@@ -599,6 +599,7 @@ export function ReviewOrder({
               <RecapRow
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
+                  // Do not show skeleton unless there has been no estimation/error yet
                   !(isGasLoading && !(!!gasAmount || !!gasError)) ? (
                     GasEstimation
                   ) : (
