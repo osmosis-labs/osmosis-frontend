@@ -144,7 +144,7 @@ export const AssetBalancesTable: FunctionComponent<{
     }
   );
 
-  const [hideDust, setHideDust] = useState(false);
+  const [hideDust, setHideDust] = useState(true);
 
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
@@ -178,8 +178,6 @@ export const AssetBalancesTable: FunctionComponent<{
             warnUnverified={showUnverifiedAssets && !asset.isVerified}
           />
         ),
-        // size: 164,
-        // maxSize: 164,
       }),
       columnHelper.accessor((row) => row, {
         id: "balance",
@@ -310,7 +308,7 @@ export const AssetBalancesTable: FunctionComponent<{
         className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
-        placeholder={t("assets.table.search")}
+        placeholder={t("portfolio.searchBalances")}
         debounce={500}
       />
       <table
@@ -435,7 +433,7 @@ export const AssetBalancesTable: FunctionComponent<{
           </p>
           <Button
             onClick={() => setHideDust((prev) => !prev)}
-            className="gap-2 !py-2 !px-4"
+            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4"
             variant="outline"
             size="lg-full"
           >
@@ -539,6 +537,7 @@ export const AssetActionsCell: AssetCellComponent<{
             variant="secondary"
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "deposit",
@@ -554,6 +553,7 @@ export const AssetActionsCell: AssetCellComponent<{
             variant="secondary"
             onClick={(e) => {
               e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "withdraw",

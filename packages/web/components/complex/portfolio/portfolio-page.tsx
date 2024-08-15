@@ -104,13 +104,13 @@ export const PortfolioPage: FunctionComponent = () => {
                 onClick={() => {
                   logEvent([
                     EventName.Portfolio.tabClicked,
-                    { section: "Your assets" },
+                    { section: "Your balances" },
                   ]);
                 }}
               >
                 {({ selected }) => (
                   <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.yourAssets")}
+                    {t("portfolio.yourBalances")}
                   </h6>
                 )}
               </Tab>

@@ -303,7 +303,9 @@
   "portfolio": {
     "buy": "Buy",
     "yourAssets": "Your assets",
+    "yourBalances": "Your balances",
     "yourPositions": "Your positions",
+    "searchBalances": "Search balances",
     "yourSuperchargedPositions": "Your Supercharged positions",
     "yourLiquidityPools": "Your liquidity pools",
     "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
