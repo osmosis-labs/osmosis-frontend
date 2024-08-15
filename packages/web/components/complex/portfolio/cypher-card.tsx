@@ -1,8 +1,10 @@
 import Link from "next/link";
 
 import { Icon } from "~/components/assets";
+import { useTranslation } from "~/hooks";
 
 export const CypherCard = () => {
+  const { t } = useTranslation();
   return (
     <Link
       href="https://osmosis.cyphercard.io"
@@ -14,11 +16,15 @@ export const CypherCard = () => {
           <Icon id="cypher-card" />
         </div>
         <div className="flex flex-col gap-1">
-          <p className="subtitle1 text-white-full">Spend with OSMO</p>
-          <p className="body2 text-osmoverse-300">Order your card now</p>
+          <p className="subtitle1 text-white-full">
+            {t("portfolio.cypherSpend")}
+          </p>
+          <p className="body2 text-osmoverse-300">
+            {t("portfolio.cypherOrder")}
+          </p>
         </div>
         <div className="caption ml-auto rounded-xl bg-osmoverse-800 p-1 px-2 text-osmoverse-300">
-          Beta
+          {t("portfolio.cypherBeta")}
         </div>
       </div>
     </Link>

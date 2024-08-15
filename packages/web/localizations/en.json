@@ -326,7 +326,10 @@
     "seeAll": "See all",
     "show": "Show",
     "hide": "Hide",
-    "hidden": "Hidden"
+    "hidden": "Hidden",
+    "cypherSpend": "Osmosis Pay",
+    "cypherOrder": "Order your card now",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Buy tokens",
   "components": {
