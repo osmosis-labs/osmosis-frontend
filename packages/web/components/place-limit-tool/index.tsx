@@ -614,7 +614,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
             priceOverride={
-              type === "limit" ? swapState.priceState.priceFiat : undefined
+              type === "limit"
+                ? new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    swapState.priceState.spotPrice
+                  )
+                : undefined
             }
           />
         </div>
