@@ -58,13 +58,13 @@ export const PortfolioHistoricalChart = ({
             }}
             onPointerOut={resetDataPoint}
           />
-          <div className="my-3 flex justify-between">
+          <div className="my-3 flex h-8 justify-between">
             <PortfolioHistoricalRangeButtonGroup
               priceRange={range}
               setPriceRange={setRange}
             />
             <IconButton
-              className="border border-osmoverse-700 py-0 md:hidden"
+              className="!h-8 !w-8 border border-osmoverse-700 py-0 md:hidden"
               aria-label="Open main menu dropdown"
               icon={
                 <Icon
