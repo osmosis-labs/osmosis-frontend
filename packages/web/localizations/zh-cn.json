@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "买",
     "yourAssets": "您的资产",
+    "yourBalances": "您的余额",
     "yourPositions": "您的职位",
+    "searchBalances": "搜索余额",
     "yourSuperchargedPositions": "您的超级职位",
     "yourLiquidityPools": "您的流动资金池",
     "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
@@ -326,6 +328,8 @@
     "show": "展示",
     "hide": "隐藏",
     "hidden": "隐",
+    "cypherSpend": "渗透支付",
+    "cypherOrder": "立即订购您的卡",
     "cypherBeta": "测试版"
   },
   "buyTokens": "购买代币",

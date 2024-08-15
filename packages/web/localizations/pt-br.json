@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "Comprar",
     "yourAssets": "Seus ativos",
+    "yourBalances": "Seus saldos",
     "yourPositions": "Suas posições",
+    "searchBalances": "Pesquisar saldos",
     "yourSuperchargedPositions": "Suas posições sobrecarregadas",
     "yourLiquidityPools": "Seus pools de liquidez",
     "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
@@ -326,6 +328,8 @@
     "show": "Mostrar",
     "hide": "Esconder",
     "hidden": "Escondido",
+    "cypherSpend": "Pagamento por osmose",
+    "cypherOrder": "Peça já o seu cartão",
     "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar tokens",

@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "खरीदना",
     "yourAssets": "आपकी संपत्ति",
+    "yourBalances": "आपका शेष",
     "yourPositions": "आपके पद",
+    "searchBalances": "शेष राशि खोजें",
     "yourSuperchargedPositions": "आपकी सुपरचार्ज्ड स्थिति",
     "yourLiquidityPools": "आपकी तरलता पूल",
     "connectWallet": "ओस्मोसिस पर अपने बैलेंस और पोजीशन पर नज़र रखने के लिए अपने वॉलेट को कनेक्ट करें।",
@@ -326,6 +328,8 @@
     "show": "दिखाओ",
     "hide": "छिपाना",
     "hidden": "छिपा हुआ",
+    "cypherSpend": "ऑस्मोसिस पे",
+    "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
     "cypherBeta": "बीटा"
   },
   "buyTokens": "टोकन खरीदें",

@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "買う",
     "yourAssets": "あなたの資産",
+    "yourBalances": "残高",
     "yourPositions": "あなたの立場",
+    "searchBalances": "残高を検索",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
     "yourLiquidityPools": "流動性プール",
     "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
@@ -326,6 +328,8 @@
     "show": "見せる",
     "hide": "隠れる",
     "hidden": "隠れた",
+    "cypherSpend": "オズモーシスペイ",
+    "cypherOrder": "今すぐカードを注文する",
     "cypherBeta": "ベータ"
   },
   "buyTokens": "トークンを購入する",

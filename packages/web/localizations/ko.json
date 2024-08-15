@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "구입하다",
     "yourAssets": "귀하의 자산",
+    "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
+    "searchBalances": "잔액 검색",
     "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
     "yourLiquidityPools": "귀하의 유동성 풀",
     "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요.",
@@ -326,6 +328,8 @@
     "show": "보여주다",
     "hide": "숨다",
     "hidden": "숨겨진",
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
     "cypherBeta": "베타"
   },
   "buyTokens": "토큰 구매",

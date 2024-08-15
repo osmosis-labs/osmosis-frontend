@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "Cumpără",
     "yourAssets": "Activele tale",
+    "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
+    "searchBalances": "Căutați solduri",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
     "yourLiquidityPools": "Fondurile dvs. de lichiditate",
     "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis.",
@@ -326,6 +328,8 @@
     "show": "Spectacol",
     "hide": "Ascunde",
     "hidden": "Ascuns",
+    "cypherSpend": "Plată osmoză",
+    "cypherOrder": "Comanda cardul tau acum",
     "cypherBeta": "Beta"
   },
   "buyTokens": "Cumpărați jetoane",

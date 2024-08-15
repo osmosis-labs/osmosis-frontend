@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "Satın almak",
     "yourAssets": "Varlıklarınız",
+    "yourBalances": "Bakiyeleriniz",
     "yourPositions": "Pozisyonlarınız",
+    "searchBalances": "Bakiyeleri ara",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
     "yourLiquidityPools": "Likidite havuzlarınız",
     "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
@@ -326,6 +328,8 @@
     "show": "Göstermek",
     "hide": "Saklamak",
     "hidden": "Gizlenmiş",
+    "cypherSpend": "Osmoz Ödeme",
+    "cypherOrder": "Kartınızı şimdi sipariş edin",
     "cypherBeta": "Beta"
   },
   "buyTokens": "jeton satın al",

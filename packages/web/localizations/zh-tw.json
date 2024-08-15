@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "買",
     "yourAssets": "您的資產",
+    "yourBalances": "您的餘額",
     "yourPositions": "您的職位",
+    "searchBalances": "搜尋餘額",
     "yourSuperchargedPositions": "您的超級職位",
     "yourLiquidityPools": "您的流動資金池",
     "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。",
@@ -326,6 +328,8 @@
     "show": "展示",
     "hide": "隱藏",
     "hidden": "隱",
+    "cypherSpend": "滲透支付",
+    "cypherOrder": "立即訂購您的卡",
     "cypherBeta": "貝塔"
   },
   "buyTokens": "購買代幣",

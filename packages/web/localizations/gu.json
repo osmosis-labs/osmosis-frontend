@@ -304,7 +304,9 @@
   "portfolio": {
     "buy": "ખરીદો",
     "yourAssets": "તમારી સંપત્તિ",
+    "yourBalances": "તમારું બેલેન્સ",
     "yourPositions": "તમારી સ્થિતિ",
+    "searchBalances": "બેલેન્સ શોધો",
     "yourSuperchargedPositions": "તમારી સુપરચાર્જ્ડ પોઝિશન્સ",
     "yourLiquidityPools": "તમારા લિક્વિડિટી પૂલ",
     "connectWallet": "ઓસ્મોસિસ પર તમારા બેલેન્સ અને સ્થિતિને ટ્રૅક કરવાનું પ્રારંભ કરવા માટે તમારા વૉલેટને કનેક્ટ કરો.",
@@ -326,6 +328,8 @@
     "show": "બતાવો",
     "hide": "છુપાવો",
     "hidden": "છુપાયેલ",
+    "cypherSpend": "ઓસ્મોસિસ પે",
+    "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
     "cypherBeta": "બેટા"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
