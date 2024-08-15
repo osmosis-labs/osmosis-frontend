@@ -44,6 +44,9 @@ import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
+  initialBaseDenom?: string;
+  initialQuoteDenom?: string;
+  onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {
@@ -79,7 +82,12 @@ const NON_DISPLAY_ERRORS = [
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ page }: PlaceLimitToolProps) => {
+  ({
+    page,
+    initialBaseDenom = "ATOM",
+    initialQuoteDenom = "USDC",
+    onOrderSuccess,
+  }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -91,8 +99,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [{ from, quote, tab, type }, set] = useQueryStates({
-      from: parseAsString.withDefault("ATOM"),
-      quote: parseAsString.withDefault("USDC"),
+      from: parseAsString.withDefault(
+        !!initialBaseDenom ? initialBaseDenom : "ATOM"
+      ),
+      quote: parseAsString.withDefault(
+        !!initialQuoteDenom ? initialQuoteDenom : "USDC"
+      ),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,
@@ -555,7 +567,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     )}
                 </span>
               </button>
-              <PriceSelector />
+              <PriceSelector
+                initialBaseDenom={initialBaseDenom}
+                initialQuoteDenom={initialQuoteDenom}
+              />
             </AssetFieldsetFooter>
           </AssetFieldset>
           {type === "limit" && (
@@ -613,6 +628,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             setAmountSafe("fiat", "");
             setReviewOpen(false);
             setIsSendingTx(false);
+            onOrderSuccess?.(
+              swapState.baseAsset?.coinDenom,
+              swapState.quoteAsset?.coinDenom
+            );
           }}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}
