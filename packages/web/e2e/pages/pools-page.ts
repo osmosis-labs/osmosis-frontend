@@ -10,6 +10,7 @@ export class PoolsPage extends BasePage {
   readonly viewMore: Locator;
   readonly poolsLink: Locator;
   readonly balance: Locator;
+  readonly searchInput: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -19,6 +20,7 @@ export class PoolsPage extends BasePage {
     this.balance = page.locator(
       '//span[.="Total balance"]/..//h4[contains(@class, "text-osmoverse-100")]'
     );
+    this.searchInput = page.locator('//input[@id="search-input"]');
   }
 
   async goto() {
@@ -38,5 +40,11 @@ export class PoolsPage extends BasePage {
     await this.page.waitForTimeout(2000);
     await super.printUrl();
     return new PoolPage(this.page);
+  }
+
+  async searchForPool(poolName: string) {
+    await this.searchInput.fill(poolName);
+    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(2000);
   }
 }
