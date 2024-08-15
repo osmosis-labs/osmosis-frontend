@@ -49,7 +49,7 @@ export const TradeDetails = observer(
     const { t } = useTranslation();
     const routesVisDisclosure = useDisclosure();
 
-    const [outAsBase, setOutAsBase] = useState(!tab || tab === "buy");
+    const [outAsBase, setOutAsBase] = useState(tab === "buy");
 
     const [details, { height: detailsHeight }] = useMeasure<HTMLDivElement>();
 

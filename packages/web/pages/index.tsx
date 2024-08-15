@@ -16,6 +16,8 @@ export const SwapPreviousTradeKey = "swap-previous-trade";
 export type PreviousTrade = {
   sendTokenDenom: string;
   outTokenDenom: string;
+  baseDenom: string;
+  quoteDenom: string;
 };
 
 const Home = () => {
@@ -26,6 +28,9 @@ const Home = () => {
 
 const HomeNew = () => {
   const featureFlags = useFeatureFlags();
+
+  const [previousTrade, setPreviousTrade] =
+    useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -48,7 +53,11 @@ const HomeNew = () => {
         <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center md:top-0">
           <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-            <TradeTool page="Swap Page" />
+            <TradeTool
+              page="Swap Page"
+              previousTrade={previousTrade}
+              setPreviousTrade={setPreviousTrade}
+            />
           </div>
         </div>
       </div>
@@ -102,7 +111,12 @@ const HomeV1 = () => {
             useQueryParams
             useOtherCurrencies
             onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
-              setPreviousTrade({ sendTokenDenom, outTokenDenom });
+              setPreviousTrade({
+                sendTokenDenom,
+                outTokenDenom,
+                baseDenom: previousTrade?.baseDenom ?? "",
+                quoteDenom: previousTrade?.quoteDenom ?? "",
+              });
             }}
             initialSendTokenDenom={previousTrade?.sendTokenDenom}
             initialOutTokenDenom={previousTrade?.outTokenDenom}
