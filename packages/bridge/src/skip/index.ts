@@ -306,47 +306,44 @@ export class SkipBridgeProvider implements BridgeProvider {
             ? counterparty.address
             : counterparty.sourceDenom;
         const skipCounterparty = assets[counterparty.chainId]?.assets.find(
-          (a) => a.denom.toLowerCase() === address.toLowerCase()
+          (a) =>
+            counterparty.chainType === "evm" &&
+            address === NativeEVMTokenConstantAddress
+              ? /**
+                 * Skip labels native tokens as "native" and uses the symbol of the counterparty
+                 */
+                a.denom.toLowerCase() === address.toLowerCase() ||
+                (a.denom.includes("native") &&
+                  a.symbol?.toLowerCase() === counterparty.symbol.toLowerCase())
+              : a.denom.toLowerCase() === address.toLowerCase()
         );
+
         if (!skipCounterparty) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === address.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId, address, {
-              chainId: c.chainId,
-              chainType: "cosmos",
-              address: address,
-              denom: c.symbol,
-              decimals: c.decimals,
-              coinGeckoId: skipCounterparty.coingecko_id,
-            });
-          }
+          foundVariants.setAsset(c.chainId, address, {
+            chainId: c.chainId,
+            chainType: "cosmos",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
+
         if (counterparty.chainType === "evm") {
           const c = counterparty as EVMCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === address.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId.toString(), address, {
-              chainId: c.chainId,
-              chainType: "evm",
-              address: address,
-              denom: c.symbol,
-              decimals: c.decimals,
-              coinGeckoId: skipCounterparty.coingecko_id,
-            });
-          }
+          foundVariants.setAsset(c.chainId.toString(), address, {
+            chainId: c.chainId,
+            chainType: "evm",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
       }
 

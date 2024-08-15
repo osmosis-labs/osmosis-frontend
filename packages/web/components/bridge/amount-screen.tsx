@@ -586,7 +586,6 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
-        checkChainAndConnectWallet(firstChain);
       }
     }, [
       checkChainAndConnectWallet,
@@ -654,6 +653,7 @@ export const AmountScreen = observer(
         ? !fromChain || !fromAsset
         : !toChain || !toAsset);
 
+    console.log(counterpartySupportedAssetsByChainId);
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
         ? !isNil(fromAsset) &&
