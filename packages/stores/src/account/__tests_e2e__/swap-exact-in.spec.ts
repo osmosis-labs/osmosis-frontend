@@ -74,11 +74,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           .sendSwapExactAmountInMsg(
             [{ id: queryPool!.id, tokenOutDenom: "ubar" }],
             {
-              currency: {
-                coinDenom: "FOO",
-                coinMinimalDenom: "ufoo",
-                coinDecimals: 6,
-              },
+              coinMinimalDenom: "ufoo",
               amount: "10",
             },
             "1",
@@ -101,11 +97,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
           .sendSwapExactAmountInMsg(
             [{ id: queryPool!.id, tokenOutDenom: "uatom" }],
             {
-              currency: {
-                coinDenom: "ION",
-                coinMinimalDenom: "uion",
-                coinDecimals: 6,
-              },
+              coinMinimalDenom: "uion",
               amount: "10",
             },
             "1",
@@ -151,7 +143,10 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
               tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
             },
           ],
-          tokenIn,
+          {
+            coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+            amount: tokenIn.amount,
+          },
           "1",
           undefined,
           undefined,
@@ -244,7 +239,10 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
               tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
             },
           ],
-          tokenIn,
+          {
+            coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+            amount: tokenIn.amount,
+          },
           "1",
           undefined,
           undefined,
@@ -330,7 +328,10 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
               tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
             },
           ],
-          tokenIn,
+          {
+            coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+            amount: tokenIn.amount,
+          },
           "1",
           undefined,
           undefined,
@@ -432,7 +433,10 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
                 tokenOutDenom: tokenOutCurrency.coinMinimalDenom,
               },
             ],
-            tokenIn,
+            {
+              coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+              amount: tokenIn.amount,
+            },
             outWithLess.toString(),
             undefined,
             undefined,
@@ -527,7 +531,9 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
             })),
             tokenInAmount: route.initialAmount.toString(),
           })),
-          tokenIn,
+          {
+            coinMinimalDenom: tokenIn.currency.coinMinimalDenom,
+          },
           amount.toString(),
           undefined,
           undefined,

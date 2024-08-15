@@ -1,7 +1,7 @@
-import { Msg, StdFee } from "@cosmjs/launchpad";
-import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
+import type { Msg, StdFee } from "@cosmjs/launchpad";
+import type { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
 import { Dec } from "@keplr-wallet/unit";
-import { KeplrSignOptions } from "@keplr-wallet/types";
+import type { KeplrSignOptions } from "@keplr-wallet/types";
 
 export type ProtoMsgsOrWithAminoMsgs = {
   aminoMsgs?: Msg[];

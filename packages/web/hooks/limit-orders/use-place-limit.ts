@@ -1,8 +1,9 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
+import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage } from "~/config";
@@ -251,10 +252,10 @@ export const usePlaceLimit = ({
     isMarket,
   ]);
 
-  const encodedMsg = useMemo(() => {
+  const { value: encodedMsg } = useAsync(async () => {
     if (!placeLimitMsg) return;
 
-    return cosmwasmMsgOpts.executeWasm.messageComposer({
+    return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
       msg: Buffer.from(JSON.stringify(placeLimitMsg)),

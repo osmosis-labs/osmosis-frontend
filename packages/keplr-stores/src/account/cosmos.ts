@@ -1,12 +1,6 @@
 import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
 import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
-import {
-  BroadcastMode,
-  makeSignDoc,
-  Msg,
-  StdFee,
-  StdSignDoc,
-} from "@cosmjs/launchpad";
+import type { BroadcastMode, Msg, StdFee, StdSignDoc } from "@cosmjs/launchpad";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
 import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
@@ -535,6 +529,7 @@ export class CosmosAccountImpl {
         );
       }
 
+      const { makeSignDoc } = await import("@cosmjs/launchpad");
       const signDoc = makeSignDoc(
         aminoMsgs,
         fee,
