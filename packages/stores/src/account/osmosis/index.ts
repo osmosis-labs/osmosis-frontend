@@ -1196,6 +1196,80 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   *
+   * @param routes Routes to split swap through.
+   * @param tokenIn Token swapping in.
+   * @param tokenOutMinAmount Minimum amount of token out expected.
+   * @param numTicksCrossed Number of CL ticks crossed for swap quote.
+   * @param memo Transaction memo.
+   * @param TxFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendSplitRouteSwapExactAmountOutMsg(
+    routes: {
+      pools: {
+        id: string;
+        tokenInDenom: string;
+      }[];
+      tokenOutAmount: string;
+    }[],
+    tokenOut: { currency: Currency },
+    tokenInMaxAmount: string,
+    memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const msg = this.msgOpts.splitRouteSwapExactAmountOut.messageComposer({
+      routes,
+      tokenOut,
+      tokenInMaxAmount,
+      userOsmoAddress: this.address,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "splitRouteSwapExactAmountOut",
+      [msg],
+      memo,
+      signOptions?.fee,
+      signOptions,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((_bal) => {
+              //TODO: DOES THIS NEED REFRESHED?
+              // if (
+              //   bal.currency.coinMinimalDenom ===
+              //     tokenIn.currency.coinMinimalDenom ||
+              //   routes
+              //     .flatMap(({ pools }) => pools)
+              //     .find(
+              //       (pool) =>
+              //         pool.tokenOutDenom === bal.currency.coinMinimalDenom
+              //     )
+              // ) {
+              //   bal.waitFreshResponse();
+              // }
+            });
+          routes
+            .flatMap(({ pools }) => pools)
+            .forEach(({ id: poolId }) => {
+              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
+            });
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
    * Perform swap through one or more pools, with a desired input token.
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
@@ -1311,7 +1385,6 @@ export class OsmosisAccountImpl {
             };
           }),
         });
-
         return [msg];
       },
       memo,

@@ -8,7 +8,9 @@ import {
 import type { RouterKey } from "@osmosis-labs/server";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
+  makeSplitRoutesSwapExactAmountOutMsg,
   makeSwapExactAmountInMsg,
+  makeSwapExactAmountOutMsg,
   SignOptions,
 } from "@osmosis-labs/stores";
 import { Currency, MinimalAsset } from "@osmosis-labs/types";
@@ -121,12 +123,14 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
+    quoteType,
   });
 
   const outAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets: reverseSwapAssets,
+    quoteType,
   });
 
   // load flags
@@ -376,8 +380,6 @@ export function useSwap(
             );
           }
 
-          const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
           const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
@@ -458,46 +460,103 @@ export function useSwap(
           /**
            * Send messages to account
            */
-          if (routes.length === 1) {
-            const { pools } = routes[0];
-            account.osmosis
-              .sendSwapExactAmountInMsg(
-                pools,
-                tokenIn,
-                tokenOutMinAmount,
-                undefined,
-                signOptions,
-                ({ code }) => {
-                  if (code)
-                    reject(
-                      new Error("Failed to send swap exact amount in message")
-                    );
-                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
-                }
-              )
-              .catch(reject);
-          } else if (routes.length > 1) {
-            account.osmosis
-              .sendSplitRouteSwapExactAmountInMsg(
-                routes,
-                tokenIn,
-                tokenOutMinAmount,
-                undefined,
-                signOptions,
-                ({ code }) => {
-                  if (code)
-                    reject(
-                      new Error(
-                        "Failed to send split route swap exact amount in message"
-                      )
-                    );
-                  else resolve("multiroute");
-                }
-              )
-              .catch(reject);
+          if (quoteType === "out-given-in") {
+            const { routes, tokenIn, tokenOutMinAmount } = txParams;
+            const typedRoutes = routes as SwapTxRouteOutGivenIn[];
+            if (routes.length === 1) {
+              const { pools } = typedRoutes[0];
+              account.osmosis
+                .sendSwapExactAmountInMsg(
+                  pools,
+                  tokenIn!,
+                  tokenOutMinAmount!,
+                  undefined,
+                  signOptions,
+                  ({ code }) => {
+                    if (code)
+                      reject(
+                        new Error("Failed to send swap exact amount in message")
+                      );
+                    else resolve(pools.length === 1 ? "exact-in" : "multihop");
+                  }
+                )
+                .catch(reject);
+            } else if (routes.length > 1) {
+              account.osmosis
+                .sendSplitRouteSwapExactAmountInMsg(
+                  typedRoutes,
+                  tokenIn!,
+                  tokenOutMinAmount!,
+                  undefined,
+                  signOptions,
+                  ({ code }) => {
+                    if (code)
+                      reject(
+                        new Error(
+                          "Failed to send split route swap exact amount in message"
+                        )
+                      );
+                    else resolve("multiroute");
+                  }
+                )
+                .catch(reject);
+            } else {
+              // should not be possible because button should be disabled
+              reject(new Error("No routes given"));
+            }
           } else {
-            // should not be possible because button should be disabled
-            reject(new Error("No routes given"));
+            const { routes, tokenOut, tokenInMaxAmount } = txParams;
+            const typedRoutes = routes as SwapTxRouteInGivenOut[];
+            if (routes.length === 1) {
+              const { pools } = typedRoutes[0];
+              account.osmosis
+                .sendSwapExactAmountOutMsg(
+                  pools,
+                  {
+                    currency: tokenOut!.currency,
+                    amount: new Dec(tokenOut!.amount ?? "0")
+                      .quo(
+                        DecUtils.getTenExponentNInPrecisionRange(
+                          tokenOut!.currency.coinDecimals
+                        )
+                      )
+                      .toString(),
+                  },
+                  tokenInMaxAmount!,
+                  undefined,
+                  signOptions,
+                  ({ code }) => {
+                    if (code)
+                      reject(
+                        new Error("Failed to send swap exact amount in message")
+                      );
+                    else resolve(pools.length === 1 ? "exact-in" : "multihop");
+                  }
+                )
+                .catch(reject);
+            } else if (routes.length > 1) {
+              account.osmosis
+                .sendSplitRouteSwapExactAmountOutMsg(
+                  typedRoutes,
+                  tokenOut!,
+                  tokenInMaxAmount!,
+                  undefined,
+                  signOptions,
+                  ({ code }) => {
+                    if (code)
+                      reject(
+                        new Error(
+                          "Failed to send split route swap exact amount in message"
+                        )
+                      );
+                    else resolve("multiroute");
+                  }
+                )
+                .catch(reject);
+            } else {
+              // should not be possible because button should be disabled
+              reject(new Error("No routes given"));
+            }
           }
         }
       ).finally(() => inAmountInput.reset()),
@@ -867,10 +926,12 @@ export function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
+  quoteType = "out-given-in",
 }: {
   swapAssets: ReturnType<typeof useSwapAssets>;
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
+  quoteType?: QuoteType;
 }) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -922,7 +983,8 @@ export function useSwapAmountInput({
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
-    Boolean(quoteForCurrentBalance);
+    Boolean(quoteForCurrentBalance) &&
+    quoteType === "out-given-in";
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
@@ -1099,6 +1161,24 @@ type QuoteInGivenOut =
 type RouteOutGivenIn = QuoteOutGivenIn["split"][number];
 type RouteInGivenOut = QuoteInGivenOut["split"][number];
 
+type SwapTxPoolOutGivenIn = {
+  id: string;
+  tokenOutDenom: string;
+};
+type SwapTxRouteOutGivenIn = {
+  pools: SwapTxPoolOutGivenIn[];
+  tokenInAmount: string;
+};
+
+type SwapTxPoolInGivenOut = {
+  id: string;
+  tokenInDenom: string;
+};
+type SwapTxRouteInGivenOut = {
+  pools: SwapTxPoolInGivenOut[];
+  tokenOutAmount: string;
+};
+
 function getSwapTxParameters({
   coinAmount,
   maxSlippage,
@@ -1131,88 +1211,87 @@ function getSwapTxParameters({
   if (!fromAsset) throw new Error("No from asset");
   if (!toAsset) throw new Error("No to asset");
 
-  /**
-   * Prepare swap data
-   */
+  if (quoteType === "out-given-in") {
+    const routes: SwapTxRouteOutGivenIn[] = [];
 
-  type Pool = {
-    id: string;
-    tokenOutDenom: string;
-  };
-  type Route = {
-    pools: Pool[];
-    tokenInAmount: string;
-  };
+    for (const route of quote.split) {
+      const pools: SwapTxPoolOutGivenIn[] = [];
+      const typedRoute = route as RouteOutGivenIn;
+      for (let i = 0; i < route.pools.length; i++) {
+        const pool = route.pools[i];
 
-  const routes: Route[] = [];
+        pools.push({
+          id: pool.id,
+          tokenOutDenom: typedRoute.tokenOutDenoms[i],
+        });
+      }
 
-  for (const route of quote.split) {
-    const pools: Pool[] = [];
-
-    for (let i = 0; i < route.pools.length; i++) {
-      const pool = route.pools[i];
-
-      const tokenOutDenom = (() => {
-        if ((route as RouteOutGivenIn).tokenOutDenoms)
-          return (route as RouteOutGivenIn).tokenOutDenoms[i];
-        if (
-          (route as RouteInGivenOut).tokenInDenoms &&
-          i < (route as RouteInGivenOut).tokenInDenoms.length - 1
-        )
-          return (route as RouteInGivenOut).tokenInDenoms[i + 1];
-
-        if (
-          (route as RouteInGivenOut).tokenInDenoms &&
-          i === (route as RouteInGivenOut).tokenInDenoms.length - 1
-        )
-          return (route as RouteInGivenOut).tokenOutDenom;
-
-        throw new Error("No tokenOutDenoms or tokenInDenoms");
-      })();
-      pools.push({
-        id: pool.id,
-        tokenOutDenom,
+      routes.push({
+        pools: pools,
+        tokenInAmount: route.initialAmount.toString(),
       });
     }
 
-    routes.push({
-      pools: pools,
-      tokenInAmount: route.initialAmount.toString(),
-    });
+    /** In amount converted to integer (remove decimals) */
+    const tokenIn = {
+      currency: fromAsset as Currency,
+      amount: coinAmount,
+    };
+
+    /** Out amount with slippage included */
+    const tokenOutMinAmount = quote.amount
+      .toDec()
+      .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
+      .mul(new Dec(1).sub(maxSlippage))
+      .truncate()
+      .toString();
+
+    return {
+      routes,
+      tokenIn,
+      tokenOutMinAmount,
+    };
+  } else {
+    const routes: SwapTxRouteInGivenOut[] = [];
+
+    for (const route of quote.split) {
+      const pools: SwapTxPoolInGivenOut[] = [];
+      const typedRoute = route as RouteInGivenOut;
+
+      for (let i = 0; i < route.pools.length; i++) {
+        const pool = route.pools[i];
+        pools.push({
+          id: pool.id,
+          tokenInDenom: typedRoute.tokenInDenoms[i],
+        });
+      }
+
+      routes.push({
+        pools: pools,
+        tokenOutAmount: route.initialAmount.toString(),
+      });
+    }
+
+    /** In amount converted to integer (remove decimals) */
+    const tokenOut = {
+      currency: toAsset as Currency,
+      amount: coinAmount,
+    };
+
+    /** Out amount with slippage included */
+    const tokenInMaxAmount = quote.amount
+      .toDec()
+      .mul(DecUtils.getTenExponentNInPrecisionRange(fromAsset.coinDecimals))
+      .mul(new Dec(1).add(maxSlippage))
+      .truncate()
+      .toString();
+
+    return {
+      routes,
+      tokenOut,
+      tokenInMaxAmount,
+    };
   }
-
-  /** In amount converted to integer (remove decimals) */
-  const tokenIn = {
-    currency: fromAsset as Currency,
-    amount:
-      quoteType === "out-given-in"
-        ? coinAmount
-        : quote.amount
-            .toDec()
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(fromAsset.coinDecimals)
-            )
-            .truncate()
-            .toString(),
-  };
-
-  /** Out amount with slippage included */
-  const tokenOutMinAmount = (
-    quoteType === "out-given-in"
-      ? quote.amount
-          .toDec()
-          .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
-      : new Dec(coinAmount)
-  )
-    .mul(new Dec(1).sub(maxSlippage))
-    .truncate()
-    .toString();
-
-  return {
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-  };
 }
 
 function getSwapMessages({
@@ -1257,29 +1336,61 @@ function getSwapMessages({
     return undefined;
   }
 
-  const { routes, tokenIn, tokenOutMinAmount } = txParams;
+  if (quoteType === "out-given-in") {
+    const { routes, tokenIn, tokenOutMinAmount } = txParams;
 
-  const { pools } = routes[0];
+    const typedRoutes = routes as SwapTxRouteOutGivenIn[];
+    const { pools } = typedRoutes[0];
 
-  if (routes.length < 1) {
-    throw new Error("Routes are empty");
+    if (routes.length < 1) {
+      throw new Error("Routes are empty");
+    }
+
+    return [
+      routes.length === 1
+        ? makeSwapExactAmountInMsg({
+            pools,
+            tokenIn: tokenIn!,
+            tokenOutMinAmount: tokenOutMinAmount!,
+            userOsmoAddress,
+          })
+        : makeSplitRoutesSwapExactAmountInMsg({
+            routes: typedRoutes,
+            tokenIn: tokenIn!,
+            tokenOutMinAmount: tokenOutMinAmount!,
+            userOsmoAddress,
+          }),
+    ];
   }
 
-  return [
-    routes.length === 1
-      ? makeSwapExactAmountInMsg({
-          pools,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        })
-      : makeSplitRoutesSwapExactAmountInMsg({
-          routes,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        }),
-  ];
+  if (quoteType === "in-given-out") {
+    const { routes, tokenOut, tokenInMaxAmount } = txParams;
+
+    const typedRoutes = routes as SwapTxRouteInGivenOut[];
+    const { pools } = typedRoutes[0];
+
+    if (routes.length < 1) {
+      throw new Error("Routes are empty");
+    }
+
+    return [
+      routes.length === 1
+        ? makeSwapExactAmountOutMsg({
+            pools,
+            tokenOut: tokenOut!,
+            tokenInMaxAmount: tokenInMaxAmount!,
+            userOsmoAddress,
+          })
+        : makeSplitRoutesSwapExactAmountOutMsg({
+            routes: typedRoutes,
+            tokenOut: tokenOut!,
+            tokenInMaxAmount: tokenInMaxAmount!,
+            userOsmoAddress,
+          }),
+    ];
+  }
+
+  throw new Error(`Unsupported quote type ${quoteType}`);
 }
 
 export type QuoteType = "out-given-in" | "in-given-out";

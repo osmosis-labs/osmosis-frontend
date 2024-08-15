@@ -4,6 +4,7 @@ import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,
   makeSplitRoutesSwapExactAmountInMsg,
+  makeSplitRoutesSwapExactAmountOutMsg,
   makeSwapExactAmountInMsg,
 } from "../message-composers";
 import { createMsgOpts } from "../utils";
@@ -42,6 +43,9 @@ export const osmosisMsgOpts = createMsgOpts({
   },
   swapExactAmountIn: {
     messageComposer: makeSwapExactAmountInMsg,
+  },
+  splitRouteSwapExactAmountOut: {
+    messageComposer: makeSplitRoutesSwapExactAmountOutMsg,
   },
   swapExactAmountOut: {
     messageComposer:

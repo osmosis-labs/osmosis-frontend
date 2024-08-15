@@ -127,7 +127,7 @@ export function useEstimateTxFees({
     }
     return queryResult.error;
   }, [queryResult.error]);
-
+  if (queryResult.error) console.log(messages, queryResult.error);
   return { ...queryResult, error: specificError };
 }
 
