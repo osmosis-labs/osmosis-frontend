@@ -157,14 +157,14 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests in US
+      - name: Run Swap tests in EU
         env:
           BASE_URL: "https://app.osmosis.zone"
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-          USE_TEST_PROXY: "true"
+          USE_TEST_PROXY: "use"
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -200,14 +200,14 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests in US
+      - name: Run Swap tests in SG
         env:
           BASE_URL: "https://app.osmosis.zone"
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          USE_TEST_PROXY: "true"
+          USE_TEST_PROXY: "use"
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
