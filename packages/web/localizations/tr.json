@@ -325,7 +325,8 @@
     "seeAll": "Tümünü gör",
     "show": "Göstermek",
     "hide": "Saklamak",
-    "hidden": "Gizlenmiş"
+    "hidden": "Gizlenmiş",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "jeton satın al",
   "components": {

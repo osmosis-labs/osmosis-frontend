@@ -325,7 +325,8 @@
     "seeAll": "Ver todo",
     "show": "Espectáculo",
     "hide": "Esconder",
-    "hidden": "Oculto"
+    "hidden": "Oculto",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar fichas",
   "components": {

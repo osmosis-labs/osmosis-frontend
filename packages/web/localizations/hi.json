@@ -325,7 +325,8 @@
     "seeAll": "सभी देखें",
     "show": "दिखाओ",
     "hide": "छिपाना",
-    "hidden": "छिपा हुआ"
+    "hidden": "छिपा हुआ",
+    "cypherBeta": "बीटा"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {

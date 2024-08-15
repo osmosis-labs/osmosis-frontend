@@ -325,7 +325,8 @@
     "seeAll": "Alles sehen",
     "show": "Zeigen",
     "hide": "Verstecken",
-    "hidden": "Versteckt"
+    "hidden": "Versteckt",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

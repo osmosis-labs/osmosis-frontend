@@ -325,7 +325,8 @@
     "seeAll": "Ver tudo",
     "show": "Mostrar",
     "hide": "Esconder",
-    "hidden": "Escondido"
+    "hidden": "Escondido",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar tokens",
   "components": {

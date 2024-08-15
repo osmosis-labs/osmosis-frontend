@@ -325,7 +325,8 @@
     "seeAll": "Смотреть все",
     "show": "Показывать",
     "hide": "Скрывать",
-    "hidden": "Скрытый"
+    "hidden": "Скрытый",
+    "cypherBeta": "Бета"
   },
   "buyTokens": "Купить токены",
   "components": {

@@ -325,7 +325,8 @@
     "seeAll": "모두 보기",
     "show": "보여주다",
     "hide": "숨다",
-    "hidden": "숨겨진"
+    "hidden": "숨겨진",
+    "cypherBeta": "베타"
   },
   "buyTokens": "토큰 구매",
   "components": {

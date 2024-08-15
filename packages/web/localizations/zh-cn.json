@@ -325,7 +325,8 @@
     "seeAll": "查看全部",
     "show": "展示",
     "hide": "隐藏",
-    "hidden": "隐"
+    "hidden": "隐",
+    "cypherBeta": "测试版"
   },
   "buyTokens": "购买代币",
   "components": {

@@ -325,7 +325,8 @@
     "seeAll": "همه را ببینید",
     "show": "نمایش دهید",
     "hide": "پنهان کردن",
-    "hidden": "پنهان شده است"
+    "hidden": "پنهان شده است",
+    "cypherBeta": "بتا"
   },
   "buyTokens": "خرید توکن",
   "components": {

@@ -325,7 +325,8 @@
     "seeAll": "Tout voir",
     "show": "Montrer",
     "hide": "Cacher",
-    "hidden": "Caché"
+    "hidden": "Caché",
+    "cypherBeta": "Bêta"
   },
   "buyTokens": "Acheter jetons",
   "components": {

@@ -325,7 +325,8 @@
     "seeAll": "Vezi toate",
     "show": "Spectacol",
     "hide": "Ascunde",
-    "hidden": "Ascuns"
+    "hidden": "Ascuns",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {

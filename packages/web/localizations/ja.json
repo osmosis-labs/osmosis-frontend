@@ -325,7 +325,8 @@
     "seeAll": "すべて見る",
     "show": "見せる",
     "hide": "隠れる",
-    "hidden": "隠れた"
+    "hidden": "隠れた",
+    "cypherBeta": "ベータ"
   },
   "buyTokens": "トークンを購入する",
   "components": {

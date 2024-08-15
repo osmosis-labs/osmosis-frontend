@@ -325,7 +325,8 @@
     "seeAll": "看全部",
     "show": "展示",
     "hide": "隱藏",
-    "hidden": "隱"
+    "hidden": "隱",
+    "cypherBeta": "貝塔"
   },
   "buyTokens": "購買代幣",
   "components": {
