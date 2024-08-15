@@ -18,7 +18,6 @@ import {
   useFeatureFlags,
   useTranslation,
   useWalletSelect,
-  useWindowSize,
 } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -31,8 +30,7 @@ export const PortfolioPage: FunctionComponent = () => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
   const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const { width } = useWindowSize();
+  console.log("isWalletLoading", isWalletLoading);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
@@ -75,6 +73,7 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
+  console.log("isWalletConnected", isWalletConnected);
 
   return (
     <div
@@ -146,7 +145,7 @@ export const PortfolioPage: FunctionComponent = () => {
                   />
                 </TabPanel>
                 <TabPanel>
-                  <UserPositionsSection address={wallet.address} />
+                  <UserPositionsSection address={wallet?.address} />
                 </TabPanel>
               </TabPanels>
             )}
