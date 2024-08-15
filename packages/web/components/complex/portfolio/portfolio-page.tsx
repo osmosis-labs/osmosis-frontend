@@ -78,15 +78,15 @@ export const PortfolioPage: FunctionComponent = () => {
   return (
     <div
       className={classNames(
-        "m-auto flex w-full max-w-container space-x-12 p-8 pt-4",
-        "1.5xl:flex-col 1.5xl:space-x-0",
+        "flex justify-center p-8 pt-4",
+        "1.5xl:flex-col",
         "md:p-4",
         {
           "bg-osmoverse-900": !featureFlags.limitOrders,
         }
       )}
     >
-      <main className="flex w-[752px] min-w-[752px] flex-col 1.5xl:w-full 1.5xl:min-w-full">
+      <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
         <section className="flex py-3" ref={overviewRef}>
           <AssetsOverview
             totalValue={
