@@ -30,7 +30,7 @@ test.describe("Test Filled Order feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Filled Trades", password);
+    await walletPage.setWalletNameAndPassword("Monitoring E2E Tests", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
