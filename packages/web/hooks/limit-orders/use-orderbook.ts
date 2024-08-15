@@ -203,17 +203,16 @@ export const useOrderbook = ({
 
   const error = useMemo(() => {
     if (
-      !Boolean(orderbook) ||
-      !Boolean(orderbook!.poolId) ||
-      orderbook!.poolId === ""
+      !isOrderbookLoading &&
+      (!orderbook || !orderbook!.poolId || orderbook!.poolId === "")
     ) {
       return "errors.noOrderbook";
     }
 
-    if (Boolean(makerFeeError)) {
+    if (makerFeeError) {
       return makerFeeError?.message;
     }
-  }, [orderbook, makerFeeError]);
+  }, [orderbook, makerFeeError, isOrderbookLoading]);
 
   return {
     orderbook,

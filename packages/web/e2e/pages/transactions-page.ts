@@ -71,7 +71,7 @@ export class TransactionsPage extends BasePage {
   ) {
     const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[.='$${price}']/../../..//button`;
     console.log("Use locator for a cancel btn: " + cancelBtn);
-    await this.page.locator(cancelBtn).click();
+    await this.page.locator(cancelBtn).first().click();
     const pageApprove = context.waitForEvent("page");
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
