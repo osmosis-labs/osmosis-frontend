@@ -13,9 +13,17 @@ interface UITradeType {
   disabled: boolean;
 }
 
+interface OrderTypeSelectorProps {
+  initialQuoteDenom?: string;
+  initialBaseDenom?: string;
+}
+
 export const TRADE_TYPES = ["market", "limit"] as const;
 
-export const OrderTypeSelector = () => {
+export const OrderTypeSelector = ({
+  initialQuoteDenom,
+  initialBaseDenom,
+}: OrderTypeSelectorProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -23,13 +31,16 @@ export const OrderTypeSelector = () => {
     "type",
     parseAsStringLiteral(TRADE_TYPES).withDefault("market")
   );
-  const [base] = useQueryState("from", parseAsString.withDefault("ATOM"));
+  const [base] = useQueryState(
+    "from",
+    parseAsString.withDefault(initialBaseDenom || "ATOM")
+  );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault("USDC")
+    parseAsString.withDefault(initialQuoteDenom || "USDC")
   );
 
-  const { selectableBaseAssets, selectableQuoteDenoms } =
+  const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
     useOrderbookSelectableDenoms();
 
   const hasOrderbook = useMemo(
@@ -42,7 +53,7 @@ export const OrderTypeSelector = () => {
   }, [base, selectableQuoteDenoms]);
 
   useEffect(() => {
-    if (type === "limit" && !hasOrderbook) {
+    if (type === "limit" && !hasOrderbook && !isLoading) {
       setType("market");
     } else if (
       type === "limit" &&
@@ -51,7 +62,15 @@ export const OrderTypeSelector = () => {
     ) {
       setQuote(selectableQuotes[0].coinDenom);
     }
-  }, [hasOrderbook, setType, type, selectableQuotes, setQuote, quote]);
+  }, [
+    hasOrderbook,
+    setType,
+    type,
+    selectableQuotes,
+    setQuote,
+    quote,
+    isLoading,
+  ]);
 
   useEffect(() => {
     switch (type) {
@@ -80,10 +99,10 @@ export const OrderTypeSelector = () => {
       {
         id: "limit",
         title: t("limitOrders.limit"),
-        disabled: !hasOrderbook,
+        disabled: isLoading || !hasOrderbook,
       },
     ],
-    [hasOrderbook, t]
+    [hasOrderbook, isLoading, t]
   );
 
   return (
@@ -96,7 +115,9 @@ export const OrderTypeSelector = () => {
             disabled={!disabled}
             title={t("limitOrders.unavailable", { denom: base })}
             key={`order-type-selector-${id}`}
-            containerClassName="!w-fit"
+            containerClassName={classNames("!w-fit", {
+              hidden: isLoading,
+            })}
           >
             <button
               onClick={() => setType(id)}

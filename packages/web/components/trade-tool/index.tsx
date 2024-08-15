@@ -15,15 +15,18 @@ import {
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {
   swapToolProps?: SwapToolProps;
   page: EventPage;
+  previousTrade?: PreviousTrade;
+  setPreviousTrade: (trade: PreviousTrade) => void;
 }
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
-  ({ page, swapToolProps }) => {
+  ({ page, swapToolProps, previousTrade, setPreviousTrade }) => {
     const { logEvent } = useAmplitudeAnalytics();
     const { t } = useTranslation();
     const [tab, setTab] = useQueryState(
@@ -61,15 +64,50 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
           <div className="flex w-full items-center justify-between md:gap-2">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">
-              {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
+              {tab !== SwapToolTab.SWAP && (
+                <OrderTypeSelector
+                  initialBaseDenom={previousTrade?.baseDenom}
+                  initialQuoteDenom={previousTrade?.quoteDenom}
+                />
+              )}
             </div>
           </div>
           {useMemo(() => {
             switch (tab) {
               case SwapToolTab.BUY:
-                return <PlaceLimitTool key="tool-buy" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-buy"
+                    page={page}
+                    initialBaseDenom={previousTrade?.baseDenom}
+                    initialQuoteDenom={previousTrade?.quoteDenom}
+                    onOrderSuccess={(baseDenom, quoteDenom) => {
+                      setPreviousTrade({
+                        sendTokenDenom: quoteDenom ?? "",
+                        outTokenDenom: baseDenom ?? "",
+                        baseDenom: baseDenom ?? "",
+                        quoteDenom: quoteDenom ?? "",
+                      });
+                    }}
+                  />
+                );
               case SwapToolTab.SELL:
-                return <PlaceLimitTool key="tool-sell" page={page} />;
+                return (
+                  <PlaceLimitTool
+                    key="tool-sell"
+                    page={page}
+                    initialBaseDenom={previousTrade?.baseDenom}
+                    initialQuoteDenom={previousTrade?.quoteDenom}
+                    onOrderSuccess={(baseDenom, quoteDenom) => {
+                      setPreviousTrade({
+                        sendTokenDenom: baseDenom ?? "",
+                        outTokenDenom: quoteDenom ?? "",
+                        baseDenom: baseDenom ?? "",
+                        quoteDenom: quoteDenom ?? "",
+                      });
+                    }}
+                  />
+                );
               case SwapToolTab.SWAP:
               default:
                 return (
@@ -77,11 +115,21 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                     useOtherCurrencies
                     useQueryParams
                     page={page}
+                    onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
+                      setPreviousTrade({
+                        sendTokenDenom,
+                        outTokenDenom,
+                        baseDenom: previousTrade?.baseDenom ?? "",
+                        quoteDenom: previousTrade?.quoteDenom ?? "",
+                      });
+                    }}
+                    initialSendTokenDenom={previousTrade?.sendTokenDenom}
+                    initialOutTokenDenom={previousTrade?.outTokenDenom}
                     {...swapToolProps}
                   />
                 );
             }
-          }, [page, swapToolProps, tab])}
+          }, [page, swapToolProps, tab, previousTrade, setPreviousTrade])}
         </div>
         {wallet?.isWalletConnected && (
           <Link
