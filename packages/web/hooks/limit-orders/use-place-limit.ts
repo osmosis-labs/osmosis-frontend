@@ -478,6 +478,7 @@ export const usePlaceLimit = ({
     inAmountInput.reset();
     priceState.reset();
     marketState.inAmountInput.reset();
+    marketState.outAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
 
   const error = useMemo(() => {
