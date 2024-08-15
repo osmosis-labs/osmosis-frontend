@@ -178,6 +178,8 @@ export const AssetBalancesTable: FunctionComponent<{
             warnUnverified={showUnverifiedAssets && !asset.isVerified}
           />
         ),
+        // size: 164,
+        // maxSize: 164,
       }),
       columnHelper.accessor((row) => row, {
         id: "balance",
@@ -521,6 +523,7 @@ export const AssetActionsCell: AssetCellComponent<{
           variant="ghost"
           className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
+            e.stopPropagation();
             e.preventDefault();
 
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
