@@ -95,7 +95,8 @@
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
-    "goToPool": "havuza git #{poolId}"
+    "goToPool": "havuza git #{poolId}",
+    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin."
   },
   "copied": "Kopyalandı!",
   "app": {

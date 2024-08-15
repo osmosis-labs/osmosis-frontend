@@ -95,7 +95,8 @@
     "totalBalance": "Balanço total",
     "numPositions": "indefinido",
     "onePosition": "1 posição",
-    "goToPool": "Vá para a piscina #{poolId}"
+    "goToPool": "Vá para a piscina #{poolId}",
+    "errorFetchingPositions": "Falha ao buscar detalhes da posição. Tente atualizar a página. Se o problema persistir, entre em contato com o suporte."
   },
   "copied": "Copiado!",
   "app": {

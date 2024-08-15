@@ -95,7 +95,8 @@
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
-    "goToPool": "رفتن به استخر #{poolId}"
+    "goToPool": "رفتن به استخر #{poolId}",
+    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید."
   },
   "copied": "کپی شده!",
   "app": {
