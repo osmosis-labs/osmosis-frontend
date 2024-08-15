@@ -246,6 +246,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         const setMarketAmount = isMarketOutAmount
           ? swapState.marketState.outAmountInput.setAmount
           : swapState.marketState.inAmountInput.setAmount;
+        const setOppositeMarketAmount = isMarketOutAmount
+          ? swapState.marketState.inAmountInput.setAmount
+          : swapState.marketState.outAmountInput.setAmount;
 
         setQuoteType(!isMarketOutAmount ? "out-given-in" : "in-given-out");
 
@@ -253,6 +256,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         if (!value?.trim()) {
           if (type === "market") {
             setMarketAmount("");
+            setOppositeMarketAmount("");
           }
           return update("");
         }
@@ -271,7 +275,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         }
 
         if (type === "market") {
-          console.log("UPDATED", updatedValue);
           setMarketAmount(updatedValue);
         }
         const isFocused = focused === amountType;
@@ -280,7 +283,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           parseFloat(updatedValue) !== 0 && !isFocused
             ? trimPlaceholderZeros(updatedValue)
             : updatedValue;
-
+        console.log(formattedValue);
         update(formattedValue);
       },
       [
@@ -375,6 +378,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     ]);
 
     const inputValue = useMemo(() => {
+      const shouldTrim = (amount: string) =>
+        parseInt(amount) !== 0 && !amount.endsWith(".");
       if (type === "market") {
         if (tab === "sell") {
           return focused === "fiat"
@@ -382,27 +387,34 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 swapState.marketState.outAmountInput.inputAmount ?? "",
                 2
               )
-            : trimPlaceholderZeros(
-                swapState.marketState.inAmountInput.inputAmount ?? ""
-              );
+            : shouldTrim(swapState.marketState.inAmountInput.inputAmount)
+            ? trimPlaceholderZeros(
+                swapState.marketState.inAmountInput.inputAmount
+              )
+            : swapState.marketState.inAmountInput.inputAmount ?? "";
         } else {
           return focused === "fiat"
             ? transformAmount(
                 swapState.marketState.inAmountInput.inputAmount ?? "",
                 2
               )
+            : shouldTrim(swapState.marketState.outAmountInput.inputAmount)
+            ? trimPlaceholderZeros(
+                swapState.marketState.outAmountInput.inputAmount
+              )
             : swapState.marketState.outAmountInput.inputAmount ?? "";
         }
       }
-
       return focused === "fiat"
         ? fiatAmount
-        : swapState.inAmountInput.amount?.toDec().toString() ?? "";
+        : shouldTrim(swapState.inAmountInput.inputAmount)
+        ? trimPlaceholderZeros(swapState.inAmountInput.inputAmount)
+        : swapState.inAmountInput.inputAmount ?? "";
     }, [
       focused,
       tab,
       type,
-      swapState.inAmountInput.amount,
+      swapState.inAmountInput.inputAmount,
       swapState.marketState.inAmountInput.inputAmount,
       swapState.marketState.outAmountInput.inputAmount,
       fiatAmount,
