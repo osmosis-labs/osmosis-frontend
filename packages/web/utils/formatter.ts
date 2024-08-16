@@ -360,24 +360,28 @@ export const compressZeros = (
  * Rounds to the provided `maxDecimals` parameter.
  */
 export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
-  if (!price.toDec().isZero() && price.toDec().lt(new Dec(0.01))) {
+  if (price.toDec().isZero()) return "$0";
+
+  if (price.toDec().lt(new Dec(0.01))) {
     return "<$0.01";
   }
 
-  const truncatedAmount = new Dec(
-    parseFloat(price.toDec().toString()).toFixed(maxDecimals).toString()
-  );
-
-  if (truncatedAmount.gte(new Dec(1000000000))) {
+  if (price.toDec().gte(new Dec(1000000000))) {
     return ">$1B";
   }
-  const truncatedPrice = new PricePretty(price.fiatCurrency, truncatedAmount);
-  const formattedPrice = formatPretty(truncatedPrice, {
-    ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
-  });
 
-  const split = formattedPrice.split(".");
-  return split[0] + "." + split[1].slice(0, maxDecimals);
+  const splitDec = price.toDec().toString().split(".");
+  const maxDecimalStr = splitDec[0] + "." + splitDec[1].slice(0, maxDecimals);
+  const maxDecimalPrice = new PricePretty(
+    price.fiatCurrency,
+    new Dec(maxDecimalStr)
+  );
+
+  const splitPretty = formatPretty(maxDecimalPrice, {
+    ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
+  }).split(".");
+
+  return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
 }
 
 export function calcFontSize(numChars: number, isMobile: boolean): string {

@@ -235,7 +235,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     ]);
 
     const setAmountSafe = useCallback(
-      (amountType: "fiat" | "token", value?: string) => {
+      (
+        amountType: "fiat" | "token",
+        value?: string,
+        maxDecimals?: number = 2
+      ) => {
         const update =
           amountType === "fiat"
             ? setFiatAmount
@@ -263,7 +267,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
         const updatedValue = transformAmount(
           value,
-          amountType === "fiat" ? 2 : swapState.baseAsset?.coinDecimals
+          amountType === "fiat"
+            ? maxDecimals
+            : swapState.baseAsset?.coinDecimals
         ).trim();
 
         if (
@@ -283,7 +289,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           parseFloat(updatedValue) !== 0 && !isFocused
             ? trimPlaceholderZeros(updatedValue)
             : updatedValue;
-        console.log(formattedValue);
         update(formattedValue);
       },
       [
@@ -311,7 +316,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         ? swapState.priceState.price.mul(value)
         : undefined;
 
-      setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined);
+      setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined, 10);
     }, [
       focused,
       setAmountSafe,
@@ -406,7 +411,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         }
       }
       return focused === "fiat"
-        ? fiatAmount
+        ? transformAmount(fiatAmount, 2)
         : shouldTrim(swapState.inAmountInput.inputAmount)
         ? trimPlaceholderZeros(swapState.inAmountInput.inputAmount)
         : swapState.inAmountInput.inputAmount ?? "";
@@ -479,25 +484,31 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             ? trimPlaceholderZeros(
                 swapState.marketState.inAmountInput.inputAmount
               ) ?? ""
-            : transformAmount(
-                swapState.marketState.outAmountInput.inputAmount ?? "",
-                2
+            : formatFiatPrice(
+                new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  swapState.marketState.inAmountInput.inputAmount || "0"
+                )
               );
         } else {
           return focused === "fiat"
             ? trimPlaceholderZeros(
                 swapState.marketState.outAmountInput.inputAmount ?? ""
               )
-            : transformAmount(
-                swapState.marketState.inAmountInput.inputAmount ?? "",
-                2
+            : formatFiatPrice(
+                new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  swapState.marketState.inAmountInput.inputAmount || "0"
+                )
               );
         }
       }
-
+      console.log(fiatAmount);
       return focused === "fiat"
         ? swapState.inAmountInput.inputAmount
-        : fiatAmount;
+        : formatFiatPrice(
+            new PricePretty(DEFAULT_VS_CURRENCY, fiatAmount || "0")
+          );
     }, [
       focused,
       swapState.marketState.inAmountInput.inputAmount,
@@ -508,7 +519,29 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.inAmountInput.inputAmount,
     ]);
 
-    console.log(nonFocusedDisplayAmount);
+    const isInputLessThanOneCent = useMemo(() => {
+      if (focused !== "fiat") return false;
+
+      let inputValueRaw = "0";
+      if (tab === "buy" && type === "market") {
+        inputValueRaw = swapState.marketState.inAmountInput.inputAmount;
+      } else if (tab === "sell" && type === "market") {
+        inputValueRaw = swapState.marketState.outAmountInput.inputAmount;
+      } else {
+        inputValueRaw = fiatAmount;
+      }
+
+      const valueDec = new Dec(inputValueRaw || "0");
+
+      return !valueDec.isZero() && valueDec.lt(new Dec(0.01));
+    }, [
+      tab,
+      type,
+      swapState.marketState.inAmountInput.inputAmount,
+      swapState.marketState.outAmountInput.inputAmount,
+      fiatAmount,
+      focused,
+    ]);
     return (
       <>
         <div>
@@ -562,12 +595,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         "text-osmoverse-600": inputValue === "",
                       })}
                     >
-                      $
+                      {isInputLessThanOneCent && "<"}$
                     </span>
                   )
                 }
                 ref={inputRef}
-                inputValue={inputValue}
+                inputValue={
+                  isInputLessThanOneCent && focused === "fiat"
+                    ? "0.01"
+                    : inputValue
+                }
                 onInputChange={(e) => setAmountSafe(focused, e.target.value)}
                 data-testid={`trade-input-${type}`}
               />
@@ -610,14 +647,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 />
                 <span
                   className={classNames(
-                    "body2 sm:caption transition-opacity sm:my-px sm:py-2",
-                    {
-                      "text-osmoverse-300": type === "market",
-                      "text-wosmongton-300": type === "limit",
-                    }
+                    "body2 sm:caption text-wosmongton-300 transition-opacity sm:my-px sm:py-2"
                   )}
                 >
-                  {focused === "token" && <span>$</span>}
                   {nonFocusedDisplayAmount || "0"}{" "}
                   {focused === "fiat" && (
                     <span>{swapState.baseAsset?.coinDenom}</span>
