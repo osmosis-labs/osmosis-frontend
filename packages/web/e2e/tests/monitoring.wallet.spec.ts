@@ -50,7 +50,7 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("2.99");
-    await tradePage.setLimitPriceChange("2%");
+    await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
@@ -76,7 +76,7 @@ test.describe("Test Filled Order feature", () => {
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("1.05 USDC (Noble/channel-750)");
+    expect(msgContentAmount).toContain('"quantity": "1050000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
