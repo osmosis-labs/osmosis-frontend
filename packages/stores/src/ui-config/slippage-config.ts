@@ -153,4 +153,9 @@ export class ObservableSlippageConfig {
 
     return;
   }
+
+  @action
+  setDefaultSlippage(value: string) {
+    this._defaultManualSlippage = value;
+  }
 }

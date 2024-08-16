@@ -136,8 +136,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const { onOpenWalletSelect } = useWalletSelect();
 
-    const slippageConfig = useSlippageConfig();
-
+    const slippageConfig = useSlippageConfig({
+      defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
+      selectedIndex: quoteType === "in-given-out" ? 1 : 0,
+    });
+    console.log(slippageConfig.slippage.toDec().toString());
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
