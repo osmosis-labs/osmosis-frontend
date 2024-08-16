@@ -95,7 +95,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     });
 
     const account = accountStore.getWallet(chainId);
-    const slippageConfig = useSlippageConfig();
+    const slippageConfig = useSlippageConfig({
+      defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
+      selectedIndex: quoteType === "in-given-out" ? 1 : 0,
+    });
 
     const swapState = useSwap({
       initialFromDenom: initialSendTokenDenom,
