@@ -37,33 +37,40 @@ export function getAll(categories: Categories): FormattedAllocation[] {
     .add(unclaimedRewardsCap)
     .add(pooledCap);
 
-  return [
+  const allocations: { key: string; fiatValue: Dec }[] = [
     {
       key: "available",
-      percentage: new RatePretty(userBalancesCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, userBalancesCap),
+      fiatValue: userBalancesCap,
     },
     {
       key: "staked",
-      percentage: new RatePretty(stakedCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, stakedCap),
+      fiatValue: stakedCap,
     },
     {
       key: "unstaking",
-      percentage: new RatePretty(unstakingCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unstakingCap),
+      fiatValue: unstakingCap,
     },
     {
       key: "unclaimedRewards",
-      percentage: new RatePretty(unclaimedRewardsCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unclaimedRewardsCap),
+      fiatValue: unclaimedRewardsCap,
     },
     {
       key: "pooled",
-      percentage: new RatePretty(pooledCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledCap),
+      fiatValue: pooledCap,
     },
   ];
+
+  const sortedAllocation = sort(allocations, "fiatValue", "desc");
+
+  const formattedAllocations: FormattedAllocation[] = sortedAllocation.map(
+    (allocation) => ({
+      key: allocation.key,
+      percentage: new RatePretty(allocation.fiatValue.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, allocation.fiatValue),
+    })
+  );
+
+  return formattedAllocations;
 }
 
 export function calculatePercentAndFiatValues(
