@@ -10,7 +10,7 @@ import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
 import { UserPositionsSection } from "~/components/complex/portfolio/user-positions";
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
-import { Spinner } from "~/components/loaders";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
@@ -19,6 +19,7 @@ import {
   useDimension,
   useFeatureFlags,
   useTranslation,
+  useWalletSelect,
 } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -74,6 +75,8 @@ export const PortfolioPage: FunctionComponent = observer(() => {
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
 
+  const { isLoading: isWalletLoading } = useWalletSelect();
+
   return (
     <div
       className={classNames(
@@ -85,7 +88,9 @@ export const PortfolioPage: FunctionComponent = observer(() => {
         }
       )}
     >
-      {isWalletConnected ? (
+      {isWalletLoading ? (
+        <SkeletonLoader className="h-24 w-1/2 lg:w-full" />
+      ) : isWalletConnected ? (
         <>
           <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
             <section className="flex py-3" ref={overviewRef}>
