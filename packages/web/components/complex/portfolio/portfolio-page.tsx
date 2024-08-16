@@ -8,6 +8,7 @@ import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
 import { UserPositionsSection } from "~/components/complex/portfolio/user-positions";
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
+import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { Spinner } from "~/components/loaders";
 import { AssetBalancesTable } from "~/components/table/asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
@@ -75,7 +76,7 @@ export const PortfolioPage: FunctionComponent = () => {
     wallet && wallet.isWalletConnected && wallet.address;
   console.log("isWalletConnected", isWalletConnected);
 
-  return (
+  return isWalletConnected ? (
     <div
       className={classNames(
         "flex justify-center p-8 pt-4",
@@ -175,9 +176,7 @@ export const PortfolioPage: FunctionComponent = () => {
         <RecentActivity />
       </aside>
     </div>
+  ) : isWalletLoading ? null : (
+    <WalletDisconnectedSplash />
   );
 };
-
-//  isWalletLoading ? null : (
-//   <WalletDisconnectedSplash />
-// )}
