@@ -4,12 +4,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -28,12 +28,12 @@ export const MyPositionCard: FunctionComponent<{
     poolId,
     currentCoins,
     currentValue,
-    priceRange: [lowerPrice, upperPrice],
-    isFullRange,
+    // priceRange: [lowerPrice, upperPrice],
+    // isFullRange,
   } = position;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
-  const featureFlags = useFeatureFlags();
+  // const featureFlags = useFeatureFlags();
 
   const { data: positionPerformance } =
     api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
@@ -202,35 +202,35 @@ const PositionDataGroup: FunctionComponent<{
   </div>
 );
 
-const RangeDataGroup: FunctionComponent<{
-  lowerPrice: Dec;
-  upperPrice: Dec;
-  isFullRange: boolean;
-}> = ({ lowerPrice, upperPrice, isFullRange }) => {
-  const { t } = useTranslation();
+// const RangeDataGroup: FunctionComponent<{
+//   lowerPrice: Dec;
+//   upperPrice: Dec;
+//   isFullRange: boolean;
+// }> = ({ lowerPrice, upperPrice, isFullRange }) => {
+//   const { t } = useTranslation();
 
-  return (
-    <PositionDataGroup
-      label={t("clPositions.selectedRange")}
-      value={
-        <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
-          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
-            {isFullRange
-              ? "0"
-              : formatPretty(lowerPrice, {
-                  scientificMagnitudeThreshold: 4,
-                })}
-          </h6>
-          <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
-            {isFullRange
-              ? "∞"
-              : formatPretty(upperPrice, {
-                  scientificMagnitudeThreshold: 4,
-                })}
-          </h6>
-        </div>
-      }
-    />
-  );
-};
+//   return (
+//     <PositionDataGroup
+//       label={t("clPositions.selectedRange")}
+//       value={
+//         <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
+//           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
+//             {isFullRange
+//               ? "0"
+//               : formatPretty(lowerPrice, {
+//                   scientificMagnitudeThreshold: 4,
+//                 })}
+//           </h6>
+//           <Icon id="left-right-arrow" className="flex-shrink-0" />
+//           <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
+//             {isFullRange
+//               ? "∞"
+//               : formatPretty(upperPrice, {
+//                   scientificMagnitudeThreshold: 4,
+//                 })}
+//           </h6>
+//         </div>
+//       }
+//     />
+//   );
+// };
