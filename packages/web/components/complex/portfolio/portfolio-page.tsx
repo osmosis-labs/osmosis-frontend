@@ -36,34 +36,20 @@ export const PortfolioPage: FunctionComponent = () => {
     onLoadEvent: [EventName.Portfolio.pageViewed],
   });
 
-  const { data: totalValueData, isFetched: isTotalValueFetched } =
-    api.edge.assets.getUserAssetsTotal.useQuery(
-      {
-        userOsmoAddress: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-        select: ({ value }) => value,
+  const {
+    data: allocation,
+    isLoading: isLoadingAllocation,
+    isFetched: isFetchedAllocation,
+  } = api.local.portfolio.getAllocation.useQuery(
+    {
+      address: wallet?.address ?? "",
+    },
+    {
+      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+    }
+  );
 
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
-  const userHasNoAssets = totalValueData && totalValueData.toDec().isZero();
-
-  const { data: allocation, isLoading: isLoadingAllocation } =
-    api.local.portfolio.getAllocation.useQuery(
-      {
-        address: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      }
-    );
+  const userHasNoAssets = allocation && allocation?.totalCap.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -83,9 +69,10 @@ export const PortfolioPage: FunctionComponent = () => {
       <section className="flex py-3" ref={overviewRef}>
         <AssetsOverview
           totalValue={
-            totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+            allocation?.totalCap ||
+            new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
           }
-          isTotalValueFetched={isTotalValueFetched}
+          isTotalValueFetched={isFetchedAllocation}
         />
       </section>
 
@@ -131,7 +118,7 @@ export const PortfolioPage: FunctionComponent = () => {
                   )}
                 </Tab>
               </TabList>
-              {!isTotalValueFetched ? (
+              {!isFetchedAllocation ? (
                 <div className="mx-auto my-6 w-fit">
                   <Spinner />
                 </div>
