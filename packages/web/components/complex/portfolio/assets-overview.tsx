@@ -129,7 +129,9 @@ export const AssetsOverview: FunctionComponent<
     new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
 
-  const [isChartMinimized, setIsChartMinimized] = useState(true);
+  const [isChartMinimized, setIsChartMinimized] = useState(
+    width < Breakpoint.lg ? false : true
+  );
 
   useEffect(() => {
     if (width < Breakpoint.lg) setIsChartMinimized(false);
