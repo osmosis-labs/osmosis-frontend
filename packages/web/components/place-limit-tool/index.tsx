@@ -140,7 +140,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
       selectedIndex: quoteType === "in-given-out" ? 1 : 0,
     });
-    console.log(slippageConfig.slippage.toDec().toString());
+
     const swapState = usePlaceLimit({
       osmosisChainId: accountStore.osmosisChainId,
       orderDirection,
@@ -506,7 +506,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               );
         }
       }
-      console.log(fiatAmount);
+
       return focused === "fiat"
         ? swapState.inAmountInput.inputAmount
         : formatFiatPrice(
