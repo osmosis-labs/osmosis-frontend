@@ -297,11 +297,13 @@ export const AssetsOverview: FunctionComponent<
           error={error}
           setShowDate={setShowDate}
           resetDataPoint={() => {
-            setDataPoint({
-              time: dayjs().unix() as Time,
-              value: +totalValue.toDec().toString(),
-            });
-            setShowDate(false);
+            if (totalValue) {
+              setDataPoint({
+                time: dayjs().unix() as Time,
+                value: +totalValue?.toDec()?.toString(),
+              });
+              setShowDate(false);
+            }
           }}
         />
       </Transition>
