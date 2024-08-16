@@ -1,12 +1,12 @@
 import { osmosis } from "@osmosis-labs/proto-codecs";
-
 import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,
   makeSplitRoutesSwapExactAmountInMsg,
   makeSplitRoutesSwapExactAmountOutMsg,
   makeSwapExactAmountInMsg,
-} from "../message-composers";
+} from "@osmosis-labs/tx";
+
 import { createMsgOpts } from "../utils";
 
 export const osmosisMsgOpts = createMsgOpts({

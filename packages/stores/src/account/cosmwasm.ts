@@ -1,21 +1,20 @@
-import { StdFee } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/amino";
 import {
   ChainGetter,
   CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import deepmerge from "deepmerge";
-import { DeepPartial, Optional } from "utility-types";
+import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
+import { Optional } from "utility-types";
 
 import {
   AccountStore,
   CosmosAccount,
   DeliverTxResponse,
   OsmosisAccount,
-} from "../../account";
-import { OsmosisQueries } from "../../queries";
-import { cosmwasmMsgOpts } from "./types";
+} from "../account";
+import { OsmosisQueries } from "../queries";
 
 export interface CosmwasmAccount {
   cosmwasm: CosmwasmAccountImpl;
@@ -23,9 +22,6 @@ export interface CosmwasmAccount {
 
 export const CosmwasmAccount = {
   use(options: {
-    msgOptsCreator?: (
-      chainId: string
-    ) => DeepPartial<typeof cosmwasmMsgOpts> | undefined;
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
@@ -33,20 +29,12 @@ export const CosmwasmAccount = {
     chainId: string
   ) => CosmwasmAccount {
     return (base, chainGetter, chainId) => {
-      const msgOptsFromCreator = options.msgOptsCreator
-        ? options.msgOptsCreator(chainId)
-        : undefined;
-
       return {
         cosmwasm: new CosmwasmAccountImpl(
           base,
           chainGetter,
           chainId,
-          options.queriesStore,
-          deepmerge<
-            typeof cosmwasmMsgOpts,
-            DeepPartial<typeof cosmwasmMsgOpts>
-          >(cosmwasmMsgOpts, msgOptsFromCreator ? msgOptsFromCreator : {})
+          options.queriesStore
         ),
       };
     };
@@ -62,8 +50,7 @@ export class CosmwasmAccountImpl {
     protected readonly chainId: string,
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
-    >,
-    readonly msgOpts: typeof cosmwasmMsgOpts
+    >
   ) {}
 
   private get address() {
@@ -80,7 +67,7 @@ export class CosmwasmAccountImpl {
    * @param onTxEvents The callback function to be called when the transaction is broadcasted or fulfilled.
    */
   async sendExecuteContractMsg(
-    type: keyof typeof this.msgOpts | "unknown" = "executeWasm",
+    type = "executeWasm",
     contractAddress: string,
     obj: object,
     funds: CoinPrimitive[],
@@ -92,10 +79,10 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const msg = this.msgOpts.executeWasm.messageComposer({
+    const msg = await makeExecuteCosmwasmContractMsg({
       sender: this.address,
       contract: contractAddress,
-      msg: Buffer.from(JSON.stringify(obj)),
+      msg: obj,
       funds,
     });
 
@@ -116,7 +103,7 @@ export class CosmwasmAccountImpl {
   }
 
   async sendMultiExecuteContractMsg(
-    type: keyof typeof this.msgOpts | "unknown" = "executeWasm",
+    type = "executeWasm",
     msgs: {
       contractAddress: string;
       msg: object;
@@ -130,14 +117,16 @@ export class CosmwasmAccountImpl {
           onFulfill?: (tx: DeliverTxResponse) => void;
         }
   ) {
-    const mappedMsgs = msgs.map(({ msg, funds, contractAddress }) => {
-      return this.msgOpts.executeWasm.messageComposer({
-        sender: this.address,
-        contract: contractAddress,
-        msg: Buffer.from(JSON.stringify(msg)),
-        funds,
-      });
-    });
+    const mappedMsgs = await Promise.all(
+      msgs.map(async ({ msg, funds, contractAddress }) => {
+        return await makeExecuteCosmwasmContractMsg({
+          sender: this.address,
+          contract: contractAddress,
+          msg,
+          funds,
+        });
+      })
+    );
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -155,5 +144,3 @@ export class CosmwasmAccountImpl {
     );
   }
 }
-
-export * from "./types";

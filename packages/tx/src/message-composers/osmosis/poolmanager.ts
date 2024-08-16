@@ -1,5 +1,4 @@
-import { osmosis } from "@osmosis-labs/proto-codecs";
-import { Currency } from "@osmosis-labs/types";
+import { getOsmosisCodec } from "../../codec";
 
 /**
  * Constructs a message for performing a split route swap with an exact input amount across
@@ -7,7 +6,7 @@ import { Currency } from "@osmosis-labs/types";
  * for another through a series of split routes, specifying the minimum amount of
  * the output token they are willing to accept.
  */
-export function makeSplitRoutesSwapExactAmountInMsg({
+export async function makeSplitRoutesSwapExactAmountInMsg({
   routes,
   tokenIn,
   tokenOutMinAmount,
@@ -20,10 +19,11 @@ export function makeSplitRoutesSwapExactAmountInMsg({
     }[];
     tokenInAmount: string;
   }[];
-  tokenIn: { currency: Currency };
+  tokenIn: { coinMinimalDenom: string };
   tokenOutMinAmount: string;
   userOsmoAddress: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.splitRouteSwapExactAmountIn(
     {
       sender: userOsmoAddress,
@@ -34,7 +34,7 @@ export function makeSplitRoutesSwapExactAmountInMsg({
         })),
         tokenInAmount: tokenInAmount,
       })),
-      tokenInDenom: tokenIn.currency.coinMinimalDenom,
+      tokenInDenom: tokenIn.coinMinimalDenom,
       tokenOutMinAmount,
     }
   );
@@ -46,7 +46,7 @@ export function makeSplitRoutesSwapExactAmountInMsg({
  * amount of one token for another through specified liquidity pools, with a minimum
  * acceptable amount of the output token.
  */
-export function makeSwapExactAmountInMsg({
+export async function makeSwapExactAmountInMsg({
   pools,
   tokenIn,
   tokenOutMinAmount,
@@ -56,10 +56,11 @@ export function makeSwapExactAmountInMsg({
     id: string;
     tokenOutDenom: string;
   }[];
-  tokenIn: { currency: Currency; amount: string };
+  tokenIn: { coinMinimalDenom: string; amount: string };
   tokenOutMinAmount: string;
   userOsmoAddress: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn(
     {
       sender: userOsmoAddress,
@@ -70,7 +71,7 @@ export function makeSwapExactAmountInMsg({
         };
       }),
       tokenIn: {
-        denom: tokenIn.currency.coinMinimalDenom,
+        denom: tokenIn.coinMinimalDenom,
         amount: tokenIn.amount.toString(),
       },
       tokenOutMinAmount,
@@ -84,20 +85,21 @@ export function makeSwapExactAmountInMsg({
  * amount of one token for another through specified liquidity pools, with a minimum
  * acceptable amount of the output token.
  */
-export function makeSwapExactAmountOutMsg({
+export async function makeSwapExactAmountOutMsg({
   pools,
-  tokenOut,
   tokenInMaxAmount,
+  tokenOut,
   userOsmoAddress,
 }: {
   pools: {
     id: string;
     tokenInDenom: string;
   }[];
-  tokenOut: { currency: Currency; amount: string };
   tokenInMaxAmount: string;
+  tokenOut: { coinMinimalDenom: string; amount: string };
   userOsmoAddress: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut(
     {
       sender: userOsmoAddress,
@@ -108,8 +110,8 @@ export function makeSwapExactAmountOutMsg({
         };
       }),
       tokenOut: {
-        denom: tokenOut.currency.coinMinimalDenom,
-        amount: tokenOut.amount.toString(),
+        denom: tokenOut.coinMinimalDenom,
+        amount: tokenOut.amount,
       },
       tokenInMaxAmount,
     }
@@ -122,7 +124,7 @@ export function makeSwapExactAmountOutMsg({
  * for another through a series of split routes, specifying the minimum amount of
  * the output token they are willing to accept.
  */
-export function makeSplitRoutesSwapExactAmountOutMsg({
+export async function makeSplitRoutesSwapExactAmountOutMsg({
   routes,
   tokenOut,
   tokenInMaxAmount,
@@ -135,10 +137,11 @@ export function makeSplitRoutesSwapExactAmountOutMsg({
     }[];
     tokenOutAmount: string;
   }[];
-  tokenOut: { currency: Currency };
+  tokenOut: { coinMinimalDenom: string };
   tokenInMaxAmount: string;
   userOsmoAddress: string;
 }) {
+  const osmosis = await getOsmosisCodec();
   return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.splitRouteSwapExactAmountOut(
     {
       sender: userOsmoAddress,
@@ -149,7 +152,7 @@ export function makeSplitRoutesSwapExactAmountOutMsg({
         })),
         tokenOutAmount: tokenOutAmount,
       })),
-      tokenOutDenom: tokenOut.currency.coinMinimalDenom,
+      tokenOutDenom: tokenOut.coinMinimalDenom,
       tokenInMaxAmount,
     }
   );

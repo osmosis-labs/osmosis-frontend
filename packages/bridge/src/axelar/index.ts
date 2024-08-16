@@ -2,10 +2,9 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
-import { Registry } from "@cosmjs/proto-signing";
+import type { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { cosmosMsgOpts, estimateGasFee } from "@osmosis-labs/tx";
+import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -50,7 +49,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
   protected axelarChainId: string;
 
   protected readonly axelarScanBaseUrl: string;
@@ -420,14 +419,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: transactionData.msgTypeUrl,
             value: transactionData.msg,
           }),
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -594,21 +595,19 @@ export class AxelarBridgeProvider implements BridgeProvider {
         );
       }
 
-      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
-        {
-          receiver: depositAddress,
-          sender: fromAddress,
-          sourceChannel: ibcTransferMethod.chain.channelId,
-          sourcePort: "transfer",
-          timeoutTimestamp: "0" as any,
-          // @ts-ignore
-          timeoutHeight,
-          token: {
-            amount: fromAmount,
-            denom: fromAsset.address,
-          },
-        }
-      );
+      const { typeUrl, value: msg } = await makeIBCTransferMsg({
+        receiver: depositAddress,
+        sender: fromAddress,
+        sourceChannel: ibcTransferMethod.chain.channelId,
+        sourcePort: "transfer",
+        timeoutTimestamp: "0" as any,
+        // @ts-ignore
+        timeoutHeight,
+        token: {
+          amount: fromAmount,
+          denom: fromAsset.address,
+        },
+      });
 
       return {
         type: "cosmos",
@@ -807,6 +806,17 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     return this._assetTransferClient!;
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
   }
 
   async getExternalUrl({

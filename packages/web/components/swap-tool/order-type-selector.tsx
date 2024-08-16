@@ -33,11 +33,11 @@ export const OrderTypeSelector = ({
   );
   const [base] = useQueryState(
     "from",
-    parseAsString.withDefault(!!initialBaseDenom ? initialBaseDenom : "ATOM")
+    parseAsString.withDefault(initialBaseDenom || "ATOM")
   );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault(!!initialQuoteDenom ? initialQuoteDenom : "USDC")
+    parseAsString.withDefault(initialQuoteDenom || "USDC")
   );
 
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =

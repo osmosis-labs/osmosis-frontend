@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/amino";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -6,14 +6,14 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import type { RouterKey } from "@osmosis-labs/server";
+import { SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSplitRoutesSwapExactAmountOutMsg,
   makeSwapExactAmountInMsg,
   makeSwapExactAmountOutMsg,
-  SignOptions,
-} from "@osmosis-labs/stores";
-import { Currency, MinimalAsset } from "@osmosis-labs/types";
+} from "@osmosis-labs/tx";
+import { MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -24,6 +24,7 @@ import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
@@ -367,9 +368,11 @@ export function useSwap(
                 quoteType === "out-given-in"
                   ? inAmountInput.amount.toCoin().amount
                   : outAmountInput.amount.toCoin().amount,
-              maxSlippage,
-              fromAsset: swapAssets.fromAsset,
-              toAsset: swapAssets.toAsset,
+              maxSlippage: maxSlippage.toString(),
+              tokenInCoinMinimalDenom: swapAssets.fromAsset.coinMinimalDenom,
+              tokenOutCoinMinimalDenom: swapAssets.toAsset.coinMinimalDenom,
+              tokenOutCoinDecimals: swapAssets.toAsset.coinDecimals,
+              tokenInCoinDecimals: swapAssets.fromAsset.coinDecimals,
               quote,
               quoteType,
             });
@@ -513,14 +516,8 @@ export function useSwap(
                 .sendSwapExactAmountOutMsg(
                   pools,
                   {
-                    currency: tokenOut!.currency,
-                    amount: new Dec(tokenOut!.amount ?? "0")
-                      .quo(
-                        DecUtils.getTenExponentNInPrecisionRange(
-                          tokenOut!.currency.coinDecimals
-                        )
-                      )
-                      .toString(),
+                    coinMinimalDenom: tokenOut!.coinMinimalDenom,
+                    amount: tokenOut!.amount,
                   },
                   tokenInMaxAmount!,
                   undefined,
@@ -1183,33 +1180,29 @@ function getSwapTxParameters({
   coinAmount,
   maxSlippage,
   quote,
-  fromAsset,
-  toAsset,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinMinimalDenom,
+  tokenInCoinDecimals,
+  tokenOutCoinDecimals,
   quoteType = "out-given-in",
 }: {
   coinAmount: string;
-  maxSlippage: Dec;
+  maxSlippage: string;
   quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinMinimalDenom: string;
+  tokenInCoinDecimals: number;
+  tokenOutCoinDecimals: number;
   quoteType?: QuoteType;
 }) {
-  if (!quote) {
+  if (isNil(quote)) {
     throw new Error(
       "User input should be disabled if no route is found or is being generated"
     );
   }
-  if (!coinAmount) throw new Error("No input");
-  if (!fromAsset) throw new Error("No from asset");
-  if (!toAsset) throw new Error("No to asset");
+  if (isNil(coinAmount)) throw new Error("No input");
+  if (isNil(tokenInCoinMinimalDenom)) throw new Error("No from asset");
+  if (isNil(tokenOutCoinDecimals)) throw new Error("No to asset");
 
   if (quoteType === "out-given-in") {
     const routes: SwapTxRouteOutGivenIn[] = [];
@@ -1234,15 +1227,15 @@ function getSwapTxParameters({
 
     /** In amount converted to integer (remove decimals) */
     const tokenIn = {
-      currency: fromAsset as Currency,
+      coinMinimalDenom: tokenInCoinMinimalDenom,
       amount: coinAmount,
     };
 
     /** Out amount with slippage included */
     const tokenOutMinAmount = quote.amount
       .toDec()
-      .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
-      .mul(new Dec(1).sub(maxSlippage))
+      .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
+      .mul(new Dec(1).sub(new Dec(maxSlippage)))
       .truncate()
       .toString();
 
@@ -1274,15 +1267,15 @@ function getSwapTxParameters({
 
     /** In amount converted to integer (remove decimals) */
     const tokenOut = {
-      currency: toAsset as Currency,
+      coinMinimalDenom: tokenOutCoinMinimalDenom,
       amount: coinAmount,
     };
 
     /** Out amount with slippage included */
     const tokenInMaxAmount = quote.amount
       .toDec()
-      .mul(DecUtils.getTenExponentNInPrecisionRange(fromAsset.coinDecimals))
-      .mul(new Dec(1).add(maxSlippage))
+      .mul(DecUtils.getTenExponentNInPrecisionRange(tokenInCoinDecimals))
+      .mul(new Dec(1).add(new Dec(maxSlippage)))
       .truncate()
       .toString();
 
@@ -1294,28 +1287,24 @@ function getSwapTxParameters({
   }
 }
 
-function getSwapMessages({
+async function getSwapMessages({
   coinAmount,
   maxSlippage,
   quote,
-  fromAsset,
-  toAsset,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinMinimalDenom,
+  tokenInCoinDecimals,
+  tokenOutCoinDecimals,
   userOsmoAddress,
   quoteType = "out-given-in",
 }: {
   coinAmount: string;
-  maxSlippage: Dec | undefined;
+  maxSlippage: string | undefined;
   quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinMinimalDenom: string;
+  tokenOutCoinDecimals: number;
+  tokenInCoinDecimals: number;
   userOsmoAddress: string | undefined;
   quoteType?: QuoteType;
 }) {
@@ -1327,8 +1316,10 @@ function getSwapMessages({
     txParams = getSwapTxParameters({
       coinAmount,
       maxSlippage,
-      fromAsset,
-      toAsset,
+      tokenInCoinMinimalDenom,
+      tokenOutCoinMinimalDenom,
+      tokenOutCoinDecimals,
+      tokenInCoinDecimals,
       quote,
       quoteType,
     });
@@ -1348,13 +1339,13 @@ function getSwapMessages({
 
     return [
       routes.length === 1
-        ? makeSwapExactAmountInMsg({
+        ? await makeSwapExactAmountInMsg({
             pools,
             tokenIn: tokenIn!,
             tokenOutMinAmount: tokenOutMinAmount!,
             userOsmoAddress,
           })
-        : makeSplitRoutesSwapExactAmountInMsg({
+        : await makeSplitRoutesSwapExactAmountInMsg({
             routes: typedRoutes,
             tokenIn: tokenIn!,
             tokenOutMinAmount: tokenOutMinAmount!,
@@ -1375,13 +1366,13 @@ function getSwapMessages({
 
     return [
       routes.length === 1
-        ? makeSwapExactAmountOutMsg({
+        ? await makeSwapExactAmountOutMsg({
             pools,
             tokenOut: tokenOut!,
             tokenInMaxAmount: tokenInMaxAmount!,
             userOsmoAddress,
           })
-        : makeSplitRoutesSwapExactAmountOutMsg({
+        : await makeSplitRoutesSwapExactAmountOutMsg({
             routes: typedRoutes,
             tokenOut: tokenOut!,
             tokenInMaxAmount: tokenInMaxAmount!,
@@ -1401,7 +1392,7 @@ export type QuoteType = "out-given-in" | "in-given-out";
 function useQueryRouterBestQuote(
   input: Omit<
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
-    "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
+    "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
     tokenIn: MinimalAsset &
       Partial<{
@@ -1474,11 +1465,15 @@ function useQueryRouterBestQuote(
                     ...quote,
                     messages: getSwapMessages({
                       quote,
-                      toAsset: input.tokenOut,
-                      fromAsset: input.tokenIn,
-                      maxSlippage: input.maxSlippage,
+                      tokenInCoinMinimalDenom:
+                        input.tokenOut?.coinMinimalDenom ?? "",
+                      tokenOutCoinMinimalDenom:
+                        input.tokenIn?.coinMinimalDenom ?? "",
+                      tokenOutCoinDecimals: input.tokenOut?.coinDecimals ?? 0,
+                      maxSlippage: input.maxSlippage?.toString() || "",
                       coinAmount: input.tokenInAmount,
                       userOsmoAddress: account?.address,
+                      tokenInCoinDecimals: input.tokenIn?.coinDecimals ?? 0,
                     }),
                   };
                 },
@@ -1525,11 +1520,15 @@ function useQueryRouterBestQuote(
                   ...quote,
                   messages: getSwapMessages({
                     quote,
-                    toAsset: input.tokenOut,
-                    fromAsset: input.tokenIn,
-                    maxSlippage: input.maxSlippage,
+                    tokenInCoinMinimalDenom:
+                      input.tokenOut?.coinMinimalDenom ?? "",
+                    tokenOutCoinMinimalDenom:
+                      input.tokenIn?.coinMinimalDenom ?? "",
+                    tokenOutCoinDecimals: input.tokenOut?.coinDecimals ?? 0,
+                    maxSlippage: input.maxSlippage?.toString() || "",
                     coinAmount: input.tokenInAmount,
                     userOsmoAddress: account?.address,
+                    tokenInCoinDecimals: input.tokenIn?.coinDecimals ?? 0,
                     quoteType: "in-given-out",
                   }),
                 };
@@ -1592,6 +1591,30 @@ function useQueryRouterBestQuote(
     };
   }, [bestData, quoteType, input.tokenInAmount, input.tokenIn, input.tokenOut]);
 
+  const { value: messages } = useAsync(async () => {
+    if (!bestData) return undefined;
+    const messages = await getSwapMessages({
+      quote: bestData,
+      tokenOutCoinDecimals: input.tokenOut.coinDecimals,
+      tokenOutCoinMinimalDenom: input.tokenOut.coinMinimalDenom,
+      tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
+      tokenInCoinDecimals: input.tokenIn.coinDecimals,
+      maxSlippage: input.maxSlippage?.toString(),
+      coinAmount: input.tokenInAmount,
+      userOsmoAddress: account?.address,
+    });
+    return messages;
+  }, [
+    account?.address,
+    bestData,
+    input.maxSlippage,
+    input.tokenIn.coinMinimalDenom,
+    input.tokenInAmount,
+    input.tokenOut.coinDecimals,
+    input.tokenOut.coinMinimalDenom,
+    input.tokenIn.coinDecimals,
+  ]);
+  console.log("MESSAGES", messages);
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
@@ -1610,7 +1633,7 @@ function useQueryRouterBestQuote(
   );
 
   return {
-    data: acceptedQuote,
+    data: acceptedQuote ? { ...acceptedQuote, messages } : undefined,
     isLoading: !isOneSuccessful,
     error: someError,
     numSucceeded,

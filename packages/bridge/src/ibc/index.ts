@@ -1,5 +1,4 @@
-import { Registry } from "@cosmjs/proto-signing";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import type { Registry } from "@cosmjs/proto-signing";
 import {
   Chain,
   queryGeneratedChains,
@@ -7,8 +6,8 @@ import {
 } from "@osmosis-labs/server";
 import {
   calcAverageBlockTimeMs,
-  cosmosMsgOpts,
   estimateGasFee,
+  makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import cachified from "cachified";
@@ -31,7 +30,7 @@ export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
   readonly providerName = IbcBridgeProvider.ID;
 
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
@@ -149,7 +148,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainId: params.toChain.chainId.toString(),
     });
 
-    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
+    const { typeUrl, value: msg } = await makeIBCTransferMsg({
       receiver: params.toAddress,
       sender: params.fromAddress,
       sourceChannel,
@@ -168,14 +167,16 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: typeUrl,
             value: msg,
           }),
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -408,6 +409,17 @@ export class IbcBridgeProvider implements BridgeProvider {
       getFreshValue: () =>
         queryGeneratedChains({ zoneChainId: this.ctx.chainList[0].chain_id }),
     });
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
   }
 }
 

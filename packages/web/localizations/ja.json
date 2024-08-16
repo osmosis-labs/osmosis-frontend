@@ -95,7 +95,8 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール #{poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します",
+    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。"
   },
   "copied": "コピーしました！",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターを保存する",
     "rewards": "報酬",
-    "estimatedInYearlyRewards": "年間報酬で見積もる",
     "availableToClaim": "請求可能",
     "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
