@@ -422,7 +422,7 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {filteredAssetsData.length > 0 && (
+      {assetsData.length > 0 && (
         <div className="flex items-center justify-between gap-4 py-2 px-4">
           <p
             className={classNames("body1 grow text-osmoverse-300", {

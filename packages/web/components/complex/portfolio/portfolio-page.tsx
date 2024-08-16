@@ -2,6 +2,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
@@ -18,7 +19,6 @@ import {
   useDimension,
   useFeatureFlags,
   useTranslation,
-  useWalletSelect,
 } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -26,13 +26,11 @@ import { api } from "~/utils/trpc";
 import { CypherCard } from "./cypher-card";
 import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
-export const PortfolioPage: FunctionComponent = () => {
+export const PortfolioPage: FunctionComponent = observer(() => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const featureFlags = useFeatureFlags();
-  const { isLoading: isWalletLoading } = useWalletSelect();
-  console.log("isWalletLoading", isWalletLoading);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
@@ -191,4 +189,4 @@ export const PortfolioPage: FunctionComponent = () => {
       )}
     </div>
   );
-};
+});
