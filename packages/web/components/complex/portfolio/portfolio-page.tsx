@@ -53,17 +53,21 @@ export const PortfolioPage: FunctionComponent = () => {
         },
       }
     );
-  const userHasNoAssets = totalValueData && totalValueData.toDec().isZero();
 
-  const { data: allocation, isLoading: isLoadingAllocation } =
-    api.local.portfolio.getAllocation.useQuery(
-      {
-        address: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      }
-    );
+  const {
+    data: allocation,
+    isLoading: isLoadingAllocation,
+    isFetched: isFetchedAllocation,
+  } = api.local.portfolio.getAllocation.useQuery(
+    {
+      address: wallet?.address ?? "",
+    },
+    {
+      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+    }
+  );
+
+  const userHasNoAssets = allocation && allocation?.totalCap.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -83,9 +87,10 @@ export const PortfolioPage: FunctionComponent = () => {
       <section className="flex py-3" ref={overviewRef}>
         <AssetsOverview
           totalValue={
-            totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+            allocation?.totalCap ||
+            new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
           }
-          isTotalValueFetched={isTotalValueFetched}
+          isTotalValueFetched={isFetchedAllocation}
         />
       </section>
 

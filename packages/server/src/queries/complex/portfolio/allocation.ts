@@ -20,6 +20,7 @@ export interface GetAllocationResponse {
   all: FormattedAllocation[];
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
+  totalCap: PricePretty;
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -160,9 +161,15 @@ export async function getAllocation({
     allocationLimit
   );
 
+  const totalCap = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(categories["total-assets"].capitalization)
+  );
+
   return {
     all,
     assets,
     available,
+    totalCap,
   };
 }
