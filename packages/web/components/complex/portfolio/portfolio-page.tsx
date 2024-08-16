@@ -36,24 +36,6 @@ export const PortfolioPage: FunctionComponent = () => {
     onLoadEvent: [EventName.Portfolio.pageViewed],
   });
 
-  const { data: totalValueData, isFetched: isTotalValueFetched } =
-    api.edge.assets.getUserAssetsTotal.useQuery(
-      {
-        userOsmoAddress: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-        select: ({ value }) => value,
-
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
-
   const {
     data: allocation,
     isLoading: isLoadingAllocation,
@@ -136,7 +118,7 @@ export const PortfolioPage: FunctionComponent = () => {
                   )}
                 </Tab>
               </TabList>
-              {!isTotalValueFetched ? (
+              {!isFetchedAllocation ? (
                 <div className="mx-auto my-6 w-fit">
                   <Spinner />
                 </div>
