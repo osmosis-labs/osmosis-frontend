@@ -106,7 +106,7 @@ export const AssetsOverview: FunctionComponent<
 
   const [dataPoint, setDataPoint] = useState<DataPoint>({
     time: dayjs().unix() as Time,
-    value: 0,
+    value: undefined,
   });
 
   const [range, setRange] = useState<Range>("1d");
@@ -122,15 +122,6 @@ export const AssetsOverview: FunctionComponent<
     },
     {
       enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      onSuccess: (data) => {
-        if (data && data.length > 0) {
-          const lastItem = data[data.length - 1];
-          setDataPoint({
-            time: lastItem.time as Time,
-            value: undefined,
-          });
-        }
-      },
     }
   );
 
@@ -230,7 +221,7 @@ export const AssetsOverview: FunctionComponent<
             <Button
               className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
               onClick={() => startBridge({ direction: "withdraw" })}
-              disabled={totalValue && totalValue.toDec().isZero()}
+              disabled={totalValue && totalValue?.toDec().isZero()}
             >
               <Icon
                 id="withdraw"
