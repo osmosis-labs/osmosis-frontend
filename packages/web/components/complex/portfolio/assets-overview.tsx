@@ -15,7 +15,6 @@ import { useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { GetStartedWithOsmosis } from "~/components/complex/portfolio/get-started-with-osmosis";
 import {
   PortfolioHistoricalChart,
   PortfolioHistoricalChartMinimized,
@@ -146,154 +145,146 @@ export const AssetsOverview: FunctionComponent<
         marginBottom: isChartMinimized ? "" : `${CHART_CONTAINER_HEIGHT}px`,
       }}
     >
-      {wallet && wallet.isWalletConnected && wallet.address ? (
-        <>
-          <header className="flex justify-between">
-            <div className="mr-6 flex flex-col">
-              <span className="body1 text-osmoverse-300">
-                {t("assets.totalBalance")}
-              </span>
+      <header className="flex justify-between">
+        <div className="mr-6 flex flex-col">
+          <span className="body1 text-osmoverse-300">
+            {t("assets.totalBalance")}
+          </span>
 
-              <SkeletonLoader
-                className={classNames(
-                  `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
-                )}
-                isLoaded={isTotalValueFetched}
-              >
-                {isMobile ? (
-                  <h4>{totalDisplayValue?.toString()}</h4>
-                ) : (
-                  <h3>{totalDisplayValue?.toString()}</h3>
-                )}
-              </SkeletonLoader>
-              <SkeletonLoader
-                className={classNames(
-                  isPortfolioOverTimeDataIsFetched ? "mt-2" : "mt-2 h-6 w-16"
-                )}
-                isLoaded={isPortfolioOverTimeDataIsFetched}
-              >
-                <PortfolioPerformance
-                  selectedDifference={selectedDifferencePricePretty}
-                  selectedPercentage={selectedPercentageRatePretty}
-                  formattedDate={formattedDate}
-                  showDate={showDate}
-                />
-              </SkeletonLoader>
-              <div className="flex items-center gap-3 pt-6">
-                <Button
-                  className="flex h-[48px] !w-[125px] items-center gap-2 !rounded-full !p-0"
-                  onClick={() => startBridge({ direction: "deposit" })}
-                >
-                  <Icon id="deposit" height={16} width={16} />
-                  <div className="subtitle1">
-                    {t("assets.table.depositButton")}
-                  </div>
-                </Button>
-                <Button
-                  className="group flex h-[48px] !w-[94px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
-                  onClick={fiatRampSelection}
-                >
-                  <CreditCardIcon
-                    isAnimated
-                    classes={{
-                      backCard: "group-hover:stroke-[2]",
-                      frontCard:
-                        "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
-                    }}
-                  />
-                  <span className="subtitle1">{t("portfolio.buy")}</span>
-                </Button>
-                <Button
-                  className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
-                  onClick={() => startBridge({ direction: "withdraw" })}
-                  disabled={totalValue && totalValue.toDec().isZero()}
-                >
-                  <Icon
-                    id="withdraw"
-                    height={16}
-                    width={16}
-                    className="!h-4 !w-4"
-                  />
-                  <div className="subtitle1">
-                    {t("assets.table.withdrawButton")}
-                  </div>
-                </Button>
-              </div>
-            </div>
-            <Transition
-              show={isChartMinimized}
-              enter="transition ease-out duration-500"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="transition ease-out duration-500"
-              leaveFrom="opacity-100"
-              leaveTo="opacity-0"
-              className={classNames(
-                "mt-auto flex h-[156px] w-full flex-col items-end",
-                "w-full max-w-[344px]",
-                "xl:w-[383px] xl:max-w-[383px]",
-                "lg:w-[312px] lg:max-w-[312px]"
-              )}
-              as="div"
-            >
-              <button
-                className={classNames(
-                  "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
-                )}
-                onClick={() => setIsChartMinimized(false)}
-              >
-                <PortfolioHistoricalChartMinimized
-                  data={portfolioOverTimeData as AreaData<Time>[]}
-                  isFetched={isPortfolioOverTimeDataIsFetched}
-                  error={error}
-                />
-                <div className="absolute z-50 h-full w-full">
-                  <Icon
-                    id="resize-expand"
-                    className="absolute top-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
-                    height={16}
-                    width={16}
-                  />
-                </div>
-              </button>
-            </Transition>
-          </header>
-
-          <Transition
-            show={!isChartMinimized}
-            enter="ease-out duration-500 transition-opacity delay-[250ms]"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-out duration-[250ms] transition-opacity"
-            leaveFrom="opacity-100"
-            leaveTo=" opacity-0"
-            as="div"
-            unmount={false}
-            appear={true}
-            className="absolute top-full w-full"
+          <SkeletonLoader
+            className={classNames(
+              `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
+            )}
+            isLoaded={isTotalValueFetched}
           >
-            <PortfolioHistoricalChart
-              setIsChartMinimized={setIsChartMinimized}
+            {isMobile ? (
+              <h4>{totalDisplayValue?.toString()}</h4>
+            ) : (
+              <h3>{totalDisplayValue?.toString()}</h3>
+            )}
+          </SkeletonLoader>
+          <SkeletonLoader
+            className={classNames(
+              isPortfolioOverTimeDataIsFetched ? "mt-2" : "mt-2 h-6 w-16"
+            )}
+            isLoaded={isPortfolioOverTimeDataIsFetched}
+          >
+            <PortfolioPerformance
+              selectedDifference={selectedDifferencePricePretty}
+              selectedPercentage={selectedPercentageRatePretty}
+              formattedDate={formattedDate}
+              showDate={showDate}
+            />
+          </SkeletonLoader>
+          <div className="flex items-center gap-3 pt-6">
+            <Button
+              className="flex h-[48px] !w-[125px] items-center gap-2 !rounded-full !p-0"
+              onClick={() => startBridge({ direction: "deposit" })}
+            >
+              <Icon id="deposit" height={16} width={16} />
+              <div className="subtitle1">{t("assets.table.depositButton")}</div>
+            </Button>
+            <Button
+              className="group flex h-[48px] !w-[94px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:bg-gradient-positive hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)]"
+              onClick={fiatRampSelection}
+            >
+              <CreditCardIcon
+                isAnimated
+                classes={{
+                  backCard: "group-hover:stroke-[2]",
+                  frontCard:
+                    "group-hover:fill-[#71B5EB] group-hover:stroke-[2]",
+                }}
+              />
+              <span className="subtitle1">{t("portfolio.buy")}</span>
+            </Button>
+            <Button
+              className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
+              onClick={() => startBridge({ direction: "withdraw" })}
+              disabled={totalValue && totalValue.toDec().isZero()}
+            >
+              <Icon
+                id="withdraw"
+                height={16}
+                width={16}
+                className="!h-4 !w-4"
+              />
+              <div className="subtitle1">
+                {t("assets.table.withdrawButton")}
+              </div>
+            </Button>
+          </div>
+        </div>
+        <Transition
+          show={isChartMinimized}
+          enter="transition ease-out duration-500"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="transition ease-out duration-500"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+          className={classNames(
+            "mt-auto flex h-[156px] w-full flex-col items-end",
+            "w-full max-w-[344px]",
+            "xl:w-[383px] xl:max-w-[383px]",
+            "lg:w-[312px] lg:max-w-[312px]"
+          )}
+          as="div"
+        >
+          <button
+            className={classNames(
+              "group relative my-3 flex h-full w-full cursor-pointer overflow-clip rounded-[1.25rem] bg-opacity-10 p-0 hover:bg-osmoverse-900"
+            )}
+            onClick={() => setIsChartMinimized(false)}
+          >
+            <PortfolioHistoricalChartMinimized
               data={portfolioOverTimeData as AreaData<Time>[]}
               isFetched={isPortfolioOverTimeDataIsFetched}
-              setDataPoint={setDataPoint}
-              range={range}
-              setRange={setRange}
               error={error}
-              setShowDate={setShowDate}
-              resetDataPoint={() => {
-                setDataPoint({
-                  time: dayjs().unix() as Time,
-                  value: +totalValue.toDec().toString(),
-                });
-                setShowDate(false);
-              }}
             />
-          </Transition>
-        </>
-      ) : (
-        <GetStartedWithOsmosis />
-      )}
+            <div className="absolute z-50 h-full w-full">
+              <Icon
+                id="resize-expand"
+                className="absolute top-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                height={16}
+                width={16}
+              />
+            </div>
+          </button>
+        </Transition>
+      </header>
+
+      <Transition
+        show={!isChartMinimized}
+        enter="ease-out duration-500 transition-opacity delay-[250ms]"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-out duration-[250ms] transition-opacity"
+        leaveFrom="opacity-100"
+        leaveTo=" opacity-0"
+        as="div"
+        unmount={false}
+        appear={true}
+        className="absolute top-full w-full"
+      >
+        <PortfolioHistoricalChart
+          setIsChartMinimized={setIsChartMinimized}
+          data={portfolioOverTimeData as AreaData<Time>[]}
+          isFetched={isPortfolioOverTimeDataIsFetched}
+          setDataPoint={setDataPoint}
+          range={range}
+          setRange={setRange}
+          error={error}
+          setShowDate={setShowDate}
+          resetDataPoint={() => {
+            setDataPoint({
+              time: dayjs().unix() as Time,
+              value: +totalValue.toDec().toString(),
+            });
+            setShowDate(false);
+          }}
+        />
+      </Transition>
     </div>
   );
 });

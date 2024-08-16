@@ -24,6 +24,7 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { CypherCard } from "./cypher-card";
+import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
 export const PortfolioPage: FunctionComponent = () => {
   const { t } = useTranslation();
@@ -74,9 +75,8 @@ export const PortfolioPage: FunctionComponent = () => {
 
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
-  console.log("isWalletConnected", isWalletConnected);
 
-  return isWalletConnected ? (
+  return (
     <div
       className={classNames(
         "flex justify-center p-8 pt-4",
@@ -87,96 +87,108 @@ export const PortfolioPage: FunctionComponent = () => {
         }
       )}
     >
-      <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
-        <section className="flex py-3" ref={overviewRef}>
-          <AssetsOverview
-            totalValue={
-              totalValueData || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-            }
-            isTotalValueFetched={isTotalValueFetched}
-          />
-        </section>
-        <section className="w-full py-3">
-          <TabGroup>
-            <TabList className="-mx-4 flex" ref={tabsRef}>
-              <Tab
-                disabled={userHasNoAssets}
-                className="py-3 px-4 disabled:opacity-80"
-                onClick={() => {
-                  logEvent([
-                    EventName.Portfolio.tabClicked,
-                    { section: "Your balances" },
-                  ]);
-                }}
-              >
-                {({ selected }) => (
-                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.yourBalances")}
-                  </h6>
+      {isWalletConnected ? (
+        <>
+          <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
+            <section className="flex py-3" ref={overviewRef}>
+              <AssetsOverview
+                totalValue={
+                  totalValueData ||
+                  new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                }
+                isTotalValueFetched={isTotalValueFetched}
+              />
+            </section>
+            <section className="w-full py-3">
+              <TabGroup>
+                <TabList className="-mx-4 flex" ref={tabsRef}>
+                  <Tab
+                    disabled={userHasNoAssets}
+                    className="py-3 px-4 disabled:opacity-80"
+                    onClick={() => {
+                      logEvent([
+                        EventName.Portfolio.tabClicked,
+                        { section: "Your balances" },
+                      ]);
+                    }}
+                  >
+                    {({ selected }) => (
+                      <h6
+                        className={!selected ? "text-osmoverse-500" : undefined}
+                      >
+                        {t("portfolio.yourBalances")}
+                      </h6>
+                    )}
+                  </Tab>
+                  <Tab
+                    disabled={userHasNoAssets}
+                    className="py-3 px-4 disabled:opacity-80 "
+                    onClick={() => {
+                      logEvent([
+                        EventName.Portfolio.tabClicked,
+                        { section: "Your positions" },
+                      ]);
+                    }}
+                  >
+                    {({ selected }) => (
+                      <h6
+                        className={!selected ? "text-osmoverse-500" : undefined}
+                      >
+                        {t("portfolio.yourPositions")}
+                      </h6>
+                    )}
+                  </Tab>
+                </TabList>
+                {!isTotalValueFetched ? (
+                  <div className="mx-auto my-6 w-fit">
+                    <Spinner />
+                  </div>
+                ) : userHasNoAssets ? (
+                  <UserZeroBalanceTableSplash />
+                ) : (
+                  <TabPanels>
+                    <TabPanel>
+                      <AssetBalancesTable
+                        tableTopPadding={overviewHeight + tabsHeight}
+                      />
+                    </TabPanel>
+                    <TabPanel>
+                      <UserPositionsSection address={wallet?.address} />
+                    </TabPanel>
+                  </TabPanels>
                 )}
-              </Tab>
-              <Tab
-                disabled={userHasNoAssets}
-                className="py-3 px-4 disabled:opacity-80 "
-                onClick={() => {
-                  logEvent([
-                    EventName.Portfolio.tabClicked,
-                    { section: "Your positions" },
-                  ]);
-                }}
-              >
-                {({ selected }) => (
-                  <h6 className={!selected ? "text-osmoverse-500" : undefined}>
-                    {t("portfolio.yourPositions")}
-                  </h6>
-                )}
-              </Tab>
-            </TabList>
-            {!isTotalValueFetched ? (
-              <div className="mx-auto my-6 w-fit">
-                <Spinner />
-              </div>
-            ) : userHasNoAssets ? (
-              <UserZeroBalanceTableSplash />
-            ) : (
-              <TabPanels>
-                <TabPanel>
-                  <AssetBalancesTable
-                    tableTopPadding={overviewHeight + tabsHeight}
-                  />
-                </TabPanel>
-                <TabPanel>
-                  <UserPositionsSection address={wallet?.address} />
-                </TabPanel>
-              </TabPanels>
-            )}
-          </TabGroup>
-        </section>
-      </main>
+              </TabGroup>
+            </section>
+          </main>
 
-      <aside
-        className={classNames(
-          "flex w-[320px] min-w-[320px] flex-col",
-          "1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16",
-          "md:flex-col-reverse"
-        )}
-      >
-        <div
-          className={classNames(
-            "w-full",
-            "1.5xl:w-[320px] 1.5xl:min-w-[320px]",
-            "md:w-full md:max-w-full"
-          )}
-        >
-          {featureFlags.cypherCard && <CypherCard />}
-          {!isLoadingAllocation && !userHasNoAssets && (
-            <Allocation allocation={allocation} />
-          )}
+          <aside
+            className={classNames(
+              "flex w-[320px] min-w-[320px] flex-col",
+              "1.5xl:w-full 1.5xl:min-w-full 1.5xl:flex-row-reverse 1.5xl:gap-x-16",
+              "md:flex-col-reverse"
+            )}
+          >
+            <div
+              className={classNames(
+                "w-full",
+                "1.5xl:w-[320px] 1.5xl:min-w-[320px]",
+                "md:w-full md:max-w-full"
+              )}
+            >
+              {featureFlags.cypherCard && <CypherCard />}
+              {!isLoadingAllocation && !userHasNoAssets && (
+                <Allocation allocation={allocation} />
+              )}
+            </div>
+            <RecentActivity />
+          </aside>
+        </>
+      ) : (
+        <div className="flex flex-col">
+          <GetStartedWithOsmosis />
+          <WalletDisconnectedSplash />
         </div>
-        <RecentActivity />
-      </aside>
+      )}
     </div>
-  ) : isWalletLoading ? null : (
-    <WalletDisconnectedSplash />
   );
 };
