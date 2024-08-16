@@ -124,14 +124,12 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
-    quoteType,
   });
 
   const outAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets: reverseSwapAssets,
-    quoteType,
   });
 
   // load flags
@@ -319,11 +317,12 @@ export function useSwap(
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
     messages: quote?.messages,
-    enabled: networkFeeQueryEnabled,
+    enabled: true,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
+
   const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
 
   const hasOverSpendLimitError = useMemo(() => {
@@ -923,12 +922,10 @@ export function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
-  quoteType = "out-given-in",
 }: {
   swapAssets: ReturnType<typeof useSwapAssets>;
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
-  quoteType?: QuoteType;
 }) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -980,8 +977,7 @@ export function useSwapAmountInput({
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
-    Boolean(quoteForCurrentBalance) &&
-    quoteType === "out-given-in";
+    Boolean(quoteForCurrentBalance);
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
@@ -1184,7 +1180,7 @@ function getSwapTxParameters({
   tokenOutCoinMinimalDenom,
   tokenInCoinDecimals,
   tokenOutCoinDecimals,
-  quoteType = "out-given-in",
+  quoteType,
 }: {
   coinAmount: string;
   maxSlippage: string;
@@ -1193,7 +1189,7 @@ function getSwapTxParameters({
   tokenOutCoinMinimalDenom: string;
   tokenInCoinDecimals: number;
   tokenOutCoinDecimals: number;
-  quoteType?: QuoteType;
+  quoteType: QuoteType;
 }) {
   if (isNil(quote)) {
     throw new Error(
@@ -1460,24 +1456,6 @@ function useQueryRouterBestQuote(
               {
                 enabled: enabled && Boolean(availableRouterKeys.length),
 
-                select: (quote) => {
-                  return {
-                    ...quote,
-                    messages: getSwapMessages({
-                      quote,
-                      tokenInCoinMinimalDenom:
-                        input.tokenOut?.coinMinimalDenom ?? "",
-                      tokenOutCoinMinimalDenom:
-                        input.tokenIn?.coinMinimalDenom ?? "",
-                      tokenOutCoinDecimals: input.tokenOut?.coinDecimals ?? 0,
-                      maxSlippage: input.maxSlippage?.toString() || "",
-                      coinAmount: input.tokenInAmount,
-                      userOsmoAddress: account?.address,
-                      tokenInCoinDecimals: input.tokenIn?.coinDecimals ?? 0,
-                    }),
-                  };
-                },
-
                 // quotes should not be considered fresh for long, otherwise
                 // the gas simulation will fail due to slippage and the user would see errors
                 staleTime: 5_000,
@@ -1514,25 +1492,6 @@ function useQueryRouterBestQuote(
             },
             {
               enabled: enabled && Boolean(availableRouterKeys.length),
-
-              select: (quote) => {
-                return {
-                  ...quote,
-                  messages: getSwapMessages({
-                    quote,
-                    tokenInCoinMinimalDenom:
-                      input.tokenOut?.coinMinimalDenom ?? "",
-                    tokenOutCoinMinimalDenom:
-                      input.tokenIn?.coinMinimalDenom ?? "",
-                    tokenOutCoinDecimals: input.tokenOut?.coinDecimals ?? 0,
-                    maxSlippage: input.maxSlippage?.toString() || "",
-                    coinAmount: input.tokenInAmount,
-                    userOsmoAddress: account?.address,
-                    tokenInCoinDecimals: input.tokenIn?.coinDecimals ?? 0,
-                    quoteType: "in-given-out",
-                  }),
-                };
-              },
 
               // quotes should not be considered fresh for long, otherwise
               // the gas simulation will fail due to slippage and the user would see errors
@@ -1602,7 +1561,9 @@ function useQueryRouterBestQuote(
       maxSlippage: input.maxSlippage?.toString(),
       coinAmount: input.tokenInAmount,
       userOsmoAddress: account?.address,
+      quoteType,
     });
+
     return messages;
   }, [
     account?.address,
@@ -1613,8 +1574,9 @@ function useQueryRouterBestQuote(
     input.tokenOut.coinDecimals,
     input.tokenOut.coinMinimalDenom,
     input.tokenIn.coinDecimals,
+    quoteType,
   ]);
-  console.log("MESSAGES", messages);
+
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
