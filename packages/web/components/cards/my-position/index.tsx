@@ -132,7 +132,7 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          {positionPerformance && featureFlags.positionRoi && (
+          {/* {positionPerformance && featureFlags.positionRoi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
               value={positionPerformance.roi.maxDecimals(0).toString()}
@@ -142,7 +142,7 @@ export const MyPositionCard: FunctionComponent<{
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
             isFullRange={isFullRange}
-          />
+          /> */}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
             value={formatPretty(currentValue)}
