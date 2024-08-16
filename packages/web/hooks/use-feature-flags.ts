@@ -31,7 +31,8 @@ export type AvailableFlags =
   | "oneClickTrading"
   | "limitOrders"
   | "advancedChart"
-  | "cypherCard";
+  | "cypherCard"
+  | "newPortfolioPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -65,6 +66,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   _isInitialized: false,
   _isClientIDPresent: false,
   cypherCard: false,
+  newPortfolioPage: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =

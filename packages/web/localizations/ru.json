@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Купить",
-    "yourAssets": "Ваши активы",
+    "yourBalances": "Ваши балансы",
     "yourPositions": "Ваши позиции",
+    "searchBalances": "Поиск остатков",
     "yourSuperchargedPositions": "Ваши суперзаряженные позиции",
     "yourLiquidityPools": "Ваши пулы ликвидности",
     "connectWallet": "Подключите свой кошелек, чтобы начать отслеживать свои балансы и позиции на Osmosis.",
@@ -325,7 +326,10 @@
     "seeAll": "Смотреть все",
     "show": "Показывать",
     "hide": "Скрывать",
-    "hidden": "Скрытый"
+    "hidden": "Скрытый",
+    "cypherSpend": "Платить за осмос",
+    "cypherOrder": "Закажите карту сейчас",
+    "cypherBeta": "Бета"
   },
   "buyTokens": "Купить токены",
   "components": {

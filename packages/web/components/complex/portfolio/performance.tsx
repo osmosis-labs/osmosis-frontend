@@ -11,14 +11,14 @@ export const PortfolioPerformance: FunctionComponent<{
   showDate: boolean;
 }> = ({ selectedDifference, selectedPercentage, formattedDate, showDate }) => {
   return (
-    <div className="body1 md:caption flex text-bullish-400">
+    <div className="body1 flex text-bullish-400">
       <PriceChange
         className="ml-2"
         priceChange={selectedPercentage}
         value={selectedDifference}
       />
       {showDate && formattedDate && (
-        <span className="ml-2 text-osmoverse-400">{formattedDate}</span>
+        <span className="body1 ml-2 text-osmoverse-400">{formattedDate}</span>
       )}
     </div>
   );
