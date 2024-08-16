@@ -88,7 +88,7 @@ const timeToLocal = (originalTime: number) => {
 
 export const AssetsOverview: FunctionComponent<
   {
-    totalValue: PricePretty;
+    totalValue?: PricePretty;
     isTotalValueFetched?: boolean;
   } & CustomClasses
 > = observer(({ totalValue, isTotalValueFetched }) => {
@@ -127,7 +127,7 @@ export const AssetsOverview: FunctionComponent<
           const lastItem = data[data.length - 1];
           setDataPoint({
             time: lastItem.time as Time,
-            value: lastItem.value,
+            value: undefined,
           });
         }
       },
@@ -142,8 +142,9 @@ export const AssetsOverview: FunctionComponent<
     : undefined;
 
   const totalDisplayValue =
-    new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
-    totalValue?.toString();
+    dataPoint.value !== undefined
+      ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
+      : totalValue?.toString();
 
   const [isChartMinimized, setIsChartMinimized] = useState(
     width < Breakpoint.lg ? false : true
@@ -183,7 +184,7 @@ export const AssetsOverview: FunctionComponent<
             className={classNames(
               `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
             )}
-            isLoaded={isTotalValueFetched}
+            isLoaded={isTotalValueFetched || totalDisplayValue === undefined}
           >
             {isMobile ? (
               <h4>{totalDisplayValue?.toString()}</h4>

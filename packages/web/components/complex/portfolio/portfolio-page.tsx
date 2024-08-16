@@ -1,6 +1,4 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
@@ -83,9 +81,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
           <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
             <section className="flex py-3" ref={overviewRef}>
               <AssetsOverview
-                totalValue={
-                  totalCap || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
-                }
+                totalValue={totalCap}
                 isTotalValueFetched={isFetchedAllocation}
               />
             </section>
