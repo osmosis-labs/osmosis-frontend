@@ -52,7 +52,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const totalCap = allocation?.totalCap;
 
-  const userHasNoAssets = allocation && totalCap.toDec().isZero();
+  const userHasNoAssets = allocation && totalCap?.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
