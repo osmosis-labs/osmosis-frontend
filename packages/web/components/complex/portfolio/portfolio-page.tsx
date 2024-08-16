@@ -37,34 +37,22 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     onLoadEvent: [EventName.Portfolio.pageViewed],
   });
 
-  const { data: totalValueData, isFetched: isTotalValueFetched } =
-    api.edge.assets.getUserAssetsTotal.useQuery(
-      {
-        userOsmoAddress: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-        select: ({ value }) => value,
+  const {
+    data: allocation,
+    isLoading: isLoadingAllocation,
+    isFetched: isFetchedAllocation,
+  } = api.local.portfolio.getAllocation.useQuery(
+    {
+      address: wallet?.address ?? "",
+    },
+    {
+      enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+    }
+  );
 
-        // expensive query
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
-  const userHasNoAssets = totalValueData && totalValueData.toDec().isZero();
+  const totalCap = allocation?.totalCap;
 
-  const { data: allocation, isLoading: isLoadingAllocation } =
-    api.local.portfolio.getAllocation.useQuery(
-      {
-        address: wallet?.address ?? "",
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      }
-    );
+  const userHasNoAssets = allocation && totalCap.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -96,10 +84,9 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             <section className="flex py-3" ref={overviewRef}>
               <AssetsOverview
                 totalValue={
-                  totalValueData ||
-                  new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+                  totalCap || new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
                 }
-                isTotalValueFetched={isTotalValueFetched}
+                isTotalValueFetched={isFetchedAllocation}
               />
             </section>
             <section className="w-full py-3">
@@ -142,7 +129,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     )}
                   </Tab>
                 </TabList>
-                {!isTotalValueFetched ? (
+                {!isFetchedAllocation ? (
                   <div className="mx-auto my-6 w-fit">
                     <Spinner />
                   </div>

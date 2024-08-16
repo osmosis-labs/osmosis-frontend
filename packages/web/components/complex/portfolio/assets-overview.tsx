@@ -12,6 +12,7 @@ import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useEffect } from "react";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -68,6 +69,21 @@ const calculatePortfolioPerformance = (
     selectedDifferencePricePretty,
     totalPriceChange,
   };
+};
+
+const timeToLocal = (originalTime: number) => {
+  const d = new Date(originalTime * 1000);
+  return (
+    Date.UTC(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    ) / 1000
+  );
 };
 
 export const AssetsOverview: FunctionComponent<
@@ -137,6 +153,17 @@ export const AssetsOverview: FunctionComponent<
     if (width < Breakpoint.lg) setIsChartMinimized(false);
   }, [isMobile, width]);
 
+  const localizedPortfolioOverTimeData = useMemo(
+    () =>
+      portfolioOverTimeData?.map((data) => {
+        return {
+          time: timeToLocal(data.time),
+          value: data.value,
+        };
+      }),
+    [portfolioOverTimeData]
+  );
+
   return isWalletLoading ? null : (
     <div
       className={classNames(
@@ -152,7 +179,6 @@ export const AssetsOverview: FunctionComponent<
           <span className="body1 text-osmoverse-300">
             {t("assets.totalBalance")}
           </span>
-
           <SkeletonLoader
             className={classNames(
               `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
@@ -240,7 +266,7 @@ export const AssetsOverview: FunctionComponent<
             onClick={() => setIsChartMinimized(false)}
           >
             <PortfolioHistoricalChartMinimized
-              data={portfolioOverTimeData as AreaData<Time>[]}
+              data={localizedPortfolioOverTimeData as AreaData<Time>[]}
               isFetched={isPortfolioOverTimeDataIsFetched}
               error={error}
             />
@@ -271,7 +297,7 @@ export const AssetsOverview: FunctionComponent<
       >
         <PortfolioHistoricalChart
           setIsChartMinimized={setIsChartMinimized}
-          data={portfolioOverTimeData as AreaData<Time>[]}
+          data={localizedPortfolioOverTimeData as AreaData<Time>[]}
           isFetched={isPortfolioOverTimeDataIsFetched}
           setDataPoint={setDataPoint}
           range={range}

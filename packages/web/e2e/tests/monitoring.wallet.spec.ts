@@ -30,7 +30,7 @@ test.describe("Test Filled Order feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Filled Trades", password);
+    await walletPage.setWalletNameAndPassword("Monitoring E2E Tests", password);
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -50,7 +50,7 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("2.99");
-    await tradePage.setLimitPriceChange("2%");
+    await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
@@ -76,7 +76,7 @@ test.describe("Test Filled Order feature", () => {
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("1.05 USDC (Noble/channel-750)");
+    expect(msgContentAmount).toContain('"quantity": "1050000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
