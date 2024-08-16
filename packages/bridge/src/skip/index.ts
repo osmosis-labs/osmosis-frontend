@@ -477,7 +477,7 @@ export class SkipBridgeProvider implements BridgeProvider {
       const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
         sender: cosmwasmData.sender,
         contract: cosmwasmData.contract,
-        msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
+        msg: cosmwasmData.msg,
         funds: cosmwasmData.funds,
       });
 
