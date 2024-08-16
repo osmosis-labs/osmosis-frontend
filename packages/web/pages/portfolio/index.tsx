@@ -1,8 +1,7 @@
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import { useEffect } from "react";
 
+import { AssetsPageV1 } from "~/components/complex/assets-page-v1";
 import { PortfolioPage } from "~/components/complex/portfolio/portfolio-page";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 
@@ -13,8 +12,6 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 const Portfolio: NextPage = () => {
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
-
-  useRedirectToAssetsPage();
 
   if (!featureFlags._isInitialized) {
     return (
@@ -27,42 +24,13 @@ const Portfolio: NextPage = () => {
 
   return (
     <>
-      <PortfolioPage />
-
-      {/* <NextSeo
+      <NextSeo
         title={t("seo.portfolio.title")}
         description={t("seo.portfolio.description")}
       />
-      {featureFlags.portfolioPageAndNewAssetsPage ? (
-        <PortfolioPage />
-      ) : (
-        <AssetsPageV1 />
-      )} */}
+      {featureFlags.newPortfolioPage ? <PortfolioPage /> : <AssetsPageV1 />}
     </>
   );
 };
-
-/**  Redirect to assets page if neither new assets page (old page moves here)
-     or new portfolio page is enabled */
-function useRedirectToAssetsPage() {
-  const featureFlags = useFeatureFlags();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (
-      featureFlags._isInitialized &&
-      !featureFlags.portfolioPageAndNewAssetsPage &&
-      !featureFlags.newAssetsPage &&
-      router.isReady
-    ) {
-      router.push("/assets");
-    }
-  }, [
-    featureFlags._isInitialized,
-    featureFlags.portfolioPageAndNewAssetsPage,
-    featureFlags.newAssetsPage,
-    router,
-  ]);
-}
 
 export default Portfolio;
