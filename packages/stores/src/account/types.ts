@@ -1,4 +1,4 @@
-import { AminoMsg, StdFee } from "@cosmjs/amino";
+import type { AminoMsg, StdFee } from "@cosmjs/amino";
 import {
   ChainWalletBase,
   SignOptions as CosmoskitSignOptions,
@@ -8,7 +8,7 @@ import {
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
-import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
+import type { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
 
 import { WalletConnectionInProgressError } from "./wallet-errors";

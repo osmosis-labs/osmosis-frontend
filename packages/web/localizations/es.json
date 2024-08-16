@@ -95,7 +95,8 @@
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
     "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #{poolId}"
+    "goToPool": "Ir a la piscina #{poolId}",
+    "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia."
   },
   "copied": "¡Copiado!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
     "rewards": "Recompensas",
-    "estimatedInYearlyRewards": "Estimado en recompensas anuales",
     "availableToClaim": "disponible para reclamar",
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
@@ -1249,6 +1249,7 @@
     "filled": "Completado",
     "claimable": "Reclamable",
     "claimAndClose": "Reclamar y cerrar",
+    "close": "Cerca",
     "claim": "Afirmar",
     "accept": "Aceptar",
     "cancelled": "Cancelado",

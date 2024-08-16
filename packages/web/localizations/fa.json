@@ -95,7 +95,8 @@
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
     "onePosition": "1 موقعیت",
-    "goToPool": "رفتن به استخر #{poolId}"
+    "goToPool": "رفتن به استخر #{poolId}",
+    "errorFetchingPositions": "جزئیات موقعیت واکشی نشد. لطفاً صفحه را بازخوانی کنید. اگر مشکل برطرف نشد، با پشتیبانی تماس بگیرید."
   },
   "copied": "کپی شده!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "بازنشانی فیلترها",
     "saveFilters": "ذخیره فیلترها",
     "rewards": "پاداش",
-    "estimatedInYearlyRewards": "بر اساس جوایز سالانه تخمین زده می شود",
     "availableToClaim": "در دسترس برای ادعا",
     "claimAllRewards": "تمام جوایز را مطالبه کنید",
     "join": "پیوستن",
@@ -1249,6 +1249,7 @@
     "filled": "پر شده است",
     "claimable": "قابل ادعا",
     "claimAndClose": "ادعا کنید و ببندید",
+    "close": "بستن",
     "claim": "ادعا کنید",
     "accept": "تایید کنید",
     "cancelled": "لغو شد",

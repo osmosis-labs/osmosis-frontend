@@ -95,7 +95,8 @@
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
-    "goToPool": "前往泳池 #{poolId}"
+    "goToPool": "前往泳池 #{poolId}",
+    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。"
   },
   "copied": "複製了！",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "重置過濾器",
     "saveFilters": "保存過濾器",
     "rewards": "獎勵",
-    "estimatedInYearlyRewards": "預計每年獎勵",
     "availableToClaim": "可索賠",
     "claimAllRewards": "領取所有獎勵",
     "join": "加入",
@@ -1249,6 +1249,7 @@
     "filled": "填充",
     "claimable": "可索賠",
     "claimAndClose": "索賠並關閉",
+    "close": "關閉",
     "claim": "宣稱",
     "accept": "接受",
     "cancelled": "取消",

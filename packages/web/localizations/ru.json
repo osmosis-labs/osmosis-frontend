@@ -95,7 +95,8 @@
     "totalBalance": "Итоговый баланс",
     "numPositions": "{numPositions} позиции",
     "onePosition": "1 позиция",
-    "goToPool": "Перейти к пулу № #{poolId}"
+    "goToPool": "Перейти к пулу № #{poolId}",
+    "errorFetchingPositions": "Не удалось получить данные о позиции. Попробуйте обновить страницу. Если проблема не устранена, обратитесь в службу поддержки."
   },
   "copied": "Скопировано!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "Сбросить фильтры",
     "saveFilters": "Сохранить фильтры",
     "rewards": "Награды",
-    "estimatedInYearlyRewards": "Расчетное годовое вознаграждение",
     "availableToClaim": "доступен для претензии",
     "claimAllRewards": "Получите все награды",
     "join": "Присоединиться",
@@ -1249,6 +1249,7 @@
     "filled": "Заполненный",
     "claimable": "Заявленный",
     "claimAndClose": "Заявить права и закрыть",
+    "close": "Закрывать",
     "claim": "Требовать",
     "accept": "Принимать",
     "cancelled": "Отменено",

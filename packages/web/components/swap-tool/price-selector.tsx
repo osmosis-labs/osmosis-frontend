@@ -35,7 +35,7 @@ const VALID_QUOTES: MainnetAssetSymbols[] = [
   "USDC.sol.wh",
   "USDC.eth.grv",
   "USDC.eth.wh",
-  "USDC.matic.axl",
+  "USDC.e.matic.axl",
   "USDC.avax.axl",
   "USDC.eth.axl",
   "USDT.eth.grv",
@@ -56,230 +56,281 @@ function sortByAmount(
     : 1;
 }
 
-export const PriceSelector = memo(() => {
-  const { t } = useTranslation();
+interface PriceSelectorProps {
+  initialBaseDenom: string;
+  initialQuoteDenom: string;
+}
 
-  const [tab, setTab] = useQueryState("tab");
-  const [quote] = useQueryState("quote", parseAsString.withDefault("USDC"));
-  const [base, setBase] = useQueryState(
-    "from",
-    parseAsString.withDefault("OSMO")
-  );
-  const [_, setSellOpen] = useQueryState(
-    "sellOpen",
-    parseAsBoolean.withDefault(false)
-  );
+export const PriceSelector = memo(
+  ({
+    initialBaseDenom = "ATOM",
+    initialQuoteDenom = "USDC",
+  }: PriceSelectorProps) => {
+    const { t } = useTranslation();
 
-  const [__, setBuyOpen] = useQueryState(
-    "buyOpen",
-    parseAsBoolean.withDefault(false)
-  );
+    const [tab, setTab] = useQueryState("tab");
+    const [quote] = useQueryState(
+      "quote",
+      parseAsString.withDefault(initialQuoteDenom || "USDC")
+    );
+    const [base, setBase] = useQueryState(
+      "from",
+      parseAsString.withDefault(initialBaseDenom || "ATOM")
+    );
+    const [_, setSellOpen] = useQueryState(
+      "sellOpen",
+      parseAsBoolean.withDefault(false)
+    );
 
-  const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
+    const [__, setBuyOpen] = useQueryState(
+      "buyOpen",
+      parseAsBoolean.withDefault(false)
+    );
 
-  const quoteAsset = useMemo(
-    () =>
-      getAssetFromAssetList({ assetLists: AssetLists, symbol: quote })
-        ?.rawAsset as Asset | undefined,
-    [quote]
-  );
+    const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
-  useEffect(() => {
-    if (quote === base) {
-      setBase("OSMO");
-    }
-  }, [base, quote, setBase]);
+    const quoteAsset = useMemo(
+      () =>
+        getAssetFromAssetList({ assetLists: AssetLists, symbol: quote })
+          ?.rawAsset as Asset | undefined,
+      [quote]
+    );
 
-  const { accountStore } = useStore();
-  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+    useEffect(() => {
+      if (quote === base) {
+        setBase("ATOM");
+      }
+    }, [base, quote, setBase]);
 
-  const defaultQuotes = useMemo(
-    () =>
-      UI_DEFAULT_QUOTES.map(
-        (symbol) =>
-          getAssetFromAssetList({
-            assetLists: AssetLists,
-            symbol,
-          })?.rawAsset
-      ).filter(Boolean) as Asset[],
-    []
-  );
+    const { accountStore } = useStore();
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
-    { userOsmoAddress: wallet?.address },
-    {
-      enabled: !!wallet?.address,
-      select: (data) =>
-        data.items
-          .map((walletAsset) => {
-            if (
-              !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
-                walletAsset.coinDenom as MainnetAssetSymbols
-              )
-            ) {
-              return undefined;
-            }
-
-            const asset = getAssetFromAssetList({
+    const defaultQuotes = useMemo(
+      () =>
+        UI_DEFAULT_QUOTES.map(
+          (symbol) =>
+            getAssetFromAssetList({
               assetLists: AssetLists,
-              symbol: walletAsset.coinDenom,
-            });
+              symbol,
+            })?.rawAsset
+        ).filter(Boolean) as Asset[],
+      []
+    );
 
-            // Extrapolate the rawAsset and return the amount and usdValue
-            const returnAsset: AssetWithBalance = {
-              ...asset!.rawAsset,
-              amount: walletAsset.amount,
-            };
-            // In the future, we might want to pass every coin instead of just stables.
-            return asset?.rawAsset.categories.includes("stablecoin")
-              ? returnAsset
-              : undefined;
-          })
-          .filter(Boolean)
-          .toSorted(sortByAmount)
-          .toSorted((assetA) => {
-            const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
-              (asset) => asset.coinDenom === assetA?.symbol
-            );
+    const { data: userQuotes } = api.edge.assets.getUserAssets.useQuery(
+      { userOsmoAddress: wallet?.address },
+      {
+        enabled: !!wallet?.address,
+        select: (data) =>
+          data.items
+            .map((walletAsset) => {
+              if (
+                !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
+                  walletAsset.coinDenom as MainnetAssetSymbols
+                )
+              ) {
+                return undefined;
+              }
 
-            return isAssetAAvailable ? -1 : 1;
-          }) as AssetWithBalance[],
-    }
-  );
+              const asset = getAssetFromAssetList({
+                assetLists: AssetLists,
+                symbol: walletAsset.coinDenom,
+              });
 
-  const userQuotesWithoutBalances = useMemo(
-    () =>
-      (userQuotes ?? [])
-        .map(({ amount, usdValue, ...props }) => ({ ...props }))
-        .filter(Boolean) as Asset[],
-    [userQuotes]
-  );
+              // Extrapolate the rawAsset and return the amount and usdValue
+              const returnAsset: AssetWithBalance = {
+                ...asset!.rawAsset,
+                amount: walletAsset.amount,
+              };
+              // In the future, we might want to pass every coin instead of just stables.
+              return asset?.rawAsset.categories.includes("stablecoin")
+                ? returnAsset
+                : undefined;
+            })
+            .filter(Boolean)
+            .toSorted(sortByAmount)
+            .toSorted((assetA) => {
+              const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
+                (asset) => asset.coinDenom === assetA?.symbol
+              );
 
-  /**
-   * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
-   * Sell trades limited to canonical USDC and alloyed USDT.
-   */
-  const defaultQuotesWithBalances = useMemo(
-    () =>
-      userQuotes?.filter(({ amount, symbol }) => {
-        if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
-          return true;
-        return amount?.toDec().gt(new Dec(0)) ?? false;
-      }) ?? [],
-    [userQuotes]
-  );
+              return isAssetAAvailable ? -1 : 1;
+            }) as AssetWithBalance[],
+      }
+    );
 
-  const selectableQuotes = useMemo(() => {
-    return wallet?.isWalletConnected
-      ? tab === "sell"
-        ? userQuotesWithoutBalances
-        : defaultQuotesWithBalances
-      : defaultQuotes;
-  }, [
-    defaultQuotes,
-    defaultQuotesWithBalances,
-    tab,
-    userQuotesWithoutBalances,
-    wallet?.isWalletConnected,
-  ]);
+    const userQuotesWithoutBalances = useMemo(
+      () =>
+        (userQuotes ?? [])
+          .map(({ amount, usdValue, ...props }) => ({ ...props }))
+          .filter(Boolean) as Asset[],
+      [userQuotes]
+    );
 
-  const {
-    isOpen: isAddFundsModalOpen,
-    onClose: closeAddFundsModal,
-    onOpen: openAddFundsModal,
-  } = useDisclosure();
+    /**
+     * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
+     * Sell trades limited to canonical USDC and alloyed USDT.
+     */
+    const defaultQuotesWithBalances = useMemo(
+      () =>
+        userQuotes?.filter(({ amount, symbol }) => {
+          if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
+            return true;
+          return amount?.toDec().gt(new Dec(0)) ?? false;
+        }) ?? [],
+      [userQuotes]
+    );
 
-  const { isMobile } = useWindowSize(Breakpoint.sm);
+    const selectableQuotes = useMemo(() => {
+      return wallet?.isWalletConnected
+        ? tab === "sell"
+          ? userQuotesWithoutBalances
+          : defaultQuotesWithBalances
+        : defaultQuotes;
+    }, [
+      defaultQuotes,
+      defaultQuotesWithBalances,
+      tab,
+      userQuotesWithoutBalances,
+      wallet?.isWalletConnected,
+    ]);
 
-  return (
-    <>
-      <Menu as="div" className="relative inline-block">
-        {({ open }) => (
-          <>
-            <Menu.Button className="flex items-center justify-between">
-              <div className="flex flex-1 items-center justify-between">
-                {quoteAsset && (
-                  <div className="flex items-center gap-1 transition-opacity sm:gap-0">
-                    <span className="body2 sm:caption whitespace-nowrap text-osmoverse-300">
-                      {tab === "buy"
-                        ? t("limitOrders.payWith")
-                        : t("limitOrders.receive")}
-                    </span>
-                    <div className="flex items-center gap-2 py-1 pl-1 pr-3 sm:gap-1 sm:py-1.5">
-                      {quoteAsset.logoURIs && (
-                        <Image
-                          src={
-                            quoteAsset.logoURIs.svg ||
-                            quoteAsset.logoURIs.png ||
-                            ""
-                          }
-                          alt={`${quoteAsset.symbol} icon`}
-                          width={isMobile ? 20 : 24}
-                          height={isMobile ? 20 : 24}
-                          priority
-                        />
-                      )}
-                      <span className="md:caption body2 text-left">
-                        {quoteAsset.symbol}
+    const {
+      isOpen: isAddFundsModalOpen,
+      onClose: closeAddFundsModal,
+      onOpen: openAddFundsModal,
+    } = useDisclosure();
+
+    const { isMobile } = useWindowSize(Breakpoint.sm);
+
+    return (
+      <>
+        <Menu as="div" className="relative inline-block">
+          {({ open }) => (
+            <>
+              <Menu.Button className="flex items-center justify-between">
+                <div className="flex flex-1 items-center justify-between">
+                  {quoteAsset && (
+                    <div className="flex items-center gap-1 transition-opacity sm:gap-0">
+                      <span className="body2 sm:caption whitespace-nowrap text-osmoverse-300">
+                        {tab === "buy"
+                          ? t("limitOrders.payWith")
+                          : t("limitOrders.receive")}
                       </span>
-                      <Icon
-                        id="chevron-down"
-                        className={classNames(
-                          "h-[7px] w-3 text-wosmongton-200 transition-transform",
-                          {
-                            "rotate-180": open,
-                          }
+                      <div className="flex items-center gap-2 py-1 pl-1 pr-3 sm:gap-1 sm:py-1.5">
+                        {quoteAsset.logoURIs && (
+                          <Image
+                            src={
+                              quoteAsset.logoURIs.svg ||
+                              quoteAsset.logoURIs.png ||
+                              ""
+                            }
+                            alt={`${quoteAsset.symbol} icon`}
+                            width={isMobile ? 20 : 24}
+                            height={isMobile ? 20 : 24}
+                            priority
+                          />
                         )}
-                      />
+                        <span className="md:caption body2 text-left">
+                          {quoteAsset.symbol}
+                        </span>
+                        <Icon
+                          id="chevron-down"
+                          className={classNames(
+                            "h-[7px] w-3 text-wosmongton-200 transition-transform",
+                            {
+                              "rotate-180": open,
+                            }
+                          )}
+                        />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            </Menu.Button>
-            <Transition
-              as={Fragment}
-              enter="transition ease-out duration-100"
-              enterFrom="transform opacity-0 scale-95"
-              enterTo="transform opacity-100 scale-100"
-              leave="transition ease-in duration-75"
-              leaveFrom="transform opacity-100 scale-100"
-              leaveTo="transform opacity-0 scale-95"
-            >
-              <Menu.Items className="absolute right-0 z-50 flex w-[384px] max-w-[calc(100vw-2.5rem)] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
-                <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
-                  <SelectableQuotes
-                    selectableQuotes={selectableQuotes}
-                    userQuotes={userQuotes}
-                  />
+                  )}
                 </div>
-                <div className="flex flex-col px-5 py-2">
-                  {wallet?.isWalletConnected && tab === "buy" && (
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-50 flex w-[384px] max-w-[calc(100vw-2.5rem)] origin-top-left flex-col rounded-xl border border-solid border-osmoverse-700 bg-osmoverse-800">
+                  <div className="flex max-h-[336px] flex-col overflow-y-auto border-b border-osmoverse-700 p-2">
+                    <SelectableQuotes
+                      selectableQuotes={selectableQuotes}
+                      userQuotes={userQuotes}
+                    />
+                  </div>
+                  <div className="flex flex-col px-5 py-2">
+                    {wallet?.isWalletConnected && tab === "buy" && (
+                      <button
+                        type="button"
+                        onClick={openAddFundsModal}
+                        className="flex w-full items-center justify-between py-3"
+                      >
+                        <span className="subtitle1 text-left font-semibold text-wosmongton-200">
+                          {t("limitOrders.addFunds")}
+                        </span>
+                        <div className="flex items-center gap-1">
+                          <div className="relative flex items-center">
+                            {/** Here we just display default quotes */}
+                            {defaultQuotes.map(({ symbol, logoURIs }, i) => {
+                              return (
+                                <Image
+                                  key={`${symbol}-logo`}
+                                  alt=""
+                                  src={logoURIs.svg || logoURIs.png || ""}
+                                  width={24}
+                                  height={24}
+                                  className={classNames("h-6 w-6", {
+                                    "-ml-2": i > 0,
+                                  })}
+                                />
+                              );
+                            })}
+                          </div>
+                          <div className="flex h-6 w-6 items-center justify-center">
+                            <Icon
+                              id="chevron-right"
+                              className="h-3 w-[7px] text-osmoverse-300"
+                            />
+                          </div>
+                        </div>
+                      </button>
+                    )}
                     <button
-                      type="button"
-                      onClick={openAddFundsModal}
+                      onClick={() => {
+                        if (tab === "buy") {
+                          setSellOpen(true);
+                        } else {
+                          setBuyOpen(true);
+                        }
+                        setTab("swap");
+                      }}
                       className="flex w-full items-center justify-between py-3"
                     >
-                      <span className="subtitle1 text-left font-semibold text-wosmongton-200">
-                        {t("limitOrders.addFunds")}
+                      <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
+                        {tab === "buy"
+                          ? t("limitOrders.swapFromAnotherAsset")
+                          : t("limitOrders.swapToAnotherAsset")}
                       </span>
                       <div className="flex items-center gap-1">
-                        <div className="relative flex items-center">
-                          {/** Here we just display default quotes */}
-                          {defaultQuotes.map(({ symbol, logoURIs }, i) => {
-                            return (
-                              <Image
-                                key={`${symbol}-logo`}
-                                alt=""
-                                src={logoURIs.svg || logoURIs.png || ""}
-                                width={24}
-                                height={24}
-                                className={classNames("h-6 w-6", {
-                                  "-ml-2": i > 0,
-                                })}
-                              />
-                            );
-                          })}
-                        </div>
+                        {wallet?.address ? (
+                          <HighestBalanceAssetsIcons
+                            userOsmoAddress={wallet.address}
+                          />
+                        ) : (
+                          <Image
+                            src={"/images/quote-swap-from-another-asset.png"}
+                            alt=""
+                            width={176}
+                            height={48}
+                            className="h-6 w-[88px]"
+                          />
+                        )}
                         <div className="flex h-6 w-6 items-center justify-center">
                           <Icon
                             id="chevron-right"
@@ -288,59 +339,21 @@ export const PriceSelector = memo(() => {
                         </div>
                       </div>
                     </button>
-                  )}
-                  <button
-                    onClick={() => {
-                      if (tab === "buy") {
-                        setSellOpen(true);
-                      } else {
-                        setBuyOpen(true);
-                      }
-                      setTab("swap");
-                    }}
-                    className="flex w-full items-center justify-between py-3"
-                  >
-                    <span className="subtitle1 max-w-[200px] text-left font-semibold text-wosmongton-200">
-                      {tab === "buy"
-                        ? t("limitOrders.swapFromAnotherAsset")
-                        : t("limitOrders.swapToAnotherAsset")}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      {wallet?.address ? (
-                        <HighestBalanceAssetsIcons
-                          userOsmoAddress={wallet.address}
-                        />
-                      ) : (
-                        <Image
-                          src={"/images/quote-swap-from-another-asset.png"}
-                          alt=""
-                          width={176}
-                          height={48}
-                          className="h-6 w-[88px]"
-                        />
-                      )}
-                      <div className="flex h-6 w-6 items-center justify-center">
-                        <Icon
-                          id="chevron-right"
-                          className="h-3 w-[7px] text-osmoverse-300"
-                        />
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </Menu.Items>
-            </Transition>
-          </>
-        )}
-      </Menu>
-      <AddFundsModal
-        isOpen={isAddFundsModalOpen}
-        onRequestClose={closeAddFundsModal}
-        from="buy"
-      />
-    </>
-  );
-});
+                  </div>
+                </Menu.Items>
+              </Transition>
+            </>
+          )}
+        </Menu>
+        <AddFundsModal
+          isOpen={isAddFundsModalOpen}
+          onRequestClose={closeAddFundsModal}
+          from="buy"
+        />
+      </>
+    );
+  }
+);
 
 function HighestBalanceAssetsIcons({
   userOsmoAddress,

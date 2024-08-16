@@ -95,7 +95,8 @@
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
     "onePosition": "1 pozisyon",
-    "goToPool": "havuza git #{poolId}"
+    "goToPool": "havuza git #{poolId}",
+    "errorFetchingPositions": "Pozisyon detayları alınamadı. Lütfen sayfayı yenilemeyi deneyin. Sorun devam ederse, destekle iletişime geçin."
   },
   "copied": "Kopyalandı!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "Filtreleri sıfırla",
     "saveFilters": "Filtreleri kaydet",
     "rewards": "Ödüller",
-    "estimatedInYearlyRewards": "Yıllık ödüllerde tahmin edilir",
     "availableToClaim": "talep edilebilir",
     "claimAllRewards": "Tüm ödülleri talep edin",
     "join": "Katılmak",
@@ -1249,6 +1249,7 @@
     "filled": "Dolu",
     "claimable": "Hak talebinde bulunulabilir",
     "claimAndClose": "Talep et ve kapat",
+    "close": "Kapalı",
     "claim": "İddia",
     "accept": "Kabul etmek",
     "cancelled": "İptal edildi",

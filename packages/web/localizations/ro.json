@@ -95,7 +95,8 @@
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
-    "goToPool": "Mergi la piscina #{poolId}"
+    "goToPool": "Mergi la piscina #{poolId}",
+    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența."
   },
   "copied": "Copiat!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "Resetați filtrele",
     "saveFilters": "Salvați filtrele",
     "rewards": "Recompense",
-    "estimatedInYearlyRewards": "Estimat în recompense anuale",
     "availableToClaim": "disponibil pentru revendicare",
     "claimAllRewards": "Revendicați toate recompensele",
     "join": "A te alatura",
@@ -1249,6 +1249,7 @@
     "filled": "Umplut",
     "claimable": "Revendicabil",
     "claimAndClose": "Revendicați și închideți",
+    "close": "Aproape",
     "claim": "Revendicare",
     "accept": "Accept",
     "cancelled": "Anulat",

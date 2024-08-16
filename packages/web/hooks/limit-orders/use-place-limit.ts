@@ -1,8 +1,9 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
+import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage } from "~/config";
@@ -251,10 +252,10 @@ export const usePlaceLimit = ({
     isMarket,
   ]);
 
-  const encodedMsg = useMemo(() => {
+  const { value: encodedMsg } = useAsync(async () => {
     if (!placeLimitMsg) return;
 
-    return cosmwasmMsgOpts.executeWasm.messageComposer({
+    return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
       msg: Buffer.from(JSON.stringify(placeLimitMsg)),
@@ -378,33 +379,43 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: balances, isLoading: isBalancesLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
+  const { data, isLoading: isBalancesLoading } =
+    api.edge.assets.getUserAssets.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
       {
         enabled: !!account?.address,
-        select: (balances) =>
-          balances.filter(
-            ({ denom }) =>
-              denom === baseAsset?.coinMinimalDenom ||
-              denom === quoteAsset?.coinMinimalDenom
+        select: ({ items }) =>
+          items.filter(
+            ({ coinMinimalDenom }) =>
+              coinMinimalDenom.toLowerCase() ===
+                baseAsset?.coinMinimalDenom?.toLowerCase() ||
+              coinMinimalDenom.toLowerCase() ===
+                quoteAsset?.coinMinimalDenom?.toLowerCase()
           ),
       }
     );
 
-  const quoteTokenBalance = useMemo(() => {
-    if (!balances) return;
+  const baseTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          baseAsset?.coinMinimalDenom.toLowerCase()
+      )?.amount,
+    [data, baseAsset]
+  );
+  const quoteTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          quoteAsset?.coinMinimalDenom?.toLowerCase()
+      )?.amount,
+    [data, quoteAsset]
+  );
 
-    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, quoteAsset]);
-
-  const baseTokenBalance = useMemo(() => {
-    if (!balances) return;
-
-    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, baseAsset]);
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(

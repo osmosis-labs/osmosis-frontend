@@ -163,6 +163,8 @@ interface TokenSelectProps {
   isFetchingNextPageAssets?: boolean;
   isLoadingSelectAssets?: boolean;
   page?: EventPage;
+  assetQueryInput?: string;
+  setAssetQueryInput?: (input: string) => void;
 }
 
 const AssetFieldsetTokenSelector = ({
@@ -178,6 +180,8 @@ const AssetFieldsetTokenSelector = ({
   isFetchingNextPageAssets,
   page = "Swap Page",
   isLoadingSelectAssets,
+  assetQueryInput,
+  setAssetQueryInput,
   ...rest
 }: TokenSelectProps) => {
   const { t } = useTranslation();
@@ -259,6 +263,8 @@ const AssetFieldsetTokenSelector = ({
           hasNextPageAssets={hasNextPageAssets}
           isFetchingNextPageAssets={isFetchingNextPageAssets}
           isLoadingSelectAssets={isLoadingSelectAssets}
+          assetQueryInput={assetQueryInput}
+          setAssetQueryInput={setAssetQueryInput}
         />
       )}
     </>

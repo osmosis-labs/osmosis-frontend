@@ -95,7 +95,8 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동 #{poolId}"
+    "goToPool": "풀 번호로 이동 #{poolId}",
+    "errorFetchingPositions": "직책 세부 정보를 가져오지 못했습니다. 페이지를 새로 고침해 보세요. 문제가 지속되면 지원팀에 문의하세요."
   },
   "copied": "복사되었습니다!",
   "app": {
@@ -1106,7 +1107,6 @@
     "resetFilters": "필터 재설정",
     "saveFilters": "필터 저장",
     "rewards": "보상",
-    "estimatedInYearlyRewards": "연간 보상으로 추정",
     "availableToClaim": "청구 가능",
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
@@ -1249,6 +1249,7 @@
     "filled": "채우는",
     "claimable": "청구 가능",
     "claimAndClose": "청구 및 종료",
+    "close": "닫다",
     "claim": "주장하다",
     "accept": "수용하다",
     "cancelled": "취소 된",
