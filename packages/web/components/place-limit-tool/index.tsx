@@ -241,7 +241,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       (
         amountType: "fiat" | "token",
         value?: string,
-        maxDecimals?: number = 2
+        maxDecimals: number = 2
       ) => {
         const update =
           amountType === "fiat"

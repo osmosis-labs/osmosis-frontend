@@ -7,8 +7,8 @@ export function useSlippageConfig({
   defaultSlippage = "0.5",
   selectedIndex = 0,
 }: Partial<{
-  defaultSlippage?: string;
-  selectedIndex?: number;
+  defaultSlippage: string;
+  selectedIndex: number;
 }> = {}) {
   const [slippageConfig] = useState(() => new ObservableSlippageConfig());
 
