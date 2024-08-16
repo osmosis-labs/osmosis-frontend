@@ -106,20 +106,19 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚨 Synthetic Geo Monitoring Tests Failure Alert 🚨",
               "blocks": [
                 {
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "Synthetic Geo Monitoring Tests Failure"
+                    "text": "🚨 Synthetic Geo Swap Monitoring Tests Failure Alert 🚨"
                   }
                 },
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Environment:* production\n*App URL:* https://app.osmosis.zone"
+                    "text": "*Production App URL:* https://app.osmosis.zone"
                   }
                 },
                 {
@@ -223,11 +222,91 @@ jobs:
           name: sg-swap-test-results
           path: packages/web/playwright-report
 
+  fe-trade-eu-tests:
+    timeout-minutes: 10
+    name: prod-fe-trade-eu-tests
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap tests in EU
+        env:
+          BASE_URL: "https://app.osmosis.zone"
+          TEST_PROXY: "http://138.68.112.16:8888"
+          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
+          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          USE_TEST_PROXY: "use"
+        run: |
+          cd packages/web
+          npx playwright test monitoring
+      - name: upload monitoring test results
+        if: failure()
+        id: monitoring-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eu-trade-test-results
+          path: packages/web/playwright-report
+      - name: Send Slack alert if test fails
+        id: slack
+        if: failure()
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚨 Synthetic EU Trade Monitoring Tests Failure Alert 🚨"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Production App URL:* https://app.osmosis.zone"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [fe-quote-tests, fe-swap-us-tests, fe-swap-sg-tests, fe-swap-eu-tests]
+      [
+        fe-quote-tests,
+        fe-swap-us-tests,
+        fe-swap-sg-tests,
+        fe-swap-eu-tests,
+        fe-trade-eu-tests,
+      ]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7

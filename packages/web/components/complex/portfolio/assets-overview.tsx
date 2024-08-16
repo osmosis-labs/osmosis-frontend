@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
+import { useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -63,6 +64,21 @@ const calculatePortfolioPerformance = (
     selectedDifferencePricePretty,
     totalPriceChange,
   };
+};
+
+const timeToLocal = (originalTime: number) => {
+  const d = new Date(originalTime * 1000);
+  return (
+    Date.UTC(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    ) / 1000
+  );
 };
 
 export const AssetsOverview: FunctionComponent<
@@ -123,6 +139,17 @@ export const AssetsOverview: FunctionComponent<
   const totalDisplayValue =
     new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value || 0)) ||
     totalValue?.toString();
+
+  const localizedPortfolioOverTimeData = useMemo(
+    () =>
+      portfolioOverTimeData?.map((data) => {
+        return {
+          time: timeToLocal(data.time),
+          value: data.value,
+        };
+      }),
+    [portfolioOverTimeData]
+  );
 
   const [isChartMinimized, setIsChartMinimized] = useState(true);
 
@@ -221,7 +248,7 @@ export const AssetsOverview: FunctionComponent<
                 onClick={() => setIsChartMinimized(false)}
               >
                 <PortfolioHistoricalChartMinimized
-                  data={portfolioOverTimeData as AreaData<Time>[]}
+                  data={localizedPortfolioOverTimeData as AreaData<Time>[]}
                   isFetched={isPortfolioOverTimeDataIsFetched}
                   error={error}
                 />
@@ -252,7 +279,7 @@ export const AssetsOverview: FunctionComponent<
           >
             <PortfolioHistoricalChart
               setIsChartMinimized={setIsChartMinimized}
-              data={portfolioOverTimeData as AreaData<Time>[]}
+              data={localizedPortfolioOverTimeData as AreaData<Time>[]}
               isFetched={isPortfolioOverTimeDataIsFetched}
               setDataPoint={setDataPoint}
               range={range}
