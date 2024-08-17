@@ -581,7 +581,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
           sender: fromAddress,
           contract: cosmwasmData.msg.wasm.contract,
-          msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
+          msg: cosmwasmData.msg.wasm.msg,
           funds: [fromCoin],
         });
 
