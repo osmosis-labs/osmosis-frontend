@@ -1,4 +1,4 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
@@ -18,6 +18,7 @@ import { Gauge, queryGauges } from "../../osmosis";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
 import { getEpochs } from "../osmosis";
 import { Epoch } from "../osmosis/epochs";
+import { PoolMarketMetrics } from "./market";
 
 /**
  * Pools that are excluded from showing external boost incentives APRs.
@@ -35,15 +36,6 @@ const allPoolIncentiveTypes = [
   "none",
 ] as const;
 export type PoolIncentiveType = (typeof allPoolIncentiveTypes)[number];
-
-export type PoolMarketMetrics = Partial<{
-    volume7dUsd: PricePretty;
-    volume24hUsd: PricePretty;
-    volume24hChange: RatePretty;
-    feesSpent24hUsd: PricePretty;
-    feesSpent7dUsd: PricePretty;
-  }>;
-
 
 export type PoolIncentives = Partial<{
   aprBreakdown: Partial<{
