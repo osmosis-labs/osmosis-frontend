@@ -19,6 +19,7 @@ const allPooltypes = [
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
 
+// PoolMarketMetrics is a partial type that contains the market metrics of a pool.
 type PoolMarketMetrics = Partial<{
   volume7dUsd: PricePretty;
   volume24hUsd: PricePretty;
