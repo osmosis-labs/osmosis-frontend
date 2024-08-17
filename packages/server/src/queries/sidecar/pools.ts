@@ -119,5 +119,8 @@ export function queryPools({
   }
 
   url.search = params.toString();
+
+  console.log({ s: url.search });
+
   return apiClient<SqsPool[]>(url.toString());
 }

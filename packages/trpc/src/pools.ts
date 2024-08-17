@@ -26,11 +26,11 @@ const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
-  "feesSpent7dUsd",
-  "feesSpent24hUsd",
-  "volume7dUsd",
-  "volume24hUsd",
-  "aprBreakdown.total.upper",
+  "market.feesSpent7dUsd",
+  "market.feesSpent24hUsd",
+  "market.volume7dUsd",
+  "market.volume24hUsd",
+  "incentives.aprBreakdown.total.upper",
 ] as const;
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
@@ -82,7 +82,7 @@ export const poolsRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       })
     ),
-  getMarketIncentivePools: publicProcedure
+  getPools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(
         z.object({
@@ -117,36 +117,15 @@ export const poolsRouter = createTRPCRouter({
               withMarketIncentives: true,
             });
 
-            const marketIncentivePools = pools
-              .map((pool) => {
-                const {
-                  incentives: { aprBreakdown, incentiveTypes } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
-                  market,
-                  ...restPool // Get the rest of the properties of pool excluding marketIncentives
-                } = pool;
-
-                return {
-                  ...restPool,
-                  aprBreakdown,
-                  incentiveTypes,
-                  ...market,
-                };
-              })
-              .filter((pool): pool is NonNullable<typeof pool> => !!pool);
-
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
+            if (search) return pools;
+            else return sort(pools, sortInput.keyPath, sortInput.direction);
           },
           cacheKey: JSON.stringify({
             search,
             sortInput,
             minLiquidityUsd,
             types,
+            denoms,
             incentiveTypes,
           }),
           cursor,

@@ -92,12 +92,7 @@ export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
-  let pools = await poolProvider({
-    ...params,
-    poolIds: params?.poolIds,
-    minLiquidityUsd: params?.minLiquidityUsd,
-    withMarketIncentives: params?.withMarketIncentives,
-  });
+  let pools = await poolProvider(params);
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>
@@ -129,9 +124,8 @@ export async function getPools(
     ]),
   }));
 
-  if (params.denoms) {
-    const denoms = params.denoms;
-
+  const denoms = params.denoms;
+  if (denoms) {
     denomPools = denomPools.filter((denomPool) =>
       denomPool.coinDenoms.some((denom) => denoms.includes(denom))
     );
@@ -166,7 +160,6 @@ export async function getPools(
 export * from "./bonding";
 export * from "./env";
 export * from "./incentives";
-export * from "./market";
 export * from "./providers";
 export * from "./route-token-out-given-in";
 export * from "./share";
