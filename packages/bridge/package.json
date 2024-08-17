@@ -39,13 +39,14 @@
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
     "viem": "2.16.4",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "base-x": "^5.0.0"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
     "jest-in-case": "^1.0.2",
-    "ts-jest": "^29.1.0",
-    "typescript": "^5.4.5"
+    "ts-jest": "^29.1.2",
+    "typescript": "5.4.5"
   },
   "lint-staged": {
     "*": [

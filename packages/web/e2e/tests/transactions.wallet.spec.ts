@@ -58,7 +58,7 @@ test.describe("Test Transactions feature", () => {
     await transactionsPage.viewTransactionByNumber(20);
     await transactionsPage.viewOnExplorerIsVisible();
     await transactionsPage.closeTransaction();
-    await transactionsPage.viewTransactionByNumber(55);
+    await transactionsPage.viewTransactionByNumber(45);
     await transactionsPage.viewOnExplorerIsVisible();
     await transactionsPage.closeTransaction();
   });

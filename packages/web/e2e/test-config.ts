@@ -50,7 +50,7 @@ export class TestConfig {
   }
 
   getBrowserConfig(headless: boolean) {
-    const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "true";
+    const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "use";
     const viewport = { width: 1440, height: 1280 };
     if (USE_PROXY) {
       console.info(

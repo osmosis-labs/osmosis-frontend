@@ -30,6 +30,12 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
+const unsupportedBridges: Exclude<Bridge, QuotableBridge>[] = [
+  "Nomic",
+  "Wormhole",
+  "Nitro",
+];
+
 export const AmountAndReviewScreen = observer(
   ({
     direction,
@@ -171,7 +177,11 @@ export const AmountAndReviewScreen = observer(
     const quoteBridges = useMemo(
       () =>
         bridges.filter(
-          (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+          (bridge) =>
+            !unsupportedBridges.includes(
+              // @ts-expect-error
+              bridge
+            )
         ) as QuotableBridge[],
       [bridges]
     );
@@ -179,31 +189,45 @@ export const AmountAndReviewScreen = observer(
     const quote = useBridgeQuotes({
       toAddress,
       toChain: toChain,
-      toAsset: toAsset
-        ? {
-            address:
-              toChain?.chainType === "evm"
-                ? getAddress(toAsset.address)
-                : toAsset.address,
-            decimals: toAsset.decimals,
-            denom: toAsset.denom,
-            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
-          }
-        : undefined,
+      toAsset: (() => {
+        if (!toAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === toAsset.address ||
+            toAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            toChain?.chainType === "evm"
+              ? getAddress(toAsset.address)
+              : toAsset.address,
+          decimals: toAsset.decimals,
+          denom: toAsset.denom,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       fromAddress,
       fromChain: fromChain,
-      fromAsset: fromAsset
-        ? {
-            address:
-              fromChain?.chainType === "evm"
-                ? getAddress(fromAsset.address)
-                : fromAsset.address,
-            decimals: fromAsset.decimals,
-            denom: fromAsset.denom,
-            amount: fromAsset.amount,
-            imageUrl: assetsInOsmosis?.[0].coinImageUrl,
-          }
-        : undefined,
+      fromAsset: (() => {
+        if (!fromAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === fromAsset.address ||
+            fromAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            fromChain?.chainType === "evm"
+              ? getAddress(fromAsset.address)
+              : fromAsset.address,
+          decimals: fromAsset.decimals,
+          denom: fromAsset.denom,
+          amount: fromAsset.amount,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,

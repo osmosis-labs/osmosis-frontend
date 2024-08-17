@@ -32,7 +32,7 @@ export const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
     return (
       <>
         {hasPositions && (
-          <section>
+          <section className="py-3">
             <span className="body2 text-osmoverse-200">
               {t("portfolio.yourSuperchargedPositions")}
             </span>

@@ -35,14 +35,14 @@ export const BridgeNetworkSelectModal: FunctionComponent<
 }) => {
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
+  const [isSwitchingEvmChain, setIsSwitchingEvmChain] = React.useState(false);
 
   const {
     isConnected: isEvmWalletConnected,
     chainId: currentEvmWalletChainId,
     connector,
   } = useEvmWalletAccount();
-  const { switchChainAsync: switchEvmChain, isLoading: isSwitchingEvmChain } =
-    useSwitchEvmChain();
+  const { switchChainAsync: switchEvmChain } = useSwitchEvmChain();
 
   const selectableChains = useMemo(
     () => chains.filter((chain) => chain.chainId !== toChain.chainId),
@@ -67,7 +67,10 @@ export const BridgeNetworkSelectModal: FunctionComponent<
         "min-h-[80vh]": !showSwitchingNetworkState,
       })}
       {...modalProps}
-      onAfterClose={() => setQuery("")}
+      onAfterClose={() => {
+        setQuery("");
+        setIsSwitchingEvmChain(false); // Avoid small flicker after changing evm chain and closing the modal
+      }}
     >
       <div className="animate-[fadeIn_0.25s]">
         {showSwitchingNetworkState && (
@@ -104,9 +107,11 @@ export const BridgeNetworkSelectModal: FunctionComponent<
                   className="flex items-center justify-between rounded-2xl p-4 transition-colors duration-200 hover:bg-osmoverse-700/50 md:py-2 md:px-0"
                   onClick={async () => {
                     if (shouldSwitchEvmChain) {
+                      setIsSwitchingEvmChain(true);
                       await switchEvmChain({
                         chainId: chain.chainId as EthereumChainIds,
                       }).catch((e) => {
+                        setIsSwitchingEvmChain(false);
                         console.error("Failed to switch EVM chain", e);
                       });
                     }

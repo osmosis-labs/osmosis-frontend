@@ -1,4 +1,8 @@
-import { compressZeros } from "../formatter";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import cases from "jest-in-case";
+
+import { compressZeros, formatFiatPrice } from "../formatter";
 
 describe("compressZeros function", () => {
   it("should not compress zeros with and handle the absence of currency symbol", () => {
@@ -86,3 +90,45 @@ describe("compressZeros function", () => {
     });
   });
 });
+
+cases(
+  "formatFiatPrice",
+  ({ input, output, maxDecimals }) => {
+    const inputPrice = new PricePretty(DEFAULT_VS_CURRENCY, new Dec(input));
+    expect(formatFiatPrice(inputPrice, maxDecimals)).toEqual(output);
+  },
+  [
+    {
+      name: "Standard formatting",
+      input: "1.24",
+      output: "$1.24",
+    },
+    {
+      name: "1c Value",
+      input: "0.01",
+      output: "$0.01",
+    },
+    {
+      name: "Sub 1c value",
+      input: "0.001",
+      output: "<$0.01",
+    },
+    {
+      name: "Large value with too many decimals",
+      input: "12345.12345",
+      output: "$12,345.12",
+      maxDecimals: 2,
+    },
+    {
+      name: "Large value with too few decimals",
+      input: "12345.1",
+      output: "$12,345.10",
+      maxDecimals: 2,
+    },
+    {
+      name: "Extremely small value",
+      input: "0.000000000012",
+      output: "<$0.01",
+    },
+  ]
+);

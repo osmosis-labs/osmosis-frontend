@@ -1,21 +1,20 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import * as Sentry from "@sentry/core";
+import { context, Span, trace } from "@opentelemetry/api";
 
 import { captureError, captureErrorAndReturn, captureIfError } from "../error";
 
-jest.mock("@sentry/core");
+jest.mock("@opentelemetry/api");
 
 describe("captureErrorAndReturn", () => {
   it("should capture the error and return the provided value", () => {
     const mockError = new Error("Test error");
     const returnValue = "Return value";
-
-    // Mock the captureError function to just return the error
-    jest.spyOn(Sentry, "captureException").mockImplementation(() => "error");
+    const mockSpan = { recordException: jest.fn() };
+    jest.spyOn(trace, "getSpan").mockReturnValue(mockSpan as unknown as Span);
+    jest.spyOn(context, "active").mockReturnValue({} as any);
 
     const result = captureErrorAndReturn(mockError, returnValue);
 
-    expect(Sentry.captureException).toHaveBeenCalledWith(mockError);
+    expect(mockSpan.recordException).toHaveBeenCalledWith(mockError);
     expect(result).toBe(returnValue);
   });
 });
@@ -27,16 +26,22 @@ describe("captureError", () => {
 
   test("captures Error instances", () => {
     const error = new Error("Test error");
+    const mockSpan = { recordException: jest.fn() };
+    jest.spyOn(trace, "getSpan").mockReturnValue(mockSpan as unknown as Span);
+    jest.spyOn(context, "active").mockReturnValue({} as any);
 
     captureError(error);
-    expect(Sentry.captureException).toHaveBeenCalledWith(error);
+    expect(mockSpan.recordException).toHaveBeenCalledWith(error);
   });
 
   test("does not capture non-Error instances", () => {
     const notAnError = "Not an error";
+    const mockSpan = { recordException: jest.fn() };
+    jest.spyOn(trace, "getSpan").mockReturnValue(mockSpan as unknown as Span);
+    jest.spyOn(context, "active").mockReturnValue({} as any);
 
     captureError(notAnError);
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(mockSpan.recordException).not.toHaveBeenCalled();
   });
 });
 
@@ -47,15 +52,22 @@ describe("captureIfError", () => {
 
   test("captures Error thrown in closure", () => {
     const error = new Error("Test error");
+    const mockSpan = { recordException: jest.fn() };
+    jest.spyOn(trace, "getSpan").mockReturnValue(mockSpan as unknown as Span);
+    jest.spyOn(context, "active").mockReturnValue({} as any);
 
     captureIfError(() => {
       throw error;
     });
-    expect(Sentry.captureException).toHaveBeenCalledWith(error);
+    expect(mockSpan.recordException).toHaveBeenCalledWith(error);
   });
 
   test("calls throwable function that doesn't throw", () => {
+    const mockSpan = { recordException: jest.fn() };
+    jest.spyOn(trace, "getSpan").mockReturnValue(mockSpan as unknown as Span);
+    jest.spyOn(context, "active").mockReturnValue({} as any);
+
     captureIfError(() => {});
-    expect(Sentry.captureException).not.toHaveBeenCalled();
+    expect(mockSpan.recordException).not.toHaveBeenCalled();
   });
 });

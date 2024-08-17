@@ -1,4 +1,4 @@
-import { StdFee } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/amino";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   NoRouteError,
@@ -6,25 +6,23 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import type { RouterKey } from "@osmosis-labs/server";
+import { SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSwapExactAmountInMsg,
-  SignOptions,
-} from "@osmosis-labs/stores";
-import { Currency, MinimalAsset } from "@osmosis-labs/types";
+} from "@osmosis-labs/tx";
+import { MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
   makeMinimalAsset,
+  sum,
 } from "@osmosis-labs/utils";
-import { sum } from "@osmosis-labs/utils";
 import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { useMemo } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
+import { parseAsString, useQueryState } from "nuqs";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
@@ -48,9 +46,9 @@ import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
-import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -260,9 +258,9 @@ export function useSwap(
           try {
             txParams = getSwapTxParameters({
               coinAmount: inAmountInput.amount.toCoin().amount,
-              maxSlippage,
-              fromAsset: swapAssets.fromAsset,
-              toAsset: swapAssets.toAsset,
+              maxSlippage: maxSlippage.toString(),
+              tokenInCoinMinimalDenom: swapAssets.fromAsset.coinMinimalDenom,
+              tokenOutCoinDecimals: swapAssets.toAsset.coinDecimals,
               quote,
             });
           } catch (e) {
@@ -749,7 +747,7 @@ export function useSwapAssets({
   };
 }
 
-function useSwapAmountInput({
+export function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
@@ -868,7 +866,7 @@ function useSwapAmountInput({
  * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
  */
-function useToFromDenoms({
+export function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
@@ -877,21 +875,19 @@ function useToFromDenoms({
   initialFromDenom?: string;
   initialToDenom?: string;
 }) {
-  const router = useRouter();
-
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
    */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
+  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    useQueryParams ? initialFromDenom : undefined
+    parseAsString.withDefault(initialFromDenom ?? "ATOM")
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryParamState(
+  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    useQueryParams ? initialToDenom : undefined
+    parseAsString.withDefault(initialToDenom ?? "OSMO")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
@@ -913,14 +909,9 @@ function useToFromDenoms({
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = () => {
     if (useQueryParams) {
-      const existingParams = router.query;
-      router.replace({
-        query: {
-          ...existingParams,
-          from: toDenomQueryParamStr,
-          to: fromDenomQueryParamStr,
-        },
-      });
+      const temp = fromDenomQueryParam;
+      setFromDenomQueryParam(toAssetQueryParam);
+      setToAssetQueryParam(temp);
       return;
     }
 
@@ -942,7 +933,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends MinimalAsset>({
+export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -981,33 +972,25 @@ function getSwapTxParameters({
   coinAmount,
   maxSlippage,
   quote,
-  fromAsset,
-  toAsset,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinDecimals,
 }: {
   coinAmount: string;
-  maxSlippage: Dec;
+  maxSlippage: string;
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinDecimals: number;
 }) {
-  if (!quote) {
+  if (isNil(quote)) {
     throw new Error(
       "User input should be disabled if no route is found or is being generated"
     );
   }
-  if (!coinAmount) throw new Error("No input");
-  if (!fromAsset) throw new Error("No from asset");
-  if (!toAsset) throw new Error("No to asset");
+  if (isNil(coinAmount)) throw new Error("No input");
+  if (isNil(tokenInCoinMinimalDenom)) throw new Error("No from asset");
+  if (isNil(tokenOutCoinDecimals)) throw new Error("No to asset");
 
   /**
    * Prepare swap data
@@ -1044,15 +1027,15 @@ function getSwapTxParameters({
 
   /** In amount converted to integer (remove decimals) */
   const tokenIn = {
-    currency: fromAsset as Currency,
+    coinMinimalDenom: tokenInCoinMinimalDenom,
     amount: coinAmount,
   };
 
   /** Out amount with slippage included */
   const tokenOutMinAmount = quote.amount
     .toDec()
-    .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
-    .mul(new Dec(1).sub(maxSlippage))
+    .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
+    .mul(new Dec(1).sub(new Dec(maxSlippage)))
     .truncate()
     .toString();
 
@@ -1063,29 +1046,21 @@ function getSwapTxParameters({
   };
 }
 
-function getSwapMessages({
+async function getSwapMessages({
   coinAmount,
   maxSlippage,
   quote,
-  fromAsset,
-  toAsset,
+  tokenInCoinMinimalDenom,
+  tokenOutCoinDecimals,
   userOsmoAddress,
 }: {
   coinAmount: string;
-  maxSlippage: Dec | undefined;
+  maxSlippage: string | undefined;
   quote:
     | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
     | undefined;
-  fromAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: MinimalAsset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
+  tokenInCoinMinimalDenom: string;
+  tokenOutCoinDecimals: number;
   userOsmoAddress: string | undefined;
 }) {
   if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
@@ -1096,8 +1071,8 @@ function getSwapMessages({
     txParams = getSwapTxParameters({
       coinAmount,
       maxSlippage,
-      fromAsset,
-      toAsset,
+      tokenInCoinMinimalDenom,
+      tokenOutCoinDecimals,
       quote,
     });
   } catch {
@@ -1114,13 +1089,13 @@ function getSwapMessages({
 
   return [
     routes.length === 1
-      ? makeSwapExactAmountInMsg({
+      ? await makeSwapExactAmountInMsg({
           pools,
           tokenIn,
           tokenOutMinAmount,
           userOsmoAddress,
         })
-      : makeSplitRoutesSwapExactAmountInMsg({
+      : await makeSplitRoutesSwapExactAmountInMsg({
           routes,
           tokenIn,
           tokenOutMinAmount,
@@ -1135,7 +1110,7 @@ function getSwapMessages({
 function useQueryRouterBestQuote(
   input: Omit<
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
-    "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
+    "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
     tokenIn: MinimalAsset &
       Partial<{
@@ -1192,20 +1167,6 @@ function useQueryRouterBestQuote(
         {
           enabled: enabled && Boolean(availableRouterKeys.length),
 
-          select: (quote) => {
-            return {
-              ...quote,
-              messages: getSwapMessages({
-                quote,
-                toAsset: input.tokenOut,
-                fromAsset: input.tokenIn,
-                maxSlippage: input.maxSlippage,
-                coinAmount: input.tokenInAmount,
-                userOsmoAddress: account?.address,
-              }),
-            };
-          },
-
           // quotes should not be considered fresh for long, otherwise
           // the gas simulation will fail due to slippage and the user would see errors
           staleTime: 5_000,
@@ -1249,6 +1210,26 @@ function useQueryRouterBestQuote(
     );
   }, [routerResults]);
 
+  const { value: messages } = useAsync(async () => {
+    if (!bestData) return undefined;
+    const messages = await getSwapMessages({
+      quote: bestData,
+      tokenOutCoinDecimals: input.tokenOut.coinDecimals,
+      tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
+      maxSlippage: input.maxSlippage?.toString(),
+      coinAmount: input.tokenInAmount,
+      userOsmoAddress: account?.address,
+    });
+    return messages;
+  }, [
+    account?.address,
+    bestData,
+    input.maxSlippage,
+    input.tokenIn.coinMinimalDenom,
+    input.tokenInAmount,
+    input.tokenOut.coinDecimals,
+  ]);
+
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
@@ -1267,7 +1248,7 @@ function useQueryRouterBestQuote(
   );
 
   return {
-    data: bestData,
+    data: bestData ? { ...bestData, messages } : undefined,
     isLoading: !isOneSuccessful,
     error: someError,
     numSucceeded,
@@ -1315,7 +1296,7 @@ function makeRouterErrorFromTrpcError(
 }
 
 /** Gets recommended assets directly from asset list. */
-function useRecommendedAssets(
+export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {

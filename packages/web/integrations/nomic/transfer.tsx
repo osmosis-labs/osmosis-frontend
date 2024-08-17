@@ -1,3 +1,4 @@
+import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { AxelarSourceChain } from "@osmosis-labs/utils";
 import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
@@ -157,7 +158,7 @@ export const NomicTransfer: FunctionComponent<
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainId,
-      osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
+      makeIBCTransferMsg.gas ?? 0
     );
     const withdrawAmountConfig = useAmountConfig(
       chainStore,

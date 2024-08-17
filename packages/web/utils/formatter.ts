@@ -354,3 +354,50 @@ export const compressZeros = (
     decimalDigits: otherDigits,
   };
 };
+
+/**
+ * Formats a fiat price using `getPriceExtendedFormatOptions` and displays `<0.01` if the price is less than $0.01.
+ * Rounds to the provided `maxDecimals` parameter.
+ */
+export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
+  if (!price.toDec().isZero() && price.toDec().lt(new Dec(0.01))) {
+    return "<$0.01";
+  }
+
+  const truncatedAmount = new Dec(
+    parseFloat(price.toDec().toString()).toFixed(maxDecimals).toString()
+  );
+
+  if (truncatedAmount.gte(new Dec(1000000000))) {
+    return ">$1B";
+  }
+  const truncatedPrice = new PricePretty(price.fiatCurrency, truncatedAmount);
+  const formattedPrice = formatPretty(truncatedPrice, {
+    ...getPriceExtendedFormatOptions(truncatedPrice.toDec()),
+  });
+
+  const split = formattedPrice.split(".");
+  return split[0] + "." + split[1].slice(0, maxDecimals);
+}
+
+export function calcFontSize(numChars: number, isMobile: boolean): string {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        7: "30px",
+        12: "18px",
+        16: "16px",
+      }
+    : {
+        7: "48px",
+        12: "38px",
+        16: "28px",
+        33: "24px",
+      };
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "16px";
+}
