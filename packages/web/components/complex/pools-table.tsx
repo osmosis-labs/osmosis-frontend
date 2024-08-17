@@ -181,8 +181,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     [poolsPagesData]
   );
 
-  console.log(poolsData[0]);
-
   // If more than half of the pools have volume and fees data, we should format their respective columns.
   // Otherwise, we should not display them.
   const { shouldDisplayVolumeData, shouldDisplayFeesData } = useMemo(() => {
