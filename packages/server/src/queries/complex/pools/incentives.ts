@@ -1,4 +1,4 @@
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
@@ -36,6 +36,15 @@ const allPoolIncentiveTypes = [
 ] as const;
 export type PoolIncentiveType = (typeof allPoolIncentiveTypes)[number];
 
+export type PoolMarketMetrics = Partial<{
+    volume7dUsd: PricePretty;
+    volume24hUsd: PricePretty;
+    volume24hChange: RatePretty;
+    feesSpent24hUsd: PricePretty;
+    feesSpent7dUsd: PricePretty;
+  }>;
+
+
 export type PoolIncentives = Partial<{
   aprBreakdown: Partial<{
     total: PoolDataRange<RatePretty | undefined>;
@@ -45,6 +54,8 @@ export type PoolIncentives = Partial<{
     boost: PoolDataRange<RatePretty | undefined>;
   }>;
   incentiveTypes: PoolIncentiveType[];
+
+  fees: PoolMarketMetrics;
 }>;
 
 export const IncentivePoolFilterSchema = z.object({

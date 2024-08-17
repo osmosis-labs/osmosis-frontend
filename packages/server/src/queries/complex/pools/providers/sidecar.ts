@@ -6,7 +6,7 @@ import { LRUCache } from "lru-cache";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
-import { queryPools, SQSAprData } from "../../../../queries/sidecar";
+import { queryPools, SQSAprData, SQSPoolFeesData } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -107,7 +107,8 @@ function makePoolFromSidecarPool({
 
 function getMarketincentivesData(
   pool_id: string,
-  apr?: SQSAprData
+  apr?: SQSAprData,
+  sqs_fees?: SQSPoolFeesData,
 ): PoolIncentives {
   let totalUpper = maybeMakeRatePretty(apr?.total_apr.upper ?? 0);
   let totalLower = maybeMakeRatePretty(apr?.total_apr.lower ?? 0);
@@ -186,6 +187,12 @@ function getMarketincentivesData(
         }
       : undefined,
     incentiveTypes,
+    fees: {
+        volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, sqs_fees?.volume_24h ?? 0),
+        volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, sqs_fees?.volume_7d ?? 0),
+        feesSpent24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, sqs_fees?.fees_spent_24h ?? 0),
+        feesSpent7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, sqs_fees?.fees_spent_7d ?? 0),
+    },
   };
 
   return aprFormatted;

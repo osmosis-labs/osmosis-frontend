@@ -71,6 +71,15 @@ export type SQSAprData = {
   };
 };
 
+export type SQSPoolFeesData = {
+  pool_id?: string;
+  volume_24h?: number;
+  volume_7d?: number;
+  fees_spent_24h?: number;
+  fees_spent_7d?: number;
+  fees_percentage?: string;
+};
+
 export type SqsPool = {
   /** Sidecar returns the same pool models as the node. */
   chain_model: ChainPool;
@@ -84,14 +93,7 @@ export type SqsPool = {
   liquidity_cap_error: string;
 
   apr_data?: SQSAprData;
-  fees_data?: {
-    pool_id?: string;
-    volume_24h?: number;
-    volume_7d?: number;
-    fees_spent_24h?: number;
-    fees_spent_7d?: number;
-    fees_percentage?: string;
-  };
+  fees_data?: SQSPoolFeesData;
 };
 
 export function queryPools({

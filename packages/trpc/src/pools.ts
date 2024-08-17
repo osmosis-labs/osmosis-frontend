@@ -109,7 +109,7 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const [pools, marketMetrics] = await Promise.all([
+            const [pools] = await Promise.all([
               getPools({
                 ...ctx,
                 search,
@@ -118,15 +118,13 @@ export const poolsRouter = createTRPCRouter({
                 denoms,
                 withMarketIncetives: true,
               }),
-              getCachedPoolMarketMetricsMap(),
             ]);
 
             const marketIncentivePools = pools
               .map((pool) => {
-                const metricsForPool = marketMetrics.get(pool.id) ?? {};
 
                 const {
-                  marketIncentives: { aprBreakdown, incentiveTypes } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
+                  marketIncentives: { aprBreakdown, incentiveTypes, fees } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
                   ...restPool // Get the rest of the properties of pool excluding marketIncentives
                 } = pool;
 
@@ -134,8 +132,7 @@ export const poolsRouter = createTRPCRouter({
                   ...restPool,
                   aprBreakdown,
                   incentiveTypes,
-
-                  ...metricsForPool,
+                  metricsForPool: fees,
                 };
               })
               .filter((pool): pool is NonNullable<typeof pool> => !!pool);
