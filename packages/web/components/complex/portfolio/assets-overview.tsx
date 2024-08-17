@@ -221,7 +221,7 @@ export const AssetsOverview: FunctionComponent<
             <Button
               className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
               onClick={() => startBridge({ direction: "withdraw" })}
-              disabled={totalValue && totalValue?.toDec().isZero()}
+              disabled={totalValue && totalValue?.toDec()?.isZero()}
             >
               <Icon
                 id="withdraw"
