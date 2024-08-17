@@ -33,9 +33,14 @@ test.describe("Test Select Pool feature", () => {
     await context.close();
   });
 
-  test("User should be able to select ATOM/USDC pool", async () => {
+  test.only("User should be able to select ATOM/USDC pool", async () => {
     const poolName = "ATOM/USDC";
     await poolsPage.goto();
+    expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
+    const topLiquidity = await poolsPage.getTopTenLiquidity();
+    topLiquidity.every(function (element) {
+      expect(element).toBeGreaterThan(10_000);
+    });
     await poolsPage.searchForPool(poolName);
     const poolPage = await poolsPage.viewPool(1282, poolName);
     const balance = await poolPage.getBalance();
