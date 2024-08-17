@@ -107,6 +107,8 @@ function makePoolFromSidecarPool({
   };
 }
 
+// getMarketIncentivesData is a function that returns the incentives and market data for a pool
+// based on the pool_id and the apr_data and fees_data from the sidecar response
 function getMarketIncentivesData(
   pool_id: string,
   { apr_data: aprs, fees_data: fees }: SidecarPool
