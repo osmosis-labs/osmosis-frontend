@@ -41,7 +41,8 @@ export function getPoolsFromSidecar({
     key:
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
       minLiquidityUsd,
-    ttl: 5_000, // 5 seconds
+    ttl: 6_000, // 6 seconds
+    staleWhileRevalidate: 3_500, // 3.5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () =>
