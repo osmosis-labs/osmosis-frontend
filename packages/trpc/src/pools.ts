@@ -130,9 +130,9 @@ export const poolsRouter = createTRPCRouter({
 
                 return {
                   ...restPool,
+                  ...fees,
                   aprBreakdown,
                   incentiveTypes,
-                  metricsForPool: fees,
                 };
               })
               .filter((pool): pool is NonNullable<typeof pool> => !!pool);

@@ -101,7 +101,7 @@ function makePoolFromSidecarPool({
       sidecarPool.liquidity_cap
     ),
 
-    marketIncentives: getMarketincentivesData(pool_id, sidecarPool.apr_data),
+    marketIncentives: getMarketincentivesData(pool_id, sidecarPool.apr_data, sidecarPool.fees_data),
   };
 }
 
