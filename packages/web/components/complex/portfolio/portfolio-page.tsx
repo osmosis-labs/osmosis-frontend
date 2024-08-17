@@ -49,7 +49,7 @@ export const PortfolioPage: FunctionComponent = () => {
     }
   );
 
-  const userHasNoAssets = allocation && allocation?.totalCap.toDec().isZero();
+  const userHasNoAssets = allocation && allocation?.totalCap?.toDec().isZero();
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();

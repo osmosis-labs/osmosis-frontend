@@ -441,7 +441,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     let approvalTx: { to: Address; data: string } | undefined;
     try {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => String(chainId) === String(squidFromChain.chainId)
       );
 

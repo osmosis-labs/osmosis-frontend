@@ -552,7 +552,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   private getViemProvider(chainID: string) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       (chain) => chain.id.toString() === chainID
     );
 
@@ -751,7 +751,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
     if (txData.type === "evm") {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 

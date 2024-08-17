@@ -1,7 +1,6 @@
 import { PropsWithChildren, Provider } from "react";
 
 import { ImmersiveBridgeFlow } from "~/components/bridge/immersive-bridge";
-import { LegacyBridgeFlow } from "~/components/bridge/legacy";
 import { FiatRampKey } from "~/integrations";
 import { createContext } from "~/utils/react-context";
 
@@ -36,17 +35,11 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
 
   if (!featureFlags._isInitialized)
     return <LoadingContext>{children}</LoadingContext>;
-  if (featureFlags.newDepositWithdrawFlow)
+  else
     return (
       <ImmersiveBridgeFlow Provider={BridgeInnerProvider}>
         {children}
       </ImmersiveBridgeFlow>
-    );
-  else
-    return (
-      <LegacyBridgeFlow Provider={BridgeInnerProvider}>
-        {children}
-      </LegacyBridgeFlow>
     );
 };
 
