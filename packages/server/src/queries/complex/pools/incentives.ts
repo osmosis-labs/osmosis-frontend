@@ -18,7 +18,6 @@ import { Gauge, queryGauges } from "../../osmosis";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
 import { getEpochs } from "../osmosis";
 import { Epoch } from "../osmosis/epochs";
-import { PoolMarketMetrics } from "./market";
 
 /**
  * Pools that are excluded from showing external boost incentives APRs.
@@ -46,21 +45,18 @@ export type PoolIncentives = Partial<{
     boost: PoolDataRange<RatePretty | undefined>;
   }>;
   incentiveTypes: PoolIncentiveType[];
-
-  fees: PoolMarketMetrics;
 }>;
 
 export const IncentivePoolFilterSchema = z.object({
-  /** Only include pools of given incentive types.s */
+  /** Only include pools of given incentive types. */
   incentiveTypes: z.array(z.enum(allPoolIncentiveTypes)).optional(),
 });
 
 /** Params for filtering pools. */
 export type IncentivePoolFilter = z.infer<typeof IncentivePoolFilterSchema>;
 
-export async function getPoolIncentives(poolId: string) {
-  const map = await getCachedPoolIncentivesMap();
-  return map.get(poolId);
+export function getPoolIncentives(poolId: string) {
+  return getCachedPoolIncentivesMap().then((map) => map.get(poolId));
 }
 
 /** Checks a pool's incentive data againt a given filter to determine if it's filtered out. */

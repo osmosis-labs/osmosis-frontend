@@ -2,7 +2,6 @@ import {
   createSortSchema,
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
-  getCachedPoolMarketMetricsMap,
   getCachedTransmuterTotalPoolLiquidity,
   getPool,
   getPools,
@@ -109,30 +108,28 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const [pools] = await Promise.all([
-              getPools({
-                ...ctx,
-                search,
-                minLiquidityUsd,
-                types,
-                denoms,
-                withMarketIncetives: true,
-              }),
-            ]);
+            const pools = await getPools({
+              ...ctx,
+              search,
+              minLiquidityUsd,
+              types,
+              denoms,
+              withMarketIncentives: true,
+            });
 
             const marketIncentivePools = pools
               .map((pool) => {
-
                 const {
-                  marketIncentives: { aprBreakdown, incentiveTypes, fees } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
+                  incentives: { aprBreakdown, incentiveTypes } = {}, // Destructure aprBreakdown and incentiveTypes from marketIncentives
+                  market,
                   ...restPool // Get the rest of the properties of pool excluding marketIncentives
                 } = pool;
 
                 return {
                   ...restPool,
-                  ...fees,
                   aprBreakdown,
                   incentiveTypes,
+                  ...market,
                 };
               })
               .filter((pool): pool is NonNullable<typeof pool> => !!pool);
@@ -159,11 +156,6 @@ export const poolsRouter = createTRPCRouter({
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
     getSuperfluidPoolIds(ctx)
   ),
-  getPoolMarketMetrics: publicProcedure
-    .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) =>
-      getCachedPoolMarketMetricsMap().then((map) => map.get(poolId) ?? null)
-    ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>

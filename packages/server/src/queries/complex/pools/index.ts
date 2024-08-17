@@ -19,6 +19,14 @@ const allPooltypes = [
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
 
+type PoolMarketMetrics = Partial<{
+  volume7dUsd: PricePretty;
+  volume24hUsd: PricePretty;
+  volume24hChange: RatePretty;
+  feesSpent24hUsd: PricePretty;
+  feesSpent7dUsd: PricePretty;
+}>;
+
 export type Pool = {
   id: string;
   type: PoolType;
@@ -26,8 +34,8 @@ export type Pool = {
   spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
-
-  marketIncentives?: PoolIncentives;
+  incentives?: PoolIncentives;
+  market?: PoolMarketMetrics;
 };
 
 /** Async function that provides simplified pools from any data source.
@@ -37,7 +45,7 @@ export type PoolProvider = (params: {
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
-  withMarketIncetives?: boolean;
+  withMarketIncentives?: boolean;
 }) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
@@ -51,7 +59,7 @@ export const PoolFilterSchema = z.object({
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
   /** Include market incentive data. */
-  withMarketIncetives: z.boolean().optional(),
+  withMarketIncentives: z.boolean().optional(),
 });
 
 /** Params for filtering pools. */
@@ -88,7 +96,7 @@ export async function getPools(
     ...params,
     poolIds: params?.poolIds,
     minLiquidityUsd: params?.minLiquidityUsd,
-    withMarketIncetives: params?.withMarketIncetives,
+    withMarketIncentives: params?.withMarketIncentives,
   });
 
   if (params?.types) {
