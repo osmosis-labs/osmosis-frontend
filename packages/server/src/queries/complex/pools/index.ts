@@ -45,7 +45,6 @@ export type PoolProvider = (params: {
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
-  withMarketIncentives?: boolean;
 }) => Promise<Pool[]>;
 
 export const PoolFilterSchema = z.object({
@@ -58,8 +57,6 @@ export const PoolFilterSchema = z.object({
   types: z.array(z.enum(allPooltypes)).optional(),
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
-  /** Include market incentive data. */
-  withMarketIncentives: z.boolean().optional(),
 });
 
 /** Params for filtering pools. */

@@ -28,7 +28,7 @@ export function getPoolsFromSidecar({
   assetLists,
   poolIds,
   minLiquidityUsd,
-  withMarketIncentives,
+  withMarketIncentives = true,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
@@ -40,7 +40,8 @@ export function getPoolsFromSidecar({
     cache: poolsCache,
     key:
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      minLiquidityUsd,
+      minLiquidityUsd +
+      withMarketIncentives.toString(),
     ttl: 6_000, // 6 seconds
     staleWhileRevalidate: 3_500, // 3.5 seconds
     getFreshValue: async () => {

@@ -114,7 +114,6 @@ export const poolsRouter = createTRPCRouter({
               minLiquidityUsd,
               types,
               denoms,
-              withMarketIncentives: true,
             });
 
             if (search) return pools;
