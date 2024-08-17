@@ -24,7 +24,7 @@ export const PoolsOverview: FunctionComponent<
       coinMinimalDenom: "uosmo",
     }
   );
-  const { data: epochs } = api.edge.params.getEpochs.useQuery();
+  const { data: epochs } = api.local.params.getEpochs.useQuery();
 
   // update time every second
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
