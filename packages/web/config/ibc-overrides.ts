@@ -24,7 +24,6 @@ type AdditionalData = Partial<
   Record<MainnetAssetSymbols | TestnetAssetSymbols, AdditionalDataValue>
 >;
 
-const environment = IS_TESTNET ? "testnet" : "mainnet";
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
