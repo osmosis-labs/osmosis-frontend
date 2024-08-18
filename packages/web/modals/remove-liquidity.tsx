@@ -32,7 +32,7 @@ export const RemoveLiquidityModal: FunctionComponent<
   const [percentage, setPercentage] = useState("50");
 
   const { data: pool, isLoading: isLoadingPool } =
-    api.edge.pools.getSharePool.useQuery({
+    api.local.pools.getSharePool.useQuery({
       poolId,
     });
 

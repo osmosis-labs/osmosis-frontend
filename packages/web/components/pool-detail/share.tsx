@@ -87,7 +87,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
         },
       }
     );
-    const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
+    const { data: sharePool } = api.local.pools.getSharePool.useQuery({
       poolId: pool.id,
     });
 

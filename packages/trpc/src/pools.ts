@@ -38,9 +38,6 @@ export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
 
 export const poolsRouter = createTRPCRouter({
-  getSharePool: publicProcedure
-    .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId }, ctx }) => getSharePool({ ...ctx, poolId })),
   getUserPools: publicProcedure
     .input(UserOsmoAddressSchema.required())
     .query(async ({ input: { userOsmoAddress }, ctx }) =>
@@ -185,6 +182,9 @@ export const poolsRouter = createTRPCRouter({
 
 // Local router queries for pools.
 export const poolsLocalRouter = createTRPCRouter({
+  getSharePool: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ input: { poolId }, ctx }) => getSharePool({ ...ctx, poolId })),
   getPool: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId }, ctx }) => getPool({ ...ctx, poolId })),

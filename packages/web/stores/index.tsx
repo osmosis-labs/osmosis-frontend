@@ -21,8 +21,8 @@ export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.staking.getUserDelegations.invalidate();
   apiUtils.local.concentratedLiquidity.getUserPositions.invalidate();
   apiUtils.local.concentratedLiquidity.getPositionDetails.invalidate();
-  apiUtils.edge.pools.getSharePool.invalidate();
-  apiUtils.edge.pools.getPool.invalidate();
+  apiUtils.local.pools.getSharePool.invalidate();
+  apiUtils.local.pools.getPool.invalidate();
   apiUtils.edge.pools.getUserSharePool.invalidate();
   apiUtils.edge.pools.getSharePoolBondDurations.invalidate();
   apiUtils.local.balances.getUserBalances.invalidate();
