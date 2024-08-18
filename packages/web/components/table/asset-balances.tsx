@@ -29,7 +29,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -510,7 +510,7 @@ export const AssetActionsCell: AssetCellComponent<{
 }) => {
   const { t } = useTranslation();
 
-  const { bridgeAsset } = useBridge();
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 

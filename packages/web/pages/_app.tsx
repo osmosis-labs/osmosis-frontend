@@ -40,7 +40,7 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { BridgeProvider } from "~/hooks/bridge";
+import { ImmersiveBridge } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -81,21 +81,20 @@ function MyApp({ Component, pageProps }: AppProps) {
         <StoreProvider>
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
-              <BridgeProvider>
-                <SEO />
-                <IbcNotifier />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-              </BridgeProvider>
+              <SEO />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                {Component && <Component {...pageProps} />}
+              </MainLayoutWrapper>
             </ErrorBoundary>
+            <ImmersiveBridge />
           </WalletSelectProvider>
         </StoreProvider>
       </MultiLanguageProvider>

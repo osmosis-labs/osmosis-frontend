@@ -1,8 +1,12 @@
 import { Transition } from "@headlessui/react";
 import { isNil } from "@osmosis-labs/utils";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
-import { useQueryState } from "nuqs";
-import { memo, PropsWithChildren, useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { useMount, useSearchParam } from "react-use";
+import { create } from "zustand";
+import { combine } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { AmountAndReviewScreen } from "~/components/bridge/amount-and-review-screen";
@@ -14,92 +18,202 @@ import { StepProgress } from "~/components/stepper/progress-bar";
 import { IconButton } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useTranslation, useWindowKeyActions } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { useDisclosure } from "~/hooks/use-disclosure";
+import {
+  logAmplitudeEvent,
+  useAmplitudeAnalytics,
+} from "~/hooks/use-amplitude-analytics";
 import { FiatRampKey } from "~/integrations";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
-import { createContext } from "~/utils/react-context";
 
-export type BridgeContext = {
-  /** Start bridging without knowing the asset to bridge yet. */
-  startBridge: (params: { direction: "deposit" | "withdraw" }) => void;
-  /** Start bridging a specified asset of coinMinimalDenom or symbol/denom. */
-  bridgeAsset: (params: {
-    /** Symol is preferred for improved quality of Amplitude data. */
-    anyDenom: string;
-    direction: "deposit" | "withdraw";
-  }) => void;
-  /** Open a specified fiat on ramp given a specific fiat ramp key and asset key. */
-  fiatRamp: (params: { fiatRampKey: FiatRampKey; assetKey: string }) => void;
-  /** Open fiat ramp selection. */
-  fiatRampSelection: () => void;
-};
-/** A bridge flow for UI for deposit/withdraw or fiat on ramping capable of handling the bridge context provider. */
-
-const [BridgeInnerProvider, useBridge] = createContext<BridgeContext>();
-
-export { useBridge };
-
-export enum BridgeScreen {
+export const enum BridgeScreen {
   Asset = "0",
   Amount = "1",
   Review = "2",
 }
 
-const MemoizedChildren = memo(({ children }: PropsWithChildren) => {
-  return <>{children}</>;
-});
+export const useBridgeStore = create(
+  combine(
+    {
+      isVisible: false,
+      step: BridgeScreen.Asset,
+      direction: undefined as "deposit" | "withdraw" | undefined,
+      selectedAssetDenom: undefined as string | undefined,
+      fiatRamp: null as {
+        fiatRampKey: FiatRampKey;
+        assetKey: string;
+      } | null,
+      fiatRampSelectionOpen: false,
+    },
+    (set) => ({
+      setIsVisible: (isVisible: boolean) => set({ isVisible }),
+      setStep: (step: BridgeScreen) => set({ step }),
+      setDirection: (direction: "deposit" | "withdraw" | undefined) => {
+        set({ direction });
+      },
+      setSelectedAssetDenom: (denom: string | undefined) => {
+        if (!isNil(denom)) {
+          logAmplitudeEvent([
+            EventName.DepositWithdraw.assetSelected,
+            {
+              tokenName: denom,
+            },
+          ]);
+        }
+        set({ selectedAssetDenom: denom });
+      },
+      startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
+        set({ isVisible: true, direction });
+      },
+      bridgeAsset: ({
+        anyDenom,
+        direction = "deposit",
+      }: {
+        anyDenom: string | undefined;
+        direction: "deposit" | "withdraw" | undefined;
+      }) => {
+        if (anyDenom) {
+          logAmplitudeEvent([
+            EventName.DepositWithdraw.assetSelected,
+            {
+              tokenName: anyDenom,
+            },
+          ]);
+        }
+        set({
+          isVisible: true,
+          direction,
+          step: BridgeScreen.Amount,
+          selectedAssetDenom: anyDenom,
+        });
+      },
+      setFiatRampParams: (
+        params: {
+          fiatRampKey: FiatRampKey;
+          assetKey: string;
+        } | null
+      ) => {
+        set({ fiatRamp: params });
+      },
+      toggleFiatRamp: ({
+        fiatRampKey,
+        assetKey,
+      }: {
+        fiatRampKey: FiatRampKey;
+        assetKey: string;
+      }) => {
+        set({ fiatRamp: { fiatRampKey, assetKey } });
+      },
+      fiatRampSelection: () => {
+        set({ fiatRampSelectionOpen: true });
+      },
+      toggleFiatRampSelection: (nextValue: boolean) => {
+        set((state) => ({
+          fiatRampSelectionOpen: nextValue ?? !state.fiatRampSelectionOpen,
+        }));
+      },
+    })
+  )
+);
 
 /** Provides a globally accessible bridge UX that is initiated via the `useBridge` hook. */
-export const BridgeProvider = ({ children }: PropsWithChildren) => {
+export const ImmersiveBridge = () => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+  const transferDirectionSearchParam = useSearchParam("transferDirection");
+  const transferAssetSearchParam = useSearchParam("transferAsset");
+  const { isReady: isRouterReady } = useRouter();
 
-  const [isVisible, setIsVisible] = useState(false);
-  const [step, setStep] = useState<BridgeScreen>(BridgeScreen.Asset);
-  const [direction, setDirection] = useQueryState<
-    "deposit" | "withdraw" | null
-  >("transferDirection", {
-    history: "replace",
-    parse: (value) => (value === "withdraw" ? "withdraw" : "deposit"),
-  });
-  const [selectedAssetDenom, setSelectedAssetDenom] = useQueryState<
-    string | null
-  >("transferAsset", {
-    defaultValue: null,
-    history: "replace",
-    parse: (value) => {
-      if (typeof value === "string") return value;
-      return null;
-    },
+  const {
+    direction,
+    isVisible,
+    selectedAssetDenom,
+    setDirection,
+    setIsVisible,
+    setSelectedAssetDenom,
+    setStep,
+    step,
+    isFiatOnRampSelectionOpen,
+    toggleFiatOnRampSelection,
+    fiatRampParams,
+    setFiatRampParams,
+    bridgeAsset,
+  } = useBridgeStore(
+    useShallow((state) => ({
+      isVisible: state.isVisible,
+      step: state.step,
+      direction: state.direction,
+      selectedAssetDenom: state.selectedAssetDenom,
+      setIsVisible: state.setIsVisible,
+      setStep: state.setStep,
+      setDirection: state.setDirection,
+      setSelectedAssetDenom: state.setSelectedAssetDenom,
+      isFiatOnRampSelectionOpen: state.fiatRampSelectionOpen,
+      toggleFiatOnRampSelection: state.toggleFiatRampSelection,
+      fiatRampParams: state.fiatRamp,
+      setFiatRampParams: state.setFiatRampParams,
+      bridgeAsset: state.bridgeAsset,
+    }))
+  );
+
+  /**
+   * Open the bridge transfer flow if the transfer direction or asset is specified in the URL
+   */
+  useMount(() => {
+    let nextDirection: "deposit" | "withdraw" | undefined;
+    let nextAsset: string | undefined;
+
+    if (
+      transferDirectionSearchParam === "deposit" ||
+      transferDirectionSearchParam === "withdraw"
+    ) {
+      nextDirection = transferDirectionSearchParam;
+    }
+
+    if (transferAssetSearchParam) {
+      nextAsset = transferAssetSearchParam;
+    }
+
+    setDirection(nextDirection);
+    setSelectedAssetDenom(nextAsset);
+
+    if (nextDirection || nextAsset) {
+      bridgeAsset({
+        anyDenom: nextAsset,
+        direction: nextDirection,
+      });
+    }
+
+    if (nextAsset) {
+      setStep(BridgeScreen.Amount);
+    }
   });
 
   useEffect(() => {
-    if (!isNil(direction) && !isVisible) setIsVisible(true);
-    if (isNil(direction) && isVisible) setDirection("deposit"); // default direction
-    if (!isNil(selectedAssetDenom) && !isVisible) {
-      setIsVisible(true);
-      setStep(BridgeScreen.Amount);
-      logEvent([
-        EventName.DepositWithdraw.assetSelected,
-        {
-          tokenName: selectedAssetDenom,
-        },
-      ]);
+    if (!isRouterReady || !isVisible) return;
+
+    const url = new URL(location.href);
+
+    const hadTransferDirection = url.searchParams.has("transferDirection");
+    const hadTransferAsset = url.searchParams.has("transferAsset");
+
+    console.log(direction);
+    if (direction) url.searchParams.set("transferDirection", direction);
+    if (selectedAssetDenom)
+      url.searchParams.set("transferAsset", selectedAssetDenom);
+
+    console.log(url.href);
+
+    /**
+     * If the URL did not have any transfer direction or asset, push the new URL to the history
+     */
+    if (!hadTransferDirection && !hadTransferAsset) {
+      window.history.pushState(null, document.title, url.href);
+      return;
     }
-  }, [direction, selectedAssetDenom, isVisible, setDirection, logEvent]);
 
-  const [fiatRampParams, setFiatRampParams] = useState<{
-    fiatRampKey: FiatRampKey;
-    assetKey: string;
-  } | null>(null);
-
-  const {
-    isOpen: isFiatOnrampSelectionOpen,
-    onOpen: onOpenFiatOnrampSelection,
-    onClose: onCloseFiatOnrampSelection,
-  } = useDisclosure();
+    window.history.pushState(null, document.title, url.href);
+  }, [direction, isRouterReady, isVisible, selectedAssetDenom]);
 
   useEffect(() => {
     if (isVisible) {
@@ -115,13 +229,14 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
 
   const onClose = () => {
     setIsVisible(false);
-    setDirection(null);
-    setSelectedAssetDenom(null);
-  };
 
-  const onOpen = (direction: "deposit" | "withdraw") => {
-    setIsVisible(true);
-    setDirection(direction);
+    /**
+     * Remove bridge related query params from the URL
+     */
+    const url = new URL(location.href);
+    url.searchParams.delete("transferDirection");
+    url.searchParams.delete("transferAsset");
+    window.history.replaceState(null, document.title, url.href);
   };
 
   useWindowKeyActions({
@@ -129,42 +244,7 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
   });
 
   return (
-    <BridgeInnerProvider
-      value={{
-        startBridge: ({ direction }: { direction: "deposit" | "withdraw" }) => {
-          onOpen(direction);
-        },
-        bridgeAsset: async ({
-          anyDenom,
-          direction,
-        }: {
-          anyDenom: string;
-          direction: "deposit" | "withdraw";
-        }) => {
-          onOpen(direction);
-          setStep(BridgeScreen.Amount);
-          setSelectedAssetDenom(anyDenom);
-          logEvent([
-            EventName.DepositWithdraw.assetSelected,
-            {
-              tokenName: anyDenom,
-            },
-          ]);
-        },
-        fiatRamp: ({
-          fiatRampKey,
-          assetKey,
-        }: {
-          fiatRampKey: FiatRampKey;
-          assetKey: string;
-        }) => {
-          setFiatRampParams({ fiatRampKey, assetKey });
-        },
-        fiatRampSelection: onOpenFiatOnrampSelection,
-      }}
-    >
-      <MemoizedChildren>{children}</MemoizedChildren>
-
+    <>
       <ScreenManager
         currentScreen={String(step)}
         onChangeScreen={(screen) => setStep(screen as BridgeScreen)}
@@ -174,7 +254,7 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
             <Transition
               show={isVisible}
               as="div"
-              className="fixed inset-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
+              className="fixed inset-0 z-[9999] flex h-screen w-screen bg-osmoverse-900"
               enter="transition-opacity duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
@@ -182,7 +262,8 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
               afterLeave={() => {
-                setSelectedAssetDenom(null);
+                setSelectedAssetDenom(undefined);
+                setDirection(undefined);
                 setStep(BridgeScreen.Asset);
               }}
             >
@@ -213,7 +294,7 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
                                 (Number(step) - 1).toString() as BridgeScreen
                               );
                               if (step === BridgeScreen.Amount) {
-                                setSelectedAssetDenom(null);
+                                setSelectedAssetDenom(undefined);
                               }
                             }}
                           />
@@ -227,7 +308,7 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
                                 step !== BridgeScreen.Asset
                                   ? () => {
                                       setStep(BridgeScreen.Asset);
-                                      setSelectedAssetDenom(null);
+                                      setSelectedAssetDenom(undefined);
                                     }
                                   : undefined,
                             },
@@ -262,12 +343,6 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
                                   onSelectAsset={({ coinDenom }) => {
                                     setCurrentScreen(BridgeScreen.Amount);
                                     setSelectedAssetDenom(coinDenom);
-                                    logEvent([
-                                      EventName.DepositWithdraw.assetSelected,
-                                      {
-                                        tokenName: coinDenom,
-                                      },
-                                    ]);
                                   }}
                                 />
                               ) : null
@@ -303,12 +378,12 @@ export const BridgeProvider = ({ children }: PropsWithChildren) => {
         />
       )}
       <FiatOnrampSelectionModal
-        isOpen={isFiatOnrampSelectionOpen}
-        onRequestClose={onCloseFiatOnrampSelection}
+        isOpen={isFiatOnRampSelectionOpen}
+        onRequestClose={() => toggleFiatOnRampSelection(false)}
         onSelectRamp={() => {
           logEvent([EventName.ProfileModal.buyTokensClicked]);
         }}
       />
-    </BridgeInnerProvider>
+    </>
   );
 };

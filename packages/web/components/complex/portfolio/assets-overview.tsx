@@ -12,6 +12,7 @@ import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useMemo } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -27,7 +28,7 @@ import { useFormatDate } from "~/components/transactions/transaction-utils";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useTranslation, useWalletSelect, useWindowSize } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -90,7 +91,12 @@ export const AssetsOverview: FunctionComponent<
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
-  const { startBridge, fiatRampSelection } = useBridge();
+  const { startBridge, fiatRampSelection } = useBridgeStore(
+    useShallow((state) => ({
+      startBridge: state.startBridge,
+      fiatRampSelection: state.fiatRampSelection,
+    }))
+  );
   const { isLoading: isWalletLoading } = useWalletSelect();
   const { isMobile } = useWindowSize();
   const formatDate = useFormatDate();
