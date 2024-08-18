@@ -2,7 +2,6 @@ import {
   createSortSchema,
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
-  getCachedPoolMarketMetricsMap,
   getCachedTransmuterTotalPoolLiquidity,
   getPool,
   getPools,
@@ -12,7 +11,6 @@ import {
   getUserPools,
   getUserSharePools,
   IncentivePoolFilterSchema,
-  isIncentivePoolFiltered,
   maybeCachePaginatedItems,
   PoolFilterSchema,
 } from "@osmosis-labs/server";
@@ -28,11 +26,11 @@ const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
-  "feesSpent7dUsd",
-  "feesSpent24hUsd",
-  "volume7dUsd",
-  "volume24hUsd",
-  "aprBreakdown.total.upper",
+  "market.feesSpent7dUsd",
+  "market.feesSpent24hUsd",
+  "market.volume7dUsd",
+  "market.volume24hUsd",
+  "incentives.aprBreakdown.total.upper",
 ] as const;
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
@@ -78,7 +76,7 @@ export const poolsRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       })
     ),
-  getMarketIncentivePools: publicProcedure
+  getPools: publicProcedure
     .input(
       GetInfinitePoolsSchema.and(
         z.object({
@@ -104,52 +102,23 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const [pools, incentives, marketMetrics] = await Promise.all([
-              getPools({
-                ...ctx,
-                search,
-                minLiquidityUsd,
-                types,
-                denoms,
-              }),
-              getCachedPoolIncentivesMap(),
-              getCachedPoolMarketMetricsMap(),
-            ]);
+            const pools = await getPools({
+              ...ctx,
+              search,
+              minLiquidityUsd,
+              types,
+              denoms,
+            });
 
-            const marketIncentivePools = pools
-              .map((pool) => {
-                const incentivesForPool = incentives.get(pool.id);
-                const metricsForPool = marketMetrics.get(pool.id) ?? {};
-
-                const isIncentiveFiltered =
-                  incentivesForPool &&
-                  isIncentivePoolFiltered(incentivesForPool, {
-                    incentiveTypes,
-                  });
-
-                if (isIncentiveFiltered) return;
-
-                return {
-                  ...pool,
-                  ...incentivesForPool,
-                  ...metricsForPool,
-                };
-              })
-              .filter((pool): pool is NonNullable<typeof pool> => !!pool);
-
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
+            if (search) return pools;
+            else return sort(pools, sortInput.keyPath, sortInput.direction);
           },
           cacheKey: JSON.stringify({
             search,
             sortInput,
             minLiquidityUsd,
             types,
+            denoms,
             incentiveTypes,
           }),
           cursor,
@@ -159,11 +128,6 @@ export const poolsRouter = createTRPCRouter({
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
     getSuperfluidPoolIds(ctx)
   ),
-  getPoolMarketMetrics: publicProcedure
-    .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) =>
-      getCachedPoolMarketMetricsMap().then((map) => map.get(poolId) ?? null)
-    ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>
