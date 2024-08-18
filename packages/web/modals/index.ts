@@ -10,7 +10,6 @@ export * from "./lock-tokens";
 export * from "./menu-options";
 export * from "./one-click-trading-intro-modal";
 export * from "./remove-liquidity";
-export * from "./select-asset-source";
 export * from "./settings";
 export * from "./settings";
 export * from "./superfluid-validator";
