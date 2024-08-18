@@ -18,7 +18,7 @@ import {
   makeMinimalAsset,
   sort,
 } from "@osmosis-labs/utils";
-import { inferRouterInputs, inferRouterOutputs, initTRPC } from "@trpc/server";
+import { inferRouterOutputs, initTRPC } from "@trpc/server";
 
 import { createInnerTRPCContext, swapRouter } from "..";
 import { AssetLists } from "./mock-asset-lists";
@@ -43,7 +43,6 @@ const caller = createCaller({
 });
 
 type RouterOutputs = inferRouterOutputs<typeof router>;
-type RouterInputs = inferRouterInputs<typeof router>;
 
 const atomAsset = getAssetFromAssetList({
   assetLists: AssetLists,
