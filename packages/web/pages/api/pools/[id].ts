@@ -50,5 +50,5 @@ export default async function pools(req: Request) {
 }
 
 export const config = {
-  runtime: "edge",
+  runtime: "local",
 };
