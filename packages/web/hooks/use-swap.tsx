@@ -485,7 +485,7 @@ export function useSwap(
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
-        : !Boolean(quoteErrorMsg)
+        : !quoteErrorMsg
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
