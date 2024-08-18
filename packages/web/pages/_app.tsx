@@ -93,8 +93,8 @@ function MyApp({ Component, pageProps }: AppProps) {
               <MainLayoutWrapper>
                 {Component && <Component {...pageProps} />}
               </MainLayoutWrapper>
+              <ImmersiveBridge />
             </ErrorBoundary>
-            <ImmersiveBridge />
           </WalletSelectProvider>
         </StoreProvider>
       </MultiLanguageProvider>

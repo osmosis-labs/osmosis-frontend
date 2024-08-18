@@ -197,12 +197,9 @@ export const ImmersiveBridge = () => {
     const hadTransferDirection = url.searchParams.has("transferDirection");
     const hadTransferAsset = url.searchParams.has("transferAsset");
 
-    console.log(direction);
     if (direction) url.searchParams.set("transferDirection", direction);
     if (selectedAssetDenom)
       url.searchParams.set("transferAsset", selectedAssetDenom);
-
-    console.log(url.href);
 
     /**
      * If the URL did not have any transfer direction or asset, push the new URL to the history
@@ -254,7 +251,7 @@ export const ImmersiveBridge = () => {
             <Transition
               show={isVisible}
               as="div"
-              className="fixed inset-0 z-[9999] flex h-screen w-screen bg-osmoverse-900"
+              className="fixed inset-0 z-[999] flex h-screen w-screen bg-osmoverse-900"
               enter="transition-opacity duration-300"
               enterFrom="opacity-0"
               enterTo="opacity-100"
