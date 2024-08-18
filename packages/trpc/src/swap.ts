@@ -4,7 +4,7 @@ import {
   captureIfError,
   getAsset,
   getCosmwasmPoolTypeFromCodeId,
-  getDefaultRouter,
+  getSidecarRouter,
   Pool,
 } from "@osmosis-labs/server";
 import { AssetList } from "@osmosis-labs/types";
@@ -27,7 +27,7 @@ export const swapRouter = createTRPCRouter({
         input: { tokenInDenom, tokenInAmount, tokenOutDenom, forcePoolId },
         ctx,
       }) => {
-        const router = getDefaultRouter();
+        const router = getSidecarRouter();
 
         // send to router
         const startTime = Date.now();

@@ -9,15 +9,6 @@ export type Token = {
   amount: Int;
 };
 
-export interface TokenOutGivenInRouter {
-  /** Route, with splits, given an in token and out denom. */
-  routeByTokenIn(
-    tokenIn: Token,
-    tokenOutDenom: string,
-    forcePoolId?: string
-  ): Promise<SplitTokenInQuote>;
-}
-
 export interface RoutablePool {
   /** Unique identifier across pools. */
   id: string;
