@@ -17,7 +17,7 @@ import {
   makeMinimalAsset,
   sum,
 } from "@osmosis-labs/utils";
-import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
+import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -183,9 +183,9 @@ export function useSwap(
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
   }, [
-    quoteError,
+    quoteErrorMsg,
     quote,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     inAmountInput.error,
     inAmountInput.isEmpty,
   ]);
@@ -416,9 +416,9 @@ export function useSwap(
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteError &&
+        !quoteErrorMsg &&
         !inAmountInput.isEmpty,
-      [quote, quoteError, inAmountInput.isEmpty]
+      [quote, quoteErrorMsg, inAmountInput.isEmpty]
     )
   );
 
@@ -485,7 +485,7 @@ export function useSwap(
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
-        : !Boolean(quoteError)
+        : !Boolean(quoteErrorMsg)
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
@@ -500,7 +500,7 @@ export function useSwap(
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
@@ -786,7 +786,7 @@ export function useSwapAmountInput({
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
-    error: quoteForCurrentBalanceError,
+    errorMsg: quoteForCurrentBalanceErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -822,8 +822,8 @@ export function useSwapAmountInput({
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
-    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
-  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
+    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceErrorMsg;
+  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceErrorMsg]);
 
   const notEnoughBalanceForMax = useMemo(
     () =>
@@ -836,13 +836,10 @@ export function useSwapAmountInput({
       currentBalanceNetworkFeeError?.message.includes(
         "Insufficient alternative balance for transaction fees"
       ) ||
-      quoteForCurrentBalanceError?.message.includes(
+      quoteForCurrentBalanceErrorMsg?.includes(
         "Not enough quoted. Try increasing amount."
       ),
-    [
-      currentBalanceNetworkFeeError?.message,
-      quoteForCurrentBalanceError?.message,
-    ]
+    [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
   useEffect(() => {
@@ -1204,12 +1201,7 @@ function useQueryRouterBestQuote(
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(
-  error:
-    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
-    | null
-    | undefined
-):
+function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
         | NoRouteError
@@ -1219,21 +1211,20 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: boolean;
     }
   | undefined {
-  if (isNil(error)) return;
-  const tprcShapeMsg = error?.message;
+  if (isNil(errorMsg)) return;
 
-  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+  if (errorMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
     return { error: new NotEnoughLiquidityError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
     return { error: new NotEnoughQuotedError(), isUnexpected: false };
   }
-  if (error) {
+  if (errorMsg) {
     return {
-      error: new Error("Unexpected router error" + (tprcShapeMsg ?? "")),
+      error: new Error("Unexpected router error" + (errorMsg ?? "")),
       isUnexpected: true,
     };
   }
