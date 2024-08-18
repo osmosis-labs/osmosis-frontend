@@ -2,6 +2,7 @@ import { Environment } from "@axelar-network/axelarjs-sdk";
 import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
+import { makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { AxelarSourceChain, getKeyByValue } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -192,7 +193,7 @@ export const AxelarTransfer: FunctionComponent<
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainId,
-      osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
+      makeIBCTransferMsg.gas ?? 0
     );
     const withdrawAmountConfig = useAmountConfig(
       chainStore,

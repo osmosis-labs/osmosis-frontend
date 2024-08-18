@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { SIDECAR_BASE_URL } from "../../env";
@@ -10,6 +11,11 @@ interface Coin {
 export interface AccountCoinsResult {
   coin: Coin;
   cap_value: string;
+}
+
+export interface AccountCoinsResultDec {
+  coin: Coin;
+  cap_value: Dec;
 }
 export interface Category {
   capitalization: string;

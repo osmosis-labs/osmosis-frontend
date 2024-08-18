@@ -38,7 +38,7 @@ export const PriceChange: FunctionComponent<
     value !== undefined ? `(${priceChangeDisplay})` : priceChangeDisplay;
 
   return (
-    <div className={classNames("flex h-fit items-center gap-1", className)}>
+    <div className={classNames("flex items-center gap-1", className)}>
       {isBullish && (
         <Icon
           id="triangle-down"

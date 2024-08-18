@@ -5,13 +5,16 @@ import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
   static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
-    // 0.05%
+    // 0.5%
     new Dec("0.005"),
     // 1%
     new Dec("0.01"),
     // 3%
     new Dec("0.03"),
   ];
+
+  @observable
+  protected _defaultManualSlippage: string = "0.5";
 
   @observable.shallow
   protected _selectableSlippages: ReadonlyArray<Dec> =
@@ -21,10 +24,10 @@ export class ObservableSlippageConfig {
   protected _selectedIndex: number = 0;
 
   @observable
-  protected _isManualSlippage: boolean = false;
+  protected _isManualSlippage: boolean = true;
 
   @observable
-  protected _manualSlippage: string = "5.0";
+  protected _manualSlippage: string = "0.5";
 
   constructor() {
     makeObservable(this);
@@ -81,6 +84,11 @@ export class ObservableSlippageConfig {
   @computed
   get manualSlippageStr(): string {
     return this._manualSlippage;
+  }
+
+  @computed
+  get defaultManualSlippage(): string {
+    return this._defaultManualSlippage;
   }
 
   @computed

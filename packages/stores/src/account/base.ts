@@ -1,27 +1,12 @@
 import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
-import {
-  AminoMsg,
-  encodeSecp256k1Pubkey,
-  encodeSecp256k1Signature,
-  OfflineAminoSigner,
-} from "@cosmjs/amino";
-import { fromBase64 } from "@cosmjs/encoding";
-import { StdFee } from "@cosmjs/launchpad";
-import { Int53 } from "@cosmjs/math";
-import {
+import type { OfflineAminoSigner } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/launchpad";
+import type {
   EncodeObject,
-  encodePubkey,
-  makeAuthInfoBytes,
-  makeSignDoc,
   OfflineDirectSigner,
   Registry,
 } from "@cosmjs/proto-signing";
-import {
-  AminoTypes,
-  BroadcastTxError,
-  SignerData,
-  SigningStargateClient,
-} from "@cosmjs/stargate";
+import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {
   MainWalletBase,
   WalletConnectOptions,
@@ -41,17 +26,10 @@ import {
   Functionify,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import {
-  cosmosProtoRegistry,
-  cosmwasmProtoRegistry,
-  ibcProtoRegistry,
-  osmosis,
-  osmosisProtoRegistry,
-} from "@osmosis-labs/proto-codecs";
-import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
+  getOsmosisCodec,
   QuoteStdFee,
   SimulateNotAvailableError,
   TxTracer,
@@ -67,8 +45,7 @@ import {
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
-import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
@@ -77,7 +54,7 @@ import { Optional, UnionToIntersection } from "utility-types";
 import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
 import { InsufficientBalanceForFeeError } from "../ui-config";
-import { aminoConverters } from "./amino-converters";
+import { getAminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   CosmosRegistryWallet,
@@ -146,13 +123,44 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     IPromiseBasedObservable<boolean>
   >();
 
-  private aminoTypes = new AminoTypes(aminoConverters);
-  private registry = new Registry([
-    ...cosmwasmProtoRegistry,
-    ...cosmosProtoRegistry,
-    ...ibcProtoRegistry,
-    ...osmosisProtoRegistry,
-  ]);
+  private _aminoTypes: AminoTypes | null = null;
+  private _registry: Registry | null = null;
+
+  private async getAminoTypes() {
+    if (!this._aminoTypes) {
+      const [{ AminoTypes }, aminoConverters] = await Promise.all([
+        import("@cosmjs/stargate"),
+        getAminoConverters(),
+      ]);
+      this._aminoTypes = new AminoTypes(aminoConverters);
+    }
+    return this._aminoTypes;
+  }
+
+  private async getRegistry() {
+    if (!this._registry) {
+      const [
+        {
+          cosmosProtoRegistry,
+          cosmwasmProtoRegistry,
+          ibcProtoRegistry,
+          osmosisProtoRegistry,
+        },
+        { Registry },
+      ] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+
+      this._registry = new Registry([
+        ...cosmwasmProtoRegistry,
+        ...cosmosProtoRegistry,
+        ...ibcProtoRegistry,
+        ...osmosisProtoRegistry,
+      ]);
+    }
+    return this._registry;
+  }
 
   /**
    * We make sure that the 'base' field always has as its value the native chain parameter
@@ -230,13 +238,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
-      {
-        signingStargate: () => ({
-          aminoTypes: this.aminoTypes,
-          registry: this
-            .registry as unknown as SigningStargateClient["registry"],
-        }),
-      },
+      undefined,
       {
         endpoints: getWalletEndpoints(this.chains),
       },
@@ -593,6 +595,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         messages: msgs,
         signOptions: mergedSignOptions,
       });
+      const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -630,6 +633,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
 
       if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
       }
 
@@ -818,6 +822,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
+    const osmosis = await getOsmosisCodec();
+
     /**
      * If the message is an authenticator message, force the direct signing.
      * This is because the authenticator message should be signed with proto for now.
@@ -894,6 +900,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo += " \n1CT";
     }
 
+    const [
+      { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
+      { TxExtension },
+      { fromBase64 },
+      { Int53 },
+      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
+      { TxRaw },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import(
+        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
+      ),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -907,7 +931,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     pubkey.typeUrl = pubKeyTypeUrl;
 
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
+    const registry = await this.getRegistry();
+    const txBodyBytes = registry.encodeTxBody({
       messages,
       memo,
       nonCriticalExtensionOptions: [
@@ -1011,6 +1036,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       memo += " \nFE";
     }
 
+    const [
+      { encodeSecp256k1Pubkey },
+      { encodePubkey, makeAuthInfoBytes },
+      { fromBase64 },
+      { Int53 },
+      { TxRaw },
+      { SignMode },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import("@cosmjs/proto-signing"),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+      import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
+    ]);
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -1025,18 +1066,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     pubkey.typeUrl = pubKeyTypeUrl;
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+    const aminoTypes = await this.getAminoTypes();
     const msgs = messages.map((msg) => {
-      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
+      const res = aminoTypes.toAmino(msg);
       // Include the 'memo' field again because the 'registry' omits it
       if (msg.value.memo) {
         res.value.memo = msg.value.memo;
       }
       return res;
-    }) as AminoMsg[];
+    });
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
-    const signDoc = makeSignDocAmino(
+    const signDoc = await makeSignDocAmino(
       msgs,
       fee,
       chainId,
@@ -1058,10 +1100,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBodyBytes = this.registry?.encodeTxBody({
+    console.log(signDoc);
+
+    const registry = await this.getRegistry();
+    const signedTxBodyBytes = registry.encodeTxBody({
       messages: signed.msgs.map((msg) => {
-        const res: any =
-          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+        const res = aminoTypes.fromAmino(msg);
         // Include the 'memo' field again because the 'registry' omits it
         if (msg.value.memo) {
           res.value.memo = msg.value.memo;
@@ -1137,6 +1181,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
+
+    const [
+      { encodeSecp256k1Pubkey },
+      { encodePubkey },
+      { fromBase64 },
+      { Int53 },
+      { makeAuthInfoBytes, makeSignDoc },
+      { TxRaw },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import("@cosmjs/proto-signing"),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
@@ -1166,7 +1227,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo,
       },
     };
-    const txBodyBytes = this.registry?.encode(txBodyEncodeObject) as Uint8Array;
+
+    const registry = await this.getRegistry();
+    const txBodyBytes = registry.encode(txBodyEncodeObject) as Uint8Array;
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
@@ -1283,7 +1346,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
+      const registry = await this.getRegistry();
+      const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
       // check for one click trading tx decoration
       const shouldBeSignedWithOneClickTrading =
@@ -1413,6 +1477,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
+    const { TxExtension } = await import(
+      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
+    );
     return [
       {
         typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",

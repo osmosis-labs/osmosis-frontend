@@ -95,7 +95,8 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール #{poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します",
+    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。"
   },
   "copied": "コピーしました！",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",
-      "pendingDeposit": "保留中の入金",
-      "pendingWithdraw": "保留中の撤回",
-      "successDeposit": "寄託",
-      "successWithdraw": "撤退",
-      "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました",
       "connectionError": "接続エラー"
     },
     "ibcTransfer": {
@@ -224,16 +219,8 @@
       "approveInWallet": "ウォレットで承認",
       "enterAddress": "{network}アドレス",
       "errors": {
-        "insufficientBal": "残高不足",
-        "insufficientFee": "不十分な料金",
-        "reconnectWallet": "{walletName}を再接続します",
-        "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
         "seeRequest": "{walletName}リクエストを参照してください。",
-        "noQuotesAvailable": "利用可能な見積もりはありません",
-        "unexpectedError": "予期しないエラー。もう一度試してください。",
-        "transactionError": "トランザクション取得エラー。もう一度試してください。",
-        "invalidAddress": "無効なアドレス",
-        "missingAddress": "住所がありません"
+        "invalidAddress": "無効なアドレス"
       },
       "from": "から",
       "loading": "読み込み中",
@@ -316,9 +303,9 @@
   },
   "portfolio": {
     "buy": "買う",
-    "yourAssets": "あなたの資産",
+    "yourBalances": "残高",
     "yourPositions": "あなたの立場",
-    "recentTransfers": "最近の送金",
+    "searchBalances": "残高を検索",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
     "yourLiquidityPools": "流動性プール",
     "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
@@ -334,10 +321,21 @@
     "pooled": "プール",
     "other": "他の",
     "all": "全て",
-    "assets": "資産"
+    "assets": "資産",
+    "recentActivity": "最近のアクティビティ",
+    "seeAll": "すべて見る",
+    "show": "見せる",
+    "hide": "隠れる",
+    "hidden": "隠れた",
+    "cypherSpend": "オズモーシスペイ",
+    "cypherOrder": "今すぐカードを注文する",
+    "cypherBeta": "ベータ"
   },
   "buyTokens": "トークンを購入する",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "残高不足"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "フィアット オンランプを選択してください",
       "kadoSubtitle": "OSMO、USDCをサポート",
@@ -416,6 +414,7 @@
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
     "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
     "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません",
     "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する"
@@ -452,7 +451,6 @@
     "pools": "プール",
     "stake": "ステーク",
     "store": "アプリ",
-    "swap": "スワップ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
     "trade": "プロトレーディング",
@@ -803,9 +801,11 @@
     "MAX": "マックス",
     "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",
     "pool": "プール番号{id}",
-    "priceImpact": "価格への影響",
+    "priceImpact": "市場への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
+    "showDetails": "詳細を表示",
+    "hideDetails": "隠れる",
     "continueAnyway": "とにかく続けます",
     "warning": {
       "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
@@ -817,7 +817,17 @@
       "title": "トランザクション設定"
     },
     "title": "スワップ",
-    "dynamicSpreadFactor": "動的"
+    "dynamicSpreadFactor": "動的",
+    "gas": {
+      "oneClickTradingError": "現時点ではネットワーク手数料を見積もることはできません。手数料が 1 クリック取引ネットワーク手数料の上限を超える場合は、ウォレットで手動で承認を進めることができます。",
+      "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
+      "gasEstimationError": "ネットワーク料金は見積もれません",
+      "unknown": "未知",
+      "additionalNetworkFee": "追加のネットワーク料金"
+    },
+    "noRoutes": "ルートが見つかりません",
+    "route": "ルート",
+    "routes": "ルート"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
@@ -979,7 +989,17 @@
     "transferWithNoun": "{noun}で転送する",
     "risks": "ブリッジングにはリスクが伴います。",
     "learnMore": "もっと詳しく知る",
-    "openNoun": "{noun}を開く"
+    "openNoun": "{noun}を開く",
+    "insufficientFundsForFees": "手数料の資金が不足している",
+    "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
+    "assetsDepositsUnavailable": "{asset}の預金は利用できません",
+    "assetsWithdrawsUnavailable": "{asset}の引き出しは利用できません",
+    "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
+    "noAvailableWithdraws": "現在、利用可能なルートまたはプロバイダーが見つかりません。後でもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションを設定してください。",
+    "somethingIsntWorking": "何かがうまくいかない…",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。ページを更新してもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
+    "assetIsCurrentlyUnstable": "{asset}の転送は現在不安定です",
+    "transferWillLikelyTakeLonger": "転送には通常より時間がかかるか、完全に失敗する可能性があります。自己責任で進めてください。"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -1091,7 +1111,6 @@
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターを保存する",
     "rewards": "報酬",
-    "estimatedInYearlyRewards": "年間報酬で見積もる",
     "availableToClaim": "請求可能",
     "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
@@ -1183,7 +1202,9 @@
     "viewOnExplorer": "エクスプローラーで見る",
     "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "noPriceData": "価格データは利用できません",
-    "viewAll": "すべて表示"
+    "viewAll": "すべて表示",
+    "history": "歴史",
+    "orders": "注文"
   },
   "date": {
     "earlierToday": "本日",
@@ -1193,5 +1214,119 @@
   "pagination": {
     "older": "古い",
     "newer": "新しい"
-  }
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "注文",
+        "amount": "額",
+        "price": "価格",
+        "orderPlaced": "注文済み",
+        "status": "状態"
+      },
+      "emptyState": {
+        "title": "最近の注文はありません",
+        "subtitle": "取引注文履歴がここに表示されます。",
+        "connectTitle": "ウォレットを接続すると注文履歴が表示されます",
+        "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
+      }
+    },
+    "aboveMarket": {
+      "title": "市場価格を上回る制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "belowMarket": {
+      "title": "市場価格以下の制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "enterAnAmountTo": "金額を入力してください",
+    "toSell": "売る",
+    "toBuy": "購入する",
+    "sell": "売る",
+    "sold": "販売済み",
+    "percentFilled": "充填率",
+    "status": "状態",
+    "price": "価格",
+    "buy": "買う",
+    "pay": "支払う",
+    "open": "開ける",
+    "filled": "満たされた",
+    "claimable": "請求可能",
+    "claimAndClose": "請求して終了",
+    "close": "近い",
+    "claim": "請求",
+    "accept": "受け入れる",
+    "cancelled": "キャンセル",
+    "cancel": "キャンセル",
+    "daysAgo": "{days}日前",
+    "hoursAgo": "{hours}前",
+    "buyWith": "{coinA}または{coinB}で購入",
+    "orderHistory": "注文履歴",
+    "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
+    "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
+    "sellAnAsset": "資産を売る",
+    "swapAnAsset": "資産を交換する",
+    "of": "の",
+    "insufficientFunds": "残高不足",
+    "startTrading": "取引を始める",
+    "tradeFees": "取引手数料（注文成立時）",
+    "youNeed": "必要なのは",
+    "stablecoin": "ステーブルコイン",
+    "quoteUpdated": "引用を更新しました",
+    "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
+    "chooseAnOption": "続行するにはオプションを選択してください。",
+    "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
+    "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
+    "reviewTrade": "取引のレビュー",
+    "errors": {
+      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
+      "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",
+      "tradeMayNotExecuted": "取引が実行されない可能性があります"
+    },
+    "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
+    "whatIsOrderClaim": {
+      "title": "注文請求とは何ですか?",
+      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに、約定した注文から資金を手動で請求する必要がある場合もあります。<inlang-LineFeed><inlang-LineFeed>この請求プロセスでは、未請求のすべての約定済み注文に対してウォレット内の単一のトランザクションを承認する必要があり、少額のネットワーク料金が発生します。"
+    },
+    "whatIsAStablecoin": {
+      "title": "ステーブルコインとは何ですか?",
+      "description": "ステーブルコインは、法定通貨や金などの別の資産に価値が固定され、安定した価格を維持する暗号通貨の一種です。Osmosis では、資産の売買に使用される主なステーブルコインは USDC と USDT です。"
+    },
+    "claimAll": "すべてを主張する",
+    "addFunds": "資金を追加",
+    "selectAnAssetTo": {
+      "buy": "購入する資産を選択",
+      "sell": "売却する資産を選択する"
+    },
+    "payWith": "お支払い方法",
+    "receive": "受け取る",
+    "swapFromAnotherAsset": "別の資産からのスワップ",
+    "connectYourWallet": "ウォレットを接続する",
+    "toSeeYourBalances": "残高を確認する",
+    "searchAssets": "アセットを検索",
+    "marketPrice": "市場価格",
+    "below": "下に",
+    "above": "その上",
+    "currentPrice": "現在の価格",
+    "whenDenomPriceIs": "{denom}価格が",
+    "orderType": "注文タイプ",
+    "confirm": "確認する",
+    "market": "市場",
+    "limit": "制限",
+    "trade": "貿易",
+    "swapToAnotherAsset": "別の資産に交換する",
+    "invalidPrice": "無効な価格",
+    "priceTooLow": "価格が低すぎる",
+    "priceTooHigh": "価格が高すぎる",
+    "unavailable": "{denom}では利用できません",
+    "orderHistoryHeaders": {
+      "past": "過去",
+      "pending": "保留中",
+      "filled": "請求する注文を完了"
+    },
+    "priceReaches": "{denom}価格が{price}に達した場合",
+    "belowMinimumAmount": "{amount}最小"
+  },
+  "tradeFee": "取引手数料",
+  "receiveAtLeast": "少なくとも受け取る"
 }

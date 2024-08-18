@@ -95,7 +95,8 @@
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
     "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #{poolId}"
+    "goToPool": "Ir a la piscina #{poolId}",
+    "errorFetchingPositions": "No se pudieron obtener los detalles de la posición. Intente actualizar la página. Si el problema persiste, comuníquese con el servicio de asistencia."
   },
   "copied": "¡Copiado!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "Reembolsado",
       "success": "Éxito",
       "title": "Historial de transferencias",
-      "pendingDeposit": "Deposito pendiente",
-      "pendingWithdraw": "A la espera de Retiro",
-      "successDeposit": "Depositado",
-      "successWithdraw": "se retiró",
-      "failDeposit": "El depósito falló",
-      "failWithdraw": "Retiro fallido",
       "connectionError": "Error de conexión"
     },
     "ibcTransfer": {
@@ -224,16 +219,8 @@
       "approveInWallet": "Aprobar en billetera",
       "enterAddress": "dirección {network}",
       "errors": {
-        "insufficientBal": "Saldo insuficiente",
-        "insufficientFee": "Cuota insuficiente",
-        "reconnectWallet": "Reconectar {walletName}",
-        "wrongNetworkInWallet": "Red incorrecta en {walletName}",
         "seeRequest": "Ver solicitud en {walletName}",
-        "noQuotesAvailable": "No hay cotizaciones disponibles",
-        "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
-        "invalidAddress": "Dirección inválida",
-        "missingAddress": "Dirección faltante"
+        "invalidAddress": "Dirección inválida"
       },
       "from": "De",
       "loading": "Cargando",
@@ -316,9 +303,9 @@
   },
   "portfolio": {
     "buy": "Comprar",
-    "yourAssets": "Tus activos",
+    "yourBalances": "Sus saldos",
     "yourPositions": "Tus posiciones",
-    "recentTransfers": "Transferencias recientes",
+    "searchBalances": "Buscar saldos",
     "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
     "yourLiquidityPools": "Tus fondos de liquidez",
     "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis.",
@@ -334,10 +321,21 @@
     "pooled": "agrupado",
     "other": "Otro",
     "all": "Todo",
-    "assets": "Activos"
+    "assets": "Activos",
+    "recentActivity": "Actividad reciente",
+    "seeAll": "Ver todo",
+    "show": "Espectáculo",
+    "hide": "Esconder",
+    "hidden": "Oculto",
+    "cypherSpend": "Pago por ósmosis",
+    "cypherOrder": "Pide tu tarjeta ahora",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar fichas",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fondos insuficientes"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
@@ -416,6 +414,7 @@
     "txTimedOutError": "Se agotó el tiempo de espera de la transacción. Por favor, intenta de nuevo.",
     "insufficientFee": "Saldo insuficiente para tarifas de transacción. Por favor agregue fondos para continuar.",
     "noData": "Sin datos",
+    "noOrderbook": "Sin libro de pedidos para el par",
     "uhOhSomethingWentWrong": "Oh oh algo salió mal",
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Por favor, inténtelo de nuevo más tarde.",
     "startAgain": "Empezar de nuevo"
@@ -452,7 +451,6 @@
     "pools": "Piscinas",
     "stake": "Abonar",
     "store": "Aplicaciones",
-    "swap": "Intercambio",
     "vote": "Votar",
     "featureRequests": "Solicitudes de Funciones",
     "trade": "Comercio profesional",
@@ -803,9 +801,11 @@
     "MAX": "Máximo",
     "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
     "pool": "Piscina #{id}",
-    "priceImpact": "Impacto sobre el precio",
+    "priceImpact": "Impacto en el mercado",
     "routerTooltipFee": "Tarifa",
     "routerTooltipSpreadFactor": "Factor de dispersión",
+    "showDetails": "Mostrar detalles",
+    "hideDetails": "Esconder",
     "continueAnyway": "De todas maneras, continúe",
     "warning": {
       "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
@@ -817,7 +817,17 @@
       "title": "Configuración de transacción"
     },
     "title": "Intercambio",
-    "dynamicSpreadFactor": "Dinámica"
+    "dynamicSpreadFactor": "Dinámica",
+    "gas": {
+      "oneClickTradingError": "La tarifa de red no se puede estimar en este momento. Si la tarifa excede el límite de tarifa de la red 1-Click Trading, podrá continuar con la aprobación manual en su billetera.",
+      "error": "La tarifa de red no se puede estimar en este momento. Revise las tarifas de la red en su billetera antes de aprobar la transacción.",
+      "gasEstimationError": "No se puede estimar la tarifa de red",
+      "unknown": "Desconocido",
+      "additionalNetworkFee": "Tarifa de red adicional"
+    },
+    "noRoutes": "No se encontraron rutas",
+    "route": "ruta",
+    "routes": "rutas"
   },
   "walletSelect": {
     "gettingStarted": "Empezando",
@@ -979,7 +989,17 @@
     "transferWithNoun": "Transferir con {noun}",
     "risks": "La unión conlleva riesgos.",
     "learnMore": "Aprende más",
-    "openNoun": "Abrir {noun}"
+    "openNoun": "Abrir {noun}",
+    "insufficientFundsForFees": "Fondos insuficientes para las tarifas",
+    "youNeedFundsToPay": "Necesita fondos para pagar las tarifas de red y puente en {chain} .",
+    "assetsDepositsUnavailable": "Los depósitos {asset} no están disponibles",
+    "assetsWithdrawsUnavailable": "{asset} los retiros no están disponibles",
+    "noAvailableDeposits": "Actualmente no se pueden encontrar rutas ni proveedores disponibles. Inténtelo de nuevo más tarde o utilice una aplicación alternativa para transferir sus fondos a Osmosis.",
+    "noAvailableWithdraws": "Actualmente no se pueden encontrar rutas ni proveedores disponibles. Inténtelo de nuevo más tarde o configure una aplicación alternativa para transferir sus fondos desde Osmosis.",
+    "somethingIsntWorking": "Algo no funciona…",
+    "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Actualice la página e inténtelo nuevamente o use una aplicación alternativa para transferir sus fondos a Osmosis.",
+    "assetIsCurrentlyUnstable": "Las transferencias {asset} actualmente son inestables",
+    "transferWillLikelyTakeLonger": "Es probable que las transferencias demoren más de lo habitual o que fallen por completo. Proceda bajo su propio riesgo."
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
@@ -1091,7 +1111,6 @@
     "resetFilters": "Restablecer filtros",
     "saveFilters": "Guardar filtros",
     "rewards": "Recompensas",
-    "estimatedInYearlyRewards": "Estimado en recompensas anuales",
     "availableToClaim": "disponible para reclamar",
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
@@ -1183,7 +1202,9 @@
     "viewOnExplorer": "Ver en el explorador",
     "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
     "noPriceData": "Datos de precios no disponibles",
-    "viewAll": "Ver todo"
+    "viewAll": "Ver todo",
+    "history": "Historia",
+    "orders": "Pedidos"
   },
   "date": {
     "earlierToday": "El día de hoy",
@@ -1193,5 +1214,119 @@
   "pagination": {
     "older": "Más viejo",
     "newer": "Más nuevo"
-  }
+  },
+  "limitOrders": {
+    "historyTable": {
+      "columns": {
+        "order": "Orden",
+        "amount": "Cantidad",
+        "price": "Precio",
+        "orderPlaced": "Pedido realizado",
+        "status": "Estado"
+      },
+      "emptyState": {
+        "title": "No hay pedidos recientes",
+        "subtitle": "Su historial de órdenes comerciales aparecerá aquí.",
+        "connectTitle": "Conecte su billetera para ver su historial de pedidos",
+        "connectSubtitle": "Tus órdenes límite anteriores en Osmosis aparecerán aquí."
+      }
+    },
+    "aboveMarket": {
+      "title": "Precio límite por encima del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "belowMarket": {
+      "title": "Precio límite por debajo del precio de mercado",
+      "description": "Si continúa, su orden se procesará como una orden de mercado a precio de mercado."
+    },
+    "enterAnAmountTo": "Introduzca una cantidad a",
+    "toSell": "vender",
+    "toBuy": "comprar",
+    "sell": "Vender",
+    "sold": "Vendido",
+    "percentFilled": "Porcentaje lleno",
+    "status": "Estado",
+    "price": "Precio",
+    "buy": "Comprar",
+    "pay": "Pagar",
+    "open": "Abierto",
+    "filled": "Completado",
+    "claimable": "Reclamable",
+    "claimAndClose": "Reclamar y cerrar",
+    "close": "Cerca",
+    "claim": "Afirmar",
+    "accept": "Aceptar",
+    "cancelled": "Cancelado",
+    "cancel": "Cancelar",
+    "daysAgo": "{days} hace d",
+    "hoursAgo": "{hours} hace h",
+    "buyWith": "Compre con {coinA} o {coinB}",
+    "orderHistory": "Historial de pedidos",
+    "tradeAnotherAssetOr": "Cambie otro activo por {coinA} o {coinB}",
+    "tradeAnotherAsset": "Cambie otro activo por {coinDenom}",
+    "sellAnAsset": "Vender un activo",
+    "swapAnAsset": "Intercambiar un activo",
+    "of": "de",
+    "insufficientFunds": "Fondos insuficientes",
+    "startTrading": "Comienza a negociar",
+    "tradeFees": "Tarifas comerciales (cuando se completa el pedido)",
+    "youNeed": "Necesitas",
+    "stablecoin": "moneda estable",
+    "quoteUpdated": "Cotización actualizada",
+    "fundsOsmosisToBuyAssets": "fondos en Osmosis para comprar activos.",
+    "chooseAnOption": "Elija una opción para continuar.",
+    "lowerSlippageToleranceRecommended": "Se recomienda una menor tolerancia al deslizamiento.",
+    "tryHigherSlippage": "Pruebe con una tolerancia máxima de deslizamiento más alta.",
+    "reviewTrade": "Revisar el comercio",
+    "errors": {
+      "noAssetAvailable": "No tienes fondos {coinName} en Osmosis para operar. Elija una opción para continuar.",
+      "tradeMayResultInLossOfValue": "Su operación puede resultar en una pérdida significativa de valor",
+      "tradeMayNotExecuted": "Es posible que su operación no se ejecute"
+    },
+    "transferFromAnotherNetwork": "Transferir desde otra red o billetera",
+    "whatIsOrderClaim": {
+      "title": "¿Qué reclama el pedido?",
+      "description": "En la mayoría de los casos, cuando se completa una orden limitada, los fondos se agregan automáticamente a su saldo. Sin embargo, en algunos casos excepcionales, los fondos deben reclamarse manualmente desde la orden completada.<inlang-LineFeed>\nEste proceso de reclamo implica aprobar una única transacción en su billetera para todos los pedidos ejecutados no reclamados, lo que genera una tarifa de red nominal."
+    },
+    "whatIsAStablecoin": {
+      "title": "¿Qué es una moneda estable?",
+      "description": "Las monedas estables son un tipo de criptomoneda cuyo valor está vinculado a otro activo, como una moneda fiduciaria o el oro, para mantener un precio estable. En Osmosis, las principales monedas estables para comprar y vender activos son USDC y USDT."
+    },
+    "claimAll": "Reclamar todo",
+    "addFunds": "Añadir fondos",
+    "selectAnAssetTo": {
+      "buy": "Seleccione un activo para comprar",
+      "sell": "Seleccione un activo para vender"
+    },
+    "payWith": "Pagar con",
+    "receive": "Recibir",
+    "swapFromAnotherAsset": "Intercambiar desde otro activo",
+    "connectYourWallet": "Conecta tu billetera",
+    "toSeeYourBalances": "para ver tus saldos",
+    "searchAssets": "Buscar activos",
+    "marketPrice": "precio de mercado",
+    "below": "abajo",
+    "above": "arriba",
+    "currentPrice": "precio actual",
+    "whenDenomPriceIs": "Cuando el precio {denom} es",
+    "orderType": "Tipo de orden",
+    "confirm": "Confirmar",
+    "market": "Mercado",
+    "limit": "Límite",
+    "trade": "Comercio",
+    "swapToAnotherAsset": "Cambiar a otro activo",
+    "invalidPrice": "Precio no válido",
+    "priceTooLow": "Precio demasiado bajo",
+    "priceTooHigh": "Precio demasiado alto",
+    "unavailable": "No disponible para {denom}",
+    "orderHistoryHeaders": {
+      "past": "Pasado",
+      "pending": "Pendiente",
+      "filled": "Pedidos completados para reclamar"
+    },
+    "priceReaches": "Si el precio {denom} alcanza {price}",
+    "belowMinimumAmount": "{amount} mínimo"
+  },
+  "tradeFee": "Tarifa de comercio",
+  "receiveAtLeast": "Recibir al menos"
 }

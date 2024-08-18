@@ -32,8 +32,7 @@ import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -173,7 +172,10 @@ export const NavBar: FunctionComponent<
         <div
           className={classNames(
             "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
-            className
+            className,
+            {
+              "bg-osmoverse-1000": featureFlags.limitOrders,
+            }
           )}
         >
           <div className="relative hidden shrink-0 items-center md:flex">
@@ -301,7 +303,10 @@ export const NavBar: FunctionComponent<
           className={classNames(
             "bg-osmoverse-900",
             showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
-            backElementClassNames
+            backElementClassNames,
+            {
+              "!bg-osmoverse-1000": featureFlags.limitOrders,
+            }
           )}
         />
         {showBanner && (

@@ -4,12 +4,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -28,12 +28,12 @@ export const MyPositionCard: FunctionComponent<{
     poolId,
     currentCoins,
     currentValue,
-    priceRange: [lowerPrice, upperPrice],
-    isFullRange,
+    // priceRange: [lowerPrice, upperPrice],
+    // isFullRange,
   } = position;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
-  const featureFlags = useFeatureFlags();
+  // const featureFlags = useFeatureFlags();
 
   const { data: positionPerformance } =
     api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
@@ -49,22 +49,25 @@ export const MyPositionCard: FunctionComponent<{
       }
     );
 
-  const { data: positionDetails, isLoading: isLoadingPositionDetails } =
-    api.local.concentratedLiquidity.getPositionDetails.useQuery(
-      {
-        position: position.position,
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: Boolean(account?.address),
+  const {
+    data: positionDetails,
+    isLoading: isLoadingPositionDetails,
+    isError: hasPositionDetailsError,
+  } = api.local.concentratedLiquidity.getPositionDetails.useQuery(
+    {
+      position: position.position,
+      userOsmoAddress: account?.address ?? "",
+    },
+    {
+      enabled: Boolean(account?.address),
 
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-      }
-    );
+      },
+    }
+  );
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -108,10 +111,12 @@ export const MyPositionCard: FunctionComponent<{
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
               />
               <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
-                <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
-                  {positionDetails?.spreadFactor.toString() ?? ""}{" "}
-                  {t("clPositions.spreadFactor")}
-                </span>
+                {!hasPositionDetailsError && (
+                  <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+                    {positionDetails?.spreadFactor.toString() ?? ""}{" "}
+                    {t("clPositions.spreadFactor")}
+                  </span>
+                )}
               </SkeletonLoader>
             </div>
             <SkeletonLoader
@@ -127,7 +132,7 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          {positionPerformance && featureFlags.positionRoi && (
+          {/* {positionPerformance && featureFlags.positionRoi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
               value={positionPerformance.roi.maxDecimals(0).toString()}
@@ -137,22 +142,24 @@ export const MyPositionCard: FunctionComponent<{
             lowerPrice={lowerPrice}
             upperPrice={upperPrice}
             isFullRange={isFullRange}
-          />
+          /> */}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
             value={formatPretty(currentValue)}
           />
           <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
-            <PositionDataGroup
-              label={t("pool.APR")}
-              value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
-                maxDecimals: 1,
-              })}
-              isSuperfluid={
-                Boolean(positionDetails?.superfluidData) &&
-                positionDetails?.status !== "outOfRange"
-              }
-            />
+            {!hasPositionDetailsError && (
+              <PositionDataGroup
+                label={t("pool.APR")}
+                value={formatPretty(positionDetails?.rangeApr ?? new Dec(0), {
+                  maxDecimals: 1,
+                })}
+                isSuperfluid={
+                  Boolean(positionDetails?.superfluidData) &&
+                  positionDetails?.status !== "outOfRange"
+                }
+              />
+            )}
           </SkeletonLoader>
         </div>
       </div>
@@ -160,9 +167,11 @@ export const MyPositionCard: FunctionComponent<{
         <MyPositionCardExpandedSection
           poolId={poolId}
           position={props.position}
+          isLoadingPositionDetails={isLoadingPositionDetails}
           positionDetails={positionDetails}
           positionPerformance={positionPerformance}
           showLinkToPool={showLinkToPool}
+          hasPositionDetailsError={hasPositionDetailsError}
         />
       )}
     </div>
@@ -193,35 +202,35 @@ const PositionDataGroup: FunctionComponent<{
   </div>
 );
 
-const RangeDataGroup: FunctionComponent<{
-  lowerPrice: Dec;
-  upperPrice: Dec;
-  isFullRange: boolean;
-}> = ({ lowerPrice, upperPrice, isFullRange }) => {
-  const { t } = useTranslation();
+// const RangeDataGroup: FunctionComponent<{
+//   lowerPrice: Dec;
+//   upperPrice: Dec;
+//   isFullRange: boolean;
+// }> = ({ lowerPrice, upperPrice, isFullRange }) => {
+//   const { t } = useTranslation();
 
-  return (
-    <PositionDataGroup
-      label={t("clPositions.selectedRange")}
-      value={
-        <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
-          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
-            {isFullRange
-              ? "0"
-              : formatPretty(lowerPrice, {
-                  scientificMagnitudeThreshold: 4,
-                })}
-          </h6>
-          <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
-            {isFullRange
-              ? "∞"
-              : formatPretty(upperPrice, {
-                  scientificMagnitudeThreshold: 4,
-                })}
-          </h6>
-        </div>
-      }
-    />
-  );
-};
+//   return (
+//     <PositionDataGroup
+//       label={t("clPositions.selectedRange")}
+//       value={
+//         <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
+//           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
+//             {isFullRange
+//               ? "0"
+//               : formatPretty(lowerPrice, {
+//                   scientificMagnitudeThreshold: 4,
+//                 })}
+//           </h6>
+//           <Icon id="left-right-arrow" className="flex-shrink-0" />
+//           <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
+//             {isFullRange
+//               ? "∞"
+//               : formatPretty(upperPrice, {
+//                   scientificMagnitudeThreshold: 4,
+//                 })}
+//           </h6>
+//         </div>
+//       }
+//     />
+//   );
+// };

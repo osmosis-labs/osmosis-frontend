@@ -1,4 +1,4 @@
-import { StdSignature } from "@cosmjs/amino";
+import type { StdSignature } from "@cosmjs/amino";
 import { ChainRecord, Wallet } from "@cosmos-kit/core";
 
 import { ChainWC } from "~/integrations/core-walletconnect/chain-wallet";

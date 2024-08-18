@@ -69,7 +69,6 @@ export class RootStore {
       OsmosisAccount.use({ queriesStore: this.queriesStore }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator: () => ({ ibcTransfer: { gas: 130000 } }),
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );

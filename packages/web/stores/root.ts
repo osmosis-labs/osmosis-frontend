@@ -213,16 +213,6 @@ export class RootStore {
       }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator(chainId) {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
