@@ -85,13 +85,11 @@ function assertValidQuote({
   tokenIn,
   tokenOut,
   tokenInAmount,
-  router,
 }: {
   quote: RouterOutputs["swapRouter"]["routeTokenOutGivenIn"];
   tokenInAmount: string;
   tokenIn: Asset;
   tokenOut: Asset;
-  router: RouterInputs["swapRouter"]["routeTokenOutGivenIn"]["preferredRouter"];
 }) {
   // Amount
   expect(quote.amount).toBeInstanceOf(CoinPretty);
@@ -162,12 +160,10 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = atomAsset;
   const tokenOut = osmoAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -175,7 +171,6 @@ it("Sidecar - ATOM <> OSMO - should return valid quote", async () => {
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 });
 
@@ -183,12 +178,10 @@ it("Sidecar - OSMO <> ATOM - should return valid quote", async () => {
   const tokenInAmount = "1000000";
   const tokenIn = osmoAsset;
   const tokenOut = atomAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -196,7 +189,6 @@ it("Sidecar - OSMO <> ATOM - should return valid quote", async () => {
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 });
 
@@ -204,12 +196,10 @@ it("Sidecar - USDC <> USDT - should return valid quote. Token in amount differen
   const tokenInAmount = "1000000";
   const tokenIn = usdcAsset;
   const tokenOut = usdtAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -217,7 +207,6 @@ it("Sidecar - USDC <> USDT - should return valid quote. Token in amount differen
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 
   const tokenInAmountDec = new Dec(tokenInAmount).quo(
@@ -236,12 +225,10 @@ it("Sidecar - USDT <> USDC - should return valid quote. Token in amount differen
   const tokenInAmount = "1000000";
   const tokenIn = usdtAsset;
   const tokenOut = usdcAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -249,7 +236,6 @@ it("Sidecar - USDT <> USDC - should return valid quote. Token in amount differen
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 
   const tokenInAmountDec = new Dec(tokenInAmount).quo(
@@ -268,12 +254,10 @@ it("Sidecar - OSMO <> USK - should return valid quote even if the token price is
   const tokenInAmount = "1000000";
   const tokenIn = osmoAsset;
   const tokenOut = uskAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -281,7 +265,6 @@ it("Sidecar - OSMO <> USK - should return valid quote even if the token price is
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 });
 
@@ -289,12 +272,10 @@ it("Sidecar — USDC.axl <> USDC — Should return valid quote for possible allo
   const tokenInAmount = "1000000";
   const tokenIn = usdcAxelarAsset;
   const tokenOut = usdcAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -302,7 +283,6 @@ it("Sidecar — USDC.axl <> USDC — Should return valid quote for possible allo
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 
   const amountDec: Dec = reply.amount.toDec();
@@ -325,12 +305,10 @@ it.skip("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", 
   const tokenInAmount = "1000000";
   const tokenIn = astroAsset;
   const tokenOut = osmoAsset;
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
   });
 
   assertValidQuote({
@@ -338,7 +316,6 @@ it.skip("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", 
     tokenInAmount,
     tokenIn: tokenIn.rawAsset,
     tokenOut: tokenOut.rawAsset,
-    router: preferredRouter,
   });
 
   let pclPool:
@@ -354,90 +331,6 @@ it.skip("Sidecar — ASTRO <> OSMO — Should return valid quote for PCL pool", 
   expect(pclPool).toBeDefined();
   expect(pclPool!.inCurrency).toEqual(makeMinimalAsset(astroAsset.rawAsset));
   expect(pclPool!.outCurrency).toEqual(makeMinimalAsset(osmoAsset.rawAsset));
-});
-
-it.skip("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", async () => {
-  const tokenInAmount = "1000000";
-  const tokenIn = atomAsset;
-  const tokenOut = osmoAsset;
-  const preferredRouter = "tfm";
-  const reply = await caller.swapRouter.routeTokenOutGivenIn({
-    tokenInDenom: tokenIn.coinMinimalDenom,
-    tokenInAmount,
-    tokenOutDenom: tokenOut.coinMinimalDenom,
-    preferredRouter,
-  });
-
-  // Amount
-  expect(reply.amount).toBeInstanceOf(CoinPretty);
-  expect(reply.amount.currency).toEqual(makeMinimalAsset(tokenOut.rawAsset));
-
-  const amount = reply.amount.toDec().toString();
-  expect(isNumeric(amount)).toBeTruthy();
-  // Make sure amount is not negative
-  expect(parseFloat(amount)).toBeGreaterThan(0);
-
-  // Swap fee
-  // expect(reply.swapFee).toBeInstanceOf(RatePretty);
-  // // Should match with the format of "0.1%"
-  // expect(reply.swapFee?.toString()).toMatch(percentageRegex);
-
-  // const swapFee = reply.swapFee!.toDec().toString();
-  // expect(isNumeric(swapFee)).toBeTruthy();
-  // expect(parseFloat(swapFee)).toBeGreaterThan(0);
-
-  // Price impact token out
-  expect(reply.priceImpactTokenOut).toBeInstanceOf(RatePretty);
-  // Should match with the format of "0.1%"
-  expect(reply.priceImpactTokenOut?.toString()).toMatch(percentageRegex);
-
-  const priceImpactTokenOut = reply.priceImpactTokenOut!.toDec().toString();
-  expect(isNumeric(priceImpactTokenOut)).toBeTruthy();
-  expect(parseFloat(priceImpactTokenOut)).toBeGreaterThan(0);
-
-  // Token in fee amount
-  // expect(reply.tokenInFeeAmount).toBeInstanceOf(Int);
-  // const tokenInFeeAmount = reply.tokenInFeeAmount!.toString();
-  // expect(isNumeric(tokenInFeeAmount)).toBeTruthy();
-  // expect(parseFloat(tokenInFeeAmount)).toBeGreaterThan(0);
-
-  // Split
-  expect(Array.isArray(reply.split)).toBeTruthy();
-  expect(reply.split.length).toBeGreaterThan(0);
-
-  for (const split of reply.split) {
-    expect(split.initialAmount).toBeInstanceOf(Int);
-
-    expect(Array.isArray(split.pools)).toBeTruthy();
-    expect(split.pools.length).toBeGreaterThan(0);
-
-    expect(split.tokenInDenom).toBe(tokenIn.coinMinimalDenom);
-
-    expect(Array.isArray(split.tokenOutDenoms)).toBeTruthy();
-    expect(split.tokenOutDenoms.length).toBeGreaterThan(0);
-  }
-
-  // Sum of all split amount should equal token in amount
-  const splitAmountSum = reply.split.reduce(
-    (acc, split) => acc.add(split.initialAmount),
-    new Int(0)
-  );
-  expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
-
-  // name
-  expect(reply.name).toBe("tfm");
-
-  // timeMs
-  expect(isNumeric(reply.timeMs)).toBeTruthy();
-
-  // Token in fee amount fiat value
-  // expect(reply.tokenInFeeAmountFiatValue).toBeInstanceOf(PricePretty);
-
-  // const tokenInFeeAmountFiatValue = reply
-  //   .tokenInFeeAmountFiatValue!.toDec()
-  //   .toString();
-  // expect(isNumeric(tokenInFeeAmountFiatValue)).toBeTruthy();
-  // expect(parseFloat(tokenInFeeAmountFiatValue)).toBeGreaterThan(0);
 });
 
 /**
@@ -519,12 +412,10 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     .truncate()
     .toString();
 
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.currency.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.currency.coinMinimalDenom,
-    preferredRouter,
     forcePoolId: mediumVolumePool.id,
   });
 
@@ -539,7 +430,6 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
       coinMinimalDenom: tokenOut.currency.coinMinimalDenom,
       assetLists: AssetLists,
     })!.rawAsset,
-    router: preferredRouter,
   });
 });
 
@@ -579,12 +469,10 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     .truncate()
     .toString();
 
-  const preferredRouter = "sidecar";
   const reply = await caller.swapRouter.routeTokenOutGivenIn({
     tokenInDenom: tokenIn.currency.coinMinimalDenom,
     tokenInAmount,
     tokenOutDenom: tokenOut.currency.coinMinimalDenom,
-    preferredRouter,
     forcePoolId: lowVolumeTokenPool.id,
   });
 
@@ -596,6 +484,5 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
       coinMinimalDenom: tokenOut.currency.coinMinimalDenom,
       assetLists: AssetLists,
     })!.rawAsset,
-    router: preferredRouter,
   });
 });
