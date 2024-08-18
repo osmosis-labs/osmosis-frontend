@@ -5,6 +5,7 @@ import {
   createTRPCRouter,
   oneClickTradingRouter,
   paramsRouter,
+  poolsLocalRouter as poolsRouter,
   portfolioRouter,
   swapRouter,
 } from "@osmosis-labs/trpc";
@@ -23,4 +24,5 @@ export const localRouter = createTRPCRouter({
   bridgeTransfer: localBridgeTransferRouter,
   portfolio: portfolioRouter,
   params: paramsRouter,
+  pools: poolsRouter,
 });
