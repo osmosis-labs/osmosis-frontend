@@ -5,12 +5,13 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -19,21 +20,28 @@ import { api } from "~/utils/trpc";
 export const MyPositionCard: FunctionComponent<{
   showLinkToPool?: boolean;
   position: UserPosition;
+  showRoi?: boolean;
+  showSelectedRange?: boolean;
 }> = observer((props) => {
   const { accountStore, chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
-  const { showLinkToPool = false, position } = props;
+  const {
+    showLinkToPool = false,
+    position,
+    showRoi,
+    showSelectedRange,
+  } = props;
   const {
     poolId,
     currentCoins,
     currentValue,
-    // priceRange: [lowerPrice, upperPrice],
-    // isFullRange,
+    priceRange: [lowerPrice, upperPrice],
+    isFullRange,
   } = position;
   const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(true);
-  // const featureFlags = useFeatureFlags();
+  const featureFlags = useFeatureFlags();
 
   const { data: positionPerformance } =
     api.local.concentratedLiquidity.getPositionHistoricalPerformance.useQuery(
@@ -132,17 +140,19 @@ export const MyPositionCard: FunctionComponent<{
           </div>
         </div>
         <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
-          {/* {positionPerformance && featureFlags.positionRoi && (
+          {showRoi && positionPerformance && featureFlags.positionRoi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
               value={positionPerformance.roi.maxDecimals(0).toString()}
             />
           )}
-          <RangeDataGroup
-            lowerPrice={lowerPrice}
-            upperPrice={upperPrice}
-            isFullRange={isFullRange}
-          /> */}
+          {showSelectedRange && (
+            <RangeDataGroup
+              lowerPrice={lowerPrice}
+              upperPrice={upperPrice}
+              isFullRange={isFullRange}
+            />
+          )}
           <PositionDataGroup
             label={t("clPositions.myLiquidity")}
             value={formatPretty(currentValue)}
@@ -202,35 +212,35 @@ const PositionDataGroup: FunctionComponent<{
   </div>
 );
 
-// const RangeDataGroup: FunctionComponent<{
-//   lowerPrice: Dec;
-//   upperPrice: Dec;
-//   isFullRange: boolean;
-// }> = ({ lowerPrice, upperPrice, isFullRange }) => {
-//   const { t } = useTranslation();
+const RangeDataGroup: FunctionComponent<{
+  lowerPrice: Dec;
+  upperPrice: Dec;
+  isFullRange: boolean;
+}> = ({ lowerPrice, upperPrice, isFullRange }) => {
+  const { t } = useTranslation();
 
-//   return (
-//     <PositionDataGroup
-//       label={t("clPositions.selectedRange")}
-//       value={
-//         <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
-//           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
-//             {isFullRange
-//               ? "0"
-//               : formatPretty(lowerPrice, {
-//                   scientificMagnitudeThreshold: 4,
-//                 })}
-//           </h6>
-//           <Icon id="left-right-arrow" className="flex-shrink-0" />
-//           <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
-//             {isFullRange
-//               ? "∞"
-//               : formatPretty(upperPrice, {
-//                   scientificMagnitudeThreshold: 4,
-//                 })}
-//           </h6>
-//         </div>
-//       }
-//     />
-//   );
-// };
+  return (
+    <PositionDataGroup
+      label={t("clPositions.selectedRange")}
+      value={
+        <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
+          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
+            {isFullRange
+              ? "0"
+              : formatPretty(lowerPrice, {
+                  scientificMagnitudeThreshold: 4,
+                })}
+          </h6>
+          <Icon id="left-right-arrow" className="flex-shrink-0" />
+          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
+            {isFullRange
+              ? "∞"
+              : formatPretty(upperPrice, {
+                  scientificMagnitudeThreshold: 4,
+                })}
+          </h6>
+        </div>
+      }
+    />
+  );
+};
