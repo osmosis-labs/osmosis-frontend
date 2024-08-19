@@ -138,7 +138,7 @@ export const AssetsOverview: FunctionComponent<
       : totalValue?.toString();
 
   const [_isChartMinimized, setIsChartMinimized] = useLocalStorage(
-    "is-chart-minimzed",
+    "is-portfolio-chart-minimzed",
     true
   );
 
