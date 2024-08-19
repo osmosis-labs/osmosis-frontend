@@ -171,12 +171,6 @@
       "FeeAPY": "Taxa de APY",
       "liquidity": "Minha Liquidez"
     },
-    "selectAssetSource": {
-      "installWallet": "Instalar {walletName}",
-      "next": "Próximo",
-      "titleDeposit": "Depositar de",
-      "titleWithdraw": "Sacar para"
-    },
     "stakedAssets": "OSMO em stake",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Depositar",
       "hideZero": "Esconder saldos zerados",
       "hideBalances": "Saldos mascarados",
-      "preTransfer": {
-        "currentBal": "Saldo Atual",
-        "deposit": "Deposit",
-        "withdraw": "Sacar"
-      },
       "search": "Buscar",
       "sort": {
         "balance": "Saldo",
@@ -217,58 +206,20 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "approveInWallet": "Aprovar na carteira",
-      "enterAddress": "{network} endereço",
       "errors": {
-        "seeRequest": "Ver solicitação em {walletName}",
-        "invalidAddress": "Endereço inválido"
+        "seeRequest": "Ver solicitação em {walletName}"
       },
       "from": "De",
       "loading": "Carregando",
-      "titleDeposit": "Depositar {coinDenom}",
-      "titleWithdraw": "Sacar {coinDenom}",
       "to": "Para",
       "transferFee": "Taxa de Transferência",
-      "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
       "expectedOutput": "Resultado Esperado",
       "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
       "priceImpact": "Impacto no preço",
       "sending": "Enviando...",
       "transferAnyway": "Transferir de qualquer maneira"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Próximo",
-      "deposit": "Depositar",
-      "network": "Rede",
-      "withdraw": "Saque"
-    },
     "unbondedAssets": "Destravado",
-    "nomic": {
-      "addresses": "endereços.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Taxa de minerador de Bitcoin",
-      "bridgeAtCapacity": "A ponte está atualmente em plena capacidade. Por favor, tente novamente mais tarde.",
-      "bridgeFee": "Taxa da Ponte Nômica",
-      "confirmations": "6 confirmações",
-      "enterBitcoinAddress": "Insira o endereço Bitcoin",
-      "estimatedArrival": "Chegada estimada",
-      "estimatedTimeTag": "Tempo estimado",
-      "estimatedTime": "5 minutos",
-      "expirationTime": "4 dias",
-      "learnMore": "Saiba mais em",
-      "lossOfFunds": "O uso do endereço após esse horário resultará em perda de fundos.",
-      "minDeposit": "Depósito Mínimo",
-      "minWithdrawal": "Retirada Mínima",
-      "nomicCapacityLimit": "Nomic tem um limite de capacidade de",
-      "onlyUse": "Use apenas",
-      "pendingDeposits": "Depósitos pendentes",
-      "poweredBy": "Distribuído por",
-      "proceed": "Continuar",
-      "depositExpiration": "Este endereço de depósito expira em",
-      "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
-      "warning": "AVISO:",
-      "loading": "Carregando..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Ativar ativos não verificados",
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
@@ -1164,7 +1115,6 @@
       "veryHigh": "Muito alto"
     }
   },
-  "disclaimer": "Isenção de responsabilidade",
   "remaining": "restante",
   "timeUnits": {
     "second": "segundo",
