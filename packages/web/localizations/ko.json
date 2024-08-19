@@ -1304,7 +1304,6 @@
     "connectYourWallet": "지갑을 연결하세요",
     "toSeeYourBalances": "잔액을 보려면",
     "searchAssets": "자산 검색",
-    "marketPrice": "시장 가격",
     "below": "아래에",
     "above": "~ 위에",
     "currentPrice": "현재 가격",
@@ -1326,6 +1325,29 @@
     },
     "priceReaches": "{denom} 가격 {price} 도달하면",
     "belowMinimumAmount": "{amount} 최소"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "가격 영향이란 무엇인가?",
+      "content": "이는 시장 유동성이 귀하의 실행 가격에 미치는 영향입니다. 거래 규모가 클수록 시장에 미치는 영향이 더 큰 경향이 있습니다."
+    },
+    "expectedRate": {
+      "header": "예상 가격이란 무엇인가요?",
+      "content": "이것은 당신이 받을 것으로 예상되는 가격입니다. 가격은 자주 바뀌므로 특정 가격으로 거래하고 싶다면 대신 제한 주문을 시도하세요."
+    },
+    "swapFees": {
+      "header": "스왑 수수료는 무엇인가요?",
+      "content": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 Osmosis 프로토콜이 부과하는 수수료입니다."
+    },
+    "tradeRoute": {
+      "header": "무역로란 무엇인가?",
+      "contentTop": " 거래하는 자산 간에 직접적인 시장이 없는 경우 Osmosis는 다른 자산과 일련의 거래를 통해 언제나 가장 좋은 가격을 얻어 거래를 성사시키려고 시도합니다.",
+      "contentBottom": "이용 가능한 유동성에 따른 최적의 효율성을 위해, 때로는 거래가 다양한 자산을 대상으로 여러 경로로 분할될 것입니다."
+    },
+    "outputDifference": {
+      "header": "출력 차이란 무엇인가요?",
+      "content": "이것은 당신이 지불하고 받는 것의 가치 차이입니다. 양수는 당신이 사는 금액이 더 가치가 있다는 것을 의미하고, 음수는 당신이 판매하는 금액이 더 가치가 있다는 것을 의미합니다."
+    }
   },
   "tradeFee": "거래 수수료",
   "receiveAtLeast": "최소한 받다"

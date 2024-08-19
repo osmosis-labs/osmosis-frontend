@@ -1304,7 +1304,6 @@
     "connectYourWallet": "連接你的錢包",
     "toSeeYourBalances": "查看您的餘額",
     "searchAssets": "搜尋資產",
-    "marketPrice": "市價",
     "below": "以下",
     "above": "多於",
     "currentPrice": "時價",
@@ -1326,6 +1325,29 @@
     },
     "priceReaches": "如果{denom}價格達到{price}",
     "belowMinimumAmount": "{amount}最小值"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "什麼是價格影響？",
+      "content": "這就是市場流動性對您的執行價格的影響。較大的交易往往會產生較大的市場影響。"
+    },
+    "expectedRate": {
+      "header": "預期利率是多少？",
+      "content": "這是您預計收到的價格。價格經常變化，因此如果您希望以特定價格進行交易，請嘗試限價訂單。"
+    },
+    "swapFees": {
+      "header": "什麼是掉期費用？",
+      "content": "這是 Osmosis 協議為了獎勵流動性提供者和維護網路而收取的費用。"
+    },
+    "tradeRoute": {
+      "header": "什麼是貿易路線？",
+      "contentTop": " 如果您正在交易的資產之間沒有直接市場，Osmosis 將嘗試透過與其他資產進行一系列交易來實現交易，以便在任何給定時間獲得最佳價格。",
+      "contentBottom": "為了根據可用流動性實現最佳效率，有時交易會被分成具有不同資產的多條路線。"
+    },
+    "outputDifference": {
+      "header": "什麼是輸出差異？",
+      "content": "這是您支付和收到的價值之間的差異。正數意味著您購買的金額更值錢，而負數意味著您賣出的金額更有價值。"
+    }
   },
   "tradeFee": "交易費",
   "receiveAtLeast": "至少收到"

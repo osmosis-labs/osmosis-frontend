@@ -1304,7 +1304,6 @@
     "connectYourWallet": "Connectez votre portefeuille",
     "toSeeYourBalances": "pour voir vos soldes",
     "searchAssets": "Rechercher des ressources",
-    "marketPrice": "prix du marché",
     "below": "ci-dessous",
     "above": "au-dessus de",
     "currentPrice": "prix actuel",
@@ -1326,6 +1325,29 @@
     },
     "priceReaches": "Si le prix {denom} atteint {price}",
     "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Qu'est-ce que l'impact des prix ?",
+      "content": "Il s'agit de l'impact de la liquidité du marché sur votre prix d'exécution. Les transactions plus importantes ont tendance à avoir un impact plus important sur le marché."
+    },
+    "expectedRate": {
+      "header": "Quel est le taux attendu ?",
+      "content": "Il s'agit du prix que vous êtes censé recevoir. Les prix changent fréquemment, donc si vous souhaitez négocier à un prix spécifique, essayez plutôt un ordre à cours limité."
+    },
+    "swapFees": {
+      "header": "Que sont les frais de swap ?",
+      "content": "Il s'agit des frais facturés par le protocole Osmosis afin de récompenser les fournisseurs de liquidités et de maintenir le réseau."
+    },
+    "tradeRoute": {
+      "header": "Qu'est-ce qu'une route commerciale ?",
+      "contentTop": " S'il n'y a pas de marché direct entre les actifs que vous négociez, Osmosis essaiera de réaliser la transaction en effectuant une série de transactions avec d'autres actifs pour obtenir le meilleur prix à tout moment.",
+      "contentBottom": "Pour une efficacité optimale en fonction de la liquidité disponible, les transactions seront parfois divisées en plusieurs itinéraires avec des actifs différents."
+    },
+    "outputDifference": {
+      "header": "Quelle est la différence de sortie ?",
+      "content": "Il s'agit de la différence de valeur entre ce que vous payez et ce que vous recevez. Les nombres positifs signifient que le montant que vous achetez vaut plus, tandis que les nombres négatifs signifient que le montant que vous vendez vaut plus."
+    }
   },
   "tradeFee": "Frais de transaction",
   "receiveAtLeast": "Recevez au moins"
