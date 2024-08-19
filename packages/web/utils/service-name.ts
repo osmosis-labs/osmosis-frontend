@@ -1,6 +1,6 @@
 export function getOpentelemetryServiceName(): string {
-  const url = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL;
-  const urlParts = url?.split("-");
+  const branchUrl = process.env.NEXT_PUBLIC_VERCEL_BRANCH_URL;
+  const urlParts = branchUrl?.split("-");
 
   // Find the index of 'git' and check if the next part is 'stage'
   const gitIndex = urlParts?.indexOf("git");
