@@ -645,7 +645,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   height={16}
                   className="text-wosmongton-300"
                 />
-                <span className="body2 sm:caption text-wosmongton-300 transition-opacity sm:my-px sm:py-2">
+                <span className="body2 sm:caption flex text-wosmongton-300 transition-opacity sm:my-px sm:py-2">
                   {nonFocusedDisplayAmount || "0"}{" "}
                   {focused === "fiat" && (
                     <span className="ml-1">
