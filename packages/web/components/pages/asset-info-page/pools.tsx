@@ -23,7 +23,7 @@ const defaultFilters: PoolsTableFilters = {
 };
 
 const sortParams: PoolsTabelSortParams = {
-  allPoolsSort: "volume24hUsd",
+  allPoolsSort: "market.volume24hUsd",
   allPoolsSortDir: "desc",
 };
 

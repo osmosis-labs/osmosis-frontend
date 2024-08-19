@@ -10,14 +10,7 @@ import {
   RouteWithInAmount,
   validateRoute,
 } from "./route";
-import {
-  Logger,
-  Quote,
-  RoutablePool,
-  SplitTokenInQuote,
-  Token,
-  TokenOutGivenInRouter,
-} from "./types";
+import { Logger, Quote, RoutablePool, SplitTokenInQuote, Token } from "./types";
 import {
   cacheKeyForTokenOutGivenIn,
   invertRoute,
@@ -60,7 +53,7 @@ export type OptimizedRoutesParams = {
  *  @throws NotEnoughLiquidityError if there is not enough liquidity in a route.
  *  @throws NoRouteError if there is no route between the tokens.
  */
-export class OptimizedRoutes implements TokenOutGivenInRouter {
+export class OptimizedRoutes {
   protected readonly _sortedPools: RoutablePool[];
   protected readonly _preferredPoolIds?: string[];
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;

@@ -171,12 +171,6 @@
       "FeeAPY": "APY ücreti",
       "liquidity": "Likiditem"
     },
-    "selectAssetSource": {
-      "installWallet": "{walletName} yükle",
-      "next": "Sonraki",
-      "titleDeposit": "Adresten yatır",
-      "titleWithdraw": "Adrese çek"
-    },
     "stakedAssets": "Stake Edilmiş OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Yatır",
       "hideZero": "Sıfır bakiyeyi gizle",
       "hideBalances": "Maskelenmiş bakiyeler",
-      "preTransfer": {
-        "currentBal": "Mevcut Bakiye",
-        "deposit": "Yatır",
-        "withdraw": "Çek"
-      },
       "search": "Arama",
       "sort": {
         "balance": "Bakiye",
@@ -217,58 +206,20 @@
       "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "approveInWallet": "Cüzdanda onayla",
-      "enterAddress": "{network} adresi",
       "errors": {
-        "seeRequest": "{walletName}'deki talebi gör",
-        "invalidAddress": "Geçersiz adres"
+        "seeRequest": "{walletName}'deki talebi gör"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
-      "titleDeposit": "{coinDenom} Yatır",
-      "titleWithdraw": "{coinDenom} Çek",
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
-      "waitTime": "{minutes} dakika",
-      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
       "expectedOutput": "Beklenen çıktı",
       "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
       "priceImpact": "Fiyat Etkisi",
       "sending": "Gönderiliyor...",
       "transferAnyway": "Yine de Aktar"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Sonraki",
-      "deposit": "Yatır",
-      "network": "Ağ",
-      "withdraw": "Çek"
-    },
     "unbondedAssets": "Bağlı Olmayan",
-    "nomic": {
-      "addresses": "adresler.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Bitcoin Madenci Ücreti",
-      "bridgeAtCapacity": "Köprü şu anda kapasiteyle çalışıyor. Lütfen daha sonra tekrar deneyiniz.",
-      "bridgeFee": "Nomik Köprü Ücreti",
-      "confirmations": "6 onay",
-      "enterBitcoinAddress": "Bitcoin Adresini Girin",
-      "estimatedArrival": "tahmini varış",
-      "estimatedTimeTag": "Tahmini süresi",
-      "estimatedTime": "5 dakika",
-      "expirationTime": "4 gün",
-      "learnMore": "Daha fazlasını şu adreste öğrenin:",
-      "lossOfFunds": "Adresin bu saatten sonra kullanılması para kaybına yol açacaktır.",
-      "minDeposit": "Minimum Depozito",
-      "minWithdrawal": "Minimum Para Çekme",
-      "nomicCapacityLimit": "Nomic'in kapasite sınırı vardır",
-      "onlyUse": "Sadece kullan",
-      "pendingDeposits": "Bekleyen para yatırma işlemleri",
-      "poweredBy": "Tarafından desteklenmektedir",
-      "proceed": "İlerlemek",
-      "depositExpiration": "Bu para yatırma adresinin süresi şu tarihte doluyor:",
-      "undergoAudit": "denetim sırasında (tahmini tamamlanma tarihi Ocak 2024).",
-      "warning": "UYARI:",
-      "loading": "Yükleniyor..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
@@ -303,8 +254,9 @@
   },
   "portfolio": {
     "buy": "Satın almak",
-    "yourAssets": "Varlıklarınız",
+    "yourBalances": "Bakiyeleriniz",
     "yourPositions": "Pozisyonlarınız",
+    "searchBalances": "Bakiyeleri ara",
     "yourSuperchargedPositions": "Süper Yüklü pozisyonlarınız",
     "yourLiquidityPools": "Likidite havuzlarınız",
     "connectWallet": "Osmosis'te bakiyelerinizi ve pozisyonlarınızı takip etmeye başlamak için cüzdanınızı bağlayın.",
@@ -325,7 +277,10 @@
     "seeAll": "Tümünü gör",
     "show": "Göstermek",
     "hide": "Saklamak",
-    "hidden": "Gizlenmiş"
+    "hidden": "Gizlenmiş",
+    "cypherSpend": "Osmoz Ödeme",
+    "cypherOrder": "Kartınızı şimdi sipariş edin",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -1160,7 +1115,6 @@
       "veryHigh": "Çok yüksek"
     }
   },
-  "disclaimer": "Sorumluluk reddi beyanı",
   "remaining": "geriye kalan",
   "timeUnits": {
     "second": "ikinci",
@@ -1300,7 +1254,6 @@
     "connectYourWallet": "Cüzdanınızı bağlayın",
     "toSeeYourBalances": "bakiyenizi görmek için",
     "searchAssets": "Varlıkları arayın",
-    "marketPrice": "Market fiyatı",
     "below": "altında",
     "above": "üstünde",
     "currentPrice": "Mevcut fiyat",
@@ -1322,6 +1275,29 @@
     },
     "priceReaches": "{denom} fiyatı {price} ulaşırsa",
     "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Fiyat etkisi nedir?",
+      "content": "Bu, piyasa likiditesinin yürütme fiyatınız üzerindeki etkisidir. Daha büyük işlemlerin daha büyük piyasa etkisine sahip olma eğilimi vardır."
+    },
+    "expectedRate": {
+      "header": "Beklenen oran nedir?",
+      "content": "Bu, almanız beklenen fiyattır. Fiyatlar sıklıkla değişir, bu nedenle belirli bir fiyattan işlem yapmak istiyorsanız, bunun yerine bir limit emri deneyin."
+    },
+    "swapFees": {
+      "header": "Swap ücretleri nelerdir?",
+      "content": "Bu, likidite sağlayıcılarını ödüllendirmek ve ağı sürdürmek amacıyla Osmosis protokolü tarafından tahsil edilen ücrettir."
+    },
+    "tradeRoute": {
+      "header": "Ticaret yolu nedir?",
+      "contentTop": " İşlem yaptığınız varlıklar arasında doğrudan bir piyasa yoksa Osmosis, belirli bir zamanda en iyi fiyatı elde etmek için diğer varlıklarla bir dizi işlem yaparak işlemi gerçekleştirmeye çalışacaktır.",
+      "contentBottom": "Mevcut likiditeye bağlı olarak optimum verimlilik için, bazen işlemler farklı varlıklarla birden fazla rotaya bölünecektir."
+    },
+    "outputDifference": {
+      "header": "Çıktı farkı nedir?",
+      "content": "Bu, ödediğiniz ve aldığınız arasındaki değer farkıdır. Pozitif sayılar satın aldığınız miktarın daha değerli olduğu anlamına gelirken, negatif sayılar sattığınız miktarın daha değerli olduğu anlamına gelir."
+    }
   },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al"

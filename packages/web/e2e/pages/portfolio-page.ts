@@ -9,6 +9,7 @@ export class PortfolioPage extends BasePage {
   readonly viewMore: Locator;
   readonly portfolioLink: Locator;
   readonly viewTransactions: Locator;
+  readonly searchInput: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -20,6 +21,7 @@ export class PortfolioPage extends BasePage {
       '//a//div[contains(text(), "Portfolio")]'
     );
     this.viewTransactions = page.locator('//div/a[.="View all"]');
+    this.searchInput = page.locator('//input[@id="search-input"]');
   }
 
   async goto() {
@@ -32,6 +34,7 @@ export class PortfolioPage extends BasePage {
   }
 
   async getBalanceFor(token: string) {
+    await this.page.evaluate(() => window.scrollBy(0, 250));
     const bal = this.page
       .locator(`//tbody/tr//a[contains(@href, "/assets/${token}")]`)
       .nth(1);
@@ -60,5 +63,11 @@ export class PortfolioPage extends BasePage {
       await this.viewMore.click();
       await this.page.waitForTimeout(1000);
     }
+  }
+
+  async searchForToken(tokenName: string) {
+    await this.searchInput.fill(tokenName);
+    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(2000);
   }
 }

@@ -171,12 +171,6 @@
       "FeeAPY": "수수료 APY",
       "liquidity": "내 유동성"
     },
-    "selectAssetSource": {
-      "installWallet": "{walletName} 설치",
-      "next": "다음",
-      "titleDeposit": "입금할 지갑",
-      "titleWithdraw": "출금할 지갑"
-    },
     "stakedAssets": "스테이킹된 OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
       "hideBalances": "자산 숨기기",
-      "preTransfer": {
-        "currentBal": "현재 수량",
-        "deposit": "입금",
-        "withdraw": "출금"
-      },
       "search": "검색",
       "sort": {
         "balance": "수량",
@@ -217,58 +206,20 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "approveInWallet": "지갑에서 승인",
-      "enterAddress": "{network} 주소",
       "errors": {
-        "seeRequest": "{walletName}에서 요청 사항 확인하기",
-        "invalidAddress": "잘못된 주소"
+        "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
       "from": "발신 체인",
       "loading": "로딩",
-      "titleDeposit": "{coinDenom} 입금",
-      "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
-      "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
       "expectedOutput": "예상 출력",
       "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
       "sending": "배상...",
       "transferAnyway": "무시하고 전송"
     },
-    "transferAssetSelect": {
-      "buttonNext": "다음",
-      "deposit": "입금",
-      "network": "네트워크",
-      "withdraw": "출금"
-    },
     "unbondedAssets": "예치해제된 자산",
-    "nomic": {
-      "addresses": "구애.",
-      "bitcoin": "비트코인(BTC)",
-      "bitcoinMinerFee": "비트코인 채굴자 수수료",
-      "bridgeAtCapacity": "교량은 현재 수용능력이 찼습니다. 나중에 다시 시도 해주십시오.",
-      "bridgeFee": "노믹 브릿지 수수료",
-      "confirmations": "6개의 확인",
-      "enterBitcoinAddress": "비트코인 주소를 입력하세요",
-      "estimatedArrival": "예상 도착 시간",
-      "estimatedTimeTag": "예상 시간",
-      "estimatedTime": "5 분",
-      "expirationTime": "4 일",
-      "learnMore": "자세히 알아보기",
-      "lossOfFunds": "이 시간 이후에 주소를 사용하면 자금이 손실됩니다.",
-      "minDeposit": "최소 입금액",
-      "minWithdrawal": "최소 출금",
-      "nomicCapacityLimit": "Nomic의 용량 제한은 다음과 같습니다.",
-      "onlyUse": "만 사용",
-      "pendingDeposits": "대기 중인 예금",
-      "poweredBy": "제공:",
-      "proceed": "진행하다",
-      "depositExpiration": "이 입금 주소는 다음 날짜에 만료됩니다.",
-      "undergoAudit": "감사 진행중",
-      "warning": "경고:",
-      "loading": "로딩 중..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "확인되지 않은 자산 활성화",
       "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
@@ -303,8 +254,9 @@
   },
   "portfolio": {
     "buy": "구입하다",
-    "yourAssets": "귀하의 자산",
+    "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
+    "searchBalances": "잔액 검색",
     "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
     "yourLiquidityPools": "귀하의 유동성 풀",
     "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요.",
@@ -325,7 +277,10 @@
     "seeAll": "모두 보기",
     "show": "보여주다",
     "hide": "숨다",
-    "hidden": "숨겨진"
+    "hidden": "숨겨진",
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
+    "cypherBeta": "베타"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -1160,7 +1115,6 @@
       "veryHigh": "매우 높음"
     }
   },
-  "disclaimer": "부인 성명",
   "remaining": "남은",
   "timeUnits": {
     "second": "두번째",
@@ -1300,7 +1254,6 @@
     "connectYourWallet": "지갑을 연결하세요",
     "toSeeYourBalances": "잔액을 보려면",
     "searchAssets": "자산 검색",
-    "marketPrice": "시장 가격",
     "below": "아래에",
     "above": "~ 위에",
     "currentPrice": "현재 가격",
@@ -1322,6 +1275,29 @@
     },
     "priceReaches": "{denom} 가격 {price} 도달하면",
     "belowMinimumAmount": "{amount} 최소"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "가격 영향이란 무엇인가?",
+      "content": "이는 시장 유동성이 귀하의 실행 가격에 미치는 영향입니다. 거래 규모가 클수록 시장에 미치는 영향이 더 큰 경향이 있습니다."
+    },
+    "expectedRate": {
+      "header": "예상 가격이란 무엇인가요?",
+      "content": "이것은 당신이 받을 것으로 예상되는 가격입니다. 가격은 자주 바뀌므로 특정 가격으로 거래하고 싶다면 대신 제한 주문을 시도하세요."
+    },
+    "swapFees": {
+      "header": "스왑 수수료는 무엇인가요?",
+      "content": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 Osmosis 프로토콜이 부과하는 수수료입니다."
+    },
+    "tradeRoute": {
+      "header": "무역로란 무엇인가?",
+      "contentTop": " 거래하는 자산 간에 직접적인 시장이 없는 경우 Osmosis는 다른 자산과 일련의 거래를 통해 언제나 가장 좋은 가격을 얻어 거래를 성사시키려고 시도합니다.",
+      "contentBottom": "이용 가능한 유동성에 따른 최적의 효율성을 위해, 때로는 거래가 다양한 자산을 대상으로 여러 경로로 분할될 것입니다."
+    },
+    "outputDifference": {
+      "header": "출력 차이란 무엇인가요?",
+      "content": "이것은 당신이 지불하고 받는 것의 가치 차이입니다. 양수는 당신이 사는 금액이 더 가치가 있다는 것을 의미하고, 음수는 당신이 판매하는 금액이 더 가치가 있다는 것을 의미합니다."
+    }
   },
   "tradeFee": "거래 수수료",
   "receiveAtLeast": "최소한 받다"

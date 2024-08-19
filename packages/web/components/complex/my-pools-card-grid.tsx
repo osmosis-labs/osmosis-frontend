@@ -68,7 +68,7 @@ export const MyPoolsCardsGrid = observer(() => {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid-cards mt-5 grid md:gap-3">
+      <div className="grid-cards mt-5 grid grid-cols-2 1.5md:grid-cols-1 md:gap-2">
         {isLoadingMyPoolDetails ? (
           <>
             {new Array(6).fill(undefined).map((_, i) => (

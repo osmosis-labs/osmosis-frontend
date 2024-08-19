@@ -15,9 +15,6 @@ export type AvailableFlags =
   | "multiBridgeProviders"
   | "earnPage"
   | "transactionsPage"
-  | "sidecarRouter"
-  | "legacyRouter"
-  | "tfmRouter"
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
   | "topAnnouncementBanner"
@@ -31,14 +28,10 @@ export type AvailableFlags =
   | "oneClickTrading"
   | "limitOrders"
   | "advancedChart"
-  | "cypherCard";
+  | "cypherCard"
+  | "newPortfolioPage";
 
-type ModifiedFlags =
-  | Exclude<AvailableFlags, "mobileNotifications">
-  | "_isInitialized"
-  | "_isClientIDPresent";
-
-const defaultFlags: Record<ModifiedFlags, boolean> = {
+const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
   tokenInfo: true,
@@ -46,9 +39,6 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   multiBridgeProviders: true,
   earnPage: false,
   transactionsPage: true,
-  sidecarRouter: true,
-  legacyRouter: true,
-  tfmRouter: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
@@ -62,9 +52,8 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   oneClickTrading: false,
   limitOrders: true,
   advancedChart: false,
-  _isInitialized: false,
-  _isClientIDPresent: false,
   cypherCard: false,
+  newPortfolioPage: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =
@@ -72,7 +61,7 @@ const LIMIT_ORDER_COUNTRY_CODES =
     s.trim()
   ) ?? [];
 
-export const useFeatureFlags = () => {
+export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
@@ -120,5 +109,8 @@ export const useFeatureFlags = () => {
       launchdarklyFlags.limitOrders &&
       (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
         LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
-  } as Record<ModifiedFlags, boolean>;
-};
+  } as Record<
+    AvailableFlags | "_isInitialized" | "_isClientIDPresent",
+    boolean
+  >;
+}

@@ -171,12 +171,6 @@
       "FeeAPY": "Frais PAR",
       "liquidity": "Ma liquidité"
     },
-    "selectAssetSource": {
-      "installWallet": "Installer {walletName}",
-      "next": "Suivant",
-      "titleDeposit": "Dépôt de",
-      "titleWithdraw": "Retirer à"
-    },
     "stakedAssets": "OSMO cautionné",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
       "hideBalances": "Soldes masqués",
-      "preTransfer": {
-        "currentBal": "solde actuel",
-        "deposit": "Déposer",
-        "withdraw": "Retirer"
-      },
       "search": "Chercher",
       "sort": {
         "balance": "Solde",
@@ -217,58 +206,20 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "approveInWallet": "Approuver dans le portefeuille",
-      "enterAddress": "Adresse {network}",
       "errors": {
-        "seeRequest": "Voir la demande dans {walletName}",
-        "invalidAddress": "Adresse invalide"
+        "seeRequest": "Voir la demande dans {walletName}"
       },
       "from": "De",
       "loading": "Chargement",
-      "titleDeposit": "Déposer {coinDenom}",
-      "titleWithdraw": "Retirer {coinDenom}",
       "to": "À",
       "transferFee": "Frais de transfert",
-      "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
       "expectedOutput": "Production attendue",
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
       "sending": "Envoi en cours...",
       "transferAnyway": "Transférer quand même"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Suivant",
-      "deposit": "Déposer",
-      "network": "Réseau",
-      "withdraw": "Retirer"
-    },
     "unbondedAssets": "Actifs non liés",
-    "nomic": {
-      "addresses": "adresses.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Frais de mineur Bitcoin",
-      "bridgeAtCapacity": "Le pont est actuellement à pleine capacité. Veuillez réessayer plus tard.",
-      "bridgeFee": "Frais de pont nomiques",
-      "confirmations": "6 confirmations",
-      "enterBitcoinAddress": "Entrez l'adresse Bitcoin",
-      "estimatedArrival": "Arrivée estimée",
-      "estimatedTimeTag": "Temps estimé",
-      "estimatedTime": "5 minutes",
-      "expirationTime": "4 jours",
-      "learnMore": "Apprenez-en davantage sur",
-      "lossOfFunds": "L'utilisation de l'adresse après cette heure entraînera une perte de fonds.",
-      "minDeposit": "Dépôt minimum",
-      "minWithdrawal": "Retrait minimum",
-      "nomicCapacityLimit": "Nomic a une limite de capacité de",
-      "onlyUse": "Seule utilisation",
-      "pendingDeposits": "Dépôts en attente",
-      "poweredBy": "Alimenté par",
-      "proceed": "Procéder",
-      "depositExpiration": "Cette adresse de dépôt expire dans",
-      "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
-      "warning": "AVERTISSEMENT:",
-      "loading": "Chargement..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
@@ -303,8 +254,9 @@
   },
   "portfolio": {
     "buy": "Acheter",
-    "yourAssets": "Vos atouts",
+    "yourBalances": "Vos soldes",
     "yourPositions": "Vos postes",
+    "searchBalances": "Rechercher des soldes",
     "yourSuperchargedPositions": "Vos positions suralimentées",
     "yourLiquidityPools": "Vos pools de liquidité",
     "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis.",
@@ -325,7 +277,10 @@
     "seeAll": "Tout voir",
     "show": "Montrer",
     "hide": "Cacher",
-    "hidden": "Caché"
+    "hidden": "Caché",
+    "cypherSpend": "Paiement par osmose",
+    "cypherOrder": "Commandez votre carte maintenant",
+    "cypherBeta": "Bêta"
   },
   "buyTokens": "Acheter jetons",
   "components": {
@@ -1160,7 +1115,6 @@
       "veryHigh": "Très haut"
     }
   },
-  "disclaimer": "Clause de non-responsabilité",
   "remaining": "restant",
   "timeUnits": {
     "second": "deuxième",
@@ -1300,7 +1254,6 @@
     "connectYourWallet": "Connectez votre portefeuille",
     "toSeeYourBalances": "pour voir vos soldes",
     "searchAssets": "Rechercher des ressources",
-    "marketPrice": "prix du marché",
     "below": "ci-dessous",
     "above": "au-dessus de",
     "currentPrice": "prix actuel",
@@ -1322,6 +1275,29 @@
     },
     "priceReaches": "Si le prix {denom} atteint {price}",
     "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Qu'est-ce que l'impact des prix ?",
+      "content": "Il s'agit de l'impact de la liquidité du marché sur votre prix d'exécution. Les transactions plus importantes ont tendance à avoir un impact plus important sur le marché."
+    },
+    "expectedRate": {
+      "header": "Quel est le taux attendu ?",
+      "content": "Il s'agit du prix que vous êtes censé recevoir. Les prix changent fréquemment, donc si vous souhaitez négocier à un prix spécifique, essayez plutôt un ordre à cours limité."
+    },
+    "swapFees": {
+      "header": "Que sont les frais de swap ?",
+      "content": "Il s'agit des frais facturés par le protocole Osmosis afin de récompenser les fournisseurs de liquidités et de maintenir le réseau."
+    },
+    "tradeRoute": {
+      "header": "Qu'est-ce qu'une route commerciale ?",
+      "contentTop": " S'il n'y a pas de marché direct entre les actifs que vous négociez, Osmosis essaiera de réaliser la transaction en effectuant une série de transactions avec d'autres actifs pour obtenir le meilleur prix à tout moment.",
+      "contentBottom": "Pour une efficacité optimale en fonction de la liquidité disponible, les transactions seront parfois divisées en plusieurs itinéraires avec des actifs différents."
+    },
+    "outputDifference": {
+      "header": "Quelle est la différence de sortie ?",
+      "content": "Il s'agit de la différence de valeur entre ce que vous payez et ce que vous recevez. Les nombres positifs signifient que le montant que vous achetez vaut plus, tandis que les nombres négatifs signifient que le montant que vous vendez vaut plus."
+    }
   },
   "tradeFee": "Frais de transaction",
   "receiveAtLeast": "Recevez au moins"

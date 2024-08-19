@@ -171,12 +171,6 @@
       "FeeAPY": "Gebühr APY",
       "liquidity": "Meine Liquidität"
     },
-    "selectAssetSource": {
-      "installWallet": "Installieren Sie {walletName}",
-      "next": "Nächste",
-      "titleDeposit": "Einzahlung ab",
-      "titleWithdraw": "Sich zurückziehen"
-    },
     "stakedAssets": "Abgestecktes OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Kaution",
       "hideZero": "Nullsalden ausblenden",
       "hideBalances": "Maskierte Salden",
-      "preTransfer": {
-        "currentBal": "Aktueller Kontostand",
-        "deposit": "Kaution",
-        "withdraw": "Zurückziehen"
-      },
       "search": "Suchen",
       "sort": {
         "balance": "Gleichgewicht",
@@ -217,58 +206,20 @@
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
       "approveInWallet": "Im Wallet genehmigen",
-      "enterAddress": "{network} Adresse",
       "errors": {
-        "seeRequest": "Siehe Anfrage in {walletName}",
-        "invalidAddress": "Ungültige Adresse"
+        "seeRequest": "Siehe Anfrage in {walletName}"
       },
       "from": "Aus",
       "loading": "Wird geladen",
-      "titleDeposit": "Einzahlung {coinDenom}",
-      "titleWithdraw": "Abheben {coinDenom}",
       "to": "Zu",
       "transferFee": "Ablöse",
-      "waitTime": "{minutes} Minuten",
-      "warnDepositAddressDifferent": "Warnung: Das ausgewählte Konto in {address} unterscheidet sich von dem Konto, auf das Sie zuletzt eingezahlt haben.",
       "expectedOutput": "Erwartete Ausgabe",
       "expectedOutputInfo": "Abhängig vom genutzten Anbieter kann es aufgrund von Gebühren, Slippage und Preisauswirkungen zu einem geringeren Output kommen.",
       "priceImpact": "Preisauswirkungen",
       "sending": "Senden...",
       "transferAnyway": "Übertragen Sie trotzdem"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Nächste",
-      "deposit": "Kaution",
-      "network": "Netzwerk",
-      "withdraw": "Zurückziehen"
-    },
     "unbondedAssets": "Verfügbar",
-    "nomic": {
-      "addresses": "Adressen.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Bitcoin-Miner-Gebühr",
-      "bridgeAtCapacity": "Die Brücke ist derzeit voll. Bitte versuchen Sie es später noch einmal.",
-      "bridgeFee": "Nomic Bridge-Gebühr",
-      "confirmations": "6 Bestätigungen",
-      "enterBitcoinAddress": "Geben Sie die Bitcoin-Adresse ein",
-      "estimatedArrival": "Voraussichtliche Ankunft",
-      "estimatedTimeTag": "Geschätzte Zeit",
-      "estimatedTime": "5 Minuten",
-      "expirationTime": "4 Tage",
-      "learnMore": "Erfahren Sie mehr unter",
-      "lossOfFunds": "Eine spätere Verwendung der Adresse führt zum Verlust des Geldes.",
-      "minDeposit": "Mindesteinzahlung",
-      "minWithdrawal": "Mindestauszahlung",
-      "nomicCapacityLimit": "Nomic hat eine Kapazitätsgrenze von",
-      "onlyUse": "Benutz nur",
-      "pendingDeposits": "Ausstehende Einzahlungen",
-      "poweredBy": "Angetrieben von",
-      "proceed": "Fortfahren",
-      "depositExpiration": "Diese Einzahlungsadresse läuft in ab",
-      "undergoAudit": "während der Prüfung (voraussichtlicher Abschluss: Januar 2024).",
-      "warning": "WARNUNG:",
-      "loading": "Wird geladen..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Aktivieren Sie nicht verifizierte Assets",
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
@@ -303,8 +254,9 @@
   },
   "portfolio": {
     "buy": "Kaufen",
-    "yourAssets": "Ihr Vermögen",
+    "yourBalances": "Ihre Guthaben",
     "yourPositions": "Ihre Positionen",
+    "searchBalances": "Guthaben suchen",
     "yourSuperchargedPositions": "Ihre Supercharged-Positionen",
     "yourLiquidityPools": "Ihre Liquiditätspools",
     "connectWallet": "Verbinden Sie Ihr Portemonnaie, um mit der Verfolgung Ihrer Guthaben und Positionen auf Osmosis zu beginnen.",
@@ -325,7 +277,10 @@
     "seeAll": "Alles sehen",
     "show": "Zeigen",
     "hide": "Verstecken",
-    "hidden": "Versteckt"
+    "hidden": "Versteckt",
+    "cypherSpend": "Osmose-Bezahlung",
+    "cypherOrder": "Bestellen Sie jetzt Ihre Karte",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -1160,7 +1115,6 @@
       "veryHigh": "Sehr hoch"
     }
   },
-  "disclaimer": "Haftungsausschluss",
   "remaining": "übrig",
   "timeUnits": {
     "second": "zweite",
@@ -1300,7 +1254,6 @@
     "connectYourWallet": "Verbinde dein Wallet",
     "toSeeYourBalances": "um Ihre Guthaben einzusehen",
     "searchAssets": "Assets suchen",
-    "marketPrice": "Marktpreis",
     "below": "unten",
     "above": "über",
     "currentPrice": "derzeitiger Preis",
@@ -1322,6 +1275,29 @@
     },
     "priceReaches": "Wenn der Preis {denom} {price} erreicht",
     "belowMinimumAmount": "{amount} Minimum"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Was ist Preiseinfluss?",
+      "content": "Dies ist der Einfluss der Marktliquidität auf Ihren Ausführungspreis. Größere Trades haben tendenziell einen größeren Einfluss auf den Markt."
+    },
+    "expectedRate": {
+      "header": "Was ist der erwartete Zinssatz?",
+      "content": "Dies ist der Preis, den Sie voraussichtlich erhalten werden. Preise ändern sich häufig. Wenn Sie also zu einem bestimmten Preis handeln möchten, versuchen Sie es stattdessen mit einer Limit-Order."
+    },
+    "swapFees": {
+      "header": "Was sind Swap-Gebühren?",
+      "content": "Dies ist die vom Osmosis-Protokoll erhobene Gebühr, um Liquiditätsanbieter zu belohnen und das Netzwerk aufrechtzuerhalten."
+    },
+    "tradeRoute": {
+      "header": "Was ist eine Handelsroute?",
+      "contentTop": " Wenn zwischen den von Ihnen gehandelten Vermögenswerten kein direkter Markt besteht, versucht Osmosis, den Handel durch eine Reihe von Handelsgeschäften mit anderen Vermögenswerten zustande zu bringen, um jederzeit den besten Preis zu erzielen.",
+      "contentBottom": "Um eine optimale Effizienz auf Grundlage der verfügbaren Liquidität zu erzielen, werden Handelsgeschäfte manchmal auf mehrere Routen mit unterschiedlichen Vermögenswerten aufgeteilt."
+    },
+    "outputDifference": {
+      "header": "Was ist der Ausgabeunterschied?",
+      "content": "Dies ist die Wertdifferenz zwischen dem, was Sie bezahlen und erhalten. Positive Zahlen bedeuten, dass der Betrag, den Sie kaufen, mehr wert ist, während negative Zahlen bedeuten, dass der Betrag, den Sie verkaufen, mehr wert ist."
+    }
   },
   "tradeFee": "Handelsgebühr",
   "receiveAtLeast": "Erhalten Sie mindestens"

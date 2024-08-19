@@ -5,7 +5,6 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { RouterKey } from "@osmosis-labs/server";
 import { SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
@@ -18,7 +17,7 @@ import {
   makeMinimalAsset,
   sum,
 } from "@osmosis-labs/utils";
-import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
+import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
@@ -129,7 +128,7 @@ export function useSwap(
   const {
     data: quote,
     isLoading: isQuoteLoading_,
-    error: quoteError,
+    errorMsg: quoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -147,7 +146,7 @@ export function useSwap(
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
-    error: spotPriceQuoteError,
+    errorMsg: spotPriceQuoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -168,25 +167,25 @@ export function useSwap(
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
-    let error = quoteError;
+    let errorMsg = quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
-      (quote && !quote.amount.toDec().isPositive() && !error) ||
-      (!quote && spotPriceQuoteError)
+      (quote && !quote.amount.toDec().isPositive() && !errorMsg) ||
+      (!quote && spotPriceQuoteErrorMsg)
     )
-      error = spotPriceQuoteError;
+      errorMsg = spotPriceQuoteErrorMsg;
 
-    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+    const errorFromTrpc = makeRouterErrorFromTrpcError(errorMsg)?.error;
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
   }, [
-    quoteError,
+    quoteErrorMsg,
     quote,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     inAmountInput.error,
     inAmountInput.isEmpty,
   ]);
@@ -417,9 +416,9 @@ export function useSwap(
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteError &&
+        !quoteErrorMsg &&
         !inAmountInput.isEmpty,
-      [quote, quoteError, inAmountInput.isEmpty]
+      [quote, quoteErrorMsg, inAmountInput.isEmpty]
     )
   );
 
@@ -486,7 +485,7 @@ export function useSwap(
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
-        : !Boolean(quoteError)
+        : !quoteErrorMsg
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
@@ -501,7 +500,7 @@ export function useSwap(
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
@@ -787,7 +786,7 @@ export function useSwapAmountInput({
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
-    error: quoteForCurrentBalanceError,
+    errorMsg: quoteForCurrentBalanceErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -823,8 +822,8 @@ export function useSwapAmountInput({
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
-    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
-  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
+    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceErrorMsg;
+  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceErrorMsg]);
 
   const notEnoughBalanceForMax = useMemo(
     () =>
@@ -837,13 +836,10 @@ export function useSwapAmountInput({
       currentBalanceNetworkFeeError?.message.includes(
         "Insufficient alternative balance for transaction fees"
       ) ||
-      quoteForCurrentBalanceError?.message.includes(
+      quoteForCurrentBalanceErrorMsg?.includes(
         "Not enough quoted. Try increasing amount."
       ),
-    [
-      currentBalanceNetworkFeeError?.message,
-      quoteForCurrentBalanceError?.message,
-    ]
+    [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
   useEffect(() => {
@@ -1124,96 +1120,59 @@ function useQueryRouterBestQuote(
       }>;
     maxSlippage: Dec | undefined;
   },
-  enabled: boolean,
-  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+  enabled: boolean
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
-
-  const availableRouterKeys: RouterKey[] = useMemo(
-    () =>
-      !featureFlags._isInitialized
-        ? []
-        : routerKeys.filter((key) => {
-            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
-            if (!featureFlags.legacyRouter && key === "legacy") return false;
-            // TFM doesn't support force swap through pool
-            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
-              return false;
-            return true;
-          }),
-    [
-      featureFlags._isInitialized,
-      featureFlags.sidecarRouter,
-      featureFlags.legacyRouter,
-      featureFlags.tfmRouter,
-      routerKeys,
-      input.forcePoolId,
-    ]
-  );
 
   const trpcReact = createTRPCReact<AppRouter>();
-  const routerResults = trpcReact.useQueries((t) =>
-    availableRouterKeys.map((key) =>
-      t.local.quoteRouter.routeTokenOutGivenIn(
-        {
-          tokenInAmount: input.tokenInAmount,
-          tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-          tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-          forcePoolId: input.forcePoolId,
-          preferredRouter: key,
+  const quoteResult = trpcReact.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+    {
+      tokenInAmount: input.tokenInAmount,
+      tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+      tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+      forcePoolId: input.forcePoolId,
+    },
+    {
+      enabled: enabled,
+
+      // quotes should not be considered fresh for long, otherwise
+      // the gas simulation will fail due to slippage and the user would see errors
+      staleTime: 5_000,
+      cacheTime: 5_000,
+      refetchInterval: 5_000,
+
+      // Disable retries, as useQueries
+      // will block successfull quotes from being returned
+      // if failed quotes are being returned
+      // until retry starts returning false.
+      // This causes slow UX even though there's a
+      // quote that the user can use.
+      retry: false,
+
+      // prevent batching so that fast routers can
+      // return requests faster than the slowest router
+      trpc: {
+        context: {
+          skipBatch: true,
         },
-        {
-          enabled: enabled && Boolean(availableRouterKeys.length),
-
-          // quotes should not be considered fresh for long, otherwise
-          // the gas simulation will fail due to slippage and the user would see errors
-          staleTime: 5_000,
-          cacheTime: 5_000,
-          refetchInterval: 5_000,
-
-          // Disable retries, as useQueries
-          // will block successfull quotes from being returned
-          // if failed quotes are being returned
-          // until retry starts returning false.
-          // This causes slow UX even though there's a
-          // quote that the user can use.
-          retry: false,
-
-          // prevent batching so that fast routers can
-          // return requests faster than the slowest router
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
-          },
-        }
-      )
-    )
+      },
+    }
   );
 
-  // reduce the results' data to that with the highest out amount
-  const bestData = useMemo(() => {
-    return (
-      routerResults
-        // only those that have fetched
-        .filter((routerResults) => Boolean(routerResults.isFetched))
-        // only those that have returned a result without error
-        .map(({ data }) => data)
-        // only the best quote data
-        .reduce((best, cur) => {
-          if (!best) return cur;
-          if (cur && best.amount.toDec().lt(cur.amount.toDec())) return cur;
-          return best;
-        }, undefined)
-    );
-  }, [routerResults]);
+  const {
+    data: quote,
+    isSuccess,
+    isError,
+    error,
+  } = useMemo(() => {
+    return quoteResult;
+  }, [quoteResult]);
 
   const { value: messages } = useAsync(async () => {
-    if (!bestData) return undefined;
+    if (!quote) return undefined;
     const messages = await getSwapMessages({
-      quote: bestData,
+      quote: quote,
       tokenOutCoinDecimals: input.tokenOut.coinDecimals,
       tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
       maxSlippage: input.maxSlippage?.toString(),
@@ -1223,49 +1182,26 @@ function useQueryRouterBestQuote(
     return messages;
   }, [
     account?.address,
-    bestData,
+    quote,
     input.maxSlippage,
     input.tokenIn.coinMinimalDenom,
     input.tokenInAmount,
     input.tokenOut.coinDecimals,
   ]);
 
-  const numSucceeded = routerResults.filter(
-    ({ isSuccess }) => isSuccess
-  ).length;
-  const isOneSuccessful = Boolean(numSucceeded);
-  const numError = routerResults.filter(({ isError }) => isError).length;
-  const isOneErrored = Boolean(numError);
-
-  // if none have returned a resulting quote, find some error
-  const someError = useMemo(
-    () =>
-      !isOneSuccessful && isOneErrored
-        ? routerResults.find((routerResults) => Boolean(routerResults.error))
-            ?.error
-        : undefined,
-    [isOneSuccessful, isOneErrored, routerResults]
-  );
-
   return {
-    data: bestData ? { ...bestData, messages } : undefined,
-    isLoading: !isOneSuccessful,
-    error: someError,
-    numSucceeded,
-    numError,
-    numAvailableRouters: availableRouterKeys.length,
+    data: quote ? { ...quote, messages } : undefined,
+    isLoading: !isSuccess,
+    errorMsg: error?.message,
+    numSucceeded: isSuccess ? 1 : 0,
+    numError: isError ? 1 : 0,
   };
 }
 
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(
-  error:
-    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
-    | null
-    | undefined
-):
+function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
         | NoRouteError
@@ -1275,21 +1211,20 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: boolean;
     }
   | undefined {
-  if (isNil(error)) return;
-  const tprcShapeMsg = error?.message;
+  if (isNil(errorMsg)) return;
 
-  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+  if (errorMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
     return { error: new NotEnoughLiquidityError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
     return { error: new NotEnoughQuotedError(), isUnexpected: false };
   }
-  if (error) {
+  if (errorMsg) {
     return {
-      error: new Error("Unexpected router error" + (tprcShapeMsg ?? "")),
+      error: new Error("Unexpected router error" + (errorMsg ?? "")),
       isUnexpected: true,
     };
   }

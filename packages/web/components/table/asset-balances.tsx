@@ -144,7 +144,7 @@ export const AssetBalancesTable: FunctionComponent<{
     }
   );
 
-  const [hideDust, setHideDust] = useState(false);
+  const [hideDust, setHideDust] = useState(true);
 
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
@@ -308,7 +308,7 @@ export const AssetBalancesTable: FunctionComponent<{
         className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
-        placeholder={t("assets.table.search")}
+        placeholder={t("portfolio.searchBalances")}
         debounce={500}
       />
       <table
@@ -422,7 +422,7 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {filteredAssetsData.length > 0 && (
+      {assetsData.length > 0 && (
         <div className="flex items-center justify-between gap-4 py-2 px-4">
           <p
             className={classNames("body1 grow text-osmoverse-300", {
@@ -433,7 +433,7 @@ export const AssetBalancesTable: FunctionComponent<{
           </p>
           <Button
             onClick={() => setHideDust((prev) => !prev)}
-            className="gap-2 !py-2 !px-4"
+            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4"
             variant="outline"
             size="lg-full"
           >
@@ -521,6 +521,7 @@ export const AssetActionsCell: AssetCellComponent<{
           variant="ghost"
           className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
+            e.stopPropagation();
             e.preventDefault();
 
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
@@ -529,17 +530,19 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       )}
-      <div className="flex gap-3">
+      <div className="flex gap-3 md:hidden">
         {!needsActivation && (
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "deposit",
-              })
-            }
+              });
+            }}
           >
             <Icon id="deposit" height={20} width={20} />
           </Button>
@@ -548,12 +551,14 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "withdraw",
-              })
-            }
+              });
+            }}
           >
             <Icon id="withdraw" height={20} width={20} />
           </Button>
