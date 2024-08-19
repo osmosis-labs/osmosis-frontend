@@ -553,7 +553,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   )}{" "}
                   {type === "market" &&
                     swapState.marketState.quote?.priceImpactTokenOut && (
-                      <span className="text-osmoverse-500">
+                      <span
+                        className={classNames("text-osmoverse-500", {
+                          hidden:
+                            swapState.marketState.quote?.priceImpactTokenOut
+                              .toDec()
+                              .lt(new Dec(0.01)),
+                        })}
+                      >
                         &#40;-
                         {formatPretty(
                           swapState.marketState.quote?.priceImpactTokenOut

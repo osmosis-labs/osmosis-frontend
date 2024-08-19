@@ -514,6 +514,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                               "text-rust-400": showOutputDifferenceWarning,
                               "text-osmoverse-600":
                                 !showOutputDifferenceWarning,
+                              hidden: outputDifference
+                                .toDec()
+                                .lt(new Dec(0.01)),
                             }
                           )}
                         >{` (-${outputDifference})`}</span>
