@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Handelsgebühr",
-  "receiveAtLeast": "Erhalten Sie mindestens"
+  "receiveAtLeast": "Erhalten Sie mindestens",
+  "payAtMost": "Bezahlen Sie höchstens"
 }

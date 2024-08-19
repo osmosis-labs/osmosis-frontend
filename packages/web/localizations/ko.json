@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "거래 수수료",
-  "receiveAtLeast": "최소한 받다"
+  "receiveAtLeast": "최소한 받다",
+  "payAtMost": "최대 지불"
 }

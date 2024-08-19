@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Frais de transaction",
-  "receiveAtLeast": "Recevez au moins"
+  "receiveAtLeast": "Recevez au moins",
+  "payAtMost": "Payer au maximum"
 }

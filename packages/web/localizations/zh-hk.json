@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "交易費",
-  "receiveAtLeast": "至少收到"
+  "receiveAtLeast": "至少收到",
+  "payAtMost": "最多付錢"
 }

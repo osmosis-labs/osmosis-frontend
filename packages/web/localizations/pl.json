@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Opłata za handel",
-  "receiveAtLeast": "Otrzymaj co najmniej"
+  "receiveAtLeast": "Otrzymaj co najmniej",
+  "payAtMost": "Zapłać maksymalnie"
 }

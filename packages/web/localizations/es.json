@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Tarifa de comercio",
-  "receiveAtLeast": "Recibir al menos"
+  "receiveAtLeast": "Recibir al menos",
+  "payAtMost": "Pagar como máximo"
 }

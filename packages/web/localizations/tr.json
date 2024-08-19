@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Ticaret ücreti",
-  "receiveAtLeast": "En azından al"
+  "receiveAtLeast": "En azından al",
+  "payAtMost": "En fazla öde"
 }

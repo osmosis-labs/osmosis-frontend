@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Comision comercială",
-  "receiveAtLeast": "Primește cel puțin"
+  "receiveAtLeast": "Primește cel puțin",
+  "payAtMost": "Plătește cel mult"
 }
