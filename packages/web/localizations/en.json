@@ -327,6 +327,8 @@
     "show": "Show",
     "hide": "Hide",
     "hidden": "Hidden",
+    "showHidden": "Show hidden ({hiddenDustCount})",
+    "hideSmallBalances": "Hide small balances",
     "cypherSpend": "Osmosis Pay",
     "cypherOrder": "Order your card now",
     "cypherBeta": "Beta"
