@@ -1327,6 +1327,29 @@
     "priceReaches": "Si el precio {denom} alcanza {price}",
     "belowMinimumAmount": "{amount} mínimo"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "¿Qué es el impacto en el precio?",
+      "content": "Este es el impacto que tiene la liquidez del mercado en el precio de ejecución. Las operaciones más grandes tienden a tener un mayor impacto en el mercado."
+    },
+    "expectedRate": {
+      "header": "¿Qué es la tasa esperada?",
+      "content": "Este es el precio que se espera que recibas. Los precios cambian con frecuencia, por lo que si deseas operar a un precio específico, prueba con una orden limitada."
+    },
+    "swapFees": {
+      "header": "¿Qué son las tarifas de swap?",
+      "content": "Esta es la tarifa que cobra el protocolo Osmosis para recompensar a los proveedores de liquidez y mantener la red."
+    },
+    "tradeRoute": {
+      "header": "¿Qué es una ruta comercial?",
+      "contentTop": " Si no existe un mercado directo entre los activos que estás negociando, Osmosis intentará que la transacción se realice realizando una serie de transacciones con otros activos para obtener el mejor precio en cualquier momento.",
+      "contentBottom": "Para lograr una eficiencia óptima en función de la liquidez disponible, a veces las operaciones se dividirán en múltiples rutas con diferentes activos."
+    },
+    "outputDifference": {
+      "header": "¿Qué es la diferencia de salida?",
+      "content": "Esta es la diferencia de valor entre lo que pagas y lo que recibes. Los números positivos significan que la cantidad que compras vale más, mientras que los números negativos significan que la cantidad que vendes vale más."
+    }
+  },
   "tradeFee": "Tarifa de comercio",
   "receiveAtLeast": "Recibir al menos"
 }

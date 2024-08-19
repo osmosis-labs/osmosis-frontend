@@ -1327,6 +1327,29 @@
     "priceReaches": "Dacă prețul {denom} atinge {price}",
     "belowMinimumAmount": "{amount} minim"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Ce este impactul prețului?",
+      "content": "Acesta este impactul pe care lichiditatea pieței îl are asupra prețului de execuție. Tranzacțiile mai mari tind să aibă un impact mai mare pe piață."
+    },
+    "expectedRate": {
+      "header": "Care este rata așteptată?",
+      "content": "Acesta este prețul pe care vă așteptați să îl primiți. Prețurile se schimbă frecvent, așa că dacă doriți să tranzacționați la un anumit preț, încercați în schimb un ordin limită."
+    },
+    "swapFees": {
+      "header": "Ce sunt comisioanele de swap?",
+      "content": "Acesta este comisionul perceput de protocolul Osmosis pentru a recompensa furnizorii de lichidități și a menține rețeaua."
+    },
+    "tradeRoute": {
+      "header": "Ce este o rută comercială?",
+      "contentTop": " Dacă nu există o piață directă între activele pe care le tranzacționați, Osmosis va încerca să facă tranzacția efectuând o serie de tranzacții cu alte active pentru a obține cel mai bun preț la un moment dat.",
+      "contentBottom": "Pentru o eficiență optimă pe baza lichidității disponibile, uneori tranzacțiile vor fi împărțite în mai multe rute cu active diferite."
+    },
+    "outputDifference": {
+      "header": "Care este diferența de ieșire?",
+      "content": "Aceasta este diferența de valoare dintre ceea ce plătești și ceea ce primești. Cifrele pozitive înseamnă că suma pe care o cumpărați valorează mai mult, în timp ce cifrele negative înseamnă că suma pe care o vindeți valorează mai mult."
+    }
+  },
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin"
 }

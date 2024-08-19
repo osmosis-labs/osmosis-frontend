@@ -1327,6 +1327,29 @@
     "priceReaches": "Wenn der Preis {denom} {price} erreicht",
     "belowMinimumAmount": "{amount} Minimum"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Was ist Preiseinfluss?",
+      "content": "Dies ist der Einfluss der Marktliquidität auf Ihren Ausführungspreis. Größere Trades haben tendenziell einen größeren Einfluss auf den Markt."
+    },
+    "expectedRate": {
+      "header": "Was ist der erwartete Zinssatz?",
+      "content": "Dies ist der Preis, den Sie voraussichtlich erhalten werden. Preise ändern sich häufig. Wenn Sie also zu einem bestimmten Preis handeln möchten, versuchen Sie es stattdessen mit einer Limit-Order."
+    },
+    "swapFees": {
+      "header": "Was sind Swap-Gebühren?",
+      "content": "Dies ist die vom Osmosis-Protokoll erhobene Gebühr, um Liquiditätsanbieter zu belohnen und das Netzwerk aufrechtzuerhalten."
+    },
+    "tradeRoute": {
+      "header": "Was ist eine Handelsroute?",
+      "contentTop": " Wenn zwischen den von Ihnen gehandelten Vermögenswerten kein direkter Markt besteht, versucht Osmosis, den Handel durch eine Reihe von Handelsgeschäften mit anderen Vermögenswerten zustande zu bringen, um jederzeit den besten Preis zu erzielen.",
+      "contentBottom": "Um eine optimale Effizienz auf Grundlage der verfügbaren Liquidität zu erzielen, werden Handelsgeschäfte manchmal auf mehrere Routen mit unterschiedlichen Vermögenswerten aufgeteilt."
+    },
+    "outputDifference": {
+      "header": "Was ist der Ausgabeunterschied?",
+      "content": "Dies ist die Wertdifferenz zwischen dem, was Sie bezahlen und erhalten. Positive Zahlen bedeuten, dass der Betrag, den Sie kaufen, mehr wert ist, während negative Zahlen bedeuten, dass der Betrag, den Sie verkaufen, mehr wert ist."
+    }
+  },
   "tradeFee": "Handelsgebühr",
   "receiveAtLeast": "Erhalten Sie mindestens"
 }
