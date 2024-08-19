@@ -5,11 +5,7 @@
  * functionality and stability.
  */
 import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
-import {
-  getAssetPrice,
-  getPools,
-  superjson,
-} from "@osmosis-labs/server";
+import { getAssetPrice, getPools, superjson } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
