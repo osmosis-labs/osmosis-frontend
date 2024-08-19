@@ -91,17 +91,20 @@ export const TransactionContent = ({
             <Tab.List className="flex items-center gap-8">
               {TX_PAGE_TABS.map((defaultTab) => (
                 <Tab key={defaultTab}>
-                  <h5
-                    className={classNames({
-                      "text-osmoverse-500": defaultTab !== tab,
-                    })}
+                  <span
+                    className={classNames(
+                      {
+                        "text-osmoverse-500": defaultTab !== tab,
+                      },
+                      "text-h5 font-h5 sm:text-h6"
+                    )}
                   >
                     {t(
                       defaultTab === "history"
                         ? "transactions.history"
                         : "transactions.orders"
                     )}
-                  </h5>
+                  </span>
                 </Tab>
               ))}
             </Tab.List>

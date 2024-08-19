@@ -7,7 +7,10 @@ import {
   type TransactionRequest,
 } from "@0xsquid/sdk";
 import { Dec } from "@keplr-wallet/unit";
-import { cosmosMsgOpts, cosmwasmMsgOpts } from "@osmosis-labs/tx";
+import {
+  makeExecuteCosmwasmContractMsg,
+  makeIBCTransferMsg,
+} from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   apiClient,
@@ -542,22 +545,21 @@ export class SquidBridgeProvider implements BridgeProvider {
             : { destinationAddress: ibcData.msg.receiver }
         );
 
-        const { typeUrl, value: msg } =
-          cosmosMsgOpts.ibcTransfer.messageComposer({
-            memo: ibcData.msg.memo,
-            receiver: ibcData.msg.receiver,
-            sender: ibcData.msg.sender,
-            sourceChannel: ibcData.msg.sourceChannel,
-            sourcePort: ibcData.msg.sourcePort,
-            timeoutTimestamp: new Long(
-              ibcData.msg.timeoutTimestamp.low,
-              ibcData.msg.timeoutTimestamp.high,
-              ibcData.msg.timeoutTimestamp.unsigned
-            ).toString() as any,
-            // @ts-ignore
-            timeoutHeight,
-            token: ibcData.msg.token,
-          });
+        const { typeUrl, value: msg } = await makeIBCTransferMsg({
+          memo: ibcData.msg.memo,
+          receiver: ibcData.msg.receiver,
+          sender: ibcData.msg.sender,
+          sourceChannel: ibcData.msg.sourceChannel,
+          sourcePort: ibcData.msg.sourcePort,
+          timeoutTimestamp: new Long(
+            ibcData.msg.timeoutTimestamp.low,
+            ibcData.msg.timeoutTimestamp.high,
+            ibcData.msg.timeoutTimestamp.unsigned
+          ).toString() as any,
+          // @ts-ignore
+          timeoutHeight,
+          token: ibcData.msg.token,
+        });
 
         return {
           type: "cosmos",
@@ -576,13 +578,12 @@ export class SquidBridgeProvider implements BridgeProvider {
           };
         };
 
-        const { typeUrl, value: msg } =
-          cosmwasmMsgOpts.executeWasm.messageComposer({
-            sender: fromAddress,
-            contract: cosmwasmData.msg.wasm.contract,
-            msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
-            funds: [fromCoin],
-          });
+        const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
+          sender: fromAddress,
+          contract: cosmwasmData.msg.wasm.contract,
+          msg: cosmwasmData.msg.wasm.msg,
+          funds: [fromCoin],
+        });
 
         return {
           type: "cosmos",

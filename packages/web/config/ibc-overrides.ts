@@ -361,7 +361,7 @@ const MainnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  "USDC.matic.axl": {
+  "USDC.e.matic.axl": {
     sourceChainNameOverride: "Polygon",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -766,7 +766,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt&toToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   },
-  "USDT.trx.rt": {
+  "USDT.eth.rt": {
     depositUrlOverride:
       "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt",
     withdrawUrlOverride:

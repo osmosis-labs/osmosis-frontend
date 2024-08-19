@@ -95,7 +95,8 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール #{poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します",
+    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。"
   },
   "copied": "コピーしました！",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "返金されました",
       "success": "成功",
       "title": "転送履歴",
-      "pendingDeposit": "保留中の入金",
-      "pendingWithdraw": "保留中の撤回",
-      "successDeposit": "寄託",
-      "successWithdraw": "撤退",
-      "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました",
       "connectionError": "接続エラー"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "買う",
-    "yourAssets": "あなたの資産",
+    "yourBalances": "残高",
     "yourPositions": "あなたの立場",
-    "recentTransfers": "最近の送金",
+    "searchBalances": "残高を検索",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
     "yourLiquidityPools": "流動性プール",
     "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
@@ -326,7 +321,15 @@
     "pooled": "プール",
     "other": "他の",
     "all": "全て",
-    "assets": "資産"
+    "assets": "資産",
+    "recentActivity": "最近のアクティビティ",
+    "seeAll": "すべて見る",
+    "show": "見せる",
+    "hide": "隠れる",
+    "hidden": "隠れた",
+    "cypherSpend": "オズモーシスペイ",
+    "cypherOrder": "今すぐカードを注文する",
+    "cypherBeta": "ベータ"
   },
   "buyTokens": "トークンを購入する",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターを保存する",
     "rewards": "報酬",
-    "estimatedInYearlyRewards": "年間報酬で見積もる",
     "availableToClaim": "請求可能",
     "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
@@ -1238,13 +1240,21 @@
       "description": "続行すると、注文は市場価格での成行注文として処理されます。"
     },
     "enterAnAmountTo": "金額を入力してください",
+    "toSell": "売る",
+    "toBuy": "購入する",
     "sell": "売る",
+    "sold": "販売済み",
+    "percentFilled": "充填率",
+    "status": "状態",
+    "price": "価格",
     "buy": "買う",
     "pay": "支払う",
     "open": "開ける",
     "filled": "満たされた",
     "claimable": "請求可能",
     "claimAndClose": "請求して終了",
+    "close": "近い",
+    "claim": "請求",
     "accept": "受け入れる",
     "cancelled": "キャンセル",
     "cancel": "キャンセル",
@@ -1306,11 +1316,17 @@
     "trade": "貿易",
     "swapToAnotherAsset": "別の資産に交換する",
     "invalidPrice": "無効な価格",
+    "priceTooLow": "価格が低すぎる",
+    "priceTooHigh": "価格が高すぎる",
     "unavailable": "{denom}では利用できません",
     "orderHistoryHeaders": {
       "past": "過去",
       "pending": "保留中",
       "filled": "請求する注文を完了"
-    }
-  }
+    },
+    "priceReaches": "{denom}価格が{price}に達した場合",
+    "belowMinimumAmount": "{amount}最小"
+  },
+  "tradeFee": "取引手数料",
+  "receiveAtLeast": "少なくとも受け取る"
 }

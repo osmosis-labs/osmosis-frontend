@@ -1,8 +1,9 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { cosmwasmMsgOpts } from "@osmosis-labs/stores";
+import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage } from "~/config";
@@ -28,6 +29,9 @@ function getNormalizationFactor(
 }
 
 export type OrderDirection = "bid" | "ask";
+
+export const MIN_ORDER_VALUE =
+  process.env.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT ?? "";
 
 export interface UsePlaceLimitParams {
   osmosisChainId: string;
@@ -90,11 +94,6 @@ export const usePlaceLimit = ({
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
-
-  const priceState = useLimitPrice({
-    orderDirection,
-    baseDenom: baseAsset?.coinMinimalDenom,
-  });
 
   const isMarket = useMemo(
     () => type === "market",
@@ -179,6 +178,12 @@ export const usePlaceLimit = ({
     );
   }, [baseAsset, quoteAsset]);
 
+  const priceState = useLimitPrice({
+    orderDirection,
+    baseDenom: baseAsset?.coinMinimalDenom,
+    normalizationFactor,
+  });
+
   /**
    * Determines the fiat amount the user will pay for their order.
    * In the case of an Ask the fiat amount is the amount of tokens the user will sell multiplied by the currently selected price.
@@ -214,7 +219,7 @@ export const usePlaceLimit = ({
   }, [paymentFiatValue, makerFee]);
 
   const placeLimitMsg = useMemo(() => {
-    if (isMarket) return;
+    if (isMarket || !priceState.isValidPrice) return;
 
     const quantity = paymentTokenValue.toCoin().amount ?? "0";
 
@@ -243,16 +248,17 @@ export const usePlaceLimit = ({
     quoteAssetPrice,
     normalizationFactor,
     paymentTokenValue,
+    priceState.isValidPrice,
     isMarket,
   ]);
 
-  const encodedMsg = useMemo(() => {
+  const { value: encodedMsg } = useAsync(async () => {
     if (!placeLimitMsg) return;
 
-    return cosmwasmMsgOpts.executeWasm.messageComposer({
+    return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
-      msg: Buffer.from(JSON.stringify(placeLimitMsg)),
+      msg: placeLimitMsg,
       funds: [
         {
           denom: paymentTokenValue.toCoin().denom,
@@ -373,33 +379,43 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
-  const { data: balances, isLoading: isBalancesLoading } =
-    api.local.balances.getUserBalances.useQuery(
-      { bech32Address: account?.address ?? "" },
+  const { data, isLoading: isBalancesLoading } =
+    api.edge.assets.getUserAssets.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+      },
       {
         enabled: !!account?.address,
-        select: (balances) =>
-          balances.filter(
-            ({ denom }) =>
-              denom === baseAsset?.coinMinimalDenom ||
-              denom === quoteAsset?.coinMinimalDenom
+        select: ({ items }) =>
+          items.filter(
+            ({ coinMinimalDenom }) =>
+              coinMinimalDenom.toLowerCase() ===
+                baseAsset?.coinMinimalDenom?.toLowerCase() ||
+              coinMinimalDenom.toLowerCase() ===
+                quoteAsset?.coinMinimalDenom?.toLowerCase()
           ),
       }
     );
 
-  const quoteTokenBalance = useMemo(() => {
-    if (!balances) return;
+  const baseTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          baseAsset?.coinMinimalDenom.toLowerCase()
+      )?.amount,
+    [data, baseAsset]
+  );
+  const quoteTokenBalance = useMemo(
+    () =>
+      data?.find(
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom.toLowerCase() ===
+          quoteAsset?.coinMinimalDenom?.toLowerCase()
+      )?.amount,
+    [data, quoteAsset]
+  );
 
-    return balances.find(({ denom }) => denom === quoteAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, quoteAsset]);
-
-  const baseTokenBalance = useMemo(() => {
-    if (!balances) return;
-
-    return balances.find(({ denom }) => denom === baseAsset?.coinMinimalDenom)
-      ?.coin;
-  }, [balances, baseAsset]);
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(
@@ -468,6 +484,7 @@ export const usePlaceLimit = ({
     priceState.reset();
     marketState.inAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
+
   const error = useMemo(() => {
     if (!isMarket && orderbookError) {
       return orderbookError;
@@ -475,10 +492,6 @@ export const usePlaceLimit = ({
 
     if (insufficientFunds) {
       return "limitOrders.insufficientFunds";
-    }
-
-    if (!isMarket && !priceState.isValidPrice) {
-      return "limitOrders.invalidPrice";
     }
 
     if (isMarket && marketState.error) {
@@ -490,14 +503,29 @@ export const usePlaceLimit = ({
       return "errors.zeroAmount";
     }
 
+    if (!isMarket && priceState.priceError) {
+      return priceState.priceError;
+    }
+
+    if (
+      !isMarket &&
+      !!MIN_ORDER_VALUE &&
+      isValidNumericalRawInput(MIN_ORDER_VALUE) &&
+      !!paymentFiatValue &&
+      paymentFiatValue?.toDec().lt(new Dec(MIN_ORDER_VALUE))
+    ) {
+      return "limitOrders.belowMinimumAmount";
+    }
+
     return;
   }, [
     insufficientFunds,
     isMarket,
     marketState.error,
-    priceState.isValidPrice,
     paymentTokenValue,
     orderbookError,
+    priceState.priceError,
+    paymentFiatValue,
   ]);
 
   const shouldEstimateLimitGas = useMemo(() => {
@@ -601,9 +629,11 @@ const MIN_TICK_PRICE = 0.000000000001;
 const useLimitPrice = ({
   orderDirection,
   baseDenom,
+  normalizationFactor,
 }: {
   orderDirection: OrderDirection;
   baseDenom?: string;
+  normalizationFactor?: Dec;
 }) => {
   const [priceLocked, setPriceLock] = useState(false);
 
@@ -620,6 +650,14 @@ const useLimitPrice = ({
 
   const [orderPrice, setOrderPrice] = useState("0");
   const [manualPercentAdjusted, setManualPercentAdjusted] = useState("0");
+
+  const minPrice = useMemo(() => {
+    return new Dec(MIN_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
+  }, [normalizationFactor]);
+
+  const maxPrice = useMemo(() => {
+    return new Dec(MAX_TICK_PRICE).quo(normalizationFactor ?? new Dec(1));
+  }, [normalizationFactor]);
 
   // Decimal version of the spot price, defaults to 1
   const spotPrice = useMemo(() => {
@@ -666,12 +704,6 @@ const useLimitPrice = ({
       if (!isValidNumericalRawInput(price)) return;
 
       const newPrice = new Dec(price.length > 0 ? price : "0");
-
-      if (newPrice.lt(new Dec(MIN_TICK_PRICE)) && !newPrice.isZero()) {
-        price = trimPlaceholderZeros(new Dec(MIN_TICK_PRICE).toString());
-      } else if (newPrice.gt(new Dec(MAX_TICK_PRICE))) {
-        price = trimPlaceholderZeros(new Dec(MAX_TICK_PRICE).toString());
-      }
 
       const percentAdjusted = newPrice
         .quo(spotPrice)
@@ -755,14 +787,14 @@ const useLimitPrice = ({
     },
     [setManualPercentAdjusted, orderDirection, setPriceAsPercentageOfSpotPrice]
   );
-
   // Whether the user's manual order price is a valid price
   const isValidInputPrice =
     Boolean(orderPrice) &&
     orderPrice.length > 0 &&
     !new Dec(orderPrice).isZero() &&
-    new Dec(orderPrice).isPositive();
-
+    new Dec(orderPrice).isPositive() &&
+    new Dec(orderPrice).gte(minPrice) &&
+    new Dec(orderPrice).lte(maxPrice);
   // The current price. If the user has input a manual order price then that is used, otherwise we look at the percentage adjusted.
   // If the user has a percentage adjusted input we calculate the price relative to the spot price
   // given the current direction of the order.
@@ -819,7 +851,28 @@ const useLimitPrice = ({
     reset();
   }, [orderDirection, reset, baseDenom]);
 
-  const isValidPrice = isValidInputPrice || Boolean(spotPrice);
+  const isValidPrice =
+    isValidInputPrice ||
+    ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice));
+
+  const priceError = useMemo(() => {
+    if (price.lt(minPrice)) {
+      return "limitOrders.priceTooLow";
+    }
+
+    if (price.gt(maxPrice)) {
+      return "limitOrders.priceTooHigh";
+    }
+
+    if (
+      !(
+        isValidInputPrice ||
+        ((!orderPrice || new Dec(orderPrice).isZero()) && Boolean(spotPrice))
+      )
+    ) {
+      return "limitOrders.invalidPrice";
+    }
+  }, [price, minPrice, maxPrice, isValidInputPrice, orderPrice, spotPrice]);
 
   return {
     spotPrice,
@@ -840,5 +893,6 @@ const useLimitPrice = ({
     setPriceLock,
     priceLocked,
     setPriceAsPercentageOfSpotPrice,
+    priceError,
   };
 };

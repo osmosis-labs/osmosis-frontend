@@ -95,7 +95,8 @@
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
-    "goToPool": "પૂલ #{poolId} પર જાઓ"
+    "goToPool": "પૂલ #{poolId} પર જાઓ",
+    "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો."
   },
   "copied": "નકલ કરી!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "રિફંડ",
       "success": "સફળતા",
       "title": "ટ્રાન્સફર ઇતિહાસ",
-      "pendingDeposit": "બાકી થાપણ",
-      "pendingWithdraw": "બાકી ઉપાડ",
-      "successDeposit": "જમા કરાવ્યું",
-      "successWithdraw": "પાછી ખેંચી લીધી",
-      "failDeposit": "ડિપોઝિટ નિષ્ફળ",
-      "failWithdraw": "ઉપાડ નિષ્ફળ",
       "connectionError": "કનેક્શન ભૂલ"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "ખરીદો",
-    "yourAssets": "તમારી સંપત્તિ",
+    "yourBalances": "તમારું બેલેન્સ",
     "yourPositions": "તમારી સ્થિતિ",
-    "recentTransfers": "તાજેતરના ટ્રાન્સફર",
+    "searchBalances": "બેલેન્સ શોધો",
     "yourSuperchargedPositions": "તમારી સુપરચાર્જ્ડ પોઝિશન્સ",
     "yourLiquidityPools": "તમારા લિક્વિડિટી પૂલ",
     "connectWallet": "ઓસ્મોસિસ પર તમારા બેલેન્સ અને સ્થિતિને ટ્રૅક કરવાનું પ્રારંભ કરવા માટે તમારા વૉલેટને કનેક્ટ કરો.",
@@ -326,7 +321,15 @@
     "pooled": "પૂલ",
     "other": "અન્ય",
     "all": "બધા",
-    "assets": "અસ્કયામતો"
+    "assets": "અસ્કયામતો",
+    "recentActivity": "તાજેતરની પ્રવૃત્તિ",
+    "seeAll": "બધા જુઓ",
+    "show": "બતાવો",
+    "hide": "છુપાવો",
+    "hidden": "છુપાયેલ",
+    "cypherSpend": "ઓસ્મોસિસ પે",
+    "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
+    "cypherBeta": "બેટા"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "ફિલ્ટર્સ રીસેટ કરો",
     "saveFilters": "ફિલ્ટર્સ સાચવો",
     "rewards": "પારિતોષિકો",
-    "estimatedInYearlyRewards": "વાર્ષિક પુરસ્કારોમાં અંદાજિત",
     "availableToClaim": "દાવો કરવા માટે ઉપલબ્ધ છે",
     "claimAllRewards": "બધા પુરસ્કારોનો દાવો કરો",
     "join": "જોડાઓ",
@@ -1238,13 +1240,21 @@
       "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
     },
     "enterAnAmountTo": "માટે રકમ દાખલ કરો",
+    "toSell": "વેચવા માટે",
+    "toBuy": "ખરીદવા માટે",
     "sell": "વેચો",
+    "sold": "વેચાય છે",
+    "percentFilled": "ટકા ભરેલ",
+    "status": "સ્થિતિ",
+    "price": "કિંમત",
     "buy": "ખરીદો",
     "pay": "પે",
     "open": "ખુલ્લા",
     "filled": "ભરેલ",
     "claimable": "દાવો કરવા યોગ્ય",
     "claimAndClose": "દાવો કરો અને બંધ કરો",
+    "close": "બંધ કરો",
+    "claim": "દાવો કરો",
     "accept": "સ્વીકારો",
     "cancelled": "રદ કરેલ",
     "cancel": "રદ કરો",
@@ -1306,11 +1316,17 @@
     "trade": "વેપાર",
     "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
     "invalidPrice": "અમાન્ય કિંમત",
+    "priceTooLow": "કિંમત ખૂબ ઓછી છે",
+    "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
     "unavailable": "{denom} માટે અનુપલબ્ધ",
     "orderHistoryHeaders": {
       "past": "ભૂતકાળ",
       "pending": "બાકી છે",
       "filled": "દાવો કરવાના આદેશો ભર્યા"
-    }
-  }
+    },
+    "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે",
+    "belowMinimumAmount": "{amount} ન્યૂનતમ"
+  },
+  "tradeFee": "વેપાર ફી",
+  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો"
 }

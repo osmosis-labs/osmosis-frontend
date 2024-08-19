@@ -153,61 +153,68 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         className="absolute top-0 h-0.5 w-[512px] -translate-x-5 bg-[#3C356D4A]"
         style={{ width: width + 40 }}
       />
-      <GenericDisclaimer
-        disabled={!swapState.priceState.isBeyondOppositePrice}
-        title={
-          <span className="caption">
-            {orderDirection === "bid"
-              ? t("limitOrders.aboveMarket.title")
-              : t("limitOrders.belowMarket.title")}
-          </span>
-        }
-        body={
-          <span className="text-caption text-osmoverse-300">
-            {orderDirection === "bid"
-              ? t("limitOrders.aboveMarket.description")
-              : t("limitOrders.belowMarket.description")}
-          </span>
-        }
-      >
-        <button
-          type="button"
-          className="inline-flex min-h-[32px] w-full items-center gap-1"
-          onClick={swapInputMode}
-          disabled={priceState.isLoading}
+      {!priceState.priceError ? (
+        <GenericDisclaimer
+          disabled={!swapState.priceState.isBeyondOppositePrice}
+          title={
+            <span className="caption">
+              {orderDirection === "bid"
+                ? t("limitOrders.aboveMarket.title")
+                : t("limitOrders.belowMarket.title")}
+            </span>
+          }
+          body={
+            <span className="text-caption text-osmoverse-300">
+              {orderDirection === "bid"
+                ? t("limitOrders.aboveMarket.description")
+                : t("limitOrders.belowMarket.description")}
+            </span>
+          }
         >
-          <span className="body2 text-osmoverse-300">
-            {t("limitOrders.whenDenomPriceIs", {
-              denom: swapState.baseAsset?.coinDenom ?? "",
-            })}{" "}
-            <span
-              className={classNames("body2 text-wosmongton-300", {
+          <button
+            type="button"
+            className="body2 sm:caption inline-flex min-h-[32px] w-full items-center justify-start gap-1 text-left"
+            onClick={swapInputMode}
+            disabled={priceState.isLoading}
+          >
+            <span className="text-osmoverse-300">
+              {t("limitOrders.whenDenomPriceIs", {
+                denom: swapState.baseAsset?.coinDenom ?? "",
+              })}{" "}
+              <span
+                className={classNames("text-wosmongton-300", {
+                  "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                })}
+              >
+                {priceLabel}
+              </span>{" "}
+              {inputMode === InputMode.Price &&
+                +swapState.priceState.manualPercentAdjusted > 0 && (
+                  <span
+                    className={classNames("text-wosmongton-300", {
+                      "text-rust-400":
+                        swapState.priceState.isBeyondOppositePrice,
+                    })}
+                  >
+                    {percentageSuffix}
+                  </span>
+                )}
+            </span>
+            <Icon
+              id="switch"
+              className={classNames("text-wosmongton-300", {
                 "text-rust-400": swapState.priceState.isBeyondOppositePrice,
               })}
-            >
-              {priceLabel}
-            </span>{" "}
-            {inputMode === InputMode.Price &&
-              +swapState.priceState.manualPercentAdjusted > 0 && (
-                <span
-                  className={classNames("body2 text-wosmongton-300", {
-                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-                  })}
-                >
-                  {percentageSuffix}
-                </span>
-              )}
-          </span>
-          <Icon
-            id="switch"
-            className={classNames("text-wosmongton-300", {
-              "text-rust-400": swapState.priceState.isBeyondOppositePrice,
-            })}
-            width={16}
-            height={16}
-          />
-        </button>
-      </GenericDisclaimer>
+              width={16}
+              height={16}
+            />
+          </button>
+        </GenericDisclaimer>
+      ) : (
+        <span className="body2 flex min-h-[2rem] items-center text-rust-400">
+          {t(priceState.priceError)}
+        </span>
+      )}
       <label className="flex w-full items-center justify-between">
         <div className="inline-flex items-end gap-1 py-3 text-h6 font-h6">
           <SkeletonLoader
@@ -236,12 +243,14 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                   const value = e.target.value.trim();
                   swapState.priceState.setPrice(value);
                 }}
+                inputMode="decimal"
               />
             ) : (
               <>
                 {isPercentTooLarge && <span>{">"}</span>}
                 <AutosizeInput
                   type="text"
+                  inputMode="decimal"
                   extraWidth={0}
                   inputClassName="bg-transparent text-white-full transition-colors placeholder:text-osmoverse-600"
                   value={
@@ -274,7 +283,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 >
                   %
                 </span>
-                <span className="body2 text-osmoverse-500">
+                <span className="body2 sm:caption text-osmoverse-500">
                   {percentageSuffix}
                 </span>
               </span>
@@ -286,7 +295,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
         {percentAdjustmentOptions.map(({ label, value, defaultValue }) => (
           <button
             type="button"
-            className="flex h-8 w-full items-center justify-center rounded-5xl border border-[#6B62AD] px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-osmoverse-alpha-800/[.54] hover:text-white-high disabled:opacity-50"
+            className="-m-px flex h-8 w-full items-center justify-center rounded-5xl border border-osmoverse-alpha-700 px-3 py-1 text-wosmongton-200 transition hover:border-transparent hover:bg-osmoverse-alpha-800/[.54] hover:text-white-high disabled:opacity-50"
             key={`limit-price-adjust-${label}`}
             onClick={() => {
               if (inputMode === InputMode.Percentage) {
@@ -309,7 +318,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                     id="triangle-down"
                     width={10}
                     height={6}
-                    className="rotate-180  transition-transform"
+                    className="rotate-180 transition-transform"
                   />
                 ) : (
                   <Icon
@@ -321,7 +330,7 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
                 )}
               </div>
             )}
-            <span className="body2">{label}</span>
+            <span className="body2 sm:caption">{label}</span>
           </button>
         ))}
       </div>

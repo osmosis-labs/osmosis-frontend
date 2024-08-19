@@ -82,9 +82,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         }
       );
 
-    const { data: poolMarketMetrics, isLoading: isPoolMarketMetricsLoading } =
-      api.edge.pools.getPoolMarketMetrics.useQuery({ poolId });
-
     const userHasPositionInPool = userPositions && userPositions.length > 0;
 
     const claimableSpreadRewardPositions = useMemo(
@@ -207,19 +204,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
-                <SkeletonLoader
-                  className={classNames(
-                    isPoolMarketMetricsLoading ? "h-full w-32" : null
-                  )}
-                  isLoaded={!isPoolMarketMetricsLoading}
-                >
-                  {poolMarketMetrics?.volume24hUsd && (
-                    <PoolDataGroup
-                      label={t("pool.24hrTradingVolume")}
-                      value={formatPretty(poolMarketMetrics.volume24hUsd)}
-                    />
-                  )}
-                </SkeletonLoader>
+                {pool?.market?.volume24hUsd && (
+                  <PoolDataGroup
+                    label={t("pool.24hrTradingVolume")}
+                    value={formatPretty(pool.market.volume24hUsd)}
+                  />
+                )}
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={

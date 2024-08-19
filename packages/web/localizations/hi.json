@@ -95,7 +95,8 @@
     "totalBalance": "कुल शेष",
     "numPositions": "{numPositions} पद",
     "onePosition": "1 पद",
-    "goToPool": "पूल # पर जाएँ #{poolId}"
+    "goToPool": "पूल # पर जाएँ #{poolId}",
+    "errorFetchingPositions": "स्थिति विवरण प्राप्त करने में विफल। कृपया पृष्ठ को ताज़ा करने का प्रयास करें। यदि समस्या बनी रहती है, तो सहायता से संपर्क करें।"
   },
   "copied": "कॉपी किया गया!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "वापसी की गई है",
       "success": "सफलता",
       "title": "स्थानांतरण इतिहास",
-      "pendingDeposit": "लंबित जमा",
-      "pendingWithdraw": "लंबित निकासी",
-      "successDeposit": "जमा किया",
-      "successWithdraw": "वापस ले लिया",
-      "failDeposit": "जमा विफल",
-      "failWithdraw": "निकासी विफल",
       "connectionError": "संपर्क त्रुटि"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "खरीदना",
-    "yourAssets": "आपकी संपत्ति",
+    "yourBalances": "आपका शेष",
     "yourPositions": "आपके पद",
-    "recentTransfers": "हालिया स्थानांतरण",
+    "searchBalances": "शेष राशि खोजें",
     "yourSuperchargedPositions": "आपकी सुपरचार्ज्ड स्थिति",
     "yourLiquidityPools": "आपकी तरलता पूल",
     "connectWallet": "ओस्मोसिस पर अपने बैलेंस और पोजीशन पर नज़र रखने के लिए अपने वॉलेट को कनेक्ट करें।",
@@ -326,7 +321,15 @@
     "pooled": "जमा",
     "other": "अन्य",
     "all": "सभी",
-    "assets": "संपत्ति"
+    "assets": "संपत्ति",
+    "recentActivity": "हाल की गतिविधि",
+    "seeAll": "सभी देखें",
+    "show": "दिखाओ",
+    "hide": "छिपाना",
+    "hidden": "छिपा हुआ",
+    "cypherSpend": "ऑस्मोसिस पे",
+    "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
+    "cypherBeta": "बीटा"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "फ़िल्टर रीसेट करें",
     "saveFilters": "फ़िल्टर सहेजें",
     "rewards": "पुरस्कार",
-    "estimatedInYearlyRewards": "वार्षिक पुरस्कारों में अनुमानित",
     "availableToClaim": "दावा करने के लिए उपलब्ध",
     "claimAllRewards": "सभी पुरस्कारों का दावा करें",
     "join": "जोड़ना",
@@ -1238,13 +1240,21 @@
       "description": "यदि आप आगे बढ़ते हैं, तो आपके ऑर्डर को बाजार मूल्य पर बाजार ऑर्डर के रूप में संसाधित किया जाएगा।"
     },
     "enterAnAmountTo": "राशि दर्ज करें",
+    "toSell": "बेचने के लिए",
+    "toBuy": "खरीदने के लिए",
     "sell": "बेचना",
+    "sold": "बिका हुआ",
+    "percentFilled": "भरा गया प्रतिशत",
+    "status": "स्थिति",
+    "price": "कीमत",
     "buy": "खरीदना",
     "pay": "वेतन",
     "open": "खुला",
     "filled": "भरा हुआ",
     "claimable": "दावा योग्य",
     "claimAndClose": "दावा करें और बंद करें",
+    "close": "बंद करना",
+    "claim": "दावा",
     "accept": "स्वीकार करना",
     "cancelled": "रद्द",
     "cancel": "रद्द करना",
@@ -1306,11 +1316,17 @@
     "trade": "व्यापार",
     "swapToAnotherAsset": "किसी अन्य परिसंपत्ति में स्वैप करें",
     "invalidPrice": "अमान्य मूल्य",
+    "priceTooLow": "कीमत बहुत कम है",
+    "priceTooHigh": "कीमत बहुत अधिक है",
     "unavailable": "{denom} के लिए अनुपलब्ध",
     "orderHistoryHeaders": {
       "past": "अतीत",
       "pending": "लंबित",
       "filled": "दावा करने के लिए भरे गए ऑर्डर"
-    }
-  }
+    },
+    "priceReaches": "यदि {denom} मूल्य {price} तक पहुँच जाता है",
+    "belowMinimumAmount": "{amount} न्यूनतम"
+  },
+  "tradeFee": "व्यापार शुल्क",
+  "receiveAtLeast": "कम से कम प्राप्त करें"
 }

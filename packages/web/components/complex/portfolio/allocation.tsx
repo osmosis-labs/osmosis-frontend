@@ -1,15 +1,20 @@
 import { Dec } from "@keplr-wallet/unit";
 import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { EventName } from "~/config";
-import { MultiLanguageT } from "~/hooks";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  Breakpoint,
+  MultiLanguageT,
+  useAmplitudeAnalytics,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 
 const COLORS: Record<AllocationOptions, string[]> = {
   all: [
@@ -55,10 +60,18 @@ export const Allocation: FunctionComponent<{
 }> = ({ allocation }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
+  const { width } = useWindowSize();
+
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
 
   const [isOpen, setIsOpen] = useState(true);
+
+  useEffect(() => {
+    if (width > Breakpoint.xl) {
+      setIsOpen(true);
+    }
+  }, [width]);
 
   const { t } = useTranslation();
 
@@ -67,18 +80,20 @@ export const Allocation: FunctionComponent<{
   const selectedList = allocation[selectedOption];
 
   return (
-    <div className="flex w-full flex-col">
+    <div className="flex w-full flex-col py-3">
       <div
         className="flex cursor-pointer items-center justify-between py-3"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         <h6>{t("portfolio.allocation")}</h6>
-        <Icon
-          id="chevron-down"
-          className={classNames("transition-transform", {
-            "rotate-180": isOpen,
-          })}
-        />
+        {width > Breakpoint.xl && (
+          <Icon
+            id="chevron-down"
+            className={classNames("transition-transform", {
+              "rotate-180": isOpen,
+            })}
+          />
+        )}
       </div>
       {isOpen && (
         <>

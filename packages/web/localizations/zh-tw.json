@@ -95,7 +95,8 @@
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
     "onePosition": "1 個位置",
-    "goToPool": "前往泳池#{poolId}"
+    "goToPool": "前往泳池#{poolId}",
+    "errorFetchingPositions": "無法取得職位詳細資料。請嘗試刷新頁面。如果問題仍然存在，請聯絡支援人員。"
   },
   "copied": "複製了！",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "已退款",
       "success": "成功",
       "title": "轉移歷史",
-      "pendingDeposit": "待定存款",
-      "pendingWithdraw": "待提款",
-      "successDeposit": "已存入",
-      "successWithdraw": "退出",
-      "failDeposit": "存款失敗",
-      "failWithdraw": "提現失敗",
       "connectionError": "連線錯誤"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "買",
-    "yourAssets": "您的資產",
+    "yourBalances": "您的餘額",
     "yourPositions": "您的職位",
-    "recentTransfers": "最近轉會",
+    "searchBalances": "搜尋餘額",
     "yourSuperchargedPositions": "您的超級職位",
     "yourLiquidityPools": "您的流動資金池",
     "connectWallet": "連接您的錢包，開始追蹤您在 Osmosis 上的餘額和部位。",
@@ -326,7 +321,15 @@
     "pooled": "匯集",
     "other": "其他",
     "all": "全部",
-    "assets": "資產"
+    "assets": "資產",
+    "recentActivity": "最近的活動",
+    "seeAll": "看全部",
+    "show": "展示",
+    "hide": "隱藏",
+    "hidden": "隱",
+    "cypherSpend": "滲透支付",
+    "cypherOrder": "立即訂購您的卡",
+    "cypherBeta": "貝塔"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "重置過濾器",
     "saveFilters": "保存過濾器",
     "rewards": "獎勵",
-    "estimatedInYearlyRewards": "預計每年獎勵",
     "availableToClaim": "可索賠",
     "claimAllRewards": "領取所有獎勵",
     "join": "加入",
@@ -1238,13 +1240,21 @@
       "description": "如果您繼續，您的訂單將作為市價訂單以市場價格處理。"
     },
     "enterAnAmountTo": "輸入金額至",
+    "toSell": "出售",
+    "toBuy": "買",
     "sell": "賣",
+    "sold": "賣",
+    "percentFilled": "填充百分比",
+    "status": "地位",
+    "price": "價格",
     "buy": "買",
     "pay": "支付",
     "open": "打開",
     "filled": "填充",
     "claimable": "可索賠",
     "claimAndClose": "索賠並關閉",
+    "close": "關閉",
+    "claim": "宣稱",
     "accept": "接受",
     "cancelled": "取消",
     "cancel": "取消",
@@ -1306,11 +1316,17 @@
     "trade": "貿易",
     "swapToAnotherAsset": "交換到另一種資產",
     "invalidPrice": "價格無效",
+    "priceTooLow": "價格太低",
+    "priceTooHigh": "價格太高",
     "unavailable": "不適用於{denom}",
     "orderHistoryHeaders": {
       "past": "過去的",
       "pending": "待辦的",
       "filled": "已填寫訂單以領取"
-    }
-  }
+    },
+    "priceReaches": "如果{denom}價格達到{price}",
+    "belowMinimumAmount": "{amount}最小值"
+  },
+  "tradeFee": "交易費",
+  "receiveAtLeast": "至少收到"
 }

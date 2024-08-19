@@ -95,7 +95,8 @@
     "totalBalance": "전체 자산",
     "numPositions": "한정되지 않은",
     "onePosition": "1 위치",
-    "goToPool": "풀 번호로 이동 #{poolId}"
+    "goToPool": "풀 번호로 이동 #{poolId}",
+    "errorFetchingPositions": "직책 세부 정보를 가져오지 못했습니다. 페이지를 새로 고침해 보세요. 문제가 지속되면 지원팀에 문의하세요."
   },
   "copied": "복사되었습니다!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "환불됨",
       "success": "성공",
       "title": "전송 내역",
-      "pendingDeposit": "입금 대기 중",
-      "pendingWithdraw": "출금 대기 중",
-      "successDeposit": "입금됨",
-      "successWithdraw": "철수",
-      "failDeposit": "입금 실패",
-      "failWithdraw": "출금 실패",
       "connectionError": "연결 오류"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "구입하다",
-    "yourAssets": "귀하의 자산",
+    "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
-    "recentTransfers": "최근 이적",
+    "searchBalances": "잔액 검색",
     "yourSuperchargedPositions": "귀하의 슈퍼차지 위치",
     "yourLiquidityPools": "귀하의 유동성 풀",
     "connectWallet": "Osmosis에서 잔액과 포지션 추적을 시작하려면 지갑을 연결하세요.",
@@ -326,7 +321,15 @@
     "pooled": "풀링됨",
     "other": "다른",
     "all": "모두",
-    "assets": "자산"
+    "assets": "자산",
+    "recentActivity": "최근 활동",
+    "seeAll": "모두 보기",
+    "show": "보여주다",
+    "hide": "숨다",
+    "hidden": "숨겨진",
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
+    "cypherBeta": "베타"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "필터 재설정",
     "saveFilters": "필터 저장",
     "rewards": "보상",
-    "estimatedInYearlyRewards": "연간 보상으로 추정",
     "availableToClaim": "청구 가능",
     "claimAllRewards": "모든 보상을 받으세요",
     "join": "가입하다",
@@ -1238,13 +1240,21 @@
       "description": "계속 진행하시면 귀하의 주문은 시장가로 시장가 주문으로 처리됩니다."
     },
     "enterAnAmountTo": "금액을 입력하세요.",
+    "toSell": "판매하다",
+    "toBuy": "구매하다",
     "sell": "팔다",
+    "sold": "판매된",
+    "percentFilled": "채워진 비율",
+    "status": "상태",
+    "price": "가격",
     "buy": "구입하다",
     "pay": "지불하다",
     "open": "열려 있는",
     "filled": "채우는",
     "claimable": "청구 가능",
     "claimAndClose": "청구 및 종료",
+    "close": "닫다",
+    "claim": "주장하다",
     "accept": "수용하다",
     "cancelled": "취소 된",
     "cancel": "취소",
@@ -1306,11 +1316,17 @@
     "trade": "거래",
     "swapToAnotherAsset": "다른 자산으로 교체",
     "invalidPrice": "잘못된 가격",
+    "priceTooLow": "가격이 너무 낮음",
+    "priceTooHigh": "가격이 너무 비싸요",
     "unavailable": "{denom} 에는 사용할 수 없습니다.",
     "orderHistoryHeaders": {
       "past": "과거",
       "pending": "보류 중",
       "filled": "주문이 채워져서 청구됩니다"
-    }
-  }
+    },
+    "priceReaches": "{denom} 가격 {price} 도달하면",
+    "belowMinimumAmount": "{amount} 최소"
+  },
+  "tradeFee": "거래 수수료",
+  "receiveAtLeast": "최소한 받다"
 }

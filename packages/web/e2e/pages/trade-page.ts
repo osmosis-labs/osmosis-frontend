@@ -2,7 +2,6 @@
 import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
-import { TransactionsPage } from "~/e2e/pages/transactions-page";
 
 export class TradePage extends BasePage {
   readonly page: Page;
@@ -19,8 +18,6 @@ export class TradePage extends BasePage {
   readonly buyBtn: Locator;
   readonly sellTabBtn: Locator;
   readonly sellBtn: Locator;
-  readonly limit10Percent: Locator;
-  readonly limit2Percent: Locator;
   readonly limitTabBtn: Locator;
   readonly orderHistoryLink: Locator;
   readonly limitPrice: Locator;
@@ -43,14 +40,12 @@ export class TradePage extends BasePage {
       '//div/button[contains(@class, "ease-bounce")]'
     );
     this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
-    this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
+    this.trxSuccessful = page.getByText("Transaction Successful");
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
     this.inputAmount = page.locator(
-      "//div[contains(@class, 'transiiton-all')]/input[@placeholder]"
+      "//input[contains(@data-testid, 'trade-input')]"
     );
-    this.limit10Percent = page.locator('//span[@class="body2" and .="10%"]');
-    this.limit2Percent = page.locator('//span[@class="body2" and .="2%"]');
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
@@ -67,10 +62,13 @@ export class TradePage extends BasePage {
     console.log("FE opened at: " + currentUrl);
   }
 
-  async gotoOrdersHistory() {
+  async gotoOrdersHistory(timeout: number = 1) {
+    await this.page.waitForTimeout(1000);
     await this.orderHistoryLink.click();
     await this.page.waitForTimeout(1000);
-    return new TransactionsPage(this.page);
+    await new Promise((f) => setTimeout(f, timeout * 1000));
+    const currentUrl = this.page.url();
+    console.log("FE opened at: " + currentUrl);
   }
 
   async openBuyTab() {
@@ -92,14 +90,15 @@ export class TradePage extends BasePage {
     return lp;
   }
 
-  async setLimit10PercentChange() {
-    await this.limit10Percent.click();
+  async setLimitPriceChange(change: string) {
+    const locator = `//button/span[contains(@class, "body2") and .="${change}"]`;
+    await this.page.locator(locator).click();
     await this.page.waitForTimeout(1000);
   }
 
-  async setLimit2PercentChange() {
-    await this.limit2Percent.click();
-    await this.page.waitForTimeout(1000);
+  async setLimitPrice(price: string) {
+    console.log(`Set Order Limit Price to: ${price}`);
+    await this.limitPrice.fill(price, { timeout: 2000 });
   }
 
   async flipTokenPair() {
@@ -165,61 +164,34 @@ export class TradePage extends BasePage {
   async selectPair(from: string, to: string) {
     // Filter does not show already selected tokens
     console.log("Select pair " + from + " to " + to);
-    const tokenLocator = "//div//button[@type]//img[@alt]";
-    const fromToken = this.page.locator(tokenLocator).nth(0);
-    const toToken = this.page.locator(tokenLocator).nth(1);
-
-    let fromTokenText = await fromToken.innerText();
-    let toTokenText = await toToken.innerText();
-    console.log("Current pair: " + fromTokenText + " / " + toTokenText);
-
-    if (fromTokenText == from && toTokenText == to) {
-      console.log(
-        "Current pair: " + fromTokenText + toTokenText + " is already matching."
-      );
-      return;
-    }
-
-    if (fromTokenText == to && toTokenText == from) {
-      await this.flipTokenPair();
-      console.log(
-        "Current pair: " + fromTokenText + toTokenText + " is fliped."
-      );
-      return;
-    }
-
-    if (from == toTokenText || to == fromTokenText) {
-      await this.flipTokenPair();
-    }
-
-    if (fromTokenText != from && toTokenText != from) {
-      await fromToken.click();
-      // we expect that after 1 second token filter is displayed.
-      await this.page.waitForTimeout(1000);
-      await this.page.getByPlaceholder("Search").fill(from);
-      const fromLocator = this.page
-        .locator(
-          "//div/button[@data-testid='token-select-asset']//span[.='" +
-            from +
-            "']"
-        )
-        .first();
-      await fromLocator.click();
-    }
-
-    if (toTokenText != to && fromTokenText != to) {
-      await toToken.click();
-      // we expect that after 1 second token filter is displayed.
-      await this.page.waitForTimeout(1000);
-      await this.page.getByPlaceholder("Search").fill(to);
-
-      const toLocator = this.page.locator(
-        "//div/button[@data-testid='token-select-asset']//span[@ class='subtitle2 text-osmoverse-400' and .='" +
-          to +
-          "']"
-      );
-      await toLocator.click();
-    }
+    const fromToken = this.page.locator(
+      "//div//button[@data-testid='token-in']//img[@alt]"
+    );
+    const toToken = this.page.locator(
+      "//div//button[@data-testid='token-out']//img[@alt]"
+    );
+    // Select From Token
+    await fromToken.click({ timeout: 4000 });
+    // we expect that after 1 second token filter is displayed.
+    await this.page.waitForTimeout(1000);
+    await this.page.getByPlaceholder("Search").fill(from);
+    const fromLocator = this.page
+      .locator(
+        `//div/button[@data-testid='token-select-asset']//span[.='${from}']`
+      )
+      .first();
+    await fromLocator.click({ timeout: 4000 });
+    // Select To Token
+    await toToken.click({ timeout: 4000 });
+    // we expect that after 1 second token filter is displayed.
+    await this.page.waitForTimeout(1000);
+    await this.page.getByPlaceholder("Search").fill(to);
+    const toLocator = this.page
+      .locator(
+        `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
+      )
+      .first();
+    await toLocator.click();
     // we expect that after 2 seconds exchange rate is populated.
     await this.page.waitForTimeout(2000);
     expect(await this.getExchangeRate()).toContain(from);
@@ -232,8 +204,9 @@ export class TradePage extends BasePage {
 
   async isTransactionSuccesful(delay: number = 7) {
     console.log("Wait for a transaction success for 7 seconds.");
-    return await this.trxSuccessful.isVisible({
+    await expect(this.trxSuccessful).toBeVisible({
       timeout: delay * 1000,
+      visible: true,
     });
   }
 

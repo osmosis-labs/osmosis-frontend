@@ -35,13 +35,7 @@ export const swapRouter = createTRPCRouter({
         },
         ctx,
       }) => {
-        const osmosisChainId = ctx.chainList[0].chain_id;
-
-        const routers = getRouters(
-          osmosisChainId,
-          ctx.assetLists,
-          ctx.chainList
-        );
+        const routers = getRouters(ctx.chainList);
 
         const { name, router } = routers.find(
           ({ name }) => name === preferredRouter

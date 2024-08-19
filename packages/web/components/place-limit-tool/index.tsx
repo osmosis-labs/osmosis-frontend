@@ -35,16 +35,18 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { usePlaceLimit } from "~/hooks/limit-orders";
+import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
 export interface PlaceLimitToolProps {
   page: EventPage;
-  refetchOrders: () => Promise<any>;
+  initialBaseDenom?: string;
+  initialQuoteDenom?: string;
+  onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
 const fixDecimalCount = (value: string, decimalCount = 18) => {
@@ -75,11 +77,17 @@ const transformAmount = (value: string, decimalCount = 18) => {
 const NON_DISPLAY_ERRORS = [
   "errors.zeroAmount",
   "errors.emptyAmount",
-  "errors.generic",
+  "limitOrders.priceTooLow",
+  "limitOrders.priceTooHigh",
 ];
 
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
-  ({ page, refetchOrders }: PlaceLimitToolProps) => {
+  ({
+    page,
+    initialBaseDenom = "ATOM",
+    initialQuoteDenom = "USDC",
+    onOrderSuccess,
+  }: PlaceLimitToolProps) => {
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -91,8 +99,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [{ from, quote, tab, type }, set] = useQueryStates({
-      from: parseAsString.withDefault("ATOM"),
-      quote: parseAsString.withDefault("USDC"),
+      from: parseAsString.withDefault(initialBaseDenom || "ATOM"),
+      quote: parseAsString.withDefault(initialQuoteDenom || "USDC"),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,
@@ -177,13 +185,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
-        (swapState.marketState.isQuoteLoading ||
-          Boolean(swapState.marketState.isLoadingNetworkFee)) &&
+        swapState.marketState.isQuoteLoading &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
-      swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.isQuoteLoading,
       swapState.marketState.error,
     ]);
@@ -405,18 +411,28 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const errorDisplay = useMemo(() => {
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
+        if (swapState.error === "errors.generic") {
+          return t("errors.uhOhSomethingWentWrong");
+        }
+
+        if (swapState.error === "limitOrders.belowMinimumAmount") {
+          return t("limitOrders.belowMinimumAmount", {
+            amount: formatFiatPrice(
+              new PricePretty(DEFAULT_VS_CURRENCY, MIN_ORDER_VALUE)
+            ),
+          });
+        }
         return t(swapState.error);
       }
     }, [swapState.error, t]);
-
     return (
       <>
-        <div className="flex flex-col">
+        <div>
           <AssetFieldset>
             <AssetFieldsetHeader>
               <AssetFieldsetHeaderLabel>
                 <span
-                  className={classNames("body2 text-osmoverse-300", {
+                  className={classNames("body2 sm:caption text-osmoverse-300", {
                     "text-rust-400": errorDisplay,
                   })}
                 >
@@ -425,9 +441,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   ) : (
                     <>
                       {t("limitOrders.enterAnAmountTo")}{" "}
-                      {orderDirection === "bid"
-                        ? t("portfolio.buy").toLowerCase()
-                        : t("limitOrders.sell").toLowerCase()}
+                      <span className="sm:hidden">
+                        {orderDirection === "bid"
+                          ? t("limitOrders.toBuy").toLowerCase()
+                          : t("limitOrders.toSell").toLowerCase()}
+                      </span>
                     </>
                   )}
                 </span>
@@ -436,12 +454,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 availableBalance={
                   tab === "buy"
                     ? swapState.quoteAsset?.usdValue &&
-                      formatPretty(swapState.quoteAsset?.usdValue, {
-                        minimumSignificantDigits: 6,
-                        maximumSignificantDigits: 6,
-                        maxDecimals: 10,
-                        notation: "standard",
-                      })
+                      formatFiatPrice(swapState.quoteAsset?.usdValue)
                     : swapState.baseTokenBalance &&
                       formatPretty(swapState.baseTokenBalance.toDec(), {
                         minimumSignificantDigits: 6,
@@ -455,7 +468,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 showAddFundsButton={!hasFunds}
               />
             </AssetFieldsetHeader>
-            <div className="flex items-center justify-between py-3">
+            <div className="flex items-center justify-between py-3 ">
               <AssetFieldsetInput
                 page={page}
                 inputPrefix={
@@ -486,13 +499,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                 isFetchingNextPageAssets={
                   swapState.marketState.isFetchingNextPageAssets
                 }
+                isLoadingSelectAssets={
+                  swapState.marketState.isLoadingSelectAssets
+                }
                 data-testid="token-in"
+                setAssetQueryInput={swapState.marketState.setAssetsQueryInput}
+                assetQueryInput={swapState.marketState.assetsQueryInput}
               />
             </div>
             <AssetFieldsetFooter>
               <button
                 type="button"
-                className="inline-flex items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
+                className="inline-flex min-h-[2rem] flex-1 items-center gap-2 text-start disabled:pointer-events-none disabled:cursor-default"
                 disabled={type === "market"}
                 onClick={() => {
                   setFocused((p) => (p === "fiat" ? "token" : "fiat"));
@@ -510,10 +528,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   />
                 )}
                 <span
-                  className={classNames("body2 h-5 transition-opacity", {
-                    "text-osmoverse-300": type === "market",
-                    "text-wosmongton-300": type === "limit",
-                  })}
+                  className={classNames(
+                    "body2 sm:caption transition-opacity sm:my-px sm:py-2",
+                    {
+                      "text-osmoverse-300": type === "market",
+                      "text-wosmongton-300": type === "limit",
+                    }
+                  )}
                 >
                   {focused === "token" && <span>$</span>}
                   {trimPlaceholderZeros(
@@ -542,7 +563,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     )}
                 </span>
               </button>
-              <PriceSelector />
+              <PriceSelector
+                initialBaseDenom={initialBaseDenom}
+                initialQuoteDenom={initialQuoteDenom}
+              />
             </AssetFieldsetFooter>
           </AssetFieldset>
           {type === "limit" && (
@@ -585,6 +609,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             makerFee={swapState.makerFee}
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
+            priceOverride={
+              type === "limit"
+                ? new PricePretty(
+                    DEFAULT_VS_CURRENCY,
+                    swapState.priceState.spotPrice
+                  )
+                : undefined
+            }
           />
         </div>
         <ReviewOrder
@@ -593,11 +625,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           confirmAction={async () => {
             setIsSendingTx(true);
             await swapState.placeLimit();
-            refetchOrders();
             swapState.reset();
             setAmountSafe("fiat", "");
             setReviewOpen(false);
             setIsSendingTx(false);
+            onOrderSuccess?.(
+              swapState.baseAsset?.coinDenom,
+              swapState.quoteAsset?.coinDenom
+            );
           }}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}

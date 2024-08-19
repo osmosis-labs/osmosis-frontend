@@ -95,7 +95,8 @@
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja",
-    "goToPool": "Idź do basenu #{poolId}"
+    "goToPool": "Idź do basenu #{poolId}",
+    "errorFetchingPositions": "Nie udało się pobrać szczegółów pozycji. Spróbuj odświeżyć stronę. Jeśli problem będzie się powtarzał, skontaktuj się z pomocą techniczną."
   },
   "copied": "Skopiowano!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "Zwrócone",
       "success": "Udane",
       "title": "Historia Transferów",
-      "pendingDeposit": "Oczekujący depozyt",
-      "pendingWithdraw": "Oczekuje na wycofanie",
-      "successDeposit": "Zdeponowane",
-      "successWithdraw": "Wycofał się",
-      "failDeposit": "Wpłata nie powiodła się",
-      "failWithdraw": "Wypłata nie powiodła się",
       "connectionError": "Błąd połączenia"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "Kupić",
-    "yourAssets": "Twoje aktywa",
+    "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
-    "recentTransfers": "Ostatnie transfery",
+    "searchBalances": "Wyszukaj salda",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
     "yourLiquidityPools": "Twoje pule płynności",
     "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
@@ -326,7 +321,15 @@
     "pooled": "Połączone",
     "other": "Inny",
     "all": "Wszystko",
-    "assets": "Aktywa"
+    "assets": "Aktywa",
+    "recentActivity": "Ostatnia aktywność",
+    "seeAll": "Zobacz wszystko",
+    "show": "Pokazywać",
+    "hide": "Ukrywać",
+    "hidden": "Ukryty",
+    "cypherSpend": "Osmoza Płaca",
+    "cypherOrder": "Zamów swoją kartę już teraz",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "Zresetuj filtry",
     "saveFilters": "Zapisz filtry",
     "rewards": "Nagrody",
-    "estimatedInYearlyRewards": "Szacowane w rocznych nagrodach",
     "availableToClaim": "dostępne do reklamacji",
     "claimAllRewards": "Odbierz wszystkie nagrody",
     "join": "Dołączyć",
@@ -1238,13 +1240,21 @@
       "description": "Jeśli będziesz kontynuować, Twoje zlecenie zostanie przetworzone jako zlecenie rynkowe po cenie rynkowej."
     },
     "enterAnAmountTo": "Wpisz kwotę do",
+    "toSell": "sprzedać",
+    "toBuy": "kupić",
     "sell": "Sprzedać",
+    "sold": "Sprzedany",
+    "percentFilled": "Procent wypełnienia",
+    "status": "Status",
+    "price": "Cena",
     "buy": "Kupić",
     "pay": "Płacić",
     "open": "otwarty",
     "filled": "Wypełniony",
     "claimable": "Możliwość roszczenia",
     "claimAndClose": "Złóż wniosek i zamknij",
+    "close": "Zamknąć",
+    "claim": "Prawo",
     "accept": "Zaakceptować",
     "cancelled": "Odwołany",
     "cancel": "Anulować",
@@ -1306,11 +1316,17 @@
     "trade": "Handel",
     "swapToAnotherAsset": "Zamień na inny zasób",
     "invalidPrice": "Nieprawidłowa cena",
+    "priceTooLow": "Cena za niska",
+    "priceTooHigh": "Cena za wysoka",
     "unavailable": "Niedostępne dla {denom}",
     "orderHistoryHeaders": {
       "past": "Przeszłość",
       "pending": "Aż do",
       "filled": "Wypełnione zamówienia do odbioru"
-    }
-  }
+    },
+    "priceReaches": "Jeśli cena {denom} osiągnie {price}",
+    "belowMinimumAmount": "{amount} minimalna"
+  },
+  "tradeFee": "Opłata za handel",
+  "receiveAtLeast": "Otrzymaj co najmniej"
 }

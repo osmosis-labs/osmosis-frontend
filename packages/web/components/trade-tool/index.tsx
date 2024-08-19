@@ -15,16 +15,18 @@ import {
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
 export interface TradeToolProps {
   swapToolProps?: SwapToolProps;
   page: EventPage;
+  previousTrade?: PreviousTrade;
+  setPreviousTrade: (trade: PreviousTrade) => void;
 }
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
-  ({ page, swapToolProps }) => {
+  ({ page, swapToolProps, previousTrade, setPreviousTrade }) => {
     const { logEvent } = useAmplitudeAnalytics();
     const { t } = useTranslation();
     const [tab, setTab] = useQueryState(
@@ -36,12 +38,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
-
-    const { orders, refetch } = useOrderbookAllActiveOrders({
-      userAddress: wallet?.address ?? "",
-      pageSize: 10,
-      refetchInterval: 4000,
-    });
 
     useEffect(() => {
       switch (tab) {
@@ -64,11 +60,16 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     }, [tab]);
     return (
       <ClientOnly>
-        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3">
-          <div className="flex w-full items-center justify-between md:flex-wrap md:gap-4">
+        <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
+          <div className="flex w-full items-center justify-between md:gap-2">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
             <div className="flex items-center gap-2">
-              {tab !== SwapToolTab.SWAP && <OrderTypeSelector />}
+              {tab !== SwapToolTab.SWAP && (
+                <OrderTypeSelector
+                  initialBaseDenom={previousTrade?.baseDenom}
+                  initialQuoteDenom={previousTrade?.quoteDenom}
+                />
+              )}
             </div>
           </div>
           {useMemo(() => {
@@ -78,7 +79,16 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   <PlaceLimitTool
                     key="tool-buy"
                     page={page}
-                    refetchOrders={refetch}
+                    initialBaseDenom={previousTrade?.baseDenom}
+                    initialQuoteDenom={previousTrade?.quoteDenom}
+                    onOrderSuccess={(baseDenom, quoteDenom) => {
+                      setPreviousTrade({
+                        sendTokenDenom: quoteDenom ?? "",
+                        outTokenDenom: baseDenom ?? "",
+                        baseDenom: baseDenom ?? "",
+                        quoteDenom: quoteDenom ?? "",
+                      });
+                    }}
                   />
                 );
               case SwapToolTab.SELL:
@@ -86,7 +96,16 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                   <PlaceLimitTool
                     key="tool-sell"
                     page={page}
-                    refetchOrders={refetch}
+                    initialBaseDenom={previousTrade?.baseDenom}
+                    initialQuoteDenom={previousTrade?.quoteDenom}
+                    onOrderSuccess={(baseDenom, quoteDenom) => {
+                      setPreviousTrade({
+                        sendTokenDenom: baseDenom ?? "",
+                        outTokenDenom: quoteDenom ?? "",
+                        baseDenom: baseDenom ?? "",
+                        quoteDenom: quoteDenom ?? "",
+                      });
+                    }}
                   />
                 );
               case SwapToolTab.SWAP:
@@ -96,13 +115,23 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
                     useOtherCurrencies
                     useQueryParams
                     page={page}
+                    onSwapSuccess={({ sendTokenDenom, outTokenDenom }) => {
+                      setPreviousTrade({
+                        sendTokenDenom,
+                        outTokenDenom,
+                        baseDenom: previousTrade?.baseDenom ?? "",
+                        quoteDenom: previousTrade?.quoteDenom ?? "",
+                      });
+                    }}
+                    initialSendTokenDenom={previousTrade?.sendTokenDenom}
+                    initialOutTokenDenom={previousTrade?.outTokenDenom}
                     {...swapToolProps}
                   />
                 );
             }
-          }, [page, swapToolProps, tab, refetch])}
+          }, [page, swapToolProps, tab, previousTrade, setPreviousTrade])}
         </div>
-        {wallet?.isWalletConnected && orders.length > 0 && (
+        {wallet?.isWalletConnected && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
             className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"

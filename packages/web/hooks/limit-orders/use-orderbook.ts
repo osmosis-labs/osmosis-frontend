@@ -203,17 +203,16 @@ export const useOrderbook = ({
 
   const error = useMemo(() => {
     if (
-      !Boolean(orderbook) ||
-      !Boolean(orderbook!.poolId) ||
-      orderbook!.poolId === ""
+      !isOrderbookLoading &&
+      (!orderbook || !orderbook!.poolId || orderbook!.poolId === "")
     ) {
       return "errors.noOrderbook";
     }
 
-    if (Boolean(makerFeeError)) {
+    if (makerFeeError) {
       return makerFeeError?.message;
     }
-  }, [orderbook, makerFeeError]);
+  }, [orderbook, makerFeeError, isOrderbookLoading]);
 
   return {
     orderbook,
@@ -285,7 +284,6 @@ export const useOrderbookAllActiveOrders = ({
     isRefetching,
   } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
     {
-      contractAddresses: addresses,
       userOsmoAddress: userAddress,
       limit: pageSize,
     },
@@ -295,7 +293,7 @@ export const useOrderbookAllActiveOrders = ({
       refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
-      keepPreviousData: true,
+      keepPreviousData: false,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -345,7 +343,6 @@ export const useOrderbookClaimableOrders = ({
     refetch,
   } = api.edge.orderbooks.getClaimableOrders.useQuery(
     {
-      contractAddresses: addresses,
       userOsmoAddress: userAddress,
     },
     {

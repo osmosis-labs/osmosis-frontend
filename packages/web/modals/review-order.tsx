@@ -20,14 +20,20 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { EventName, EventPage } from "~/config/analytics-events";
 import {
+  Breakpoint,
   useAmplitudeAnalytics,
   useOneClickTradingSession,
   useTranslation,
+  useWindowSize,
 } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatFiatPrice,
+  formatPretty,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 
 interface ReviewOrderProps {
   isOpen: boolean;
@@ -85,7 +91,6 @@ export function ReviewOrder({
   isBeyondOppositePrice = false,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
-
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
@@ -95,6 +100,7 @@ export function ReviewOrder({
     "type",
     parseAsString.withDefault("market")
   );
+  const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const isManualSlippageTooHigh = +manualSlippage > 1;
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
@@ -156,7 +162,8 @@ export function ReviewOrder({
   );
 
   useEffect(() => {
-    if (limitSetPriceLock && orderType === "limit") limitSetPriceLock(isOpen);
+    if (limitSetPriceLock && orderType === "limit" && isOpen)
+      limitSetPriceLock(true);
   }, [limitSetPriceLock, isOpen, orderType]);
 
   const gasFeeError = useMemo(() => {
@@ -173,11 +180,11 @@ export function ReviewOrder({
         title={t("swap.gas.gasEstimationError")}
         body={gasFeeError}
       >
-        <span className="flex items-center gap-1">
+        <span className="sm:caption flex items-center gap-1">
           <Icon
             id="question"
-            width={24}
-            height={24}
+            width={isMobile ? 20 : 24}
+            height={isMobile ? 20 : 24}
             className="scale-75 text-osmoverse-300"
           />{" "}
           {t("swap.gas.unknown")}
@@ -186,7 +193,7 @@ export function ReviewOrder({
     ) : (
       <span
         className={classNames(
-          "inline-flex items-center gap-1 text-osmoverse-100",
+          "sm:caption inline-flex items-center gap-1 text-osmoverse-100",
           { "animate-pulse": isGasLoading }
         )}
       >
@@ -194,14 +201,14 @@ export function ReviewOrder({
         {gasAmount && gasAmount.toString()}
       </span>
     );
-  }, [gasAmount, isGasLoading, gasFeeError, t]);
+  }, [gasAmount, isGasLoading, gasFeeError, isMobile, t]);
 
   return (
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="w-[512px] rounded-2xl !p-0"
+      className="w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
     >
       <div className="flex h-auto w-full flex-col bg-osmoverse-850">
         <div className="relative flex h-20 items-center justify-center p-4">
@@ -219,7 +226,7 @@ export function ReviewOrder({
           })}
         >
           {orderType === "limit" && tab !== "swap" && (
-            <div className="flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
+            <div className="sm:caption flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
               <div className="flex items-center gap-4">
                 <div className="flex h-10 min-w-10 items-center justify-center">
                   {(tab === "buy" && !isBeyondOppositePrice) ||
@@ -241,13 +248,16 @@ export function ReviewOrder({
                     />
                   )}
                 </div>
-                <span className="w-full text-osmoverse-300">
-                  If {baseDenom} price reaches{" "}
-                  {limitPriceFiat &&
-                    formatPretty(
-                      limitPriceFiat,
-                      getPriceExtendedFormatOptions(limitPriceFiat.toDec())
-                    )}
+                <span className="flex-1 text-osmoverse-300">
+                  {t("limitOrders.priceReaches", {
+                    denom: baseDenom ?? "",
+                    price: limitPriceFiat
+                      ? formatPretty(
+                          limitPriceFiat,
+                          getPriceExtendedFormatOptions(limitPriceFiat.toDec())
+                        )
+                      : "",
+                  })}
                 </span>
                 {percentAdjusted && (
                   <div className="flex items-center">
@@ -300,29 +310,22 @@ export function ReviewOrder({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">
+                  <p className="sm:caption text-osmoverse-300">
                     {tab === "buy"
                       ? t("limitOrders.pay")
                       : t("limitOrders.sell")}
                   </p>
                   {inAmountToken && (
-                    <span className="subtitle1">
+                    <span className="subtitle1 sm:subtitle2">
                       {formatPretty(inAmountToken)}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="flex flex-col items-end">
-                <p>
-                  {formatPretty(
-                    inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0),
-                    {
-                      ...getPriceExtendedFormatOptions(
-                        inAmountFiat?.toDec() ?? new Dec(0)
-                      ),
-                    }
-                  )}
-                </p>
+              <div className="sm:subtitle2 flex flex-col items-end">
+                {formatFiatPrice(
+                  inAmountFiat ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                )}
               </div>
             </div>
             <div className="flex items-center justify-between p-2">
@@ -347,12 +350,12 @@ export function ReviewOrder({
                   />
                 )}
                 <div className="flex flex-col">
-                  <p className="text-osmoverse-300">
+                  <p className="sm:caption text-osmoverse-300">
                     {tab === "sell"
                       ? t("limitOrders.receive")
                       : t("portfolio.buy")}
                   </p>
-                  <span className="subtitle1">
+                  <span className="subtitle1 sm:subtitle2">
                     {expectedOutput && (
                       <>
                         {formatPretty(expectedOutput.toDec(), {
@@ -372,19 +375,18 @@ export function ReviewOrder({
                   {outputDifference && (
                     <span
                       className={classNames(
-                        "body2",
+                        "body2 sm:caption",
                         showOutputDifferenceWarning
                           ? "text-rust-400"
                           : "text-osmoverse-300"
                       )}
                     >{`-${outputDifference}`}</span>
                   )}
-                  <span>
-                    {formatPretty(expectedOutputFiat ?? new Dec(0), {
-                      ...getPriceExtendedFormatOptions(
-                        expectedOutputFiat?.toDec() ?? new Dec(0)
-                      ),
-                    })}
+                  <span className="sm:subtitle2">
+                    {formatFiatPrice(
+                      expectedOutputFiat ??
+                        new PricePretty(DEFAULT_VS_CURRENCY, 0)
+                    )}
                   </span>
                 </p>
               </div>
@@ -416,7 +418,7 @@ export function ReviewOrder({
                       </span>
                     }
                   >
-                    <div className="flex items-center justify-center">
+                    <div className="sm:caption flex items-center justify-center">
                       {isBeyondOppositePrice && (
                         <Icon
                           id="alert-circle"
@@ -440,7 +442,7 @@ export function ReviewOrder({
                       <div className="flex items-center justify-end">
                         <div
                           className={classNames(
-                            "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all",
+                            "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
                             {
                               "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2":
                                 isEditingSlippage,
@@ -449,11 +451,12 @@ export function ReviewOrder({
                         >
                           <AutosizeInput
                             type="text"
+                            inputMode="decimal"
                             minWidth={30}
                             placeholder={
                               slippageConfig?.defaultManualSlippage + "%"
                             }
-                            className="w-fit bg-transparent px-0"
+                            className="sm:caption w-fit bg-transparent px-0"
                             inputClassName={classNames(
                               "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
                               {
@@ -514,10 +517,10 @@ export function ReviewOrder({
                         className="text-rust-400"
                       />
                       <div className="flex flex-col gap-1">
-                        <span className="body2">
+                        <span className="body2 sm:caption">
                           {t("limitOrders.errors.tradeMayResultInLossOfValue")}
                         </span>
-                        <span className="body2 text-osmoverse-300">
+                        <span className="body2 sm:caption text-osmoverse-300">
                           {t("limitOrders.lowerSlippageToleranceRecommended")}
                         </span>
                       </div>
@@ -540,10 +543,10 @@ export function ReviewOrder({
                         />
                       </svg>
                       <div className="flex flex-col gap-1">
-                        <span className="body2">
+                        <span className="body2 sm:caption">
                           {t("limitOrders.errors.tradeMayNotExecuted")}
                         </span>
-                        <span className="body2 text-osmoverse-300">
+                        <span className="body2 sm:caption text-osmoverse-300">
                           {t("limitOrders.tryHigherSlippage")}
                         </span>
                       </div>
@@ -556,9 +559,9 @@ export function ReviewOrder({
               )}
               {orderType === "market" ? (
                 <RecapRow
-                  left="Receive at least"
+                  left={t("receiveAtLeast")}
                   right={
-                    <span>
+                    <span className="sm:caption">
                       {outAmountLessSlippage &&
                         outFiatAmountLessSlippage &&
                         toAsset && (
@@ -585,9 +588,9 @@ export function ReviewOrder({
                 />
               ) : (
                 <RecapRow
-                  left="Trade fee"
+                  left={t("tradeFee")}
                   right={
-                    <span className="text-bullish-400">
+                    <span className="sm:caption text-bullish-400">
                       {t("transfer.free")}
                     </span>
                   }
@@ -596,17 +599,16 @@ export function ReviewOrder({
               <RecapRow
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
-                  <>
-                    {!isGasLoading ? (
-                      GasEstimation
-                    ) : (
-                      <Skeleton className="h-5 w-16" />
-                    )}
-                  </>
+                  // Do not show skeleton unless there has been no estimation/error yet
+                  !(isGasLoading && !(!!gasAmount || !!gasError)) ? (
+                    GasEstimation
+                  ) : (
+                    <Skeleton className="h-5 w-16" />
+                  )
                 }
               />
             </div>
-            {isBeyondOppositePrice && (
+            {isBeyondOppositePrice && orderType === "limit" && (
               <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                 <Icon
                   id="alert-triangle"
@@ -614,13 +616,13 @@ export function ReviewOrder({
                   height={24}
                   className="text-rust-400"
                 />
-                <div className="flex flex-col gap-1">
-                  <span className="body2">
+                <div className="body2 sm:caption flex flex-col gap-1">
+                  <span>
                     {tab === "buy"
                       ? t("limitOrders.aboveMarket.title")
                       : t("limitOrders.belowMarket.title")}
                   </span>
-                  <span className="body2 text-osmoverse-300">
+                  <span className="text-osmoverse-300">
                     {tab === "buy"
                       ? t("limitOrders.aboveMarket.description")
                       : t("limitOrders.belowMarket.description")}
@@ -634,7 +636,7 @@ export function ReviewOrder({
                   mode="primary"
                   onClick={confirmAction}
                   disabled={isConfirmationDisabled}
-                  className="body2 !rounded-2xl"
+                  className="body2 sm:caption !rounded-2xl"
                 >
                   <h6>{t("limitOrders.confirm")}</h6>
                 </Button>

@@ -26,7 +26,7 @@ const useAllPoolsTable = () => {
     {
       allPoolsSort: parseAsStringLiteral(
         marketIncentivePoolsSortKeys
-      ).withDefault("volume24hUsd"),
+      ).withDefault("market.volume24hUsd"),
       allPoolsSortDir: parseAsStringEnum<SortDirection>([
         "asc",
         "desc",

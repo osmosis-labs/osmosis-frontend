@@ -95,7 +95,8 @@
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #{poolId}"
+    "goToPool": "Aller à la piscine #{poolId}",
+    "errorFetchingPositions": "Impossible de récupérer les informations de position. Veuillez essayer d'actualiser la page. Si le problème persiste, contactez le support."
   },
   "copied": "Copié!",
   "app": {
@@ -146,12 +147,6 @@
       "refunded": "Rembourser",
       "success": "Succès",
       "title": "Historique des transferts",
-      "pendingDeposit": "Dépôt en attente",
-      "pendingWithdraw": "En attente de retrait",
-      "successDeposit": "Déposé",
-      "successWithdraw": "Retiré",
-      "failDeposit": "Échec du dépôt",
-      "failWithdraw": "Échec du retrait",
       "connectionError": "Erreur de connexion"
     },
     "ibcTransfer": {
@@ -308,9 +303,9 @@
   },
   "portfolio": {
     "buy": "Acheter",
-    "yourAssets": "Vos atouts",
+    "yourBalances": "Vos soldes",
     "yourPositions": "Vos postes",
-    "recentTransfers": "Transferts récents",
+    "searchBalances": "Rechercher des soldes",
     "yourSuperchargedPositions": "Vos positions suralimentées",
     "yourLiquidityPools": "Vos pools de liquidité",
     "connectWallet": "Connectez votre portefeuille pour commencer à suivre vos soldes et positions sur Osmosis.",
@@ -326,7 +321,15 @@
     "pooled": "Regroupé",
     "other": "Autre",
     "all": "Tous",
-    "assets": "Actifs"
+    "assets": "Actifs",
+    "recentActivity": "Activité récente",
+    "seeAll": "Tout voir",
+    "show": "Montrer",
+    "hide": "Cacher",
+    "hidden": "Caché",
+    "cypherSpend": "Paiement par osmose",
+    "cypherOrder": "Commandez votre carte maintenant",
+    "cypherBeta": "Bêta"
   },
   "buyTokens": "Acheter jetons",
   "components": {
@@ -1108,7 +1111,6 @@
     "resetFilters": "Réinitialiser les filtres",
     "saveFilters": "Enregistrer les filtres",
     "rewards": "Récompenses",
-    "estimatedInYearlyRewards": "Estimé en récompenses annuelles",
     "availableToClaim": "disponible pour réclamer",
     "claimAllRewards": "Réclamez toutes les récompenses",
     "join": "Rejoindre",
@@ -1238,13 +1240,21 @@
       "description": "Si vous continuez, votre ordre sera traité comme un ordre au marché au prix du marché."
     },
     "enterAnAmountTo": "Entrez un montant à",
+    "toSell": "à vendre",
+    "toBuy": "acheter",
     "sell": "Vendre",
+    "sold": "Vendu",
+    "percentFilled": "Pourcentage rempli",
+    "status": "Statut",
+    "price": "Prix",
     "buy": "Acheter",
     "pay": "Payer",
     "open": "Ouvrir",
     "filled": "Rempli",
     "claimable": "Réclamable",
     "claimAndClose": "Réclamez et clôturez",
+    "close": "Fermer",
+    "claim": "Réclamer",
     "accept": "Accepter",
     "cancelled": "Annulé",
     "cancel": "Annuler",
@@ -1306,11 +1316,17 @@
     "trade": "Commerce",
     "swapToAnotherAsset": "Échanger vers un autre actif",
     "invalidPrice": "Prix invalide",
+    "priceTooLow": "Prix trop bas",
+    "priceTooHigh": "Prix trop élevé",
     "unavailable": "Indisponible pour {denom}",
     "orderHistoryHeaders": {
       "past": "Passé",
       "pending": "En attente",
       "filled": "Commandes exécutées à réclamer"
-    }
-  }
+    },
+    "priceReaches": "Si le prix {denom} atteint {price}",
+    "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeFee": "Frais de transaction",
+  "receiveAtLeast": "Recevez au moins"
 }
