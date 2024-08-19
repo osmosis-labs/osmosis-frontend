@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Kupić",
-    "yourAssets": "Twoje aktywa",
+    "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
+    "searchBalances": "Wyszukaj salda",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
     "yourLiquidityPools": "Twoje pule płynności",
     "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
@@ -325,7 +326,10 @@
     "seeAll": "Zobacz wszystko",
     "show": "Pokazywać",
     "hide": "Ukrywać",
-    "hidden": "Ukryty"
+    "hidden": "Ukryty",
+    "cypherSpend": "Osmoza Płaca",
+    "cypherOrder": "Zamów swoją kartę już teraz",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -1300,7 +1304,6 @@
     "connectYourWallet": "Podłącz swój portfel",
     "toSeeYourBalances": "aby zobaczyć saldo",
     "searchAssets": "Wyszukaj zasoby",
-    "marketPrice": "Cena rynkowa",
     "below": "poniżej",
     "above": "powyżej",
     "currentPrice": "aktualna cena",
@@ -1322,6 +1325,29 @@
     },
     "priceReaches": "Jeśli cena {denom} osiągnie {price}",
     "belowMinimumAmount": "{amount} minimalna"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Czym jest wpływ na cenę?",
+      "content": "To jest wpływ płynności rynku na cenę wykonania. Większe transakcje mają tendencję do większego wpływu na rynek."
+    },
+    "expectedRate": {
+      "header": "Jaka jest oczekiwana stawka?",
+      "content": "To jest cena, którą powinieneś otrzymać. Ceny często się zmieniają, więc jeśli chcesz handlować po określonej cenie, spróbuj zamiast tego zlecenia limit."
+    },
+    "swapFees": {
+      "header": "Czym są opłaty swapowe?",
+      "content": "Jest to opłata pobierana przez protokół Osmosis w celu nagradzania dostawców płynności i utrzymania sieci."
+    },
+    "tradeRoute": {
+      "header": "Czym jest szlak handlowy?",
+      "contentTop": " Jeśli nie ma bezpośredniego rynku pomiędzy aktywami, którymi handlujesz, Osmosis spróbuje doprowadzić do transakcji poprzez przeprowadzenie serii transakcji z udziałem innych aktywów, aby uzyskać najlepszą cenę w danym momencie.",
+      "contentBottom": "Aby osiągnąć optymalną wydajność w oparciu o dostępną płynność, transakcje będą czasami dzielone na wiele tras obejmujących różne aktywa."
+    },
+    "outputDifference": {
+      "header": "Czym jest różnica wyjściowa?",
+      "content": "Jest to różnica wartości między tym, co płacisz, a tym, co otrzymujesz. Liczby dodatnie oznaczają, że kwota, którą kupujesz, jest warta więcej, podczas gdy liczby ujemne oznaczają, że kwota, którą sprzedajesz, jest warta więcej."
+    }
   },
   "tradeFee": "Opłata za handel",
   "receiveAtLeast": "Otrzymaj co najmniej"

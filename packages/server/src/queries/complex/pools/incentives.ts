@@ -48,16 +48,15 @@ export type PoolIncentives = Partial<{
 }>;
 
 export const IncentivePoolFilterSchema = z.object({
-  /** Only include pools of given incentive types.s */
+  /** Only include pools of given incentive types. */
   incentiveTypes: z.array(z.enum(allPoolIncentiveTypes)).optional(),
 });
 
 /** Params for filtering pools. */
 export type IncentivePoolFilter = z.infer<typeof IncentivePoolFilterSchema>;
 
-export async function getPoolIncentives(poolId: string) {
-  const map = await getCachedPoolIncentivesMap();
-  return map.get(poolId);
+export function getPoolIncentives(poolId: string) {
+  return getCachedPoolIncentivesMap().then((map) => map.get(poolId));
 }
 
 /** Checks a pool's incentive data againt a given filter to determine if it's filtered out. */

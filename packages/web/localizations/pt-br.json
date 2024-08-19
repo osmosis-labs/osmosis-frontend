@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Comprar",
-    "yourAssets": "Seus ativos",
+    "yourBalances": "Seus saldos",
     "yourPositions": "Suas posições",
+    "searchBalances": "Pesquisar saldos",
     "yourSuperchargedPositions": "Suas posições sobrecarregadas",
     "yourLiquidityPools": "Seus pools de liquidez",
     "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
@@ -325,7 +326,10 @@
     "seeAll": "Ver tudo",
     "show": "Mostrar",
     "hide": "Esconder",
-    "hidden": "Escondido"
+    "hidden": "Escondido",
+    "cypherSpend": "Pagamento por osmose",
+    "cypherOrder": "Peça já o seu cartão",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -1300,7 +1304,6 @@
     "connectYourWallet": "Conecte sua carteira",
     "toSeeYourBalances": "para ver seus saldos",
     "searchAssets": "Pesquisar ativos",
-    "marketPrice": "preço de mercado",
     "below": "abaixo",
     "above": "acima",
     "currentPrice": "preço atual",
@@ -1322,6 +1325,29 @@
     },
     "priceReaches": "Se o preço {denom} atingir {price}",
     "belowMinimumAmount": "{amount} mínimo"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "O que é impacto de preço?",
+      "content": "Este é o impacto que a liquidez do mercado tem no seu preço de execução. Negociações maiores tendem a ter maior impacto no mercado."
+    },
+    "expectedRate": {
+      "header": "Qual é a taxa esperada?",
+      "content": "Este é o preço que você espera receber. Os preços mudam frequentemente, então se você deseja negociar a um preço específico, tente uma ordem limite."
+    },
+    "swapFees": {
+      "header": "O que são taxas de swap?",
+      "content": "Esta é a taxa cobrada pelo protocolo Osmosis para recompensar os provedores de liquidez e manter a rede."
+    },
+    "tradeRoute": {
+      "header": "O que é uma rota comercial?",
+      "contentTop": " Se não houver um mercado direto entre os ativos que você está negociando, a Osmosis tentará fazer a negociação acontecer realizando uma série de negociações com outros ativos para obter o melhor preço em qualquer momento.",
+      "contentBottom": "Para eficiência ideal com base na liquidez disponível, às vezes as negociações serão divididas em várias rotas com ativos diferentes."
+    },
+    "outputDifference": {
+      "header": "O que é diferença de saída?",
+      "content": "Essa é a diferença de valor entre o que você paga e recebe. Números positivos significam que a quantia que você está comprando vale mais, enquanto números negativos significam que a quantia que você está vendendo vale mais."
+    }
   },
   "tradeFee": "Taxa de negociação",
   "receiveAtLeast": "Receba pelo menos"

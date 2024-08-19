@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "买",
-    "yourAssets": "您的资产",
+    "yourBalances": "您的余额",
     "yourPositions": "您的职位",
+    "searchBalances": "搜索余额",
     "yourSuperchargedPositions": "您的超级职位",
     "yourLiquidityPools": "您的流动资金池",
     "connectWallet": "连接您的钱包，开始跟踪 Osmosis 上的余额和头寸。",
@@ -325,7 +326,10 @@
     "seeAll": "查看全部",
     "show": "展示",
     "hide": "隐藏",
-    "hidden": "隐"
+    "hidden": "隐",
+    "cypherSpend": "渗透支付",
+    "cypherOrder": "立即订购您的卡",
+    "cypherBeta": "测试版"
   },
   "buyTokens": "购买代币",
   "components": {
@@ -1300,7 +1304,6 @@
     "connectYourWallet": "连接你的钱包",
     "toSeeYourBalances": "查看你的余额",
     "searchAssets": "搜索资产",
-    "marketPrice": "市场价",
     "below": "以下",
     "above": "多于",
     "currentPrice": "时价",
@@ -1322,6 +1325,29 @@
     },
     "priceReaches": "如果{denom}价格达到{price}",
     "belowMinimumAmount": "{amount}最小值"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "什么是价格影响？",
+      "content": "这是市场流动性对执行价格的影响。交易量越大，市场影响就越大。"
+    },
+    "expectedRate": {
+      "header": "預期利率是多少？",
+      "content": "这是您预期收到的价格。价格经常变化，因此如果您希望以特定价格进行交易，请尝试限价订单。"
+    },
+    "swapFees": {
+      "header": "什么是掉期费？",
+      "content": "这是 Osmosis 协议为了奖励流动性提供者和维护网络而收取的费用。"
+    },
+    "tradeRoute": {
+      "header": "什么是贸易路线？",
+      "contentTop": " 如果您交易的资产之间没有直接市场，Osmosis 将尝试通过与其他资产进行一系列交易来实现交易，以便在任何给定时间获得最佳价格。",
+      "contentBottom": "为了根据可用流动性实现最佳效率，有时交易会分成具有不同资产的多条路线。"
+    },
+    "outputDifference": {
+      "header": "产量差异是什么？",
+      "content": "这是您支付和收到的金额之间的差额。正数表示您购买的金额价值更高，而负数表示您出售的金额价值更高。"
+    }
   },
   "tradeFee": "交易费",
   "receiveAtLeast": "至少收到"

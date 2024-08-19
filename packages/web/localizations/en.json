@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Buy",
-    "yourAssets": "Your assets",
+    "yourBalances": "Your balances",
     "yourPositions": "Your positions",
+    "searchBalances": "Search balances",
     "yourSuperchargedPositions": "Your Supercharged positions",
     "yourLiquidityPools": "Your liquidity pools",
     "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
@@ -325,7 +326,10 @@
     "seeAll": "See all",
     "show": "Show",
     "hide": "Hide",
-    "hidden": "Hidden"
+    "hidden": "Hidden",
+    "cypherSpend": "Osmosis Pay",
+    "cypherOrder": "Order your card now",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -1300,7 +1304,6 @@
     "connectYourWallet": "Connect your wallet",
     "toSeeYourBalances": "to see your balances",
     "searchAssets": "Search assets",
-    "marketPrice": "market price",
     "below": "below",
     "above": "above",
     "currentPrice": "current price",
@@ -1322,6 +1325,29 @@
     },
     "priceReaches": "If {denom} price reaches {price}",
     "belowMinimumAmount": "{amount} minimum"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "What is price impact?",
+      "content": "This is the impact that market liquidity has on your execution price. Larger trades tend to have larger market impact."
+    },
+    "expectedRate": {
+      "header": "What is expected rate?",
+      "content": "This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
+    },
+    "swapFees": {
+      "header": "What are swap fees?",
+      "content": "This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
+    },
+    "tradeRoute": {
+      "header": "What is a trade route?",
+      "contentTop": " If there's no direct market between the assets you're trading, Osmosis will try to make the trade happen by making a series of trades with other assets to get the best price at any given time.",
+      "contentBottom": "For optimal efficiency based on available liquidity, sometimes trades will be split into multiple routes with different assets."
+    },
+    "outputDifference": {
+      "header": "What is output difference?",
+      "content": "This is the difference in value between what you pay and receive. Positive numbers mean the amount you're buying is worth more, while negative numbers mean the amount you're selling is worth more."
+    }
   },
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least"

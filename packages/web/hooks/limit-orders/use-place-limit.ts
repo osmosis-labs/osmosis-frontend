@@ -258,7 +258,7 @@ export const usePlaceLimit = ({
     return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
-      msg: Buffer.from(JSON.stringify(placeLimitMsg)),
+      msg: placeLimitMsg,
       funds: [
         {
           denom: paymentTokenValue.toCoin().denom,
@@ -297,7 +297,6 @@ export const usePlaceLimit = ({
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
-        router: marketState.quote?.name,
       };
       try {
         logEvent([EventName.Swap.swapStarted, baseEvent]);

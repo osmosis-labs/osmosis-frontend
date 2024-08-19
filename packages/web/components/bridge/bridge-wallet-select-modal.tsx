@@ -215,8 +215,6 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     const showEvmWallets = !isNil(evmChain) && !isNil(evmWallets);
     const transferWithSameWallet = fromChain.chainType === toChain.chainType;
 
-    console.log({ fromChain, toChain });
-
     return (
       <ScreenManager defaultScreen={WalletSelectScreens.WalletSelect}>
         {({ setCurrentScreen }) => (

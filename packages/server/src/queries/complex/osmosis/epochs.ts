@@ -23,7 +23,8 @@ export function getEpochs({
   return cachified({
     cache: epochsCache,
     key: "epochs",
-    ttl: 1000 * 60, // 60 seconds
+    ttl: 1000 * 60 * 3, // 3 minutes
+    staleWhileRevalidate: 500, // Return stale data for 500ms while revalidating
     getFreshValue: () =>
       queryEpochs({ chainList }).then(({ epochs }) =>
         epochs.map((e) => {

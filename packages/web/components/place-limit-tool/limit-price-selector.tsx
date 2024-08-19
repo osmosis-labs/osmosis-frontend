@@ -97,15 +97,13 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
       )}`;
     }
 
-    return priceState.percentAdjusted.isZero()
-      ? t("limitOrders.marketPrice")
-      : `${trimPlaceholderZeros(
-          formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
-            ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
-            maxDecimals: 3,
-          })
-        )}%`;
-  }, [inputMode, priceState.percentAdjusted, priceState.priceFiat, t]);
+    return `${trimPlaceholderZeros(
+      formatPretty(priceState.percentAdjusted.mul(new Dec(100)).abs(), {
+        ...getPriceExtendedFormatOptions(priceState.percentAdjusted),
+        maxDecimals: 3,
+      })
+    )}%`;
+  }, [inputMode, priceState.percentAdjusted, priceState.priceFiat]);
 
   const percentageSuffix = useMemo(() => {
     if (priceState.percentAdjusted.isZero())
@@ -188,17 +186,15 @@ export const LimitPriceSelector: FC<LimitPriceSelectorProps> = ({
               >
                 {priceLabel}
               </span>{" "}
-              {inputMode === InputMode.Price &&
-                +swapState.priceState.manualPercentAdjusted > 0 && (
-                  <span
-                    className={classNames("text-wosmongton-300", {
-                      "text-rust-400":
-                        swapState.priceState.isBeyondOppositePrice,
-                    })}
-                  >
-                    {percentageSuffix}
-                  </span>
-                )}
+              {inputMode === InputMode.Price && (
+                <span
+                  className={classNames("text-wosmongton-300", {
+                    "text-rust-400": swapState.priceState.isBeyondOppositePrice,
+                  })}
+                >
+                  {percentageSuffix}
+                </span>
+              )}
             </span>
             <Icon
               id="switch"
