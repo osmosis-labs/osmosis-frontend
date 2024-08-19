@@ -48,6 +48,38 @@ export type ChainPool =
   | ChainConcentratedPool
   | ChainCosmwasmPool;
 
+export type SQSAprData = {
+  swap_fees: {
+    upper?: number;
+    lower?: number;
+  };
+  superfluid: {
+    upper?: number;
+    lower?: number;
+  };
+  osmosis: {
+    upper?: number;
+    lower?: number;
+  };
+  boost: {
+    upper?: number;
+    lower: number;
+  };
+  total_apr: {
+    upper?: number;
+    lower?: number;
+  };
+};
+
+export type SQSPoolFeesData = {
+  pool_id?: string;
+  volume_24h?: number;
+  volume_7d?: number;
+  fees_spent_24h?: number;
+  fees_spent_7d?: number;
+  fees_percentage?: string;
+};
+
 export type SqsPool = {
   /** Sidecar returns the same pool models as the node. */
   chain_model: ChainPool;
@@ -59,12 +91,20 @@ export type SqsPool = {
   /** Int: capitalization in USD. Will be `"0"` if liquidity_cap_error is present. */
   liquidity_cap: string;
   liquidity_cap_error: string;
+
+  apr_data?: SQSAprData;
+  fees_data?: SQSPoolFeesData;
 };
 
 export function queryPools({
   poolIds,
   minLiquidityCap,
-}: { poolIds?: string[]; minLiquidityCap?: string } = {}) {
+  withMarketIncentives,
+}: {
+  poolIds?: string[];
+  minLiquidityCap?: string;
+  withMarketIncentives?: boolean;
+} = {}) {
   const url = new URL("/pools", SIDECAR_BASE_URL);
   const params = new URLSearchParams();
 
@@ -73,6 +113,9 @@ export function queryPools({
   }
   if (minLiquidityCap) {
     params.append("min_liquidity_cap", minLiquidityCap);
+  }
+  if (withMarketIncentives) {
+    params.append("with_market_incentives", "true");
   }
 
   url.search = params.toString();
