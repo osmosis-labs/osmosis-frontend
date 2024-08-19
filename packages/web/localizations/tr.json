@@ -1327,6 +1327,29 @@
     "priceReaches": "{denom} fiyatı {price} ulaşırsa",
     "belowMinimumAmount": "{amount} minimum"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Fiyat etkisi nedir?",
+      "content": "Bu, piyasa likiditesinin yürütme fiyatınız üzerindeki etkisidir. Daha büyük işlemlerin daha büyük piyasa etkisine sahip olma eğilimi vardır."
+    },
+    "expectedRate": {
+      "header": "Beklenen oran nedir?",
+      "content": "Bu, almanız beklenen fiyattır. Fiyatlar sıklıkla değişir, bu nedenle belirli bir fiyattan işlem yapmak istiyorsanız, bunun yerine bir limit emri deneyin."
+    },
+    "swapFees": {
+      "header": "Swap ücretleri nelerdir?",
+      "content": "Bu, likidite sağlayıcılarını ödüllendirmek ve ağı sürdürmek amacıyla Osmosis protokolü tarafından tahsil edilen ücrettir."
+    },
+    "tradeRoute": {
+      "header": "Ticaret yolu nedir?",
+      "contentTop": " İşlem yaptığınız varlıklar arasında doğrudan bir piyasa yoksa Osmosis, belirli bir zamanda en iyi fiyatı elde etmek için diğer varlıklarla bir dizi işlem yaparak işlemi gerçekleştirmeye çalışacaktır.",
+      "contentBottom": "Mevcut likiditeye bağlı olarak optimum verimlilik için, bazen işlemler farklı varlıklarla birden fazla rotaya bölünecektir."
+    },
+    "outputDifference": {
+      "header": "Çıktı farkı nedir?",
+      "content": "Bu, ödediğiniz ve aldığınız arasındaki değer farkıdır. Pozitif sayılar satın aldığınız miktarın daha değerli olduğu anlamına gelirken, negatif sayılar sattığınız miktarın daha değerli olduğu anlamına gelir."
+    }
+  },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al"
 }

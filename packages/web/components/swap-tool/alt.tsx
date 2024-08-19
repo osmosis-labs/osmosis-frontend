@@ -27,6 +27,7 @@ import {
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage } from "~/config";
 import {
@@ -498,9 +499,9 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                 </div>
                 <AssetFieldsetFooter>
-                  <span
+                  <div
                     className={classNames(
-                      "body2 h-5 text-osmoverse-300 transition-all",
+                      "body2 flex h-5 text-osmoverse-300 transition-all",
                       {
                         "!text-osmoverse-600": swapState.tokenOutFiatValue
                           ?.toDec()
@@ -509,17 +510,19 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {swapState.tokenOutFiatValue ? (
-                      <span>
-                        {formatPretty(
-                          swapState.tokenOutFiatValue,
-                          swapState.tokenOutFiatValue?.toDec().gt(new Dec(0))
-                            ? {
-                                ...getPriceExtendedFormatOptions(
-                                  swapState.tokenOutFiatValue.toDec()
-                                ),
-                              }
-                            : undefined
-                        )}
+                      <>
+                        <span>
+                          {formatPretty(
+                            swapState.tokenOutFiatValue,
+                            swapState.tokenOutFiatValue?.toDec().gt(new Dec(0))
+                              ? {
+                                  ...getPriceExtendedFormatOptions(
+                                    swapState.tokenOutFiatValue.toDec()
+                                  ),
+                                }
+                              : undefined
+                          )}
+                        </span>
                         <span
                           className={classNames(
                             "opacity-0 transition-opacity",
@@ -535,12 +538,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                                 .lt(new Dec(0.01)),
                             }
                           )}
-                        >{` (-${outputDifference})`}</span>
-                      </span>
+                        >
+                          <GenericDisclaimer
+                            title={t("tradeDetails.outputDifference.header")}
+                            body={t("tradeDetails.outputDifference.content")}
+                            childWrapperClassName="ml-1"
+                          >{` (-${outputDifference})`}</GenericDisclaimer>
+                        </span>
+                      </>
                     ) : (
                       ""
                     )}
-                  </span>
+                  </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
             </div>

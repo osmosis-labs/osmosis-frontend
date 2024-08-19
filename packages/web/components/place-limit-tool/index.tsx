@@ -27,6 +27,7 @@ import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-se
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
 import {
@@ -644,31 +645,38 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                   height={16}
                   className="text-wosmongton-300"
                 />
-                <span
-                  className={classNames(
-                    "body2 sm:caption text-wosmongton-300 transition-opacity sm:my-px sm:py-2"
-                  )}
-                >
+                <span className="body2 sm:caption text-wosmongton-300 transition-opacity sm:my-px sm:py-2">
                   {nonFocusedDisplayAmount || "0"}{" "}
                   {focused === "fiat" && (
-                    <span>{swapState.baseAsset?.coinDenom}</span>
+                    <span className="ml-1">
+                      {swapState.baseAsset?.coinDenom}
+                    </span>
                   )}{" "}
                   {type === "market" &&
                     swapState.marketState.quote?.priceImpactTokenOut && (
-                      <span
-                        className={classNames("text-osmoverse-500", {
-                          hidden:
-                            swapState.marketState.quote?.priceImpactTokenOut
-                              .toDec()
-                              .lt(new Dec(0.01)),
-                        })}
+                      <GenericDisclaimer
+                        title={t("tradeDetails.outputDifference.header")}
+                        body={t("tradeDetails.outputDifference.content")}
+                        disabled={swapState.marketState.quote?.priceImpactTokenOut
+                          .toDec()
+                          .lt(new Dec(0.01))}
+                        childWrapperClassName={classNames(
+                          "ml-1 text-osmoverse-500 !cursor-pointer !pointer-events-auto",
+                          {
+                            hidden:
+                              swapState.marketState.quote?.priceImpactTokenOut
+                                .toDec()
+                                .lt(new Dec(0.01)),
+                          }
+                        )}
+                        tooltipClassName="!cursor-pointer"
                       >
                         &#40;-
                         {formatPretty(
                           swapState.marketState.quote?.priceImpactTokenOut
                         )}
                         &#41;
-                      </span>
+                      </GenericDisclaimer>
                     )}
                 </span>
               </button>
