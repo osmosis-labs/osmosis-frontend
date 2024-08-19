@@ -1350,5 +1350,6 @@
     }
   },
   "tradeFee": "Trade fee",
-  "receiveAtLeast": "Receive at least"
+  "receiveAtLeast": "Receive at least",
+  "payAtMost": "Pay at most"
 }

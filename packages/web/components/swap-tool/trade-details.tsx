@@ -418,11 +418,19 @@ export function ExpectedRate(
 
     if (
       swapState?.tokenOutFiatValue &&
-      swapState?.quote?.amountOut?.toDec().gt(new Dec(0))
+      swapState?.quote?.amountOut?.toDec().gt(new Dec(0)) &&
+      swapState.quoteType === "out-given-in"
     ) {
       inFiatPrice = new PricePretty(
         DEFAULT_VS_CURRENCY,
         swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec())
+      );
+    } else if (
+      swapState?.quote?.amountOut?.toDec().gt(new Dec(0)) &&
+      swapState.quoteType === "in-given-out"
+    ) {
+      inFiatPrice = swapState.tokenOutFiatValue.quo(
+        swapState.outAmountInput?.amount?.toDec() ?? new Dec(1)
       );
     } else {
       if (swapState.inAmountInput?.price) {

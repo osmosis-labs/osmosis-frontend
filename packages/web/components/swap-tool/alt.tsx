@@ -173,6 +173,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+      const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
 
       // Compute out amount less slippage
       const outAmountLessSlippage =
@@ -183,7 +184,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               )
             : undefined
           : new IntPretty(
-              swapState.outAmountInput?.amount?.toDec().mul(oneMinusSlippage) ??
+              swapState.quote?.amount?.toDec().mul(onePlusSlippage) ??
                 new Dec(0)
             );
 
@@ -191,7 +192,13 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
         ? new PricePretty(
             DEFAULT_VS_CURRENCY,
-            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+            swapState.tokenOutFiatValue
+              ?.toDec()
+              .mul(
+                quoteType === "out-given-in"
+                  ? oneMinusSlippage
+                  : onePlusSlippage
+              )
           )
         : undefined;
 
@@ -201,7 +208,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.quote,
       swapState.tokenOutFiatValue,
       quoteType,
-      swapState.outAmountInput,
     ]);
 
     // reivew swap modal
@@ -694,6 +700,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           gasAmount={swapState.networkFee?.gasUsdValueToPay}
           isGasLoading={swapState.isLoadingNetworkFee}
           gasError={swapState.networkFeeError}
+          quoteType={swapState.quoteType}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

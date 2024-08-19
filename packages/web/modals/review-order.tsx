@@ -27,7 +27,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { useSwap } from "~/hooks/use-swap";
+import { QuoteType, useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -60,6 +60,7 @@ interface ReviewOrderProps {
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   page?: EventPage;
+  quoteType?: QuoteType;
   isBeyondOppositePrice?: boolean;
 }
 
@@ -89,6 +90,7 @@ export function ReviewOrder({
   fromAsset,
   page,
   isBeyondOppositePrice = false,
+  quoteType,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -380,7 +382,9 @@ export function ReviewOrder({
                           ? "text-rust-400"
                           : "text-osmoverse-300"
                       )}
-                    >{`-${outputDifference}`}</span>
+                    >{`${
+                      outputDifference.toDec().isPositive() ? "-" : "+"
+                    }${new RatePretty(outputDifference.toDec().abs())}`}</span>
                   )}
                   <span className="sm:subtitle2">
                     {formatFiatPrice(
@@ -559,7 +563,11 @@ export function ReviewOrder({
               )}
               {orderType === "market" ? (
                 <RecapRow
-                  left={t("receiveAtLeast")}
+                  left={
+                    quoteType === "out-given-in"
+                      ? t("receiveAtLeast")
+                      : t("payAtMost")
+                  }
                   right={
                     <span className="sm:caption">
                       {outAmountLessSlippage &&
@@ -569,7 +577,9 @@ export function ReviewOrder({
                             {formatPretty(outAmountLessSlippage, {
                               maxDecimals: 6,
                             })}{" "}
-                            {toAsset.coinDenom}
+                            {quoteType === "out-given-in"
+                              ? toAsset.coinDenom
+                              : fromAsset?.coinDenom}
                           </span>
                         )}{" "}
                       {outFiatAmountLessSlippage && (

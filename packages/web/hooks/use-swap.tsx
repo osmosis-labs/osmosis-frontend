@@ -5,7 +5,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { RouterKey } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY, type RouterKey } from "@osmosis-labs/server";
 import { SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
@@ -588,7 +588,12 @@ export function useSwap(
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
-    if (inAmountInput.amount && quote && swapAssets.toAsset) {
+    if (
+      inAmountInput.amount &&
+      quote &&
+      swapAssets.toAsset &&
+      quoteType === "out-given-in"
+    ) {
       return new CoinPretty(
         swapAssets.toAsset,
         quote.amount
@@ -598,9 +603,29 @@ export function useSwap(
             DecUtils.getTenExponentN(swapAssets.toAsset.coinDecimals)
           )
       );
+    } else if (
+      outAmountInput.amount &&
+      quote &&
+      swapAssets.toAsset &&
+      quoteType === "in-given-out"
+    ) {
+      return new CoinPretty(
+        swapAssets.toAsset,
+        outAmountInput.amount
+          .toDec()
+          .quo(quote.amount.toDec())
+          .mulTruncate(
+            DecUtils.getTenExponentN(swapAssets.toAsset.coinDecimals)
+          )
+      );
     }
-  }, [inAmountInput.amount, quote, swapAssets.toAsset]);
-
+  }, [
+    inAmountInput.amount,
+    quote,
+    swapAssets.toAsset,
+    outAmountInput.amount,
+    quoteType,
+  ]);
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
     return (
@@ -631,14 +656,23 @@ export function useSwap(
   // The price impact is computed directly from quote, ensuring most up-to-date state.
   // This guarantees consistency between token in and token out fiat values.
   const tokenOutFiatValue: PricePretty = useMemo(() => {
-    return getTokenOutFiatValue(
-      quote?.priceImpactTokenOut?.toDec(),
-      inAmountInput.fiatValue?.toDec()
-    ).sub(tokenInFeeAmountFiatValue);
+    if (quoteType === "out-given-in") {
+      return getTokenOutFiatValue(
+        quote?.priceImpactTokenOut?.toDec(),
+        inAmountInput.fiatValue?.toDec()
+      ).sub(tokenInFeeAmountFiatValue);
+    } else {
+      return (
+        outAmountInput.fiatValue ??
+        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+      );
+    }
   }, [
     inAmountInput.fiatValue,
     quote?.priceImpactTokenOut,
     tokenInFeeAmountFiatValue,
+    quoteType,
+    outAmountInput.fiatValue,
   ]);
 
   return {
@@ -669,6 +703,7 @@ export function useSwap(
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
+    quoteType,
   };
 }
 
