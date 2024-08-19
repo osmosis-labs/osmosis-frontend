@@ -224,7 +224,7 @@ export class IbcBridgeProvider implements BridgeProvider {
     // try to get asset list fee asset first, or otherwise the chain fee currency
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find((asset) => asset.coinMinimalDenom);
+      .find((asset) => asset.coinMinimalDenom.toLowerCase() === denom);
 
     if (assetListAsset) {
       return {

@@ -8,6 +8,7 @@ import {
   forwardRef,
   PropsWithChildren,
   ReactNode,
+  useCallback,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -57,8 +58,13 @@ const AssetFieldsetHeaderBalance = observer(
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
-
+    const { logEvent } = useAmplitudeAnalytics();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+    const onClickAddFunds = useCallback(() => {
+      logEvent([EventName.LimitOrder.addFunds]);
+      openAddFundsModal?.();
+    }, [openAddFundsModal, logEvent]);
 
     return (
       <div
@@ -71,7 +77,7 @@ const AssetFieldsetHeaderBalance = observer(
           showAddFundsButton ? (
             <button
               type="button"
-              onClick={openAddFundsModal}
+              onClick={onClickAddFunds}
               className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
             >
               {t("limitOrders.addFunds")}

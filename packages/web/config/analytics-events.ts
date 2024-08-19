@@ -239,6 +239,8 @@ export const EventName = {
     claimOrdersCompleted: "Limit Order: Claim all orders completed",
     claimOrdersFailed: "Limit Order: Claim all orders failed",
     pageViewed: "Limit Order: Order page viewed",
+    addFunds: "Limit Order: Add funds button clicked",
+    swapFromAnotherAsset: "Limit Order: Swap from another asset clicked",
   },
   DepositWithdraw: {
     assetSelected: "DepositWithdraw: Asset selected",

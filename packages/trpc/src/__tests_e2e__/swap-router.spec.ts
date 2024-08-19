@@ -5,12 +5,7 @@
  * functionality and stability.
  */
 import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
-import {
-  getAssetPrice,
-  getCachedPoolMarketMetricsMap,
-  getPools,
-  superjson,
-} from "@osmosis-labs/server";
+import { getAssetPrice, getPools, superjson } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
@@ -453,32 +448,20 @@ it.skip("TFM - ATOM <> OSMO - should return valid partial quote (no swap fee)", 
  * - Low volume tokens have a 24-hour USD volume less than or equal to 40% of average volume
  */
 async function getSortedPoolsWithVolume() {
-  const [pools, marketMetrics] = await Promise.all([
+  const [pools] = await Promise.all([
     getPools({
       assetLists: AssetLists,
       chainList: MockChains,
     }),
-    getCachedPoolMarketMetricsMap(),
   ]);
 
   let totalVolume = new Dec(0);
-  const poolsWithVolume = pools
-    .map((pool) => {
-      const metricsForPool = marketMetrics.get(pool.id);
-      if (!metricsForPool) return undefined;
 
-      const volume24hUsdDec =
-        metricsForPool.volume24hUsd?.toDec() ?? new Dec(0);
-      totalVolume = totalVolume.add(volume24hUsdDec);
+  pools.forEach((pool: any) => {
+    totalVolume = totalVolume.add(pool.volume24hUsdDec);
+  });
 
-      return {
-        ...pool,
-        volume24hUsdDec,
-      };
-    })
-    .filter((pool): pool is NonNullable<typeof pool> => !!pool);
-
-  const sortedPoolsWithVolume = sort(poolsWithVolume, "volume24hUsdDec");
+  const sortedPoolsWithVolume = sort(pools, "volume24hUsdDec");
 
   const averageVolume = totalVolume.quo(new Dec(sortedPoolsWithVolume.length));
 
@@ -490,7 +473,7 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
     await getSortedPoolsWithVolume();
 
   const mediumVolumePool = sortedPoolsWithVolume.find(
-    (pool) =>
+    (pool: any) =>
       pool.volume24hUsdDec.lte(averageVolume) && pool.reserveCoins.length === 2
   )!;
 
@@ -548,7 +531,7 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
     await getSortedPoolsWithVolume();
 
   const lowVolumeTokenPool = sortedPoolsWithVolume.find(
-    (pool) =>
+    (pool: any) =>
       // Find a token that less than or equal to 40% of the average volume
       pool.volume24hUsdDec.lte(averageVolume.mul(new Dec(0.4))) &&
       pool.reserveCoins.length === 2

@@ -248,7 +248,7 @@ export const usePlaceLimit = ({
     return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
-      msg: Buffer.from(JSON.stringify(placeLimitMsg)),
+      msg: placeLimitMsg,
       funds: [
         {
           denom: paymentTokenValue.toCoin().denom,

@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Buy",
-    "yourAssets": "Your assets",
+    "yourBalances": "Your balances",
     "yourPositions": "Your positions",
+    "searchBalances": "Search balances",
     "yourSuperchargedPositions": "Your Supercharged positions",
     "yourLiquidityPools": "Your liquidity pools",
     "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
@@ -325,7 +326,10 @@
     "seeAll": "See all",
     "show": "Show",
     "hide": "Hide",
-    "hidden": "Hidden"
+    "hidden": "Hidden",
+    "cypherSpend": "Osmosis Pay",
+    "cypherOrder": "Order your card now",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Buy tokens",
   "components": {

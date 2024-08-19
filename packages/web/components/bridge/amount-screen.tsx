@@ -586,7 +586,6 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
-        checkChainAndConnectWallet(firstChain);
       }
     }, [
       checkChainAndConnectWallet,

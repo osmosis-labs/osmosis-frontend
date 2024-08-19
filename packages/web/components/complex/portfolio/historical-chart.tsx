@@ -58,13 +58,13 @@ export const PortfolioHistoricalChart = ({
             }}
             onPointerOut={resetDataPoint}
           />
-          <div className="my-3 flex justify-between">
+          <div className="my-3 flex h-8 justify-between">
             <PortfolioHistoricalRangeButtonGroup
               priceRange={range}
               setPriceRange={setRange}
             />
             <IconButton
-              className="border border-osmoverse-700 py-0"
+              className="!h-8 !w-8 border border-osmoverse-700 py-0 1.5md:hidden"
               aria-label="Open main menu dropdown"
               icon={
                 <Icon
@@ -94,7 +94,7 @@ export const PortfolioHistoricalChartMinimized = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="w-full grow">
+    <div className="h-full w-full scale-110">
       {error ? (
         <div className="error-message flex h-full items-center justify-center">
           {t("errors.generic")}

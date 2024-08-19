@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Comprar",
-    "yourAssets": "Tus activos",
+    "yourBalances": "Sus saldos",
     "yourPositions": "Tus posiciones",
+    "searchBalances": "Buscar saldos",
     "yourSuperchargedPositions": "Tus posiciones sobrealimentadas",
     "yourLiquidityPools": "Tus fondos de liquidez",
     "connectWallet": "Conecte su billetera para comenzar a rastrear sus saldos y posiciones en Osmosis.",
@@ -325,7 +326,10 @@
     "seeAll": "Ver todo",
     "show": "Espectáculo",
     "hide": "Esconder",
-    "hidden": "Oculto"
+    "hidden": "Oculto",
+    "cypherSpend": "Pago por ósmosis",
+    "cypherOrder": "Pide tu tarjeta ahora",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Comprar fichas",
   "components": {

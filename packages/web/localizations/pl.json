@@ -303,8 +303,9 @@
   },
   "portfolio": {
     "buy": "Kupić",
-    "yourAssets": "Twoje aktywa",
+    "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
+    "searchBalances": "Wyszukaj salda",
     "yourSuperchargedPositions": "Twoje doładowane pozycje",
     "yourLiquidityPools": "Twoje pule płynności",
     "connectWallet": "Podłącz swój portfel, aby rozpocząć śledzenie sald i pozycji w Osmozie.",
@@ -325,7 +326,10 @@
     "seeAll": "Zobacz wszystko",
     "show": "Pokazywać",
     "hide": "Ukrywać",
-    "hidden": "Ukryty"
+    "hidden": "Ukryty",
+    "cypherSpend": "Osmoza Płaca",
+    "cypherOrder": "Zamów swoją kartę już teraz",
+    "cypherBeta": "Beta"
   },
   "buyTokens": "Kup tokeny",
   "components": {

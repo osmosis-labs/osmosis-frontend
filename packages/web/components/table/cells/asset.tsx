@@ -27,7 +27,7 @@ export const AssetCell: FunctionComponent<
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
+    <div className="min-w-44 flex w-[164px] items-center gap-4 md:min-w-[164px] md:gap-3">
       {isInUserWatchlist !== undefined && onClickWatchlist && (
         <div className="min-w-6 min-h-6">
           <Icon
