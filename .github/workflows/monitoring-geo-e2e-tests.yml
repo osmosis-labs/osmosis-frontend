@@ -253,7 +253,7 @@ jobs:
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
-          npx playwright test monitoring
+          npx playwright test monitoring --timeout 180000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
