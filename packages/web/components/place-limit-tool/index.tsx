@@ -32,6 +32,7 @@ import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
 import {
   useDisclosure,
+  useFeatureFlags,
   useSlippageConfig,
   useTranslation,
   useWalletSelect,
@@ -100,6 +101,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
     const inputRef = useRef<HTMLInputElement>(null);
+    const featureFlags = useFeatureFlags();
 
     const [{ from, quote, tab, type }, set] = useQueryStates({
       from: parseAsString.withDefault(initialBaseDenom || "ATOM"),
@@ -644,13 +646,16 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                     inputRef.current.focus();
                   }
                 }}
+                disabled={!featureFlags.inGivenOut && type === "market"}
               >
-                <Icon
-                  id="switch"
-                  width={16}
-                  height={16}
-                  className="text-wosmongton-300"
-                />
+                {(featureFlags.inGivenOut || type === "limit") && (
+                  <Icon
+                    id="switch"
+                    width={16}
+                    height={16}
+                    className="text-wosmongton-300"
+                  />
+                )}
                 <span className="body2 sm:caption flex text-wosmongton-300 transition-opacity sm:my-px sm:py-2">
                   {nonFocusedDisplayAmount || "0"}{" "}
                   {focused === "fiat" && (

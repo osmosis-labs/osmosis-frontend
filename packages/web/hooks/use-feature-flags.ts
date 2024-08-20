@@ -32,7 +32,8 @@ export type AvailableFlags =
   | "limitOrders"
   | "advancedChart"
   | "cypherCard"
-  | "newPortfolioPage";
+  | "newPortfolioPage"
+  | "inGivenOut";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -67,6 +68,7 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   _isClientIDPresent: false,
   cypherCard: false,
   newPortfolioPage: false,
+  inGivenOut: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =
@@ -100,6 +102,7 @@ export const useFeatureFlags = () => {
   const isDevModeWithoutClientID =
     process.env.NODE_ENV === "development" &&
     !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),

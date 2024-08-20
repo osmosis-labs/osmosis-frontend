@@ -493,7 +493,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     onInputChange={(e) => {
                       e.preventDefault();
 
-                      setQuoteType("in-given-out");
+                      if (quoteType !== "in-given-out")
+                        setQuoteType("in-given-out");
                       if (e.target.value.length <= (isMobile ? 19 : 26)) {
                         swapState.outAmountInput.setAmount(e.target.value);
                       }
@@ -502,6 +503,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount("");
                       }
                     }}
+                    disabled={!featureFlags.inGivenOut}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.toAsset?.coinDenom}

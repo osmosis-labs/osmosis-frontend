@@ -118,6 +118,7 @@ interface AssetFieldsetInputProps {
   page?: EventPage;
   wrapperClassNames?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 const AssetFieldsetInput = forwardRef<
@@ -132,6 +133,7 @@ const AssetFieldsetInput = forwardRef<
       outputValue,
       wrapperClassNames,
       placeholder = "0",
+      disabled = false,
       ...rest
     },
     ref
@@ -160,6 +162,7 @@ const AssetFieldsetInput = forwardRef<
             onChange={onInputChange}
             value={inputValue}
             inputMode="decimal"
+            disabled={disabled}
             {...rest}
           />
         )}
