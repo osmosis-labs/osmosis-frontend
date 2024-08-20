@@ -329,7 +329,7 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames(
                     {
-                      "w-[250px]": index === 0,
+                      "w-64": index === 0,
                       "flex-grow": index !== 0,
                     },
                     index === headers.length - 1 ? "text-right" : "text-left"
