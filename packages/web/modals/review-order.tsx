@@ -610,7 +610,7 @@ export function ReviewOrder({
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
                   // Do not show skeleton unless there has been no estimation/error yet
-                  !(isGasLoading && !(!!gasAmount || !!gasError)) ? (
+                  !!gasAmount || !!gasError ? (
                     GasEstimation
                   ) : (
                     <Skeleton className="h-5 w-16" />

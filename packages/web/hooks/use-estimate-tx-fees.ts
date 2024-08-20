@@ -130,10 +130,12 @@ export function useEstimateTxFees({
 
     if (
       queryResult.error instanceof Error &&
-      queryResult.error.message.includes("Swap requires")
+      (queryResult.error.message.includes("Swap requires") ||
+        queryResult.error.message.includes("is greater than max amount"))
     ) {
       return new SwapRequiresError(queryResult.error.message);
     }
+
     if (queryResult.error) console.log(messages, queryResult.error);
     return queryResult.error;
   }, [queryResult.error]);

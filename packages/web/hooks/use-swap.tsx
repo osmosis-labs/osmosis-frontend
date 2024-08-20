@@ -1640,7 +1640,8 @@ export function useDynamicSlippageConfig({
   useEffect(() => {
     if (feeError) {
       if (
-        feeError.message.includes("Swap requires") &&
+        (feeError.message.includes("Swap requires") ||
+          feeError.message.includes("is greater than max amount")) &&
         quoteType === "in-given-out"
       ) {
         const amounts = extractSwapRequiredErrorAmounts(feeError.message);
@@ -1696,8 +1697,9 @@ function extractSwapRequiredErrorAmounts(str: string) {
   const split = str
     .split(" ")
     .map((s) => {
-      if (regex.test(s)) {
-        return s.match(regex)?.[0] ?? undefined;
+      const stripped = s.replace("(", "").replace(")", "");
+      if (regex.test(stripped)) {
+        return stripped.match(regex)?.[0] ?? undefined;
       }
     })
     .filter(Boolean);

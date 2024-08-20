@@ -220,6 +220,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+      const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
 
       // Compute out amount less slippage
       const amountWithSlippage =
@@ -230,9 +231,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               )
             : undefined
           : new IntPretty(
-              swapState.marketState.outAmountInput?.amount
+              swapState.marketState.inAmountInput?.amount
                 ?.toDec()
-                .mul(oneMinusSlippage) ?? new Dec(0)
+                .mul(onePlusSlippage) ?? new Dec(0)
             );
 
       // Compute out fiat amount less slippage
@@ -241,7 +242,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             DEFAULT_VS_CURRENCY,
             swapState.marketState.tokenOutFiatValue
               ?.toDec()
-              .mul(oneMinusSlippage)
+              .mul(
+                quoteType === "in-given-out"
+                  ? onePlusSlippage
+                  : oneMinusSlippage
+              )
           )
         : undefined;
 
@@ -251,7 +256,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.marketState.quote,
       swapState.marketState.tokenOutFiatValue,
       quoteType,
-      swapState.marketState.outAmountInput,
+      swapState.marketState.inAmountInput,
     ]);
 
     const setAmountSafe = useCallback(
