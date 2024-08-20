@@ -294,7 +294,7 @@ export function useSwap(
 
   const networkFeeQueryEnabled =
     featureFlags.swapToolSimulateFee &&
-    !Boolean(precedentError) &&
+    !precedentError &&
     !isQuoteLoading &&
     (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
     Boolean(quote?.messages) &&
