@@ -171,12 +171,6 @@
       "FeeAPY": "APY din taxe",
       "liquidity": "Lichiditate pool"
     },
-    "selectAssetSource": {
-      "installWallet": "Instaleaza {walletName}",
-      "next": "Urmatorul",
-      "titleDeposit": "Depoziteaza de la",
-      "titleWithdraw": "Retrage catre"
-    },
     "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Depoziteaza",
       "hideZero": "Ascunde balantele zero",
       "hideBalances": "Balante mascate",
-      "preTransfer": {
-        "currentBal": "Balanta Curenta",
-        "deposit": "Depoziteaza",
-        "withdraw": "Retrage"
-      },
       "search": "Filtreaza dupa simbol",
       "sort": {
         "balance": "Balanta",
@@ -217,58 +206,20 @@
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "approveInWallet": "Aprobați în portofel",
-      "enterAddress": "Adresa {network}",
       "errors": {
-        "seeRequest": "Vezi solicitarea în {walletName}",
-        "invalidAddress": "Adresă invalidă"
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
       "from": "De la",
       "loading": "Se incarca",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
       "expectedOutput": "Rezultat așteptat",
       "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
       "transferAnyway": "Transfer oricum"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Urmatorul",
-      "deposit": "Depozit",
-      "network": "Retea",
-      "withdraw": "Retragere"
-    },
     "unbondedAssets": "Deblocate",
-    "nomic": {
-      "addresses": "adrese.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Taxa Bitcoin Miner",
-      "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",
-      "bridgeFee": "Taxa Nomic Bridge",
-      "confirmations": "6 confirmări",
-      "enterBitcoinAddress": "Introduceți adresa Bitcoin",
-      "estimatedArrival": "Sosire estimată",
-      "estimatedTimeTag": "Timpul estimat",
-      "estimatedTime": "5 minute",
-      "expirationTime": "4 zile",
-      "learnMore": "Aflați mai multe la",
-      "lossOfFunds": "Utilizarea adresei după această oră va duce la pierderea fondurilor.",
-      "minDeposit": "Depozit minim",
-      "minWithdrawal": "Retragere minimă",
-      "nomicCapacityLimit": "Nomic are o limită de capacitate de",
-      "onlyUse": "Folosiți numai",
-      "pendingDeposits": "Depuneri în așteptare",
-      "poweredBy": "Cu sprijinul",
-      "proceed": "Continua",
-      "depositExpiration": "Această adresă de depozit expiră în",
-      "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
-      "warning": "AVERTIZARE:",
-      "loading": "Se încarcă..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activați activele neverificate",
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
@@ -1164,7 +1115,6 @@
       "veryHigh": "Foarte inalt"
     }
   },
-  "disclaimer": "Disclaimer",
   "remaining": "rămas",
   "timeUnits": {
     "second": "al doilea",
