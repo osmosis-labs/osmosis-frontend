@@ -350,8 +350,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
 
-  console.log(collapsedColumns);
-
   const table = useReactTable({
     data: poolsData,
     columns: collapsedColumns,
