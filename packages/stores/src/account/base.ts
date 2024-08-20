@@ -1111,7 +1111,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         return res;
       }),
       memo: signed.memo,
-      timeoutHeight: BigInt(signDoc.timeout_height ?? "0"),
+      timeoutHeight: BigInt(signed.timeout_height ?? "0"),
     });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
