@@ -341,12 +341,16 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl && shouldDisplayFeesData)
       collapsedColIds.push("market.feesSpent7dUsd");
+    if (width < Breakpoint.xlhalf && width > Breakpoint.xl)
+      collapsedColIds.push("aprBreakdown.total");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
     if (width < Breakpoint.lg && shouldDisplayVolumeData)
       collapsedColIds.push("market.volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
+
+  console.log(collapsedColumns);
 
   const table = useReactTable({
     data: poolsData,
