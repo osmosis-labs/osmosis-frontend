@@ -80,10 +80,10 @@ export async function makeSwapExactAmountInMsg({
 }
 
 /**
- * Constructs a message for performing a swap with an exact input amount across a route
+ * Constructs a message for performing a swap with an exact output amount across a route
  * — single or multiple liquidity pools. This function enables users to swap a specific
- * amount of one token for another through specified liquidity pools, with a minimum
- * acceptable amount of the output token.
+ * amount of one token for another through specified liquidity pools, with a maximum
+ * acceptable amount of the input token.
  */
 export async function makeSwapExactAmountOutMsg({
   pools,
@@ -119,10 +119,10 @@ export async function makeSwapExactAmountOutMsg({
 }
 
 /**
- * Constructs a message for performing a split route swap with an exact input amount across
+ * Constructs a message for performing a split route swap with an exact output amount across
  * multiple routes. This function allows users to swap a specific amount of one token
- * for another through a series of split routes, specifying the minimum amount of
- * the output token they are willing to accept.
+ * for another through a series of split routes, specifying the maximum amount of
+ * the input token they are willing to accept.
  */
 export async function makeSplitRoutesSwapExactAmountOutMsg({
   routes,

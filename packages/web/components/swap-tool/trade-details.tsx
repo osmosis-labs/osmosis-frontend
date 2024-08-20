@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
@@ -27,8 +27,6 @@ interface TradeDetailsProps {
   swapState: ReturnType<typeof useSwap>;
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   type: "limit" | "market";
-  outAmountLessSlippage?: IntPretty;
-  outFiatAmountLessSlippage?: PricePretty;
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;

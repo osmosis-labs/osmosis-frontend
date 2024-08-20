@@ -41,8 +41,8 @@ interface ReviewOrderProps {
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
-  outAmountLessSlippage?: IntPretty;
-  outFiatAmountLessSlippage?: PricePretty;
+  amountWithSlippage?: IntPretty;
+  fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;
   showOutputDifferenceWarning?: boolean;
   percentAdjusted?: Dec;
@@ -70,8 +70,8 @@ export function ReviewOrder({
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
-  outAmountLessSlippage,
-  outFiatAmountLessSlippage,
+  amountWithSlippage,
+  fiatAmountWithSlippage,
   outputDifference,
   showOutputDifferenceWarning,
   percentAdjusted,
@@ -109,7 +109,7 @@ export function ReviewOrder({
 
   //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
-    () => outAmountLessSlippage ?? new IntPretty(0),
+    () => amountWithSlippage ?? new IntPretty(0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -120,12 +120,12 @@ export function ReviewOrder({
       return {
         diffGteSlippage: slippageConfig
           ? originalValue
-              .sub(outAmountLessSlippage ?? new IntPretty(0))
+              .sub(amountWithSlippage ?? new IntPretty(0))
               .toDec()
               .gte(slippageConfig?.slippage.toDec())
           : false,
         restart: () => {
-          originalValue = outAmountLessSlippage ?? new IntPretty(0);
+          originalValue = amountWithSlippage ?? new IntPretty(0);
         },
       };
     },
@@ -138,7 +138,7 @@ export function ReviewOrder({
      * quote so as to warn the user.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [outAmountLessSlippage, slippageConfig]
+    [amountWithSlippage, slippageConfig]
   );
 
   const handleManualSlippageChange = useCallback(
@@ -570,11 +570,11 @@ export function ReviewOrder({
                   }
                   right={
                     <span className="sm:caption">
-                      {outAmountLessSlippage &&
-                        outFiatAmountLessSlippage &&
+                      {amountWithSlippage &&
+                        fiatAmountWithSlippage &&
                         toAsset && (
                           <span className="text-osmoverse-100">
-                            {formatPretty(outAmountLessSlippage, {
+                            {formatPretty(amountWithSlippage, {
                               maxDecimals: 6,
                             })}{" "}
                             {quoteType === "out-given-in"
@@ -582,12 +582,12 @@ export function ReviewOrder({
                               : fromAsset?.coinDenom}
                           </span>
                         )}{" "}
-                      {outFiatAmountLessSlippage && (
+                      {fiatAmountWithSlippage && (
                         <span className="text-osmoverse-300">
                           (~
-                          {formatPretty(outFiatAmountLessSlippage, {
+                          {formatPretty(fiatAmountWithSlippage, {
                             ...getPriceExtendedFormatOptions(
-                              outFiatAmountLessSlippage.toDec()
+                              fiatAmountWithSlippage.toDec()
                             ),
                           })}
                           )

@@ -194,13 +194,13 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       slippageConfig.setDefaultSlippage(defaultSlippage);
     }, [quoteType, slippageConfig]);
 
-    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
+    const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
       const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
 
       // Compute out amount less slippage
-      const outAmountLessSlippage =
+      const amountWithSlippage =
         quoteType === "out-given-in"
           ? swapState.quote
             ? new IntPretty(
@@ -213,7 +213,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             );
 
       // Compute out fiat amount less slippage
-      const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
+      const fiatAmountWithSlippage = swapState.tokenOutFiatValue
         ? new PricePretty(
             DEFAULT_VS_CURRENCY,
             swapState.tokenOutFiatValue
@@ -226,7 +226,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           )
         : undefined;
 
-      return { outAmountLessSlippage, outFiatAmountLessSlippage };
+      return { amountWithSlippage, fiatAmountWithSlippage };
     }, [
       slippageConfig.slippage,
       swapState.quote,
@@ -467,9 +467,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <button
                   className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
                   onClick={() => {
-                    // const out = swapState.quote?.amount
-                    //   ? formatPretty(swapState.quote.amount.toDec())
-                    //   : "";
                     const inAmount = swapState.inAmountInput.inputAmount;
                     const outAmount = swapState.outAmountInput.inputAmount;
 
@@ -655,8 +652,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             type="market"
             swapState={swapState}
             slippageConfig={slippageConfig}
-            outAmountLessSlippage={outAmountLessSlippage}
-            outFiatAmountLessSlippage={outFiatAmountLessSlippage}
           />
         </div>
         <TokenSelectModalLimit
@@ -720,8 +715,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
           slippageConfig={slippageConfig}
-          outAmountLessSlippage={outAmountLessSlippage}
-          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          amountWithSlippage={amountWithSlippage}
+          fiatAmountWithSlippage={fiatAmountWithSlippage}
           outputDifference={outputDifference}
           showOutputDifferenceWarning={showOutputDifferenceWarning}
           fromAsset={swapState.fromAsset}

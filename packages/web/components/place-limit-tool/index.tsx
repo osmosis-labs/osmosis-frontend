@@ -217,12 +217,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       );
     }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
 
-    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
+    const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
 
       // Compute out amount less slippage
-      const outAmountLessSlippage =
+      const amountWithSlippage =
         quoteType === "out-given-in"
           ? swapState.marketState.quote
             ? new IntPretty(
@@ -236,7 +236,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             );
 
       // Compute out fiat amount less slippage
-      const outFiatAmountLessSlippage = swapState.marketState.tokenOutFiatValue
+      const fiatAmountWithSlippage = swapState.marketState.tokenOutFiatValue
         ? new PricePretty(
             DEFAULT_VS_CURRENCY,
             swapState.marketState.tokenOutFiatValue
@@ -245,7 +245,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           )
         : undefined;
 
-      return { outAmountLessSlippage, outFiatAmountLessSlippage };
+      return { amountWithSlippage, fiatAmountWithSlippage };
     }, [
       slippageConfig.slippage,
       swapState.marketState.quote,
@@ -777,8 +777,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             );
             resetSlippage();
           }}
-          outAmountLessSlippage={outAmountLessSlippage}
-          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          amountWithSlippage={amountWithSlippage}
+          fiatAmountWithSlippage={fiatAmountWithSlippage}
           isConfirmationDisabled={isSendingTx}
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}
