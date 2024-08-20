@@ -487,7 +487,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             : formatFiatPrice(
                 new PricePretty(
                   DEFAULT_VS_CURRENCY,
-                  swapState.marketState.inAmountInput.inputAmount || "0"
+                  swapState.marketState.outAmountInput.inputAmount || "0"
                 )
               );
         } else {

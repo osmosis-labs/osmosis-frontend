@@ -121,13 +121,15 @@ export function useEstimateTxFees({
       ) ||
         queryResult.error.message.includes(
           "Insufficient alternative balance for transaction fees"
-        ))
+        ) ||
+        queryResult.error.message.includes("insufficient funds"))
     ) {
       return new InsufficientBalanceForFeeError(queryResult.error.message);
     }
+    if (queryResult.error) console.log(messages, queryResult.error);
     return queryResult.error;
   }, [queryResult.error]);
-  if (queryResult.error) console.log(messages, queryResult.error);
+
   return { ...queryResult, error: specificError };
 }
 

@@ -278,6 +278,7 @@ export function useSwap(
       error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error as any)?.error;
+    console.log(error);
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
@@ -1659,7 +1660,6 @@ function makeRouterErrorFromTrpcError(
   | undefined {
   if (isNil(error)) return;
   const tprcShapeMsg = error?.message;
-
   if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
   }
