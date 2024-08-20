@@ -276,8 +276,8 @@
     "recentActivity": "Activitate recentă",
     "seeAll": "Vezi toate",
     "show": "Spectacol",
-    "hide": "Ascunde",
-    "hidden": "Ascuns",
+    "showHidden": "Afișați ascunse ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ascunde soldurile mici",
     "cypherSpend": "Plată osmoză",
     "cypherOrder": "Comanda cardul tau acum",
     "cypherBeta": "Beta"

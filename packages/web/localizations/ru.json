@@ -276,8 +276,8 @@
     "recentActivity": "Недавняя активность",
     "seeAll": "Смотреть все",
     "show": "Показывать",
-    "hide": "Скрывать",
-    "hidden": "Скрытый",
+    "showHidden": "Показать скрытое ( {hiddenDustCount} )",
+    "hideSmallBalances": "Скрыть небольшие остатки",
     "cypherSpend": "Платить за осмос",
     "cypherOrder": "Закажите карту сейчас",
     "cypherBeta": "Бета"

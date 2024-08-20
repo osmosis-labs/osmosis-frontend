@@ -20,6 +20,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
 import {
@@ -144,7 +145,7 @@ export const AssetBalancesTable: FunctionComponent<{
     }
   );
 
-  const [hideDust, setHideDust] = useState(true);
+  const [hideDust, setHideDust] = useLocalStorage("portfolio-hide-dust", true);
 
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
@@ -423,21 +424,18 @@ export const AssetBalancesTable: FunctionComponent<{
         </tbody>
       </table>
       {assetsData.length > 0 && (
-        <div className="flex items-center justify-between gap-4 py-2 px-4">
-          <p
-            className={classNames("body1 grow text-osmoverse-300", {
-              invisible: !hideDust,
-            })}
-          >
-            {t("portfolio.hidden")} ({hiddenDustCount})
-          </p>
+        <div className="flex items-center justify-end gap-4 py-2 px-4">
           <Button
-            onClick={() => setHideDust((prev) => !prev)}
-            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4"
+            onClick={() => setHideDust(!hideDust)}
+            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
             variant="outline"
             size="lg-full"
           >
-            {hideDust ? t("portfolio.show") : t("portfolio.hide")}
+            {hideDust
+              ? t("portfolio.showHidden", {
+                  hiddenDustCount: hiddenDustCount.toString(),
+                })
+              : t("portfolio.hideSmallBalances")}
             <Icon
               id="chevron-down"
               className={classNames("h-4 w-4 transition-transform", {

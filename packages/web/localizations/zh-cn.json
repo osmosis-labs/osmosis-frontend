@@ -276,8 +276,8 @@
     "recentActivity": "最近活动",
     "seeAll": "查看全部",
     "show": "展示",
-    "hide": "隐藏",
-    "hidden": "隐",
+    "showHidden": "显示隐藏（ {hiddenDustCount} ）",
+    "hideSmallBalances": "隐藏小额余额",
     "cypherSpend": "渗透支付",
     "cypherOrder": "立即订购您的卡",
     "cypherBeta": "测试版"

@@ -276,8 +276,8 @@
     "recentActivity": "Letzte Aktivität",
     "seeAll": "Alles sehen",
     "show": "Zeigen",
-    "hide": "Verstecken",
-    "hidden": "Versteckt",
+    "showHidden": "Versteckte anzeigen ( {hiddenDustCount} )",
+    "hideSmallBalances": "Kleine Guthaben verbergen",
     "cypherSpend": "Osmose-Bezahlung",
     "cypherOrder": "Bestellen Sie jetzt Ihre Karte",
     "cypherBeta": "Beta"

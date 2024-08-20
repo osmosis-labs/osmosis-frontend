@@ -276,8 +276,8 @@
     "recentActivity": "Son aktivite",
     "seeAll": "Tümünü gör",
     "show": "Göstermek",
-    "hide": "Saklamak",
-    "hidden": "Gizlenmiş",
+    "showHidden": "Gizliyi göster ( {hiddenDustCount} )",
+    "hideSmallBalances": "Küçük bakiyeleri gizle",
     "cypherSpend": "Osmoz Ödeme",
     "cypherOrder": "Kartınızı şimdi sipariş edin",
     "cypherBeta": "Beta"
