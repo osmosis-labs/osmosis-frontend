@@ -11,7 +11,7 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags, useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
@@ -25,7 +25,7 @@ export const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
   const { t } = useTranslation();
   const flags = useFeatureFlags();
-  const { fiatRampSelection } = useBridge();
+  const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 

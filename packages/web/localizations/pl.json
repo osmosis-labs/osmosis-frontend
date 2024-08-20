@@ -171,12 +171,6 @@
       "FeeAPY": "APY z Prowizji",
       "liquidity": "Moja płynność"
     },
-    "selectAssetSource": {
-      "installWallet": "Zainstaluj {walletName}",
-      "next": "Dalej",
-      "titleDeposit": "Wpłać z",
-      "titleWithdraw": "Wypłać do"
-    },
     "stakedAssets": "Stakowane OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Wpłać",
       "hideZero": "Ukryj puste salda",
       "hideBalances": "Zamaskowane salda",
-      "preTransfer": {
-        "currentBal": "Aktualne Saldo",
-        "deposit": "Wpłać",
-        "withdraw": "Wypłać"
-      },
       "search": "Szukaj",
       "sort": {
         "balance": "Saldo",
@@ -217,58 +206,20 @@
       "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
       "approveInWallet": "Zatwierdź w portfelu",
-      "enterAddress": "Adres {network}",
       "errors": {
-        "seeRequest": "Zobacz żądanie w {walletName}",
-        "invalidAddress": "Błędny adres"
+        "seeRequest": "Zobacz żądanie w {walletName}"
       },
       "from": "Od",
       "loading": "Ładowanie",
-      "titleDeposit": "Wpłać {coinDenom}",
-      "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
-      "waitTime": "{minutes} minut",
-      "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś.",
       "expectedOutput": "Oczekiwany wynik",
       "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
       "sending": "Wysyłanie...",
       "transferAnyway": "Transfer mimo wszystko"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Dalej",
-      "deposit": "Wpłać",
-      "network": "Sieć",
-      "withdraw": "Wypłać"
-    },
     "unbondedAssets": "Rozwiązane",
-    "nomic": {
-      "addresses": "adresy.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Opłata za kopanie bitcoinów",
-      "bridgeAtCapacity": "Most jest obecnie obciążony pełną przepustowością. Spróbuj ponownie później.",
-      "bridgeFee": "Opłata pomostowa Nomic",
-      "confirmations": "6 potwierdzeń",
-      "enterBitcoinAddress": "Wprowadź adres Bitcoin",
-      "estimatedArrival": "Szacowany przyjazd",
-      "estimatedTimeTag": "Szacowany czas",
-      "estimatedTime": "5 minut",
-      "expirationTime": "4 dni",
-      "learnMore": "Dowiedz się więcej na",
-      "lossOfFunds": "Użycie adresu po tym czasie będzie skutkowało utratą środków.",
-      "minDeposit": "Minimalny depozyt",
-      "minWithdrawal": "Minimalna wypłata",
-      "nomicCapacityLimit": "Nomic ma limit pojemności wynoszący",
-      "onlyUse": "Jedynym zastosowaniem",
-      "pendingDeposits": "Oczekujące depozyty",
-      "poweredBy": "Obsługiwane przez",
-      "proceed": "Przystępować",
-      "depositExpiration": "Ten adres depozytowy wygasa w",
-      "undergoAudit": "w trakcie audytu (szacunkowe zakończenie: styczeń 2024 r.).",
-      "warning": "OSTRZEŻENIE:",
-      "loading": "Wczytywanie..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Aktywuj niezweryfikowane zasoby",
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
@@ -324,9 +275,8 @@
     "assets": "Aktywa",
     "recentActivity": "Ostatnia aktywność",
     "seeAll": "Zobacz wszystko",
-    "show": "Pokazywać",
-    "hide": "Ukrywać",
-    "hidden": "Ukryty",
+    "showHidden": "Pokaż ukryte ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ukryj małe salda",
     "cypherSpend": "Osmoza Płaca",
     "cypherOrder": "Zamów swoją kartę już teraz",
     "cypherBeta": "Beta"
@@ -1164,7 +1114,6 @@
       "veryHigh": "Bardzo wysoko"
     }
   },
-  "disclaimer": "Zastrzeżenie",
   "remaining": "pozostały",
   "timeUnits": {
     "second": "drugi",

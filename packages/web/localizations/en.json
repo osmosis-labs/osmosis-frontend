@@ -171,12 +171,6 @@
       "FeeAPY": "Fee APY",
       "liquidity": "My Liquidity"
     },
-    "selectAssetSource": {
-      "installWallet": "Install {walletName}",
-      "next": "Next",
-      "titleDeposit": "Deposit from",
-      "titleWithdraw": "Withdraw to"
-    },
     "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Deposit",
       "hideZero": "Hide zero balances",
       "hideBalances": "Masked balances",
-      "preTransfer": {
-        "currentBal": "Current Balance",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
-      },
       "search": "Search",
       "sort": {
         "balance": "Balance",
@@ -217,58 +206,20 @@
       "availableOn": "Available on {network}",
       "approving": "Approving...",
       "approveInWallet": "Approve in wallet",
-      "enterAddress": "{network} address",
       "errors": {
-        "seeRequest": "See request in {walletName}",
-        "invalidAddress": "Invalid Address"
+        "seeRequest": "See request in {walletName}"
       },
       "from": "From",
       "loading": "Loading",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
-      "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
       "expectedOutput": "Expected Output",
       "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact",
       "sending": "Sending...",
       "transferAnyway": "Transfer Anyway"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Next",
-      "deposit": "Deposit",
-      "network": "Network",
-      "withdraw": "Withdraw"
-    },
     "unbondedAssets": "Available",
-    "nomic": {
-      "addresses": "addresses.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Bitcoin Miner Fee",
-      "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",
-      "bridgeFee": "Nomic Bridge Fee",
-      "confirmations": "6 confirmations",
-      "enterBitcoinAddress": "Enter Bitcoin Address",
-      "estimatedArrival": "Estimated Arrival",
-      "estimatedTimeTag": "Estimated time",
-      "estimatedTime": "5 minutes",
-      "expirationTime": "4 days",
-      "learnMore": "Learn more at",
-      "lossOfFunds": "Use of address after this time will result in loss of funds.",
-      "minDeposit": "Minimum Deposit",
-      "minWithdrawal": "Minimum Withdrawal",
-      "nomicCapacityLimit": "Nomic has a capacity limit of",
-      "onlyUse": "Only use",
-      "pendingDeposits": "Pending deposits",
-      "poweredBy": "Powered by",
-      "proceed": "Proceed",
-      "depositExpiration": "This deposit address expires in",
-      "undergoAudit": "while undergoing auditing (est. completion January 2024).",
-      "warning": "WARNING:",
-      "loading": "Loading..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activate unverified assets",
       "description": "is an unverified token. Do you wish to activate it? Be sure to research thoroughly before trading.",
@@ -324,9 +275,8 @@
     "assets": "Assets",
     "recentActivity": "Recent activity",
     "seeAll": "See all",
-    "show": "Show",
-    "hide": "Hide",
-    "hidden": "Hidden",
+    "showHidden": "Show hidden ({hiddenDustCount})",
+    "hideSmallBalances": "Hide small balances",
     "cypherSpend": "Osmosis Pay",
     "cypherOrder": "Order your card now",
     "cypherBeta": "Beta"
@@ -1164,7 +1114,6 @@
       "veryHigh": "Very high"
     }
   },
-  "disclaimer": "Disclaimer",
   "remaining": "remaining",
   "timeUnits": {
     "second": "second",

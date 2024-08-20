@@ -474,7 +474,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     transactionData: EvmBridgeTransactionRequest
   ) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       ({ id: chainId }) => String(chainId) === String(params.fromChain.chainId)
     );
 
@@ -847,5 +847,4 @@ export class AxelarBridgeProvider implements BridgeProvider {
   }
 }
 
-export * from "./tokens";
 export * from "./transfer-status";

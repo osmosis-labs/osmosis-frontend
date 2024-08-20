@@ -382,7 +382,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
-            const evmChain = Object.values(EthereumChainInfo).find(
+            const evmChain = EthereumChainInfo.find(
               (chain) => chain.id === chainId
             );
 
@@ -392,7 +392,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
-              chainName: evmChain.chainName,
+              chainName: evmChain.name,
               chainId: evmChain.id,
               chainType,
               logoUri: evmChain.relativeLogoUrl,

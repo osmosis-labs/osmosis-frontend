@@ -8,13 +8,13 @@ import { getAddress } from "viem";
 import { Screen, useScreenManager } from "~/components/screen-manager";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { AmountScreen } from "./amount-screen";
-import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
 import { QuotableBridge, useBridgeQuotes } from "./use-bridge-quotes";
 import {
@@ -250,13 +250,13 @@ export const AmountAndReviewScreen = observer(
     });
 
     if (!selectedAssetDenom) {
-      setCurrentScreen(ImmersiveBridgeScreen.Asset);
+      setCurrentScreen(BridgeScreen.Asset);
       return null;
     }
 
     return (
       <>
-        <Screen screenName={ImmersiveBridgeScreen.Amount}>
+        <Screen screenName={BridgeScreen.Amount}>
           {({ setCurrentScreen }) => (
             <AmountScreen
               direction={direction}
@@ -280,12 +280,12 @@ export const AmountAndReviewScreen = observer(
               fiatAmount={fiatAmount}
               setFiatAmount={setFiatAmount}
               quote={quote}
-              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreen.Review)}
+              onConfirm={() => setCurrentScreen(BridgeScreen.Review)}
               onClose={onClose}
             />
           )}
         </Screen>
-        <Screen screenName={ImmersiveBridgeScreen.Review}>
+        <Screen screenName={BridgeScreen.Review}>
           {({ goBack }) => (
             <>
               {fromChain &&

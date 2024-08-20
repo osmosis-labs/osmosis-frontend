@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
@@ -19,7 +20,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -53,7 +54,12 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     unverifiedNativeBalances,
   } = assetsStore;
   const { t } = useTranslation();
-  const { startBridge, bridgeAsset } = useBridge();
+  const { startBridge, bridgeAsset } = useBridgeStore(
+    useShallow((state) => ({
+      startBridge: state.startBridge,
+      bridgeAsset: state.bridgeAsset,
+    }))
+  );
 
   const isWalletConnected = Boolean(
     accountStore.getWallet(accountStore.osmosisChainId)?.isWalletConnected
