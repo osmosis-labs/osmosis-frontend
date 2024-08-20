@@ -325,8 +325,8 @@
     "recentActivity": "Activité récente",
     "seeAll": "Tout voir",
     "show": "Montrer",
-    "hide": "Cacher",
-    "hidden": "Caché",
+    "showHidden": "Afficher caché ( {hiddenDustCount} )",
+    "hideSmallBalances": "Masquer les petits soldes",
     "cypherSpend": "Paiement par osmose",
     "cypherOrder": "Commandez votre carte maintenant",
     "cypherBeta": "Bêta"

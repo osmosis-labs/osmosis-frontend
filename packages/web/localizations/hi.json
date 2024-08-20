@@ -325,8 +325,8 @@
     "recentActivity": "हाल की गतिविधि",
     "seeAll": "सभी देखें",
     "show": "दिखाओ",
-    "hide": "छिपाना",
-    "hidden": "छिपा हुआ",
+    "showHidden": "छुपा हुआ दिखाएँ ( {hiddenDustCount} )",
+    "hideSmallBalances": "छोटे शेष राशि छिपाएँ",
     "cypherSpend": "ऑस्मोसिस पे",
     "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
     "cypherBeta": "बीटा"

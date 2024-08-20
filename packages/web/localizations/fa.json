@@ -325,8 +325,8 @@
     "recentActivity": "فعالیت اخیر",
     "seeAll": "همه را ببینید",
     "show": "نمایش دهید",
-    "hide": "پنهان کردن",
-    "hidden": "پنهان شده است",
+    "showHidden": "نمایش پنهان ( {hiddenDustCount} )",
+    "hideSmallBalances": "توازن های کوچک را پنهان کنید",
     "cypherSpend": "اسمز پرداخت",
     "cypherOrder": "همین الان کارت خود را سفارش دهید",
     "cypherBeta": "بتا"

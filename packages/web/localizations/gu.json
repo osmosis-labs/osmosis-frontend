@@ -325,8 +325,8 @@
     "recentActivity": "તાજેતરની પ્રવૃત્તિ",
     "seeAll": "બધા જુઓ",
     "show": "બતાવો",
-    "hide": "છુપાવો",
-    "hidden": "છુપાયેલ",
+    "showHidden": "છુપાયેલ બતાવો ( {hiddenDustCount} )",
+    "hideSmallBalances": "નાના બેલેન્સ છુપાવો",
     "cypherSpend": "ઓસ્મોસિસ પે",
     "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
     "cypherBeta": "બેટા"

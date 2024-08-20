@@ -325,8 +325,8 @@
     "recentActivity": "최근 활동",
     "seeAll": "모두 보기",
     "show": "보여주다",
-    "hide": "숨다",
-    "hidden": "숨겨진",
+    "showHidden": "숨겨진 항목 표시( {hiddenDustCount} )",
+    "hideSmallBalances": "소액 잔액 숨기기",
     "cypherSpend": "오스모시스 페이",
     "cypherOrder": "지금 카드를 주문하세요",
     "cypherBeta": "베타"

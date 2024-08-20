@@ -325,8 +325,8 @@
     "recentActivity": "最近のアクティビティ",
     "seeAll": "すべて見る",
     "show": "見せる",
-    "hide": "隠れる",
-    "hidden": "隠れた",
+    "showHidden": "非表示を表示 ( {hiddenDustCount} )",
+    "hideSmallBalances": "少額残高を非表示にする",
     "cypherSpend": "オズモーシスペイ",
     "cypherOrder": "今すぐカードを注文する",
     "cypherBeta": "ベータ"

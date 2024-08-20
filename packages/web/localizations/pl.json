@@ -325,8 +325,8 @@
     "recentActivity": "Ostatnia aktywność",
     "seeAll": "Zobacz wszystko",
     "show": "Pokazywać",
-    "hide": "Ukrywać",
-    "hidden": "Ukryty",
+    "showHidden": "Pokaż ukryte ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ukryj małe salda",
     "cypherSpend": "Osmoza Płaca",
     "cypherOrder": "Zamów swoją kartę już teraz",
     "cypherBeta": "Beta"

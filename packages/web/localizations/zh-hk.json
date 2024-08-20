@@ -325,8 +325,8 @@
     "recentActivity": "最近的活動",
     "seeAll": "看全部",
     "show": "展示",
-    "hide": "隱藏",
-    "hidden": "隱",
+    "showHidden": "顯示隱藏 ( {hiddenDustCount} )",
+    "hideSmallBalances": "隱藏小額餘額",
     "cypherSpend": "滲透支付",
     "cypherOrder": "立即訂購您的卡",
     "cypherBeta": "貝塔"
