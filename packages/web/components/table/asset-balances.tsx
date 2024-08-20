@@ -374,7 +374,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
             return (
               <tr
-                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850/80"
                 key={rows[virtualRow.index].id}
                 onClick={() => router.push(pushUrl)}
               >
@@ -535,6 +535,7 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
+            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -551,6 +552,7 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
+            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
