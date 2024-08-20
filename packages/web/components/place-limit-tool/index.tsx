@@ -1,4 +1,4 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -152,6 +152,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       quoteType,
     });
 
+    const resetSlippage = useCallback(() => {
+      const defaultSlippage = quoteType === "in-given-out" ? "1" : "0.5";
+      if (
+        slippageConfig.slippage.toDec() ===
+        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+      ) {
+        return;
+      }
+      slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+      slippageConfig.setDefaultSlippage(defaultSlippage);
+    }, [quoteType, slippageConfig]);
+
     useDynamicSlippageConfig({
       slippageConfig,
       feeError: swapState.marketState.networkFeeError,
@@ -248,6 +260,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         value?: string,
         maxDecimals: number = 2
       ) => {
+        resetSlippage();
         const update =
           amountType === "fiat"
             ? setFiatAmount
@@ -761,10 +774,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               swapState.baseAsset?.coinDenom,
               swapState.quoteAsset?.coinDenom
             );
-            slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
-            slippageConfig.setDefaultSlippage(
-              quoteType === "in-given-out" ? "1" : "0.5"
-            );
+            resetSlippage();
           }}
           outAmountLessSlippage={outAmountLessSlippage}
           outFiatAmountLessSlippage={outFiatAmountLessSlippage}

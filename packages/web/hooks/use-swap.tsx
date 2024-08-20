@@ -1734,7 +1734,7 @@ export function useDynamicSlippageConfig({
 
           console.log("Slippage Required", slippageRequired.toString());
 
-          if (slippageRequired.gt(slippage)) {
+          if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
             const [index, amount] = slippageConfig.getSmallestSlippage(
               slippageRequired.sub(new Dec(1))
             );

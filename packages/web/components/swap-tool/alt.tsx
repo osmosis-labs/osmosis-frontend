@@ -1,5 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -176,6 +182,18 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setBuyOpen(false);
     }, [setBuyOpen, setSellOpen]);
 
+    const resetSlippage = useCallback(() => {
+      const defaultSlippage = quoteType === "in-given-out" ? "1" : "0.5";
+      if (
+        slippageConfig.slippage.toDec() ===
+        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+      ) {
+        return;
+      }
+      slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+      slippageConfig.setDefaultSlippage(defaultSlippage);
+    }, [quoteType, slippageConfig]);
+
     const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
       // Compute ratio of 1 - slippage
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
@@ -261,10 +279,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             });
           }
 
-          slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
-          slippageConfig.setDefaultSlippage(
-            quoteType === "in-given-out" ? "1" : "0.5"
-          );
+          resetSlippage();
         })
         .catch((error) => {
           console.error("swap failed", error);
@@ -402,6 +417,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       if (e.target.value.length === 0) {
                         swapState.outAmountInput.setAmount("");
                       }
+
+                      resetSlippage();
                     }}
                     data-testid="trade-input-swap"
                     wrapperClassNames={classNames({
@@ -466,6 +483,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       setQuoteType("out-given-in");
                       swapState.inAmountInput.setAmount(outAmount);
                     }
+
+                    resetSlippage();
                   }}
                 >
                   <Icon
@@ -502,6 +521,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       if (e.target.value.length === 0) {
                         swapState.inAmountInput.setAmount("");
                       }
+
+                      resetSlippage();
                     }}
                     disabled={!featureFlags.inGivenOut}
                   />
