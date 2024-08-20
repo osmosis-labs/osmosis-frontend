@@ -329,10 +329,8 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames(
                     {
-                      // defines column width
-                      "w-56 lg:w-36":
-                        index !== 0 && index !== headers.length - 1,
-                      "w-36": index === headers.length - 1,
+                      "w-64": index === 0,
+                      "flex-grow": index !== 0,
                     },
                     index === headers.length - 1 ? "text-right" : "text-left"
                   )}
@@ -513,7 +511,7 @@ export const AssetActionsCell: AssetCellComponent<{
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 
   return (
-    <div className="flex items-center gap-2 text-wosmongton-200">
+    <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
           variant="ghost"
