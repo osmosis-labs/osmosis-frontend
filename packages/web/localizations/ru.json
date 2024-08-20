@@ -275,7 +275,6 @@
     "assets": "Ресурсы",
     "recentActivity": "Недавняя активность",
     "seeAll": "Смотреть все",
-    "show": "Показывать",
     "showHidden": "Показать скрытое ( {hiddenDustCount} )",
     "hideSmallBalances": "Скрыть небольшие остатки",
     "cypherSpend": "Платить за осмос",

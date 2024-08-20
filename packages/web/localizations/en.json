@@ -275,7 +275,6 @@
     "assets": "Assets",
     "recentActivity": "Recent activity",
     "seeAll": "See all",
-    "show": "Show",
     "showHidden": "Show hidden ({hiddenDustCount})",
     "hideSmallBalances": "Hide small balances",
     "cypherSpend": "Osmosis Pay",

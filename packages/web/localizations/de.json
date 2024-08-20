@@ -275,7 +275,6 @@
     "assets": "Vermögenswerte",
     "recentActivity": "Letzte Aktivität",
     "seeAll": "Alles sehen",
-    "show": "Zeigen",
     "showHidden": "Versteckte anzeigen ( {hiddenDustCount} )",
     "hideSmallBalances": "Kleine Guthaben verbergen",
     "cypherSpend": "Osmose-Bezahlung",
