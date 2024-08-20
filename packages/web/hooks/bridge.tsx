@@ -209,7 +209,7 @@ export const ImmersiveBridge = () => {
       return;
     }
 
-    window.history.pushState(null, document.title, url.href);
+    window.history.replaceState(null, document.title, url.href);
   }, [direction, isRouterReady, isVisible, selectedAssetDenom]);
 
   useEffect(() => {
