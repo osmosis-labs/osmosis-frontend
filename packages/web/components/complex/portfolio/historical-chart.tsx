@@ -22,7 +22,7 @@ interface PortfolioHistoricalChartProps {
   setRange: (range: Range) => void;
   error: unknown;
   setShowDate: (show: boolean) => void;
-  setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsChartMinimized: (isChartMinimized: boolean) => void;
 }
 
 export const PortfolioHistoricalChart = ({

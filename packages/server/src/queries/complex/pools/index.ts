@@ -159,7 +159,6 @@ export * from "./bonding";
 export * from "./env";
 export * from "./incentives";
 export * from "./providers";
-export * from "./route-token-out-given-in";
 export * from "./share";
 export * from "./superfluid";
 export * from "./transmuter";

@@ -287,7 +287,6 @@ export const usePlaceLimit = ({
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
-        router: marketState.quote?.name,
       };
       try {
         logEvent([EventName.Swap.swapStarted, baseEvent]);

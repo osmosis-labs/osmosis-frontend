@@ -4,11 +4,10 @@ import type {
   SplitTokenOutQuote,
 } from "@osmosis-labs/pools";
 import {
-  availableRoutersSchema,
   captureIfError,
   getAsset,
   getCosmwasmPoolTypeFromCodeId,
-  getRouters,
+  getSidecarRouter,
   Pool,
 } from "@osmosis-labs/server";
 import { AssetList } from "@osmosis-labs/types";
@@ -23,26 +22,15 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
-        preferredRouter: availableRoutersSchema,
         forcePoolId: z.string().optional(),
       })
     )
     .query(
       async ({
-        input: {
-          tokenInDenom,
-          tokenInAmount,
-          tokenOutDenom,
-          preferredRouter,
-          forcePoolId,
-        },
+        input: { tokenInDenom, tokenInAmount, tokenOutDenom, forcePoolId },
         ctx,
       }) => {
-        const routers = getRouters(ctx.chainList);
-
-        const { name, router } = routers.find(
-          ({ name }) => name === preferredRouter
-        )!;
+        const router = getSidecarRouter();
 
         // send to router
         const startTime = Date.now();
@@ -81,26 +69,15 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenOutAmount: z.string(),
         tokenOutDenom: z.string(),
-        preferredRouter: availableRoutersSchema,
         forcePoolId: z.string().optional(),
       })
     )
     .query(
       async ({
-        input: {
-          tokenInDenom,
-          tokenOutAmount,
-          tokenOutDenom,
-          preferredRouter,
-          forcePoolId,
-        },
+        input: { tokenInDenom, tokenOutAmount, tokenOutDenom, forcePoolId },
         ctx,
       }) => {
-        const routers = getRouters(ctx.chainList);
-
-        const { name, router } = routers.find(
-          ({ name }) => name === preferredRouter
-        )!;
+        const router = getSidecarRouter();
 
         // send to router
         const startTime = Date.now();

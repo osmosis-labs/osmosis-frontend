@@ -171,12 +171,6 @@
       "FeeAPY": "शुल्क एपीवाई",
       "liquidity": "मेरी तरलता"
     },
-    "selectAssetSource": {
-      "installWallet": "{walletName} इंस्टॉल करें",
-      "next": "अगला",
-      "titleDeposit": "से जमा करें",
-      "titleWithdraw": "को वापस ले लें"
-    },
     "stakedAssets": "स्टेक्ड OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "जमा",
       "hideZero": "शून्य शेष छिपाएँ",
       "hideBalances": "नकाबपोश तराजू",
-      "preTransfer": {
-        "currentBal": "वर्तमान शेष",
-        "deposit": "जमा",
-        "withdraw": "निकालना"
-      },
       "search": "खोज",
       "sort": {
         "balance": "संतुलन",
@@ -217,58 +206,20 @@
       "availableOn": "{network} पर उपलब्ध है",
       "approving": "अनुमोदन...",
       "approveInWallet": "वॉलेट में स्वीकृति दें",
-      "enterAddress": "{network} पता",
       "errors": {
-        "seeRequest": "{walletName} में अनुरोध देखें",
-        "invalidAddress": "अमान्य पता"
+        "seeRequest": "{walletName} में अनुरोध देखें"
       },
       "from": "से",
       "loading": "लोड हो रहा है",
-      "titleDeposit": "जमा करें {coinDenom}",
-      "titleWithdraw": "{coinDenom} वापस लें",
       "to": "को",
       "transferFee": "हस्तांतरण शुल्क",
-      "waitTime": "{minutes} मिनट",
-      "warnDepositAddressDifferent": "चेतावनी: {address} में चयनित खाता आपके द्वारा अंतिम बार जमा किए गए खाते से भिन्न है।",
       "expectedOutput": "अपेक्षित उत्पादन",
       "expectedOutputInfo": "उपयोग किए गए प्रदाता के आधार पर, शुल्क, फिसलन और कीमत प्रभाव के अनुसार कम आउटपुट हो सकता है।",
       "priceImpact": "मूल्य प्रभाव",
       "sending": "भेजना...",
       "transferAnyway": "फिर भी स्थानांतरण"
     },
-    "transferAssetSelect": {
-      "buttonNext": "अगला",
-      "deposit": "जमा",
-      "network": "नेटवर्क",
-      "withdraw": "निकालना"
-    },
     "unbondedAssets": "उपलब्ध",
-    "nomic": {
-      "addresses": "पते.",
-      "bitcoin": "बिटकॉइन (बीटीसी)",
-      "bitcoinMinerFee": "बिटकॉइन माइनर शुल्क",
-      "bridgeAtCapacity": "पुल वर्तमान में क्षमता पर है। कृपया बाद में पुन: प्रयास करें।",
-      "bridgeFee": "नॉमिक ब्रिज शुल्क",
-      "confirmations": "6 पुष्टिकरण",
-      "enterBitcoinAddress": "बिटकॉइन पता दर्ज करें",
-      "estimatedArrival": "अनुमानित आगमन",
-      "estimatedTimeTag": "अनुमानित समय",
-      "estimatedTime": "5 मिनट",
-      "expirationTime": "चार दिन",
-      "learnMore": "यहां और जानें",
-      "lossOfFunds": "इस समय के बाद पते का उपयोग करने से धन की हानि होगी।",
-      "minDeposit": "न्यूनतम जमा",
-      "minWithdrawal": "न्यूनतम निकासी",
-      "nomicCapacityLimit": "नॉमिक की क्षमता सीमा है",
-      "onlyUse": "केवल उपयोग करें",
-      "pendingDeposits": "लंबित जमा",
-      "poweredBy": "द्वारा संचालित",
-      "proceed": "आगे बढ़ना",
-      "depositExpiration": "यह जमा पता समाप्त हो रहा है",
-      "undergoAudit": "ऑडिटिंग के दौरान (अनुमानित समापन जनवरी 2024)।",
-      "warning": "चेतावनी:",
-      "loading": "लोड हो रहा है..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "असत्यापित संपत्तियों को सक्रिय करें",
       "description": "एक असत्यापित टोकन है. क्या आप इसे सक्रिय करना चाहते हैं? ट्रेडिंग से पहले अच्छी तरह से शोध अवश्य कर लें।",
@@ -324,9 +275,8 @@
     "assets": "संपत्ति",
     "recentActivity": "हाल की गतिविधि",
     "seeAll": "सभी देखें",
-    "show": "दिखाओ",
-    "hide": "छिपाना",
-    "hidden": "छिपा हुआ",
+    "showHidden": "छुपा हुआ दिखाएँ ( {hiddenDustCount} )",
+    "hideSmallBalances": "छोटे शेष राशि छिपाएँ",
     "cypherSpend": "ऑस्मोसिस पे",
     "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
     "cypherBeta": "बीटा"
@@ -1164,7 +1114,6 @@
       "veryHigh": "बहुत ऊँचा"
     }
   },
-  "disclaimer": "अस्वीकरण",
   "remaining": "शेष",
   "timeUnits": {
     "second": "दूसरा",

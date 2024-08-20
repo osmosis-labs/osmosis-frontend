@@ -171,12 +171,6 @@
       "FeeAPY": "Комиссия APY",
       "liquidity": "Моя ликвидность"
     },
-    "selectAssetSource": {
-      "installWallet": "Установите {walletName}",
-      "next": "Следующий",
-      "titleDeposit": "Депозит от",
-      "titleWithdraw": "Вывести на"
-    },
     "stakedAssets": "Ставка ОСМО",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Депозит",
       "hideZero": "Скрыть нулевой баланс",
       "hideBalances": "Маскированные балансы",
-      "preTransfer": {
-        "currentBal": "Текущий баланс",
-        "deposit": "Депозит",
-        "withdraw": "Отзывать"
-      },
       "search": "Поиск",
       "sort": {
         "balance": "Баланс",
@@ -217,58 +206,20 @@
       "availableOn": "Доступно в {network}",
       "approving": "Одобрение...",
       "approveInWallet": "Одобрить в кошельке",
-      "enterAddress": "{network} адрес",
       "errors": {
-        "seeRequest": "См. запрос в {walletName}",
-        "invalidAddress": "Неверный адрес"
+        "seeRequest": "См. запрос в {walletName}"
       },
       "from": "От",
       "loading": "Загрузка",
-      "titleDeposit": "Депозит {coinDenom}",
-      "titleWithdraw": "Вывести {coinDenom}",
       "to": "К",
       "transferFee": "Комиссия за перевод",
-      "waitTime": "{minutes} минут",
-      "warnDepositAddressDifferent": "Внимание: выбранная учетная запись в {address} отличается от учетной записи, с которой вы в последний раз вносили депозит.",
       "expectedOutput": "Ожидаемый результат",
       "expectedOutputInfo": "В зависимости от используемого поставщика производительность может быть ниже в зависимости от комиссий, проскальзывания и влияния на цену.",
       "priceImpact": "Влияние на цену",
       "sending": "Отправка...",
       "transferAnyway": "Перенос в любом случае"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Следующий",
-      "deposit": "Депозит",
-      "network": "Сеть",
-      "withdraw": "Отзывать"
-    },
     "unbondedAssets": "Доступный",
-    "nomic": {
-      "addresses": "адреса.",
-      "bitcoin": "Биткойн (БТД)",
-      "bitcoinMinerFee": "Комиссия майнера биткойнов",
-      "bridgeAtCapacity": "В настоящее время мост загружен. Пожалуйста, повторите попытку позже.",
-      "bridgeFee": "Комиссия за Nomic Bridge",
-      "confirmations": "6 подтверждений",
-      "enterBitcoinAddress": "Введите биткойн-адрес",
-      "estimatedArrival": "ожидаемое прибытие",
-      "estimatedTimeTag": "Расчетное время",
-      "estimatedTime": "5 минут",
-      "expirationTime": "4 дня",
-      "learnMore": "Узнайте больше на",
-      "lossOfFunds": "Использование адреса после этого времени приведет к потере средств.",
-      "minDeposit": "Минимальный депозит",
-      "minWithdrawal": "Минимальный вывод",
-      "nomicCapacityLimit": "Nomic имеет ограничение мощности",
-      "onlyUse": "Используйте только",
-      "pendingDeposits": "Ожидаемые депозиты",
-      "poweredBy": "Питаться от",
-      "proceed": "Продолжить",
-      "depositExpiration": "Срок действия этого депозитного адреса истекает через",
-      "undergoAudit": "во время прохождения аудита (завершение ожидается в январе 2024 г.).",
-      "warning": "ПРЕДУПРЕЖДЕНИЕ:",
-      "loading": "Загрузка..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Активировать непроверенные активы",
       "description": "является непроверенным токеном. Вы хотите активировать его? Обязательно тщательно изучите рынок перед торговлей.",
@@ -324,9 +275,8 @@
     "assets": "Ресурсы",
     "recentActivity": "Недавняя активность",
     "seeAll": "Смотреть все",
-    "show": "Показывать",
-    "hide": "Скрывать",
-    "hidden": "Скрытый",
+    "showHidden": "Показать скрытое ( {hiddenDustCount} )",
+    "hideSmallBalances": "Скрыть небольшие остатки",
     "cypherSpend": "Платить за осмос",
     "cypherOrder": "Закажите карту сейчас",
     "cypherBeta": "Бета"
@@ -1164,7 +1114,6 @@
       "veryHigh": "Очень высоко"
     }
   },
-  "disclaimer": "Отказ от ответственности",
   "remaining": "оставшийся",
   "timeUnits": {
     "second": "второй",

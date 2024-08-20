@@ -256,7 +256,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: swapState.quote?.timeMs,
-        router: swapState.quote?.name,
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
       setIsSendingTx(true);

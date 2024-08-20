@@ -9,18 +9,23 @@ import {
   SplitTokenInQuote,
   SplitTokenOutQuote,
   Token,
-  TokenOutGivenInRouter,
 } from "@osmosis-labs/pools/build/router";
 import { apiClient } from "@osmosis-labs/utils";
 
+import { SIDECAR_BASE_URL } from "../../env";
 import {
   SidecarInGivenOutQuoteResponse,
   SidecarPoolType,
   SidecarQuoteResponse,
 } from "./types";
 
+/** Get a client for the sidecar router. */
+export function getSidecarRouter() {
+  return new OsmosisSidecarRemoteRouter(SIDECAR_BASE_URL);
+}
+
 /** Use this as a client for generating quotes from a sidecar query server. */
-export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
+class OsmosisSidecarRemoteRouter {
   protected readonly baseUrl: URL;
 
   constructor(protected readonly sidecarBaseUrl: string) {
