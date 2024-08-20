@@ -320,6 +320,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         swapState.marketState.outAmountInput.setAmount,
         tab,
         type,
+        resetSlippage,
       ]
     );
 
