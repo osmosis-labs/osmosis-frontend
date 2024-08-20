@@ -1,15 +1,21 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 
 export const UserZeroBalanceTableSplash: FunctionComponent = () => {
   const { t } = useTranslation();
-  const { startBridge, fiatRampSelection } = useBridge();
+  const { startBridge, fiatRampSelection } = useBridgeStore(
+    useShallow((state) => ({
+      startBridge: state.startBridge,
+      fiatRampSelection: state.fiatRampSelection,
+    }))
+  );
 
   return (
     <div className="mx-auto flex w-fit flex-col gap-4 py-3 text-center">
