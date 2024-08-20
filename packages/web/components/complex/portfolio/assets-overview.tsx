@@ -11,8 +11,8 @@ import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useEffect } from "react";
 import { useMemo } from "react";
+import { useLocalStorage } from "react-use";
 import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
@@ -143,13 +143,12 @@ export const AssetsOverview: FunctionComponent<
       ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
       : totalValue?.toString();
 
-  const [isChartMinimized, setIsChartMinimized] = useState(
-    width < Breakpoint.lg ? false : true
+  const [_isChartMinimized, setIsChartMinimized] = useLocalStorage(
+    "is-portfolio-chart-minimized",
+    true
   );
 
-  useEffect(() => {
-    if (width < Breakpoint.lg) setIsChartMinimized(false);
-  }, [isMobile, width]);
+  const isChartMinimized = width < Breakpoint.lg ? false : _isChartMinimized;
 
   const localizedPortfolioOverTimeData = useMemo(
     () =>
