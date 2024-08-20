@@ -131,8 +131,8 @@ export function useSwap(
     errorMsg: quoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset!,
-      tokenOut: swapAssets.toAsset!,
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
@@ -1108,16 +1108,20 @@ function useQueryRouterBestQuote(
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
-    tokenIn: MinimalAsset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
-    tokenOut: MinimalAsset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
+    tokenIn:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
+    tokenOut:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
     maxSlippage: Dec | undefined;
   },
   enabled: boolean
@@ -1170,11 +1174,14 @@ function useQueryRouterBestQuote(
   }, [quoteResult]);
 
   const { value: messages } = useAsync(async () => {
-    if (!quote) return undefined;
+    const tokenOutCoinDecimals = input.tokenOut?.coinDecimals;
+    const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
+    if (!quote || !tokenOutCoinDecimals || !tokenInCoinMinimalDenom)
+      return undefined;
     const messages = await getSwapMessages({
       quote: quote,
-      tokenOutCoinDecimals: input.tokenOut.coinDecimals,
-      tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
+      tokenOutCoinDecimals,
+      tokenInCoinMinimalDenom,
       maxSlippage: input.maxSlippage?.toString(),
       coinAmount: input.tokenInAmount,
       userOsmoAddress: account?.address,
@@ -1184,9 +1191,9 @@ function useQueryRouterBestQuote(
     account?.address,
     quote,
     input.maxSlippage,
-    input.tokenIn.coinMinimalDenom,
+    input.tokenIn?.coinMinimalDenom,
     input.tokenInAmount,
-    input.tokenOut.coinDecimals,
+    input.tokenOut?.coinDecimals,
   ]);
 
   return {
