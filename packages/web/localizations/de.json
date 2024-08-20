@@ -171,12 +171,6 @@
       "FeeAPY": "Gebühr APY",
       "liquidity": "Meine Liquidität"
     },
-    "selectAssetSource": {
-      "installWallet": "Installieren Sie {walletName}",
-      "next": "Nächste",
-      "titleDeposit": "Einzahlung ab",
-      "titleWithdraw": "Sich zurückziehen"
-    },
     "stakedAssets": "Abgestecktes OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Kaution",
       "hideZero": "Nullsalden ausblenden",
       "hideBalances": "Maskierte Salden",
-      "preTransfer": {
-        "currentBal": "Aktueller Kontostand",
-        "deposit": "Kaution",
-        "withdraw": "Zurückziehen"
-      },
       "search": "Suchen",
       "sort": {
         "balance": "Gleichgewicht",
@@ -217,58 +206,20 @@
       "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
       "approveInWallet": "Im Wallet genehmigen",
-      "enterAddress": "{network} Adresse",
       "errors": {
-        "seeRequest": "Siehe Anfrage in {walletName}",
-        "invalidAddress": "Ungültige Adresse"
+        "seeRequest": "Siehe Anfrage in {walletName}"
       },
       "from": "Aus",
       "loading": "Wird geladen",
-      "titleDeposit": "Einzahlung {coinDenom}",
-      "titleWithdraw": "Abheben {coinDenom}",
       "to": "Zu",
       "transferFee": "Ablöse",
-      "waitTime": "{minutes} Minuten",
-      "warnDepositAddressDifferent": "Warnung: Das ausgewählte Konto in {address} unterscheidet sich von dem Konto, auf das Sie zuletzt eingezahlt haben.",
       "expectedOutput": "Erwartete Ausgabe",
       "expectedOutputInfo": "Abhängig vom genutzten Anbieter kann es aufgrund von Gebühren, Slippage und Preisauswirkungen zu einem geringeren Output kommen.",
       "priceImpact": "Preisauswirkungen",
       "sending": "Senden...",
       "transferAnyway": "Übertragen Sie trotzdem"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Nächste",
-      "deposit": "Kaution",
-      "network": "Netzwerk",
-      "withdraw": "Zurückziehen"
-    },
     "unbondedAssets": "Verfügbar",
-    "nomic": {
-      "addresses": "Adressen.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Bitcoin-Miner-Gebühr",
-      "bridgeAtCapacity": "Die Brücke ist derzeit voll. Bitte versuchen Sie es später noch einmal.",
-      "bridgeFee": "Nomic Bridge-Gebühr",
-      "confirmations": "6 Bestätigungen",
-      "enterBitcoinAddress": "Geben Sie die Bitcoin-Adresse ein",
-      "estimatedArrival": "Voraussichtliche Ankunft",
-      "estimatedTimeTag": "Geschätzte Zeit",
-      "estimatedTime": "5 Minuten",
-      "expirationTime": "4 Tage",
-      "learnMore": "Erfahren Sie mehr unter",
-      "lossOfFunds": "Eine spätere Verwendung der Adresse führt zum Verlust des Geldes.",
-      "minDeposit": "Mindesteinzahlung",
-      "minWithdrawal": "Mindestauszahlung",
-      "nomicCapacityLimit": "Nomic hat eine Kapazitätsgrenze von",
-      "onlyUse": "Benutz nur",
-      "pendingDeposits": "Ausstehende Einzahlungen",
-      "poweredBy": "Angetrieben von",
-      "proceed": "Fortfahren",
-      "depositExpiration": "Diese Einzahlungsadresse läuft in ab",
-      "undergoAudit": "während der Prüfung (voraussichtlicher Abschluss: Januar 2024).",
-      "warning": "WARNUNG:",
-      "loading": "Wird geladen..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Aktivieren Sie nicht verifizierte Assets",
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
@@ -325,8 +276,8 @@
     "recentActivity": "Letzte Aktivität",
     "seeAll": "Alles sehen",
     "show": "Zeigen",
-    "hide": "Verstecken",
-    "hidden": "Versteckt",
+    "showHidden": "Versteckte anzeigen ( {hiddenDustCount} )",
+    "hideSmallBalances": "Kleine Guthaben verbergen",
     "cypherSpend": "Osmose-Bezahlung",
     "cypherOrder": "Bestellen Sie jetzt Ihre Karte",
     "cypherBeta": "Beta"
@@ -1164,7 +1115,6 @@
       "veryHigh": "Sehr hoch"
     }
   },
-  "disclaimer": "Haftungsausschluss",
   "remaining": "übrig",
   "timeUnits": {
     "second": "zweite",

@@ -171,12 +171,6 @@
       "FeeAPY": "料金APY",
       "liquidity": "私の流動性"
     },
-    "selectAssetSource": {
-      "installWallet": "{walletName}をインストールします",
-      "next": "次",
-      "titleDeposit": "からの入金",
-      "titleWithdraw": "に撤退する"
-    },
     "stakedAssets": "ステークされたOSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "デポジット",
       "hideZero": "ゼロ残高を非表示にする",
       "hideBalances": "マスクされた残高",
-      "preTransfer": {
-        "currentBal": "経常収支",
-        "deposit": "デポジット",
-        "withdraw": "撤回する"
-      },
       "search": "検索",
       "sort": {
         "balance": "バランス",
@@ -217,58 +206,20 @@
       "availableOn": "{network}で利用可能",
       "approving": "承認中...",
       "approveInWallet": "ウォレットで承認",
-      "enterAddress": "{network}アドレス",
       "errors": {
-        "seeRequest": "{walletName}リクエストを参照してください。",
-        "invalidAddress": "無効なアドレス"
+        "seeRequest": "{walletName}リクエストを参照してください。"
       },
       "from": "から",
       "loading": "読み込み中",
-      "titleDeposit": "入金{coinDenom}",
-      "titleWithdraw": "出金{coinDenom}",
       "to": "に",
       "transferFee": "転送料",
-      "waitTime": "{minutes}分",
-      "warnDepositAddressDifferent": "警告: {address}で選択したアカウントは、最後に入金したアカウントとは異なります。",
       "expectedOutput": "期待される出力",
       "expectedOutputInfo": "使用するプロバイダーによっては、料金、スリッページ、価格への影響に応じて出力が低下する場合があります。",
       "priceImpact": "価格への影響",
       "sending": "送信...",
       "transferAnyway": "とにかく転送"
     },
-    "transferAssetSelect": {
-      "buttonNext": "次",
-      "deposit": "デポジット",
-      "network": "通信網",
-      "withdraw": "撤回する"
-    },
     "unbondedAssets": "利用可能",
-    "nomic": {
-      "addresses": "アドレス。",
-      "bitcoin": "ビットコイン (BTC)",
-      "bitcoinMinerFee": "ビットコインマイナー手数料",
-      "bridgeAtCapacity": "橋は現在満杯です。後でもう一度試してください。",
-      "bridgeFee": "ノミックブリッジ料金",
-      "confirmations": "6件の確認",
-      "enterBitcoinAddress": "ビットコインアドレスを入力してください",
-      "estimatedArrival": "到着予定時刻",
-      "estimatedTimeTag": "予定時刻",
-      "estimatedTime": "5分",
-      "expirationTime": "4日",
-      "learnMore": "詳細については、こちらをご覧ください",
-      "lossOfFunds": "この期間を過ぎてアドレスを使用すると資金が失われます。",
-      "minDeposit": "最低入金額",
-      "minWithdrawal": "最低出金額",
-      "nomicCapacityLimit": "Nomic には次の容量制限があります",
-      "onlyUse": "のみ使用します",
-      "pendingDeposits": "保留中の預金",
-      "poweredBy": "搭載",
-      "proceed": "進む",
-      "depositExpiration": "この入金アドレスの有効期限は次のとおりです",
-      "undergoAudit": "監査を受けている間（完了予定は 2024 年 1 月）。",
-      "warning": "警告：",
-      "loading": "読み込み中..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "未検証のアセットをアクティブ化する",
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
@@ -325,8 +276,8 @@
     "recentActivity": "最近のアクティビティ",
     "seeAll": "すべて見る",
     "show": "見せる",
-    "hide": "隠れる",
-    "hidden": "隠れた",
+    "showHidden": "非表示を表示 ( {hiddenDustCount} )",
+    "hideSmallBalances": "少額残高を非表示にする",
     "cypherSpend": "オズモーシスペイ",
     "cypherOrder": "今すぐカードを注文する",
     "cypherBeta": "ベータ"
@@ -1164,7 +1115,6 @@
       "veryHigh": "すごく高い"
     }
   },
-  "disclaimer": "免責事項",
   "remaining": "残り",
   "timeUnits": {
     "second": "2番",

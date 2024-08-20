@@ -4,11 +4,11 @@ import { NextSeo } from "next-seo";
 import { useMount } from "react-use";
 
 import { useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 
 const TestBridge: NextPage = () => {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   useMount(() => {
     bridgeAsset({

@@ -171,12 +171,6 @@
       "FeeAPY": "수수료 APY",
       "liquidity": "내 유동성"
     },
-    "selectAssetSource": {
-      "installWallet": "{walletName} 설치",
-      "next": "다음",
-      "titleDeposit": "입금할 지갑",
-      "titleWithdraw": "출금할 지갑"
-    },
     "stakedAssets": "스테이킹된 OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
       "hideBalances": "자산 숨기기",
-      "preTransfer": {
-        "currentBal": "현재 수량",
-        "deposit": "입금",
-        "withdraw": "출금"
-      },
       "search": "검색",
       "sort": {
         "balance": "수량",
@@ -217,58 +206,20 @@
       "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "approveInWallet": "지갑에서 승인",
-      "enterAddress": "{network} 주소",
       "errors": {
-        "seeRequest": "{walletName}에서 요청 사항 확인하기",
-        "invalidAddress": "잘못된 주소"
+        "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
       "from": "발신 체인",
       "loading": "로딩",
-      "titleDeposit": "{coinDenom} 입금",
-      "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
-      "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
       "expectedOutput": "예상 출력",
       "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
       "sending": "배상...",
       "transferAnyway": "무시하고 전송"
     },
-    "transferAssetSelect": {
-      "buttonNext": "다음",
-      "deposit": "입금",
-      "network": "네트워크",
-      "withdraw": "출금"
-    },
     "unbondedAssets": "예치해제된 자산",
-    "nomic": {
-      "addresses": "구애.",
-      "bitcoin": "비트코인(BTC)",
-      "bitcoinMinerFee": "비트코인 채굴자 수수료",
-      "bridgeAtCapacity": "교량은 현재 수용능력이 찼습니다. 나중에 다시 시도 해주십시오.",
-      "bridgeFee": "노믹 브릿지 수수료",
-      "confirmations": "6개의 확인",
-      "enterBitcoinAddress": "비트코인 주소를 입력하세요",
-      "estimatedArrival": "예상 도착 시간",
-      "estimatedTimeTag": "예상 시간",
-      "estimatedTime": "5 분",
-      "expirationTime": "4 일",
-      "learnMore": "자세히 알아보기",
-      "lossOfFunds": "이 시간 이후에 주소를 사용하면 자금이 손실됩니다.",
-      "minDeposit": "최소 입금액",
-      "minWithdrawal": "최소 출금",
-      "nomicCapacityLimit": "Nomic의 용량 제한은 다음과 같습니다.",
-      "onlyUse": "만 사용",
-      "pendingDeposits": "대기 중인 예금",
-      "poweredBy": "제공:",
-      "proceed": "진행하다",
-      "depositExpiration": "이 입금 주소는 다음 날짜에 만료됩니다.",
-      "undergoAudit": "감사 진행중",
-      "warning": "경고:",
-      "loading": "로딩 중..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "확인되지 않은 자산 활성화",
       "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
@@ -325,8 +276,8 @@
     "recentActivity": "최근 활동",
     "seeAll": "모두 보기",
     "show": "보여주다",
-    "hide": "숨다",
-    "hidden": "숨겨진",
+    "showHidden": "숨겨진 항목 표시( {hiddenDustCount} )",
+    "hideSmallBalances": "소액 잔액 숨기기",
     "cypherSpend": "오스모시스 페이",
     "cypherOrder": "지금 카드를 주문하세요",
     "cypherBeta": "베타"
@@ -1164,7 +1115,6 @@
       "veryHigh": "매우 높음"
     }
   },
-  "disclaimer": "부인 성명",
   "remaining": "남은",
   "timeUnits": {
     "second": "두번째",

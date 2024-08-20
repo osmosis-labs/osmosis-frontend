@@ -171,12 +171,6 @@
       "FeeAPY": "Frais PAR",
       "liquidity": "Ma liquidité"
     },
-    "selectAssetSource": {
-      "installWallet": "Installer {walletName}",
-      "next": "Suivant",
-      "titleDeposit": "Dépôt de",
-      "titleWithdraw": "Retirer à"
-    },
     "stakedAssets": "OSMO cautionné",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
       "hideBalances": "Soldes masqués",
-      "preTransfer": {
-        "currentBal": "solde actuel",
-        "deposit": "Déposer",
-        "withdraw": "Retirer"
-      },
       "search": "Chercher",
       "sort": {
         "balance": "Solde",
@@ -217,58 +206,20 @@
       "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "approveInWallet": "Approuver dans le portefeuille",
-      "enterAddress": "Adresse {network}",
       "errors": {
-        "seeRequest": "Voir la demande dans {walletName}",
-        "invalidAddress": "Adresse invalide"
+        "seeRequest": "Voir la demande dans {walletName}"
       },
       "from": "De",
       "loading": "Chargement",
-      "titleDeposit": "Déposer {coinDenom}",
-      "titleWithdraw": "Retirer {coinDenom}",
       "to": "À",
       "transferFee": "Frais de transfert",
-      "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
       "expectedOutput": "Production attendue",
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
       "sending": "Envoi en cours...",
       "transferAnyway": "Transférer quand même"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Suivant",
-      "deposit": "Déposer",
-      "network": "Réseau",
-      "withdraw": "Retirer"
-    },
     "unbondedAssets": "Actifs non liés",
-    "nomic": {
-      "addresses": "adresses.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Frais de mineur Bitcoin",
-      "bridgeAtCapacity": "Le pont est actuellement à pleine capacité. Veuillez réessayer plus tard.",
-      "bridgeFee": "Frais de pont nomiques",
-      "confirmations": "6 confirmations",
-      "enterBitcoinAddress": "Entrez l'adresse Bitcoin",
-      "estimatedArrival": "Arrivée estimée",
-      "estimatedTimeTag": "Temps estimé",
-      "estimatedTime": "5 minutes",
-      "expirationTime": "4 jours",
-      "learnMore": "Apprenez-en davantage sur",
-      "lossOfFunds": "L'utilisation de l'adresse après cette heure entraînera une perte de fonds.",
-      "minDeposit": "Dépôt minimum",
-      "minWithdrawal": "Retrait minimum",
-      "nomicCapacityLimit": "Nomic a une limite de capacité de",
-      "onlyUse": "Seule utilisation",
-      "pendingDeposits": "Dépôts en attente",
-      "poweredBy": "Alimenté par",
-      "proceed": "Procéder",
-      "depositExpiration": "Cette adresse de dépôt expire dans",
-      "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
-      "warning": "AVERTISSEMENT:",
-      "loading": "Chargement..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
@@ -325,8 +276,8 @@
     "recentActivity": "Activité récente",
     "seeAll": "Tout voir",
     "show": "Montrer",
-    "hide": "Cacher",
-    "hidden": "Caché",
+    "showHidden": "Afficher caché ( {hiddenDustCount} )",
+    "hideSmallBalances": "Masquer les petits soldes",
     "cypherSpend": "Paiement par osmose",
     "cypherOrder": "Commandez votre carte maintenant",
     "cypherBeta": "Bêta"
@@ -1164,7 +1115,6 @@
       "veryHigh": "Très haut"
     }
   },
-  "disclaimer": "Clause de non-responsabilité",
   "remaining": "restant",
   "timeUnits": {
     "second": "deuxième",

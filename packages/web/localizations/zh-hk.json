@@ -171,12 +171,6 @@
       "FeeAPY": "交易費 APY",
       "liquidity": "我嘅流動性"
     },
-    "selectAssetSource": {
-      "installWallet": "安裝 {walletName}",
-      "next": "下一步",
-      "titleDeposit": "存入自",
-      "titleWithdraw": "轉出到"
-    },
     "stakedAssets": "已質押嘅OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "存入",
       "hideZero": "隱藏結餘為零嘅項目",
       "hideBalances": "隱藏餘額",
-      "preTransfer": {
-        "currentBal": "目前結餘",
-        "deposit": "存入",
-        "withdraw": "轉出"
-      },
       "search": "搜索",
       "sort": {
         "balance": "結餘",
@@ -217,58 +206,20 @@
       "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "approveInWallet": "在錢包中批准",
-      "enterAddress": "{network}位址",
       "errors": {
-        "seeRequest": "在{walletName}中查看請求",
-        "invalidAddress": "無效地址"
+        "seeRequest": "在{walletName}中查看請求"
       },
       "from": "從",
       "loading": "載入中",
-      "titleDeposit": "存入 {coinDenom}",
-      "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
-      "waitTime": "{minutes} 分鐘",
-      "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同",
       "expectedOutput": "預期輸出",
       "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
       "priceImpact": "價格影響",
       "sending": "正在發送...",
       "transferAnyway": "無論如何轉移"
     },
-    "transferAssetSelect": {
-      "buttonNext": "下一步",
-      "deposit": "存入",
-      "network": "網絡",
-      "withdraw": "轉出"
-    },
     "unbondedAssets": "未鎖定",
-    "nomic": {
-      "addresses": "地址。",
-      "bitcoin": "比特幣（BTC）",
-      "bitcoinMinerFee": "比特幣礦工費",
-      "bridgeAtCapacity": "該橋目前已滿載。請稍後再試。",
-      "bridgeFee": "諾米克橋費",
-      "confirmations": "6 確認",
-      "enterBitcoinAddress": "輸入比特幣地址",
-      "estimatedArrival": "預計抵達時間",
-      "estimatedTimeTag": "預計時間",
-      "estimatedTime": "5分鐘",
-      "expirationTime": "4天",
-      "learnMore": "了解更多信息，請訪問",
-      "lossOfFunds": "在此時間之後使用地址將導致資金損失。",
-      "minDeposit": "最低存款額",
-      "minWithdrawal": "最低提款額",
-      "nomicCapacityLimit": "Nomic 的容量限制為",
-      "onlyUse": "僅使用",
-      "pendingDeposits": "待處理存款",
-      "poweredBy": "供電",
-      "proceed": "繼續",
-      "depositExpiration": "該儲值地址到期時間為",
-      "undergoAudit": "正在接受審核（預計於 2024 年 1 月完成）。",
-      "warning": "警告：",
-      "loading": "載入中..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "啟動未驗證資產",
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
@@ -325,8 +276,8 @@
     "recentActivity": "最近的活動",
     "seeAll": "看全部",
     "show": "展示",
-    "hide": "隱藏",
-    "hidden": "隱",
+    "showHidden": "顯示隱藏 ( {hiddenDustCount} )",
+    "hideSmallBalances": "隱藏小額餘額",
     "cypherSpend": "滲透支付",
     "cypherOrder": "立即訂購您的卡",
     "cypherBeta": "貝塔"
@@ -1164,7 +1115,6 @@
       "veryHigh": "很高"
     }
   },
-  "disclaimer": "免責聲明",
   "remaining": "其餘的",
   "timeUnits": {
     "second": "第二",

@@ -171,12 +171,6 @@
       "FeeAPY": "ફી APY",
       "liquidity": "મારી લિક્વિડિટી"
     },
-    "selectAssetSource": {
-      "installWallet": "ઇન્સ્ટોલ કરો {walletName}",
-      "next": "આગળ",
-      "titleDeposit": "થી જમા",
-      "titleWithdraw": "માટે પાછી ખેંચો"
-    },
     "stakedAssets": "સ્ટેક્ડ OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "જમા",
       "hideZero": "શૂન્ય બેલેન્સ છુપાવો",
       "hideBalances": "માસ્ક બેલેન્સ",
-      "preTransfer": {
-        "currentBal": "વર્તમાન રકમ",
-        "deposit": "જમા",
-        "withdraw": "ઉપાડો"
-      },
       "search": "શોધો",
       "sort": {
         "balance": "સંતુલન",
@@ -217,58 +206,20 @@
       "availableOn": "{network} પર ઉપલબ્ધ",
       "approving": "મંજૂર કરી રહ્યાં છીએ...",
       "approveInWallet": "વૉલેટમાં મંજૂર કરો",
-      "enterAddress": "{network} સરનામું",
       "errors": {
-        "seeRequest": "{walletName} માં વિનંતી જુઓ",
-        "invalidAddress": "અમાન્ય સરનામું"
+        "seeRequest": "{walletName} માં વિનંતી જુઓ"
       },
       "from": "થી",
       "loading": "લોડ કરી રહ્યું છે",
-      "titleDeposit": "જમા {coinDenom}",
-      "titleWithdraw": "પાછી ખેંચો {coinDenom}",
       "to": "પ્રતિ",
       "transferFee": "ટ્રાન્સફર ફી",
-      "waitTime": "{minutes} મિનિટ",
-      "warnDepositAddressDifferent": "ચેતવણી: {address} માં પસંદ કરેલ ખાતું તમે છેલ્લે જમા કરાવેલ ખાતાથી અલગ છે.",
       "expectedOutput": "અપેક્ષિત આઉટપુટ",
       "expectedOutputInfo": "ઉપયોગમાં લેવાતા પ્રદાતાના આધારે, ફી, સ્લિપેજ અને કિંમતની અસર અનુસાર ઓછું આઉટપુટ હોઈ શકે છે.",
       "priceImpact": "ભાવની અસર",
       "sending": "મોકલી રહ્યું છે...",
       "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો"
     },
-    "transferAssetSelect": {
-      "buttonNext": "આગળ",
-      "deposit": "જમા",
-      "network": "નેટવર્ક",
-      "withdraw": "ઉપાડો"
-    },
     "unbondedAssets": "ઉપલબ્ધ છે",
-    "nomic": {
-      "addresses": "સરનામાં",
-      "bitcoin": "બિટકોઇન (BTC)",
-      "bitcoinMinerFee": "Bitcoin ખાણિયો ફી",
-      "bridgeAtCapacity": "બ્રિજ હાલમાં ક્ષમતા પર છે. પછીથી ફરી પ્રયત્ન કરો.",
-      "bridgeFee": "નોમિક બ્રિજ ફી",
-      "confirmations": "6 પુષ્ટિકરણ",
-      "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો",
-      "estimatedArrival": "અંદાજિત આગમન",
-      "estimatedTimeTag": "અંદાજિત સમય",
-      "estimatedTime": "5 મિનિટ",
-      "expirationTime": "4 દિવસ",
-      "learnMore": "પર વધુ જાણો",
-      "lossOfFunds": "આ સમય પછી સરનામાના ઉપયોગથી ભંડોળની ખોટ થશે.",
-      "minDeposit": "ન્યૂનતમ થાપણ",
-      "minWithdrawal": "ન્યૂનતમ ઉપાડ",
-      "nomicCapacityLimit": "નોમિકની ક્ષમતા મર્યાદા છે",
-      "onlyUse": "ફક્ત ઉપયોગ કરો",
-      "pendingDeposits": "બાકી થાપણો",
-      "poweredBy": "દ્વારા સંચાલિત",
-      "proceed": "આગળ વધો",
-      "depositExpiration": "આ ડિપોઝિટ એડ્રેસની સમયસીમા સમાપ્ત થાય છે",
-      "undergoAudit": "જ્યારે ઓડિટ થઈ રહ્યું છે (અંદાજે જાન્યુઆરી 2024 પૂર્ણ થશે).",
-      "warning": "ચેતવણી:",
-      "loading": "લોડ કરી રહ્યું છે..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "ચકાસાયેલ અસ્કયામતો સક્રિય કરો",
       "description": "વણચકાસાયેલ ટોકન છે. શું તમે તેને સક્રિય કરવા માંગો છો? વેપાર કરતા પહેલા સંપૂર્ણ સંશોધન કરવાની ખાતરી કરો.",
@@ -325,8 +276,8 @@
     "recentActivity": "તાજેતરની પ્રવૃત્તિ",
     "seeAll": "બધા જુઓ",
     "show": "બતાવો",
-    "hide": "છુપાવો",
-    "hidden": "છુપાયેલ",
+    "showHidden": "છુપાયેલ બતાવો ( {hiddenDustCount} )",
+    "hideSmallBalances": "નાના બેલેન્સ છુપાવો",
     "cypherSpend": "ઓસ્મોસિસ પે",
     "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
     "cypherBeta": "બેટા"
@@ -1164,7 +1115,6 @@
       "veryHigh": "ખૂબ જ ઊંચી"
     }
   },
-  "disclaimer": "અસ્વીકરણ",
   "remaining": "બાકી",
   "timeUnits": {
     "second": "બીજું",
