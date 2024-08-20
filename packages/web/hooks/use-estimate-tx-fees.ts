@@ -9,6 +9,7 @@ import {
   InsufficientBalanceForFeeError,
   OsmosisAccount,
   SignOptions,
+  SwapRequiresError,
 } from "@osmosis-labs/stores";
 import { QuoteStdFee } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
@@ -125,6 +126,13 @@ export function useEstimateTxFees({
         queryResult.error.message.includes("insufficient funds"))
     ) {
       return new InsufficientBalanceForFeeError(queryResult.error.message);
+    }
+
+    if (
+      queryResult.error instanceof Error &&
+      queryResult.error.message.includes("Swap requires")
+    ) {
+      return new SwapRequiresError(queryResult.error.message);
     }
     if (queryResult.error) console.log(messages, queryResult.error);
     return queryResult.error;

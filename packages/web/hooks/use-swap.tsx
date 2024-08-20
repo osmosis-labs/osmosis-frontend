@@ -6,7 +6,7 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY, type RouterKey } from "@osmosis-labs/server";
-import { SignOptions } from "@osmosis-labs/stores";
+import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   makeSplitRoutesSwapExactAmountInMsg,
   makeSplitRoutesSwapExactAmountOutMsg,
@@ -278,7 +278,6 @@ export function useSwap(
       error = spotPriceQuoteError;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error as any)?.error;
-    console.log(error);
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
@@ -1701,4 +1700,82 @@ export function useRecommendedAssets(
         ),
     [fromCoinMinimalDenom, toCoinMinimalDenom]
   );
+}
+
+/** Dynamically adjusts slippage for in-given-out quotes */
+export function useDynamicSlippageConfig({
+  slippageConfig,
+  feeError,
+  quoteType = "out-given-in",
+}: {
+  slippageConfig: ObservableSlippageConfig;
+  feeError?: Error | null;
+  quoteType: QuoteType;
+}) {
+  useEffect(() => {
+    if (feeError) {
+      if (
+        feeError.message.includes("Swap requires") &&
+        quoteType === "in-given-out"
+      ) {
+        const amounts = extractSwapRequiredErrorAmounts(feeError.message);
+
+        if (amounts) {
+          const [required, sent] = amounts;
+          const slippage = new Dec(1).add(slippageConfig.slippage.toDec());
+
+          if (!required || !sent) return;
+
+          console.log(`Required: ${required}`);
+          console.log(`Sent: ${sent}`);
+          console.log("Current slippage", slippage.toString());
+          const amountPreSlippage = new Dec(sent).quo(slippage);
+          const slippageRequired = new Dec(required).quo(amountPreSlippage);
+
+          console.log("Slippage Required", slippageRequired.toString());
+
+          if (slippageRequired.gt(slippage)) {
+            const [index, amount] = slippageConfig.getSmallestSlippage(
+              slippageRequired.sub(new Dec(1))
+            );
+
+            console.log("Setting slippage to", amount.toString());
+
+            slippageConfig.select(index as number);
+            slippageConfig.setDefaultSlippage(
+              trimPlaceholderZeros(
+                (amount as Dec)
+                  .mul(DecUtils.getTenExponentNInPrecisionRange(2))
+                  .toString()
+              )
+            );
+          }
+        } else {
+          console.log("No amounts found");
+        }
+      }
+    }
+  }, [feeError, slippageConfig, quoteType]);
+}
+
+/** Extracts the numerical values from the swap required error
+ *
+ * e.g. Error: Fetch error. failed to execute message; message index: 0:
+ * Swap requires 498419192699272362737ibc/E47F4E97C534C95B942729E1B25DBDE111EA791411CFF100515050BEA0AC0C6B,
+ * which is greater than the amount 497246119581463551214: calculated amount is larger than max amount
+ *
+ * returns ["498419192699272362737", "497246119581463551214"]
+ */
+function extractSwapRequiredErrorAmounts(str: string) {
+  const regex = /^\d+/;
+  const split = str
+    .split(" ")
+    .map((s) => {
+      if (regex.test(s)) {
+        return s.match(regex)?.[0] ?? undefined;
+      }
+    })
+    .filter(Boolean);
+
+  return [split[1], split[2]];
 }

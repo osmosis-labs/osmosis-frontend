@@ -40,7 +40,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { QuoteType, useSwap } from "~/hooks/use-swap";
+import { QuoteType, useDynamicSlippageConfig, useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
@@ -108,6 +108,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       useQueryParams,
       forceSwapInPoolId,
       maxSlippage: slippageConfig.slippage.toDec(),
+      quoteType,
+    });
+
+    useDynamicSlippageConfig({
+      slippageConfig,
+      feeError: swapState.networkFeeError,
       quoteType,
     });
 
@@ -254,6 +260,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               sendTokenDenom: swapState.fromAsset.coinDenom,
             });
           }
+
+          slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+          slippageConfig.setDefaultSlippage(
+            quoteType === "in-given-out" ? "1" : "0.5"
+          );
         })
         .catch((error) => {
           console.error("swap failed", error);

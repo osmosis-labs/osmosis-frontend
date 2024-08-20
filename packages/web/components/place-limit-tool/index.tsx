@@ -37,7 +37,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
-import { QuoteType } from "~/hooks/use-swap";
+import { QuoteType, useDynamicSlippageConfig } from "~/hooks/use-swap";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
@@ -147,6 +147,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       type,
       page,
       maxSlippage: slippageConfig.slippage.toDec(),
+      quoteType,
+    });
+
+    useDynamicSlippageConfig({
+      slippageConfig,
+      feeError: swapState.marketState.networkFeeError,
       quoteType,
     });
 
@@ -749,6 +755,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             onOrderSuccess?.(
               swapState.baseAsset?.coinDenom,
               swapState.quoteAsset?.coinDenom
+            );
+            slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+            slippageConfig.setDefaultSlippage(
+              quoteType === "in-given-out" ? "1" : "0.5"
             );
           }}
           outAmountLessSlippage={outAmountLessSlippage}
