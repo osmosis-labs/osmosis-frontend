@@ -1,5 +1,11 @@
 import type { StdFee } from "@cosmjs/amino";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@keplr-wallet/unit";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -13,7 +19,7 @@ import {
   makeSwapExactAmountInMsg,
   makeSwapExactAmountOutMsg,
 } from "@osmosis-labs/tx";
-import { MinimalAsset } from "@osmosis-labs/types";
+import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
   getAssetFromAssetList,
   isNil,
@@ -37,6 +43,7 @@ import {
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading";
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -1642,6 +1649,93 @@ export function useRecommendedAssets(
         ),
     [fromCoinMinimalDenom, toCoinMinimalDenom]
   );
+}
+
+/**
+ * Calculates the input or output amount for a swap with slippage applied.
+ * For in-given-out this is the max input amount, for out-given-in this is the minimum output amount.
+ *
+ * @param swapState - The swap state object.
+ * @param slippageConfig - The slippage configuration object.
+ * @param quoteType - The type of quote to use.
+ * @returns The amount with slippage applied in both token and fiat values.
+ */
+export function useAmountWithSlippage({
+  swapState,
+  slippageConfig,
+  quoteType,
+}: {
+  swapState: SwapState;
+  slippageConfig: ObservableSlippageConfig;
+  quoteType: QuoteType;
+}) {
+  const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
+    // Compute ratio of 1 - slippage
+    const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+    const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
+
+    if (quoteType === "out-given-in") {
+      const amountWithSlippage = swapState.quote
+        ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+        : undefined;
+      const fiatAmountWithSlippage = swapState.tokenOutFiatValue
+        ? new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+          )
+        : undefined;
+
+      return { amountWithSlippage, fiatAmountWithSlippage };
+    }
+
+    if (quoteType === "in-given-out") {
+      const amountWithSlippage = swapState.quote
+        ? new IntPretty(swapState.quote.amount.toDec().mul(onePlusSlippage))
+        : new IntPretty(0);
+      const balance = new IntPretty(
+        swapState.inAmountInput.balance?.toDec() ?? new Dec(0)
+      );
+      // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
+      // which implies the user has enough balance.
+      const maxAmountWithSlippage =
+        amountWithSlippage > balance && !balance.toDec().isZero()
+          ? balance
+          : amountWithSlippage;
+
+      const fiatAmountWithSlippage = mulPrice(
+        new CoinPretty(
+          swapState.fromAsset as Currency,
+          maxAmountWithSlippage.mul(
+            DecUtils.getTenExponentN(swapState.fromAsset?.coinDecimals ?? 0)
+          )
+        ),
+        swapState.inAmountInput.price,
+        DEFAULT_VS_CURRENCY
+      );
+      return {
+        amountWithSlippage: maxAmountWithSlippage,
+        fiatAmountWithSlippage,
+      };
+    }
+
+    return {
+      amountWithSlippage: undefined,
+      fiatAmountWithSlippage: undefined,
+    };
+  }, [
+    slippageConfig.slippage,
+    swapState.quote,
+    swapState.tokenOutFiatValue,
+    quoteType,
+    swapState.fromAsset,
+    swapState.inAmountInput.price,
+    swapState.inAmountInput.balance,
+  ]);
+
+  return {
+    amountWithSlippage,
+    fiatAmountWithSlippage,
+  };
 }
 
 /** Dynamically adjusts slippage for in-given-out quotes */

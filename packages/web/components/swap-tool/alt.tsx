@@ -1,14 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -17,7 +9,6 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -48,8 +39,12 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { QuoteType, useDynamicSlippageConfig, useSwap } from "~/hooks/use-swap";
+import {
+  QuoteType,
+  useAmountWithSlippage,
+  useDynamicSlippageConfig,
+  useSwap,
+} from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
@@ -197,66 +192,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       slippageConfig.setDefaultSlippage(defaultSlippage);
     }, [quoteType, slippageConfig]);
 
-    const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
-      // Compute ratio of 1 - slippage
-      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
-      const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
-
-      if (quoteType === "out-given-in") {
-        const amountWithSlippage = swapState.quote
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
-          : undefined;
-        const fiatAmountWithSlippage = swapState.tokenOutFiatValue
-          ? new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
-            )
-          : undefined;
-
-        return { amountWithSlippage, fiatAmountWithSlippage };
-      }
-
-      if (quoteType === "in-given-out") {
-        const amountWithSlippage = swapState.quote
-          ? new IntPretty(swapState.quote.amount.toDec().mul(onePlusSlippage))
-          : new IntPretty(0);
-        const balance = new IntPretty(
-          swapState.inAmountInput.balance?.toDec() ?? new Dec(0)
-        );
-        const maxAmountWithSlippage =
-          amountWithSlippage > balance && !balance.toDec().isZero()
-            ? balance
-            : amountWithSlippage;
-
-        const fiatAmountWithSlippage = mulPrice(
-          new CoinPretty(
-            swapState.fromAsset as Currency,
-            maxAmountWithSlippage.mul(
-              DecUtils.getTenExponentN(swapState.fromAsset?.coinDecimals ?? 0)
-            )
-          ),
-          swapState.inAmountInput.price,
-          DEFAULT_VS_CURRENCY
-        );
-        return {
-          amountWithSlippage: maxAmountWithSlippage,
-          fiatAmountWithSlippage,
-        };
-      }
-
-      return {
-        amountWithSlippage: undefined,
-        fiatAmountWithSlippage: undefined,
-      };
-    }, [
-      slippageConfig.slippage,
-      swapState.quote,
-      swapState.tokenOutFiatValue,
-      swapState.inAmountInput.balance,
-      quoteType,
-      swapState.fromAsset,
-      swapState.inAmountInput.price,
-    ]);
+    const { amountWithSlippage, fiatAmountWithSlippage } =
+      useAmountWithSlippage({
+        swapState,
+        slippageConfig,
+        quoteType,
+      });
 
     // reivew swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
