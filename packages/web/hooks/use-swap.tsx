@@ -1468,74 +1468,65 @@ function useQueryRouterBestQuote(
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const trpcReact = createTRPCReact<AppRouter>();
 
+  const queryOptions = {
+    // quotes should not be considered fresh for long, otherwise
+    // the gas simulation will fail due to slippage and the user would see errors
+    staleTime: 5_000,
+    cacheTime: 5_000,
+    refetchInterval: 5_000,
+
+    // Disable retries, as useQueries
+    // will block successfull quotes from being returned
+    // if failed quotes are being returned
+    // until retry starts returning false.
+    // This causes slow UX even though there's a
+    // quote that the user can use.
+    retry: false,
+
+    // prevent batching so that fast routers can
+    // return requests faster than the slowest router
+    trpc: {
+      context: {
+        skipBatch: true,
+      },
+    },
+  };
+
+  const inGivenOutQuote =
+    trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
+      {
+        tokenOutAmount: input.tokenInAmount ?? "",
+        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+        forcePoolId: input.forcePoolId,
+      },
+      {
+        ...queryOptions,
+        enabled: enabled && quoteType === "in-given-out",
+
+        // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
+        staleTime: 10_000,
+        cacheTime: 10_000,
+        refetchInterval: 10_000,
+      }
+    );
+
+  const outGivenInQuote =
+    trpcReact.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+      {
+        tokenInAmount: input.tokenInAmount,
+        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+        forcePoolId: input.forcePoolId,
+      },
+      {
+        ...queryOptions,
+        enabled: enabled && quoteType === "out-given-in",
+      }
+    );
+
   const quoteResult =
-    quoteType === "out-given-in"
-      ? trpcReact.local.quoteRouter.routeTokenOutGivenIn.useQuery(
-          {
-            tokenInAmount: input.tokenInAmount,
-            tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-            tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-            forcePoolId: input.forcePoolId,
-          },
-          {
-            enabled: enabled,
-
-            // quotes should not be considered fresh for long, otherwise
-            // the gas simulation will fail due to slippage and the user would see errors
-            staleTime: 5_000,
-            cacheTime: 5_000,
-            refetchInterval: 5_000,
-
-            // Disable retries, as useQueries
-            // will block successfull quotes from being returned
-            // if failed quotes are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // quote that the user can use.
-            retry: false,
-
-            // prevent batching so that fast routers can
-            // return requests faster than the slowest router
-            trpc: {
-              context: {
-                skipBatch: true,
-              },
-            },
-          }
-        )
-      : trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
-          {
-            tokenOutAmount: input.tokenInAmount ?? "",
-            tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-            tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-            forcePoolId: input.forcePoolId,
-          },
-          {
-            enabled: enabled,
-
-            // quotes should not be considered fresh for long, otherwise
-            // the gas simulation will fail due to slippage and the user would see errors
-            staleTime: 10_000,
-            cacheTime: 10_000,
-            refetchInterval: 10_000,
-
-            // Disable retries, as useQueries
-            // will block successfull quotes from being returned
-            // if failed quotes are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // quote that the user can use.
-            retry: false,
-
-            // prevent batching so that fast routers can
-            // return requests faster than the slowest router
-            trpc: {
-              context: {
-                skipBatch: true,
-              },
-            },
-          }
-        );
+    quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
 
   const {
     data: quote,
