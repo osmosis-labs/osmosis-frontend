@@ -2,7 +2,9 @@ import type { PricePretty } from "@keplr-wallet/unit";
 
 export type AvailableOneClickTradingMessages =
   | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn"
-  | "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn";
+  | "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn"
+  | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut"
+  | "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut";
 
 export type OneClickTradingResetPeriods = "day" | "week" | "month" | "year";
 export interface OneClickTradingTimeLimit {

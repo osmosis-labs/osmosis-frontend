@@ -414,7 +414,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       "opacity-50":
                         quoteType === "in-given-out" && isSwapToolLoading,
                     })}
-                    disabled={quoteType === "in-given-out" && isSwapToolLoading}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -526,10 +525,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
                       resetSlippage();
                     }}
-                    disabled={
-                      !featureFlags.inGivenOut ||
-                      (quoteType === "out-given-in" && isSwapToolLoading)
-                    }
+                    disabled={!featureFlags.inGivenOut}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.toAsset?.coinDenom}
