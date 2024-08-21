@@ -1251,20 +1251,18 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
-            .balances.forEach((_bal) => {
-              //TODO: DOES THIS NEED REFRESHED?
-              // if (
-              //   bal.currency.coinMinimalDenom ===
-              //     tokenIn.currency.coinMinimalDenom ||
-              //   routes
-              //     .flatMap(({ pools }) => pools)
-              //     .find(
-              //       (pool) =>
-              //         pool.tokenOutDenom === bal.currency.coinMinimalDenom
-              //     )
-              // ) {
-              //   bal.waitFreshResponse();
-              // }
+            .balances.forEach((bal) => {
+              if (
+                bal.currency.coinMinimalDenom === tokenOut.coinMinimalDenom ||
+                routes
+                  .flatMap(({ pools }) => pools)
+                  .find(
+                    (pool) =>
+                      pool.tokenInDenom === bal.currency.coinMinimalDenom
+                  )
+              ) {
+                bal.waitFreshResponse();
+              }
             });
           routes
             .flatMap(({ pools }) => pools)
