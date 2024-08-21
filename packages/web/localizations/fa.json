@@ -777,7 +777,8 @@
     },
     "noRoutes": "هیچ مسیری پیدا نشد",
     "route": "مسیر",
-    "routes": "مسیرها"
+    "routes": "مسیرها",
+    "slippageOverBalance": "بودجه ناکافی برای پوشش لغزش"
   },
   "walletSelect": {
     "gettingStarted": "شروع شدن",

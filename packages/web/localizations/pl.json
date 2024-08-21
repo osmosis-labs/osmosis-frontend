@@ -777,7 +777,8 @@
     },
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
-    "routes": "trasy"
+    "routes": "trasy",
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",

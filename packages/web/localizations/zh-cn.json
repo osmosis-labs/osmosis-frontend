@@ -777,7 +777,8 @@
     },
     "noRoutes": "未找到任何路线",
     "route": "路线",
-    "routes": "路线"
+    "routes": "路线",
+    "slippageOverBalance": "资金不足以弥补滑点"
   },
   "walletSelect": {
     "gettingStarted": "入门",

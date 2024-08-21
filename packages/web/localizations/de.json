@@ -777,7 +777,8 @@
     },
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
-    "routes": "Routen"
+    "routes": "Routen",
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",

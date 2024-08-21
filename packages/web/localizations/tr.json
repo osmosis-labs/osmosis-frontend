@@ -777,7 +777,8 @@
     },
     "noRoutes": "Rota bulunamadı",
     "route": "rota",
-    "routes": "rotalar"
+    "routes": "rotalar",
+    "slippageOverBalance": "Kaymayı karşılayacak yeterli fon yok"
   },
   "walletSelect": {
     "gettingStarted": "Başlarken",

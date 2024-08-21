@@ -777,7 +777,8 @@
     },
     "noRoutes": "ルートが見つかりません",
     "route": "ルート",
-    "routes": "ルート"
+    "routes": "ルート",
+    "slippageOverBalance": "スリッページをカバーするための資金が不足している"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",

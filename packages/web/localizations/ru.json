@@ -777,7 +777,8 @@
     },
     "noRoutes": "Маршруты не найдены",
     "route": "маршрут",
-    "routes": "маршруты"
+    "routes": "маршруты",
+    "slippageOverBalance": "Недостаточно средств для покрытия проскальзывания"
   },
   "walletSelect": {
     "gettingStarted": "Начиная",

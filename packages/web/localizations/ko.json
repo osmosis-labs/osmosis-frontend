@@ -777,7 +777,8 @@
     },
     "noRoutes": "경로를 찾을 수 없습니다.",
     "route": "노선",
-    "routes": "노선"
+    "routes": "노선",
+    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다"
   },
   "walletSelect": {
     "gettingStarted": "시작하기",

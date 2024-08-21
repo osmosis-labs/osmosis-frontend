@@ -777,7 +777,8 @@
     },
     "noRoutes": "कोई मार्ग नहीं मिला",
     "route": "मार्ग",
-    "routes": "मार्ग"
+    "routes": "मार्ग",
+    "slippageOverBalance": "स्लिपेज को कवर करने के लिए अपर्याप्त धनराशि"
   },
   "walletSelect": {
     "gettingStarted": "शुरू करना",

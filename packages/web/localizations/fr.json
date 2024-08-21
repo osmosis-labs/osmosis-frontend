@@ -777,7 +777,8 @@
     },
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
-    "routes": "itinéraires"
+    "routes": "itinéraires",
+    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages"
   },
   "walletSelect": {
     "gettingStarted": "Commencer",

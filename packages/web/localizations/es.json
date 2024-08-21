@@ -777,7 +777,8 @@
     },
     "noRoutes": "No se encontraron rutas",
     "route": "ruta",
-    "routes": "rutas"
+    "routes": "rutas",
+    "slippageOverBalance": "Fondos insuficientes para cubrir el deslizamiento"
   },
   "walletSelect": {
     "gettingStarted": "Empezando",

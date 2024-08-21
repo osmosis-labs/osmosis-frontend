@@ -777,7 +777,8 @@
     },
     "noRoutes": "Nu au fost găsite rute",
     "route": "traseu",
-    "routes": "trasee"
+    "routes": "trasee",
+    "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul"
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",
