@@ -9,6 +9,7 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
+  useEffect,
   useRef,
   useState,
 } from "react";
@@ -93,12 +94,22 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
     const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
+    // auto focus from amount on token switch
+    const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
+    const toAmountInputEl = useRef<HTMLInputElement | null>(null);
 
     const [_, setType] = useQueryState("type");
 
     useMount(() => {
       setType(null);
     });
+
+    useEffect(() => {
+      if (!featureFlags.inGivenOut && quoteType === "in-given-out") {
+        setQuoteType("out-given-in");
+        fromAmountInputEl.current?.focus();
+      }
+    }, [featureFlags.inGivenOut, quoteType]);
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
@@ -129,10 +140,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         swapState.setToAssetDenom("OSMO");
       }
     }
-
-    // auto focus from amount on token switch
-    const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
-    const toAmountInputEl = useRef<HTMLInputElement | null>(null);
 
     const outputDifference = new RatePretty(
       swapState.inAmountInput?.fiatValue
