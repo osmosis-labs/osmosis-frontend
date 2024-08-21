@@ -777,7 +777,8 @@
     },
     "noRoutes": "Keine Routen gefunden",
     "route": "Route",
-    "routes": "Routen"
+    "routes": "Routen",
+    "slippageOverBalance": "Unzureichende Mittel zur Deckung von Slippage"
   },
   "walletSelect": {
     "gettingStarted": "Erste Schritte",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "Handelsgebühr",
-  "receiveAtLeast": "Erhalten Sie mindestens"
+  "receiveAtLeast": "Erhalten Sie mindestens",
+  "payAtMost": "Bezahlen Sie höchstens"
 }

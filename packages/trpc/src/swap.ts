@@ -1,5 +1,8 @@
 import { CoinPretty, Int, RatePretty } from "@keplr-wallet/unit";
-import type { SplitTokenInQuote } from "@osmosis-labs/pools";
+import type {
+  SplitTokenInQuote,
+  SplitTokenOutQuote,
+} from "@osmosis-labs/pools";
 import {
   captureIfError,
   getAsset,
@@ -60,6 +63,54 @@ export const swapRouter = createTRPCRouter({
         };
       }
     ),
+  routeTokenInGivenOut: publicProcedure
+    .input(
+      z.object({
+        tokenInDenom: z.string(),
+        tokenOutAmount: z.string(),
+        tokenOutDenom: z.string(),
+        forcePoolId: z.string().optional(),
+      })
+    )
+    .query(
+      async ({
+        input: { tokenInDenom, tokenOutAmount, tokenOutDenom, forcePoolId },
+        ctx,
+      }) => {
+        const router = getSidecarRouter();
+
+        // send to router
+        const startTime = Date.now();
+
+        const quote = await router.routeByTokenOut(
+          {
+            denom: tokenOutDenom,
+            amount: new Int(tokenOutAmount),
+          },
+          tokenInDenom,
+          forcePoolId
+        );
+
+        const timeMs = Date.now() - startTime;
+
+        const tokenInAsset = getAsset({
+          ...ctx,
+          anyDenom: tokenInDenom,
+        });
+        return {
+          ...quote,
+          split: makeDisplayableOutGivenInSplit(quote.split, ctx.assetLists),
+          // supplementary data with display types
+          name,
+          timeMs,
+          amount: new CoinPretty(tokenInAsset, quote.amount),
+          priceImpactTokenOut: quote.priceImpactTokenOut
+            ? new RatePretty(quote.priceImpactTokenOut.abs())
+            : undefined,
+          swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
+        };
+      }
+    ),
 });
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
@@ -86,6 +137,53 @@ function makeDisplayableSplit(
         getAsset({
           assetLists,
           anyDenom: tokenOutDenoms[index],
+        })
+      );
+
+      return {
+        id: pool_.id,
+        type,
+        spreadFactor: new RatePretty(pool_.swapFee ? pool_.swapFee : 0),
+        dynamicSpreadFactor: type === "cosmwasm-astroport-pcl",
+        inCurrency: inAsset,
+        outCurrency: outAsset,
+      };
+    });
+
+    return {
+      ...existingSplit,
+      pools: poolsWithInfos,
+    };
+  });
+}
+
+/** Get pool type, in, and out currency for displaying the route in detail. */
+function makeDisplayableOutGivenInSplit(
+  split: SplitTokenOutQuote["split"],
+  assetLists: AssetList[]
+) {
+  return split.map((existingSplit) => {
+    const { pools, tokenInDenoms, tokenOutDenom } = existingSplit;
+    const poolsWithInfos = pools.map((pool_, index) => {
+      let type: Pool["type"] = pool_.type as Pool["type"];
+
+      if (pool_?.codeId) {
+        type = getCosmwasmPoolTypeFromCodeId(pool_.codeId);
+      }
+
+      const inAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: tokenInDenoms[index],
+        })
+      );
+      const outAsset = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom:
+            index === pools.length - 1
+              ? tokenOutDenom
+              : tokenInDenoms[index + 1],
         })
       );
 

@@ -10,7 +10,14 @@ import {
   RouteWithInAmount,
   validateRoute,
 } from "./route";
-import { Logger, Quote, RoutablePool, SplitTokenInQuote, Token } from "./types";
+import {
+  Logger,
+  Quote,
+  RoutablePool,
+  SplitTokenInQuote,
+  SplitTokenOutQuote,
+  Token,
+} from "./types";
 import {
   cacheKeyForTokenOutGivenIn,
   invertRoute,
@@ -147,6 +154,14 @@ export class OptimizedRoutes {
     );
     const quote = await this.calculateTokenOutByTokenIn(split);
     return quote;
+  }
+
+  async routeByTokenOut(
+    _tokenOut: Token,
+    _tokenInDenom: string,
+    _forcePoolId?: string | undefined
+  ): Promise<SplitTokenOutQuote> {
+    throw new Error("TFM Router does not implement in given out");
   }
 
   async getOptimizedRoutesByTokenIn(

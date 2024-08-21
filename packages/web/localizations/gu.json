@@ -777,7 +777,8 @@
     },
     "noRoutes": "કોઈ રૂટ મળ્યા નથી",
     "route": "માર્ગ",
-    "routes": "માર્ગો"
+    "routes": "માર્ગો",
+    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ"
   },
   "walletSelect": {
     "gettingStarted": "શરૂઆત કરવી",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "વેપાર ફી",
-  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો"
+  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો",
+  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો"
 }

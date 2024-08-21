@@ -1,5 +1,3 @@
-import type { MsgSwapExactAmountOut } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
-
 import { getOsmosisCodec } from "../../codec";
 
 /**
@@ -81,19 +79,81 @@ export async function makeSwapExactAmountInMsg({
   );
 }
 
+/**
+ * Constructs a message for performing a swap with an exact output amount across a route
+ * — single or multiple liquidity pools. This function enables users to swap a specific
+ * amount of one token for another through specified liquidity pools, with a maximum
+ * acceptable amount of the input token.
+ */
 export async function makeSwapExactAmountOutMsg({
-  sender,
-  routes,
+  pools,
   tokenInMaxAmount,
   tokenOut,
-}: MsgSwapExactAmountOut) {
+  userOsmoAddress,
+}: {
+  pools: {
+    id: string;
+    tokenInDenom: string;
+  }[];
+  tokenInMaxAmount: string;
+  tokenOut: { coinMinimalDenom: string; amount: string };
+  userOsmoAddress: string;
+}) {
   const osmosis = await getOsmosisCodec();
   return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut(
     {
-      sender,
-      routes,
+      sender: userOsmoAddress,
+      routes: pools.map(({ id, tokenInDenom }) => {
+        return {
+          poolId: BigInt(id),
+          tokenInDenom: tokenInDenom,
+        };
+      }),
+      tokenOut: {
+        denom: tokenOut.coinMinimalDenom,
+        amount: tokenOut.amount,
+      },
       tokenInMaxAmount,
-      tokenOut,
+    }
+  );
+}
+
+/**
+ * Constructs a message for performing a split route swap with an exact output amount across
+ * multiple routes. This function allows users to swap a specific amount of one token
+ * for another through a series of split routes, specifying the maximum amount of
+ * the input token they are willing to accept.
+ */
+export async function makeSplitRoutesSwapExactAmountOutMsg({
+  routes,
+  tokenOut,
+  tokenInMaxAmount,
+  userOsmoAddress,
+}: {
+  routes: {
+    pools: {
+      id: string;
+      tokenInDenom: string;
+    }[];
+    tokenOutAmount: string;
+  }[];
+  tokenOut: { coinMinimalDenom: string };
+  tokenInMaxAmount: string;
+  userOsmoAddress: string;
+}) {
+  const osmosis = await getOsmosisCodec();
+  return osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.splitRouteSwapExactAmountOut(
+    {
+      sender: userOsmoAddress,
+      routes: routes.map(({ pools, tokenOutAmount }) => ({
+        pools: pools.map(({ id, tokenInDenom }) => ({
+          poolId: BigInt(id),
+          tokenInDenom: tokenInDenom,
+        })),
+        tokenOutAmount: tokenOutAmount,
+      })),
+      tokenOutDenom: tokenOut.coinMinimalDenom,
+      tokenInMaxAmount,
     }
   );
 }

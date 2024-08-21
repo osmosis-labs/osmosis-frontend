@@ -30,6 +30,7 @@ import {
   makeRemoveAuthenticatorMsg,
   makeSetValidatorSetPreferenceMsg,
   makeSplitRoutesSwapExactAmountInMsg,
+  makeSplitRoutesSwapExactAmountOutMsg,
   makeSuperfluidDelegateMsg,
   makeSuperfluidUnbondLockMsg,
   makeSuperfluidUndelegateMsg,
@@ -1206,6 +1207,78 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   *
+   * @param routes Routes to split swap through.
+   * @param tokenIn Token swapping in.
+   * @param tokenOutMinAmount Minimum amount of token out expected.
+   * @param numTicksCrossed Number of CL ticks crossed for swap quote.
+   * @param memo Transaction memo.
+   * @param TxFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendSplitRouteSwapExactAmountOutMsg(
+    routes: {
+      pools: {
+        id: string;
+        tokenInDenom: string;
+      }[];
+      tokenOutAmount: string;
+    }[],
+    tokenOut: { coinMinimalDenom: string },
+    tokenInMaxAmount: string,
+    memo: string = "",
+    signOptions?: SignOptions & { fee?: StdFee },
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const msg = await makeSplitRoutesSwapExactAmountOutMsg({
+      routes,
+      tokenOut,
+      tokenInMaxAmount,
+      userOsmoAddress: this.address,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "splitRouteSwapExactAmountOut",
+      [msg],
+      memo,
+      signOptions?.fee,
+      signOptions,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((bal) => {
+              if (
+                bal.currency.coinMinimalDenom === tokenOut.coinMinimalDenom ||
+                routes
+                  .flatMap(({ pools }) => pools)
+                  .find(
+                    (pool) =>
+                      pool.tokenInDenom === bal.currency.coinMinimalDenom
+                  )
+              ) {
+                bal.waitFreshResponse();
+              }
+            });
+          routes
+            .flatMap(({ pools }) => pools)
+            .forEach(({ id: poolId }) => {
+              queries.osmosis?.queryPools.getPool(poolId)?.waitFreshResponse();
+            });
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
    * Perform swap through one or more pools, with a desired input token.
    *
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
@@ -1287,7 +1360,7 @@ export class OsmosisAccountImpl {
       id: string;
       tokenInDenom: string;
     }[],
-    tokenOut: { currency: Currency; amount: string },
+    tokenOut: { coinMinimalDenom: string; amount: string },
     tokenInMaxAmount: string,
     memo: string = "",
     signOptions?: SignOptions,
@@ -1297,30 +1370,12 @@ export class OsmosisAccountImpl {
       this.chainId,
       "swapExactAmountOut",
       async () => {
-        const outUAmount = new Dec(tokenOut.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              tokenOut.currency.coinDecimals
-            )
-          )
-          .truncate();
-        const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
-
         const msg = await makeSwapExactAmountOutMsg({
-          sender: this.address,
+          userOsmoAddress: this.address,
           tokenInMaxAmount,
-          tokenOut: {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
-          },
-          routes: pools.map(({ id, tokenInDenom }) => {
-            return {
-              poolId: BigInt(id),
-              tokenInDenom,
-            };
-          }),
+          tokenOut,
+          pools,
         });
-
         return [msg];
       },
       memo,
@@ -1338,8 +1393,7 @@ export class OsmosisAccountImpl {
                   ({ tokenInDenom }) =>
                     tokenInDenom === bal.currency.coinMinimalDenom
                 ) ||
-                bal.currency.coinMinimalDenom ===
-                  tokenOut.currency.coinMinimalDenom
+                bal.currency.coinMinimalDenom === tokenOut.coinMinimalDenom
               ) {
                 bal.waitFreshResponse();
               }

@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { RouteWithInAmount } from "./route";
+import { RouteWithInAmount, RouteWithOutAmount } from "./route";
 
 export type Token = {
   /** Denom of the token. */
@@ -50,6 +50,14 @@ export type Quote = {
 /** Quote with potential split of in token amount across multiple routes. */
 export type SplitTokenInQuote = Quote & {
   split: RouteWithInAmount[];
+  /** In amount after fees paid are subtracted. */
+  tokenInFeeAmount?: Int;
+  swapFee?: Dec;
+};
+
+/** Quote with potential split of in token amount across multiple routes. */
+export type SplitTokenOutQuote = Quote & {
+  split: RouteWithOutAmount[];
   /** In amount after fees paid are subtracted. */
   tokenInFeeAmount?: Int;
   swapFee?: Dec;

@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -9,7 +9,6 @@ import {
   FunctionComponent,
   ReactNode,
   useCallback,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -40,17 +39,19 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useSwap } from "~/hooks/use-swap";
+import {
+  QuoteType,
+  useAmountWithSlippage,
+  useDynamicSlippageConfig,
+  useSwap,
+} from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import {
-  calcFontSize,
-  formatPretty,
-  getPriceExtendedFormatOptions,
-} from "~/utils/formatter";
+import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -91,6 +92,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
+    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
 
     const [_, setType] = useQueryState("type");
 
@@ -99,7 +101,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     });
 
     const account = accountStore.getWallet(chainId);
-    const slippageConfig = useSlippageConfig();
+    const slippageConfig = useSlippageConfig({
+      defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
+      selectedIndex: quoteType === "in-given-out" ? 1 : 0,
+    });
 
     const swapState = useSwap({
       initialFromDenom: initialSendTokenDenom,
@@ -108,6 +113,13 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       useQueryParams,
       forceSwapInPoolId,
       maxSlippage: slippageConfig.slippage.toDec(),
+      quoteType,
+    });
+
+    useDynamicSlippageConfig({
+      slippageConfig,
+      feeError: swapState.networkFeeError,
+      quoteType,
     });
 
     if (swapState.fromAsset?.coinDenom === swapState.toAsset?.coinDenom) {
@@ -120,6 +132,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
+    const toAmountInputEl = useRef<HTMLInputElement | null>(null);
 
     const outputDifference = new RatePretty(
       swapState.inAmountInput?.fiatValue
@@ -168,31 +181,24 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       setBuyOpen(false);
     }, [setBuyOpen, setSellOpen]);
 
-    const { outAmountLessSlippage, outFiatAmountLessSlippage } = useMemo(() => {
-      // Compute ratio of 1 - slippage
-      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+    const resetSlippage = useCallback(() => {
+      const defaultSlippage = quoteType === "in-given-out" ? "1" : "0.5";
+      if (
+        slippageConfig.slippage.toDec() ===
+        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+      ) {
+        return;
+      }
+      slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+      slippageConfig.setDefaultSlippage(defaultSlippage);
+    }, [quoteType, slippageConfig]);
 
-      // Compute out amount less slippage
-      const outAmountLessSlippage =
-        swapState.quote && swapState.toAsset
-          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
-          : undefined;
-
-      // Compute out fiat amount less slippage
-      const outFiatAmountLessSlippage = swapState.tokenOutFiatValue
-        ? new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
-          )
-        : undefined;
-
-      return { outAmountLessSlippage, outFiatAmountLessSlippage };
-    }, [
-      slippageConfig.slippage,
-      swapState.quote,
-      swapState.toAsset,
-      swapState.tokenOutFiatValue,
-    ]);
+    const { amountWithSlippage, fiatAmountWithSlippage } =
+      useAmountWithSlippage({
+        swapState,
+        slippageConfig,
+        quoteType,
+      });
 
     // reivew swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
@@ -237,6 +243,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
               sendTokenDenom: swapState.fromAsset.coinDenom,
             });
           }
+
+          resetSlippage();
         })
         .catch((error) => {
           console.error("swap failed", error);
@@ -253,7 +261,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
     let buttonText: string;
     if (swapState.error) {
@@ -262,6 +273,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t("swap.buttonError");
     } else if (swapState.hasOverSpendLimitError) {
       buttonText = t("swap.continueAnyway");
+    } else if (
+      !!swapState.networkFeeError &&
+      (swapState.isSlippageOverBalance ||
+        swapState.networkFeeError.message.includes("insufficient funds"))
+    ) {
+      buttonText = t("swap.slippageOverBalance");
     } else {
       buttonText = t("swap.button");
     }
@@ -295,7 +312,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       isSendingTx ||
       isWalletLoading ||
       (account?.walletStatus === WalletStatus.Connected &&
-        (swapState.inAmountInput.isEmpty ||
+        ((quoteType === "out-given-in" && swapState.inAmountInput.isEmpty) ||
+          (quoteType === "in-given-out" && swapState.outAmountInput.isEmpty) ||
           !Boolean(swapState.quote) ||
           isSwapToolLoading ||
           Boolean(swapState.error) ||
@@ -324,7 +342,11 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                     </span>
                   </AssetFieldsetHeaderLabel>
                   <AssetFieldsetHeaderBalance
-                    onMax={() => swapState.inAmountInput.toggleMax()}
+                    onMax={() => {
+                      setQuoteType("out-given-in");
+                      swapState.inAmountInput.toggleMax();
+                      fromAmountInputEl.current?.focus();
+                    }}
                     availableBalance={
                       swapState.inAmountInput.balance &&
                       formatPretty(
@@ -357,14 +379,41 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
                     ref={fromAmountInputEl}
-                    inputValue={swapState.inAmountInput.inputAmount}
+                    inputValue={
+                      quoteType === "in-given-out" &&
+                      swapState.inAmountInput.amount
+                        ? trimPlaceholderZeros(
+                            formatPretty(
+                              swapState.inAmountInput.amount?.toDec(),
+                              {
+                                minimumSignificantDigits: 6,
+                                maximumSignificantDigits: 6,
+                                maxDecimals: 10,
+                                notation: "standard",
+                              }
+                            )
+                          )
+                        : swapState.inAmountInput.inputAmount
+                    }
                     onInputChange={(e) => {
                       e.preventDefault();
+
+                      setQuoteType("out-given-in");
                       if (e.target.value.length <= (isMobile ? 19 : 26)) {
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
+
+                      if (e.target.value.length === 0) {
+                        swapState.outAmountInput.setAmount("");
+                      }
+
+                      resetSlippage();
                     }}
                     data-testid="trade-input-swap"
+                    wrapperClassNames={classNames({
+                      "opacity-50":
+                        quoteType === "in-given-out" && isSwapToolLoading,
+                    })}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -408,11 +457,20 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <button
                   className="group absolute top-1/2 left-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-2 border-solid border-[#3C356D4A] bg-osmoverse-900"
                   onClick={() => {
-                    const out = swapState.quote?.amount
-                      ? formatPretty(swapState.quote.amount.toDec())
-                      : "";
-                    swapState.inAmountInput.setAmount(out);
+                    const inAmount = swapState.inAmountInput.inputAmount;
+                    const outAmount = swapState.outAmountInput.inputAmount;
+
                     swapState.switchAssets();
+
+                    if (quoteType === "out-given-in") {
+                      setQuoteType("in-given-out");
+                      swapState.outAmountInput.setAmount(inAmount);
+                    } else {
+                      setQuoteType("out-given-in");
+                      swapState.inAmountInput.setAmount(outAmount);
+                    }
+
+                    resetSlippage();
                   }}
                 >
                   <Icon
@@ -431,43 +489,43 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 </AssetFieldsetHeader>
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
-                    outputValue={
-                      <span
-                        className={classNames(
-                          "whitespace-nowrap text-h3 font-h3 transition-opacity sm:text-[30px] sm:font-h5",
-                          swapState.quote?.amount.toDec().isPositive() &&
-                            !swapState.inAmountInput.isTyping &&
-                            !swapState.isQuoteLoading
-                            ? "text-white-full"
-                            : "text-osmoverse-600",
-                          {
-                            "opacity-50": isSwapToolLoading,
-                          }
-                        )}
-                        style={{
-                          fontSize: swapState.quote
-                            ? calcFontSize(
-                                formatPretty(swapState.quote.amount.toDec(), {
-                                  minimumSignificantDigits: 6,
-                                  maximumSignificantDigits: 6,
-                                  maxDecimals: 10,
-                                  notation: "standard",
-                                }).replace(/[,\.]/g, "").length,
-                                isMobile
-                              )
-                            : undefined,
-                        }}
-                      >
-                        {swapState.quote?.amount
-                          ? formatPretty(swapState.quote.amount.toDec(), {
-                              minimumSignificantDigits: 6,
-                              maximumSignificantDigits: 6,
-                              maxDecimals: 10,
-                              notation: "standard",
-                            })
-                          : "0"}
-                      </span>
+                    ref={toAmountInputEl}
+                    wrapperClassNames={classNames({
+                      "opacity-50":
+                        quoteType === "out-given-in" && isSwapToolLoading,
+                    })}
+                    inputValue={
+                      quoteType === "out-given-in" &&
+                      swapState.outAmountInput.amount
+                        ? trimPlaceholderZeros(
+                            formatPretty(
+                              swapState.outAmountInput.amount?.toDec(),
+                              {
+                                minimumSignificantDigits: 6,
+                                maximumSignificantDigits: 6,
+                                maxDecimals: 10,
+                                notation: "standard",
+                              }
+                            )
+                          )
+                        : swapState.outAmountInput.inputAmount
                     }
+                    onInputChange={(e) => {
+                      e.preventDefault();
+
+                      if (quoteType !== "in-given-out")
+                        setQuoteType("in-given-out");
+                      if (e.target.value.length <= (isMobile ? 19 : 26)) {
+                        swapState.outAmountInput.setAmount(e.target.value);
+                      }
+
+                      if (e.target.value.length === 0) {
+                        swapState.inAmountInput.setAmount("");
+                      }
+
+                      resetSlippage();
+                    }}
+                    disabled={!featureFlags.inGivenOut}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.toAsset?.coinDenom}
@@ -599,8 +657,6 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
             type="market"
             swapState={swapState}
             slippageConfig={slippageConfig}
-            outAmountLessSlippage={outAmountLessSlippage}
-            outFiatAmountLessSlippage={outFiatAmountLessSlippage}
           />
         </div>
         <TokenSelectModalLimit
@@ -664,19 +720,20 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
           slippageConfig={slippageConfig}
-          outAmountLessSlippage={outAmountLessSlippage}
-          outFiatAmountLessSlippage={outFiatAmountLessSlippage}
+          amountWithSlippage={amountWithSlippage}
+          fiatAmountWithSlippage={fiatAmountWithSlippage}
           outputDifference={outputDifference}
           showOutputDifferenceWarning={showOutputDifferenceWarning}
           fromAsset={swapState.fromAsset}
           toAsset={swapState.toAsset}
           inAmountToken={swapState.inAmountInput.amount}
           inAmountFiat={swapState.inAmountInput.fiatValue}
-          expectedOutput={swapState.quote?.amount}
+          expectedOutput={swapState.quote?.amountOut}
           expectedOutputFiat={swapState.tokenOutFiatValue}
           gasAmount={swapState.networkFee?.gasUsdValueToPay}
           isGasLoading={swapState.isLoadingNetworkFee}
           gasError={swapState.networkFeeError}
+          quoteType={swapState.quoteType}
         />
         <AddFundsModal
           isOpen={isAddFundsModalOpen}

@@ -777,7 +777,8 @@
     },
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
-    "routes": "trasy"
+    "routes": "trasy",
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "Opłata za handel",
-  "receiveAtLeast": "Otrzymaj co najmniej"
+  "receiveAtLeast": "Otrzymaj co najmniej",
+  "payAtMost": "Zapłać maksymalnie"
 }

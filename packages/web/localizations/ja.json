@@ -777,7 +777,8 @@
     },
     "noRoutes": "ルートが見つかりません",
     "route": "ルート",
-    "routes": "ルート"
+    "routes": "ルート",
+    "slippageOverBalance": "スリッページをカバーするための資金が不足している"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "取引手数料",
-  "receiveAtLeast": "少なくとも受け取る"
+  "receiveAtLeast": "少なくとも受け取る",
+  "payAtMost": "最大で支払う"
 }

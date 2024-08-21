@@ -121,4 +121,12 @@ export class InsufficientBalanceForFeeError extends Error {
   }
 }
 
+export class SwapRequiresError extends Error {
+  constructor(m: string) {
+    super(m);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, SwapRequiresError.prototype);
+  }
+}
+
 export * from "./manage-liquidity/errors";

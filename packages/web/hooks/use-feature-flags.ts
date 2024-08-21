@@ -29,7 +29,8 @@ export type AvailableFlags =
   | "limitOrders"
   | "advancedChart"
   | "cypherCard"
-  | "newPortfolioPage";
+  | "newPortfolioPage"
+  | "inGivenOut";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
@@ -54,6 +55,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   advancedChart: false,
   cypherCard: false,
   newPortfolioPage: false,
+  inGivenOut: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =
@@ -87,6 +89,7 @@ export function useFeatureFlags() {
   const isDevModeWithoutClientID =
     process.env.NODE_ENV === "development" &&
     !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),

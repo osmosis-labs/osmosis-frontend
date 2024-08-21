@@ -15,7 +15,7 @@ import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { useSwap, useSwapAssets } from "~/hooks/use-swap";
+import { QuoteType, useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -43,6 +43,7 @@ export interface UsePlaceLimitParams {
   type: "limit" | "market";
   page: EventPage;
   maxSlippage?: Dec;
+  quoteType?: QuoteType;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -60,6 +61,7 @@ export const usePlaceLimit = ({
   type,
   page,
   maxSlippage,
+  quoteType = "out-given-in",
 }: UsePlaceLimitParams) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -90,6 +92,7 @@ export const usePlaceLimit = ({
     useQueryParams: false,
     useOtherCurrencies,
     maxSlippage,
+    quoteType,
   });
 
   const quoteAsset = swapAssets.toAsset;
@@ -159,19 +162,6 @@ export const usePlaceLimit = ({
     isMarket,
     marketState.inAmountInput.amount,
   ]);
-
-  /**
-   * When creating a market order we want to update the market state with the input amount
-   * with the amount of base tokens.
-   *
-   * Only runs on an ASK order. A BID order is handled by the input directly.
-   */
-  useEffect(() => {
-    if (orderDirection === "bid") return;
-
-    const normalizedAmount = inAmountInput.amount?.toDec().toString() ?? "0";
-    marketState.inAmountInput.setAmount(normalizedAmount);
-  }, [inAmountInput.amount, orderDirection, marketState.inAmountInput]);
 
   const normalizationFactor = useMemo(() => {
     if (!baseAsset || !quoteAsset) return new Dec(1);
@@ -432,13 +422,17 @@ export const usePlaceLimit = ({
     if (!baseAsset || !quoteAsset) return;
 
     if (isMarket) {
-      return (
-        marketState.quote?.amount ??
-        new CoinPretty(
-          orderDirection === "ask" ? quoteAsset! : baseAsset!,
-          new Dec(0)
-        )
-      );
+      return quoteType === "out-given-in"
+        ? marketState.quote?.amount ??
+            new CoinPretty(
+              orderDirection === "ask" ? quoteAsset! : baseAsset!,
+              new Dec(0)
+            )
+        : marketState.outAmountInput.amount ??
+            new CoinPretty(
+              orderDirection === "ask" ? baseAsset! : quoteAsset!,
+              new Dec(0)
+            );
     }
     const preFeeAmount =
       orderDirection === "ask"
@@ -451,6 +445,7 @@ export const usePlaceLimit = ({
     return preFeeAmount.mul(new Dec(1).sub(makerFee));
   }, [
     inAmountInput.amount,
+    marketState.outAmountInput.amount,
     baseAsset,
     quoteAsset,
     orderDirection,
@@ -459,6 +454,7 @@ export const usePlaceLimit = ({
     paymentFiatValue,
     isMarket,
     marketState.quote?.amount,
+    quoteType,
   ]);
 
   const expectedFiatAmountOut = useMemo(() => {
@@ -490,6 +486,7 @@ export const usePlaceLimit = ({
     inAmountInput.reset();
     priceState.reset();
     marketState.inAmountInput.reset();
+    marketState.outAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
 
   const error = useMemo(() => {

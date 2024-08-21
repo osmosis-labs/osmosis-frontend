@@ -777,7 +777,8 @@
     },
     "noRoutes": "Nenhuma rota encontrada",
     "route": "rota",
-    "routes": "rotas"
+    "routes": "rotas",
+    "slippageOverBalance": "Fundos insuficientes para cobrir o deslizamento"
   },
   "walletSelect": {
     "gettingStarted": "Começando",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "Taxa de negociação",
-  "receiveAtLeast": "Receba pelo menos"
+  "receiveAtLeast": "Receba pelo menos",
+  "payAtMost": "Pague no máximo"
 }

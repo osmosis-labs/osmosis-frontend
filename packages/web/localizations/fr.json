@@ -777,7 +777,8 @@
     },
     "noRoutes": "Aucun itinéraire trouvé",
     "route": "itinéraire",
-    "routes": "itinéraires"
+    "routes": "itinéraires",
+    "slippageOverBalance": "Fonds insuffisants pour couvrir les dérapages"
   },
   "walletSelect": {
     "gettingStarted": "Commencer",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "Frais de transaction",
-  "receiveAtLeast": "Recevez au moins"
+  "receiveAtLeast": "Recevez au moins",
+  "payAtMost": "Payer au maximum"
 }

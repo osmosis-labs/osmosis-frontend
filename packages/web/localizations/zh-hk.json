@@ -777,7 +777,8 @@
     },
     "noRoutes": "沒有找到路線",
     "route": "路線",
-    "routes": "路線"
+    "routes": "路線",
+    "slippageOverBalance": "資金不足以彌補滑點"
   },
   "walletSelect": {
     "gettingStarted": "入門",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "交易費",
-  "receiveAtLeast": "至少收到"
+  "receiveAtLeast": "至少收到",
+  "payAtMost": "最多付錢"
 }

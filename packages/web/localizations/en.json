@@ -777,7 +777,8 @@
     },
     "noRoutes": "No routes found",
     "route": "route",
-    "routes": "routes"
+    "routes": "routes",
+    "slippageOverBalance": "Insufficient funds to cover slippage"
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",
@@ -1299,5 +1300,6 @@
     }
   },
   "tradeFee": "Trade fee",
-  "receiveAtLeast": "Receive at least"
+  "receiveAtLeast": "Receive at least",
+  "payAtMost": "Sell at most"
 }
