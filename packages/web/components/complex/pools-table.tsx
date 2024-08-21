@@ -341,6 +341,8 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl && shouldDisplayFeesData)
       collapsedColIds.push("market.feesSpent7dUsd");
+    if (width < Breakpoint.xlhalf && width > Breakpoint.xl)
+      collapsedColIds.push("aprBreakdown.total");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
     if (width < Breakpoint.lg && shouldDisplayVolumeData)
       collapsedColIds.push("market.volume24hUsd");
