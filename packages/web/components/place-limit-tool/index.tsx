@@ -495,37 +495,35 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     ]);
 
     const nonFocusedDisplayAmount = useMemo(() => {
-      if (type === "market") {
+      const formatInputAsPrice = (inputAmount: string | undefined) =>
+        formatFiatPrice(
+          new PricePretty(DEFAULT_VS_CURRENCY, inputAmount || "0")
+        );
+      const getTrimmedAmount = (inputAmount: string | undefined) =>
+        trimPlaceholderZeros(inputAmount ?? "") ?? "";
+      const handleMarketTab = () => {
         if (tab === "sell") {
           return focused === "fiat"
-            ? trimPlaceholderZeros(
-                swapState.marketState.inAmountInput.inputAmount
-              ) ?? ""
-            : formatFiatPrice(
-                new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  swapState.marketState.outAmountInput.inputAmount || "0"
-                )
+            ? getTrimmedAmount(swapState.marketState.inAmountInput.inputAmount)
+            : formatInputAsPrice(
+                swapState.marketState.outAmountInput.inputAmount
               );
         } else {
           return focused === "fiat"
-            ? trimPlaceholderZeros(
-                swapState.marketState.outAmountInput.inputAmount ?? ""
-              )
-            : formatFiatPrice(
-                new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  swapState.marketState.inAmountInput.inputAmount || "0"
-                )
+            ? getTrimmedAmount(swapState.marketState.outAmountInput.inputAmount)
+            : formatInputAsPrice(
+                swapState.marketState.inAmountInput.inputAmount
               );
         }
-      }
+      };
 
-      return focused === "fiat"
-        ? swapState.inAmountInput.inputAmount
-        : formatFiatPrice(
-            new PricePretty(DEFAULT_VS_CURRENCY, fiatAmount || "0")
-          );
+      if (type === "market") {
+        return handleMarketTab();
+      } else {
+        return focused === "fiat"
+          ? swapState.inAmountInput.inputAmount
+          : formatInputAsPrice(fiatAmount);
+      }
     }, [
       focused,
       swapState.marketState.inAmountInput.inputAmount,

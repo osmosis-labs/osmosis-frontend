@@ -1670,11 +1670,8 @@ export function useAmountWithSlippage({
   quoteType: QuoteType;
 }) {
   const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
-    // Compute ratio of 1 - slippage
-    const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
-    const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
-
     if (quoteType === "out-given-in") {
+      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
       const amountWithSlippage = swapState.quote
         ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
         : undefined;
@@ -1689,6 +1686,7 @@ export function useAmountWithSlippage({
     }
 
     if (quoteType === "in-given-out") {
+      const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
       const amountWithSlippage = swapState.quote
         ? new IntPretty(swapState.quote.amount.toDec().mul(onePlusSlippage))
         : new IntPretty(0);
@@ -1738,7 +1736,7 @@ export function useAmountWithSlippage({
   };
 }
 
-/** Dynamically adjusts slippage for in-given-out quotes */
+/** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
 export function useDynamicSlippageConfig({
   slippageConfig,
   feeError,
