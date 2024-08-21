@@ -251,7 +251,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ? swapState.marketState.inAmountInput.setAmount
           : swapState.marketState.outAmountInput.setAmount;
 
-        setQuoteType(!isMarketOutAmount ? "out-given-in" : "in-given-out");
+        setQuoteType(
+          !isMarketOutAmount || !featureFlags.inGivenOut
+            ? "out-given-in"
+            : "in-given-out"
+        );
 
         // If value is empty clear values
         if (!value?.trim()) {
