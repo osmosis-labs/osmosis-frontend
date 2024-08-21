@@ -343,6 +343,22 @@ export function useSwap(
     isOneClickTradingEnabled,
   ]);
 
+  const isSlippageOverBalance = useMemo(() => {
+    if (
+      quoteType === "out-given-in" ||
+      !inAmountInput.balance ||
+      !inAmountInput.amount ||
+      !maxSlippage
+    )
+      return false;
+
+    const balance = inAmountInput.balance;
+    const amountWithSlippage = inAmountInput.amount
+      .toDec()
+      .mul(new Dec(1).add(maxSlippage));
+    return balance.toDec().lt(amountWithSlippage);
+  }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
+
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     () =>
@@ -702,6 +718,7 @@ export function useSwap(
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
+    isSlippageOverBalance,
     quoteType,
   };
 }

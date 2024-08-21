@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import {
+  CoinPretty,
   Dec,
   DecUtils,
   IntPretty,
@@ -7,6 +8,7 @@ import {
   RatePretty,
 } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -46,6 +48,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { QuoteType, useDynamicSlippageConfig, useSwap } from "~/hooks/use-swap";
 import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -199,39 +202,60 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
       const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
 
-      // Compute out amount less slippage
-      const amountWithSlippage =
-        quoteType === "out-given-in"
-          ? swapState.quote
-            ? new IntPretty(
-                swapState.quote.amount.toDec().mul(oneMinusSlippage)
-              )
-            : undefined
-          : new IntPretty(
-              swapState.quote?.amount?.toDec().mul(onePlusSlippage) ??
-                new Dec(0)
-            );
+      if (quoteType === "out-given-in") {
+        const amountWithSlippage = swapState.quote
+          ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+          : undefined;
+        const fiatAmountWithSlippage = swapState.tokenOutFiatValue
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+            )
+          : undefined;
 
-      // Compute out fiat amount less slippage
-      const fiatAmountWithSlippage = swapState.tokenOutFiatValue
-        ? new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            swapState.tokenOutFiatValue
-              ?.toDec()
-              .mul(
-                quoteType === "out-given-in"
-                  ? oneMinusSlippage
-                  : onePlusSlippage
-              )
-          )
-        : undefined;
+        return { amountWithSlippage, fiatAmountWithSlippage };
+      }
 
-      return { amountWithSlippage, fiatAmountWithSlippage };
+      if (quoteType === "in-given-out") {
+        const amountWithSlippage = swapState.quote
+          ? new IntPretty(swapState.quote.amount.toDec().mul(onePlusSlippage))
+          : new IntPretty(0);
+        const balance = new IntPretty(
+          swapState.inAmountInput.balance?.toDec() ?? new Dec(0)
+        );
+        const maxAmountWithSlippage =
+          amountWithSlippage > balance && !balance.toDec().isZero()
+            ? balance
+            : amountWithSlippage;
+
+        const fiatAmountWithSlippage = mulPrice(
+          new CoinPretty(
+            swapState.fromAsset as Currency,
+            maxAmountWithSlippage.mul(
+              DecUtils.getTenExponentN(swapState.fromAsset?.coinDecimals ?? 0)
+            )
+          ),
+          swapState.inAmountInput.price,
+          DEFAULT_VS_CURRENCY
+        );
+        return {
+          amountWithSlippage: maxAmountWithSlippage,
+          fiatAmountWithSlippage,
+        };
+      }
+
+      return {
+        amountWithSlippage: undefined,
+        fiatAmountWithSlippage: undefined,
+      };
     }, [
       slippageConfig.slippage,
       swapState.quote,
       swapState.tokenOutFiatValue,
+      swapState.inAmountInput.balance,
       quoteType,
+      swapState.fromAsset,
+      swapState.inAmountInput.price,
     ]);
 
     // reivew swap modal
@@ -295,7 +319,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    const isSwapToolLoading =
+      isWalletLoading ||
+      swapState.isQuoteLoading ||
+      swapState.isLoadingNetworkFee;
 
     let buttonText: string;
     if (swapState.error) {
@@ -304,6 +331,12 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t("swap.buttonError");
     } else if (swapState.hasOverSpendLimitError) {
       buttonText = t("swap.continueAnyway");
+    } else if (
+      !!swapState.networkFeeError &&
+      (swapState.isSlippageOverBalance ||
+        swapState.networkFeeError.message.includes("insufficient funds"))
+    ) {
+      buttonText = t("swap.slippageOverBalance");
     } else {
       buttonText = t("swap.button");
     }
