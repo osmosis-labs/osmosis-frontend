@@ -51,6 +51,7 @@ import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface SwapToolProps {
   fixedWidth?: boolean;
@@ -378,7 +379,22 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                 <div className="flex items-center justify-between py-3">
                   <AssetFieldsetInput
                     ref={fromAmountInputEl}
-                    inputValue={swapState.inAmountInput.inputAmount}
+                    inputValue={
+                      quoteType === "in-given-out" &&
+                      swapState.inAmountInput.amount
+                        ? trimPlaceholderZeros(
+                            formatPretty(
+                              swapState.inAmountInput.amount?.toDec(),
+                              {
+                                minimumSignificantDigits: 6,
+                                maximumSignificantDigits: 6,
+                                maxDecimals: 10,
+                                notation: "standard",
+                              }
+                            )
+                          )
+                        : swapState.inAmountInput.inputAmount
+                    }
                     onInputChange={(e) => {
                       e.preventDefault();
 
@@ -398,6 +414,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       "opacity-50":
                         quoteType === "in-given-out" && isSwapToolLoading,
                     })}
+                    disabled={quoteType === "in-given-out" && isSwapToolLoading}
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.fromAsset?.coinDenom}
@@ -478,7 +495,22 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                       "opacity-50":
                         quoteType === "out-given-in" && isSwapToolLoading,
                     })}
-                    inputValue={swapState.outAmountInput.inputAmount}
+                    inputValue={
+                      quoteType === "out-given-in" &&
+                      swapState.outAmountInput.amount
+                        ? trimPlaceholderZeros(
+                            formatPretty(
+                              swapState.outAmountInput.amount?.toDec(),
+                              {
+                                minimumSignificantDigits: 6,
+                                maximumSignificantDigits: 6,
+                                maxDecimals: 10,
+                                notation: "standard",
+                              }
+                            )
+                          )
+                        : swapState.outAmountInput.inputAmount
+                    }
                     onInputChange={(e) => {
                       e.preventDefault();
 
@@ -494,7 +526,10 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
                       resetSlippage();
                     }}
-                    disabled={!featureFlags.inGivenOut}
+                    disabled={
+                      !featureFlags.inGivenOut ||
+                      (quoteType === "out-given-in" && isSwapToolLoading)
+                    }
                   />
                   <AssetFieldsetTokenSelector
                     selectedCoinDenom={swapState.toAsset?.coinDenom}
