@@ -577,7 +577,10 @@ export function useSwap(
             }
           }
         }
-      ).finally(() => inAmountInput.reset()),
+      ).finally(() => {
+        inAmountInput.reset();
+        outAmountInput.reset();
+      }),
     [
       maxSlippage,
       inAmountInput,
