@@ -128,6 +128,15 @@ export const AssetsOverview: FunctionComponent<
     },
     {
       enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+      onSuccess: (data) => {
+        if (data && data.length > 0) {
+          const lastDataPoint = data[data.length - 1];
+          setDataPoint({
+            time: timeToLocal(lastDataPoint.time) as Time,
+            value: lastDataPoint.value,
+          });
+        }
+      },
     }
   );
 
