@@ -58,7 +58,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap OSMO to ATOM", async () => {
     await swapPage.goto();
     await swapPage.selectPair("OSMO", "ATOM");
-    await swapPage.enterAmount("0.01");
+    await swapPage.enterAmount("2.2");
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
@@ -71,7 +71,7 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap ATOM to OSMO", async () => {
     await swapPage.goto();
     await swapPage.selectPair("ATOM", "OSMO");
-    await swapPage.enterAmount("0.001");
+    await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
