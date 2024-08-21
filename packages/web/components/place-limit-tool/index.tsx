@@ -168,6 +168,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       slippageConfig.setDefaultSlippage(defaultSlippage);
     }, [quoteType, slippageConfig]);
 
+    useEffect(() => {
+      if (!featureFlags.inGivenOut && quoteType === "in-given-out") {
+        setQuoteType("out-given-in");
+
+        setFocused(tab === "buy" ? "fiat" : "token");
+      }
+    }, [featureFlags.inGivenOut, quoteType, tab]);
+
     useDynamicSlippageConfig({
       slippageConfig,
       feeError: swapState.marketState.networkFeeError,
@@ -251,7 +259,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ? swapState.marketState.inAmountInput.setAmount
           : swapState.marketState.outAmountInput.setAmount;
 
-        setQuoteType(!isMarketOutAmount ? "out-given-in" : "in-given-out");
+        setQuoteType(
+          !isMarketOutAmount || !featureFlags.inGivenOut
+            ? "out-given-in"
+            : "in-given-out"
+        );
 
         // If value is empty clear values
         if (!value?.trim()) {

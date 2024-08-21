@@ -208,10 +208,16 @@ export function useSwap(
       !outAmountInput.isTyping
     ) {
       inAmountInput.setAmount(
-        inGivenOutQuote && !inGivenOutQuoteError && !!outAmountInput.inputAmount
+        inGivenOutQuote && !inGivenOutQuoteError && !outAmountInput.isEmpty
           ? trimPlaceholderZeros(inGivenOutQuote.amount.toDec().toString())
           : ""
       );
+    } else if (
+      quoteType === "in-given-out" &&
+      outAmountInput.isEmpty &&
+      !inAmountInput.isEmpty
+    ) {
+      inAmountInput.setAmount("");
     }
 
     if (
@@ -220,10 +226,16 @@ export function useSwap(
       !inAmountInput.isTyping
     ) {
       outAmountInput.setAmount(
-        quote && !quoteErrorMsg && !!inAmountInput.inputAmount
+        quote && !quoteErrorMsg && !inAmountInput.isEmpty
           ? trimPlaceholderZeros(quote.amount.toDec().toString())
           : ""
       );
+    } else if (
+      quoteType === "out-given-in" &&
+      inAmountInput.isEmpty &&
+      !outAmountInput.isEmpty
+    ) {
+      outAmountInput.setAmount("");
     }
 
     /**
@@ -241,6 +253,8 @@ export function useSwap(
     inGivenOutQuoteError,
     inAmountInput.isTyping,
     outAmountInput.isTyping,
+    inAmountInput.isEmpty,
+    outAmountInput.isEmpty,
   ]);
 
   /** If a query is not enabled, it is considered loading.
@@ -577,7 +591,10 @@ export function useSwap(
             }
           }
         }
-      ).finally(() => inAmountInput.reset()),
+      ).finally(() => {
+        inAmountInput.reset();
+        outAmountInput.reset();
+      }),
     [
       maxSlippage,
       inAmountInput,
