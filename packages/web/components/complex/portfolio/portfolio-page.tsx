@@ -5,6 +5,7 @@ import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
+import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { UserPositionsSection } from "~/components/complex/portfolio/user-positions";
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
@@ -19,6 +20,7 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -33,6 +35,11 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
+  });
+
+  const { orders, isLoading: isLoadingOrders } = useOrderbookAllActiveOrders({
+    userAddress: wallet?.address ?? "",
+    pageSize: 20,
   });
 
   const {
@@ -166,6 +173,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 <Allocation allocation={allocation} />
               )}
             </div>
+            <OpenOrders orders={orders} />
             <RecentActivity />
           </aside>
         </>
