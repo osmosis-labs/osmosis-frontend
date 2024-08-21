@@ -122,17 +122,19 @@ export const usePlaceLimit = ({
    * @returns The amount of tokens to be sent with the order in base asset amounts for an Ask and quote asset amounts for a Bid.
    */
   const paymentTokenValue = useMemo(() => {
+    if (!quoteAsset || !baseAsset) return;
+
     if (isMarket)
       return (
         marketState.inAmountInput.amount ??
         new CoinPretty(
-          orderDirection === "ask" ? baseAsset! : quoteAsset!,
+          orderDirection === "ask" ? baseAsset : quoteAsset,
           new Dec(0)
         )
       );
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
-      inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
+      inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
     if (orderDirection === "ask") {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
@@ -172,8 +174,9 @@ export const usePlaceLimit = ({
   }, [inAmountInput.amount, orderDirection, marketState.inAmountInput]);
 
   const normalizationFactor = useMemo(() => {
+    if (!baseAsset || !quoteAsset) return new Dec(1);
     return getNormalizationFactor(
-      baseAsset!.coinDecimals,
+      baseAsset.coinDecimals,
       quoteAsset!.coinDecimals
     );
   }, [baseAsset, quoteAsset]);
@@ -221,7 +224,7 @@ export const usePlaceLimit = ({
   const placeLimitMsg = useMemo(() => {
     if (isMarket || !priceState.isValidPrice) return;
 
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
 
     if (quantity === "0") {
       return;
@@ -261,8 +264,8 @@ export const usePlaceLimit = ({
       msg: placeLimitMsg,
       funds: [
         {
-          denom: paymentTokenValue.toCoin().denom,
-          amount: paymentTokenValue.toCoin().amount ?? "0",
+          denom: paymentTokenValue?.toCoin().denom ?? "",
+          amount: paymentTokenValue?.toCoin().amount ?? "0",
         },
       ],
     });
@@ -274,7 +277,7 @@ export const usePlaceLimit = ({
   ]);
 
   const placeLimit = useCallback(async () => {
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
     if (quantity === "0") {
       return;
     }
@@ -322,7 +325,7 @@ export const usePlaceLimit = ({
 
     if (!placeLimitMsg) return;
 
-    const paymentDenom = paymentTokenValue.toCoin().denom;
+    const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
     const baseEvent = {
       type: orderDirection === "bid" ? "buy" : "sell",
@@ -418,14 +421,16 @@ export const usePlaceLimit = ({
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(
-          paymentTokenValue.toDec() ?? new Dec(0)
+          paymentTokenValue?.toDec() ?? new Dec(0)
         )
       : (baseTokenBalance?.toDec() ?? new Dec(0)).lt(
-          paymentTokenValue.toDec() ?? new Dec(0)
+          paymentTokenValue?.toDec() ?? new Dec(0)
         );
   }, [orderDirection, paymentTokenValue, baseTokenBalance, quoteTokenBalance]);
 
   const expectedTokenAmountOut = useMemo(() => {
+    if (!baseAsset || !quoteAsset) return;
+
     if (isMarket) {
       return (
         marketState.quote?.amount ??
@@ -463,11 +468,14 @@ export const usePlaceLimit = ({
     return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
-          quoteAssetPrice?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+          quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
+            new Dec(0)
         )
       : new PricePretty(
           DEFAULT_VS_CURRENCY,
-          priceState.price?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+          priceState.price?.mul(
+            expectedTokenAmountOut?.toDec() ?? new Dec(0)
+          ) ?? new Dec(0)
         );
   }, [
     priceState.price,
@@ -497,7 +505,7 @@ export const usePlaceLimit = ({
       return tError(marketState.error)[0];
     }
 
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
     if (quantity === "0") {
       return "errors.zeroAmount";
     }

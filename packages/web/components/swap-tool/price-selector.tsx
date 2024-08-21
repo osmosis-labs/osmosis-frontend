@@ -72,7 +72,7 @@ export const PriceSelector = memo(
     const { logEvent } = useAmplitudeAnalytics();
 
     const [tab, setTab] = useQueryState("tab");
-    const [quote] = useQueryState(
+    const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault(initialQuoteDenom || "USDC")
     );
@@ -104,6 +104,12 @@ export const PriceSelector = memo(
         setBase("ATOM");
       }
     }, [base, quote, setBase]);
+
+    useEffect(() => {
+      if (!quoteAsset) {
+        setQuote("USDC");
+      }
+    }, [quoteAsset, setQuote]);
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
