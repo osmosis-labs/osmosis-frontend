@@ -510,7 +510,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 <th
                   className={classNames(
                     // apply to all columns
-                    "sm:w-fit ",
+                    "sm:w-fit",
                     {
                       // defines column widths after first column
                       "w-28": index !== 0,

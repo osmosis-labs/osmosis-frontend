@@ -173,8 +173,8 @@ export function useSwap(
     errorMsg: quoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset!,
-      tokenOut: swapAssets.toAsset!,
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
@@ -1445,16 +1445,20 @@ function useQueryRouterBestQuote(
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
     "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
-    tokenIn: MinimalAsset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
-    tokenOut: MinimalAsset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
+    tokenIn:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
+    tokenOut:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
@@ -1543,7 +1547,7 @@ function useQueryRouterBestQuote(
   }, [quoteResult]);
 
   const acceptedQuote = useMemo(() => {
-    if (!quote) return;
+    if (!quote || !input.tokenIn || !input.tokenOut) return;
     return {
       ...quote,
       amountIn:
@@ -1558,13 +1562,24 @@ function useQueryRouterBestQuote(
   }, [quote, quoteType, input.tokenInAmount, input.tokenIn, input.tokenOut]);
 
   const { value: messages } = useAsync(async () => {
-    if (!quote) return undefined;
+    const tokenOutCoinDecimals = input.tokenOut?.coinDecimals;
+    const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
+    const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
+    const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
+    if (
+      !quote ||
+      !tokenOutCoinDecimals ||
+      !tokenInCoinMinimalDenom ||
+      !tokenOutCoinMinimalDenom ||
+      !tokenInCoinDecimals
+    )
+      return undefined;
     const messages = await getSwapMessages({
       quote: quote,
-      tokenOutCoinDecimals: input.tokenOut.coinDecimals,
-      tokenOutCoinMinimalDenom: input.tokenOut.coinMinimalDenom,
-      tokenInCoinMinimalDenom: input.tokenIn.coinMinimalDenom,
-      tokenInCoinDecimals: input.tokenIn.coinDecimals,
+      tokenOutCoinMinimalDenom,
+      tokenInCoinDecimals,
+      tokenOutCoinDecimals,
+      tokenInCoinMinimalDenom,
       maxSlippage: input.maxSlippage?.toString(),
       coinAmount: input.tokenInAmount,
       userOsmoAddress: account?.address,
@@ -1576,11 +1591,11 @@ function useQueryRouterBestQuote(
     account?.address,
     quote,
     input.maxSlippage,
-    input.tokenIn.coinMinimalDenom,
+    input.tokenIn?.coinMinimalDenom,
     input.tokenInAmount,
-    input.tokenOut.coinDecimals,
-    input.tokenOut.coinMinimalDenom,
-    input.tokenIn.coinDecimals,
+    input.tokenOut?.coinDecimals,
+    input.tokenOut?.coinMinimalDenom,
+    input.tokenIn?.coinDecimals,
     quoteType,
   ]);
 
