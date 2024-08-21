@@ -401,7 +401,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                                 notation: "standard",
                               }
                             )
-                          )
+                          ).replace(/,/g, "")
                         : swapState.inAmountInput.inputAmount
                     }
                     onInputChange={(e) => {
@@ -521,7 +521,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
                                 notation: "standard",
                               }
                             )
-                          )
+                          ).replace(/,/g, "")
                         : swapState.outAmountInput.inputAmount
                     }
                     onInputChange={(e) => {
