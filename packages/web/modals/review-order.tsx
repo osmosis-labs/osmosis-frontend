@@ -104,7 +104,11 @@ export function ReviewOrder({
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
-  const isManualSlippageTooHigh = +manualSlippage > 1;
+  const isManualSlippageTooHigh =
+    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
+    (!manualSlippage &&
+      !!slippageConfig &&
+      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
   //Value is memoized as it must be frozen when the component is mounted
@@ -464,7 +468,8 @@ export function ReviewOrder({
                             inputClassName={classNames(
                               "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
                               {
-                                "text-rust-400": isManualSlippageTooHigh,
+                                "text-rust-400 placeholder:text-rust-400":
+                                  isManualSlippageTooHigh,
                               }
                             )}
                             value={manualSlippage}
