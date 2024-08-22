@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "买",
+    "sell": "卖",
     "yourBalances": "您的余额",
     "yourPositions": "您的职位",
     "searchBalances": "搜索余额",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "隐藏小额余额",
     "cypherSpend": "渗透支付",
     "cypherOrder": "立即订购您的卡",
-    "cypherBeta": "测试版"
+    "cypherBeta": "测试版",
+    "openOrders": "未结订单"
   },
   "buyTokens": "购买代币",
   "components": {

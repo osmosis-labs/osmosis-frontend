@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "買",
+    "sell": "賣",
     "yourBalances": "您的餘額",
     "yourPositions": "您的職位",
     "searchBalances": "搜尋餘額",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "隱藏小額餘額",
     "cypherSpend": "滲透支付",
     "cypherOrder": "立即訂購您的卡",
-    "cypherBeta": "貝塔"
+    "cypherBeta": "貝塔",
+    "openOrders": "未結訂單"
   },
   "buyTokens": "購買代幣",
   "components": {

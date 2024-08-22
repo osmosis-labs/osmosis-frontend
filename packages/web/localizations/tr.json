@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Satın almak",
+    "sell": "Satmak",
     "yourBalances": "Bakiyeleriniz",
     "yourPositions": "Pozisyonlarınız",
     "searchBalances": "Bakiyeleri ara",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Küçük bakiyeleri gizle",
     "cypherSpend": "Osmoz Ödeme",
     "cypherOrder": "Kartınızı şimdi sipariş edin",
-    "cypherBeta": "Beta"
+    "cypherBeta": "Beta",
+    "openOrders": "Açık Siparişler"
   },
   "buyTokens": "jeton satın al",
   "components": {

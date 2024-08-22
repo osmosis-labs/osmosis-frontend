@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Cumpără",
+    "sell": "Vinde",
     "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
     "searchBalances": "Căutați solduri",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Ascunde soldurile mici",
     "cypherSpend": "Plată osmoză",
     "cypherOrder": "Comanda cardul tau acum",
-    "cypherBeta": "Beta"
+    "cypherBeta": "Beta",
+    "openOrders": "Comenzi deschise"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {

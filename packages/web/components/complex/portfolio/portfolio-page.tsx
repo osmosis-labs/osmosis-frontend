@@ -5,6 +5,7 @@ import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
+import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { UserPositionsSection } from "~/components/complex/portfolio/user-positions";
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
@@ -166,7 +167,10 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 <Allocation allocation={allocation} />
               )}
             </div>
-            <RecentActivity />
+            <div className="flex w-full flex-col">
+              {featureFlags.limitOrders && <OpenOrders />}
+              <RecentActivity />
+            </div>
           </aside>
         </>
       ) : (

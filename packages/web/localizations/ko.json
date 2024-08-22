@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "구입하다",
+    "sell": "팔다",
     "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
     "searchBalances": "잔액 검색",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "소액 잔액 숨기기",
     "cypherSpend": "오스모시스 페이",
     "cypherOrder": "지금 카드를 주문하세요",
-    "cypherBeta": "베타"
+    "cypherBeta": "베타",
+    "openOrders": "미결 주문"
   },
   "buyTokens": "토큰 구매",
   "components": {

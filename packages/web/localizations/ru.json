@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Купить",
+    "sell": "Продавать",
     "yourBalances": "Ваши балансы",
     "yourPositions": "Ваши позиции",
     "searchBalances": "Поиск остатков",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Скрыть небольшие остатки",
     "cypherSpend": "Платить за осмос",
     "cypherOrder": "Закажите карту сейчас",
-    "cypherBeta": "Бета"
+    "cypherBeta": "Бета",
+    "openOrders": "Открытые заказы"
   },
   "buyTokens": "Купить токены",
   "components": {

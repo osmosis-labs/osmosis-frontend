@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "買う",
+    "sell": "売る",
     "yourBalances": "残高",
     "yourPositions": "あなたの立場",
     "searchBalances": "残高を検索",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "少額残高を非表示にする",
     "cypherSpend": "オズモーシスペイ",
     "cypherOrder": "今すぐカードを注文する",
-    "cypherBeta": "ベータ"
+    "cypherBeta": "ベータ",
+    "openOrders": "オープン注文"
   },
   "buyTokens": "トークンを購入する",
   "components": {

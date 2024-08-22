@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Acheter",
+    "sell": "Vendre",
     "yourBalances": "Vos soldes",
     "yourPositions": "Vos postes",
     "searchBalances": "Rechercher des soldes",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Masquer les petits soldes",
     "cypherSpend": "Paiement par osmose",
     "cypherOrder": "Commandez votre carte maintenant",
-    "cypherBeta": "Bêta"
+    "cypherBeta": "Bêta",
+    "openOrders": "Commandes ouvertes"
   },
   "buyTokens": "Acheter jetons",
   "components": {
