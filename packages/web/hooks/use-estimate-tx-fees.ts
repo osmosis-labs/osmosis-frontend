@@ -136,7 +136,6 @@ export function useEstimateTxFees({
       return new SwapRequiresError(queryResult.error.message);
     }
 
-    if (queryResult.error) console.log(messages, queryResult.error);
     return queryResult.error;
   }, [queryResult.error]);
 

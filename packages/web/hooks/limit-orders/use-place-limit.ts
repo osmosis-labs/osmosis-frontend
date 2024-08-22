@@ -76,6 +76,13 @@ export const usePlaceLimit = ({
     baseDenom,
   });
 
+  const isMarket = useMemo(
+    () => type === "market",
+    //|| priceState.isBeyondOppositePrice
+    // Disabled auto market placing but can be readded with the above conditional
+    [type]
+  );
+
   const swapAssets = useSwapAssets({
     initialFromDenom: baseDenom,
     initialToDenom: quoteDenom,
@@ -93,18 +100,11 @@ export const usePlaceLimit = ({
     useQueryParams: false,
     useOtherCurrencies,
     maxSlippage,
-    quoteType,
+    quoteType: type !== "market" ? "out-given-in" : quoteType,
   });
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
-
-  const isMarket = useMemo(
-    () => type === "market",
-    //|| priceState.isBeyondOppositePrice
-    // Disabled auto market placing but can be readded with the above conditional
-    [type]
-  );
 
   const account = accountStore.getWallet(osmosisChainId);
 
@@ -149,7 +149,8 @@ export const usePlaceLimit = ({
     }
 
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue = inAmountInput.amount?.toDec() ?? new Dec(0);
+    const outgoingFiatValue =
+      marketState.inAmountInput.amount?.toDec() ?? new Dec(0);
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
