@@ -38,6 +38,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
   QuoteType,
   useAmountWithSlippage,
@@ -117,7 +118,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const [isSendingTx, setIsSendingTx] = useState(false);
 
     const [focused, setFocused] = useState<"fiat" | "token">(
-      tab === "buy" ? "fiat" : "token"
+      !featureFlags.inGivenOut && tab === "sell" ? "token" : "fiat"
     );
 
     const [fiatAmount, setFiatAmount] = useState<string>("");
@@ -572,6 +573,35 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       focused,
     ]);
 
+    const { tokenBalance, fiatBalance } = useMemo(() => {
+      if (tab === "buy") {
+        const fiatBalance = mulPrice(
+          swapState.quoteTokenBalance,
+          swapState.quoteAssetPrice,
+          DEFAULT_VS_CURRENCY
+        );
+        return { tokenBalance: swapState.quoteTokenBalance, fiatBalance };
+      } else if (tab === "sell") {
+        const fiatBalance = mulPrice(
+          swapState.baseTokenBalance,
+          swapState.baseAssetPrice,
+          DEFAULT_VS_CURRENCY
+        );
+        return { tokenBalance: swapState.baseTokenBalance, fiatBalance };
+      }
+
+      return {
+        tokenBalance: undefined,
+        fiatBalance: undefined,
+      };
+    }, [
+      tab,
+      swapState.quoteTokenBalance,
+      swapState.quoteAssetPrice,
+      swapState.baseTokenBalance,
+      swapState.baseAssetPrice,
+    ]);
+
     return (
       <>
         <div>
@@ -599,11 +629,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
                 availableBalance={
-                  tab === "buy"
-                    ? swapState.quoteAsset?.usdValue &&
-                      formatFiatPrice(swapState.quoteAsset?.usdValue)
-                    : swapState.baseTokenBalance &&
-                      formatPretty(swapState.baseTokenBalance.toDec(), {
+                  focused === "fiat"
+                    ? formatFiatPrice(
+                        fiatBalance ?? new PricePretty(DEFAULT_VS_CURRENCY, "0")
+                      )
+                    : formatPretty(tokenBalance ?? new Dec(0), {
                         minimumSignificantDigits: 6,
                         maximumSignificantDigits: 6,
                         maxDecimals: 10,

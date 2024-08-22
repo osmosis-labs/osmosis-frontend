@@ -13,6 +13,7 @@ import {
 } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { QuoteType, useSwap, useSwapAssets } from "~/hooks/use-swap";
@@ -115,6 +116,10 @@ export const usePlaceLimit = ({
     () => new PricePretty(DEFAULT_VS_CURRENCY, new Dec(1)),
     []
   );
+
+  const { price: baseAssetPrice } = usePrice({
+    coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+  });
 
   /**
    * Calculates the amount of tokens to be sent with the order.
@@ -608,6 +613,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    baseAssetPrice,
     reset,
     error,
     feeUsdValue,
