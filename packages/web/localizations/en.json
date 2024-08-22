@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Buy",
+    "sell": "Sell",
     "yourBalances": "Your balances",
     "yourPositions": "Your positions",
     "searchBalances": "Search balances",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Hide small balances",
     "cypherSpend": "Osmosis Pay",
     "cypherOrder": "Order your card now",
-    "cypherBeta": "Beta"
+    "cypherBeta": "Beta",
+    "openOrders": "Open Orders"
   },
   "buyTokens": "Buy tokens",
   "components": {

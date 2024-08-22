@@ -34,7 +34,7 @@ export const OpenOrders: FunctionComponent = () => {
   return (
     <div className="flex w-full flex-col py-3">
       <div className="flex cursor-pointer items-center justify-between gap-3">
-        <h6 className="py-3">Open Orders</h6>
+        <h6 className="py-3">{t("portfolio.openOrders")}</h6>
         <LinkButton
           href="/transactions?tab=orders"
           className="-mx-2 text-osmoverse-400"
@@ -98,8 +98,8 @@ export const OpenOrders: FunctionComponent = () => {
 
             const buySellText =
               order_direction === "bid"
-                ? t("limitOrders.buy")
-                : t("limitOrders.sell");
+                ? t("portfolio.buy")
+                : t("portfolio.sell");
 
             return (
               <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
