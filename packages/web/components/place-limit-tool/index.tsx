@@ -217,14 +217,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
-        (swapState.marketState.isQuoteLoading ||
-          swapState.marketState.isLoadingNetworkFee) &&
+        swapState.marketState.isQuoteLoading &&
         !Boolean(swapState.marketState.error)
       );
     }, [
       swapState.isMarket,
       swapState.marketState.isQuoteLoading,
-      swapState.marketState.isLoadingNetworkFee,
       swapState.marketState.error,
     ]);
 
@@ -631,7 +629,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               </AssetFieldsetHeaderLabel>
               <AssetFieldsetHeaderBalance
                 availableBalance={
-                  focused === "fiat"
+                  focused === "fiat" || tab === "buy"
                     ? formatFiatPrice(
                         fiatBalance ?? new PricePretty(DEFAULT_VS_CURRENCY, "0")
                       )
