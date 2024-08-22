@@ -212,12 +212,6 @@ export function useSwap(
           ? trimPlaceholderZeros(inGivenOutQuote.amount.toDec().toString())
           : ""
       );
-    } else if (
-      quoteType === "in-given-out" &&
-      outAmountInput.isEmpty &&
-      !inAmountInput.isEmpty
-    ) {
-      inAmountInput.setAmount("");
     }
 
     if (
@@ -230,12 +224,6 @@ export function useSwap(
           ? trimPlaceholderZeros(quote.amount.toDec().toString())
           : ""
       );
-    } else if (
-      quoteType === "out-given-in" &&
-      inAmountInput.isEmpty &&
-      !outAmountInput.isEmpty
-    ) {
-      outAmountInput.setAmount("");
     }
 
     /**
@@ -1784,20 +1772,13 @@ export function useDynamicSlippageConfig({
 
           if (!required || !sent) return;
 
-          console.log(`Required: ${required}`);
-          console.log(`Sent: ${sent}`);
-          console.log("Current slippage", slippage.toString());
           const amountPreSlippage = new Dec(sent).quo(slippage);
           const slippageRequired = new Dec(required).quo(amountPreSlippage);
-
-          console.log("Slippage Required", slippageRequired.toString());
 
           if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
             const [index, amount] = slippageConfig.getSmallestSlippage(
               slippageRequired.sub(new Dec(1))
             );
-
-            console.log("Setting slippage to", amount.toString());
 
             slippageConfig.select(index as number);
             slippageConfig.setDefaultSlippage(

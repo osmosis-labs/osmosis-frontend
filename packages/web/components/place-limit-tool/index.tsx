@@ -143,8 +143,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
 
     const slippageConfig = useSlippageConfig({
-      defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
-      selectedIndex: quoteType === "in-given-out" ? 1 : 0,
+      defaultSlippage: quoteType === "in-given-out" ? "0.5" : "0.5",
+      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
     const swapState = usePlaceLimit({
@@ -160,14 +160,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage = quoteType === "in-given-out" ? "1" : "0.5";
+      const defaultSlippage = quoteType === "in-given-out" ? "0.5" : "0.5";
       if (
         slippageConfig.slippage.toDec() ===
         new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
       ) {
         return;
       }
-      slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
       slippageConfig.setDefaultSlippage(defaultSlippage);
     }, [quoteType, slippageConfig]);
 
@@ -290,7 +290,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           return;
         }
 
-        if (type === "market") {
+        if (type === "market" || (amountType === "fiat" && tab === "buy")) {
           setMarketAmount(updatedValue);
         }
         const isFocused = focused === amountType;

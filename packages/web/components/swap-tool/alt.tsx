@@ -113,8 +113,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
-      defaultSlippage: quoteType === "in-given-out" ? "1" : "0.5",
-      selectedIndex: quoteType === "in-given-out" ? 1 : 0,
+      defaultSlippage: quoteType === "in-given-out" ? "0.5" : "0.5",
+      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
     const swapState = useSwap({
@@ -189,14 +189,14 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [setBuyOpen, setSellOpen]);
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage = quoteType === "in-given-out" ? "1" : "0.5";
+      const defaultSlippage = quoteType === "in-given-out" ? "0.5" : "0.5";
       if (
         slippageConfig.slippage.toDec() ===
         new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
       ) {
         return;
       }
-      slippageConfig.select(quoteType === "in-given-out" ? 1 : 0);
+      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
       slippageConfig.setDefaultSlippage(defaultSlippage);
     }, [quoteType, slippageConfig]);
 
@@ -282,8 +282,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t("swap.continueAnyway");
     } else if (
       !!swapState.networkFeeError &&
-      (swapState.isSlippageOverBalance ||
-        swapState.networkFeeError.message.includes("insufficient funds"))
+      swapState.isSlippageOverBalance &&
+      swapState.networkFeeError.message.includes("insufficient funds")
     ) {
       buttonText = t("swap.slippageOverBalance");
     } else {
