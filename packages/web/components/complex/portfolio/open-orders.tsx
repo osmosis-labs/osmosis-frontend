@@ -13,6 +13,8 @@ import { formatPretty } from "~/utils/formatter";
 const OPEN_ORDERS_LIMIT = 5;
 
 export const OpenOrders: FunctionComponent = () => {
+  const { t } = useTranslation();
+
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -21,20 +23,18 @@ export const OpenOrders: FunctionComponent = () => {
     pageSize: 100,
   });
 
-  const hasOrders = orders?.length > 0;
-
   const openOrders = orders
     ?.filter((order) => order.status === "open")
     .slice(0, OPEN_ORDERS_LIMIT);
 
-  const { t } = useTranslation();
+  const hasOpenOrders = openOrders?.length > 0;
 
-  if (isLoading || !hasOrders) return null;
+  if (isLoading || !hasOpenOrders) return null;
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between gap-3 py-3">
-        <h6>Open Orders</h6>
+      <div className="flex cursor-pointer items-center justify-between gap-3">
+        <h6 className="py-3">Open Orders</h6>
         <LinkButton
           href="/transactions?tab=orders"
           className="-mx-2 text-osmoverse-400"

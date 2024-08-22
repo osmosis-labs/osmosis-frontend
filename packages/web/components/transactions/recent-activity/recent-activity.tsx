@@ -53,8 +53,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between gap-3 py-3">
-        <h6>{t("portfolio.recentActivity")}</h6>
+      <div className="flex cursor-pointer items-center justify-between gap-3">
+        <h6 className="py-3">{t("portfolio.recentActivity")}</h6>
         <LinkButton
           href="/transactions"
           className="-mx-2 text-osmoverse-400"

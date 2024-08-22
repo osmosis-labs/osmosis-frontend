@@ -167,8 +167,10 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 <Allocation allocation={allocation} />
               )}
             </div>
-            <OpenOrders />
-            <RecentActivity />
+            <div className="flex w-full flex-col">
+              {featureFlags.limitOrders && <OpenOrders />}
+              <RecentActivity />
+            </div>
           </aside>
         </>
       ) : (
