@@ -13,6 +13,7 @@ import {
 } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { QuoteType, useSwap, useSwapAssets } from "~/hooks/use-swap";
@@ -116,6 +117,10 @@ export const usePlaceLimit = ({
     []
   );
 
+  const { price: baseAssetPrice } = usePrice({
+    coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+  });
+
   /**
    * Calculates the amount of tokens to be sent with the order.
    * In the case of an Ask order the amount sent is the amount of tokens defined by the user in terms of the base asset.
@@ -144,8 +149,7 @@ export const usePlaceLimit = ({
     }
 
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue =
-      marketState.inAmountInput.amount?.toDec() ?? new Dec(0);
+    const outgoingFiatValue = inAmountInput.amount?.toDec() ?? new Dec(0);
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
@@ -609,6 +613,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    baseAssetPrice,
     reset,
     error,
     feeUsdValue,
