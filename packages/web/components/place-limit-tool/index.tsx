@@ -309,6 +309,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         tab,
         type,
         resetSlippage,
+        featureFlags.inGivenOut,
       ]
     );
 
@@ -455,6 +456,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           Boolean(swapState.marketState.networkFeeError)
         );
       }
+
       return Boolean(swapState.error) || !swapState.isBalancesFetched;
     }, [
       swapState.error,
@@ -569,6 +571,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       fiatAmount,
       focused,
     ]);
+
     return (
       <>
         <div>

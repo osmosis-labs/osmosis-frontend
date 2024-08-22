@@ -144,8 +144,7 @@ export const usePlaceLimit = ({
     }
 
     // Determine the outgoing fiat amount the user wants to buy
-    const outgoingFiatValue =
-      marketState.inAmountInput.amount?.toDec() ?? new Dec(0);
+    const outgoingFiatValue = inAmountInput.amount?.toDec() ?? new Dec(0);
 
     // Determine the amount of quote asset tokens to send by dividing the outgoing fiat amount by the current quote asset price
     // Multiply by 10^n where n is the amount of decimals for the quote asset
