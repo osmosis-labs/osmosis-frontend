@@ -85,7 +85,7 @@ export const OpenOrders: FunctionComponent = () => {
             );
 
             // example: 0.01 USDC
-            const formattedQuotAsset = formatPretty(
+            const formattedQuoteAsset = formatPretty(
               new CoinPretty(
                 {
                   coinDecimals: quoteAsset?.decimals ?? 0,
@@ -122,7 +122,7 @@ export const OpenOrders: FunctionComponent = () => {
                 <div className="body2 ml-auto flex h-full flex-col justify-between overflow-ellipsis whitespace-nowrap text-right">
                   {formattedFiatPrice}
                   <span className="caption text-osmoverse-300">
-                    {formattedQuotAsset}
+                    {formattedQuoteAsset}
                   </span>
                 </div>
               </div>
