@@ -281,7 +281,13 @@
     "cypherSpend": "Pagamento por osmose",
     "cypherOrder": "Peça já o seu cartão",
     "cypherBeta": "Beta",
-    "openOrders": "Ordens abertas"
+    "openOrders": "Ordens abertas",
+    "last1h": "Última 1h",
+    "last24h": "Últimas 24h",
+    "last7d": "Últimos 7d",
+    "last30d": "Últimos 30d",
+    "last1y": "Último 1 ano",
+    "allTime": "Todos os tempos"
   },
   "buyTokens": "Comprar tokens",
   "components": {

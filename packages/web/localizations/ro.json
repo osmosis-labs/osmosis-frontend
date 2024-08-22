@@ -281,7 +281,13 @@
     "cypherSpend": "Plată osmoză",
     "cypherOrder": "Comanda cardul tau acum",
     "cypherBeta": "Beta",
-    "openOrders": "Comenzi deschise"
+    "openOrders": "Comenzi deschise",
+    "last1h": "Ultima 1h",
+    "last24h": "Ultimele 24 de ore",
+    "last7d": "Ultimele 7 zile",
+    "last30d": "Ultimele 30 de zile",
+    "last1y": "Ultimul 1 an",
+    "allTime": "Tot timpul"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
