@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "خرید کنید",
+    "sell": "فروش",
     "yourBalances": "موجودی شما",
     "yourPositions": "موقعیت های شما",
     "searchBalances": "جستجوی موجودی",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "توازن های کوچک را پنهان کنید",
     "cypherSpend": "اسمز پرداخت",
     "cypherOrder": "همین الان کارت خود را سفارش دهید",
-    "cypherBeta": "بتا"
+    "cypherBeta": "بتا",
+    "openOrders": "باز کردن سفارشات"
   },
   "buyTokens": "خرید توکن",
   "components": {

@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "ખરીદો",
+    "sell": "વેચો",
     "yourBalances": "તમારું બેલેન્સ",
     "yourPositions": "તમારી સ્થિતિ",
     "searchBalances": "બેલેન્સ શોધો",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "નાના બેલેન્સ છુપાવો",
     "cypherSpend": "ઓસ્મોસિસ પે",
     "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
-    "cypherBeta": "બેટા"
+    "cypherBeta": "બેટા",
+    "openOrders": "ઓર્ડર ખોલો"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {

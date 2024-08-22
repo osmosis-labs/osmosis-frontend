@@ -254,6 +254,7 @@
   },
   "portfolio": {
     "buy": "Comprar",
+    "sell": "Vender",
     "yourBalances": "Seus saldos",
     "yourPositions": "Suas posições",
     "searchBalances": "Pesquisar saldos",
@@ -279,7 +280,8 @@
     "hideSmallBalances": "Ocultar pequenos saldos",
     "cypherSpend": "Pagamento por osmose",
     "cypherOrder": "Peça já o seu cartão",
-    "cypherBeta": "Beta"
+    "cypherBeta": "Beta",
+    "openOrders": "Ordens abertas"
   },
   "buyTokens": "Comprar tokens",
   "components": {
