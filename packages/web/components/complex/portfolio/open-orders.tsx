@@ -1,62 +1,52 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import React, { FunctionComponent } from "react";
 
 import { FallbackImg } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
-import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
+import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import { useStore } from "~/stores";
 import { formatFiatPrice } from "~/utils/formatter";
 import { formatPretty } from "~/utils/formatter";
 
-const OPEN_ORDERS_LIMIT = 2;
+const OPEN_ORDERS_LIMIT = 5;
 
-const OpenOrdersSkeleton = () => {
-  return (
-    <>
-      {Array.from({ length: OPEN_ORDERS_LIMIT }).map((_, index) => (
-        <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
-          <Skeleton className="h-9 w-1/3 " />
-          <Skeleton className="h-9 w-1/5" />
-        </div>
-      ))}
-    </>
-  );
-};
+export const OpenOrders: FunctionComponent = () => {
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-export const OpenOrders: FunctionComponent<{
-  orders?: MappedLimitOrder[];
-}> = ({ orders }) => {
+  const { orders, isLoading } = useOrderbookAllActiveOrders({
+    userAddress: wallet?.address ?? "",
+    pageSize: 100,
+  });
+
+  const hasOrders = orders?.length > 0;
+
   const openOrders = orders
     ?.filter((order) => order.status === "open")
     .slice(0, OPEN_ORDERS_LIMIT);
 
   const { t } = useTranslation();
 
+  if (isLoading || !hasOrders) return null;
+
   return (
     <div className="flex w-full flex-col py-3">
       <div className="flex cursor-pointer items-center justify-between gap-3 py-3">
         <h6>Open Orders</h6>
         <LinkButton
-          href="/transactions"
+          href="/transactions?tab=orders"
           className="-mx-2 text-osmoverse-400"
           label={t("portfolio.seeAll")}
           ariaLabel={t("portfolio.seeAll")}
           size="md"
         />
       </div>
-      <div className="flex flex-col">
+      <div className="w-full flex-col justify-between self-stretch">
         {openOrders?.map(
           (
-            {
-              baseAsset,
-              quoteAsset,
-              quantity,
-              price,
-              order_direction,
-              output,
-              placed_quantity,
-            },
+            { baseAsset, quoteAsset, order_direction, output, placed_quantity },
             index
           ) => {
             const baseAssetLogo =
@@ -112,7 +102,7 @@ export const OpenOrders: FunctionComponent<{
                 : t("limitOrders.sell");
 
             return (
-              <div key={index} className="body2 -mx-2 flex w-full gap-3 p-2">
+              <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
                 <FallbackImg
                   src={baseAssetLogo}
                   alt={`${baseAsset?.symbol} icon`}
@@ -122,14 +112,14 @@ export const OpenOrders: FunctionComponent<{
                   className="inline-block"
                 />
                 <div className="flex h-full flex-col justify-between overflow-hidden whitespace-nowrap">
-                  <span className="overflow-hidden overflow-ellipsis">
+                  <span className="body2 overflow-hidden overflow-ellipsis">
                     {buySellText} {baseAsset?.currency?.coinDenom}{" "}
                   </span>
                   <span className="caption overflow-hidden overflow-ellipsis text-osmoverse-300">
                     {formattedBuySellToken}
                   </span>
                 </div>
-                <div className="ooverflow-ellipsis ml-auto flex h-full flex-col justify-between whitespace-nowrap text-right">
+                <div className="body2 ml-auto flex h-full flex-col justify-between overflow-ellipsis whitespace-nowrap text-right">
                   {formattedFiatPrice}
                   <span className="caption text-osmoverse-300">
                     {formattedQuotAsset}

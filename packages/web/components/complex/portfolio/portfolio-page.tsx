@@ -20,7 +20,6 @@ import {
   useTranslation,
   useWalletSelect,
 } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -35,11 +34,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
-  });
-
-  const { orders, isLoading: isLoadingOrders } = useOrderbookAllActiveOrders({
-    userAddress: wallet?.address ?? "",
-    pageSize: 20,
   });
 
   const {
@@ -173,7 +167,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 <Allocation allocation={allocation} />
               )}
             </div>
-            <OpenOrders orders={orders} />
+            <OpenOrders />
             <RecentActivity />
           </aside>
         </>
