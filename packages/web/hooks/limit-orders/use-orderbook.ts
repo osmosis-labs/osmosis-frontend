@@ -265,7 +265,7 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 export const useOrderbookAllActiveOrders = ({
   userAddress,
   pageSize = 10,
-  refetchInterval = 10000,
+  refetchInterval = 30000,
 }: {
   userAddress: string;
   pageSize?: number;
@@ -294,8 +294,8 @@ export const useOrderbookAllActiveOrders = ({
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
       keepPreviousData: false,
-      cacheTime: 10000,
-      staleTime: 10000,
+      cacheTime: 30000,
+      staleTime: 30000,
       trpc: {
         abortOnUnmount: true,
         context: {

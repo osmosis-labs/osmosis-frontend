@@ -104,7 +104,7 @@ export const orderbookRouter = createTRPCRouter({
           return allOrders.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}`,
-        ttl: 2000,
+        ttl: 30000,
         cursor: input.cursor,
         limit: input.limit,
       });
