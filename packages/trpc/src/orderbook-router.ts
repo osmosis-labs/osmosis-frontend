@@ -141,20 +141,22 @@ export const orderbookRouter = createTRPCRouter({
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
           const { userOsmoAddress } = input;
-          const orders = await getOrderbookActiveOrdersSQS({
-            userOsmoAddress,
-            chainList: ctx.chainList,
-            assetList: ctx.assetLists,
-          });
-          const historicalOrders = await getOrderbookHistoricalOrders({
-            userOsmoAddress,
-            assetLists: ctx.assetLists,
-            chainList: ctx.chainList,
-          });
-          return [...orders, ...historicalOrders].sort(defaultSortOrders);
+          const promises = [
+            getOrderbookActiveOrdersSQS({
+              userOsmoAddress,
+              assetList: ctx.assetLists,
+            }),
+            getOrderbookHistoricalOrders({
+              userOsmoAddress,
+              assetLists: ctx.assetLists,
+              chainList: ctx.chainList,
+            }),
+          ];
+          const orders = await Promise.all(promises);
+          return orders.flat().sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
-        ttl: 2000,
+        ttl: 5000,
         cursor: input.cursor,
         limit: input.limit,
       });

@@ -19,17 +19,15 @@ const activeOrdersCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export function getOrderbookActiveOrdersSQS({
   userOsmoAddress,
-  chainList,
   assetList,
 }: {
   userOsmoAddress: string;
-  chainList: Chain[];
   assetList: AssetList[];
 }) {
   return cachified({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-sqs-${userOsmoAddress}`,
-    ttl: 10000, // 10 seconds
+    ttl: 5000, // 5 seconds
     getFreshValue: () =>
       queryActiveOrdersSQS({
         userOsmoAddress,
