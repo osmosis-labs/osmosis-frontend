@@ -330,29 +330,48 @@ export const useOrderbookAllActiveOrders = ({
 export const useOrderbookClaimableOrders = ({
   userAddress,
   disabled = false,
+  refetchInterval = 2000,
 }: {
   userAddress: string;
   disabled?: boolean;
+  refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const {
-    data: orders,
+    data: claimableOrders,
     isLoading,
     isFetching,
     refetch,
-  } = api.edge.orderbooks.getClaimableOrders.useQuery(
+  } = api.edge.orderbooks.getAllOrdersSQS.useInfiniteQuery(
     {
       userOsmoAddress: userAddress,
+      filter: "filled",
+      limit: 100,
     },
     {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+      refetchInterval,
       enabled: !!userAddress && addresses.length > 0 && !disabled,
       refetchOnMount: true,
+      keepPreviousData: false,
+      cacheTime: refetchInterval,
+      staleTime: refetchInterval,
+      trpc: {
+        abortOnUnmount: true,
+        context: {
+          skipBatch: true,
+        },
+      },
     }
   );
 
+  const orders = useMemo(() => {
+    return claimableOrders?.pages?.flatMap((page) => page.items) ?? [];
+  }, [claimableOrders?.pages]);
   const claimAllOrders = useCallback(async () => {
     if (!account || !orders) return;
     const msgs = addresses

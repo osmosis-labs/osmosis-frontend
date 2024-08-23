@@ -13,12 +13,17 @@ import {
   OrderStatus,
 } from "@osmosis-labs/server";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { OsmoAddressSchema, UserOsmoAddressSchema } from "./parameter-types";
 
 const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   UserOsmoAddressSchema.required()
+).merge(
+  z.object({
+    filter: z.enum(["open", "filled", "historical"]).optional(),
+  })
 );
 
 const orderStatusOrder: Record<OrderStatus, number> = {
@@ -140,20 +145,35 @@ export const orderbookRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       return maybeCachePaginatedItems({
         getFreshItems: async () => {
-          const { userOsmoAddress } = input;
-          const promises = [
-            getOrderbookActiveOrdersSQS({
-              userOsmoAddress,
-              assetList: ctx.assetLists,
-            }),
-            getOrderbookHistoricalOrders({
-              userOsmoAddress,
-              assetLists: ctx.assetLists,
-              chainList: ctx.chainList,
-            }),
-          ];
+          const { userOsmoAddress, filter } = input;
+
+          const shouldFetchActive =
+            !filter || filter === "open" || filter === "filled";
+          const shouldFetchHistorical = !filter || filter === "historical";
+          const promises: Promise<MappedLimitOrder[]>[] = [];
+          if (shouldFetchActive) {
+            promises.push(
+              getOrderbookActiveOrdersSQS({
+                userOsmoAddress,
+                assetList: ctx.assetLists,
+              })
+            );
+          }
+          if (shouldFetchHistorical) {
+            promises.push(
+              getOrderbookHistoricalOrders({
+                userOsmoAddress,
+                assetLists: ctx.assetLists,
+                chainList: ctx.chainList,
+              })
+            );
+          }
           const orders = await Promise.all(promises);
-          return orders.flat().sort(defaultSortOrders);
+          const allOrders = orders.flat().sort(defaultSortOrders);
+          if (filter === "filled") {
+            return allOrders.filter((o) => o.status === "filled");
+          }
+          return allOrders;
         },
         cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
         ttl: 5000,

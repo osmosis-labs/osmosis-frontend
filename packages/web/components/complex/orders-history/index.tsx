@@ -336,16 +336,19 @@ const TableGroupHeader = ({
 
   if (group === "filled") {
     return (
-      <tr style={style} className="flex items-center">
+      <tr
+        style={style}
+        className={classNames("grid grid-cols-[auto_180px] items-center")}
+      >
         <td colSpan={5} className="!p-0">
-          <div className="flex w-full items-end justify-between pr-4">
-            <div className="relative flex items-end gap-3 pt-5">
-              <div className="flex items-center gap-2 pb-3">
-                <span className="sm:subtitle1 text-h6 font-h6">
+          <div className="flex w-full items-center justify-between pr-4">
+            <div className="relative flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="sm:subtitle1 text-h5 font-h5">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="md:body2 pb-4 pt-8 text-h6 font-h6">
+                  <span className="md:body2 text-subtitle font-subtitle">
                     {filledOrdersCount}
                   </span>
                 </div>
@@ -364,15 +367,17 @@ const TableGroupHeader = ({
                 </div>
               </GenericDisclaimer>
             </div>
-            <button
-              className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
-              onClick={claim}
-              disabled={claiming}
-            >
-              {claiming && <Spinner className="mr-2 !h-2 !w-2" />}
-              <span className="subtitle1">{t("limitOrders.claimAll")}</span>
-            </button>
           </div>
+        </td>
+        <td className="flex items-center justify-end">
+          <button
+            className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
+            onClick={claim}
+            disabled={claiming}
+          >
+            {claiming && <Spinner className="mr-2 !h-2 !w-2" />}
+            <span className="subtitle1">{t("limitOrders.claimAll")}</span>
+          </button>
         </td>
       </tr>
     );
