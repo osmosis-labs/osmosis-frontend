@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { tickToPrice } from "@osmosis-labs/math";
-import { Chain } from "@osmosis-labs/types";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
@@ -8,6 +8,7 @@ import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { LimitOrder, queryOrderbookActiveOrders } from "../../osmosis";
+import { queryActiveOrdersSQS } from "../../sidecar/orderbooks";
 import {
   getOrderbookTickState,
   getOrderbookTickUnrealizedCancels,
@@ -15,6 +16,48 @@ import {
 import type { MappedLimitOrder, OrderStatus } from "./types";
 
 const activeOrdersCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+export function getOrderbookActiveOrdersSQS({
+  userOsmoAddress,
+  chainList,
+  assetList,
+}: {
+  userOsmoAddress: string;
+  chainList: Chain[];
+  assetList: AssetList[];
+}) {
+  return cachified({
+    cache: activeOrdersCache,
+    key: `orderbookActiveOrders-sqs-${userOsmoAddress}`,
+    ttl: 10000, // 10 seconds
+    getFreshValue: () =>
+      queryActiveOrdersSQS({
+        userOsmoAddress,
+      }).then(async ({ orders }) => {
+        const mappedOrders: MappedLimitOrder[] = orders.map((o) => {
+          return {
+            ...o,
+            price: new Dec(o.price),
+            quantity: o.quantity,
+            placed_quantity: o.placed_quantity,
+            percentClaimed: new Dec(o.percentClaimed),
+            totalFilled: o.totalFilled,
+            percentFilled: new Dec(o.percentFilled),
+            quoteAsset: getAssetFromAssetList({
+              coinMinimalDenom: o.quote_asset.symbol,
+              assetLists: assetList,
+            }),
+            baseAsset: getAssetFromAssetList({
+              coinMinimalDenom: o.base_asset.symbol,
+              assetLists: assetList,
+            }),
+            output: new Dec(o.output),
+          };
+        });
+        return mappedOrders;
+      }),
+  });
+}
 
 export function getOrderbookActiveOrders({
   orderbookAddress,

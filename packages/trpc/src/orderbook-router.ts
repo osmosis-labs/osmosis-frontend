@@ -3,6 +3,7 @@ import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
   getOrderbookActiveOrders,
+  getOrderbookActiveOrdersSQS,
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
@@ -130,6 +131,30 @@ export const orderbookRouter = createTRPCRouter({
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}`,
         ttl: 30000,
+        cursor: input.cursor,
+        limit: input.limit,
+      });
+    }),
+  getAllOrdersSQS: publicProcedure
+    .input(GetInfiniteLimitOrdersInputSchema)
+    .query(async ({ input, ctx }) => {
+      return maybeCachePaginatedItems({
+        getFreshItems: async () => {
+          const { userOsmoAddress } = input;
+          const orders = await getOrderbookActiveOrdersSQS({
+            userOsmoAddress,
+            chainList: ctx.chainList,
+            assetList: ctx.assetLists,
+          });
+          const historicalOrders = await getOrderbookHistoricalOrders({
+            userOsmoAddress,
+            assetLists: ctx.assetLists,
+            chainList: ctx.chainList,
+          });
+          return [...orders, ...historicalOrders].sort(defaultSortOrders);
+        },
+        cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
+        ttl: 2000,
         cursor: input.cursor,
         limit: input.limit,
       });

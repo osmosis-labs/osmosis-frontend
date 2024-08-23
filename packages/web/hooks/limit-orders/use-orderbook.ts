@@ -265,7 +265,7 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 export const useOrderbookAllActiveOrders = ({
   userAddress,
   pageSize = 10,
-  refetchInterval = 30000,
+  refetchInterval = 2000,
 }: {
   userAddress: string;
   pageSize?: number;
@@ -282,7 +282,7 @@ export const useOrderbookAllActiveOrders = ({
     hasNextPage,
     refetch,
     isRefetching,
-  } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
+  } = api.edge.orderbooks.getAllOrdersSQS.useInfiniteQuery(
     {
       userOsmoAddress: userAddress,
       limit: pageSize,

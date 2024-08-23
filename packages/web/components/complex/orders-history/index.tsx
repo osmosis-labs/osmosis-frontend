@@ -85,7 +85,6 @@ export const OrderHistory = observer(() => {
     userAddress: wallet?.address ?? "",
     pageSize: 20,
   });
-
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
     () =>
