@@ -32,7 +32,7 @@ export function getOrderbookActiveOrders({
   return cachified({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-${orderbookAddress}-${userOsmoAddress}`,
-    ttl: 2000, // 2 seconds
+    ttl: 10000, // 10 seconds
     getFreshValue: () =>
       queryOrderbookActiveOrders({
         orderbookAddress,

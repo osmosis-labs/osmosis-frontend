@@ -52,6 +52,11 @@ export const queryOrderbookActiveOrders = createNodeQuery<
     const encodedMsg = Buffer.from(msg).toString("base64");
     return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
   },
+  options: () => {
+    return {
+      credentials: "include",
+    };
+  },
 });
 interface TickValues {
   total_amount_of_liquidity: string;
