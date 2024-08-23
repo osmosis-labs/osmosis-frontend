@@ -70,7 +70,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount("1.01");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("token_out_denom: " + USDC);
+    expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain("denom: " + ATOM);
     await tradePage.isTransactionSuccesful();
@@ -97,14 +97,14 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
-    await trxPage.cancelLimitOrder(`${amount} ATOM`, limitPrice, context);
+    await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
     await tradePage.goto();
-    const amount = "1.01";
+    const amount = "1.11";
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
@@ -122,7 +122,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
-    await trxPage.cancelLimitOrder(`${amount} OSMO`, limitPrice, context);
+    await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
