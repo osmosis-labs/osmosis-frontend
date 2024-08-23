@@ -94,7 +94,7 @@ export const PortfolioHistoricalChartMinimized = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="h-full w-full scale-110">
+    <div className="h-full w-full">
       {error ? (
         <div className="error-message flex h-full items-center justify-center">
           {t("errors.generic")}
