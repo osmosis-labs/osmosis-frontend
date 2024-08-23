@@ -55,6 +55,7 @@ export const queryOrderbookActiveOrders = createNodeQuery<
   options: () => {
     return {
       credentials: "include",
+      keepalive: true,
     };
   },
 });

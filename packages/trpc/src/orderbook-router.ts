@@ -113,7 +113,7 @@ export const orderbookRouter = createTRPCRouter({
             }
             const batchOrders = await Promise.all(promises);
             allOrders.push(...batchOrders.flat());
-            await new Promise((resolve) => setTimeout(resolve, 150));
+            await new Promise((resolve) => setTimeout(resolve, 250));
           }
           // promises.push(
           //   getOrderbookHistoricalOrders({
