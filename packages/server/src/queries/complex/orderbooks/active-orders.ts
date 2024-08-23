@@ -52,16 +52,6 @@ export function getOrderbookActiveOrdersSQS({
             output: new Dec(o.output),
           };
         });
-
-        const filledOrder: MappedLimitOrder = {
-          ...mappedOrders[mappedOrders.length - 1],
-          status: "filled",
-          percentFilled: new Dec(1),
-          percentClaimed: new Dec(0),
-        };
-        for (let i = 0; i < 10; i++) {
-          mappedOrders.push(filledOrder);
-        }
         return mappedOrders;
       }),
   });
