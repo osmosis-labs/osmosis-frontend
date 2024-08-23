@@ -66,7 +66,7 @@ export const orderbookRouter = createTRPCRouter({
           const contractAddresses = pools.map((p) => p.contractAddress);
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-          const batchSize = 5; // Define the batch size
+          const batchSize = 10; // Define the batch size
           const batches = contractAddresses.reduce((acc: any[], _, index) => {
             const batchIndex = Math.floor(index / batchSize);
             if (!acc[batchIndex]) {
@@ -113,7 +113,7 @@ export const orderbookRouter = createTRPCRouter({
             }
             const batchOrders = await Promise.all(promises);
             allOrders.push(...batchOrders.flat());
-            await new Promise((resolve) => setTimeout(resolve, 250));
+            await new Promise((resolve) => setTimeout(resolve, 500));
           }
           // promises.push(
           //   getOrderbookHistoricalOrders({
