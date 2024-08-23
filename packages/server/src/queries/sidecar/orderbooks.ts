@@ -48,7 +48,7 @@ export async function queryActiveOrdersSQS({
   userOsmoAddress: string;
 }) {
   const url = new URL(
-    `/orderbook/active-orders?userOsmoAddress=${userOsmoAddress}`,
+    `/passthrough/active-orders?userOsmoAddress=${userOsmoAddress}`,
     SIDECAR_BASE_URL
   );
   return await apiClient<ActiveOrdersResponse>(url.toString());

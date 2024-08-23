@@ -15,7 +15,6 @@ import {
 } from "~/components/swap-tool/swap-tool-tabs";
 import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -40,7 +39,6 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    useOrderbookAllActiveOrders({ userAddress: wallet?.address ?? "" });
     useEffect(() => {
       switch (tab) {
         case SwapToolTab.BUY:
