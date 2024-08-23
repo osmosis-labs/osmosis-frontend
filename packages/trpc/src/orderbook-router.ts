@@ -207,3 +207,5 @@ export const orderbookRouter = createTRPCRouter({
     return pools;
   }),
 });
+
+export const maxDuration = 30000;
