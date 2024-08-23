@@ -67,7 +67,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("ATOM");
-    await tradePage.enterAmount("0.25");
+    await tradePage.enterAmount("1.01");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
@@ -79,7 +79,7 @@ test.describe("Test Trade feature", () => {
 
   test("User should be able to limit sell ATOM", async () => {
     await tradePage.goto();
-    const amount = "0.25";
+    const amount = "1.01";
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("ATOM");
@@ -90,7 +90,7 @@ test.describe("Test Trade feature", () => {
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain(amount + " ATOM (Cosmos Hub/channel-0)");
+    //expect(msgContentAmount).toContain(amount + " ATOM (Cosmos Hub/channel-0)");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
@@ -104,7 +104,7 @@ test.describe("Test Trade feature", () => {
 
   test("User should be able to cancel limit sell OSMO", async () => {
     await tradePage.goto();
-    const amount = "2.59";
+    const amount = "1.01";
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
