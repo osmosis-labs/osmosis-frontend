@@ -114,11 +114,14 @@ export const OrderHistory = observer(() => {
     scrollMargin: listRef.current?.offsetTop ?? 0,
     paddingStart: 45,
   });
+  const filledOrdersInDisplay = useMemo(() => {
+    return orders.filter((o) => o.status === "filled");
+  }, [orders]);
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
-      disabled: isLoading || orders.length === 0 || isRefetching,
+      disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
     });
 
   const claimOrders = useCallback(async () => {

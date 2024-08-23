@@ -294,8 +294,6 @@ export const useOrderbookAllActiveOrders = ({
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
       keepPreviousData: false,
-      cacheTime: refetchInterval,
-      staleTime: refetchInterval,
       trpc: {
         abortOnUnmount: true,
         context: {
@@ -330,7 +328,7 @@ export const useOrderbookAllActiveOrders = ({
 export const useOrderbookClaimableOrders = ({
   userAddress,
   disabled = false,
-  refetchInterval = 2000,
+  refetchInterval = 5000,
 }: {
   userAddress: string;
   disabled?: boolean;
