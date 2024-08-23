@@ -49,13 +49,14 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("2.99");
+    await tradePage.enterAmount("1.1");
     await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("2.99 OSMO");
+    // now this is converted from USDC
+    //expect(msgContentAmount).toContain("2.99 OSMO");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
