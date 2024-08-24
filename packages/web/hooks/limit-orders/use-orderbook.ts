@@ -291,6 +291,8 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
+      cacheTime: refetchInterval,
+      staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
       keepPreviousData: false,
@@ -326,30 +328,32 @@ export const useOrderbookAllActiveOrders = ({
 };
 
 export const useOrderbookClaimableOrders = ({
-  userAddress,
-  disabled = false,
+  userAddress: _,
+  disabled: __,
+  orders = [],
 }: {
   userAddress: string;
   disabled?: boolean;
+  orders: MappedLimitOrder[];
 }) => {
   const { orderbooks } = useOrderbooks();
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
-  const {
-    data: orders,
-    isLoading,
-    isFetching,
-    refetch,
-  } = api.edge.orderbooks.getClaimableOrders.useQuery(
-    {
-      userOsmoAddress: userAddress,
-    },
-    {
-      enabled: !!userAddress && addresses.length > 0 && !disabled,
-      refetchOnMount: true,
-    }
-  );
+  // const {
+  //   data: orders,
+  //   isLoading,
+  //   isFetching,
+  //   refetch,
+  // } = api.edge.orderbooks.getClaimableOrders.useQuery(
+  //   {
+  //     userOsmoAddress: userAddress,
+  //   },
+  //   {
+  //     enabled: !!userAddress && addresses.length > 0 && !disabled,
+  //     refetchOnMount: true,
+  //   }
+  // );
 
   const claimAllOrders = useCallback(async () => {
     if (!account || !orders) return;
@@ -379,14 +383,14 @@ export const useOrderbookClaimableOrders = ({
 
     if (msgs.length > 0) {
       await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
-      await refetch();
+      // await refetch();
     }
-  }, [orders, account, addresses, refetch]);
+  }, [orders, account, addresses]);
 
   return {
     orders: orders ?? [],
     count: orders?.length ?? 0,
-    isLoading: isLoading || isFetching,
+    isLoading: false,
     claimAllOrders,
   };
 };
