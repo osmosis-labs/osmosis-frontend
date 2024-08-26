@@ -467,8 +467,10 @@ const TableOrderRow = memo(
           return;
       }
     })();
+
     return (
       <tr
+        data-transaction-hash={order.placed_tx}
         style={style}
         className={classNames(
           gridClasses,
