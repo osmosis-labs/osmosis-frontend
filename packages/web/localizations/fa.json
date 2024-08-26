@@ -281,7 +281,12 @@
     "cypherSpend": "اسمز پرداخت",
     "cypherOrder": "همین الان کارت خود را سفارش دهید",
     "cypherBeta": "بتا",
-    "openOrders": "باز کردن سفارشات"
+    "openOrders": "باز کردن سفارشات",
+    "last24h": "24 ساعت گذشته",
+    "last7d": "7 روز گذشته",
+    "last30d": "30 روز گذشته",
+    "last1y": "1 سال گذشته",
+    "allTime": "تمام زمان"
   },
   "buyTokens": "خرید توکن",
   "components": {

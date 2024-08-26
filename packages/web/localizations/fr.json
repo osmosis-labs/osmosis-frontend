@@ -281,7 +281,12 @@
     "cypherSpend": "Paiement par osmose",
     "cypherOrder": "Commandez votre carte maintenant",
     "cypherBeta": "Bêta",
-    "openOrders": "Commandes ouvertes"
+    "openOrders": "Commandes ouvertes",
+    "last24h": "Dernières 24h",
+    "last7d": "Derniers 7 jours",
+    "last30d": "Les 30 derniers jours",
+    "last1y": "Dernière année",
+    "allTime": "Tout le temps"
   },
   "buyTokens": "Acheter jetons",
   "components": {

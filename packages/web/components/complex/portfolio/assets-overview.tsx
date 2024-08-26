@@ -170,6 +170,23 @@ export const AssetsOverview: FunctionComponent<
     [portfolioOverTimeData]
   );
 
+  const getActiveRangeDateText = (range: Range) => {
+    switch (range) {
+      case "1d":
+        return t("portfolio.last24h");
+      case "7d":
+        return t("portfolio.last7d");
+      case "1mo":
+        return t("portfolio.last30d");
+      case "1y":
+        return t("portfolio.last1y");
+      case "all":
+        return t("portfolio.allTime");
+      default:
+        return t("portfolio.last30d");
+    }
+  };
+
   return isWalletLoading ? null : (
     <div
       className={classNames(
@@ -277,9 +294,12 @@ export const AssetsOverview: FunctionComponent<
               error={error}
             />
             <div className="absolute z-50 h-full w-full">
+              <span className="body1 absolute top-2 right-3 text-osmoverse-400">
+                {getActiveRangeDateText(range)}
+              </span>
               <Icon
                 id="resize-expand"
-                className="absolute top-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
+                className="absolute bottom-4 right-4 text-osmoverse-200 opacity-0 transition-opacity duration-100 group-hover:opacity-100"
                 height={16}
                 width={16}
               />

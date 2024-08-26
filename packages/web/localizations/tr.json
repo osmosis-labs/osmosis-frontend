@@ -281,7 +281,12 @@
     "cypherSpend": "Osmoz Ödeme",
     "cypherOrder": "Kartınızı şimdi sipariş edin",
     "cypherBeta": "Beta",
-    "openOrders": "Açık Siparişler"
+    "openOrders": "Açık Siparişler",
+    "last24h": "Son 24 saat",
+    "last7d": "Son 7 gün",
+    "last30d": "Son 30 gün",
+    "last1y": "Son 1y",
+    "allTime": "Tüm zamanlar"
   },
   "buyTokens": "jeton satın al",
   "components": {

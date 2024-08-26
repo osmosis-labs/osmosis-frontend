@@ -281,7 +281,12 @@
     "cypherSpend": "ઓસ્મોસિસ પે",
     "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
     "cypherBeta": "બેટા",
-    "openOrders": "ઓર્ડર ખોલો"
+    "openOrders": "ઓર્ડર ખોલો",
+    "last24h": "છેલ્લા 24 કલાક",
+    "last7d": "ગત તા",
+    "last30d": "છેલ્લા 30 ડી",
+    "last1y": "છેલ્લા 1 વર્ષ",
+    "allTime": "બધા સમય"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {

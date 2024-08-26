@@ -281,7 +281,12 @@
     "cypherSpend": "オズモーシスペイ",
     "cypherOrder": "今すぐカードを注文する",
     "cypherBeta": "ベータ",
-    "openOrders": "オープン注文"
+    "openOrders": "オープン注文",
+    "last24h": "過去24時間",
+    "last7d": "過去7日間",
+    "last30d": "過去30日間",
+    "last1y": "過去1年間",
+    "allTime": "これまで"
   },
   "buyTokens": "トークンを購入する",
   "components": {

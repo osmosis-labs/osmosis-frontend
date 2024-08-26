@@ -281,7 +281,12 @@
     "cypherSpend": "오스모시스 페이",
     "cypherOrder": "지금 카드를 주문하세요",
     "cypherBeta": "베타",
-    "openOrders": "미결 주문"
+    "openOrders": "미결 주문",
+    "last24h": "지난 24시간",
+    "last7d": "지난 7일",
+    "last30d": "지난 30일",
+    "last1y": "지난 1년",
+    "allTime": "모든 시간"
   },
   "buyTokens": "토큰 구매",
   "components": {

@@ -281,7 +281,12 @@
     "cypherSpend": "Osmosis Pay",
     "cypherOrder": "Order your card now",
     "cypherBeta": "Beta",
-    "openOrders": "Open Orders"
+    "openOrders": "Open Orders",
+    "last24h": "Last 24h",
+    "last7d": "Last 7d",
+    "last30d": "Last 30d",
+    "last1y": "Last 1y",
+    "allTime": "All time"
   },
   "buyTokens": "Buy tokens",
   "components": {
