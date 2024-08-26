@@ -223,7 +223,7 @@ export class TradePage extends BasePage {
 
   async isInsufficientBalance() {
     const issufBalanceBtn = this.page.locator(
-      '//button[.="Insufficient balance"]'
+      '//span[.="Insufficient balance"]'
     );
     return await issufBalanceBtn.isVisible({ timeout: 2000 });
   }
