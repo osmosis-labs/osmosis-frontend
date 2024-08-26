@@ -37,6 +37,7 @@ export default async function transactionScanHandler(
       chain: "osmosis",
       transaction: unsignedTx,
       options: ["validation", "simulation"],
+      account_address: bech32Address,
       metadata: {
         type: "in_app",
       },
