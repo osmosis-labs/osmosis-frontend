@@ -35,7 +35,7 @@ export class TradePage extends BasePage {
       '//div[@class]/button[.="Sell"]/p[@class]/..'
     );
     this.confirmSwapBtn = page.locator('//div[@class]/button[.="Confirm"]');
-    this.swapMaxBtn = page.getByRole("button", { name: "MAX", exact: true });
+    this.swapMaxBtn = page.locator('//span[.="Max"]');
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
@@ -105,6 +105,12 @@ export class TradePage extends BasePage {
     await this.flipAssetsBtn.click();
     await this.page.waitForTimeout(2000);
     console.log("Fliped token pair.");
+  }
+
+  async clickMaxAmountButton() {
+    await this.swapMaxBtn.click({ timeout: 2000 });
+    await this.page.waitForTimeout(1000);
+    console.log("Clicked Max token amount button.");
   }
 
   async enterAmount(amount: string) {

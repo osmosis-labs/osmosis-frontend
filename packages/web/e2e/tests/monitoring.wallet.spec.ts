@@ -87,4 +87,32 @@ test.describe("Test Filled Order feature", () => {
     const trxPage = new TransactionsPage(p);
     await trxPage.isFilledByLimitPrice(highLimitPrice);
   });
+
+  [{ name: "WBTC" }, { name: "WBTC.eth.axl" }].forEach(({ name }) => {
+    test(`User should be able to Buy ${name}`, async () => {
+      await tradePage.goto();
+      await tradePage.openBuyTab();
+      await tradePage.selectAsset(name);
+      await tradePage.enterAmount("0.51");
+      const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
+      expect(msgContentAmount).toBeTruthy();
+      expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
+      await tradePage.isTransactionSuccesful();
+      await tradePage.getTransactionUrl();
+    });
+  });
+
+  [{ name: "WBTC" }, { name: "WBTC.eth.axl" }].forEach(({ name }) => {
+    test(`User should be able to Sell Max ${name}`, async () => {
+      await tradePage.goto();
+      await tradePage.openSellTab();
+      await tradePage.selectAsset(name);
+      await tradePage.clickMaxAmountButton();
+      const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
+      expect(msgContentAmount).toBeTruthy();
+      expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
+      await tradePage.isTransactionSuccesful();
+      await tradePage.getTransactionUrl();
+    });
+  });
 });
