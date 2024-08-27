@@ -1,7 +1,10 @@
+import { apiClient } from "@osmosis-labs/utils";
+import { useQuery } from "@tanstack/react-query";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
+import { LevanaGeoBlockedResponse } from "~/pages/_app";
 
 // NOTE: Please add a default value to any new flag you add to this list
 export type AvailableFlags =
@@ -12,9 +15,6 @@ export type AvailableFlags =
   | "multiBridgeProviders"
   | "earnPage"
   | "transactionsPage"
-  | "sidecarRouter"
-  | "legacyRouter"
-  | "tfmRouter"
   | "osmosisUpdatesPopUp"
   | "aprBreakdown"
   | "topAnnouncementBanner"
@@ -26,24 +26,20 @@ export type AvailableFlags =
   | "newAssetsPage"
   | "newDepositWithdrawFlow"
   | "oneClickTrading"
-  | "advancedChart";
+  | "limitOrders"
+  | "advancedChart"
+  | "cypherCard"
+  | "newPortfolioPage"
+  | "inGivenOut";
 
-type ModifiedFlags =
-  | Exclude<AvailableFlags, "mobileNotifications">
-  | "_isInitialized"
-  | "_isClientIDPresent";
-
-const defaultFlags: Record<ModifiedFlags, boolean> = {
+const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
   tokenInfo: true,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
-  transactionsPage: false,
-  sidecarRouter: true,
-  legacyRouter: true,
-  tfmRouter: true,
+  transactionsPage: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
@@ -51,21 +47,39 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   positionRoi: true,
   swapToolSimulateFee: false,
   portfolioPageAndNewAssetsPage: false,
-  newAssetsPage: false,
+  newAssetsPage: true,
   displayDailyEarn: false,
   newDepositWithdrawFlow: false,
   oneClickTrading: false,
+  limitOrders: true,
   advancedChart: false,
-  _isInitialized: false,
-  _isClientIDPresent: false,
+  cypherCard: false,
+  newPortfolioPage: false,
+  inGivenOut: false,
 };
 
-export const useFeatureFlags = () => {
+const LIMIT_ORDER_COUNTRY_CODES =
+  process.env.NEXT_PUBLIC_LIMIT_ORDER_COUNTRY_CODES?.split(",").map((s) =>
+    s.trim()
+  ) ?? [];
+
+export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
 
   const client = useLDClient();
+
+  const { data: levanaGeoblock } = useQuery(
+    ["levana-geoblocked"],
+    () =>
+      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
+    {
+      staleTime: Infinity,
+      cacheTime: Infinity,
+      retry: false,
+    }
+  );
 
   useEffect(() => {
     if (!isInitialized && client && process.env.NODE_ENV !== "test")
@@ -93,5 +107,13 @@ export const useFeatureFlags = () => {
       launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-  } as Record<ModifiedFlags, boolean>;
-};
+    limitOrders:
+      isInitialized &&
+      launchdarklyFlags.limitOrders &&
+      (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
+        LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
+  } as Record<
+    AvailableFlags | "_isInitialized" | "_isClientIDPresent",
+    boolean
+  >;
+}

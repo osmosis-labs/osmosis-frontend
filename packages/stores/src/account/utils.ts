@@ -1,7 +1,6 @@
 import type { Chain } from "@chain-registry/types";
-import { AminoMsg } from "@cosmjs/amino/build/signdoc";
-import { Uint53 } from "@cosmjs/math";
-import { StdFee } from "@cosmjs/stargate";
+import type { AminoMsg } from "@cosmjs/amino/build/signdoc";
+import type { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,
   Endpoints,
@@ -70,7 +69,7 @@ export function changeDecStringToProtoBz(decStr: string): string {
 }
 
 // Creates the document to be signed from given parameters.
-export function makeSignDocAmino(
+export async function makeSignDocAmino(
   msgs: readonly AminoMsg[],
   fee: StdFee,
   chainId: string,
@@ -78,7 +77,8 @@ export function makeSignDocAmino(
   accountNumber: number | string,
   sequence: number | string,
   timeout_height?: bigint
-): StdSignDoc {
+): Promise<StdSignDoc> {
+  const { Uint53 } = await import("@cosmjs/math");
   return {
     chain_id: chainId,
     account_number: Uint53.fromString(accountNumber.toString()).toString(),

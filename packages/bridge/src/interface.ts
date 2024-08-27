@@ -12,9 +12,12 @@ export interface BridgeProviderContext {
   assetLists: AssetList[];
   chainList: Chain[];
 
-  /** Provides current timeout height for a chain of the ID
-   *  parsed from the bech32 config of the given destinationAddress. */
-  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
+  /** Provides current timeout height for a chain of given chainId.
+   *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
+  getTimeoutHeight(params: {
+    chainId?: string;
+    destinationAddress?: string;
+  }): Promise<{
     revisionNumber: string | undefined;
     revisionHeight: string;
   }>;
@@ -165,11 +168,25 @@ const bitcoinChainSchema = z.object({
   chainType: z.literal("bitcoin"),
 });
 
+const tronChainSchema = z.object({
+  /**
+   * 728126428
+   */
+  chainId: z.number(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("tron"),
+});
+
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   cosmosChainSchema,
   evmChainSchema,
   solanaChainSchema,
   bitcoinChainSchema,
+  tronChainSchema,
 ]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
@@ -251,23 +268,23 @@ export const getBridgeExternalUrlSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: bridgeChainSchema,
+  fromChain: bridgeChainSchema.optional(),
   /**
    * The destination chain information.
    */
-  toChain: bridgeChainSchema,
+  toChain: bridgeChainSchema.optional(),
   /**
    * The asset on the originating chain.
    */
-  fromAsset: bridgeAssetSchema,
+  fromAsset: bridgeAssetSchema.optional(),
   /**
    * The asset on the destination chain.
    */
-  toAsset: bridgeAssetSchema,
+  toAsset: bridgeAssetSchema.optional(),
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: z.string(),
+  toAddress: z.string().optional(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<

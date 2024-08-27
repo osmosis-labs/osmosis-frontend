@@ -1,9 +1,9 @@
-import {
+import type {
   AminoSignResponse,
   OfflineAminoSigner,
   StdSignDoc,
 } from "@cosmjs/amino";
-import {
+import type {
   Algo,
   DirectSignResponse,
   OfflineDirectSigner,

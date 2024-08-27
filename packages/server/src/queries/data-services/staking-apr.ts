@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
+import { NUMIA_API_KEY, NUMIA_BASE_URL } from "../../env";
 
 interface StakingAprResponse {
   labels: string;
@@ -20,7 +20,7 @@ export async function queryStakingApr({
   url.searchParams.append("end_date", endDate);
 
   const headers = {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+    Authorization: `Bearer ${NUMIA_API_KEY}`,
   };
 
   return apiClient<StakingAprResponse[]>(url.toString(), { headers });

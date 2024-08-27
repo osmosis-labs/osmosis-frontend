@@ -1,5 +1,5 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -11,6 +11,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useAsync } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
@@ -21,7 +22,7 @@ import {
 } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
-import { Button, buttonVariants, IconButton } from "~/components/ui/button";
+import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { EventName } from "~/config";
 import {
@@ -128,16 +129,17 @@ export const OneClickTradingSettings = ({
       }
     );
 
+  const { value: removeAuthenticatorMsg } = useAsync(async () => {
+    if (!oneClickTradingInfo) return;
+    return await makeRemoveAuthenticatorMsg({
+      id: BigInt(oneClickTradingInfo.authenticatorId),
+      sender: oneClickTradingInfo.userOsmoAddress,
+    });
+  }, [oneClickTradingInfo]);
+
   const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
     useEstimateTxFees({
-      messages: oneClickTradingInfo
-        ? [
-            makeRemoveAuthenticatorMsg({
-              id: BigInt(oneClickTradingInfo.authenticatorId),
-              sender: oneClickTradingInfo.userOsmoAddress,
-            }),
-          ]
-        : [],
+      messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
       chainId: chainStore.osmosis.chainId,
       enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
     });
@@ -223,16 +225,14 @@ export const OneClickTradingSettings = ({
             <Screen screenName="main">
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
-                  <IconButton
+                  <GoBackButton
+                    className="absolute left-7 top-7"
                     onClick={() => {
                       if (changes.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
                     }}
-                    className="absolute left-7 top-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
-                    icon={<Icon id="chevron-left" width={16} height={16} />}
-                    aria-label="Go Back"
                   />
                 )}
 

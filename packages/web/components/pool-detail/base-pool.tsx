@@ -3,8 +3,7 @@ import type { Pool } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { FunctionComponent } from "react";
-import { Fragment, useState } from "react";
+import { Fragment, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
@@ -36,9 +35,9 @@ export const BasePoolDetails: FunctionComponent<{
     useMeasure<HTMLDivElement>();
 
   return (
-    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
       <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
+        <div className="flex flex-col gap-4 rounded-4xl pb-4">
           <div
             ref={poolDetailsContainerRef}
             className={classNames(

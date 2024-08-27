@@ -10,16 +10,22 @@ import { FunctionComponent, useMemo } from "react";
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { useTranslation } from "~/hooks";
-import { UseDisclosureReturn, useWindowSize } from "~/hooks";
+import { UseDisclosureReturn, useTranslation, useWindowSize } from "~/hooks";
 import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
 
-type Split =
+type SplitOutGivenIn =
   RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
-type Route = Split[number];
-type RouteWithPercentage = Route & { percentage?: RatePretty };
+type SplitInGivenOut =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"]["split"];
+type Split = SplitOutGivenIn | SplitInGivenOut;
+type Route = SplitOutGivenIn[number] | SplitInGivenOut[number];
+type RouteInGivenOut = SplitInGivenOut[number];
+type RouteOutGivenIn = SplitOutGivenIn[number];
+type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
+  percentage?: RatePretty;
+};
 
 export const SplitRoute: FunctionComponent<
   { split: Split } & Pick<UseDisclosureReturn, "isOpen" | "onToggle"> & {
@@ -87,24 +93,30 @@ export const SplitRoute: FunctionComponent<
   );
 };
 
-const RouteLane: FunctionComponent<{
+export const RouteLane: FunctionComponent<{
   route: RouteWithPercentage;
 }> = observer(({ route }) => {
   const { chainStore } = useStore();
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
-  const sendCurrency = osmosisChain.findCurrency(route.tokenInDenom);
-  const lastOutCurrency = osmosisChain.findCurrency(
-    route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
-  );
+  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
+    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
+    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
+  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
+    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
+    : osmosisChain.findCurrency(
+        (route as RouteOutGivenIn).tokenOutDenoms[
+          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+        ]
+      );
 
   if (!sendCurrency || !lastOutCurrency) return null;
 
   return (
-    <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 p-1">
-      <div className="flex shrink-0 items-center text-center">
+    <div className="flex items-center justify-between rounded-full bg-osmoverse-1000 py-1 pl-3 pr-1">
+      <div className="flex shrink-0 items-center gap-3 text-center">
         {route.percentage && (
-          <span className="subtitle1 px-2 text-osmoverse-200">
+          <span className="body2 w-10 text-left text-osmoverse-200">
             {route.percentage.inequalitySymbol(false).maxDecimals(0).toString()}
           </span>
         )}
@@ -155,7 +167,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
         moveTransition="transform 0.4s cubic-bezier(0.7, -0.4, 0.4, 1.4)"
         content=""
       />
-      <div className="absolute mx-4 flex w-full justify-evenly">
+      <div className="absolute flex w-full justify-evenly">
         {pools.map(
           (
             {
@@ -249,10 +261,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
               }
             >
               <button
-                className={classNames(
-                  "flex items-center space-x-2 rounded-full bg-osmoverse-800 hover:bg-osmoverse-700",
-                  inCurrency && outCurrency ? "p-1" : "p-2"
-                )}
+                className="flex items-center gap-1 rounded-full bg-osmoverse-800 py-1 px-2 hover:bg-osmoverse-700"
                 onClick={() => {
                   if (!isMobile) router.push("/pool/" + id);
                 }}
@@ -273,7 +282,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   spreadFactor &&
                   !dynamicSpreadFactor && (
                     <p className="text-caption">
-                      {spreadFactor.maxDecimals(1).toString()}
+                      {spreadFactor.maxDecimals(2).toString()}
                     </p>
                   )}
               </button>

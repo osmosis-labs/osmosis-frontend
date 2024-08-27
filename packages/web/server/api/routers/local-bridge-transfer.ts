@@ -82,6 +82,19 @@ export const localBridgeTransferRouter = createTRPCRouter({
               )
             ),
           }),
+          z.object({
+            type: z.literal("tron"),
+            assets: z.array(
+              bridgeChainSchema.and(bridgeAssetSchema).and(
+                z.object({
+                  supportedVariants: z.record(
+                    z.string(),
+                    z.array(z.string().transform((v) => v as Bridge))
+                  ),
+                })
+              )
+            ),
+          }),
         ]),
       })
     )
@@ -239,8 +252,8 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
         return assetsWithBalance;
       } else {
-        // For Bitcoin or Solana, return 0 assets as it's not supported for now
-        // TODO: add 2 more else statements and send balance queries to Bitcoin or Solana as needed
+        // For Bitcoin, Tron or Solana, return 0 assets as it's not supported for now
+        // TODO: add 2 more else statements and send balance queries to Bitcoin, Tron or Solana as needed
 
         return input.source.assets.map((asset) => ({
           ...asset,

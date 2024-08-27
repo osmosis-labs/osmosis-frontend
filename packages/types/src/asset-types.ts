@@ -191,7 +191,11 @@ export type MinimalAsset = {
    */
   coinGeckoId: string | undefined;
   coinName: string;
+  /** Transfers are allowed, but unstable. */
   isUnstable: boolean;
+  /** Transfers are NOT allowed. */
+  areTransfersDisabled: boolean;
+  /** Is verified by community. */
   isVerified: boolean;
   /** Flag indicating if this asset is an alloyed asset. */
   isAlloyed: boolean;

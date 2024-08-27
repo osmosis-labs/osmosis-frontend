@@ -1,8 +1,10 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { PoolCard } from "~/components/cards/";
@@ -11,14 +13,14 @@ import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import type { Metric } from "~/components/types";
 import { Button, ShowMoreButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
   useNavBar,
+  useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -52,7 +54,12 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
     unverifiedNativeBalances,
   } = assetsStore;
   const { t } = useTranslation();
-  const { startBridge, bridgeAsset } = useBridge();
+  const { startBridge, bridgeAsset } = useBridgeStore(
+    useShallow((state) => ({
+      startBridge: state.startBridge,
+      bridgeAsset: state.bridgeAsset,
+    }))
+  );
 
   const isWalletConnected = Boolean(
     accountStore.getWallet(accountStore.osmosisChainId)?.isWalletConnected
@@ -98,7 +105,7 @@ export const AssetsPageV1: FunctionComponent = observer(() => {
   const flags = useFeatureFlags();
 
   return (
-    <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+    <main className="mx-auto flex max-w-container flex-col gap-20 p-8 pt-4 md:gap-8 md:p-4">
       <div className="flex flex-col gap-3">
         <AssetsOverview />
         {flags.transactionsPage && <TransactionsLink />}
@@ -121,6 +128,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore, queriesStore, chainStore, priceStore } = useStore();
   const { width } = useWindowSize();
   const { t } = useTranslation();
+  const flags = useFeatureFlags();
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -158,7 +166,14 @@ const AssetsOverview: FunctionComponent = observer(() => {
   };
 
   return (
-    <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
+    <div
+      className={classNames(
+        "flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-3xl bg-osmoverse-900 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5",
+        {
+          "!bg-osmoverse-1000": flags.limitOrders,
+        }
+      )}
+    >
       <Metric
         label={t("assets.totalAssets")}
         value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}

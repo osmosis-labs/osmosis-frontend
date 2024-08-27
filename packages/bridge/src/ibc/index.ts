@@ -1,5 +1,4 @@
-import { Registry } from "@cosmjs/proto-signing";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
+import type { Registry } from "@cosmjs/proto-signing";
 import {
   Chain,
   queryGeneratedChains,
@@ -7,8 +6,8 @@ import {
 } from "@osmosis-labs/server";
 import {
   calcAverageBlockTimeMs,
-  cosmosMsgOpts,
   estimateGasFee,
+  makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import cachified from "cachified";
@@ -31,7 +30,7 @@ export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
   readonly providerName = IbcBridgeProvider.ID;
 
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
@@ -146,10 +145,10 @@ export class IbcBridgeProvider implements BridgeProvider {
     const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: params.toAddress,
+      chainId: params.toChain.chainId.toString(),
     });
 
-    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
+    const { typeUrl, value: msg } = await makeIBCTransferMsg({
       receiver: params.toAddress,
       sender: params.fromAddress,
       sourceChannel,
@@ -168,14 +167,16 @@ export class IbcBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: typeUrl,
             value: msg,
           }),
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -213,14 +214,27 @@ export class IbcBridgeProvider implements BridgeProvider {
   }
 
   /**
-   * Gets gas asset from asset list, attempting to match the coinMinimalDenom or counterparty denom.
+   * Gets gas asset from asset list or chain list, attempting to match the coinMinimalDenom or chainSuggestionDenom.
    * @returns gas bridge asset, or undefined if not found.
    */
   async getGasAsset(
     fromChainId: string,
     denom: string
   ): Promise<BridgeAsset | undefined> {
-    // check the asset list
+    // try to get asset list fee asset first, or otherwise the chain fee currency
+    const assetListAsset = this.ctx.assetLists
+      .flatMap(({ assets }) => assets)
+      .find((asset) => asset.coinMinimalDenom.toLowerCase() === denom);
+
+    if (assetListAsset) {
+      return {
+        address: assetListAsset.coinMinimalDenom,
+        denom: assetListAsset.symbol,
+        decimals: assetListAsset.decimals,
+        coinGeckoId: assetListAsset.coingeckoId,
+      };
+    }
+
     const chains = await this.getChains();
     const chain = chains.find((c) => c.chain_id === fromChainId);
     const feeCurrency = chain?.feeCurrencies.find(
@@ -366,15 +380,23 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain.chainType === "evm" || toChain.chainType === "evm") {
+    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "cosmos") {
       return undefined;
     }
 
     const url = new URL("https://geo.tfm.com/");
-    url.searchParams.set("chainFrom", fromChain.chainId);
-    url.searchParams.set("token0", fromAsset.address);
-    url.searchParams.set("chainTo", toChain.chainId);
-    url.searchParams.set("token1", toAsset.address);
+    if (fromChain) {
+      url.searchParams.set("chainFrom", fromChain.chainId);
+    }
+    if (fromAsset) {
+      url.searchParams.set("token0", fromAsset.address);
+    }
+    if (toChain) {
+      url.searchParams.set("chainTo", toChain.chainId);
+    }
+    if (toAsset) {
+      url.searchParams.set("token1", toAsset.address);
+    }
 
     return { urlProviderName: "TFM", url };
   }
@@ -387,6 +409,17 @@ export class IbcBridgeProvider implements BridgeProvider {
       getFreshValue: () =>
         queryGeneratedChains({ zoneChainId: this.ctx.chainList[0].chain_id }),
     });
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
   }
 }
 

@@ -22,6 +22,7 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { ArrowButton, Button } from "~/components/ui/button";
@@ -61,6 +62,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   positionDetails: UserPositionDetails | undefined;
   positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
+  isLoadingPositionDetails: boolean;
+  hasPositionDetailsError: boolean;
 }> = observer(
   ({
     poolId,
@@ -68,6 +71,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     showLinkToPool = false,
     positionDetails,
     positionPerformance,
+    isLoadingPositionDetails,
+    hasPositionDetailsError,
   }) => {
     const {
       chainStore: {
@@ -351,44 +356,58 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           >
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <PositionButton
-            disabled={
-              !status ||
-              Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidData?.undelegationEndTime) ||
-              status === "unbonding" ||
-              !Boolean(account)
-            }
-            onClick={useCallback(() => {
-              if (superfluidData?.delegationLockId) {
-                account!.osmosis
-                  .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                    [
-                      {
-                        lockId: superfluidData.delegationLockId,
-                        isSynthetic: true,
-                      },
-                    ]
-                  )
-                  .catch(console.error);
-              } else setActiveModal("remove");
-            }, [account, superfluidData])}
+          <Tooltip
+            disabled={!hasPositionDetailsError}
+            className="cursor-default"
+            content={t("clPositions.errorFetchingPositions")}
           >
-            {Boolean(superfluidData?.delegationLockId)
-              ? t("clPositions.unstake")
-              : t("clPositions.removeLiquidity")}
-          </PositionButton>
-          <PositionButton
-            disabled={
-              !status ||
-              Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidData?.undelegationEndTime) ||
-              status === "unbonding"
-            }
-            onClick={useCallback(() => setActiveModal("increase"), [])}
+            <PositionButton
+              disabled={
+                !status ||
+                Boolean(account?.txTypeInProgress) ||
+                Boolean(superfluidData?.undelegationEndTime) ||
+                status === "unbonding" ||
+                !Boolean(account)
+              }
+              onClick={useCallback(() => {
+                if (superfluidData?.delegationLockId) {
+                  account!.osmosis
+                    .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                      [
+                        {
+                          lockId: superfluidData.delegationLockId,
+                          isSynthetic: true,
+                        },
+                      ]
+                    )
+                    .catch(console.error);
+                } else setActiveModal("remove");
+              }, [account, superfluidData])}
+              isLoading={isLoadingPositionDetails}
+            >
+              {Boolean(superfluidData?.delegationLockId)
+                ? t("clPositions.unstake")
+                : t("clPositions.removeLiquidity")}
+            </PositionButton>
+          </Tooltip>
+          <Tooltip
+            disabled={!hasPositionDetailsError}
+            className="cursor-default"
+            content={t("clPositions.errorFetchingPositions")}
           >
-            {t("clPositions.increaseLiquidity")}
-          </PositionButton>
+            <PositionButton
+              disabled={
+                !status ||
+                Boolean(account?.txTypeInProgress) ||
+                Boolean(superfluidData?.undelegationEndTime) ||
+                status === "unbonding"
+              }
+              onClick={useCallback(() => setActiveModal("increase"), [])}
+              isLoading={isLoadingPositionDetails}
+            >
+              {t("clPositions.increaseLiquidity")}
+            </PositionButton>
+          </Tooltip>
 
           {activeModal === "increase" && !!status && (
             <IncreaseConcentratedLiquidityModal

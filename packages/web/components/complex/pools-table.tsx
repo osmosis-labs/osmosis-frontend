@@ -26,16 +26,22 @@ import { Spinner } from "~/components/loaders";
 import { PoolQuickActionCell } from "~/components/table/cells";
 import { SortHeader } from "~/components/table/headers/sort";
 import { AprDisclaimerTooltip } from "~/components/tooltip/apr-disclaimer";
-import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
+import {
+  Breakpoint,
+  useFeatureFlags,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
-export type Pool =
-  RouterOutputs["edge"]["pools"]["getMarketIncentivePools"]["items"][number];
+export type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
-export type PoolIncentiveFilter = NonNullable<Pool["incentiveTypes"]>[number];
+export type PoolIncentiveFilter = NonNullable<
+  NonNullable<Pool["incentives"]>["incentiveTypes"]
+>[number];
 
 // These are the options for filtering the pools.
 export const poolFilterTypes: PoolTypeFilter[] = [
@@ -47,11 +53,11 @@ export const poolFilterTypes: PoolTypeFilter[] = [
 
 export const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
-  "feesSpent7dUsd",
-  "feesSpent24hUsd",
-  "volume7dUsd",
-  "volume24hUsd",
-  "aprBreakdown.total.upper",
+  "market.feesSpent7dUsd",
+  "market.feesSpent24hUsd",
+  "market.volume7dUsd",
+  "market.volume24hUsd",
+  "incentives.aprBreakdown.total.upper",
 ] as const;
 
 export type MarketIncentivePoolsSortKey =
@@ -91,6 +97,7 @@ export interface PoolsTableProps {
 export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
+  const featureFlags = useFeatureFlags();
   const router = useRouter();
   const {
     topOffset,
@@ -104,7 +111,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       denoms: [],
     },
     sortParams = {
-      allPoolsSort: "volume24hUsd",
+      allPoolsSort: "market.volume24hUsd",
       allPoolsSortDir: "desc",
     },
     emptyResultsText,
@@ -128,7 +135,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = api.edge.pools.getMarketIncentivePools.useInfiniteQuery(
+  } = api.edge.pools.getPools.useInfiniteQuery(
     {
       limit,
       search: filters.searchQuery
@@ -180,11 +187,11 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     let volumePresenceCount = 0;
     let feesPresenceCount = 0;
     poolsData.forEach((pool) => {
-      if (pool.volume24hUsd) {
+      if (pool.market?.volume24hUsd) {
         volumePresenceCount++;
       }
 
-      if (pool.feesSpent7dUsd) {
+      if (pool.market?.feesSpent7dUsd) {
         feesPresenceCount++;
       }
     });
@@ -210,20 +217,23 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     // Only show volume if more than half of the pools have volume data.
     if (shouldDisplayVolumeData) {
       allColumns.push(
-        columnHelper.accessor((row) => row.volume24hUsd?.toString() ?? "N/A", {
-          id: "volume24hUsd",
-          header: () => (
-            <SortHeader<MarketIncentivePoolsSortKey>
-              label={t("pools.allPools.sort.volume24h")}
-              sortKey="volume24hUsd"
-              disabled={isLoading}
-              currentSortKey={sortKey}
-              currentDirection={sortParams.allPoolsSortDir}
-              setSortDirection={setSortDirection}
-              setSortKey={setSortKey}
-            />
-          ),
-        }) as (typeof allColumns)[number]
+        columnHelper.accessor(
+          (row) => row.market?.volume24hUsd?.toString() ?? "N/A",
+          {
+            id: "market.volume24hUsd",
+            header: () => (
+              <SortHeader<MarketIncentivePoolsSortKey>
+                label={t("pools.allPools.sort.volume24h")}
+                sortKey="market.volume24hUsd"
+                disabled={isLoading}
+                currentSortKey={sortKey}
+                currentDirection={sortParams.allPoolsSortDir}
+                setSortDirection={setSortDirection}
+                setSortKey={setSortKey}
+              />
+            ),
+          }
+        ) as (typeof allColumns)[number]
       );
     }
 
@@ -251,13 +261,13 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     if (shouldDisplayFeesData) {
       allColumns.push(
         columnHelper.accessor(
-          (row) => row.feesSpent7dUsd?.toString() ?? "N/A",
+          (row) => row.market?.feesSpent7dUsd?.toString() ?? "N/A",
           {
-            id: "feesSpent7dUsd",
+            id: "market.feesSpent7dUsd",
             header: () => (
               <SortHeader
                 label={t("pools.allPools.sort.fees")}
-                sortKey="feesSpent7dUsd"
+                sortKey="market.feesSpent7dUsd"
                 disabled={isLoading}
                 currentSortKey={sortKey}
                 currentDirection={sortParams.allPoolsSortDir}
@@ -276,7 +286,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         header: () => (
           <SortHeader
             label={t("pools.allPools.sort.APRIncentivized")}
-            sortKey="aprBreakdown.total.upper"
+            sortKey="incentives.aprBreakdown.total.upper"
             disabled={isLoading}
             currentSortKey={sortKey}
             currentDirection={sortParams.allPoolsSortDir}
@@ -330,10 +340,12 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.xxl && shouldDisplayFeesData)
-      collapsedColIds.push("feesSpent7dUsd");
+      collapsedColIds.push("market.feesSpent7dUsd");
+    if (width < Breakpoint.xlhalf && width > Breakpoint.xl)
+      collapsedColIds.push("aprBreakdown.total");
     if (width < Breakpoint.xlg) collapsedColIds.push("totalFiatValueLocked");
     if (width < Breakpoint.lg && shouldDisplayVolumeData)
-      collapsedColIds.push("volume24hUsd");
+      collapsedColIds.push("market.volume24hUsd");
     if (width < Breakpoint.md) collapsedColIds.push("poolQuickActions");
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width, shouldDisplayVolumeData, shouldDisplayFeesData]);
@@ -399,7 +411,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             "table-auto",
             isPreviousData &&
               isFetching &&
-              "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+              "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
+            {
+              "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
+            }
           )}
         >
           <thead>
@@ -595,9 +610,10 @@ export function getPoolTypeTarget(pool: Pool) {
 
 export const AprBreakdownCell: PoolCellComponent = ({
   row: {
-    original: { aprBreakdown },
+    original: { incentives },
   },
 }) => {
+  const aprBreakdown = incentives?.aprBreakdown;
   if (!aprBreakdown) {
     return null;
   }

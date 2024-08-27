@@ -5,16 +5,16 @@ import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
-import { Screen } from "~/components/screen-manager";
+import { Screen, useScreenManager } from "~/components/screen-manager";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { AmountScreen } from "./amount-screen";
-import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import { ReviewScreen } from "./review-screen";
 import { QuotableBridge, useBridgeQuotes } from "./use-bridge-quotes";
 import {
@@ -30,6 +30,12 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
+const unsupportedBridges: Exclude<Bridge, QuotableBridge>[] = [
+  "Nomic",
+  "Wormhole",
+  "Nitro",
+];
+
 export const AmountAndReviewScreen = observer(
   ({
     direction,
@@ -39,6 +45,7 @@ export const AmountAndReviewScreen = observer(
     const { accountStore } = useStore();
     const apiUtils = api.useUtils();
     const { logEvent } = useAmplitudeAnalytics();
+    const { setCurrentScreen } = useScreenManager();
 
     const [fromAsset, setFromAsset] = useState<SupportedAssetWithAmount>();
     const [toAsset, setToAsset] = useState<SupportedAsset>();
@@ -94,7 +101,7 @@ export const AmountAndReviewScreen = observer(
         ? evmConnector?.name
         : toChainCosmosAccount?.walletInfo.name;
 
-    const { data: assetsInOsmosis } =
+    const { data: assetsInOsmosis, isLoading: isLoadingAssetsInOsmosis } =
       api.edge.assets.getCanonicalAssetWithVariants.useQuery(
         {
           findMinDenomOrSymbol: selectedAssetDenom ?? "",
@@ -170,7 +177,11 @@ export const AmountAndReviewScreen = observer(
     const quoteBridges = useMemo(
       () =>
         bridges.filter(
-          (bridge) => bridge !== "Nomic" && bridge !== "Wormhole"
+          (bridge) =>
+            !unsupportedBridges.includes(
+              // @ts-expect-error
+              bridge
+            )
         ) as QuotableBridge[],
       [bridges]
     );
@@ -178,29 +189,45 @@ export const AmountAndReviewScreen = observer(
     const quote = useBridgeQuotes({
       toAddress,
       toChain: toChain,
-      toAsset: toAsset
-        ? {
-            address:
-              toChain?.chainType === "evm"
-                ? getAddress(toAsset.address)
-                : toAsset.address,
-            decimals: toAsset.decimals,
-            denom: toAsset.denom,
-          }
-        : undefined,
+      toAsset: (() => {
+        if (!toAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === toAsset.address ||
+            toAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            toChain?.chainType === "evm"
+              ? getAddress(toAsset.address)
+              : toAsset.address,
+          decimals: toAsset.decimals,
+          denom: toAsset.denom,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       fromAddress,
       fromChain: fromChain,
-      fromAsset: fromAsset
-        ? {
-            address:
-              fromChain?.chainType === "evm"
-                ? getAddress(fromAsset.address)
-                : fromAsset.address,
-            decimals: fromAsset.decimals,
-            denom: fromAsset.denom,
-            amount: fromAsset.amount,
-          }
-        : undefined,
+      fromAsset: (() => {
+        if (!fromAsset) return undefined;
+        const asset = assetsInOsmosis?.find(
+          (a) =>
+            a.coinMinimalDenom === fromAsset.address ||
+            fromAsset.denom === a.coinDenom
+        );
+        return {
+          address:
+            fromChain?.chainType === "evm"
+              ? getAddress(fromAsset.address)
+              : fromAsset.address,
+          decimals: fromAsset.decimals,
+          denom: fromAsset.denom,
+          amount: fromAsset.amount,
+          imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
+          isUnstable: !!asset?.isUnstable,
+        };
+      })(),
       direction,
       onRequestClose: onClose,
       inputAmount: cryptoAmount,
@@ -222,16 +249,20 @@ export const AmountAndReviewScreen = observer(
       },
     });
 
-    if (!selectedAssetDenom) return;
+    if (!selectedAssetDenom) {
+      setCurrentScreen(BridgeScreen.Asset);
+      return null;
+    }
 
     return (
       <>
-        <Screen screenName={ImmersiveBridgeScreen.Amount}>
+        <Screen screenName={BridgeScreen.Amount}>
           {({ setCurrentScreen }) => (
             <AmountScreen
               direction={direction}
               selectedDenom={selectedAssetDenom!}
               assetsInOsmosis={assetsInOsmosis}
+              isLoadingAssetsInOsmosis={isLoadingAssetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
               supportedBridges={bridges}
               fromChain={fromChain}
@@ -249,12 +280,12 @@ export const AmountAndReviewScreen = observer(
               fiatAmount={fiatAmount}
               setFiatAmount={setFiatAmount}
               quote={quote}
-              onConfirm={() => setCurrentScreen(ImmersiveBridgeScreen.Review)}
+              onConfirm={() => setCurrentScreen(BridgeScreen.Review)}
               onClose={onClose}
             />
           )}
         </Screen>
-        <Screen screenName={ImmersiveBridgeScreen.Review}>
+        <Screen screenName={BridgeScreen.Review}>
           {({ goBack }) => (
             <>
               {fromChain &&

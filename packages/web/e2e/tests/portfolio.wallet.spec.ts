@@ -15,7 +15,6 @@ test.describe("Test Portfolio feature", () => {
   const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
-  let digitBalanceRegEx = /\d+\.\d+/;
   let page: Page;
 
   test.beforeAll(async () => {
@@ -58,34 +57,34 @@ test.describe("Test Portfolio feature", () => {
     await context.close();
   });
 
-  test("User should be able to see native balances", async () => {
-    const osmoBalance = await portfolioPage.getBalanceFor("OSMO");
-    expect(osmoBalance).toMatch(dollarBalanceRegEx);
-    const atomBalance = await portfolioPage.getBalanceFor("ATOM");
-    expect(atomBalance).toMatch(dollarBalanceRegEx);
-    const usdtBalance = await portfolioPage.getBalanceFor("USDT");
-    expect(usdtBalance).toMatch(dollarBalanceRegEx);
-    const usdcBalance = await portfolioPage.getBalanceFor("USDC");
-    expect(usdcBalance).toMatch(dollarBalanceRegEx);
-    const tiaBalance = await portfolioPage.getBalanceFor("TIA");
-    expect(tiaBalance).toMatch(dollarBalanceRegEx);
-    const daiBalance = await portfolioPage.getBalanceFor("DAI");
-    expect(daiBalance).toMatch(dollarBalanceRegEx);
+  [
+    { name: "OSMO" },
+    { name: "ATOM" },
+    { name: "USDT" },
+    { name: "USDC" },
+    { name: "TIA" },
+    { name: "DAI" },
+  ].forEach(({ name }) => {
+    test(`User should be able to see native balances for ${name}`, async () => {
+      await portfolioPage.searchForToken(name);
+      const osmoBalance = await portfolioPage.getBalanceFor(name);
+      expect(osmoBalance).toMatch(dollarBalanceRegEx);
+    });
   });
 
-  test("User should be able to see bridged balances", async () => {
-    const injBalance = await portfolioPage.getBalanceFor("INJ");
-    expect(injBalance).toMatch(dollarBalanceRegEx);
-    const ethBalance = await portfolioPage.getBalanceFor("ETH");
-    expect(ethBalance).toMatch(dollarBalanceRegEx);
-    const kujiBalance = await portfolioPage.getBalanceFor("KUJI");
-    expect(kujiBalance).toMatch(dollarBalanceRegEx);
-    const solBalance = await portfolioPage.getBalanceFor("SOL");
-    expect(solBalance).toMatch(dollarBalanceRegEx);
-    const milkTIABalance = await portfolioPage.getBalanceFor("milkTIA");
-    expect(milkTIABalance).toMatch(dollarBalanceRegEx);
-    const abtcBalance = await portfolioPage.getBalanceFor("allBTC");
-    // allBTC has not $ price atm
-    expect(abtcBalance).toMatch(digitBalanceRegEx);
+  [
+    { name: "INJ" },
+    { name: "ETH.axl" },
+    { name: "KUJI" },
+    { name: "SOL" },
+    { name: "milkTIA" },
+    { name: "BTC" },
+    { name: "WBTC" },
+  ].forEach(({ name }) => {
+    test(`User should be able to see bridged balances for ${name}`, async () => {
+      await portfolioPage.searchForToken(name);
+      const osmoBalance = await portfolioPage.getBalanceFor(name);
+      expect(osmoBalance).toMatch(dollarBalanceRegEx);
+    });
   });
 });

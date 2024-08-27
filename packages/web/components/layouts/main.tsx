@@ -8,7 +8,7 @@ import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
-import { useCurrentLanguage, useWindowSize } from "~/hooks";
+import { useCurrentLanguage, useFeatureFlags, useWindowSize } from "~/hooks";
 
 export const MainLayout = observer(
   ({
@@ -20,6 +20,7 @@ export const MainLayout = observer(
     secondaryMenuItems: MainLayoutMenu[];
   }>) => {
     const router = useRouter();
+    const featureFlags = useFeatureFlags();
     useCurrentLanguage();
 
     const { height, isMobile } = useWindowSize();
@@ -40,7 +41,15 @@ export const MainLayout = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-900 px-2 py-6 md:hidden">
+        <div
+          className={classNames(
+            "fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden px-2 py-6 md:hidden",
+            {
+              "xl:bg-osmoverse-1000": featureFlags.limitOrders,
+              "bg-osmoverse-900": !featureFlags.limitOrders,
+            }
+          )}
+        >
           {showBlockLogo && (
             <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
               <OsmosisFullLogo onClick={() => router.push("/")} />
@@ -64,7 +73,7 @@ export const MainLayout = observer(
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
+        <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
       </React.Fragment>

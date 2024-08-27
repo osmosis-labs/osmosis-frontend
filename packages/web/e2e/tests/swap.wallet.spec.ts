@@ -2,10 +2,10 @@
 import { BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
+import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
 
-import { SwapPage } from "../pages/swap-page";
 import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Swap feature", () => {
@@ -14,7 +14,7 @@ test.describe("Test Swap feature", () => {
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   const password = process.env.PASSWORD ?? "TestPassword2024.";
-  let swapPage: SwapPage;
+  let swapPage: TradePage;
   let USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
   let ATOM =
@@ -45,7 +45,7 @@ test.describe("Test Swap feature", () => {
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new SwapPage(context.pages()[0]);
+    swapPage = new TradePage(context.pages()[0]);
     await swapPage.goto();
     await swapPage.connectWallet();
     expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
@@ -58,30 +58,28 @@ test.describe("Test Swap feature", () => {
   test("User should be able to swap OSMO to ATOM", async () => {
     await swapPage.goto();
     await swapPage.selectPair("OSMO", "ATOM");
-    await swapPage.enterAmount("0.01");
+    await swapPage.enterAmount("2.2");
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap ATOM to OSMO", async () => {
     await swapPage.goto();
     await swapPage.selectPair("ATOM", "OSMO");
-    await swapPage.enterAmount("0.001");
+    await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap OSMO to USDC", async () => {
@@ -94,9 +92,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to OSMO", async () => {
@@ -109,9 +106,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap ATOM to USDC", async () => {
@@ -124,9 +120,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to ATOM", async () => {
@@ -139,9 +134,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to TIA", async () => {
@@ -154,9 +148,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + TIA);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap TIA to USDC", async () => {
@@ -169,9 +162,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + TIA);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to INJ", async () => {
@@ -184,9 +176,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + INJ);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap INJ to USDC", async () => {
@@ -199,9 +190,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + INJ);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to AKT", async () => {
@@ -214,9 +204,8 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + AKT);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 
   test("User should be able to swap AKT to USDC", async () => {
@@ -229,8 +218,7 @@ test.describe("Test Swap feature", () => {
     expect(msgContentAmount).toContain("denom: " + AKT);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    expect(swapPage.isTransactionBroadcasted(10));
-    expect(swapPage.isTransactionSuccesful(10));
-    expect(swapPage.getTransactionUrl()).toBeTruthy();
+    await swapPage.isTransactionSuccesful();
+    await swapPage.getTransactionUrl();
   });
 });

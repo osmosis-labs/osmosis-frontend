@@ -27,7 +27,7 @@ export const AssetCell: FunctionComponent<
   const { t } = useTranslation();
 
   return (
-    <div className="min-w-44 flex w-full items-center gap-4 md:gap-3">
+    <div className="w-container flex items-center gap-4 overflow-hidden md:gap-3">
       {isInUserWatchlist !== undefined && onClickWatchlist && (
         <div className="min-w-6 min-h-6">
           <Icon
@@ -55,10 +55,10 @@ export const AssetCell: FunctionComponent<
           />
         )}
       </div>
-      <div className="flex min-w-0 flex-grow flex-col">
+      <div className="flex flex-grow flex-col overflow-hidden">
         {coinName && (
-          <div className="flex items-center gap-2">
-            <div className="subtitle1 min-w-40 overflow-hidden overflow-ellipsis whitespace-nowrap">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <div className="subtitle1 overflow-hidden overflow-ellipsis whitespace-nowrap">
               {coinName}
             </div>
             {warnUnverified && (

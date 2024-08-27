@@ -1,13 +1,8 @@
-import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import { Registry } from "@cosmjs/proto-signing";
+import type { Registry } from "@cosmjs/proto-signing";
 import {
-  cosmwasmProtoRegistry,
-  ibcProtoRegistry,
-} from "@osmosis-labs/proto-codecs";
-import {
-  cosmosMsgOpts,
-  cosmwasmMsgOpts,
   estimateGasFee,
+  makeExecuteCosmwasmContractMsg,
+  makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
@@ -55,10 +50,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   readonly providerName = SkipBridgeProvider.ID;
 
   readonly skipClient: SkipApiClient;
-  protected protoRegistry = new Registry([
-    ...ibcProtoRegistry,
-    ...cosmwasmProtoRegistry,
-  ]);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
@@ -129,6 +121,9 @@ export class SkipBridgeProvider implements BridgeProvider {
                 msg.includes(
                   "Input amount is too low to cover"
                   // Could be Axelar or CCTP
+                ) ||
+                msg.includes(
+                  "Difference in USD value of route input and output is too large"
                 )
               ) {
                 throw new BridgeQuoteError({
@@ -151,7 +146,8 @@ export class SkipBridgeProvider implements BridgeProvider {
               if (
                 msg.includes(
                   "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
-                )
+                ) ||
+                msg.includes("no routes found")
               ) {
                 throw new BridgeQuoteError({
                   bridgeId: SkipBridgeProvider.ID,
@@ -211,6 +207,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
+          toChain,
           fromAddress as Address,
           msgs
         );
@@ -309,47 +306,44 @@ export class SkipBridgeProvider implements BridgeProvider {
             ? counterparty.address
             : counterparty.sourceDenom;
         const skipCounterparty = assets[counterparty.chainId]?.assets.find(
-          (a) => a.denom.toLowerCase() === address.toLowerCase()
+          (a) =>
+            counterparty.chainType === "evm" &&
+            address === NativeEVMTokenConstantAddress
+              ? /**
+                 * Skip labels native tokens as "native" and uses the symbol of the counterparty
+                 */
+                a.denom.toLowerCase() === address.toLowerCase() ||
+                (a.denom.includes("native") &&
+                  a.symbol?.toLowerCase() === counterparty.symbol.toLowerCase())
+              : a.denom.toLowerCase() === address.toLowerCase()
         );
+
         if (!skipCounterparty) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === address.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId, address, {
-              chainId: c.chainId,
-              chainType: "cosmos",
-              address: address,
-              denom: c.symbol,
-              decimals: c.decimals,
-              coinGeckoId: skipCounterparty.coingecko_id,
-            });
-          }
+          foundVariants.setAsset(c.chainId, address, {
+            chainId: c.chainId,
+            chainType: "cosmos",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
+
         if (counterparty.chainType === "evm") {
           const c = counterparty as EVMCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === address.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId.toString(), address, {
-              chainId: c.chainId,
-              chainType: "evm",
-              address: address,
-              denom: c.symbol,
-              decimals: c.decimals,
-              coinGeckoId: skipCounterparty.coingecko_id,
-            });
-          }
+          foundVariants.setAsset(c.chainId.toString(), address, {
+            chainId: c.chainId,
+            chainType: "evm",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
       }
 
@@ -438,26 +432,31 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   async createTransaction(
-    chainID: string,
+    fromChainId: string,
+    toChain: BridgeChain,
     address: Address,
     messages: SkipMsg[]
   ) {
     for (const message of messages) {
       if ("evm_tx" in message) {
         return await this.createEvmTransaction(
-          chainID,
+          fromChainId,
           address,
           message.evm_tx
         );
       }
 
       if ("multi_chain_msg" in message) {
-        return await this.createCosmosTransaction(message.multi_chain_msg);
+        return await this.createCosmosTransaction(
+          toChain,
+          message.multi_chain_msg
+        );
       }
     }
   }
 
   async createCosmosTransaction(
+    toChain: BridgeChain,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
@@ -475,28 +474,32 @@ export class SkipBridgeProvider implements BridgeProvider {
         }[];
       };
 
-      const { typeUrl, value: msg } =
-        cosmwasmMsgOpts.executeWasm.messageComposer({
-          sender: cosmwasmData.sender,
-          contract: cosmwasmData.contract,
-          msg: Buffer.from(JSON.stringify(cosmwasmData.msg)),
-          funds: cosmwasmData.funds,
-        });
+      const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
+        sender: cosmwasmData.sender,
+        contract: cosmwasmData.contract,
+        msg: cosmwasmData.msg,
+        funds: cosmwasmData.funds,
+      });
 
       return {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg,
-        fallbackGasLimit: cosmwasmMsgOpts.executeWasm.gas,
+        fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
       };
     } else {
       // is an ibc transfer
 
-      const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: messageData.receiver,
-      });
+      // If toChain is not cosmos, this IBC transfer is an
+      // intermediary IBC transfer where we need to get the
+      // timeout from the bech32 prefix of the receiving address
+      const timeoutHeight = await this.ctx.getTimeoutHeight(
+        toChain.chainType === "cosmos"
+          ? toChain
+          : { destinationAddress: messageData.receiver }
+      );
 
-      const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
+      const { typeUrl, value } = await makeIBCTransferMsg({
         sourcePort: messageData.source_port,
         sourceChannel: messageData.source_channel,
         token: {
@@ -515,7 +518,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         type: "cosmos",
         msgTypeUrl: typeUrl,
         msg: value,
-        fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+        fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
   }
@@ -546,7 +549,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   private getViemProvider(chainID: string) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       (chain) => chain.id.toString() === chainID
     );
 
@@ -658,7 +661,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     fromChain: BridgeChain,
     toChain: BridgeChain
   ) {
-    const allSkipChains = await this.getChains();
+    const [{ fromBech32, toBech32 }, allSkipChains] = await Promise.all([
+      import("@cosmjs/encoding"),
+      this.getChains(),
+    ]);
 
     const sourceChain = allSkipChains.find((c) => c.chain_id === chainIDs[0]);
     if (!sourceChain) {
@@ -742,7 +748,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
     if (txData.type === "evm") {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 
@@ -787,7 +793,9 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainList: this.ctx.chainList,
         body: {
           messages: [
-            this.protoRegistry.encodeAsAny({
+            (
+              await this.getProtoRegistry()
+            ).encodeAsAny({
               typeUrl: txData.msgTypeUrl,
               value: txData.msg,
             }),
@@ -891,6 +899,22 @@ export class SkipBridgeProvider implements BridgeProvider {
     }
   }
 
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry, cosmwasmProtoRegistry }, { Registry }] =
+        await Promise.all([
+          import("@osmosis-labs/proto-codecs"),
+          import("@cosmjs/proto-signing"),
+        ]);
+      this.protoRegistry = new Registry([
+        ...ibcProtoRegistry,
+        ...cosmwasmProtoRegistry,
+      ]);
+    }
+
+    return this.protoRegistry;
+  }
+
   async getExternalUrl({
     fromChain,
     toChain,
@@ -900,10 +924,18 @@ export class SkipBridgeProvider implements BridgeProvider {
     if (this.ctx.env === "testnet") return undefined;
 
     const url = new URL("https://go.skip.build/");
-    url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
-    url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    if (fromChain?.chainId) {
+      url.searchParams.set("src_chain", String(fromChain.chainId));
+    }
+    if (fromAsset?.address) {
+      url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
+    }
+    if (toChain?.chainId) {
+      url.searchParams.set("dest_chain", String(toChain.chainId));
+    }
+    if (toAsset?.address) {
+      url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    }
 
     return { urlProviderName: "Skip:Go", url };
   }

@@ -1,6 +1,4 @@
-import { AxelarSourceChainTokenConfigs } from "@osmosis-labs/bridge";
-
-import type { FiatRampKey, OriginBridgeInfo } from "../integrations";
+import type { FiatRampKey } from "../integrations";
 import { IS_TESTNET } from "./env";
 import type {
   MainnetAssetSymbols,
@@ -16,7 +14,7 @@ type AdditionalDataValue = {
 
   /** Alternative chain name to display as the source chain */
   sourceChainNameOverride?: string;
-  originBridgeInfo?: OriginBridgeInfo;
+
   /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
   fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
   sourceSymbolOverride?: string;
@@ -26,37 +24,14 @@ type AdditionalData = Partial<
   Record<MainnetAssetSymbols | TestnetAssetSymbols, AdditionalDataValue>
 >;
 
-const environment = IS_TESTNET ? "testnet" : "mainnet";
 const TestnetIBCAdditionalData: Partial<
   Record<TestnetAssetSymbols, AdditionalDataValue>
 > = {
   "aUSDC.axl": {
     sourceChainNameOverride: "Goerli Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
-        AxelarSourceChainTokenConfigs(environment).usdc.binance,
-        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
-        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
-        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
-        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
-      ],
-    },
-    fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
   ETH: {
     sourceChainNameOverride: "Goerli Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
-      ],
-    },
   },
 };
 
@@ -65,50 +40,15 @@ const MainnetIBCAdditionalData: Partial<
 > = {
   nBTC: {
     sourceChainNameOverride: "Bitcoin",
-    originBridgeInfo: {
-      bridge: "nomic",
-      wallets: [],
-      method: "deposit-address",
-      sourceChainTokens: [
-        {
-          id: "Bitcoin",
-          logoUrl: "/networks/bitcoin.svg",
-        },
-      ],
-    },
   },
   "WBTC.eth.axl": {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wbtc.ethereum,
-      ],
-    },
   },
   ETH: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).weth.ethereum,
-      ],
-    },
   },
   BNB: {
     sourceChainNameOverride: "Binance Smart Chain",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wbnb.binance,
-      ],
-    },
   },
   SOL: {
     depositUrlOverride: "/wormhole?from=solana&to=osmosis&token=SOL",
@@ -121,80 +61,24 @@ const MainnetIBCAdditionalData: Partial<
   },
   MATIC: {
     sourceChainNameOverride: "Polygon",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wmatic.polygon,
-      ],
-    },
   },
   SHIB: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).shib.ethereum,
-      ],
-    },
   },
   DAI: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).dai.ethereum,
-      ],
-    },
   },
   AVAX: {
     sourceChainNameOverride: "Avalanche",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wavax.avalanche,
-      ],
-    },
   },
   LINK: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).link.ethereum,
-      ],
-    },
   },
   BUSD: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).busd.ethereum,
-      ],
-    },
   },
   FIL: {
     sourceChainNameOverride: "Filecoin",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wfil.filecoin,
-      ],
-    },
   },
   APT: {
     depositUrlOverride: "/wormhole?from=aptos&to=osmosis&token=APT",
@@ -202,58 +86,18 @@ const MainnetIBCAdditionalData: Partial<
   },
   ARB: {
     sourceChainNameOverride: "Arbitrum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).arb.arbitrum,
-      ],
-    },
   },
   MKR: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).mkr.ethereum,
-      ],
-    },
   },
   rETH: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).reth.ethereum,
-      ],
-    },
   },
   AAVE: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).aave.ethereum,
-      ],
-    },
   },
   FRAX: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).frax.ethereum,
-      ],
-    },
   },
   INJ: {
     depositUrlOverride: "https://bridge.injective.network/",
@@ -261,25 +105,9 @@ const MainnetIBCAdditionalData: Partial<
   },
   FTM: {
     sourceChainNameOverride: "Fantom",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wftm.fantom,
-      ],
-    },
   },
   APE: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).ape.ethereum,
-      ],
-    },
   },
   SUI: {
     depositUrlOverride: "/wormhole?from=sui&to=osmosis&token=SUI",
@@ -287,36 +115,12 @@ const MainnetIBCAdditionalData: Partial<
   },
   cbETH: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).cbeth.ethereum,
-      ],
-    },
   },
   PEPE: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).pepe.ethereum,
-      ],
-    },
   },
   sfrxETH: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).sfrxeth.ethereum,
-      ],
-    },
   },
   SEI: {
     depositUrlOverride:
@@ -335,75 +139,21 @@ const MainnetIBCAdditionalData: Partial<
   },
   "USDT.eth.axl": {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).usdt.ethereum,
-      ],
-    },
   },
   "USDC.eth.axl": {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).usdc.ethereum,
-        AxelarSourceChainTokenConfigs(environment).usdc.binance,
-        AxelarSourceChainTokenConfigs(environment).usdc.moonbeam,
-        AxelarSourceChainTokenConfigs(environment).usdc.polygon,
-        AxelarSourceChainTokenConfigs(environment).usdc.avalanche,
-        AxelarSourceChainTokenConfigs(environment).usdc.fantom,
-      ],
-    },
-    fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  "USDC.matic.axl": {
+  "USDC.e.matic.axl": {
     sourceChainNameOverride: "Polygon",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).polygonusdc.polygon,
-      ],
-    },
   },
   "USDC.avax.axl": {
     sourceChainNameOverride: "Avalanche",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).avalancheusdc.avalanche,
-      ],
-    },
   },
   "DOT.glmr.axl": {
     sourceChainNameOverride: "Moonbeam",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).dot.moonbeam,
-      ],
-    },
   },
   GLMR: {
     sourceChainNameOverride: "Moonbeam",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).wglmr.moonbeam,
-      ],
-    },
   },
   KUJI: {
     depositUrlOverride:
@@ -425,14 +175,6 @@ const MainnetIBCAdditionalData: Partial<
   },
   RAI: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).rai.ethereum,
-      ],
-    },
   },
   SHD: {
     depositUrlOverride: "https://dash.scrt.network/ibc",
@@ -558,14 +300,6 @@ const MainnetIBCAdditionalData: Partial<
   },
   YieldETH: {
     sourceChainNameOverride: "Ethereum",
-    originBridgeInfo: {
-      bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
-      method: "deposit-address" as const,
-      sourceChainTokens: [
-        AxelarSourceChainTokenConfigs(environment).yieldeth.ethereum,
-      ],
-    },
   },
   XPLA: {
     depositUrlOverride: "https://ibc.xpla.io/",
@@ -766,7 +500,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://beta-mainnet.routernitro.com/swap?fromChain=osmosis-1&toChain=728126428&fromToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FTRX.rt&toToken=0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
   },
-  "USDT.trx.rt": {
+  "USDT.eth.rt": {
     depositUrlOverride:
       "https://beta-mainnet.routernitro.com/swap?fromChain=728126428&toChain=osmosis-1&fromToken=0xA614F803B6FD780986A42C78EC9C7F77E6DED13C&toToken=factory%2Fosmo1myv2g72h8dan7n4hx7stt3mmust6ws03zh6gxc7vz4hpmgp5z3lq9aunm9%2FUSDT.rt",
     withdrawUrlOverride:

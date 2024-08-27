@@ -339,6 +339,11 @@ describe("SkipBridgeProvider", () => {
 
     const txRequest = (await provider.createTransaction(
       "1",
+      {
+        chainId: "osmosis-1",
+        chainName: "osmosis",
+        chainType: "cosmos",
+      },
       "0xabc",
       messages
     )) as EvmBridgeTransactionRequest;

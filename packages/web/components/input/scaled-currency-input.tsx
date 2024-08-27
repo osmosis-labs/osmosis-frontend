@@ -11,7 +11,7 @@ interface ScaledCurrencyInputProps {
   value?: string;
   onChange?: (value: string) => void;
   classes?: Partial<Record<"input" | "ticker", string>>;
-
+  placeholder?: string;
   inputRef?: React.RefObject<HTMLInputElement>;
 }
 
@@ -22,6 +22,7 @@ export function ScaledCurrencyInput({
   onChange,
   classes,
   inputRef,
+  placeholder = "0",
 }: ScaledCurrencyInputProps) {
   const { isMobile } = useWindowSize();
   const [inputValue, setInputValue] = useControllableState({
@@ -95,7 +96,7 @@ export function ScaledCurrencyInput({
                 "absolute m-0 h-full w-full bg-transparent p-0 placeholder-osmoverse-500 outline-0",
                 classes?.input
               )}
-              placeholder="0"
+              placeholder={placeholder}
               data-expand="true"
               minLength={1}
               style={{

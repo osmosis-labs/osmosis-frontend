@@ -23,6 +23,7 @@ import {
   isSameVariant,
   SolanaChainInfo,
   timeout,
+  TronChainInfo,
 } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -35,6 +36,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "bitcoin" }>
   | Extract<BridgeChain, { chainType: "solana" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
+  | Extract<BridgeChain, { chainType: "tron" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -53,6 +55,7 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   IBC: "/bridges/ibc.svg",
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/bridges/wormhole.svg",
+  Nitro: "/bridges/nitro.svg",
 };
 
 const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
@@ -63,6 +66,7 @@ const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/external-bridges/portalbridge.svg",
   Generic: "/external-bridges/generic.svg",
+  Nitro: "/bridges/nitro.svg",
 };
 
 export const bridgeTransferRouter = createTRPCRouter({
@@ -78,8 +82,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -96,6 +99,14 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
       const quote = await timeout(quoteFn, 10 * 1000)();
+
+      // Basic circuit breaker to validate some invariants
+      // from input + given quote
+      if (input.fromAsset.address !== quote.input.address) {
+        throw new Error(
+          `Invalid quote: Expected fromAsset address ${input.fromAsset.address} but got ${quote.input.address} in quote`
+        );
+      }
 
       /**
        * Since transfer fee is deducted from input amount,
@@ -134,7 +145,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           asset: {
             coinMinimalDenom: input.toAsset.address,
-            sourceDenom: input.toAsset.address,
             chainId: input.toChain.chainId,
             address: input.toAsset.address,
             coinGeckoId: input.toAsset.coinGeckoId,
@@ -158,7 +168,6 @@ export const bridgeTransferRouter = createTRPCRouter({
             ...ctx,
             asset: {
               coinMinimalDenom: input.fromAsset.address,
-              sourceDenom: input.fromAsset.address,
               chainId: input.fromChain.chainId,
               address: input.fromAsset.address,
               coinGeckoId: input.fromAsset.coinGeckoId,
@@ -169,7 +178,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           asset: {
             coinMinimalDenom: feeCoin.address,
-            sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
             coinGeckoId: quote.transferFee.coinGeckoId,
@@ -183,7 +191,6 @@ export const bridgeTransferRouter = createTRPCRouter({
               {
                 bridge: input.bridge,
                 coinMinimalDenom: feeCoin.address,
-                sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
                 coinGeckoId: quote.transferFee.coinGeckoId,
@@ -197,7 +204,6 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...ctx,
               asset: {
                 coinMinimalDenom: quote.estimatedGasFee.address,
-                sourceDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
                 coinGeckoId: quote.estimatedGasFee.coinGeckoId,
@@ -330,8 +336,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -377,7 +382,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
-            const evmChain = Object.values(EthereumChainInfo).find(
+            const evmChain = EthereumChainInfo.find(
               (chain) => chain.id === chainId
             );
 
@@ -387,7 +392,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
-              chainName: evmChain.chainName,
+              chainName: evmChain.name,
               chainId: evmChain.id,
               chainType,
               logoUri: evmChain.relativeLogoUrl,
@@ -427,6 +432,12 @@ export const bridgeTransferRouter = createTRPCRouter({
               chainType,
               logoUri: "/networks/solana.svg",
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "solana" }>;
+          } else if (chainType === "tron") {
+            return {
+              ...TronChainInfo,
+              chainType,
+              logoUri: "/networks/tron.svg",
+            };
           }
 
           return undefined;
@@ -455,9 +466,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -498,9 +507,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           env: IS_TESTNET ? "testnet" : "mainnet",
           cache: lruCache,
-          getTimeoutHeight: ({ destinationAddress }) =>
-            // passes testnet chains if IS_TESTNET
-            getTimeoutHeight({ ...ctx, destinationAddress }),
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
         }
       );
 
@@ -543,10 +550,10 @@ export const bridgeTransferRouter = createTRPCRouter({
       // add external urls for external interfaces from asset list, as long as not already added
       const assetListFromAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.fromAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.fromAsset?.address);
       const assetListToAsset = ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((asset) => asset.coinMinimalDenom === input.toAsset.address);
+        .find((asset) => asset.coinMinimalDenom === input.toAsset?.address);
 
       const externalTransferMethods = (
         assetListFromAsset?.transferMethods.filter(
@@ -573,13 +580,13 @@ export const bridgeTransferRouter = createTRPCRouter({
           }
 
           let urlToAdd: (typeof externalUrls)[number] | undefined =
-            input.fromChain.chainId === "osmosis-1" && withdrawUrl
+            input.fromChain?.chainId === "osmosis-1" && withdrawUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],
                   url: withdrawUrl,
                 }
-              : input.toChain.chainId === "osmosis-1" && depositUrl
+              : input.toChain?.chainId === "osmosis-1" && depositUrl
               ? {
                   urlProviderName: name,
                   logo: ExternalBridgeLogoUrls["Generic"],

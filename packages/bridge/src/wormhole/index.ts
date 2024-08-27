@@ -66,18 +66,25 @@ export class WormholeBridgeProvider implements BridgeProvider {
     // For now we use Portal Bridge
     const url = new URL("https://portalbridge.com/");
 
-    url.searchParams.set(
-      "sourceChain",
-      fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
-    );
-    url.searchParams.set(
-      "targetChain",
-      toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
-    );
-    url.searchParams.set(
-      "asset",
-      fromChain.chainType === "solana" ? fromAsset.address : toAsset.address
-    );
+    if (fromChain) {
+      url.searchParams.set(
+        "sourceChain",
+        fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
+      );
+      if (fromChain.chainType === "solana" && fromAsset) {
+        url.searchParams.set("asset", fromAsset.address);
+      }
+    }
+
+    if (toChain) {
+      url.searchParams.set(
+        "targetChain",
+        toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
+      );
+      if (fromChain?.chainType !== "solana" && toAsset) {
+        url.searchParams.set("asset", toAsset.address);
+      }
+    }
 
     return {
       urlProviderName: "Portal",

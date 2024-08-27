@@ -8,6 +8,7 @@ export interface Alert {
   captionElement?: ReactNode;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;
+  iconElement?: ReactNode;
 }
 
 export const enum ToastType {
