@@ -33,13 +33,14 @@ def wait_for_deployment(timeout):
         print(f"Sleep for 15 seconds and get deployment uid {vercel_uid} and url: {vercel_url}")
         time.sleep(15)
         current_url = f"https://api.vercel.com/v13/deployments/{vercel_uid}"
+        ui_url = f"https://vercel.com/osmo-labs/osmosis-frontend/{vercel_uid}"
         current_response = requests.get(current_url, headers=headers)
         status = current_response.json()['status']
         print(f"Status of deployment uid {vercel_uid} is {status}")
         if status == "READY":
             break
         if status == "ERROR":
-            raise Exception(f"Vercel deployment {current_url} has failed!")
+            raise Exception(f"Vercel deployment {ui_url} has failed!")
 
     return f"environment_url={vercel_url}"
 
