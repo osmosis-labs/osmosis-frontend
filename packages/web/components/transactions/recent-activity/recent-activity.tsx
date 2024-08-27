@@ -97,7 +97,6 @@ export const RecentActivity: FunctionComponent = observer(() => {
                     value: activity.metadata[0].value[0].txInfo.tokenOut.usd,
                   },
                 }}
-                hash={""}
               />
             );
           })
