@@ -33,7 +33,7 @@ export const OpenOrders: FunctionComponent = () => {
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h6 className="py-3">{t("portfolio.openOrders")}</h6>
         <LinkButton
           href="/transactions?tab=orders"
