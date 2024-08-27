@@ -39,7 +39,7 @@ export interface TransactionRow {
     value?: PricePretty;
   };
   onClick?: () => void;
-  hash: string;
+  hash?: string;
 }
 
 export const TransactionRow: FunctionComponent<TransactionRow> = ({
