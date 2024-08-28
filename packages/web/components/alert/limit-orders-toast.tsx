@@ -52,10 +52,10 @@ export function LimitOrdersToast() {
           "sm:left-1/2 sm:right-auto sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
         )}
         onClick={() => {
-          //   onClose();
           router.push(
             `/?tab=buy&from=${fromDenom}&quote=${quoteDenom}&type=limit`
           );
+          onClose();
         }}
       >
         <div
@@ -116,7 +116,7 @@ export function LimitOrdersToast() {
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
-                  //   onClose();
+                  onClose();
                 }}
               >
                 {t("limitOrders.floatingBanner.tryLimitOrders")}
