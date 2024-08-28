@@ -107,7 +107,7 @@ test.describe("Test Filled Order feature", () => {
       await tradePage.goto();
       await tradePage.openSellTab();
       await tradePage.selectAsset(name);
-      await tradePage.clickMaxAmountButton();
+      await tradePage.enterAmount("0.49");
       const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
