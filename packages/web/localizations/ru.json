@@ -1173,6 +1173,10 @@
     "newer": "Новее"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Выберите свою цену",
+      "tryLimitOrders": "Попробуйте лимитные ордера"
+    },
     "historyTable": {
       "columns": {
         "order": "Заказ",

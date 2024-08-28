@@ -1173,6 +1173,10 @@
     "newer": "جدیدتر"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "قیمت خود را انتخاب کنید",
+      "tryLimitOrders": "سفارشات محدود را امتحان کنید"
+    },
     "historyTable": {
       "columns": {
         "order": "سفارش",

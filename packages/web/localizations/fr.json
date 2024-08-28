@@ -1173,6 +1173,10 @@
     "newer": "Plus récent"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Choisissez votre prix",
+      "tryLimitOrders": "Essayez les ordres limités"
+    },
     "historyTable": {
       "columns": {
         "order": "Commande",

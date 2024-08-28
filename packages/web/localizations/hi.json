@@ -1173,6 +1173,10 @@
     "newer": "नई"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "अपना मूल्य चुनें",
+      "tryLimitOrders": "सीमा आदेश आज़माएँ"
+    },
     "historyTable": {
       "columns": {
         "order": "आदेश",
