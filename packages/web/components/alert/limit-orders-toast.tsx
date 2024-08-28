@@ -9,7 +9,7 @@ import { useLocalStorage } from "react-use";
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { ArrowButton, IconButton } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 
 export const LimitOrdersFloatingBannerDoNotShowKey =
@@ -23,6 +23,7 @@ export function LimitOrdersToast() {
     LimitOrdersFloatingBannerDoNotShowKey,
     false
   );
+  const { isMobile } = useWindowSize(Breakpoint.sm);
 
   const { orderbook } = useOrderbook({ baseDenom: from, quoteDenom: "USDC" });
 
@@ -129,14 +130,14 @@ export function LimitOrdersToast() {
             size={null}
             className={classNames(
               "group mr-0.5 mt-3 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
-              "sm:ml-2 sm:mt-0 sm:scale-[0.75] sm:self-center"
+              "sm:mt-0 sm:h-6 sm:w-6 sm:self-center"
             )}
             icon={
               <Icon
                 id="close-thin"
                 className="ml-[1px] text-osmoverse-800 transition-colors duration-200 group-hover:text-osmoverse-100"
-                width={24}
-                height={24}
+                width={isMobile ? 16 : 24}
+                height={isMobile ? 16 : 24}
               />
             }
             onClick={(e) => {
