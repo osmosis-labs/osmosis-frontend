@@ -27,7 +27,7 @@ export function getOrderbookActiveOrdersSQS({
   return cachified({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-sqs-${userOsmoAddress}`,
-    ttl: 5000, // 5 seconds
+    ttl: 1000, // 1 second
     getFreshValue: () =>
       queryActiveOrdersSQS({
         userOsmoAddress,

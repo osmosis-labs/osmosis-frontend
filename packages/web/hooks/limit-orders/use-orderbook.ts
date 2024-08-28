@@ -309,8 +309,8 @@ export const useOrderbookAllActiveOrders = ({
 
   const refetchOrders = useCallback(async () => {
     if (isRefetching) return;
-
-    return refetch();
+    console.log("REFETCHING");
+    await refetch();
   }, [refetch, isRefetching]);
 
   return {
@@ -356,8 +356,6 @@ export const useOrderbookClaimableOrders = ({
       enabled: !!userAddress && addresses.length > 0 && !disabled,
       refetchOnMount: true,
       keepPreviousData: false,
-      cacheTime: refetchInterval,
-      staleTime: refetchInterval,
       trpc: {
         abortOnUnmount: true,
         context: {
