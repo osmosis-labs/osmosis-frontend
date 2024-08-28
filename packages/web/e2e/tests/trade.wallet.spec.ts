@@ -97,7 +97,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
-    await trxPage.cancelLimitOrder(`Sell $1.00 of`, limitPrice, context);
+    await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -122,7 +122,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
-    await trxPage.cancelLimitOrder(`Sell $1.00 of`, limitPrice, context);
+    await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
