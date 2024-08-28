@@ -57,7 +57,12 @@ export interface PlaceLimitToolProps {
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
-const fixDecimalCount = (value: string, decimalCount = 18) => {
+const fixDecimalCount = (
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) => {
+  if (rounding) return parseFloat(value).toFixed(decimalCount);
   const split = value.split(".");
   const result =
     split[0] +
@@ -65,7 +70,11 @@ const fixDecimalCount = (value: string, decimalCount = 18) => {
   return result;
 };
 
-const transformAmount = (value: string, decimalCount = 18) => {
+const transformAmount = (
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
     updatedValue = value + "0";
@@ -77,7 +86,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
   const decimals = countDecimals(updatedValue);
   return decimals > decimalCount
-    ? fixDecimalCount(updatedValue, decimalCount)
+    ? fixDecimalCount(updatedValue, decimalCount, rounding)
     : updatedValue;
 };
 
@@ -243,7 +252,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       (
         amountType: "fiat" | "token",
         value?: string,
-        maxDecimals: number = 2
+        maxDecimals: number = 2,
+        rounding: boolean = false
       ) => {
         resetSlippage();
         const update =
@@ -279,7 +289,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           value,
           amountType === "fiat"
             ? maxDecimals
-            : swapState.baseAsset?.coinDecimals
+            : swapState.baseAsset?.coinDecimals,
+          rounding
         ).trim();
 
         if (
@@ -295,10 +306,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         }
         const isFocused = focused === amountType;
 
-        const formattedValue =
-          parseFloat(updatedValue) !== 0 && !isFocused
-            ? trimPlaceholderZeros(updatedValue)
-            : updatedValue;
+        const formattedValue = !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue;
         update(formattedValue);
       },
       [
@@ -353,7 +363,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const tokenValue = value
         ? new Dec(value).quo(swapState.priceState.price)
         : undefined;
-      setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
+      setAmountSafe(
+        "token",
+        tokenValue ? tokenValue.toString() : undefined,
+        undefined,
+        true
+      );
     }, [fiatAmount, setAmountSafe, focused, swapState.priceState.price, type]);
 
     const toggleMax = useCallback(() => {
@@ -546,7 +561,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return handleMarketTab();
       } else {
         return focused === "fiat"
-          ? fixDecimalCount(swapState.inAmountInput.inputAmount, 10)
+          ? transformAmount(swapState.inAmountInput.inputAmount, 10)
           : formatInputAsPrice(fiatAmount);
       }
     }, [
