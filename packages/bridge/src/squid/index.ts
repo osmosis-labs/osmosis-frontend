@@ -315,7 +315,10 @@ export class SquidBridgeProvider implements BridgeProvider {
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((a) => a.coinMinimalDenom === asset.address);
+        .find(
+          (a) =>
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
 
       for (const counterparty of assetListAsset?.counterparty ?? []) {
         // check if supported by squid
