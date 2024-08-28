@@ -12,7 +12,6 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let dollarBalanceRegEx = /\$\d+/;
   let page: Page;
@@ -32,7 +31,7 @@ test.describe("Test Portfolio feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Portfolio", password);
+    await walletPage.setWalletNameAndPassword("Test Portfolio");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application

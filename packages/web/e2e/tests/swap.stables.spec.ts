@@ -11,7 +11,6 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY_S ?? "private_key_s";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let tradePage: TradePage;
   let USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
@@ -35,7 +34,7 @@ test.describe("Test Swap Stables feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Stables", password);
+    await walletPage.setWalletNameAndPassword("Test Stables");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     page = context.pages()[0];

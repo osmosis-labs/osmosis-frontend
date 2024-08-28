@@ -9,10 +9,9 @@ import { UnzipExtension } from "~/e2e/unzip-extension";
 import { TradePage } from "../pages/trade-page";
 import { WalletPage } from "../pages/wallet-page";
 
-test.describe("Test Filled Order feature", () => {
+test.describe("Test Filled Limit Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let tradePage: TradePage;
 
   test.beforeAll(async () => {
@@ -30,7 +29,7 @@ test.describe("Test Filled Order feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Monitoring E2E Tests", password);
+    await walletPage.setWalletNameAndPassword("Monitoring E2E Tests");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -51,8 +50,9 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("1.01");
     await tradePage.setLimitPriceChange("Market");
-    const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
-      context
+    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(
+      context,
+      true
     );
     expect(msgContentAmount).toBeTruthy();
     // now this is converted from USDC
@@ -72,8 +72,9 @@ test.describe("Test Filled Order feature", () => {
     const limitPrice = Number(await tradePage.getLimitPrice());
     const highLimitPrice = (limitPrice * 1.1).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
-    const { msgContentAmount } = await tradePage.limitBuyAndGetWalletMsg(
-      context
+    const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(
+      context,
+      true
     );
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain('"quantity": "1050000"');
@@ -88,7 +89,7 @@ test.describe("Test Filled Order feature", () => {
   });
 
   [{ name: "WBTC" }, { name: "WBTC.eth.axl" }].forEach(({ name }) => {
-    test(`User should be able to Buy ${name}`, async () => {
+    test(`User should be able to Market Buy ${name}`, async () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
@@ -103,7 +104,7 @@ test.describe("Test Filled Order feature", () => {
 
   // does not work for WBTC.eth.axl https://linear.app/osmosis/issue/FE-1058
   [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
-    test(`User should be able to Sell ${name}`, async () => {
+    test(`User should be able to Market Sell ${name}`, async () => {
       await tradePage.goto();
       await tradePage.openSellTab();
       await tradePage.selectAsset(name);
