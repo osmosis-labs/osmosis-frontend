@@ -66,14 +66,13 @@ export async function getUserPools(params: {
     .map(({ position: { pool_id } }) => pool_id)
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
-  const eventualPools = await timeout(
-    () => getPools({ ...params, poolIds: Array.from(userUniquePoolIds) }),
-    10_000, // 10 seconds
-    "getPools"
-  )();
+  const pools = await getPools({
+    ...params,
+    poolIds: Array.from(userUniquePoolIds),
+  });
 
   return await Promise.all(
-    eventualPools.map(async (pool) => {
+    pools.map(async (pool) => {
       const { id, reserveCoins, totalFiatValueLocked, type } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,
