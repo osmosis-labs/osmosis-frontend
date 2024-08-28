@@ -1173,6 +1173,10 @@
     "newer": "Daha yeni"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Fiyatınızı seçin",
+      "tryLimitOrders": "Limit emirlerini deneyin"
+    },
     "historyTable": {
       "columns": {
         "order": "Emir",

@@ -1173,6 +1173,10 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Alege-ți prețul",
+      "tryLimitOrders": "Încercați comenzi limită"
+    },
     "historyTable": {
       "columns": {
         "order": "Ordin",

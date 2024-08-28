@@ -1173,6 +1173,10 @@
     "newer": "較新"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "選擇您的價格",
+      "tryLimitOrders": "嘗試限價訂單"
+    },
     "historyTable": {
       "columns": {
         "order": "命令",

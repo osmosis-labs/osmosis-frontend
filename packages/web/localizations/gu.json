@@ -1173,6 +1173,10 @@
     "newer": "નવું"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "તમારી કિંમત પસંદ કરો",
+      "tryLimitOrders": "મર્યાદા ઓર્ડરનો પ્રયાસ કરો"
+    },
     "historyTable": {
       "columns": {
         "order": "ઓર્ડર",

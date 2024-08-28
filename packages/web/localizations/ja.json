@@ -1173,6 +1173,10 @@
     "newer": "新しい"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "価格を選択してください",
+      "tryLimitOrders": "指値注文を試す"
+    },
     "historyTable": {
       "columns": {
         "order": "注文",
