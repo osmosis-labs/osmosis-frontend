@@ -391,10 +391,17 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       setAmountSafe(
         "token",
         tokenValue ? tokenValue.toString() : undefined,
-        undefined,
+        swapState.baseAsset?.coinDecimals,
         true
       );
-    }, [fiatAmount, setAmountSafe, focused, swapState.priceState.price, type]);
+    }, [
+      fiatAmount,
+      setAmountSafe,
+      focused,
+      swapState.priceState.price,
+      type,
+      swapState.baseAsset?.coinDecimals,
+    ]);
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
