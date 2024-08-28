@@ -363,6 +363,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const tokenValue = value
         ? new Dec(value).quo(swapState.priceState.price)
         : undefined;
+
+      // When setting the token amount for a sell we want to round up due to
+      // rounding occuring when dividing the fiat amount by the token price.
+      // Without rounding there is a common case where the user inputs $1
+      // but the actual token value is only $0.99 (0.999999....) and the
+      // user is unable to place the order. With rounding we overestimate by a value of
+      // 1*10^(-tokenDecimals).
       setAmountSafe(
         "token",
         tokenValue ? tokenValue.toString() : undefined,
