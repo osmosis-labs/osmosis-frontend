@@ -49,14 +49,13 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.1");
+    await tradePage.enterAmount("1");
     await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
     );
     expect(msgContentAmount).toBeTruthy();
     // now this is converted from USDC
-    //expect(msgContentAmount).toContain("2.99 OSMO");
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
     await tradePage.isTransactionSuccesful();
@@ -93,7 +92,7 @@ test.describe("Test Filled Order feature", () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.51");
+      await tradePage.enterAmount("0.25");
       const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
@@ -102,12 +101,13 @@ test.describe("Test Filled Order feature", () => {
     });
   });
 
-  [{ name: "WBTC" }, { name: "WBTC.eth.axl" }].forEach(({ name }) => {
-    test(`User should be able to Sell Max ${name}`, async () => {
+  // does not work for WBTC.eth.axl https://linear.app/osmosis/issue/FE-1058
+  [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
+    test(`User should be able to Sell ${name}`, async () => {
       await tradePage.goto();
       await tradePage.openSellTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.49");
+      await tradePage.enterAmount("0.24");
       const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");

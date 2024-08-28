@@ -2,6 +2,7 @@
 import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
+const TRANSACTION_CONFIRMATION_TIMEOUT = 2000;
 
 export class TransactionsPage extends BasePage {
   readonly transactionRow: Locator;
@@ -95,7 +96,7 @@ export class TransactionsPage extends BasePage {
     // Expect that this is a cancel limit call
     expect(msgContentAmount).toContain("cancel_limit");
     // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
   }
 
   async isFilledByLimitPrice(price: any) {
@@ -124,7 +125,9 @@ export class TransactionsPage extends BasePage {
     console.log("Wallet is approving this msg: \n" + msgContentAmount);
     // Approve trx
     await approveBtn.click();
+    expect(msgContentAmount).toContain("cancel_limit");
+    expect(msgContentAmount).toContain("claim_limit");
     // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
   }
 }
