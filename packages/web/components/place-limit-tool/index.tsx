@@ -57,12 +57,26 @@ export interface PlaceLimitToolProps {
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
+/* Roundes a given number to the given precision
+ * i.e. roundUpToDecimal(0.23456, 2) = 0.24
+ */
+function roundUpToDecimal(value: number, precision: number) {
+  const multiplier = Math.pow(10, precision || 0);
+  return Math.ceil(value * multiplier) / multiplier;
+}
+
+/**
+ * Fixes a given string representation of a number to the given decimal count
+ * Rounds to the decimal count if rounding is true
+ */
 const fixDecimalCount = (
   value: string,
   decimalCount = 18,
   rounding = false
 ) => {
-  if (rounding) return parseFloat(value).toFixed(decimalCount);
+  if (rounding) {
+    return roundUpToDecimal(parseFloat(value), decimalCount).toString();
+  }
   const split = value.split(".");
   const result =
     split[0] +
@@ -70,6 +84,10 @@ const fixDecimalCount = (
   return result;
 };
 
+/**
+ * Transforms a given amount to the given decimal count and handles period inputs
+ * Rounds to the decimal count if rounding is true
+ */
 const transformAmount = (
   value: string,
   decimalCount = 18,
