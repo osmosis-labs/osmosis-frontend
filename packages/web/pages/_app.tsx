@@ -24,8 +24,13 @@ import {
 } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useLocalStorage } from "react-use";
 import { WagmiProvider } from "wagmi";
 
+import {
+  LimitOrdersFloatingBannerDoNotShowKey,
+  LimitOrdersToast,
+} from "~/components/alert/limit-orders-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
@@ -322,6 +327,11 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
+  const [doNotShowLimitOrdersBanner] = useLocalStorage(
+    LimitOrdersFloatingBannerDoNotShowKey,
+    false
+  );
+
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
@@ -345,6 +355,7 @@ const MainLayoutWrapper: FunctionComponent<{
           <OneClickToast />
         </>
       )}
+      {flags.limitOrders && !doNotShowLimitOrdersBanner && <LimitOrdersToast />}
     </MainLayout>
   );
 });
