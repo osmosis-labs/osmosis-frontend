@@ -27,7 +27,7 @@ export function LimitOrdersToast() {
 
   const { orderbook } = useOrderbook({ baseDenom: from, quoteDenom: "USDC" });
 
-  const fromDenom = !!orderbook ? from : "OSMO";
+  const fromDenom = orderbook ? from : "OSMO";
   const quoteDenom = "USDC";
 
   const onClose = () => {
