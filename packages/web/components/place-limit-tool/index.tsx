@@ -519,13 +519,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const handleMarketTab = () => {
         if (tab === "sell") {
           return focused === "fiat"
-            ? getTrimmedAmount(swapState.marketState.inAmountInput.inputAmount)
+            ? transformAmount(
+                getTrimmedAmount(
+                  swapState.marketState.inAmountInput.inputAmount
+                ),
+                10
+              )
             : formatInputAsPrice(
                 swapState.marketState.outAmountInput.inputAmount
               );
         } else {
           return focused === "fiat"
-            ? getTrimmedAmount(swapState.marketState.outAmountInput.inputAmount)
+            ? transformAmount(
+                getTrimmedAmount(
+                  swapState.marketState.outAmountInput.inputAmount
+                ),
+                10
+              )
             : formatInputAsPrice(
                 swapState.marketState.inAmountInput.inputAmount
               );
@@ -536,7 +546,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return handleMarketTab();
       } else {
         return focused === "fiat"
-          ? swapState.inAmountInput.inputAmount
+          ? fixDecimalCount(swapState.inAmountInput.inputAmount, 10)
           : formatInputAsPrice(fiatAmount);
       }
     }, [
