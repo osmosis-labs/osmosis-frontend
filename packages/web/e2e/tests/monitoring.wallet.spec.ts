@@ -49,7 +49,7 @@ test.describe("Test Filled Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1");
+    await tradePage.enterAmount("1.01");
     await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
       context
