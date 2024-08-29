@@ -8,7 +8,7 @@ import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
-import { ArrowButton, IconButton } from "~/components/ui/button";
+import { IconButton } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 
@@ -25,7 +25,10 @@ export function LimitOrdersToast() {
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
-  const { orderbook } = useOrderbook({ baseDenom: from, quoteDenom: "USDC" });
+  const { orderbook, isOrderbookLoading } = useOrderbook({
+    baseDenom: from,
+    quoteDenom: "USDC",
+  });
 
   const fromDenom = orderbook ? from : "OSMO";
   const quoteDenom = "USDC";
@@ -38,7 +41,7 @@ export function LimitOrdersToast() {
     <Transition
       appear
       as={Fragment}
-      show={!doNotShowAgain}
+      show={!doNotShowAgain && !isOrderbookLoading}
       enter="transform transition duration-300 ease-inOutBack"
       enterFrom="translate-x-[130%]"
       enterTo="translate-x-0 translate-y-0"
@@ -109,18 +112,21 @@ export function LimitOrdersToast() {
               >
                 {t("limitOrders.floatingBanner.title")}
               </h1>
-              <ArrowButton
+              <div
                 className={classNames(
-                  "text-subtitle1 font-subtitle1",
+                  "text-subtitle1 font-subtitle1 text-wosmongton-300",
                   "sm:text-left sm:text-caption sm:font-caption"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
+                  router.push(
+                    `/?tab=buy&from=${fromDenom}&quote=${quoteDenom}&type=limit`
+                  );
                   onClose();
                 }}
               >
                 {t("limitOrders.floatingBanner.tryLimitOrders")}
-              </ArrowButton>
+              </div>
             </div>
           </div>
 
@@ -129,7 +135,7 @@ export function LimitOrdersToast() {
             variant="default"
             size={null}
             className={classNames(
-              "group mr-0.5 mt-3 h-8 w-8 flex-shrink-0 self-start !rounded-full bg-osmoverse-600",
+              "group mr-0.5 mt-3 h-8 w-8 flex-shrink-0 self-start !rounded-full !bg-osmoverse-600",
               "sm:mt-0 sm:h-6 sm:w-6 sm:self-center"
             )}
             icon={
