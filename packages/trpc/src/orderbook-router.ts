@@ -63,7 +63,9 @@ export const orderbookRouter = createTRPCRouter({
         getFreshItems: async () => {
           const { userOsmoAddress } = input;
           const pools = await getOrderbookPools();
-          const contractAddresses = pools.map((p) => p.contractAddress);
+          const activePools = pools.filter((p) => parseInt(p.poolId) < 2065);
+          const contractAddresses = activePools.map((p) => p.contractAddress);
+
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
           const promises = contractAddresses.map(

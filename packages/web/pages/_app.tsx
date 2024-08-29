@@ -24,14 +24,18 @@ import {
 } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useLocalStorage } from "react-use";
 import { WagmiProvider } from "wagmi";
 
+import {
+  LimitOrdersFloatingBannerDoNotShowKey,
+  LimitOrdersToast,
+} from "~/components/alert/limit-orders-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { OneClickToast } from "~/components/one-click-trading/one-click-trading-toast";
 import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {
@@ -40,7 +44,7 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { BridgeProvider } from "~/hooks/bridge";
+import { ImmersiveBridge } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -81,20 +85,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <StoreProvider>
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
-              <BridgeProvider>
-                <SEO />
-                <IbcNotifier />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-              </BridgeProvider>
+              <SEO />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                {Component && <Component {...pageProps} />}
+              </MainLayoutWrapper>
+              <ImmersiveBridge />
             </ErrorBoundary>
           </WalletSelectProvider>
         </StoreProvider>
@@ -323,6 +326,11 @@ const MainLayoutWrapper: FunctionComponent<{
     },
   ];
 
+  const [doNotShowLimitOrdersBanner] = useLocalStorage(
+    LimitOrdersFloatingBannerDoNotShowKey,
+    false
+  );
+
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
@@ -343,9 +351,9 @@ const MainLayoutWrapper: FunctionComponent<{
       {flags.oneClickTrading && (
         <>
           <OneClickTradingIntroModal />
-          <OneClickToast />
         </>
       )}
+      {flags.limitOrders && !doNotShowLimitOrdersBanner && <LimitOrdersToast />}
     </MainLayout>
   );
 });

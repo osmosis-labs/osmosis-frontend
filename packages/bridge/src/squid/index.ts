@@ -315,7 +315,10 @@ export class SquidBridgeProvider implements BridgeProvider {
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((a) => a.coinMinimalDenom === asset.address);
+        .find(
+          (a) =>
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
 
       for (const counterparty of assetListAsset?.counterparty ?? []) {
         // check if supported by squid
@@ -441,7 +444,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     let approvalTx: { to: Address; data: string } | undefined;
     try {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => String(chainId) === String(squidFromChain.chainId)
       );
 
@@ -581,7 +584,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
           sender: fromAddress,
           contract: cosmwasmData.msg.wasm.contract,
-          msg: Buffer.from(JSON.stringify(cosmwasmData.msg.wasm.msg)),
+          msg: cosmwasmData.msg.wasm.msg,
           funds: [fromCoin],
         });
 

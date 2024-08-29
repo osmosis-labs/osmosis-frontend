@@ -171,12 +171,6 @@
       "FeeAPY": "Taxa de APY",
       "liquidity": "Minha Liquidez"
     },
-    "selectAssetSource": {
-      "installWallet": "Instalar {walletName}",
-      "next": "Próximo",
-      "titleDeposit": "Depositar de",
-      "titleWithdraw": "Sacar para"
-    },
     "stakedAssets": "OSMO em stake",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Depositar",
       "hideZero": "Esconder saldos zerados",
       "hideBalances": "Saldos mascarados",
-      "preTransfer": {
-        "currentBal": "Saldo Atual",
-        "deposit": "Deposit",
-        "withdraw": "Sacar"
-      },
       "search": "Buscar",
       "sort": {
         "balance": "Saldo",
@@ -217,58 +206,20 @@
       "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "approveInWallet": "Aprovar na carteira",
-      "enterAddress": "{network} endereço",
       "errors": {
-        "seeRequest": "Ver solicitação em {walletName}",
-        "invalidAddress": "Endereço inválido"
+        "seeRequest": "Ver solicitação em {walletName}"
       },
       "from": "De",
       "loading": "Carregando",
-      "titleDeposit": "Depositar {coinDenom}",
-      "titleWithdraw": "Sacar {coinDenom}",
       "to": "Para",
       "transferFee": "Taxa de Transferência",
-      "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
       "expectedOutput": "Resultado Esperado",
       "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
       "priceImpact": "Impacto no preço",
       "sending": "Enviando...",
       "transferAnyway": "Transferir de qualquer maneira"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Próximo",
-      "deposit": "Depositar",
-      "network": "Rede",
-      "withdraw": "Saque"
-    },
     "unbondedAssets": "Destravado",
-    "nomic": {
-      "addresses": "endereços.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Taxa de minerador de Bitcoin",
-      "bridgeAtCapacity": "A ponte está atualmente em plena capacidade. Por favor, tente novamente mais tarde.",
-      "bridgeFee": "Taxa da Ponte Nômica",
-      "confirmations": "6 confirmações",
-      "enterBitcoinAddress": "Insira o endereço Bitcoin",
-      "estimatedArrival": "Chegada estimada",
-      "estimatedTimeTag": "Tempo estimado",
-      "estimatedTime": "5 minutos",
-      "expirationTime": "4 dias",
-      "learnMore": "Saiba mais em",
-      "lossOfFunds": "O uso do endereço após esse horário resultará em perda de fundos.",
-      "minDeposit": "Depósito Mínimo",
-      "minWithdrawal": "Retirada Mínima",
-      "nomicCapacityLimit": "Nomic tem um limite de capacidade de",
-      "onlyUse": "Use apenas",
-      "pendingDeposits": "Depósitos pendentes",
-      "poweredBy": "Distribuído por",
-      "proceed": "Continuar",
-      "depositExpiration": "Este endereço de depósito expira em",
-      "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
-      "warning": "AVISO:",
-      "loading": "Carregando..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Ativar ativos não verificados",
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
@@ -303,8 +254,10 @@
   },
   "portfolio": {
     "buy": "Comprar",
-    "yourAssets": "Seus ativos",
+    "sell": "Vender",
+    "yourBalances": "Seus saldos",
     "yourPositions": "Suas posições",
+    "searchBalances": "Pesquisar saldos",
     "yourSuperchargedPositions": "Suas posições sobrecarregadas",
     "yourLiquidityPools": "Seus pools de liquidez",
     "connectWallet": "Conecte sua carteira para começar a rastrear seus saldos e posições no Osmosis.",
@@ -323,9 +276,17 @@
     "assets": "Ativos",
     "recentActivity": "Atividade recente",
     "seeAll": "Ver tudo",
-    "show": "Mostrar",
-    "hide": "Esconder",
-    "hidden": "Escondido"
+    "showHidden": "Mostrar oculto ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ocultar pequenos saldos",
+    "cypherSpend": "Pagamento por osmose",
+    "cypherOrder": "Peça já o seu cartão",
+    "cypherBeta": "Beta",
+    "openOrders": "Ordens abertas",
+    "last24h": "Últimas 24h",
+    "last7d": "Últimos 7d",
+    "last30d": "Últimos 30d",
+    "last1y": "Último 1 ano",
+    "allTime": "Todos os tempos"
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -823,7 +784,8 @@
     },
     "noRoutes": "Nenhuma rota encontrada",
     "route": "rota",
-    "routes": "rotas"
+    "routes": "rotas",
+    "slippageOverBalance": "Fundos insuficientes para cobrir o deslizamento"
   },
   "walletSelect": {
     "gettingStarted": "Começando",
@@ -1160,7 +1122,6 @@
       "veryHigh": "Muito alto"
     }
   },
-  "disclaimer": "Isenção de responsabilidade",
   "remaining": "restante",
   "timeUnits": {
     "second": "segundo",
@@ -1212,6 +1173,10 @@
     "newer": "Mais recente"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Escolha seu preço",
+      "tryLimitOrders": "Experimente ordens limitadas"
+    },
     "historyTable": {
       "columns": {
         "order": "Ordem",
@@ -1300,7 +1265,6 @@
     "connectYourWallet": "Conecte sua carteira",
     "toSeeYourBalances": "para ver seus saldos",
     "searchAssets": "Pesquisar ativos",
-    "marketPrice": "preço de mercado",
     "below": "abaixo",
     "above": "acima",
     "currentPrice": "preço atual",
@@ -1323,6 +1287,30 @@
     "priceReaches": "Se o preço {denom} atingir {price}",
     "belowMinimumAmount": "{amount} mínimo"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "O que é impacto de preço?",
+      "content": "Este é o impacto que a liquidez do mercado tem no seu preço de execução. Negociações maiores tendem a ter maior impacto no mercado."
+    },
+    "expectedRate": {
+      "header": "Qual é a taxa esperada?",
+      "content": "Este é o preço que você espera receber. Os preços mudam frequentemente, então se você deseja negociar a um preço específico, tente uma ordem limite."
+    },
+    "swapFees": {
+      "header": "O que são taxas de swap?",
+      "content": "Esta é a taxa cobrada pelo protocolo Osmosis para recompensar os provedores de liquidez e manter a rede."
+    },
+    "tradeRoute": {
+      "header": "O que é uma rota comercial?",
+      "contentTop": " Se não houver um mercado direto entre os ativos que você está negociando, a Osmosis tentará fazer a negociação acontecer realizando uma série de negociações com outros ativos para obter o melhor preço em qualquer momento.",
+      "contentBottom": "Para eficiência ideal com base na liquidez disponível, às vezes as negociações serão divididas em várias rotas com ativos diferentes."
+    },
+    "outputDifference": {
+      "header": "O que é diferença de saída?",
+      "content": "Essa é a diferença de valor entre o que você paga e recebe. Números positivos significam que a quantia que você está comprando vale mais, enquanto números negativos significam que a quantia que você está vendendo vale mais."
+    }
+  },
   "tradeFee": "Taxa de negociação",
-  "receiveAtLeast": "Receba pelo menos"
+  "receiveAtLeast": "Receba pelo menos",
+  "payAtMost": "Pague no máximo"
 }

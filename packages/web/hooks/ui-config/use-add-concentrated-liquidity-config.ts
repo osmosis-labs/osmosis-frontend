@@ -368,21 +368,15 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Current price adjusted with base and quote token decimals. */
   @computed
   get currentPriceWithDecimals(): Dec {
-    const queryPool = this.queriesStore
-      .get(this.chainId)
-      .osmosis!.queryPools.getPool(this.poolId);
-
-    return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+    return this.pool?.currentPrice ?? new Dec(0);
   }
 
   /** Current price, without currency decimals. */
   @computed
   get currentPrice(): Dec {
-    return (
-      this.pool?.currentSqrtPrice
-        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
-        .toDec() ?? new Dec(0)
-    );
+    const currentSqrtPrice = this.pool?.currentSqrtPrice;
+    if (!currentSqrtPrice) return new Dec(0);
+    return currentSqrtPrice.mul(currentSqrtPrice).toDec();
   }
 
   /** Moderate price range, without currency decimals. */

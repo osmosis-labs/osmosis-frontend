@@ -13,8 +13,6 @@ import { getPriceFromSidecar } from "./providers/sidecar";
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
-  assetLists: AssetList[],
-  chainList: Chain[],
   asset: Asset,
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
@@ -25,7 +23,6 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
   assetLists,
-  chainList,
   asset,
   currency = "usd",
   priceProvider = getPriceFromSidecar,
@@ -34,7 +31,6 @@ export async function getAssetPrice({
   assetLists: AssetList[];
   asset: { coinDenom?: string } & (
     | { coinMinimalDenom: string }
-    | { sourceDenom: string }
     | { chainId: number | string; address: string }
     | { coinGeckoId: string }
   );
@@ -43,7 +39,6 @@ export async function getAssetPrice({
 }): Promise<Dec> {
   const coinMinimalDenom =
     "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
-  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
   const { chainId, address } =
     "chainId" in asset && "address" in asset
       ? asset
@@ -56,7 +51,6 @@ export async function getAssetPrice({
     .find(
       (asset) =>
         (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
-        (sourceDenom && asset.sourceDenom === sourceDenom) ||
         (chainId &&
           address &&
           asset.counterparty.some(
@@ -77,7 +71,7 @@ export async function getAssetPrice({
   if (!foundAsset)
     throw new Error(
       `Asset ${
-        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
+        asset.coinDenom ?? coinMinimalDenom
       } not found in asset list registry.`
     );
 
@@ -85,8 +79,7 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
-    getFreshValue: () =>
-      priceProvider(assetLists, chainList, foundAsset, currency),
+    getFreshValue: () => priceProvider(foundAsset, currency),
   });
 }
 

@@ -10,12 +10,14 @@ import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import React, { Fragment, memo, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import { EventName } from "~/config";
 import {
   AssetLists,
   MainnetAssetSymbols,
 } from "~/config/generated/asset-lists";
 import {
   Breakpoint,
+  useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
   useWindowSize,
@@ -67,9 +69,10 @@ export const PriceSelector = memo(
     initialQuoteDenom = "USDC",
   }: PriceSelectorProps) => {
     const { t } = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const [tab, setTab] = useQueryState("tab");
-    const [quote] = useQueryState(
+    const [quote, setQuote] = useQueryState(
       "quote",
       parseAsString.withDefault(initialQuoteDenom || "USDC")
     );
@@ -101,6 +104,12 @@ export const PriceSelector = memo(
         setBase("ATOM");
       }
     }, [base, quote, setBase]);
+
+    useEffect(() => {
+      if (!quoteAsset) {
+        setQuote("USDC");
+      }
+    }, [quoteAsset, setQuote]);
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -268,7 +277,10 @@ export const PriceSelector = memo(
                     {wallet?.isWalletConnected && tab === "buy" && (
                       <button
                         type="button"
-                        onClick={openAddFundsModal}
+                        onClick={() => {
+                          logEvent([EventName.LimitOrder.addFunds]);
+                          openAddFundsModal?.();
+                        }}
                         className="flex w-full items-center justify-between py-3"
                       >
                         <span className="subtitle1 text-left font-semibold text-wosmongton-200">
@@ -303,6 +315,7 @@ export const PriceSelector = memo(
                     )}
                     <button
                       onClick={() => {
+                        logEvent([EventName.LimitOrder.swapFromAnotherAsset]);
                         if (tab === "buy") {
                           setSellOpen(true);
                         } else {

@@ -171,12 +171,6 @@
       "FeeAPY": "Fee APY",
       "liquidity": "My Liquidity"
     },
-    "selectAssetSource": {
-      "installWallet": "Install {walletName}",
-      "next": "Next",
-      "titleDeposit": "Deposit from",
-      "titleWithdraw": "Withdraw to"
-    },
     "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Deposit",
       "hideZero": "Hide zero balances",
       "hideBalances": "Masked balances",
-      "preTransfer": {
-        "currentBal": "Current Balance",
-        "deposit": "Deposit",
-        "withdraw": "Withdraw"
-      },
       "search": "Search",
       "sort": {
         "balance": "Balance",
@@ -217,58 +206,20 @@
       "availableOn": "Available on {network}",
       "approving": "Approving...",
       "approveInWallet": "Approve in wallet",
-      "enterAddress": "{network} address",
       "errors": {
-        "seeRequest": "See request in {walletName}",
-        "invalidAddress": "Invalid Address"
+        "seeRequest": "See request in {walletName}"
       },
       "from": "From",
       "loading": "Loading",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
-      "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
       "expectedOutput": "Expected Output",
       "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact",
       "sending": "Sending...",
       "transferAnyway": "Transfer Anyway"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Next",
-      "deposit": "Deposit",
-      "network": "Network",
-      "withdraw": "Withdraw"
-    },
     "unbondedAssets": "Available",
-    "nomic": {
-      "addresses": "addresses.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Bitcoin Miner Fee",
-      "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",
-      "bridgeFee": "Nomic Bridge Fee",
-      "confirmations": "6 confirmations",
-      "enterBitcoinAddress": "Enter Bitcoin Address",
-      "estimatedArrival": "Estimated Arrival",
-      "estimatedTimeTag": "Estimated time",
-      "estimatedTime": "5 minutes",
-      "expirationTime": "4 days",
-      "learnMore": "Learn more at",
-      "lossOfFunds": "Use of address after this time will result in loss of funds.",
-      "minDeposit": "Minimum Deposit",
-      "minWithdrawal": "Minimum Withdrawal",
-      "nomicCapacityLimit": "Nomic has a capacity limit of",
-      "onlyUse": "Only use",
-      "pendingDeposits": "Pending deposits",
-      "poweredBy": "Powered by",
-      "proceed": "Proceed",
-      "depositExpiration": "This deposit address expires in",
-      "undergoAudit": "while undergoing auditing (est. completion January 2024).",
-      "warning": "WARNING:",
-      "loading": "Loading..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activate unverified assets",
       "description": "is an unverified token. Do you wish to activate it? Be sure to research thoroughly before trading.",
@@ -303,8 +254,10 @@
   },
   "portfolio": {
     "buy": "Buy",
-    "yourAssets": "Your assets",
+    "sell": "Sell",
+    "yourBalances": "Your balances",
     "yourPositions": "Your positions",
+    "searchBalances": "Search balances",
     "yourSuperchargedPositions": "Your Supercharged positions",
     "yourLiquidityPools": "Your liquidity pools",
     "connectWallet": "Connect your wallet to get started with tracking your balances and positions on Osmosis.",
@@ -323,9 +276,17 @@
     "assets": "Assets",
     "recentActivity": "Recent activity",
     "seeAll": "See all",
-    "show": "Show",
-    "hide": "Hide",
-    "hidden": "Hidden"
+    "showHidden": "Show hidden ({hiddenDustCount})",
+    "hideSmallBalances": "Hide small balances",
+    "cypherSpend": "Osmosis Pay",
+    "cypherOrder": "Order your card now",
+    "cypherBeta": "Beta",
+    "openOrders": "Open Orders",
+    "last24h": "Last 24h",
+    "last7d": "Last 7d",
+    "last30d": "Last 30d",
+    "last1y": "Last 1y",
+    "allTime": "All time"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -823,7 +784,8 @@
     },
     "noRoutes": "No routes found",
     "route": "route",
-    "routes": "routes"
+    "routes": "routes",
+    "slippageOverBalance": "Insufficient funds to cover slippage"
   },
   "walletSelect": {
     "gettingStarted": "Getting Started",
@@ -1160,7 +1122,6 @@
       "veryHigh": "Very high"
     }
   },
-  "disclaimer": "Disclaimer",
   "remaining": "remaining",
   "timeUnits": {
     "second": "second",
@@ -1212,6 +1173,10 @@
     "newer": "Newer"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Pick your price",
+      "tryLimitOrders": "Try limit orders"
+    },
     "historyTable": {
       "columns": {
         "order": "Order",
@@ -1300,7 +1265,6 @@
     "connectYourWallet": "Connect your wallet",
     "toSeeYourBalances": "to see your balances",
     "searchAssets": "Search assets",
-    "marketPrice": "market price",
     "below": "below",
     "above": "above",
     "currentPrice": "current price",
@@ -1323,6 +1287,30 @@
     "priceReaches": "If {denom} price reaches {price}",
     "belowMinimumAmount": "{amount} minimum"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "What is price impact?",
+      "content": "This is the impact that market liquidity has on your execution price. Larger trades tend to have larger market impact."
+    },
+    "expectedRate": {
+      "header": "What is expected rate?",
+      "content": "This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
+    },
+    "swapFees": {
+      "header": "What are swap fees?",
+      "content": "This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
+    },
+    "tradeRoute": {
+      "header": "What is a trade route?",
+      "contentTop": " If there's no direct market between the assets you're trading, Osmosis will try to make the trade happen by making a series of trades with other assets to get the best price at any given time.",
+      "contentBottom": "For optimal efficiency based on available liquidity, sometimes trades will be split into multiple routes with different assets."
+    },
+    "outputDifference": {
+      "header": "What is output difference?",
+      "content": "This is the difference in value between what you pay and receive. Positive numbers mean the amount you're buying is worth more, while negative numbers mean the amount you're selling is worth more."
+    }
+  },
   "tradeFee": "Trade fee",
-  "receiveAtLeast": "Receive at least"
+  "receiveAtLeast": "Receive at least",
+  "payAtMost": "Sell at most"
 }

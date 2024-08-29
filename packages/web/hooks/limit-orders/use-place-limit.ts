@@ -13,9 +13,10 @@ import {
 } from "~/hooks/input/use-amount-input";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { useSwap, useSwapAssets } from "~/hooks/use-swap";
+import { QuoteType, useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
@@ -43,6 +44,7 @@ export interface UsePlaceLimitParams {
   type: "limit" | "market";
   page: EventPage;
   maxSlippage?: Dec;
+  quoteType?: QuoteType;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;
@@ -60,6 +62,7 @@ export const usePlaceLimit = ({
   type,
   page,
   maxSlippage,
+  quoteType = "out-given-in",
 }: UsePlaceLimitParams) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -72,6 +75,13 @@ export const usePlaceLimit = ({
     quoteDenom,
     baseDenom,
   });
+
+  const isMarket = useMemo(
+    () => type === "market",
+    //|| priceState.isBeyondOppositePrice
+    // Disabled auto market placing but can be readded with the above conditional
+    [type]
+  );
 
   const swapAssets = useSwapAssets({
     initialFromDenom: baseDenom,
@@ -90,17 +100,11 @@ export const usePlaceLimit = ({
     useQueryParams: false,
     useOtherCurrencies,
     maxSlippage,
+    quoteType: type !== "market" ? "out-given-in" : quoteType,
   });
 
   const quoteAsset = swapAssets.toAsset;
   const baseAsset = swapAssets.fromAsset;
-
-  const isMarket = useMemo(
-    () => type === "market",
-    //|| priceState.isBeyondOppositePrice
-    // Disabled auto market placing but can be readded with the above conditional
-    [type]
-  );
 
   const account = accountStore.getWallet(osmosisChainId);
 
@@ -113,6 +117,10 @@ export const usePlaceLimit = ({
     []
   );
 
+  const { price: baseAssetPrice } = usePrice({
+    coinMinimalDenom: baseAsset?.coinMinimalDenom ?? "",
+  });
+
   /**
    * Calculates the amount of tokens to be sent with the order.
    * In the case of an Ask order the amount sent is the amount of tokens defined by the user in terms of the base asset.
@@ -122,17 +130,19 @@ export const usePlaceLimit = ({
    * @returns The amount of tokens to be sent with the order in base asset amounts for an Ask and quote asset amounts for a Bid.
    */
   const paymentTokenValue = useMemo(() => {
+    if (!quoteAsset || !baseAsset) return;
+
     if (isMarket)
       return (
         marketState.inAmountInput.amount ??
         new CoinPretty(
-          orderDirection === "ask" ? baseAsset! : quoteAsset!,
+          orderDirection === "ask" ? baseAsset : quoteAsset,
           new Dec(0)
         )
       );
     // The amount of tokens the user wishes to buy/sell
     const baseTokenAmount =
-      inAmountInput.amount ?? new CoinPretty(baseAsset!, new Dec(0));
+      inAmountInput.amount ?? new CoinPretty(baseAsset, new Dec(0));
     if (orderDirection === "ask") {
       // In the case of an Ask we just return the amount requested to sell
       return baseTokenAmount;
@@ -158,22 +168,10 @@ export const usePlaceLimit = ({
     marketState.inAmountInput.amount,
   ]);
 
-  /**
-   * When creating a market order we want to update the market state with the input amount
-   * with the amount of base tokens.
-   *
-   * Only runs on an ASK order. A BID order is handled by the input directly.
-   */
-  useEffect(() => {
-    if (orderDirection === "bid") return;
-
-    const normalizedAmount = inAmountInput.amount?.toDec().toString() ?? "0";
-    marketState.inAmountInput.setAmount(normalizedAmount);
-  }, [inAmountInput.amount, orderDirection, marketState.inAmountInput]);
-
   const normalizationFactor = useMemo(() => {
+    if (!baseAsset || !quoteAsset) return new Dec(1);
     return getNormalizationFactor(
-      baseAsset!.coinDecimals,
+      baseAsset.coinDecimals,
       quoteAsset!.coinDecimals
     );
   }, [baseAsset, quoteAsset]);
@@ -221,7 +219,7 @@ export const usePlaceLimit = ({
   const placeLimitMsg = useMemo(() => {
     if (isMarket || !priceState.isValidPrice) return;
 
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
 
     if (quantity === "0") {
       return;
@@ -258,11 +256,11 @@ export const usePlaceLimit = ({
     return await makeExecuteCosmwasmContractMsg({
       contract: orderbookContractAddress,
       sender: account?.address ?? "",
-      msg: Buffer.from(JSON.stringify(placeLimitMsg)),
+      msg: placeLimitMsg,
       funds: [
         {
-          denom: paymentTokenValue.toCoin().denom,
-          amount: paymentTokenValue.toCoin().amount ?? "0",
+          denom: paymentTokenValue?.toCoin().denom ?? "",
+          amount: paymentTokenValue?.toCoin().amount ?? "0",
         },
       ],
     });
@@ -274,7 +272,7 @@ export const usePlaceLimit = ({
   ]);
 
   const placeLimit = useCallback(async () => {
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
     if (quantity === "0") {
       return;
     }
@@ -297,7 +295,6 @@ export const usePlaceLimit = ({
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
-        router: marketState.quote?.name,
       };
       try {
         logEvent([EventName.Swap.swapStarted, baseEvent]);
@@ -323,7 +320,7 @@ export const usePlaceLimit = ({
 
     if (!placeLimitMsg) return;
 
-    const paymentDenom = paymentTokenValue.toCoin().denom;
+    const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
     const baseEvent = {
       type: orderDirection === "bid" ? "buy" : "sell",
@@ -419,22 +416,28 @@ export const usePlaceLimit = ({
   const insufficientFunds = useMemo(() => {
     return orderDirection === "bid"
       ? (quoteTokenBalance?.toDec() ?? new Dec(0)).lt(
-          paymentTokenValue.toDec() ?? new Dec(0)
+          paymentTokenValue?.toDec() ?? new Dec(0)
         )
       : (baseTokenBalance?.toDec() ?? new Dec(0)).lt(
-          paymentTokenValue.toDec() ?? new Dec(0)
+          paymentTokenValue?.toDec() ?? new Dec(0)
         );
   }, [orderDirection, paymentTokenValue, baseTokenBalance, quoteTokenBalance]);
 
   const expectedTokenAmountOut = useMemo(() => {
+    if (!baseAsset || !quoteAsset) return;
+
     if (isMarket) {
-      return (
-        marketState.quote?.amount ??
-        new CoinPretty(
-          orderDirection === "ask" ? quoteAsset! : baseAsset!,
-          new Dec(0)
-        )
-      );
+      return quoteType === "out-given-in"
+        ? marketState.quote?.amount ??
+            new CoinPretty(
+              orderDirection === "ask" ? quoteAsset! : baseAsset!,
+              new Dec(0)
+            )
+        : marketState.outAmountInput.amount ??
+            new CoinPretty(
+              orderDirection === "ask" ? baseAsset! : quoteAsset!,
+              new Dec(0)
+            );
     }
     const preFeeAmount =
       orderDirection === "ask"
@@ -447,6 +450,7 @@ export const usePlaceLimit = ({
     return preFeeAmount.mul(new Dec(1).sub(makerFee));
   }, [
     inAmountInput.amount,
+    marketState.outAmountInput.amount,
     baseAsset,
     quoteAsset,
     orderDirection,
@@ -455,6 +459,7 @@ export const usePlaceLimit = ({
     paymentFiatValue,
     isMarket,
     marketState.quote?.amount,
+    quoteType,
   ]);
 
   const expectedFiatAmountOut = useMemo(() => {
@@ -464,11 +469,14 @@ export const usePlaceLimit = ({
     return orderDirection === "ask"
       ? new PricePretty(
           DEFAULT_VS_CURRENCY,
-          quoteAssetPrice?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+          quoteAssetPrice?.mul(expectedTokenAmountOut?.toDec() ?? new Dec(0)) ??
+            new Dec(0)
         )
       : new PricePretty(
           DEFAULT_VS_CURRENCY,
-          priceState.price?.mul(expectedTokenAmountOut.toDec()) ?? new Dec(0)
+          priceState.price?.mul(
+            expectedTokenAmountOut?.toDec() ?? new Dec(0)
+          ) ?? new Dec(0)
         );
   }, [
     priceState.price,
@@ -483,6 +491,7 @@ export const usePlaceLimit = ({
     inAmountInput.reset();
     priceState.reset();
     marketState.inAmountInput.reset();
+    marketState.outAmountInput.reset();
   }, [inAmountInput, priceState, marketState]);
 
   const error = useMemo(() => {
@@ -498,7 +507,7 @@ export const usePlaceLimit = ({
       return tError(marketState.error)[0];
     }
 
-    const quantity = paymentTokenValue.toCoin().amount ?? "0";
+    const quantity = paymentTokenValue?.toCoin().amount ?? "0";
     if (quantity === "0") {
       return "errors.zeroAmount";
     }
@@ -605,6 +614,7 @@ export const usePlaceLimit = ({
     marketState,
     isMarket,
     quoteAssetPrice,
+    baseAssetPrice,
     reset,
     error,
     feeUsdValue,

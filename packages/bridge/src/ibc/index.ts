@@ -99,7 +99,10 @@ export class IbcBridgeProvider implements BridgeProvider {
     try {
       const assetListAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
-        .find((a) => a.coinMinimalDenom === asset.address);
+        .find(
+          (a) =>
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
 
       const ibcTransferMethod = assetListAsset?.transferMethods.find(
         ({ type }) => type === "ibc"
@@ -224,7 +227,9 @@ export class IbcBridgeProvider implements BridgeProvider {
     // try to get asset list fee asset first, or otherwise the chain fee currency
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find((asset) => asset.coinMinimalDenom);
+      .find(
+        (asset) => asset.coinMinimalDenom.toLowerCase() === denom.toLowerCase()
+      );
 
     if (assetListAsset) {
       return {
@@ -238,7 +243,8 @@ export class IbcBridgeProvider implements BridgeProvider {
     const chains = await this.getChains();
     const chain = chains.find((c) => c.chain_id === fromChainId);
     const feeCurrency = chain?.feeCurrencies.find(
-      ({ chainSuggestionDenom }) => chainSuggestionDenom === denom
+      ({ chainSuggestionDenom }) =>
+        chainSuggestionDenom.toLowerCase() === denom.toLowerCase()
     );
 
     if (feeCurrency) {

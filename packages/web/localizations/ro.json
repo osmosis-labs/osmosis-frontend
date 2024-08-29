@@ -171,12 +171,6 @@
       "FeeAPY": "APY din taxe",
       "liquidity": "Lichiditate pool"
     },
-    "selectAssetSource": {
-      "installWallet": "Instaleaza {walletName}",
-      "next": "Urmatorul",
-      "titleDeposit": "Depoziteaza de la",
-      "titleWithdraw": "Retrage catre"
-    },
     "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
@@ -189,11 +183,6 @@
       "depositButton": "Depoziteaza",
       "hideZero": "Ascunde balantele zero",
       "hideBalances": "Balante mascate",
-      "preTransfer": {
-        "currentBal": "Balanta Curenta",
-        "deposit": "Depoziteaza",
-        "withdraw": "Retrage"
-      },
       "search": "Filtreaza dupa simbol",
       "sort": {
         "balance": "Balanta",
@@ -217,58 +206,20 @@
       "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "approveInWallet": "Aprobați în portofel",
-      "enterAddress": "Adresa {network}",
       "errors": {
-        "seeRequest": "Vezi solicitarea în {walletName}",
-        "invalidAddress": "Adresă invalidă"
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
       "from": "De la",
       "loading": "Se incarca",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
       "expectedOutput": "Rezultat așteptat",
       "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
       "transferAnyway": "Transfer oricum"
     },
-    "transferAssetSelect": {
-      "buttonNext": "Urmatorul",
-      "deposit": "Depozit",
-      "network": "Retea",
-      "withdraw": "Retragere"
-    },
     "unbondedAssets": "Deblocate",
-    "nomic": {
-      "addresses": "adrese.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Taxa Bitcoin Miner",
-      "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",
-      "bridgeFee": "Taxa Nomic Bridge",
-      "confirmations": "6 confirmări",
-      "enterBitcoinAddress": "Introduceți adresa Bitcoin",
-      "estimatedArrival": "Sosire estimată",
-      "estimatedTimeTag": "Timpul estimat",
-      "estimatedTime": "5 minute",
-      "expirationTime": "4 zile",
-      "learnMore": "Aflați mai multe la",
-      "lossOfFunds": "Utilizarea adresei după această oră va duce la pierderea fondurilor.",
-      "minDeposit": "Depozit minim",
-      "minWithdrawal": "Retragere minimă",
-      "nomicCapacityLimit": "Nomic are o limită de capacitate de",
-      "onlyUse": "Folosiți numai",
-      "pendingDeposits": "Depuneri în așteptare",
-      "poweredBy": "Cu sprijinul",
-      "proceed": "Continua",
-      "depositExpiration": "Această adresă de depozit expiră în",
-      "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
-      "warning": "AVERTIZARE:",
-      "loading": "Se încarcă..."
-    },
     "activateUnverifiedAssetsModal": {
       "activate": "Activați activele neverificate",
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
@@ -303,8 +254,10 @@
   },
   "portfolio": {
     "buy": "Cumpără",
-    "yourAssets": "Activele tale",
+    "sell": "Vinde",
+    "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
+    "searchBalances": "Căutați solduri",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
     "yourLiquidityPools": "Fondurile dvs. de lichiditate",
     "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis.",
@@ -323,9 +276,17 @@
     "assets": "Active",
     "recentActivity": "Activitate recentă",
     "seeAll": "Vezi toate",
-    "show": "Spectacol",
-    "hide": "Ascunde",
-    "hidden": "Ascuns"
+    "showHidden": "Afișați ascunse ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ascunde soldurile mici",
+    "cypherSpend": "Plată osmoză",
+    "cypherOrder": "Comanda cardul tau acum",
+    "cypherBeta": "Beta",
+    "openOrders": "Comenzi deschise",
+    "last24h": "Ultimele 24 de ore",
+    "last7d": "Ultimele 7 zile",
+    "last30d": "Ultimele 30 de zile",
+    "last1y": "Ultimul 1 an",
+    "allTime": "Tot timpul"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -823,7 +784,8 @@
     },
     "noRoutes": "Nu au fost găsite rute",
     "route": "traseu",
-    "routes": "trasee"
+    "routes": "trasee",
+    "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul"
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",
@@ -1160,7 +1122,6 @@
       "veryHigh": "Foarte inalt"
     }
   },
-  "disclaimer": "Disclaimer",
   "remaining": "rămas",
   "timeUnits": {
     "second": "al doilea",
@@ -1212,6 +1173,10 @@
     "newer": "Mai nou"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Alege-ți prețul",
+      "tryLimitOrders": "Încercați comenzi limită"
+    },
     "historyTable": {
       "columns": {
         "order": "Ordin",
@@ -1300,7 +1265,6 @@
     "connectYourWallet": "Conectați-vă portofelul",
     "toSeeYourBalances": "pentru a vă vedea soldurile",
     "searchAssets": "Căutați active",
-    "marketPrice": "pretul din magazin",
     "below": "de mai jos",
     "above": "de mai sus",
     "currentPrice": "pretul curent",
@@ -1323,6 +1287,30 @@
     "priceReaches": "Dacă prețul {denom} atinge {price}",
     "belowMinimumAmount": "{amount} minim"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Ce este impactul prețului?",
+      "content": "Acesta este impactul pe care lichiditatea pieței îl are asupra prețului de execuție. Tranzacțiile mai mari tind să aibă un impact mai mare pe piață."
+    },
+    "expectedRate": {
+      "header": "Care este rata așteptată?",
+      "content": "Acesta este prețul pe care vă așteptați să îl primiți. Prețurile se schimbă frecvent, așa că dacă doriți să tranzacționați la un anumit preț, încercați în schimb un ordin limită."
+    },
+    "swapFees": {
+      "header": "Ce sunt comisioanele de swap?",
+      "content": "Acesta este comisionul perceput de protocolul Osmosis pentru a recompensa furnizorii de lichidități și a menține rețeaua."
+    },
+    "tradeRoute": {
+      "header": "Ce este o rută comercială?",
+      "contentTop": " Dacă nu există o piață directă între activele pe care le tranzacționați, Osmosis va încerca să facă tranzacția efectuând o serie de tranzacții cu alte active pentru a obține cel mai bun preț la un moment dat.",
+      "contentBottom": "Pentru o eficiență optimă pe baza lichidității disponibile, uneori tranzacțiile vor fi împărțite în mai multe rute cu active diferite."
+    },
+    "outputDifference": {
+      "header": "Care este diferența de ieșire?",
+      "content": "Aceasta este diferența de valoare dintre ceea ce plătești și ceea ce primești. Cifrele pozitive înseamnă că suma pe care o cumpărați valorează mai mult, în timp ce cifrele negative înseamnă că suma pe care o vindeți valorează mai mult."
+    }
+  },
   "tradeFee": "Comision comercială",
-  "receiveAtLeast": "Primește cel puțin"
+  "receiveAtLeast": "Primește cel puțin",
+  "payAtMost": "Plătește cel mult"
 }

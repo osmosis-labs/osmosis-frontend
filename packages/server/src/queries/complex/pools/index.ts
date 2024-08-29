@@ -5,6 +5,7 @@ import { z } from "zod";
 import { IS_TESTNET } from "../../../env";
 import { search, SearchSchema } from "../../../utils/search";
 import { PoolRawResponse } from "../../osmosis";
+import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar } from "./providers";
 
 const allPooltypes = [
@@ -18,6 +19,15 @@ const allPooltypes = [
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
 
+// PoolMarketMetrics is a partial type that contains the market metrics of a pool.
+type PoolMarketMetrics = Partial<{
+  volume7dUsd: PricePretty;
+  volume24hUsd: PricePretty;
+  volume24hChange: RatePretty;
+  feesSpent24hUsd: PricePretty;
+  feesSpent7dUsd: PricePretty;
+}>;
+
 export type Pool = {
   id: string;
   type: PoolType;
@@ -25,6 +35,8 @@ export type Pool = {
   spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
+  incentives?: PoolIncentives;
+  market?: PoolMarketMetrics;
 };
 
 /** Async function that provides simplified pools from any data source.
@@ -78,11 +90,7 @@ export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
-  let pools = await poolProvider({
-    ...params,
-    poolIds: params?.poolIds,
-    minLiquidityUsd: params?.minLiquidityUsd,
-  });
+  let pools = await poolProvider(params);
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>
@@ -114,9 +122,8 @@ export async function getPools(
     ]),
   }));
 
-  if (params.denoms) {
-    const denoms = params.denoms;
-
+  const denoms = params.denoms;
+  if (denoms) {
     denomPools = denomPools.filter((denomPool) =>
       denomPool.coinDenoms.some((denom) => denoms.includes(denom))
     );
@@ -151,9 +158,7 @@ export async function getPools(
 export * from "./bonding";
 export * from "./env";
 export * from "./incentives";
-export * from "./market";
 export * from "./providers";
-export * from "./route-token-out-given-in";
 export * from "./share";
 export * from "./superfluid";
 export * from "./transmuter";

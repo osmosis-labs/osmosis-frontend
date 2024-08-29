@@ -18,12 +18,11 @@ export function useRemoveConcentratedLiquidityConfig(
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore, queriesStore } = useStore();
+  const { accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const [config] = useState(
     () =>
@@ -77,13 +76,6 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.rawLog);
                 } else {
-                  // refresh tick data
-                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                    .invalidate({ poolId })
-                    .then(() => resolve());
-                  // get latest price, if position removed
-                  osmosisQueries.queryPools.getPool(poolId)?.fetch();
-
                   logEvent([
                     EventName.ConcentratedLiquidity.removeLiquidityCompleted,
                     {
@@ -94,7 +86,10 @@ export function useRemoveConcentratedLiquidityConfig(
                     },
                   ]);
 
-                  resolve();
+                  // refresh tick data
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                    .invalidate({ poolId })
+                    .finally(() => resolve());
                 }
               }
             )
@@ -110,8 +105,7 @@ export function useRemoveConcentratedLiquidityConfig(
       logEvent,
       poolId,
       position.id,
-      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
-      osmosisQueries.queryPools,
+      apiUtils,
     ]
   );
 

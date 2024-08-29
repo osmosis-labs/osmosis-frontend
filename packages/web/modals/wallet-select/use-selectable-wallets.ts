@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Mutable } from "utility-types";
 import { Connector } from "wagmi";
 
 import { AvailableCosmosWallets } from "~/config/generated/cosmos-kit-wallet-list";
@@ -7,6 +8,37 @@ import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 
 export const WagmiWalletConnectType = "walletConnect";
 export const WagmiMetamaskSdkType = "metaMask";
+
+export function getDisplayableEvmConnector<T extends Connector>(wallet: T): T {
+  const newWallet = { ...wallet } as Mutable<T>;
+
+  if (wallet.name === "MetaMask") {
+    newWallet.icon = "/logos/metamask.svg";
+  }
+
+  if (wallet.type === WagmiMetamaskSdkType) {
+    newWallet.name = newWallet.name + " Mobile";
+  }
+
+  if (wallet.name === "WalletConnect") {
+    newWallet.icon = "/logos/walletconnect.svg";
+  }
+
+  if (wallet.name === "Coinbase Wallet") {
+    newWallet.icon = "/logos/coinbase.svg";
+
+    if (wallet.type === "injected") {
+      newWallet.name = "Coinbase Extension";
+    }
+  }
+
+  if (wallet.name === "Keplr") {
+    newWallet.name = "Keplr EVM";
+    newWallet.icon = "/wallets/keplr.svg";
+  }
+
+  return newWallet;
+}
 
 export const useSelectableWallets = ({
   isMobile,
@@ -24,32 +56,7 @@ export const useSelectableWallets = ({
       connectors
         .reduce((acc, wallet) => {
           const walletToAdd = { ...wallet, walletType: "evm" as const };
-
-          if (wallet.name === "MetaMask") {
-            walletToAdd.icon = "/logos/metamask.svg";
-          }
-
-          if (wallet.type === WagmiMetamaskSdkType) {
-            walletToAdd.name = walletToAdd.name + " Mobile";
-          }
-
-          if (wallet.name === "WalletConnect") {
-            walletToAdd.icon = "/logos/walletconnect.svg";
-          }
-
-          if (wallet.name === "Coinbase Wallet") {
-            walletToAdd.icon = "/logos/coinbase.svg";
-
-            if (wallet.type === "injected") {
-              walletToAdd.name = "Coinbase Extension";
-            }
-          }
-
-          if (wallet.name === "Keplr") {
-            walletToAdd.name = "Keplr EVM";
-          }
-
-          return [...acc, walletToAdd];
+          return [...acc, getDisplayableEvmConnector(walletToAdd)];
         }, [] as (Connector & { walletType: "evm" })[])
         // type === "injected" should come first
         .sort((a, b) => {

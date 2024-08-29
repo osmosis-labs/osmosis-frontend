@@ -15,7 +15,7 @@ const ACTIVITY_LIMIT = 5;
 const RecentActivitySkeleton = () => {
   return (
     <>
-      {Array.from({ length: 5 }).map((_, index) => (
+      {Array.from({ length: ACTIVITY_LIMIT }).map((_, index) => (
         <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
           <Skeleton className="h-9 w-1/3 " />
           <Skeleton className="h-9 w-1/5" />
@@ -53,8 +53,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between gap-3 py-3">
-        <h6>{t("portfolio.recentActivity")}</h6>
+      <div className="flex items-center justify-between gap-3">
+        <h6 className="py-3">{t("portfolio.recentActivity")}</h6>
         <LinkButton
           href="/transactions"
           className="-mx-2 text-osmoverse-400"
@@ -72,6 +72,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
           topActivity.map((activity) => {
             return (
               <SwapRow
+                hash={activity.hash}
                 key={activity.id}
                 title={{
                   pending: t("transactions.swapping"),

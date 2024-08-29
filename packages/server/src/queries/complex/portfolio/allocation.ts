@@ -6,7 +6,7 @@ import { sort } from "@osmosis-labs/utils";
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 import { queryAllocation } from "../../../queries/data-services";
 import { Categories } from "../../../queries/data-services";
-import { AccountCoinsResult } from "../../../queries/data-services";
+import { AccountCoinsResultDec } from "../../../queries/sidecar/allocation";
 import { getAsset } from "../assets";
 
 interface FormattedAllocation {
@@ -20,6 +20,7 @@ export interface GetAllocationResponse {
   all: FormattedAllocation[];
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
+  totalCap: PricePretty;
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -37,33 +38,40 @@ export function getAll(categories: Categories): FormattedAllocation[] {
     .add(unclaimedRewardsCap)
     .add(pooledCap);
 
-  return [
+  const allocations: { key: string; fiatValue: Dec }[] = [
     {
       key: "available",
-      percentage: new RatePretty(userBalancesCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, userBalancesCap),
+      fiatValue: userBalancesCap,
     },
     {
       key: "staked",
-      percentage: new RatePretty(stakedCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, stakedCap),
+      fiatValue: stakedCap,
     },
     {
       key: "unstaking",
-      percentage: new RatePretty(unstakingCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unstakingCap),
+      fiatValue: unstakingCap,
     },
     {
       key: "unclaimedRewards",
-      percentage: new RatePretty(unclaimedRewardsCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, unclaimedRewardsCap),
+      fiatValue: unclaimedRewardsCap,
     },
     {
       key: "pooled",
-      percentage: new RatePretty(pooledCap.quo(totalCap)),
-      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, pooledCap),
+      fiatValue: pooledCap,
     },
   ];
+
+  const sortedAllocation = sort(allocations, "fiatValue", "desc");
+
+  const formattedAllocations: FormattedAllocation[] = sortedAllocation.map(
+    (allocation) => ({
+      key: allocation.key,
+      percentage: new RatePretty(allocation.fiatValue.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, allocation.fiatValue),
+    })
+  );
+
+  return formattedAllocations;
 }
 
 export function calculatePercentAndFiatValues(
@@ -75,16 +83,23 @@ export function calculatePercentAndFiatValues(
   const totalAssets = categories[category];
   const totalCap = new Dec(totalAssets.capitalization);
 
+  const account_coins_result = (totalAssets?.account_coins_result || []).map(
+    (asset) => ({
+      ...asset,
+      cap_value: new Dec(asset.cap_value),
+    })
+  );
+
   const sortedAccountCoinsResults = sort(
-    totalAssets?.account_coins_result || [],
+    account_coins_result || [],
     "cap_value",
-    "asc"
+    "desc"
   );
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
   const assets: FormattedAllocation[] = topCoinsResults.map(
-    (asset: AccountCoinsResult) => {
+    (asset: AccountCoinsResultDec) => {
       const assetFromAssetLists = getAsset({
         assetLists,
         anyDenom: asset.coin.denom,
@@ -92,11 +107,8 @@ export function calculatePercentAndFiatValues(
 
       return {
         key: assetFromAssetLists.coinDenom,
-        percentage: new RatePretty(new Dec(asset.cap_value).quo(totalCap)),
-        fiatValue: new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          new Dec(asset.cap_value)
-        ),
+        percentage: new RatePretty(asset.cap_value.quo(totalCap)),
+        fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
       };
     }
   );
@@ -104,7 +116,7 @@ export function calculatePercentAndFiatValues(
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
   const otherAmount = otherAssets.reduce(
-    (sum: Dec, asset: AccountCoinsResult) => sum.add(new Dec(asset.cap_value)),
+    (sum: Dec, asset: AccountCoinsResultDec) => sum.add(asset.cap_value),
     new Dec(0)
   );
 
@@ -149,9 +161,15 @@ export async function getAllocation({
     allocationLimit
   );
 
+  const totalCap = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(categories["total-assets"].capitalization)
+  );
+
   return {
     all,
     assets,
     available,
+    totalCap,
   };
 }

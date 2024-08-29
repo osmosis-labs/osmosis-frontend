@@ -8,6 +8,7 @@ import {
   forwardRef,
   PropsWithChildren,
   ReactNode,
+  useCallback,
 } from "react";
 
 import { Icon } from "~/components/assets";
@@ -57,8 +58,13 @@ const AssetFieldsetHeaderBalance = observer(
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
-
+    const { logEvent } = useAmplitudeAnalytics();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+    const onClickAddFunds = useCallback(() => {
+      logEvent([EventName.LimitOrder.addFunds]);
+      openAddFundsModal?.();
+    }, [openAddFundsModal, logEvent]);
 
     return (
       <div
@@ -71,7 +77,7 @@ const AssetFieldsetHeaderBalance = observer(
           showAddFundsButton ? (
             <button
               type="button"
-              onClick={openAddFundsModal}
+              onClick={onClickAddFunds}
               className="body2 flex items-center justify-center rounded-5xl bg-wosmongton-700 py-1.5 px-3"
             >
               {t("limitOrders.addFunds")}
@@ -110,39 +116,60 @@ interface AssetFieldsetInputProps {
   inputValue?: string;
   outputValue?: ReactNode;
   page?: EventPage;
+  wrapperClassNames?: string;
+  placeholder?: string;
+  disabled?: boolean;
 }
 
 const AssetFieldsetInput = forwardRef<
   HTMLInputElement,
   AssetFieldsetInputProps
->(({ inputPrefix, inputValue, onInputChange, outputValue, ...rest }, ref) => {
-  const { isMobile } = useWindowSize(Breakpoint.sm);
-  const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
-  return (
-    <div
-      className="flex h-[72px] flex-1 items-center overflow-visible text-h3 font-h3 sm:h-[48px] sm:text-[30px] sm:font-h5"
-      style={{
-        fontSize: !!inputValue ? fontSize : undefined,
-      }}
-    >
-      {inputPrefix}
-      {outputValue || (
-        <input
-          ref={ref}
-          className="w-full flex-1 bg-transparent placeholder:text-osmoverse-600"
-          style={{
-            font: "inherit",
-          }}
-          placeholder="0"
-          onChange={onInputChange}
-          value={inputValue}
-          inputMode="decimal"
-          {...rest}
-        />
-      )}
-    </div>
-  );
-});
+>(
+  (
+    {
+      inputPrefix,
+      inputValue,
+      onInputChange,
+      outputValue,
+      wrapperClassNames,
+      placeholder = "0",
+      disabled = false,
+      ...rest
+    },
+    ref
+  ) => {
+    const { isMobile } = useWindowSize(Breakpoint.sm);
+    const fontSize = calcFontSize((inputValue ?? "").length, isMobile);
+    return (
+      <div
+        className={classNames(
+          "flex h-[72px] flex-1 items-center overflow-visible text-h3 font-h3 sm:h-[48px] sm:text-[30px] sm:font-h5",
+          wrapperClassNames
+        )}
+        style={{
+          fontSize: !!inputValue ? fontSize : undefined,
+        }}
+      >
+        {inputPrefix}
+        {outputValue || (
+          <input
+            ref={ref}
+            className="w-full flex-1 bg-transparent placeholder:text-osmoverse-600"
+            style={{
+              font: "inherit",
+            }}
+            placeholder={placeholder}
+            onChange={onInputChange}
+            value={inputValue}
+            inputMode="decimal"
+            disabled={disabled}
+            {...rest}
+          />
+        )}
+      </div>
+    );
+  }
+);
 
 const AssetFieldsetFooter = ({ children }: PropsWithChildren<unknown>) => (
   <div className="flex h-12 w-full items-start justify-between pb-4">

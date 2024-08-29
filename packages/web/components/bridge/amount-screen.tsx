@@ -44,6 +44,7 @@ import {
   useDisclosure,
   useTranslation,
 } from "~/hooks";
+import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -54,7 +55,6 @@ import { ChainLogo } from "../assets/chain-logo";
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
-import { ImmersiveBridgeScreen } from "./immersive-bridge";
 import {
   MoreBridgeOptionsModal,
   OnlyExternalBridgeSuggest,
@@ -586,7 +586,6 @@ export const AmountScreen = observer(
       ) {
         const firstChain = supportedChains[0];
         setChain(firstChain);
-        checkChainAndConnectWallet(firstChain);
       }
     }, [
       checkChainAndConnectWallet,
@@ -726,7 +725,7 @@ export const AmountScreen = observer(
               </span>{" "}
               <button
                 className="flex items-center gap-3"
-                onClick={() => setCurrentScreen(ImmersiveBridgeScreen.Asset)}
+                onClick={() => setCurrentScreen(BridgeScreen.Asset)}
               >
                 <Image
                   width={32}

@@ -1,43 +1,58 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "../../../../env";
+import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
-import { Pool, PoolType } from "../index";
+import { Pool, PoolIncentiveType, PoolType } from "../index";
 
 type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/**
+ * Pools that are excluded from showing external boost incentives APRs.
+ */
+const ExcludedExternalBoostPools: string[] =
+  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
   assetLists,
   poolIds,
   minLiquidityUsd,
+  withMarketIncentives = true,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
+  withMarketIncentives?: boolean;
 }): Promise<Pool[]> {
+  if (poolIds && !poolIds.length) return Promise.resolve([]);
+
   return cachified({
     cache: poolsCache,
     key:
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      minLiquidityUsd,
+      minLiquidityUsd +
+      withMarketIncentives.toString(),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () =>
-          queryPools({ poolIds, minLiquidityCap: minLiquidityUsd?.toString() }),
+          queryPools({
+            poolIds,
+            minLiquidityCap: minLiquidityUsd?.toString(),
+            withMarketIncentives,
+          }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
@@ -74,6 +89,9 @@ function makePoolFromSidecarPool({
   // to ease integrations.
   if (!reserveCoins && !IS_TESTNET) return;
 
+  const pool_id = getPoolIdFromChainPool(sidecarPool.chain_model);
+  const data = getMarketIncentivesData(pool_id, sidecarPool);
+
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
     type: getPoolTypeFromChainPool(sidecarPool.chain_model),
@@ -86,7 +104,117 @@ function makePoolFromSidecarPool({
       DEFAULT_VS_CURRENCY,
       sidecarPool.liquidity_cap
     ),
+    ...data,
   };
+}
+
+// getMarketIncentivesData is a function that returns the incentives and market data for a pool
+// based on the pool_id and the apr_data and fees_data from the sidecar response
+function getMarketIncentivesData(
+  pool_id: string,
+  { apr_data: aprs, fees_data: fees }: SidecarPool
+) {
+  let totalUpper = maybeMakeRatePretty(aprs?.total_apr.upper ?? 0);
+  let totalLower = maybeMakeRatePretty(aprs?.total_apr.lower ?? 0);
+  const swapFeeUpper = maybeMakeRatePretty(aprs?.swap_fees.upper ?? 0);
+  const swapFeeLower = maybeMakeRatePretty(aprs?.swap_fees.lower ?? 0);
+  const superfluidUpper = maybeMakeRatePretty(aprs?.superfluid.upper ?? 0);
+  const superfluidLower = maybeMakeRatePretty(aprs?.superfluid.lower ?? 0);
+  const osmosisUpper = maybeMakeRatePretty(aprs?.osmosis.upper ?? 0);
+  const osmosisLower = maybeMakeRatePretty(aprs?.osmosis.lower ?? 0);
+  let boostUpper = maybeMakeRatePretty(aprs?.boost.upper ?? 0);
+  let boostLower = maybeMakeRatePretty(aprs?.boost.lower ?? 0);
+
+  // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
+  if (
+    ExcludedExternalBoostPools.includes(pool_id) &&
+    totalUpper &&
+    totalLower &&
+    boostUpper &&
+    boostLower
+  ) {
+    totalUpper = new RatePretty(totalUpper.toDec().sub(totalUpper.toDec()));
+    totalLower = new RatePretty(totalLower.toDec().sub(totalLower.toDec()));
+    boostUpper = undefined;
+    boostLower = undefined;
+  }
+
+  // add list of incentives that are defined
+  const incentiveTypes: PoolIncentiveType[] = [];
+  if (superfluidUpper && superfluidLower) incentiveTypes.push("superfluid");
+  if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
+  if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+  if (
+    !superfluidUpper &&
+    !superfluidLower &&
+    !osmosisUpper &&
+    !osmosisLower &&
+    !boostUpper &&
+    !boostLower
+  )
+    incentiveTypes.push("none");
+  const hasBreakdownData =
+    totalUpper ||
+    totalLower ||
+    swapFeeUpper ||
+    swapFeeLower ||
+    superfluidUpper ||
+    superfluidLower ||
+    osmosisUpper ||
+    osmosisLower ||
+    boostUpper ||
+    boostLower;
+
+  return {
+    incentives: {
+      aprBreakdown: hasBreakdownData
+        ? {
+            total: {
+              upper: totalUpper,
+              lower: totalLower,
+            },
+            swapFee: {
+              upper: swapFeeUpper,
+              lower: swapFeeLower,
+            },
+            superfluid: {
+              upper: superfluidUpper,
+              lower: superfluidLower,
+            },
+            osmosis: {
+              upper: osmosisUpper,
+              lower: osmosisLower,
+            },
+            boost: {
+              upper: boostUpper,
+              lower: boostLower,
+            },
+          }
+        : undefined,
+      incentiveTypes,
+    },
+    market: {
+      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_24h ?? 0),
+      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_7d ?? 0),
+      feesSpent24hUsd: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        fees?.fees_spent_24h ?? 0
+      ),
+      feesSpent7dUsd: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        fees?.fees_spent_7d ?? 0
+      ),
+    },
+  };
+}
+
+/** Checks explicitly for 0 or null before creating rate display object. */
+function maybeMakeRatePretty(value: number): RatePretty | undefined {
+  if (value === 0 || value === null) {
+    return undefined;
+  }
+
+  return new RatePretty(new Dec(value).quo(new Dec(100)));
 }
 
 function getPoolIdFromChainPool(

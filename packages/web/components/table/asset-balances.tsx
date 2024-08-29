@@ -20,6 +20,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
 import {
@@ -29,7 +30,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -144,7 +145,7 @@ export const AssetBalancesTable: FunctionComponent<{
     }
   );
 
-  const [hideDust, setHideDust] = useState(false);
+  const [hideDust, setHideDust] = useLocalStorage("portfolio-hide-dust", true);
 
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
@@ -308,7 +309,7 @@ export const AssetBalancesTable: FunctionComponent<{
         className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
-        placeholder={t("assets.table.search")}
+        placeholder={t("portfolio.searchBalances")}
         debounce={500}
       />
       <table
@@ -328,10 +329,8 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames(
                     {
-                      // defines column width
-                      "w-56 lg:w-36":
-                        index !== 0 && index !== headers.length - 1,
-                      "w-36": index === headers.length - 1,
+                      "w-64": index === 0,
+                      "flex-grow": index !== 0,
                     },
                     index === headers.length - 1 ? "text-right" : "text-left"
                   )}
@@ -374,7 +373,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
             return (
               <tr
-                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850/80"
                 key={rows[virtualRow.index].id}
                 onClick={() => router.push(pushUrl)}
               >
@@ -422,22 +421,19 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
-      {filteredAssetsData.length > 0 && (
-        <div className="flex items-center justify-between gap-4 py-2 px-4">
-          <p
-            className={classNames("body1 grow text-osmoverse-300", {
-              invisible: !hideDust,
-            })}
-          >
-            {t("portfolio.hidden")} ({hiddenDustCount})
-          </p>
+      {assetsData.length > 0 && (
+        <div className="flex items-center justify-end gap-4 py-2 px-4">
           <Button
-            onClick={() => setHideDust((prev) => !prev)}
-            className="gap-2 !py-2 !px-4"
+            onClick={() => setHideDust(!hideDust)}
+            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
             variant="outline"
             size="lg-full"
           >
-            {hideDust ? t("portfolio.show") : t("portfolio.hide")}
+            {hideDust
+              ? t("portfolio.showHidden", {
+                  hiddenDustCount: hiddenDustCount.toString(),
+                })
+              : t("portfolio.hideSmallBalances")}
             <Icon
               id="chevron-down"
               className={classNames("h-4 w-4 transition-transform", {
@@ -510,17 +506,18 @@ export const AssetActionsCell: AssetCellComponent<{
 }) => {
   const { t } = useTranslation();
 
-  const { bridgeAsset } = useBridge();
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
 
   return (
-    <div className="flex items-center gap-2 text-wosmongton-200">
+    <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
           variant="ghost"
           className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
+            e.stopPropagation();
             e.preventDefault();
 
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
@@ -529,17 +526,20 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       )}
-      <div className="flex gap-3">
+      <div className="flex gap-3 md:hidden">
         {!needsActivation && (
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "deposit",
-              })
-            }
+              });
+            }}
           >
             <Icon id="deposit" height={20} width={20} />
           </Button>
@@ -548,12 +548,15 @@ export const AssetActionsCell: AssetCellComponent<{
           <Button
             size="icon"
             variant="secondary"
-            onClick={() =>
+            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               bridgeAsset({
                 anyDenom: coinDenom,
                 direction: "withdraw",
-              })
-            }
+              });
+            }}
           >
             <Icon id="withdraw" height={20} width={20} />
           </Button>

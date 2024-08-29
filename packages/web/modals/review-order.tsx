@@ -27,7 +27,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { useSwap } from "~/hooks/use-swap";
+import { QuoteType, useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,
@@ -41,8 +41,8 @@ interface ReviewOrderProps {
   confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
-  outAmountLessSlippage?: IntPretty;
-  outFiatAmountLessSlippage?: PricePretty;
+  amountWithSlippage?: IntPretty;
+  fiatAmountWithSlippage?: PricePretty;
   outputDifference?: RatePretty;
   showOutputDifferenceWarning?: boolean;
   percentAdjusted?: Dec;
@@ -60,6 +60,7 @@ interface ReviewOrderProps {
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   page?: EventPage;
+  quoteType?: QuoteType;
   isBeyondOppositePrice?: boolean;
 }
 
@@ -69,8 +70,8 @@ export function ReviewOrder({
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
-  outAmountLessSlippage,
-  outFiatAmountLessSlippage,
+  amountWithSlippage,
+  fiatAmountWithSlippage,
   outputDifference,
   showOutputDifferenceWarning,
   percentAdjusted,
@@ -89,6 +90,7 @@ export function ReviewOrder({
   fromAsset,
   page,
   isBeyondOppositePrice = false,
+  quoteType,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -102,12 +104,16 @@ export function ReviewOrder({
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
-  const isManualSlippageTooHigh = +manualSlippage > 1;
+  const isManualSlippageTooHigh =
+    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
+    (!manualSlippage &&
+      !!slippageConfig &&
+      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
 
   //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
-    () => outAmountLessSlippage ?? new IntPretty(0),
+    () => amountWithSlippage ?? new IntPretty(0),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
@@ -118,12 +124,12 @@ export function ReviewOrder({
       return {
         diffGteSlippage: slippageConfig
           ? originalValue
-              .sub(outAmountLessSlippage ?? new IntPretty(0))
+              .sub(amountWithSlippage ?? new IntPretty(0))
               .toDec()
               .gte(slippageConfig?.slippage.toDec())
           : false,
         restart: () => {
-          originalValue = outAmountLessSlippage ?? new IntPretty(0);
+          originalValue = amountWithSlippage ?? new IntPretty(0);
         },
       };
     },
@@ -136,7 +142,7 @@ export function ReviewOrder({
      * quote so as to warn the user.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [outAmountLessSlippage, slippageConfig]
+    [amountWithSlippage, slippageConfig]
   );
 
   const handleManualSlippageChange = useCallback(
@@ -380,7 +386,9 @@ export function ReviewOrder({
                           ? "text-rust-400"
                           : "text-osmoverse-300"
                       )}
-                    >{`-${outputDifference}`}</span>
+                    >{`${
+                      outputDifference.toDec().isPositive() ? "-" : "+"
+                    }${new RatePretty(outputDifference.toDec().abs())}`}</span>
                   )}
                   <span className="sm:subtitle2">
                     {formatFiatPrice(
@@ -460,7 +468,8 @@ export function ReviewOrder({
                             inputClassName={classNames(
                               "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
                               {
-                                "text-rust-400": isManualSlippageTooHigh,
+                                "text-rust-400 placeholder:text-rust-400":
+                                  isManualSlippageTooHigh,
                               }
                             )}
                             value={manualSlippage}
@@ -559,25 +568,31 @@ export function ReviewOrder({
               )}
               {orderType === "market" ? (
                 <RecapRow
-                  left={t("receiveAtLeast")}
+                  left={
+                    quoteType === "out-given-in"
+                      ? t("receiveAtLeast")
+                      : t("payAtMost")
+                  }
                   right={
                     <span className="sm:caption">
-                      {outAmountLessSlippage &&
-                        outFiatAmountLessSlippage &&
+                      {amountWithSlippage &&
+                        fiatAmountWithSlippage &&
                         toAsset && (
                           <span className="text-osmoverse-100">
-                            {formatPretty(outAmountLessSlippage, {
+                            {formatPretty(amountWithSlippage, {
                               maxDecimals: 6,
                             })}{" "}
-                            {toAsset.coinDenom}
+                            {quoteType === "out-given-in"
+                              ? toAsset.coinDenom
+                              : fromAsset?.coinDenom}
                           </span>
                         )}{" "}
-                      {outFiatAmountLessSlippage && (
+                      {fiatAmountWithSlippage && (
                         <span className="text-osmoverse-300">
                           (~
-                          {formatPretty(outFiatAmountLessSlippage, {
+                          {formatPretty(fiatAmountWithSlippage, {
                             ...getPriceExtendedFormatOptions(
-                              outFiatAmountLessSlippage.toDec()
+                              fiatAmountWithSlippage.toDec()
                             ),
                           })}
                           )
@@ -600,7 +615,7 @@ export function ReviewOrder({
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
                   // Do not show skeleton unless there has been no estimation/error yet
-                  !(isGasLoading && !(!!gasAmount || !!gasError)) ? (
+                  !!gasAmount || !!gasError ? (
                     GasEstimation
                   ) : (
                     <Skeleton className="h-5 w-16" />

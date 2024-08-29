@@ -145,7 +145,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           asset: {
             coinMinimalDenom: input.toAsset.address,
-            sourceDenom: input.toAsset.address,
             chainId: input.toChain.chainId,
             address: input.toAsset.address,
             coinGeckoId: input.toAsset.coinGeckoId,
@@ -169,7 +168,6 @@ export const bridgeTransferRouter = createTRPCRouter({
             ...ctx,
             asset: {
               coinMinimalDenom: input.fromAsset.address,
-              sourceDenom: input.fromAsset.address,
               chainId: input.fromChain.chainId,
               address: input.fromAsset.address,
               coinGeckoId: input.fromAsset.coinGeckoId,
@@ -180,7 +178,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           ...ctx,
           asset: {
             coinMinimalDenom: feeCoin.address,
-            sourceDenom: feeCoin.address,
             chainId: quote.transferFee.chainId,
             address: quote.transferFee.address,
             coinGeckoId: quote.transferFee.coinGeckoId,
@@ -194,7 +191,6 @@ export const bridgeTransferRouter = createTRPCRouter({
               {
                 bridge: input.bridge,
                 coinMinimalDenom: feeCoin.address,
-                sourceDenom: feeCoin.address,
                 chainId: quote.transferFee.chainId,
                 address: quote.transferFee.address,
                 coinGeckoId: quote.transferFee.coinGeckoId,
@@ -208,7 +204,6 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...ctx,
               asset: {
                 coinMinimalDenom: quote.estimatedGasFee.address,
-                sourceDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
                 coinGeckoId: quote.estimatedGasFee.coinGeckoId,
@@ -387,7 +382,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       const availableChains = uniqueChains
         .map(({ chainId, chainType }) => {
           if (chainType === "evm") {
-            const evmChain = Object.values(EthereumChainInfo).find(
+            const evmChain = EthereumChainInfo.find(
               (chain) => chain.id === chainId
             );
 
@@ -397,7 +392,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
             return {
               prettyName: evmChain.name,
-              chainName: evmChain.chainName,
+              chainName: evmChain.name,
               chainId: evmChain.id,
               chainType,
               logoUri: evmChain.relativeLogoUrl,

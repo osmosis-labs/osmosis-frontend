@@ -39,6 +39,7 @@ export const TransactionRows = ({
                 const isSelected = selectedTransactionHash === transaction.hash;
                 return (
                   <TransactionRow
+                    hash={transaction.hash}
                     key={transaction.id}
                     isSelected={isSelected}
                     title={{

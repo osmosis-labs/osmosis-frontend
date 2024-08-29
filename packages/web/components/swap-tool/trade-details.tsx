@@ -1,5 +1,5 @@
 import { Disclosure } from "@headlessui/react";
-import { Dec, IntPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
@@ -27,8 +27,6 @@ interface TradeDetailsProps {
   swapState: ReturnType<typeof useSwap>;
   slippageConfig: ReturnType<typeof useSlippageConfig>;
   type: "limit" | "market";
-  outAmountLessSlippage?: IntPretty;
-  outFiatAmountLessSlippage?: PricePretty;
   inPriceFetching?: boolean;
   treatAsStable?: string;
   makerFee?: Dec;
@@ -55,6 +53,8 @@ export const TradeDetails = observer(
 
     const isInAmountEmpty =
       swapState?.inAmountInput.error instanceof EmptyAmountError;
+    const isOutAmountEmpty =
+      swapState?.outAmountInput.error instanceof EmptyAmountError;
 
     const isLoading =
       type === "market" &&
@@ -88,14 +88,17 @@ export const TradeDetails = observer(
               }}
             >
               <div ref={details} className="flex w-full flex-col">
-                <Closer isInAmountEmpty={isInAmountEmpty} close={close} />
+                <Closer
+                  isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
+                  close={close}
+                />
                 <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
                   <SkeletonLoader
                     isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                   >
                     <GenericDisclaimer
-                      title="What is expected rate?"
-                      body="This is the price you are expected to receive. Prices are frequently changing, so if you wish to trade at a specific price, try a limit order instead."
+                      title={t("tradeDetails.expectedRate.header")}
+                      body={t("tradeDetails.expectedRate.content")}
                     >
                       <div className="flex items-center gap-2">
                         {isLoading && (
@@ -109,7 +112,8 @@ export const TradeDetails = observer(
                               "animate-pulse":
                                 inPriceFetching ||
                                 isLoading ||
-                                swapState?.inAmountInput.isTyping,
+                                swapState?.inAmountInput.isTyping ||
+                                swapState?.outAmountInput.isTyping,
                             }
                           )}
                         >
@@ -117,7 +121,8 @@ export const TradeDetails = observer(
                             <SkeletonLoader
                               isLoaded={
                                 type !== "market" ||
-                                !swapState.inAmountInput.isTyping
+                                !swapState.inAmountInput.isTyping ||
+                                !swapState.outAmountInput.isTyping
                               }
                             >
                               {ExpectedRate(
@@ -136,7 +141,7 @@ export const TradeDetails = observer(
                     className={classNames(
                       "relative flex items-center justify-between py-1 transition-opacity"
                     )}
-                    disabled={isInAmountEmpty}
+                    disabled={isInAmountEmpty || isOutAmountEmpty}
                   >
                     <GenericDisclaimer
                       title="High price impact"
@@ -147,7 +152,7 @@ export const TradeDetails = observer(
                         className={classNames(
                           "flex items-center gap-2 transition-opacity",
                           {
-                            "opacity-0": isInAmountEmpty,
+                            "opacity-0": isInAmountEmpty || isOutAmountEmpty,
                           }
                         )}
                       >
@@ -170,8 +175,8 @@ export const TradeDetails = observer(
                     <RecapRow
                       left={
                         <GenericDisclaimer
-                          title="What is price impact?"
-                          body="This is the difference in value between what you pay and what you receive. Positive numbers mean the asset you’re buying is worth more, while negative numbers mean the asset you’re selling is worth more."
+                          title={t("tradeDetails.priceImpact.header")}
+                          body={t("tradeDetails.priceImpact.content")}
                         >
                           {t("assets.transfer.priceImpact")}
                         </GenericDisclaimer>
@@ -221,8 +226,8 @@ export const TradeDetails = observer(
                     <RecapRow
                       left={
                         <GenericDisclaimer
-                          title="What are swap fees?"
-                          body="This is the fee charged by the Osmosis protocol in order to reward liquidity providers and maintain the network."
+                          title={t("tradeDetails.swapFees.header")}
+                          body={t("tradeDetails.swapFees.content")}
                         >
                           {t("pools.aprBreakdown.swapFees")}
                         </GenericDisclaimer>
@@ -274,24 +279,17 @@ export const TradeDetails = observer(
                     <Disclosure>
                       {({ open }) => {
                         const routes = swapState?.quote?.split;
-
                         return (
                           <>
                             <Disclosure.Button className="flex h-8 w-full items-center justify-between">
                               <GenericDisclaimer
-                                title="What is a trade route?"
+                                title={t("tradeDetails.tradeRoute.header")}
                                 body={
                                   <>
-                                    If there’s no direct market between the
-                                    assets you’re trading, Osmosis will try to
-                                    make the trade happen by making a series of
-                                    trades with other assets to get the best
-                                    price at any given time.
+                                    {t("tradeDetails.tradeRoute.contentTop")}
                                     <br />
                                     <br />
-                                    For optimal efficiency based on available
-                                    liquidity, sometimes trades will be split
-                                    into multiple routes with different assets.
+                                    {t("tradeDetails.tradeRoute.contentBottom")}
                                   </>
                                 }
                               >
@@ -418,11 +416,19 @@ export function ExpectedRate(
 
     if (
       swapState?.tokenOutFiatValue &&
-      swapState?.quote?.amount?.toDec().gt(new Dec(0))
+      swapState?.quote?.amountOut?.toDec().gt(new Dec(0)) &&
+      swapState.quoteType === "out-given-in"
     ) {
       inFiatPrice = new PricePretty(
         DEFAULT_VS_CURRENCY,
         swapState.tokenOutFiatValue.quo(swapState.quote.amount.toDec())
+      );
+    } else if (
+      swapState?.quote?.amountOut?.toDec().gt(new Dec(0)) &&
+      swapState.quoteType === "in-given-out"
+    ) {
+      inFiatPrice = swapState.tokenOutFiatValue.quo(
+        swapState.outAmountInput?.amount?.toDec() ?? new Dec(1)
       );
     } else {
       if (swapState.inAmountInput?.price) {
@@ -470,7 +476,8 @@ export function ExpectedRate(
 }
 
 type Split =
-  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
+  | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"]
+  | RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"]["split"];
 type Route = Split[number];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
 

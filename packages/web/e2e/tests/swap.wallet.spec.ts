@@ -13,8 +13,7 @@ test.describe("Test Swap feature", () => {
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
-  let swapPage: TradePage;
+  let tradePage: TradePage;
   let USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
   let ATOM =
@@ -41,14 +40,14 @@ test.describe("Test Swap feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps", password);
+    await walletPage.setWalletNameAndPassword("Test Swaps");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
-    swapPage = new TradePage(context.pages()[0]);
-    await swapPage.goto();
-    await swapPage.connectWallet();
-    expect(await swapPage.isError(), "Swap is not available!").toBeFalsy();
+    tradePage = new TradePage(context.pages()[0]);
+    await tradePage.goto();
+    await tradePage.connectWallet();
+    expect(await tradePage.isError(), "Swap is not available!").toBeFalsy();
   });
 
   test.afterAll(async () => {
@@ -56,169 +55,182 @@ test.describe("Test Swap feature", () => {
   });
 
   test("User should be able to swap OSMO to ATOM", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("OSMO", "ATOM");
-    await swapPage.enterAmount("0.01");
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("OSMO", "ATOM");
+    await tradePage.enterAmount("2.2");
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap ATOM to OSMO", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("ATOM", "OSMO");
-    await swapPage.enterAmount("0.001");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("ATOM", "OSMO");
+    await tradePage.enterAmount("0.01");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap OSMO to USDC", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("OSMO", "USDC");
-    await swapPage.enterAmount("0.2");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("OSMO", "USDC");
+    await tradePage.enterAmount("0.2");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: uosmo");
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
+  });
+
+  test("User should be able to swap OSMO to WBTC", async () => {
+    await tradePage.goto();
+    await tradePage.selectPair("OSMO", "WBTC");
+    await tradePage.enterAmount("0.9");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain("denom: uosmo");
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to OSMO", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("USDC", "OSMO");
-    await swapPage.enterAmount("0.1");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("USDC", "OSMO");
+    await tradePage.enterAmount("0.1");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("denom: " + USDC);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap ATOM to USDC", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("ATOM", "USDC");
-    await swapPage.enterAmount("0.015");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("ATOM", "USDC");
+    await tradePage.enterAmount("0.015");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + ATOM);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to ATOM", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("USDC", "ATOM");
-    await swapPage.enterAmount("0.1");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("USDC", "ATOM");
+    await tradePage.enterAmount("0.1");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + ATOM);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to TIA", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("USDC", "TIA");
-    await swapPage.enterAmount("0.1");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("USDC", "TIA");
+    await tradePage.enterAmount("0.1");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + TIA);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap TIA to USDC", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("TIA", "USDC");
-    await swapPage.enterAmount("0.02");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("TIA", "USDC");
+    await tradePage.enterAmount("0.02");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + TIA);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to INJ", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("USDC", "INJ");
-    await swapPage.enterAmount("0.2");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("USDC", "INJ");
+    await tradePage.enterAmount("0.2");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + INJ);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap INJ to USDC", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("INJ", "USDC");
-    await swapPage.enterAmount("0.01");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("INJ", "USDC");
+    await tradePage.enterAmount("0.01");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + INJ);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to AKT", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("USDC", "AKT");
-    await swapPage.enterAmount("0.1");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("USDC", "AKT");
+    await tradePage.enterAmount("0.1");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + USDC);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + AKT);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap AKT to USDC", async () => {
-    await swapPage.goto();
-    await swapPage.selectPair("AKT", "USDC");
-    await swapPage.enterAmount("0.025");
-    await swapPage.showSwapInfo();
-    const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
+    await tradePage.goto();
+    await tradePage.selectPair("AKT", "USDC");
+    await tradePage.enterAmount("0.025");
+    await tradePage.showSwapInfo();
+    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("denom: " + AKT);
     expect(msgContentAmount).toContain("sender: " + walletId);
     expect(msgContentAmount).toContain("token_out_denom: " + USDC);
-    await swapPage.isTransactionSuccesful();
-    await swapPage.getTransactionUrl();
+    await tradePage.isTransactionSuccesful();
+    await tradePage.getTransactionUrl();
   });
 });
