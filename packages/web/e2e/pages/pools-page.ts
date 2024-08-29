@@ -55,7 +55,7 @@ export class PoolsPage extends BasePage {
     return num;
   }
 
-  async getTopTenLiquidity() {
+  async getTopTenPoolsByLiquidity() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
     let liquidityList = [];
     for (let i = 0; i < 10; i++) {
@@ -66,5 +66,18 @@ export class PoolsPage extends BasePage {
     }
     console.log("Top 10 pools Liquidity: " + liquidityList);
     return liquidityList;
+  }
+
+  async getTopTenPoolsByVolume() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    let volumeList = [];
+    for (let i = 0; i < 10; i++) {
+      let tt = this.page.locator(loc).nth(i).locator("//td").nth(1);
+      let text: string = await tt.innerText();
+      let n: number = Number(text.replace(/[^0-9.-]+/g, ""));
+      volumeList.push(n);
+    }
+    console.log("Top 10 pools Volume: " + volumeList);
+    return volumeList;
   }
 }
