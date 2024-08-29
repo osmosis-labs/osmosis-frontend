@@ -29,7 +29,7 @@ jobs:
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
         run: |
           cd packages/web
           npx playwright test claim
