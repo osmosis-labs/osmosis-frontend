@@ -2,12 +2,14 @@
 import { BrowserContext, expect, Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
+const TRANSACTION_CONFIRMATION_TIMEOUT = 2000;
 
 export class TransactionsPage extends BasePage {
   readonly transactionRow: Locator;
   readonly viewExplorerLink: Locator;
   readonly closeTransactionBtn: Locator;
   readonly page: Page;
+  readonly claimAndClose: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -15,6 +17,10 @@ export class TransactionsPage extends BasePage {
     this.transactionRow = page.locator('//div/p[.="Swapped"]');
     this.viewExplorerLink = page.locator('//a/span["View on explorer"]/..');
     this.closeTransactionBtn = page.getByLabel("Close").nth(1);
+    this.claimAndClose = page.getByRole("button", {
+      name: "Claim and close",
+      exact: true,
+    });
   }
 
   async open() {
@@ -90,7 +96,7 @@ export class TransactionsPage extends BasePage {
     // Expect that this is a cancel limit call
     expect(msgContentAmount).toContain("cancel_limit");
     // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
+    await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
   }
 
   async isFilledByLimitPrice(price: any) {
@@ -100,5 +106,28 @@ export class TransactionsPage extends BasePage {
       timeout: 120_000,
       visible: true,
     });
+  }
+
+  async claimAndCloseAny(context: BrowserContext) {
+    await this.claimAndClose.first().click();
+    const pageApprove = context.waitForEvent("page");
+    const approvePage = await pageApprove;
+    await approvePage.waitForLoadState();
+    const approvePageTitle = approvePage.url();
+    console.log("Approve page is opened at: " + approvePageTitle);
+    const approveBtn = approvePage.getByRole("button", {
+      name: "Approve",
+    });
+    await expect(approveBtn).toBeEnabled();
+    const msgContentAmount = await approvePage
+      .getByText("Execute contract")
+      .textContent();
+    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    // Approve trx
+    await approveBtn.click();
+    expect(msgContentAmount).toContain("cancel_limit");
+    expect(msgContentAmount).toContain("claim_limit");
+    // wait for trx confirmation
+    await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
   }
 }

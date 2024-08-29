@@ -12,7 +12,6 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Trade feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let tradePage: TradePage;
   let USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
@@ -34,7 +33,7 @@ test.describe("Test Trade feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Trades", password);
+    await walletPage.setWalletNameAndPassword("Test Trades");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -86,8 +85,9 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount(amount);
     await tradePage.setLimitPriceChange("5%");
     const limitPrice = await tradePage.getLimitPrice();
-    const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
-      context
+    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(
+      context,
+      true
     );
     expect(msgContentAmount).toBeTruthy();
     //expect(msgContentAmount).toContain(amount + " ATOM (Cosmos Hub/channel-0)");
@@ -111,8 +111,9 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount(amount);
     await tradePage.setLimitPriceChange("10%");
     const limitPrice = await tradePage.getLimitPrice();
-    const { msgContentAmount } = await tradePage.limitSellAndGetWalletMsg(
-      context
+    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(
+      context,
+      true
     );
     expect(msgContentAmount).toBeTruthy();
     //expect(msgContentAmount).toContain(`${amount} OSMO`);
