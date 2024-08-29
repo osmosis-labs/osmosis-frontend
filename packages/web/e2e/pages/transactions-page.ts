@@ -10,6 +10,7 @@ export class TransactionsPage extends BasePage {
   readonly closeTransactionBtn: Locator;
   readonly page: Page;
   readonly claimAndClose: Locator;
+  readonly claimAllBtn: Locator;
 
   constructor(page: Page) {
     super(page);
@@ -19,6 +20,10 @@ export class TransactionsPage extends BasePage {
     this.closeTransactionBtn = page.getByLabel("Close").nth(1);
     this.claimAndClose = page.getByRole("button", {
       name: "Claim and close",
+      exact: true,
+    });
+    this.claimAllBtn = page.getByRole("button", {
+      name: "Claim all",
       exact: true,
     });
   }
@@ -81,8 +86,6 @@ export class TransactionsPage extends BasePage {
     const pageApprove = context.waitForEvent("page");
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
@@ -109,25 +112,65 @@ export class TransactionsPage extends BasePage {
   }
 
   async claimAndCloseAny(context: BrowserContext) {
+    const isClaimable = await this.claimAndClose
+      .first()
+      .isVisible({ timeout: 3000 });
+    if (!isClaimable) {
+      console.log("No partially filled orders to claim.");
+      return;
+    }
     await this.claimAndClose.first().click();
     const pageApprove = context.waitForEvent("page");
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
     await expect(approveBtn).toBeEnabled();
-    const msgContentAmount = await approvePage
+    const msgContentAmount1 = await approvePage
       .getByText("Execute contract")
+      .first()
       .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    const msgContentAmount2 = await approvePage
+      .getByText("Execute contract")
+      .last()
+      .textContent();
+    console.log(
+      "Wallet is approving this msg: \n" +
+        msgContentAmount1 +
+        "---- \n" +
+        msgContentAmount2
+    );
     // Approve trx
     await approveBtn.click();
-    expect(msgContentAmount).toContain("cancel_limit");
-    expect(msgContentAmount).toContain("claim_limit");
+    expect(msgContentAmount1).toContain("claim_limit");
+    expect(msgContentAmount2).toContain("cancel_limit");
     // wait for trx confirmation
     await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
+  }
+
+  async claimAll(context: BrowserContext) {
+    await this.claimAllBtn.click();
+    const pageApprove = context.waitForEvent("page");
+    const approvePage = await pageApprove;
+    await approvePage.waitForLoadState();
+    const approveBtn = approvePage.getByRole("button", {
+      name: "Approve",
+    });
+    await expect(approveBtn).toBeEnabled();
+    // Approve trx
+    await approveBtn.click();
+    // wait for trx confirmation
+    await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
+  }
+
+  async claimAllIfPresent(context: BrowserContext) {
+    const isClaimable = await this.claimAllBtn.isVisible({ timeout: 4000 });
+    if (isClaimable) {
+      console.log("Claim All filled limit orders!");
+      await this.claimAll(context);
+    } else {
+      console.log("No Claim All button.");
+    }
   }
 }
