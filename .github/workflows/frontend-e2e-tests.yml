@@ -179,3 +179,40 @@ jobs:
         with:
           name: preview-trade-test-results
           path: packages/web/playwright-report
+
+  preview-claim-tests:
+    timeout-minutes: 10
+    runs-on: macos-latest
+    needs: wait-for-deployment
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          echo "$GITHUB_OUTPUT"
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap Pair tests
+        env:
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+        run: |
+          cd packages/web
+          npx playwright test claim
+      - name: upload Claim test results
+        if: failure()
+        id: claim-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-claim-test-results
+          path: packages/web/playwright-report
