@@ -88,7 +88,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await trxPage.isFilledByLimitPrice(highLimitPrice);
   });
 
-  [{ name: "WBTC" }, { name: "WBTC.eth.axl" }].forEach(({ name }) => {
+  [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
     test(`User should be able to Market Buy ${name}`, async () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
