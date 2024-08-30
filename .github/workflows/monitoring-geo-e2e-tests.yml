@@ -49,7 +49,6 @@ jobs:
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
           USE_TEST_PROXY: ${{ matrix.test-proxy }}
-          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test select pools
