@@ -80,4 +80,16 @@ export class PoolsPage extends BasePage {
     console.log("Top 10 pools Volume: " + volumeList);
     return volumeList;
   }
+
+  async getTopTenPoolsByAPR() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    let aprList = [];
+    for (let i = 0; i < 10; i++) {
+      let tt = this.page.locator(loc).nth(i).locator("//td").nth(3);
+      let text: string = await tt.innerText();
+      aprList.push(text);
+    }
+    console.log("Top 10 pools APRs: " + aprList);
+    return aprList;
+  }
 }

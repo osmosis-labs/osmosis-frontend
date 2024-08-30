@@ -23,7 +23,7 @@ test.describe("Test Select Pool feature", () => {
     await context.close();
   });
 
-  test("User should be able to see at least 10 pools", async () => {
+  test.only("User should be able to see at least 10 pools", async () => {
     await poolsPage.goto();
     expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
     const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity();
@@ -33,6 +33,10 @@ test.describe("Test Select Pool feature", () => {
     const topVolume = await poolsPage.getTopTenPoolsByVolume();
     topVolume.every(function (element) {
       expect(element).toBeGreaterThan(10_000);
+    });
+    const topAPR = await poolsPage.getTopTenPoolsByAPR();
+    topAPR.every(function (element) {
+      expect(element).toContain("%");
     });
   });
 
