@@ -23,7 +23,7 @@ test.describe("Test Select Pool feature", () => {
     await context.close();
   });
 
-  test.only("User should be able to see at least 10 pools", async () => {
+  test("User should be able to see at least 10 pools", async () => {
     await poolsPage.goto();
     expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
     const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity();
