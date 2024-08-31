@@ -206,7 +206,6 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
-          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -220,7 +219,7 @@ jobs:
 
   fe-trade-eu-tests:
     timeout-minutes: 10
-    needs: fe-swap-eu-tests
+    needs: fe-swap-sg-tests
     name: prod-fe-trade-eu-tests
     runs-on: macos-latest
     steps:
