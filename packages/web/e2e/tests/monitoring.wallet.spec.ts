@@ -67,17 +67,17 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.05");
+    await tradePage.enterAmount("1.01");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = (limitPrice * 1.1).toFixed(4);
+    const highLimitPrice = (limitPrice * 1.07).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(
       context,
       true
     );
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain('"quantity": "1050000"');
+    expect(msgContentAmount).toContain('"quantity": "1010000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
