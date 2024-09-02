@@ -86,7 +86,7 @@ jobs:
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -161,7 +161,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
@@ -204,7 +204,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
