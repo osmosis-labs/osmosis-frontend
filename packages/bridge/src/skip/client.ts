@@ -118,13 +118,17 @@ export class SkipApiClient {
   protected authorizedApiClient<Response>(
     ...args: Parameters<typeof apiClient>
   ) {
-    const key = process.env.SKIP_API_KEY;
+    if (process.env.NODE_ENV === "test") {
+      return apiClient<Response>(args[0], args[1]);
+    }
 
+    const key = process.env.SKIP_API_KEY;
     if (!key) throw new Error("SKIP_API_KEY is not set");
 
     return apiClient<Response>(args[0], {
       ...args[1],
       headers: {
+        ...args[1]?.headers,
         // This is the format confirmed by Skip team
         Authorization: key,
       },
