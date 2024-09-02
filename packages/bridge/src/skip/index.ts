@@ -42,7 +42,7 @@ import {
   GetDepositAddressParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils";
-import { SkipApiClient } from "./queries";
+import { SkipApiClient } from "./client";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 export class SkipBridgeProvider implements BridgeProvider {

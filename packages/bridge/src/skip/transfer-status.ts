@@ -10,7 +10,7 @@ import type {
   TransferStatusReceiver,
 } from "../interface";
 import { SkipBridgeProvider } from ".";
-import { SkipApiClient } from "./queries";
+import { SkipApiClient } from "./client";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
