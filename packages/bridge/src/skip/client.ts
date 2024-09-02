@@ -125,7 +125,8 @@ export class SkipApiClient {
     return apiClient<Response>(args[0], {
       ...args[1],
       headers: {
-        Authorization: `${key}`,
+        // This is the format confirmed by Skip team
+        Authorization: key,
       },
     });
   }
