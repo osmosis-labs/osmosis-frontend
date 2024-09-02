@@ -28,7 +28,6 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
-  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -39,7 +38,6 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
-  GetDepositAddressParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils";
 import { SkipApiClient } from "./client";
@@ -55,9 +53,6 @@ export class SkipBridgeProvider implements BridgeProvider {
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
   }
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
