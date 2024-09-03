@@ -27,10 +27,6 @@ export const PriceChange: FunctionComponent<
   const isBearish = priceChange.toDec().lt(new Dec(-THRESHOLD));
   const isFlat = !isBullish && !isBearish;
 
-  console.log("----");
-  console.log("priceChange.toDec(): ", priceChange.toDec().toString());
-  console.log("priceChange", priceChange.toDec().toString());
-
   // remove negative symbol since we're using arrows
   if (isBearish) {
     priceChange = priceChange.mul(new RatePretty(-1));
@@ -42,8 +38,6 @@ export const PriceChange: FunctionComponent<
     .inequalitySymbol(false)
     .toString();
 
-  console.log("priceChangeDisplay: ", priceChangeDisplay);
-  console.log("----");
   const formattedPriceChangeDisplay =
     value !== undefined ? `(${priceChangeDisplay})` : priceChangeDisplay;
 
