@@ -343,7 +343,9 @@ const TableGroupHeader = ({
     return (
       <tr
         style={style}
-        className={classNames("grid grid-cols-[auto_180px] items-center")}
+        className={classNames(
+          "grid grid-cols-[auto_180px] items-center md:grid-cols-[auto_100px]"
+        )}
       >
         <td colSpan={5} className="!p-0">
           <div className="flex w-full items-center justify-between pr-4">
@@ -362,7 +364,7 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
                   <Icon
                     id="question"
                     className="h-6 w-6 text-wosmongton-200"
@@ -374,14 +376,16 @@ const TableGroupHeader = ({
             </div>
           </div>
         </td>
-        <td className="flex items-center justify-end">
+        <td className="flex items-center justify-end md:!p-0">
           <button
-            className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
+            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
             onClick={claim}
             disabled={claiming}
           >
-            {claiming && <Spinner className="mr-2 !h-2 !w-2" />}
-            <span className="subtitle1">{t("limitOrders.claimAll")}</span>
+            {claiming && <Spinner className="mr-2 !h-2 !w-2 md:hidden" />}
+            <span className="subtitle1 md:text-caption">
+              {t("limitOrders.claimAll")}
+            </span>
           </button>
         </td>
       </tr>
