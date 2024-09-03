@@ -1,9 +1,9 @@
-name: Synthetic Geo Monitoring Frontend tests
+name: Synthetic Swaps Geo Monitoring Frontend tests
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/20 * * * *"
+    - cron: "*/25 * * * *"
 
 jobs:
   setup-matrix:
@@ -49,7 +49,6 @@ jobs:
           TEST_PROXY_USERNAME: ${{secrets.TEST_PROXY_USERNAME}}
           TEST_PROXY_PASSWORD: ${{secrets.TEST_PROXY_PASSWORD}}
           USE_TEST_PROXY: ${{ matrix.test-proxy }}
-          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test select pools
@@ -87,7 +86,7 @@ jobs:
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -162,7 +161,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
@@ -205,9 +204,8 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY_S: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
-          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test -g "Test Swap Stables feature"
@@ -219,130 +217,11 @@ jobs:
           name: sg-swap-test-results
           path: packages/web/playwright-report
 
-  fe-trade-eu-tests:
-    timeout-minutes: 10
-    needs: fe-swap-eu-tests
-    name: prod-fe-trade-eu-tests
-    runs-on: macos-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests in EU
-        env:
-          BASE_URL: "https://app.osmosis.zone"
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          USE_TEST_PROXY: "use"
-        run: |
-          cd packages/web
-          npx playwright test monitoring --timeout 180000
-      - name: upload monitoring test results
-        if: failure()
-        id: monitoring-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: eu-trade-test-results
-          path: packages/web/playwright-report
-      - name: Send Slack alert if test fails
-        id: slack
-        if: failure()
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "🚨 Synthetic EU Trade Monitoring Tests Failure Alert 🚨"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Production App URL:* https://app.osmosis.zone"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-
-  fe-trade-us-tests:
-    timeout-minutes: 10
-    needs: fe-swap-us-tests
-    name: prod-fe-trade-us-tests
-    runs-on: macos-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests in US
-        env:
-          BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-        run: |
-          cd packages/web
-          npx playwright test monitoring --timeout 180000
-      - name: upload monitoring test results
-        if: failure()
-        id: monitoring-test-results
-        uses: actions/upload-artifact@v4
-        with:
-          name: us-trade-test-results
-          path: packages/web/playwright-report
-
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [
-        fe-quote-tests,
-        fe-swap-us-tests,
-        fe-swap-sg-tests,
-        fe-swap-eu-tests,
-        fe-trade-eu-tests,
-        fe-trade-us-tests,
-      ]
+      [fe-quote-tests, fe-swap-us-tests, fe-swap-sg-tests, fe-swap-eu-tests]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7

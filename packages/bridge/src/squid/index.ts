@@ -34,7 +34,6 @@ import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
-  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -45,7 +44,6 @@ import {
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
-  GetDepositAddressParams,
 } from "../interface";
 import { BridgeAssetMap } from "../utils";
 import { getSquidErrors } from "./error";
@@ -72,9 +70,6 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote({
     fromAmount,

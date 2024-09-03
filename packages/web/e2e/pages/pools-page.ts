@@ -47,4 +47,49 @@ export class PoolsPage extends BasePage {
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
   }
+
+  async getPoolsNumber() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    const num = await this.page.locator(loc).count();
+    console.log("Pools Count: " + num);
+    return num;
+  }
+
+  async getTopTenPoolsByLiquidity() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    let liquidityList = [];
+    for (let i = 0; i < 10; i++) {
+      let tt = this.page.locator(loc).nth(i).locator("//td").nth(2);
+      let text: string = await tt.innerText();
+      let n: number = Number(text.replace(/[^0-9.-]+/g, ""));
+      liquidityList.push(n);
+    }
+    console.log("Top 10 pools Liquidity: " + liquidityList);
+    return liquidityList;
+  }
+
+  async getTopTenPoolsByVolume() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    let volumeList = [];
+    for (let i = 0; i < 10; i++) {
+      let tt = this.page.locator(loc).nth(i).locator("//td").nth(1);
+      let text: string = await tt.innerText();
+      let n: number = Number(text.replace(/[^0-9.-]+/g, ""));
+      volumeList.push(n);
+    }
+    console.log("Top 10 pools Volume: " + volumeList);
+    return volumeList;
+  }
+
+  async getTopTenPoolsByAPR() {
+    const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
+    let aprList = [];
+    for (let i = 0; i < 10; i++) {
+      let tt = this.page.locator(loc).nth(i).locator("//td").nth(3);
+      let text: string = await tt.innerText();
+      aprList.push(text);
+    }
+    console.log("Top 10 pools APRs: " + aprList);
+    return aprList;
+  }
 }

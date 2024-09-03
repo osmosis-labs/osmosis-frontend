@@ -31,7 +31,7 @@ export class SkipApiClient {
       url.searchParams.append("only_testnets", "true");
     }
 
-    const data = await apiClient<{
+    const data = await this.authorizedApiClient<{
       chain_to_assets_map: Record<string, { assets: SkipAsset[] }>;
     }>(url.toString());
 
@@ -47,7 +47,7 @@ export class SkipApiClient {
       url.searchParams.append("only_testnets", "true");
     }
 
-    const data = await apiClient<{
+    const data = await this.authorizedApiClient<{
       chains: SkipChain[];
     }>(url.toString());
 
@@ -55,24 +55,30 @@ export class SkipApiClient {
   }
 
   async route(options: SkipRouteRequest) {
-    return apiClient<SkipRouteResponse>(`${this.baseUrl}/v2/fungible/route`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...options,
-        cumulative_affiliate_fee_bps:
-          options.cumulative_affiliate_fee_bps ?? "0",
-      }),
-    });
+    return this.authorizedApiClient<SkipRouteResponse>(
+      `${this.baseUrl}/v2/fungible/route`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          ...options,
+          cumulative_affiliate_fee_bps:
+            options.cumulative_affiliate_fee_bps ?? "0",
+        }),
+      }
+    );
   }
 
   async messages(options: SkipMsgsRequest) {
-    return apiClient<SkipMsgsResponse>(`${this.baseUrl}/v2/fungible/msgs`, {
-      method: "POST",
-      body: JSON.stringify({
-        ...options,
-        slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
-      }),
-    });
+    return this.authorizedApiClient<SkipMsgsResponse>(
+      `${this.baseUrl}/v2/fungible/msgs`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          ...options,
+          slippage_tolerance_percent: options.slippage_tolerance_percent ?? "0",
+        }),
+      }
+    );
   }
 
   async trackTransaction({
@@ -82,13 +88,16 @@ export class SkipApiClient {
     chainID: string;
     txHash: string;
   }) {
-    return apiClient<{ tx_id: string }>(`${this.baseUrl}/v2/tx/track`, {
-      method: "POST",
-      body: JSON.stringify({
-        chain_id: chainID,
-        tx_hash: txHash,
-      }),
-    });
+    return this.authorizedApiClient<{ tx_id: string }>(
+      `${this.baseUrl}/v2/tx/track`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          chain_id: chainID,
+          tx_hash: txHash,
+        }),
+      }
+    );
   }
 
   async transactionStatus({
@@ -103,6 +112,26 @@ export class SkipApiClient {
     url.searchParams.append("chain_id", chainID);
     url.searchParams.append("tx_hash", txHash);
 
-    return apiClient<SkipTxStatusResponse>(url.toString());
+    return this.authorizedApiClient<SkipTxStatusResponse>(url.toString());
+  }
+
+  protected authorizedApiClient<Response>(
+    ...args: Parameters<typeof apiClient>
+  ) {
+    if (process.env.NODE_ENV === "test") {
+      return apiClient<Response>(args[0], args[1]);
+    }
+
+    const key = process.env.SKIP_API_KEY;
+    if (!key) throw new Error("SKIP_API_KEY is not set");
+
+    return apiClient<Response>(args[0], {
+      ...args[1],
+      headers: {
+        ...args[1]?.headers,
+        // This is the format confirmed by Skip team
+        Authorization: key,
+      },
+    });
   }
 }
