@@ -166,6 +166,7 @@ export function useSwap(
     !account?.txTypeInProgress &&
     !isWalletLoading &&
     quoteType === "in-given-out";
+
   const {
     data: outGivenInQuote,
     isLoading: isQuoteLoading_,
