@@ -23,9 +23,6 @@ export const PriceChange: FunctionComponent<
     value?: PricePretty;
   } & CustomClasses
 > = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
-  console.log("-------------------");
-  console.log("PriceChange toDec toString: ", priceChange.toDec().toString());
-  console.log("Threshold toDec toString: ", new Dec(-THRESHOLD).toString());
   const isBullish = priceChange.toDec().gte(new Dec(THRESHOLD));
   const isBearish = priceChange.toDec().lte(new Dec(-THRESHOLD));
   const isFlat = !isBullish && !isBearish;
