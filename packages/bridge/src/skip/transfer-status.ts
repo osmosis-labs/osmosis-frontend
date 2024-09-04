@@ -9,8 +9,8 @@ import type {
   TransferStatusProvider,
   TransferStatusReceiver,
 } from "../interface";
-import { SkipBridgeProvider } from ".";
-import { SkipApiClient } from "./queries";
+import { SkipApiClient } from "./client";
+import { SkipBridgeProvider } from "./index";
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {

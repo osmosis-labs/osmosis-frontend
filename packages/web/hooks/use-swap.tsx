@@ -1532,7 +1532,6 @@ function useQueryRouterBestQuote(
 
   const quoteResult =
     quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
-
   const {
     data: quote,
     isSuccess,
@@ -1543,7 +1542,13 @@ function useQueryRouterBestQuote(
   }, [quoteResult]);
 
   const acceptedQuote = useMemo(() => {
-    if (!quote || !input.tokenIn || !input.tokenOut) return;
+    if (
+      !quote ||
+      !input.tokenIn ||
+      !input.tokenOut ||
+      quote.amount.toDec().isZero()
+    )
+      return;
     return {
       ...quote,
       amountIn:
@@ -1564,17 +1569,17 @@ function useQueryRouterBestQuote(
     const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
     if (
       !quote ||
-      !tokenOutCoinDecimals ||
+      typeof tokenOutCoinDecimals === "undefined" ||
       !tokenInCoinMinimalDenom ||
       !tokenOutCoinMinimalDenom ||
-      !tokenInCoinDecimals
+      typeof tokenInCoinDecimals === "undefined"
     )
       return undefined;
     const messages = await getSwapMessages({
       quote: quote,
       tokenOutCoinMinimalDenom,
-      tokenInCoinDecimals,
-      tokenOutCoinDecimals,
+      tokenInCoinDecimals: tokenInCoinDecimals!,
+      tokenOutCoinDecimals: tokenOutCoinDecimals!,
       tokenInCoinMinimalDenom,
       maxSlippage: input.maxSlippage?.toString(),
       coinAmount: input.tokenInAmount,
