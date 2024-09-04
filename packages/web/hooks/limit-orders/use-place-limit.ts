@@ -330,12 +330,19 @@ export const usePlaceLimit = ({
 
     const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
+    let valueUsd = Number(paymentFiatValue?.toDec().toString() ?? "0");
+    // Protect our data from outliers
+    // Perhaps from upstream issues with price data providers
+    if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+      valueUsd = 0;
+    }
+
     const baseEvent = {
       type: orderDirection === "bid" ? "buy" : "sell",
       fromToken: paymentDenom,
       toToken:
         orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
-      valueUsd: Number(paymentFiatValue?.toDec().toString() ?? "0"),
+      valueUsd,
       tokenAmount: Number(quantity),
       page,
       isOnHomePage: page === "Swap Page",
