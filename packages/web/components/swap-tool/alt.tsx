@@ -29,7 +29,7 @@ import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage } from "~/config";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -220,7 +220,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Protect our data from outliers
       // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
         valueUsd = 0;
       }
 

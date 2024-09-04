@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
-import { EventName, EventPage } from "~/config";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   isValidNumericalRawInput,
   useAmountInput,
@@ -284,7 +284,7 @@ export const usePlaceLimit = ({
 
       // Protect our data from outliers
       // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
         valueUsd = 0;
       }
 

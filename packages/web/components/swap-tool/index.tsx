@@ -28,7 +28,7 @@ import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage } from "~/config";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -192,7 +192,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       // Protect our data from outliers
       // Perhaps from upstream issues with price data providers
-      if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
         valueUsd = 0;
       }
 
