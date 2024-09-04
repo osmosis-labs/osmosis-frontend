@@ -27,9 +27,12 @@ export class PoolsPage extends BasePage {
     await this.page.goto("/");
     await this.page.waitForTimeout(2000);
     await this.poolsLink.click();
+    await this.page.waitForTimeout(2000);
     // Sometimes pools take longer to load
-    // we expect that after 8 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(8000);
+    // we expect that after 10 seconds tokens are loaded and any failure after this point should be considered a bug.
+    // 1464 is an OSMO/USDC pool
+    const locRows = '//tr/td/a[contains(@href, "pool/1464")]/../..';
+    await this.page.locator(locRows).hover({ timeout: 10000 });
     await super.printUrl();
   }
 
