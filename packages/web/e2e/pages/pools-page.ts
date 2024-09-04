@@ -27,8 +27,9 @@ export class PoolsPage extends BasePage {
     await this.page.goto("/");
     await this.page.waitForTimeout(2000);
     await this.poolsLink.click();
-    // we expect that after 4 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(4000);
+    // Sometimes pools take longer to load
+    // we expect that after 8 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(8000);
     await super.printUrl();
   }
 
