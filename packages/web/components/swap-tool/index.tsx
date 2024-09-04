@@ -186,6 +186,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
+      let valueUsd = Number(
+        swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+      );
+
+      // Protect our data from outliers
+      // Perhaps from upstream issues with price data providers
+      if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+        valueUsd = 0;
+      }
+
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
         tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
@@ -195,9 +205,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-        valueUsd: Number(
-          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-        ),
+        valueUsd,
         feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: swapState.quote?.timeMs,

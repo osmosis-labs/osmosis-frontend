@@ -342,6 +342,15 @@ export const AmountAndReviewScreen = observer(
                             ? fromChain.chainName
                             : toChain.chainName;
 
+                        let valueUsd = Number(
+                          q.input.fiatValue.toDec().toString()
+                        );
+                        // Protect our data from outliers
+                        // Perhaps from upstream issues with price data providers
+                        if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+                          valueUsd = 0;
+                        }
+
                         logEvent([
                           EventName.DepositWithdraw.started,
                           {
@@ -352,9 +361,7 @@ export const AmountAndReviewScreen = observer(
                             isRecommendedVariant,
                             network: networkName,
                             transferDirection: direction,
-                            valueUsd: Number(
-                              q.input.fiatValue.toDec().toString()
-                            ),
+                            valueUsd,
                             walletName,
                           },
                         ]);

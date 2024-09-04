@@ -278,6 +278,16 @@ export const usePlaceLimit = ({
     }
 
     if (isMarket) {
+      let valueUsd = Number(
+        marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+      );
+
+      // Protect our data from outliers
+      // Perhaps from upstream issues with price data providers
+      if (isNaN(valueUsd) || valueUsd > 1_000_000) {
+        valueUsd = 0;
+      }
+
       const baseEvent = {
         fromToken: marketState.fromAsset?.coinDenom,
         tokenAmount: Number(
@@ -289,9 +299,7 @@ export const usePlaceLimit = ({
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
-        valueUsd: Number(
-          marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-        ),
+        valueUsd,
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
