@@ -57,7 +57,26 @@ export interface PlaceLimitToolProps {
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
-const fixDecimalCount = (value: string, decimalCount = 18) => {
+/* Roundes a given number to the given precision
+ * i.e. roundUpToDecimal(0.23456, 2) = 0.24
+ */
+function roundUpToDecimal(value: number, precision: number) {
+  const multiplier = Math.pow(10, precision || 0);
+  return Math.ceil(value * multiplier) / multiplier;
+}
+
+/**
+ * Fixes a given string representation of a number to the given decimal count
+ * Rounds to the decimal count if rounding is true
+ */
+const fixDecimalCount = (
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) => {
+  if (rounding) {
+    return roundUpToDecimal(parseFloat(value), decimalCount).toString();
+  }
   const split = value.split(".");
   const result =
     split[0] +
@@ -65,7 +84,15 @@ const fixDecimalCount = (value: string, decimalCount = 18) => {
   return result;
 };
 
-const transformAmount = (value: string, decimalCount = 18) => {
+/**
+ * Transforms a given amount to the given decimal count and handles period inputs
+ * Rounds to the decimal count if rounding is true
+ */
+const transformAmount = (
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) => {
   let updatedValue = value;
   if (value.endsWith(".") && value.length === 1) {
     updatedValue = value + "0";
@@ -77,7 +104,7 @@ const transformAmount = (value: string, decimalCount = 18) => {
 
   const decimals = countDecimals(updatedValue);
   return decimals > decimalCount
-    ? fixDecimalCount(updatedValue, decimalCount)
+    ? fixDecimalCount(updatedValue, decimalCount, rounding)
     : updatedValue;
 };
 
@@ -243,7 +270,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       (
         amountType: "fiat" | "token",
         value?: string,
-        maxDecimals: number = 2
+        maxDecimals: number = 2,
+        rounding: boolean = false
       ) => {
         resetSlippage();
         const update =
@@ -279,7 +307,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           value,
           amountType === "fiat"
             ? maxDecimals
-            : swapState.baseAsset?.coinDecimals
+            : swapState.baseAsset?.coinDecimals,
+          rounding
         ).trim();
 
         if (
@@ -295,10 +324,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         }
         const isFocused = focused === amountType;
 
-        const formattedValue =
-          parseFloat(updatedValue) !== 0 && !isFocused
-            ? trimPlaceholderZeros(updatedValue)
-            : updatedValue;
+        const formattedValue = !isFocused
+          ? trimPlaceholderZeros(updatedValue)
+          : updatedValue;
         update(formattedValue);
       },
       [
@@ -353,8 +381,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const tokenValue = value
         ? new Dec(value).quo(swapState.priceState.price)
         : undefined;
-      setAmountSafe("token", tokenValue ? tokenValue.toString() : undefined);
-    }, [fiatAmount, setAmountSafe, focused, swapState.priceState.price, type]);
+
+      // When setting the token amount for a sell we want to round up due to
+      // rounding occuring when dividing the fiat amount by the token price.
+      // Without rounding there is a common case where the user inputs $1
+      // but the actual token value is only $0.99 (0.999999....) and the
+      // user is unable to place the order. With rounding we overestimate by a value of
+      // 1*10^(-tokenDecimals).
+      setAmountSafe(
+        "token",
+        tokenValue ? tokenValue.toString() : undefined,
+        swapState.baseAsset?.coinDecimals,
+        true
+      );
+    }, [
+      fiatAmount,
+      setAmountSafe,
+      focused,
+      swapState.priceState.price,
+      type,
+      swapState.baseAsset?.coinDecimals,
+    ]);
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
@@ -519,13 +566,23 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const handleMarketTab = () => {
         if (tab === "sell") {
           return focused === "fiat"
-            ? getTrimmedAmount(swapState.marketState.inAmountInput.inputAmount)
+            ? transformAmount(
+                getTrimmedAmount(
+                  swapState.marketState.inAmountInput.inputAmount
+                ),
+                10
+              )
             : formatInputAsPrice(
                 swapState.marketState.outAmountInput.inputAmount
               );
         } else {
           return focused === "fiat"
-            ? getTrimmedAmount(swapState.marketState.outAmountInput.inputAmount)
+            ? transformAmount(
+                getTrimmedAmount(
+                  swapState.marketState.outAmountInput.inputAmount
+                ),
+                10
+              )
             : formatInputAsPrice(
                 swapState.marketState.inAmountInput.inputAmount
               );
@@ -536,7 +593,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return handleMarketTab();
       } else {
         return focused === "fiat"
-          ? swapState.inAmountInput.inputAmount
+          ? transformAmount(swapState.inAmountInput.inputAmount, 10)
           : formatInputAsPrice(fiatAmount);
       }
     }, [

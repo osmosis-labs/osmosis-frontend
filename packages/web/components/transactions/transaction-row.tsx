@@ -39,6 +39,7 @@ export interface TransactionRow {
     value?: PricePretty;
   };
   onClick?: () => void;
+  hash: string;
 }
 
 export const TransactionRow: FunctionComponent<TransactionRow> = ({
@@ -50,11 +51,13 @@ export const TransactionRow: FunctionComponent<TransactionRow> = ({
   tokenConversion,
   transfer,
   onClick,
+  hash,
 }) => {
   const effectIconId = effect === "swap" ? "swap" : "down-arrow";
 
   return (
     <div
+      data-transaction-hash={hash}
       className={classNames(
         "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
         // Highlight the selected transaction

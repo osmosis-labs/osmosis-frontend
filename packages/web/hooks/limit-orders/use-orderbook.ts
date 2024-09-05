@@ -291,6 +291,8 @@ export const useOrderbookAllActiveOrders = ({
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       refetchInterval,
+      cacheTime: refetchInterval,
+      staleTime: refetchInterval,
       enabled: !!userAddress && addresses.length > 0,
       refetchOnMount: true,
       keepPreviousData: false,
@@ -338,32 +340,28 @@ export const useOrderbookClaimableOrders = ({
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
-  const {
-    data: claimableOrders,
-    isLoading,
-    isFetching,
-    refetch,
-  } = api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
-    {
-      userOsmoAddress: userAddress,
-      filter: "filled",
-      limit: 100,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialCursor: 0,
-      refetchInterval,
-      enabled: !!userAddress && addresses.length > 0 && !disabled,
-      refetchOnMount: true,
-      keepPreviousData: false,
-      trpc: {
-        abortOnUnmount: true,
-        context: {
-          skipBatch: true,
-        },
+  const { data: claimableOrders, isLoading } =
+    api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
+      {
+        userOsmoAddress: userAddress,
+        filter: "filled",
+        limit: 100,
       },
-    }
-  );
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+        refetchInterval,
+        enabled: !!userAddress && addresses.length > 0 && !disabled,
+        refetchOnMount: true,
+        keepPreviousData: false,
+        trpc: {
+          abortOnUnmount: true,
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const orders = useMemo(() => {
     return claimableOrders?.pages?.flatMap((page) => page.items) ?? [];
@@ -396,14 +394,14 @@ export const useOrderbookClaimableOrders = ({
 
     if (msgs.length > 0) {
       await account?.cosmwasm.sendMultiExecuteContractMsg("executeWasm", msgs);
-      await refetch();
+      // await refetch();
     }
-  }, [orders, account, addresses, refetch]);
+  }, [orders, account, addresses]);
 
   return {
     orders: orders ?? [],
     count: orders?.length ?? 0,
-    isLoading: isLoading || isFetching,
+    isLoading,
     claimAllOrders,
   };
 };

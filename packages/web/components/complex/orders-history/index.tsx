@@ -84,6 +84,7 @@ export const OrderHistory = observer(() => {
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 20,
+    refetchInterval: 10000,
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
@@ -122,6 +123,7 @@ export const OrderHistory = observer(() => {
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
+      refetchInterval: 10000,
     });
 
   const claimOrders = useCallback(async () => {
@@ -341,7 +343,9 @@ const TableGroupHeader = ({
     return (
       <tr
         style={style}
-        className={classNames("grid grid-cols-[auto_180px] items-center")}
+        className={classNames(
+          "grid grid-cols-[auto_180px] items-center md:grid-cols-[auto_100px]"
+        )}
       >
         <td colSpan={5} className="!p-0">
           <div className="flex w-full items-center justify-between pr-4">
@@ -360,7 +364,7 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
                   <Icon
                     id="question"
                     className="h-6 w-6 text-wosmongton-200"
@@ -372,14 +376,16 @@ const TableGroupHeader = ({
             </div>
           </div>
         </td>
-        <td className="flex items-center justify-end">
+        <td className="flex items-center justify-end md:!p-0">
           <button
-            className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
+            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
             onClick={claim}
             disabled={claiming}
           >
-            {claiming && <Spinner className="mr-2 !h-2 !w-2" />}
-            <span className="subtitle1">{t("limitOrders.claimAll")}</span>
+            {claiming && <Spinner className="mr-2 !h-2 !w-2 md:hidden" />}
+            <span className="subtitle1 md:text-caption">
+              {t("limitOrders.claimAll")}
+            </span>
           </button>
         </td>
       </tr>
@@ -472,6 +478,7 @@ const TableOrderRow = memo(
     })();
     return (
       <tr
+        data-transaction-hash={order.placed_tx}
         style={style}
         className={classNames(
           gridClasses,
@@ -579,14 +586,18 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:!py-0  md:hidden">
+        <td className="!px-0 !text-left xl:!py-0 md:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
         </td>
-        <td className="!px-0 !text-left  xl:!py-0">
-          <div className="xl: flex flex-col gap-1 xl:items-end xl:justify-end">
+        <td
+          className={classNames("!px-0 !text-left xl:!py-0", {
+            "flex items-center xl:justify-end": status === "filled",
+          })}
+        >
+          <div className="flex flex-col gap-1 xl:items-end xl:justify-end">
             {statusComponent}
             <span
               className={classNames(

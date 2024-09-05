@@ -30,9 +30,9 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
      * This is not related to the block height IBC timeout on chain, but rather is a catch all
      * fallback to prevent indefinite waiting when there's some unforseen issue
      * getting conclusive statuses from chain(s).
-     * Default: 60 seconds.
+     * Default: 3 minutes.
      */
-    protected readonly connectionTimeoutMs = 60 * 1000
+    protected readonly connectionTimeoutMs = 60 * 1000 * 3
   ) {}
 
   async trackTxStatus(serializedParamsOrHash: string): Promise<void> {

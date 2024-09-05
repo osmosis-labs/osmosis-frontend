@@ -281,7 +281,12 @@
     "cypherSpend": "Платить за осмос",
     "cypherOrder": "Закажите карту сейчас",
     "cypherBeta": "Бета",
-    "openOrders": "Открытые заказы"
+    "openOrders": "Открытые заказы",
+    "last24h": "Последние 24 часа",
+    "last7d": "Последние 7дн.",
+    "last30d": "Последние 30 дней",
+    "last1y": "Последний 1 год",
+    "allTime": "Все время"
   },
   "buyTokens": "Купить токены",
   "components": {
@@ -1168,6 +1173,10 @@
     "newer": "Новее"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Выберите свою цену",
+      "tryLimitOrders": "Попробуйте лимитные ордера"
+    },
     "historyTable": {
       "columns": {
         "order": "Заказ",

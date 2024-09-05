@@ -281,7 +281,12 @@
     "cypherSpend": "滲透支付",
     "cypherOrder": "立即訂購您的卡",
     "cypherBeta": "貝塔",
-    "openOrders": "未結訂單"
+    "openOrders": "未結訂單",
+    "last24h": "最近 24 小時",
+    "last7d": "過去 7 天",
+    "last30d": "過去30天",
+    "last1y": "過去 1 年",
+    "allTime": "所有時間"
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -1168,6 +1173,10 @@
     "newer": "較新"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "選擇您的價格",
+      "tryLimitOrders": "嘗試限價訂單"
+    },
     "historyTable": {
       "columns": {
         "order": "命令",

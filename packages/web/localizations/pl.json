@@ -281,7 +281,12 @@
     "cypherSpend": "Osmoza Płaca",
     "cypherOrder": "Zamów swoją kartę już teraz",
     "cypherBeta": "Beta",
-    "openOrders": "Otwarte zamówienia"
+    "openOrders": "Otwarte zamówienia",
+    "last24h": "Ostatnie 24h",
+    "last7d": "Ostatnie 7 dni",
+    "last30d": "Ostatnie 30 dni",
+    "last1y": "Ostatni 1 rok",
+    "allTime": "Cały czas"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -1168,6 +1173,10 @@
     "newer": "Nowsza"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Wybierz swoją cenę",
+      "tryLimitOrders": "Wypróbuj zlecenia limitowane"
+    },
     "historyTable": {
       "columns": {
         "order": "Zamówienie",

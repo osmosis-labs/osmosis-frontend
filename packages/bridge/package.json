@@ -32,15 +32,15 @@
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/proto-codecs": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",
-    "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/tx": "^1.0.0",
+    "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
+    "base-x": "^5.0.0",
     "cachified": "^3.5.4",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
     "viem": "2.16.4",
-    "zod": "^3.22.4",
-    "base-x": "^5.0.0"
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",

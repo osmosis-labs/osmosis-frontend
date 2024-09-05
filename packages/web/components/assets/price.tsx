@@ -1,4 +1,5 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
@@ -11,6 +12,9 @@ import { api } from "~/utils/trpc";
 import { Sparkline } from "../chart/sparkline";
 import { CustomClasses } from "../types";
 
+// 0.1%
+const THRESHOLD = 0.001;
+
 /** Colored price change text with up/down arrow. */
 export const PriceChange: FunctionComponent<
   {
@@ -19,8 +23,8 @@ export const PriceChange: FunctionComponent<
     value?: PricePretty;
   } & CustomClasses
 > = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
-  const isBullish = priceChange.toDec().isPositive();
-  const isBearish = priceChange.toDec().isNegative();
+  const isBullish = priceChange.toDec().gte(new Dec(THRESHOLD));
+  const isBearish = priceChange.toDec().lte(new Dec(-THRESHOLD));
   const isFlat = !isBullish && !isBearish;
 
   // remove negative symbol since we're using arrows
@@ -67,7 +71,7 @@ export const PriceChange: FunctionComponent<
       >
         {value !== undefined ? value.toString() + " " : null}
 
-        {isFlat ? "-" : formattedPriceChangeDisplay}
+        {isFlat ? "0.0%" : formattedPriceChangeDisplay}
       </div>
     </div>
   );

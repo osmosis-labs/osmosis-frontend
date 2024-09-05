@@ -281,7 +281,12 @@
     "cypherSpend": "Osmose-Bezahlung",
     "cypherOrder": "Bestellen Sie jetzt Ihre Karte",
     "cypherBeta": "Beta",
-    "openOrders": "Offene Bestellungen"
+    "openOrders": "Offene Bestellungen",
+    "last24h": "Letzte 24 Stunden",
+    "last7d": "Letzte 7 Tage",
+    "last30d": "Letzte 30 Tage",
+    "last1y": "Letztes 1 Jahr",
+    "allTime": "Alle Zeit"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {
@@ -1168,6 +1173,10 @@
     "newer": "Neuere"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Wählen Sie Ihren Preis",
+      "tryLimitOrders": "Versuchen Sie es mit Limit-Orders"
+    },
     "historyTable": {
       "columns": {
         "order": "Befehl",
