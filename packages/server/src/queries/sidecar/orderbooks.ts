@@ -14,13 +14,13 @@ export interface SQSActiveOrder {
   order_id: number;
   order_direction: "bid" | "ask";
   owner: string;
-  quantity: number;
+  quantity: string;
   etas: string;
-  placed_quantity: number;
+  placed_quantity: string;
   placed_at: number;
   price: string;
   percentClaimed: string;
-  totalFilled: number;
+  totalFilled: string;
   percentFilled: string;
   orderbookAddress: string;
   status: "open" | "partiallyFilled";

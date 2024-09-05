@@ -27,7 +27,7 @@ export function getOrderbookActiveOrdersSQS({
   return cachified({
     cache: activeOrdersCache,
     key: `orderbookActiveOrders-sqs-${userOsmoAddress}`,
-    ttl: 1000, // 1 second
+    ttl: 5000, // 5 seconds
     getFreshValue: () =>
       queryActiveOrdersSQS({
         userOsmoAddress,
@@ -36,10 +36,10 @@ export function getOrderbookActiveOrdersSQS({
           return {
             ...o,
             price: new Dec(o.price),
-            quantity: o.quantity,
-            placed_quantity: o.placed_quantity,
+            quantity: parseInt(o.quantity),
+            placed_quantity: parseInt(o.placed_quantity),
             percentClaimed: new Dec(o.percentClaimed),
-            totalFilled: o.totalFilled,
+            totalFilled: parseInt(o.totalFilled),
             percentFilled: new Dec(o.percentFilled),
             quoteAsset: getAssetFromAssetList({
               coinMinimalDenom: o.quote_asset.symbol,
