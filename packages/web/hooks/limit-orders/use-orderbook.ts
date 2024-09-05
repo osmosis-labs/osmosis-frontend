@@ -265,7 +265,7 @@ export type DisplayableLimitOrder = MappedLimitOrder;
 export const useOrderbookAllActiveOrders = ({
   userAddress,
   pageSize = 10,
-  refetchInterval = 2000,
+  refetchInterval = 5000,
 }: {
   userAddress: string;
   pageSize?: number;
@@ -282,7 +282,7 @@ export const useOrderbookAllActiveOrders = ({
     hasNextPage,
     refetch,
     isRefetching,
-  } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
+  } = api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
     {
       userOsmoAddress: userAddress,
       limit: pageSize,
@@ -311,8 +311,7 @@ export const useOrderbookAllActiveOrders = ({
 
   const refetchOrders = useCallback(async () => {
     if (isRefetching) return;
-
-    return refetch();
+    await refetch();
   }, [refetch, isRefetching]);
 
   return {
@@ -328,33 +327,44 @@ export const useOrderbookAllActiveOrders = ({
 };
 
 export const useOrderbookClaimableOrders = ({
-  userAddress: _,
-  disabled: __,
-  orders = [],
+  userAddress,
+  disabled = false,
+  refetchInterval = 5000,
 }: {
   userAddress: string;
   disabled?: boolean;
-  orders: MappedLimitOrder[];
+  refetchInterval?: number;
 }) => {
   const { orderbooks } = useOrderbooks();
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
-  // const {
-  //   data: orders,
-  //   isLoading,
-  //   isFetching,
-  //   refetch,
-  // } = api.edge.orderbooks.getClaimableOrders.useQuery(
-  //   {
-  //     userOsmoAddress: userAddress,
-  //   },
-  //   {
-  //     enabled: !!userAddress && addresses.length > 0 && !disabled,
-  //     refetchOnMount: true,
-  //   }
-  // );
+  const { data: claimableOrders, isLoading } =
+    api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
+      {
+        userOsmoAddress: userAddress,
+        filter: "filled",
+        limit: 100,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+        refetchInterval,
+        enabled: !!userAddress && addresses.length > 0 && !disabled,
+        refetchOnMount: true,
+        keepPreviousData: false,
+        trpc: {
+          abortOnUnmount: true,
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
+  const orders = useMemo(() => {
+    return claimableOrders?.pages?.flatMap((page) => page.items) ?? [];
+  }, [claimableOrders?.pages]);
   const claimAllOrders = useCallback(async () => {
     if (!account || !orders) return;
     const msgs = addresses
@@ -390,7 +400,7 @@ export const useOrderbookClaimableOrders = ({
   return {
     orders: orders ?? [],
     count: orders?.length ?? 0,
-    isLoading: false,
+    isLoading,
     claimAllOrders,
   };
 };
