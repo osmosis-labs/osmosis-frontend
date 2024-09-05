@@ -134,8 +134,6 @@ export const Allocation: FunctionComponent<{
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              console.log("fiatValue: ", fiatValue.toString());
-
               return (
                 <div key={key} className="body2 flex w-full justify-between">
                   <div className="flex items-center space-x-1">
