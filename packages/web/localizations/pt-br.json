@@ -1158,7 +1158,6 @@
     "transactionHash": "Hash de transação",
     "viewOnExplorer": "Ver no explorador",
     "launchAlert": "Atualmente apenas o histórico de negociações é exibido. Suporte para mais tipos de transação em breve.",
-    "noPriceData": "Dados de preço indisponíveis",
     "viewAll": "Ver tudo",
     "history": "História",
     "orders": "Pedidos"

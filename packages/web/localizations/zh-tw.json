@@ -1158,7 +1158,6 @@
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
     "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
-    "noPriceData": "價格數據不可用",
     "viewAll": "看全部",
     "history": "歷史",
     "orders": "命令"
