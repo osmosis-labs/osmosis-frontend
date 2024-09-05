@@ -311,7 +311,6 @@ export const useOrderbookAllActiveOrders = ({
 
   const refetchOrders = useCallback(async () => {
     if (isRefetching) return;
-    console.log("REFETCHING");
     await refetch();
   }, [refetch, isRefetching]);
 

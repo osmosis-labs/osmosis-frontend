@@ -74,70 +74,45 @@ export const orderbookRouter = createTRPCRouter({
 
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
             return [];
-          const batchSize = 10; // Define the batch size
-          const batches = contractAddresses.reduce((acc: any[], _, index) => {
-            const batchIndex = Math.floor(index / batchSize);
-            if (!acc[batchIndex]) {
-              acc[batchIndex] = [];
+          const promises = contractAddresses.map(
+            async (contractOsmoAddress: string) => {
+              const { baseDenom, quoteDenom } = pools.find(
+                (p) => p.contractAddress === contractOsmoAddress
+              )!;
+
+              const quoteAsset = getAssetFromAssetList({
+                coinMinimalDenom: quoteDenom,
+                assetLists: ctx.assetLists,
+              });
+              const baseAsset = getAssetFromAssetList({
+                coinMinimalDenom: baseDenom,
+                assetLists: ctx.assetLists,
+              });
+              const orders = await getOrderbookActiveOrders({
+                orderbookAddress: contractOsmoAddress,
+                userOsmoAddress: userOsmoAddress,
+                chainList: ctx.chainList,
+                baseAsset,
+                quoteAsset,
+              });
+              return orders;
             }
-            acc[batchIndex].push(contractAddresses[index]);
-            return acc;
-          }, []);
+          );
+          promises.push(
+            getOrderbookHistoricalOrders({
+              userOsmoAddress: input.userOsmoAddress,
+              assetLists: ctx.assetLists,
+              chainList: ctx.chainList,
+            })
+          );
 
-          const allOrders = [];
-          for (let i = 0; i < batches.length; i++) {
-            const promises = batches[i].map(
-              async (contractOsmoAddress: string) => {
-                const { baseDenom, quoteDenom } = pools.find(
-                  (p) => p.contractAddress === contractOsmoAddress
-                )!;
-
-                const quoteAsset = getAssetFromAssetList({
-                  coinMinimalDenom: quoteDenom,
-                  assetLists: ctx.assetLists,
-                });
-                const baseAsset = getAssetFromAssetList({
-                  coinMinimalDenom: baseDenom,
-                  assetLists: ctx.assetLists,
-                });
-                const orders = await getOrderbookActiveOrders({
-                  orderbookAddress: contractOsmoAddress,
-                  userOsmoAddress: userOsmoAddress,
-                  chainList: ctx.chainList,
-                  baseAsset,
-                  quoteAsset,
-                });
-                return orders;
-              }
-            );
-            if (i === batches.length - 1) {
-              promises.push(
-                getOrderbookHistoricalOrders({
-                  userOsmoAddress: input.userOsmoAddress,
-                  assetLists: ctx.assetLists,
-                  chainList: ctx.chainList,
-                })
-              );
-            }
-            const batchOrders = await Promise.all(promises);
-            allOrders.push(...batchOrders.flat());
-            await new Promise((resolve) => setTimeout(resolve, 500));
-          }
-          // promises.push(
-          //   getOrderbookHistoricalOrders({
-          //     userOsmoAddress: input.userOsmoAddress,
-          //     assetLists: ctx.assetLists,
-          //     chainList: ctx.chainList,
-          //   })
-          // );
-
-          // const ordersByContracts = await Promise.all(promises);
-          // const allOrders = ordersByContracts.flat();
+          const ordersByContracts = await Promise.all(promises);
+          const allOrders = ordersByContracts.flat();
 
           return allOrders.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}`,
-        ttl: 30000,
+        ttl: 15000,
         cursor: input.cursor,
         limit: input.limit,
       });
@@ -256,5 +231,3 @@ export const orderbookRouter = createTRPCRouter({
     return pools;
   }),
 });
-
-export const maxDuration = 30000;
