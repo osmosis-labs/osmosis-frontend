@@ -3,7 +3,6 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
-import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
@@ -132,7 +131,6 @@ const TokenConversion: FunctionComponent<
     TransactionRow["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
       <div className="flex w-60 items-center justify-end gap-4 md:hidden">

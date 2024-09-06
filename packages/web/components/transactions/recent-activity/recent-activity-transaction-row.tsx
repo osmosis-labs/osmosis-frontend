@@ -28,7 +28,8 @@ export const SwapRow: FunctionComponent<TransactionRow> = ({
     <div className="flex flex-col gap-0.5">
       <p className="body2 text-white-full">{title[status]}</p>
       <div className="caption flex items-center gap-1 text-osmoverse-300">
-        {formatFiatPrice(tokenConversion.tokenIn?.value)}{" "}
+        {tokenConversion.tokenIn?.value &&
+          formatFiatPrice(tokenConversion.tokenIn?.value)}{" "}
         {tokenConversion.tokenIn.amount.denom}{" "}
         <Icon id="arrow-right" width={14} height={14} />{" "}
         {tokenConversion.tokenOut.amount.denom}
