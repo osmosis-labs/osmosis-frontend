@@ -29,7 +29,7 @@ export interface LimitOrder {
   etas: string;
   claim_bounty?: string;
   placed_quantity: string;
-  placed_at: string;
+  placed_at: number;
 }
 
 interface OrderbookActiveOrdersResponse {
