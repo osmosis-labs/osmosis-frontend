@@ -12,15 +12,14 @@ import { AmplitudeEvent, EventProperties, UserProperties } from "~/config";
 /** set to true to see events and properties in console. DON'T COMMIT. */
 const DEBUG = false;
 
+type LastEvent = {
+  eventName: string;
+  eventProperties?: Partial<EventProperties> & Record<string, any>;
+};
+
 type AmplitudeStore = {
-  lastEvent: {
-    eventName: string;
-    eventProperties?: Partial<EventProperties> & Record<string, any>;
-  } | null;
-  setLastEvent: (event: {
-    eventName: string;
-    eventProperties?: Partial<EventProperties> & Record<string, any>;
-  }) => void;
+  lastEvent: LastEvent | null;
+  setLastEvent: (event: LastEvent) => void;
 };
 
 const useAmplitudeStore = create<AmplitudeStore>((set) => ({

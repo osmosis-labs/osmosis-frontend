@@ -60,7 +60,6 @@ export const PortfolioHistoricalChart = ({
               if (
                 lastEvent?.eventName !== EventName.Portfolio.chartInteraction
               ) {
-                console.log("lastEvent: ", getLastEvent());
                 logEvent([EventName.Portfolio.chartInteraction]);
               }
             }}
