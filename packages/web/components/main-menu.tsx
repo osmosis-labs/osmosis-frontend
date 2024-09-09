@@ -176,10 +176,6 @@ const MenuItemContent: React.FC<{
   const { t } = useTranslation();
   const { logEvent, getLastEvent } = useAmplitudeAnalytics();
 
-  useEffect(() => {
-    console.log("lastEvenet: ", getLastEvent());
-  });
-
   const { label, icon, amplitudeEvent, isNew, badge, secondaryLogo, subtext } =
     menu;
 
