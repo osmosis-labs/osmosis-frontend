@@ -70,6 +70,7 @@ export type EventProperties = {
   isRecommendedVariant: boolean;
   walletName: string;
   transferDirection: "deposit" | "withdraw";
+  coinDenom: string;
 };
 
 export type UserProperties = {
