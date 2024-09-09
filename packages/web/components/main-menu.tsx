@@ -174,7 +174,11 @@ const MenuItemContent: React.FC<{
   menu: MainLayoutMenu;
 }> = ({ selected, showSubTitle, menu }) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent, getLastEvent } = useAmplitudeAnalytics();
+
+  useEffect(() => {
+    console.log("lastEvenet: ", getLastEvent());
+  });
 
   const { label, icon, amplitudeEvent, isNew, badge, secondaryLogo, subtext } =
     menu;
