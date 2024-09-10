@@ -38,6 +38,8 @@ function Earn() {
   const { earnPage, _isInitialized } = useFeatureFlags();
   const { accountStore } = useStore();
   const router = useRouter();
+  const { search } = router.query;
+
   /**
    * Control the selected table idx for external control
    * such as the {num} positions onClick on EarnPosition
@@ -86,7 +88,7 @@ function Earn() {
           }))
         : [],
       lockDurationType: "all",
-      search: "",
+      search: "", // We'll handle this in the FilterProvider
       specialTokens: [],
       rewardType: "all",
     }),

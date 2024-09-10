@@ -1,4 +1,11 @@
-import { createContext, PropsWithChildren, useCallback, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   ListOption,
@@ -47,6 +54,14 @@ export const FilterProvider = ({
   defaultFilters,
 }: PropsWithChildren<{ defaultFilters: Filters }>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const router = useRouter();
+  const { search } = router.query;
+
+  useEffect(() => {
+    if (typeof search === "string" && search !== "") {
+      setFilters((prev) => ({ ...prev, search }));
+    }
+  }, [search]);
 
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {
@@ -64,13 +79,6 @@ export const FilterProvider = ({
 
       return setFilters((prev) => {
         const prevArray = prev[key] as ListOption<string>[];
-        /**
-         * This code chooses what new array
-         * to return based on the existence of the incoming filter value.
-         *
-         * If the incoming value is already present in the state value,
-         * then remove it. If it doesn't, then add it.
-         */
         const newArray = exists
           ? prevArray.filter(
               (prevOption) => prevOption.value !== filterValue.value
