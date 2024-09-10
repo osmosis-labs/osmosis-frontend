@@ -88,11 +88,11 @@ function Earn() {
           }))
         : [],
       lockDurationType: "all",
-      search: "", // We'll handle this in the FilterProvider
+      search: typeof search === "string" ? search : "",
       specialTokens: [],
       rewardType: "all",
     }),
-    [holdenDenoms?.length, cmsData, isWalletConnected]
+    [holdenDenoms?.length, cmsData, isWalletConnected, search]
   );
 
   useEffect(() => {
