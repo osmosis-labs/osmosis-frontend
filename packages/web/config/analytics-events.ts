@@ -2,6 +2,8 @@
  *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
  */
 
+import { AllocationOptions } from "~/components/complex/portfolio/types";
+
 // Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
 // For maintainability - all event logs should be in high level component
 
@@ -71,6 +73,19 @@ export type EventProperties = {
   walletName: string;
   transferDirection: "deposit" | "withdraw";
   swapSource: "market" | "swap";
+  coinDenom: string;
+  appName: string;
+  isFeatured: boolean;
+  isBanner: boolean;
+  position: number;
+  allocationType: AllocationOptions;
+  section: string;
+  tokenIn: string;
+  tokenOut: string;
+  option: string;
+  numberOfValidators: number;
+  validatorNames: string[];
+  squadSize: number;
 };
 
 export type UserProperties = {

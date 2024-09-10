@@ -10,6 +10,7 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useSwapAsset } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -262,7 +263,11 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
 
 export type DisplayableLimitOrder = MappedLimitOrder;
 
-export const useOrderbookAllActiveOrders = ({
+/**
+ * Queries for all active orders for a given user.
+ * Swaps between using SQS passthrough and a direct node query based on feature flag.
+ */
+const useOrdersQuery = ({
   userAddress,
   pageSize = 10,
   refetchInterval = 5000,
@@ -271,17 +276,18 @@ export const useOrderbookAllActiveOrders = ({
   pageSize?: number;
   refetchInterval?: number;
 }) => {
+  const { sqsActiveOrders } = useFeatureFlags();
   const { orderbooks } = useOrderbooks();
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
   const {
-    data: orders,
-    isLoading,
-    fetchNextPage,
-    isFetching,
-    isFetchingNextPage,
-    hasNextPage,
-    refetch,
-    isRefetching,
+    data: sqsOrders,
+    isLoading: isSQSOrdersLoading,
+    fetchNextPage: fetchSQSOrdersNextPage,
+    isFetching: isSQSOrdersFetching,
+    isFetchingNextPage: isSQSOrdersFetchingNextPage,
+    hasNextPage: hasSQSOrdersNextPage,
+    refetch: refetchSQSOrders,
+    isRefetching: isSQSOrdersRefetching,
   } = api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
     {
       userOsmoAddress: userAddress,
@@ -293,7 +299,7 @@ export const useOrderbookAllActiveOrders = ({
       refetchInterval,
       cacheTime: refetchInterval,
       staleTime: refetchInterval,
-      enabled: !!userAddress && addresses.length > 0,
+      enabled: !!userAddress && addresses.length > 0 && sqsActiveOrders,
       refetchOnMount: true,
       keepPreviousData: false,
       trpc: {
@@ -304,6 +310,76 @@ export const useOrderbookAllActiveOrders = ({
       },
     }
   );
+
+  const {
+    data: nodeOrders,
+    isLoading: isNodeOrdersLoading,
+    fetchNextPage: fetchNodeOrdersNextPage,
+    isFetching: isNodeOrdersFetching,
+    isFetchingNextPage: isNodeOrdersFetchingNextPage,
+    hasNextPage: hasNodeOrdersNextPage,
+    refetch: refetchNodeOrders,
+    isRefetching: isNodeOrdersRefetching,
+  } = api.edge.orderbooks.getAllOrders.useInfiniteQuery(
+    {
+      userOsmoAddress: userAddress,
+      limit: pageSize,
+    },
+    {
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+      refetchInterval,
+      cacheTime: refetchInterval,
+      staleTime: refetchInterval,
+      enabled: !!userAddress && addresses.length > 0 && !sqsActiveOrders,
+      refetchOnMount: true,
+      keepPreviousData: false,
+      trpc: {
+        abortOnUnmount: true,
+        context: {
+          skipBatch: true,
+        },
+      },
+    }
+  );
+
+  return {
+    data: sqsActiveOrders ? sqsOrders : nodeOrders,
+    isLoading: sqsActiveOrders ? isSQSOrdersLoading : isNodeOrdersLoading,
+    fetchNextPage: sqsActiveOrders
+      ? fetchSQSOrdersNextPage
+      : fetchNodeOrdersNextPage,
+    isFetching: sqsActiveOrders ? isSQSOrdersFetching : isNodeOrdersFetching,
+    isFetchingNextPage: sqsActiveOrders
+      ? isSQSOrdersFetchingNextPage
+      : isNodeOrdersFetchingNextPage,
+    hasNextPage: sqsActiveOrders ? hasSQSOrdersNextPage : hasNodeOrdersNextPage,
+    refetch: sqsActiveOrders ? refetchSQSOrders : refetchNodeOrders,
+    isRefetching: sqsActiveOrders
+      ? isSQSOrdersRefetching
+      : isNodeOrdersRefetching,
+  };
+};
+
+export const useOrderbookAllActiveOrders = ({
+  userAddress,
+  pageSize = 10,
+  refetchInterval = 5000,
+}: {
+  userAddress: string;
+  pageSize?: number;
+  refetchInterval?: number;
+}) => {
+  const {
+    data: orders,
+    isLoading,
+    fetchNextPage,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    refetch,
+    isRefetching,
+  } = useOrdersQuery({ userAddress, pageSize, refetchInterval });
 
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
@@ -326,6 +402,79 @@ export const useOrderbookAllActiveOrders = ({
   };
 };
 
+/**
+ * Queries for all claimable orders for a given user.
+ * Swaps between using SQS passthrough and a direct node query based on feature flag.
+ */
+const useClaimableOrdersQuery = ({
+  userAddress,
+  disabled = false,
+  refetchInterval = 5000,
+}: {
+  userAddress: string;
+  disabled?: boolean;
+  refetchInterval?: number;
+}) => {
+  const { orderbooks } = useOrderbooks();
+  const { sqsActiveOrders } = useFeatureFlags();
+  const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
+  const { data: claimableOrders, isLoading } =
+    api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
+      {
+        userOsmoAddress: userAddress,
+        filter: "filled",
+        limit: 100,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+        refetchInterval,
+        enabled:
+          !!userAddress && addresses.length > 0 && !disabled && sqsActiveOrders,
+        refetchOnMount: true,
+        keepPreviousData: false,
+        trpc: {
+          abortOnUnmount: true,
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+
+  const { data: nodeClaimableOrders, isLoading: nodeIsLoading } =
+    api.edge.orderbooks.getClaimableOrders.useQuery(
+      {
+        userOsmoAddress: userAddress,
+      },
+      {
+        enabled:
+          !!userAddress &&
+          addresses.length > 0 &&
+          !disabled &&
+          !sqsActiveOrders,
+        refetchOnMount: true,
+        keepPreviousData: false,
+        trpc: {
+          abortOnUnmount: true,
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
+
+  const orders = useMemo(() => {
+    if (!sqsActiveOrders) return nodeClaimableOrders;
+    return claimableOrders?.pages?.flatMap((page) => page.items) ?? [];
+  }, [claimableOrders?.pages, nodeClaimableOrders, sqsActiveOrders]);
+
+  return {
+    data: orders,
+    isLoading: sqsActiveOrders ? isLoading : nodeIsLoading,
+  };
+};
+
 export const useOrderbookClaimableOrders = ({
   userAddress,
   disabled = false,
@@ -339,32 +488,12 @@ export const useOrderbookClaimableOrders = ({
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const addresses = orderbooks.map(({ contractAddress }) => contractAddress);
-  const { data: claimableOrders, isLoading } =
-    api.local.orderbooks.getAllOrdersSQS.useInfiniteQuery(
-      {
-        userOsmoAddress: userAddress,
-        filter: "filled",
-        limit: 100,
-      },
-      {
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-        initialCursor: 0,
-        refetchInterval,
-        enabled: !!userAddress && addresses.length > 0 && !disabled,
-        refetchOnMount: true,
-        keepPreviousData: false,
-        trpc: {
-          abortOnUnmount: true,
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
+  const { data: orders, isLoading } = useClaimableOrdersQuery({
+    userAddress,
+    disabled,
+    refetchInterval,
+  });
 
-  const orders = useMemo(() => {
-    return claimableOrders?.pages?.flatMap((page) => page.items) ?? [];
-  }, [claimableOrders?.pages]);
   const claimAllOrders = useCallback(async () => {
     if (!account || !orders) return;
     const msgs = addresses

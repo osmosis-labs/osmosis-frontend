@@ -5,11 +5,27 @@ import {
   logEvent as amplitudeLogEvent,
 } from "@amplitude/analytics-browser";
 import { useEffect } from "react";
+import { create } from "zustand";
 
 import { AmplitudeEvent, EventProperties, UserProperties } from "~/config";
 
 /** set to true to see events and properties in console. DON'T COMMIT. */
 const DEBUG = false;
+
+type LastEvent = {
+  eventName: string;
+  eventProperties?: Partial<EventProperties> & Record<string, any>;
+};
+
+type AmplitudeStore = {
+  lastEvent: LastEvent | null;
+  setLastEvent: (event: LastEvent) => void;
+};
+
+const useAmplitudeStore = create<AmplitudeStore>((set) => ({
+  lastEvent: null,
+  setLastEvent: (event) => set({ lastEvent: event }),
+}));
 
 export const logAmplitudeEvent = ([eventName, eventProperties]:
   | [string, (Partial<EventProperties> & Record<string, any>) | undefined]
@@ -18,6 +34,7 @@ export const logAmplitudeEvent = ([eventName, eventProperties]:
     console.info({ name: eventName, props: eventProperties });
   }
   amplitudeLogEvent(eventName, eventProperties);
+  useAmplitudeStore.getState().setLastEvent({ eventName, eventProperties });
 };
 
 const setUserAmplitudeProperty = (
@@ -52,8 +69,15 @@ export function useAmplitudeAnalytics({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const logEvent = (event: AmplitudeEvent) => {
+    logAmplitudeEvent(event);
+  };
+
+  const getLastEvent = () => useAmplitudeStore.getState().lastEvent;
+
   return {
-    logEvent: logAmplitudeEvent,
+    logEvent,
     setUserProperty: setUserAmplitudeProperty,
+    getLastEvent,
   };
 }
