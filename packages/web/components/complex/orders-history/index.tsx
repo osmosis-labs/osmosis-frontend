@@ -84,7 +84,7 @@ export const OrderHistory = observer(() => {
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 20,
-    refetchInterval: 10000,
+    refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
@@ -123,7 +123,7 @@ export const OrderHistory = observer(() => {
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
       disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
-      refetchInterval: 10000,
+      refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     });
 
   const claimOrders = useCallback(async () => {
