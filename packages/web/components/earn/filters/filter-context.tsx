@@ -79,6 +79,13 @@ export const FilterProvider = ({
 
       return setFilters((prev) => {
         const prevArray = prev[key] as ListOption<string>[];
+        /**
+         * This code chooses what new array
+         * to return based on the existence of the incoming filter value.
+         *
+         * If the incoming value is already present in the state value,
+         * then remove it. If it doesn't, then add it.
+         */
         const newArray = exists
           ? prevArray.filter(
               (prevOption) => prevOption.value !== filterValue.value
