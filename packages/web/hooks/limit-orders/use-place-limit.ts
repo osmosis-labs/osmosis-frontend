@@ -225,21 +225,26 @@ export const usePlaceLimit = ({
       return;
     }
 
-    // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
-    // To account for this we divide by the quote asset price.
-    const tickId = priceToTick(
-      priceState.price.quo(quoteAssetPrice.toDec()).mul(normalizationFactor)
-    );
-    const msg = {
-      place_limit: {
-        tick_id: parseInt(tickId.toString()),
-        order_direction: orderDirection,
-        quantity,
-        claim_bounty: CLAIM_BOUNTY,
-      },
-    };
+    try {
+      // The requested price must account for the ratio between the quote and base asset as the base asset may not be a stablecoin.
+      // To account for this we divide by the quote asset price.
+      const tickId = priceToTick(
+        priceState.price.quo(quoteAssetPrice.toDec()).mul(normalizationFactor)
+      );
+      const msg = {
+        place_limit: {
+          tick_id: parseInt(tickId.toString()),
+          order_direction: orderDirection,
+          quantity,
+          claim_bounty: CLAIM_BOUNTY,
+        },
+      };
 
-    return msg;
+      return msg;
+    } catch (error) {
+      console.error("Error attempting to place limit order", error);
+      return;
+    }
   }, [
     orderDirection,
     priceState.price,
@@ -295,6 +300,7 @@ export const usePlaceLimit = ({
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
+        swapSource: "market" as "swap" | "market",
       };
       try {
         logEvent([EventName.Swap.swapStarted, baseEvent]);

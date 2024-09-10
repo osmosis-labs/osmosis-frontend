@@ -72,6 +72,7 @@ export type EventProperties = {
   isRecommendedVariant: boolean;
   walletName: string;
   transferDirection: "deposit" | "withdraw";
+  swapSource: "market" | "swap";
   coinDenom: string;
   appName: string;
   isFeatured: boolean;
