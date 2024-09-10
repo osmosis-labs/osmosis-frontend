@@ -8,7 +8,6 @@ import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
-import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
@@ -18,6 +17,7 @@ import {
 } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice } from "~/utils/formatter";
 
 export const TransactionDetailsContent = ({
   onRequestClose,
@@ -142,7 +142,7 @@ export const TransactionDetailsContent = ({
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
               <div className="body1 text-osmoverse-300">
-                {displayFiatPrice(tokenIn?.usd, "", t)}
+                {formatFiatPrice(tokenIn?.usd)}
               </div>
             </div>
           </div>
@@ -179,7 +179,7 @@ export const TransactionDetailsContent = ({
                 {formatPretty(tokenOut.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
               <div className="body1 text-osmoverse-300">
-                {displayFiatPrice(tokenOut?.usd, "", t)}
+                {formatFiatPrice(tokenOut?.usd)}
               </div>
             </div>
           </div>

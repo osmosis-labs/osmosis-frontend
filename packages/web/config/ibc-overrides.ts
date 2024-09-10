@@ -59,7 +59,7 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://app.picasso.network/?from=OSMOSIS&to=POLKADOT",
   },
-  MATIC: {
+  POL: {
     sourceChainNameOverride: "Polygon",
   },
   SHIB: {

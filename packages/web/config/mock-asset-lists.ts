@@ -1445,7 +1445,7 @@ export const AssetLists: AssetList[] = [
         sourceDenom: "wmatic-wei",
         coinMinimalDenom:
           "ibc/AB589511ED0DD5FA56171A39978AFBF1371DB986EC1C3526CE138A16377E39BB",
-        symbol: "MATIC",
+        symbol: "POL",
         decimals: 18,
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -1506,7 +1506,7 @@ export const AssetLists: AssetList[] = [
             chainType: "evm",
             chainId: 137,
             address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-            symbol: "MATIC",
+            symbol: "POL",
             decimals: 18,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -1514,7 +1514,7 @@ export const AssetLists: AssetList[] = [
             },
           },
         ],
-        variantGroupKey: "MATIC",
+        variantGroupKey: "POL",
         name: "Polygon",
         isAlloyed: false,
         verified: true,

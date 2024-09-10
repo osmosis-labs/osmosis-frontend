@@ -1158,7 +1158,6 @@
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
-    "noPriceData": "Données de prix indisponibles",
     "viewAll": "Voir tout",
     "history": "Histoire",
     "orders": "Ordres"

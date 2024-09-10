@@ -84,9 +84,8 @@ export const OrderHistory = observer(() => {
   } = useOrderbookAllActiveOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 20,
-    refetchInterval: 15000,
+    refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
-
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
     () =>
@@ -116,15 +115,16 @@ export const OrderHistory = observer(() => {
     scrollMargin: listRef.current?.offsetTop ?? 0,
     paddingStart: 45,
   });
+  const filledOrdersInDisplay = useMemo(() => {
+    return orders.filter((o) => o.status === "filled");
+  }, [orders]);
 
-  const filledOrders = orders.filter((o) => o.status === "filled");
-  const filledOrdersCount = filledOrders.length;
-
-  const { claimAllOrders } = useOrderbookClaimableOrders({
-    userAddress: wallet?.address ?? "",
-    disabled: isLoading || orders.length === 0 || isRefetching,
-    orders: filledOrders,
-  });
+  const { claimAllOrders, count: filledOrdersCount } =
+    useOrderbookClaimableOrders({
+      userAddress: wallet?.address ?? "",
+      disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
+      refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
+    });
 
   const claimOrders = useCallback(async () => {
     try {
@@ -433,7 +433,7 @@ const TableOrderRow = memo(
       baseAsset?.rawAsset.logoURIs.png ??
       "";
 
-    const placedAt = dayjs(placed_at);
+    const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
     const formattedDate = placedAt.format("MMM D");
 
