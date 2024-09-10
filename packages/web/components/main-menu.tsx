@@ -174,7 +174,7 @@ const MenuItemContent: React.FC<{
   menu: MainLayoutMenu;
 }> = ({ selected, showSubTitle, menu }) => {
   const { t } = useTranslation();
-  const { logEvent, getLastEvent } = useAmplitudeAnalytics();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { label, icon, amplitudeEvent, isNew, badge, secondaryLogo, subtext } =
     menu;
