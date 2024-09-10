@@ -30,7 +30,8 @@ export type AvailableFlags =
   | "advancedChart"
   | "cypherCard"
   | "newPortfolioPage"
-  | "inGivenOut";
+  | "inGivenOut"
+  | "sqsActiveOrders";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
@@ -56,6 +57,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   cypherCard: false,
   newPortfolioPage: false,
   inGivenOut: false,
+  sqsActiveOrders: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =
@@ -67,7 +69,6 @@ export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
-
   const client = useLDClient();
 
   const { data: levanaGeoblock } = useQuery(
