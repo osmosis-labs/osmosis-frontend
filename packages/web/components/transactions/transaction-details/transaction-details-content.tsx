@@ -142,7 +142,7 @@ export const TransactionDetailsContent = ({
                 {formatPretty(tokenIn.token, { maxDecimals: 6 }).split(" ")[0]}
               </div>
               <div className="body1 text-osmoverse-300">
-                {formatFiatPrice(tokenIn?.usd, "", t)}
+                {formatFiatPrice(tokenIn?.usd)}
               </div>
             </div>
           </div>
