@@ -1,3 +1,4 @@
+import { Popover } from "@headlessui/react";
 import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
@@ -515,6 +516,11 @@ export const AssetActionsCell: AssetCellComponent<{
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
   const needsConversion = coinMinimalDenom !== variantGroupKey;
 
+  const actionOptions = [
+    { key: "trade", label: t("assets.actions.trade") },
+    { key: "earn", label: t("assets.actions.earn") },
+  ];
+
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
@@ -524,17 +530,30 @@ export const AssetActionsCell: AssetCellComponent<{
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
           }}
         >
           {t("assets.table.activate")}
         </Button>
       )}
-      <div className="flex gap-3 md:hidden">
-        {!needsActivation && (
-          <>
-            {needsConversion ? (
+      {!needsActivation && (
+        <div className="flex gap-3 md:hidden">
+          {needsConversion ? (
+            <Button
+              size="icon"
+              variant="secondary"
+              className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // Add conversion logic here
+                console.log("Convert clicked");
+              }}
+            >
+              Convert
+            </Button>
+          ) : (
+            <>
               <Button
                 size="icon"
                 variant="secondary"
@@ -542,51 +561,100 @@ export const AssetActionsCell: AssetCellComponent<{
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
-                  // Add conversion logic here
-                  console.log("Convert clicked");
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "deposit",
+                  });
                 }}
               >
-                Convert
+                <Icon id="deposit" height={20} width={20} />
               </Button>
-            ) : (
-              <>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    bridgeAsset({
-                      anyDenom: coinDenom,
-                      direction: "deposit",
-                    });
-                  }}
-                >
-                  <Icon id="deposit" height={20} width={20} />
-                </Button>
-                {amount?.toDec().isPositive() && (
-                  <Button
-                    size="icon"
-                    variant="secondary"
-                    className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      bridgeAsset({
-                        anyDenom: coinDenom,
-                        direction: "withdraw",
-                      });
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "withdraw",
+                  });
+                }}
+              >
+                <Icon id="withdraw" height={20} width={20} />
+              </Button>
+            </>
+          )}
+          <AssetActionsDropdown
+            actionOptions={actionOptions}
+            onSelectAction={(action) => {
+              switch (action) {
+                case "trade":
+                  console.log("Trade clicked");
+                  break;
+                case "earn":
+                  console.log("Earn clicked");
+                  break;
+              }
+            }}
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AssetActionsDropdown: FunctionComponent<{
+  actionOptions: { key: string; label: string }[];
+  onSelectAction: (key: string) => void;
+}> = ({ actionOptions, onSelectAction }) => {
+  return (
+    <Popover className="relative shrink-0">
+      {({ open }) => (
+        <>
+          <Popover.Button
+            as={Button}
+            size="icon"
+            variant="secondary"
+            className={classNames(
+              "bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800",
+              {
+                "text-white-full": open,
+              }
+            )}
+          >
+            <Icon
+              className={classNames(
+                "transition-transform duration-150 ease-out",
+                open && "rotate-180"
+              )}
+              id="chevron-down"
+              width={16}
+              height={16}
+            />
+          </Popover.Button>
+
+          <Popover.Panel className="absolute right-0 z-50 mt-1">
+            {({ close }) => (
+              <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
+                {actionOptions.map(({ key, label }) => (
+                  <button
+                    key={key}
+                    className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
+                    onClick={() => {
+                      onSelectAction(key);
+                      close();
                     }}
                   >
-                    <Icon id="withdraw" height={20} width={20} />
-                  </Button>
-                )}
-              </>
+                    <span className="whitespace-nowrap">{label}</span>
+                  </button>
+                ))}
+              </div>
             )}
-          </>
-        )}
-      </div>
-    </div>
+          </Popover.Panel>
+        </>
+      )}
+    </Popover>
   );
 };
