@@ -152,6 +152,8 @@ export const AssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  console.log("assetsData: ", assetsData);
+
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
@@ -503,12 +505,15 @@ export const AssetActionsCell: AssetCellComponent<{
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
+  coinMinimalDenom,
+  variantGroupKey,
 }) => {
   const { t } = useTranslation();
 
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
+  const needsConversion = coinMinimalDenom !== variantGroupKey;
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
@@ -528,38 +533,58 @@ export const AssetActionsCell: AssetCellComponent<{
       )}
       <div className="flex gap-3 md:hidden">
         {!needsActivation && (
-          <Button
-            size="icon"
-            variant="secondary"
-            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              bridgeAsset({
-                anyDenom: coinDenom,
-                direction: "deposit",
-              });
-            }}
-          >
-            <Icon id="deposit" height={20} width={20} />
-          </Button>
-        )}
-        {!needsActivation && amount?.toDec().isPositive() && (
-          <Button
-            size="icon"
-            variant="secondary"
-            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              bridgeAsset({
-                anyDenom: coinDenom,
-                direction: "withdraw",
-              });
-            }}
-          >
-            <Icon id="withdraw" height={20} width={20} />
-          </Button>
+          <>
+            {needsConversion ? (
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  // Add conversion logic here
+                  console.log("Convert clicked");
+                }}
+              >
+                Convert
+              </Button>
+            ) : (
+              <>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    bridgeAsset({
+                      anyDenom: coinDenom,
+                      direction: "deposit",
+                    });
+                  }}
+                >
+                  <Icon id="deposit" height={20} width={20} />
+                </Button>
+                {amount?.toDec().isPositive() && (
+                  <Button
+                    size="icon"
+                    variant="secondary"
+                    className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      bridgeAsset({
+                        anyDenom: coinDenom,
+                        direction: "withdraw",
+                      });
+                    }}
+                  >
+                    <Icon id="withdraw" height={20} width={20} />
+                  </Button>
+                )}
+              </>
+            )}
+          </>
         )}
       </div>
     </div>
