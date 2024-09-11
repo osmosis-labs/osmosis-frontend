@@ -1158,7 +1158,6 @@
     "transactionHash": "هش تراکنش",
     "viewOnExplorer": "مشاهده در اکسپلورر",
     "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
-    "noPriceData": "اطلاعات قیمت در دسترس نیست",
     "viewAll": "مشاهده همه",
     "history": "تاریخ",
     "orders": "سفارشات"
@@ -1173,6 +1172,10 @@
     "newer": "جدیدتر"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "قیمت خود را انتخاب کنید",
+      "tryLimitOrders": "سفارشات محدود را امتحان کنید"
+    },
     "historyTable": {
       "columns": {
         "order": "سفارش",

@@ -53,7 +53,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   return (
     <div className="flex w-full flex-col py-3">
-      <div className="flex cursor-pointer items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <h6 className="py-3">{t("portfolio.recentActivity")}</h6>
         <LinkButton
           href="/transactions"
@@ -72,6 +72,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
           topActivity.map((activity) => {
             return (
               <SwapRow
+                hash={activity.hash}
                 key={activity.id}
                 title={{
                   pending: t("transactions.swapping"),

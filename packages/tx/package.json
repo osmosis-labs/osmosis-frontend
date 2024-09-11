@@ -25,8 +25,8 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@cosmjs/stargate": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
+    "@cosmjs/stargate": "0.32.3",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/proto-codecs": "^5.1.0",
     "@osmosis-labs/server": "^1.0.0",

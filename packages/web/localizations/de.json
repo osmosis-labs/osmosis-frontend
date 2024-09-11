@@ -1158,7 +1158,6 @@
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
-    "noPriceData": "Preisdaten nicht verfügbar",
     "viewAll": "Alle ansehen",
     "history": "Geschichte",
     "orders": "Aufträge"
@@ -1173,6 +1172,10 @@
     "newer": "Neuere"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Wählen Sie Ihren Preis",
+      "tryLimitOrders": "Versuchen Sie es mit Limit-Orders"
+    },
     "historyTable": {
       "columns": {
         "order": "Befehl",

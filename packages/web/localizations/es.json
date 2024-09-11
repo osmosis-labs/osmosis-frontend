@@ -1158,7 +1158,6 @@
     "transactionHash": "Hash de transacción",
     "viewOnExplorer": "Ver en el explorador",
     "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
-    "noPriceData": "Datos de precios no disponibles",
     "viewAll": "Ver todo",
     "history": "Historia",
     "orders": "Pedidos"
@@ -1173,6 +1172,10 @@
     "newer": "Más nuevo"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Elige tu precio",
+      "tryLimitOrders": "Pruebe las órdenes limitadas"
+    },
     "historyTable": {
       "columns": {
         "order": "Orden",

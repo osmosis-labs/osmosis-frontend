@@ -229,6 +229,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
         feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: swapState.quote?.timeMs,
+        swapSource: "swap" as "swap" | "market",
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
       setIsSendingTx(true);

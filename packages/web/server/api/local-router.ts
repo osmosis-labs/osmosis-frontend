@@ -4,6 +4,7 @@ import {
   concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
+  orderbookRouter,
   paramsRouter,
   portfolioRouter,
   swapRouter,
@@ -23,4 +24,5 @@ export const localRouter = createTRPCRouter({
   bridgeTransfer: localBridgeTransferRouter,
   portfolio: portfolioRouter,
   params: paramsRouter,
+  orderbooks: orderbookRouter,
 });

@@ -3,10 +3,8 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
-import { displayFiatPrice } from "~/components/transactions/transaction-utils";
-import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 import { Spinner } from "../loaders";
 
@@ -133,7 +131,6 @@ const TokenConversion: FunctionComponent<
     TransactionRow["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
       <div className="flex w-60 items-center justify-end gap-4 md:hidden">
@@ -150,7 +147,7 @@ const TokenConversion: FunctionComponent<
             </div>
           )}
           <div className="body2 text-osmoverse-400">
-            {displayFiatPrice(tokenIn?.value, "-", t)}
+            {tokenIn.value && `- ${formatFiatPrice(tokenIn.value)}`}
           </div>
         </div>
         <FallbackImg
@@ -190,7 +187,7 @@ const TokenConversion: FunctionComponent<
             </div>
           )}
           <div className="md:caption body2 mt-0 md:mt-1">
-            {displayFiatPrice(tokenOut?.value, "+", t)}
+            {tokenOut.value && `+ ${formatFiatPrice(tokenOut.value)}`}
           </div>
         </div>
       </div>

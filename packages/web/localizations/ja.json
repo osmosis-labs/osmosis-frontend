@@ -1158,7 +1158,6 @@
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
     "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
-    "noPriceData": "価格データは利用できません",
     "viewAll": "すべて表示",
     "history": "歴史",
     "orders": "注文"
@@ -1173,6 +1172,10 @@
     "newer": "新しい"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "価格を選択してください",
+      "tryLimitOrders": "指値注文を試す"
+    },
     "historyTable": {
       "columns": {
         "order": "注文",

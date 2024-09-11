@@ -1158,7 +1158,6 @@
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
-    "noPriceData": "Données de prix indisponibles",
     "viewAll": "Voir tout",
     "history": "Histoire",
     "orders": "Ordres"
@@ -1173,6 +1172,10 @@
     "newer": "Plus récent"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Choisissez votre prix",
+      "tryLimitOrders": "Essayez les ordres limités"
+    },
     "historyTable": {
       "columns": {
         "order": "Commande",

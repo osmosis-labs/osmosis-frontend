@@ -6,7 +6,6 @@ import { BasePage } from "~/e2e/pages/base-page";
 export class SwapPage extends BasePage {
   readonly page: Page;
   readonly swapBtn: Locator;
-  readonly swapHalfBtn: Locator;
   readonly swapMaxBtn: Locator;
   readonly swapInput: Locator;
   readonly flipAssetsBtn: Locator;
@@ -19,13 +18,12 @@ export class SwapPage extends BasePage {
     super(page);
     this.page = page;
     this.swapBtn = page.getByRole("button", { name: "Swap", exact: true });
-    this.swapHalfBtn = page.getByRole("button", { name: "HALF", exact: true });
     this.swapMaxBtn = page.getByRole("button", { name: "MAX", exact: true });
-    this.swapInput = page.locator('input[type="number"]');
+    this.swapInput = page.locator('//input[@data-testid="trade-input-swap"]');
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
-    this.exchangeRate = page.locator('//span[contains(@class, "subtitle2")]');
+    this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
     this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]');
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
@@ -181,18 +179,16 @@ export class SwapPage extends BasePage {
   }
 
   async showSwapInfo() {
-    const swapInfo = this.page.locator(
-      '//button[contains(@class, "transition-opacity") and contains(@class, "w-full")]'
-    );
+    const swapInfo = this.page.locator("//button//span[.='Show details']");
     await swapInfo.click();
-    console.log("Market Impact: " + (await this.getPriceInpact()));
+    console.log("Price Impact: " + (await this.getPriceInpact()));
   }
 
   async getPriceInpact() {
     const priceInpactSpan = this.page.locator(
-      '//span[.="Market Impact"]/../span[contains(@class,"text-osmoverse-200")]'
+      '//span[.="Price Impact"]/..//span[@class="text-bullish-400"]'
     );
-    return await priceInpactSpan.textContent({ timeout: 4000 });
+    return await priceInpactSpan.textContent();
   }
 
   async takeScreenshot(name: string) {
