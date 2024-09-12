@@ -156,8 +156,6 @@ export const AssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
-  console.log("assetsData: ", assetsData);
-
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
