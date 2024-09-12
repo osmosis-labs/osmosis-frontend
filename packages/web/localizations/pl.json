@@ -286,7 +286,12 @@
     "last7d": "Ostatnie 7 dni",
     "last30d": "Ostatnie 30 dni",
     "last1y": "Ostatni 1 rok",
-    "allTime": "Cały czas"
+    "allTime": "Cały czas",
+    "trade": "Handel",
+    "earn": "Zarabiać",
+    "deposit": "Depozyt",
+    "withdraw": "Wycofać",
+    "convert": "Konwertować"
   },
   "buyTokens": "Kup tokeny",
   "components": {

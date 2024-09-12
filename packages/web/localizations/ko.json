@@ -286,7 +286,12 @@
     "last7d": "지난 7일",
     "last30d": "지난 30일",
     "last1y": "지난 1년",
-    "allTime": "모든 시간"
+    "allTime": "모든 시간",
+    "trade": "거래",
+    "earn": "벌다",
+    "deposit": "보증금",
+    "withdraw": "철회하다",
+    "convert": "전환하다"
   },
   "buyTokens": "토큰 구매",
   "components": {

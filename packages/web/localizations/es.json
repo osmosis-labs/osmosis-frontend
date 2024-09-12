@@ -286,7 +286,12 @@
     "last7d": "Últimos 7 días",
     "last30d": "Últimos 30 días",
     "last1y": "Último 1 año",
-    "allTime": "Todo el tiempo"
+    "allTime": "Todo el tiempo",
+    "trade": "Comercio",
+    "earn": "Ganar",
+    "deposit": "Depósito",
+    "withdraw": "Retirar",
+    "convert": "Convertir"
   },
   "buyTokens": "Comprar fichas",
   "components": {

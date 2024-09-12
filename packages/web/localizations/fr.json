@@ -286,7 +286,12 @@
     "last7d": "Derniers 7 jours",
     "last30d": "Les 30 derniers jours",
     "last1y": "Dernière année",
-    "allTime": "Tout le temps"
+    "allTime": "Tout le temps",
+    "trade": "Commerce",
+    "earn": "Gagner",
+    "deposit": "Dépôt",
+    "withdraw": "Retirer",
+    "convert": "Convertir"
   },
   "buyTokens": "Acheter jetons",
   "components": {

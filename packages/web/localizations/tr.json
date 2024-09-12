@@ -286,7 +286,12 @@
     "last7d": "Son 7 gün",
     "last30d": "Son 30 gün",
     "last1y": "Son 1y",
-    "allTime": "Tüm zamanlar"
+    "allTime": "Tüm zamanlar",
+    "trade": "Ticaret",
+    "earn": "Para kazanmak",
+    "deposit": "Depozito",
+    "withdraw": "Geri çekilmek",
+    "convert": "Dönüştürmek"
   },
   "buyTokens": "jeton satın al",
   "components": {
