@@ -1,4 +1,4 @@
-import { Popover } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
@@ -510,6 +510,7 @@ export const AssetActionsCell: AssetCellComponent<{
   variantGroupKey,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
@@ -517,9 +518,16 @@ export const AssetActionsCell: AssetCellComponent<{
   const needsConversion = coinMinimalDenom !== variantGroupKey;
 
   const actionOptions = [
-    { key: "trade", label: t("assets.actions.trade") },
-    { key: "earn", label: t("assets.actions.earn") },
+    { key: "trade", label: t("portfolio.trade") },
+    { key: "earn", label: t("portfolio.earn") },
   ];
+
+  if (needsConversion) {
+    actionOptions.push(
+      { key: "deposit", label: t("portfolio.deposit") },
+      { key: "withdraw", label: t("portfolio.withdraw") }
+    );
+  }
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
@@ -540,9 +548,8 @@ export const AssetActionsCell: AssetCellComponent<{
         <div className="flex gap-3 md:hidden">
           {needsConversion ? (
             <Button
-              size="icon"
               variant="secondary"
-              className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              className="max-h-[48px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -591,10 +598,22 @@ export const AssetActionsCell: AssetCellComponent<{
             onSelectAction={(action) => {
               switch (action) {
                 case "trade":
-                  console.log("Trade clicked");
+                  router.push(`/assets/${coinDenom}`);
                   break;
                 case "earn":
-                  console.log("Earn clicked");
+                  router.push(`/earn?search=${coinDenom}`);
+                  break;
+                case "deposit":
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "deposit",
+                  });
+                  break;
+                case "withdraw":
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "withdraw",
+                  });
                   break;
               }
             }}
@@ -611,38 +630,22 @@ const AssetActionsDropdown: FunctionComponent<{
 }> = ({ actionOptions, onSelectAction }) => {
   return (
     <Popover className="relative shrink-0">
-      {({ open }) => (
+      {() => (
         <>
-          <Popover.Button
-            as={Button}
-            size="icon"
-            variant="secondary"
-            className={classNames(
-              "bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800",
-              {
-                "text-white-full": open,
-              }
-            )}
-          >
-            <Icon
-              className={classNames(
-                "transition-transform duration-150 ease-out",
-                open && "rotate-180"
-              )}
-              id="chevron-down"
-              width={16}
-              height={16}
-            />
-          </Popover.Button>
+          <PopoverButton as={Button} size="icon" variant="ghost">
+            <Icon id="dots-three-vertical" width={24} height={24} />
+          </PopoverButton>
 
-          <Popover.Panel className="absolute right-0 z-50 mt-1">
+          <PopoverPanel className="absolute right-0 z-50 mt-1">
             {({ close }) => (
               <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
                 {actionOptions.map(({ key, label }) => (
                   <button
                     key={key}
                     className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
                       onSelectAction(key);
                       close();
                     }}
@@ -652,7 +655,7 @@ const AssetActionsDropdown: FunctionComponent<{
                 ))}
               </div>
             )}
-          </Popover.Panel>
+          </PopoverPanel>
         </>
       )}
     </Popover>
