@@ -25,6 +25,7 @@ import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
+import { MultiLanguageT } from "~/hooks";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -57,6 +58,8 @@ type AssetRow =
 type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
+
+type Action = "deposit" | "withdraw" | "trade" | "earn";
 
 const DUST_THRESHOLD = new Dec(0.01);
 
@@ -234,7 +237,6 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const table = useReactTable({
     data: filteredAssetsData,
-    // @ts-expect-error
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
@@ -490,10 +492,7 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
-const getActionOptions = (
-  t: (key: string) => string,
-  showConvertButton: boolean
-) => {
+const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   return [
     ...(showConvertButton
       ? [
@@ -503,7 +502,7 @@ const getActionOptions = (
       : []),
     { key: "trade", label: t("portfolio.trade") },
     { key: "earn", label: t("portfolio.earn") },
-  ];
+  ] as Array<{ key: Action; label: string }>;
 };
 
 const handleSelectAction = (
@@ -639,8 +638,11 @@ export const AssetActionsCell: AssetCellComponent<{
 };
 
 const AssetActionsDropdown: FunctionComponent<{
-  actionOptions: { key: string; label: string }[];
-  onSelectAction: (key: string) => void;
+  actionOptions: {
+    key: Action;
+    label: string;
+  }[];
+  onSelectAction: (key: Action) => void;
 }> = ({ actionOptions, onSelectAction }) => {
   return (
     <Popover className="relative shrink-0">
@@ -686,7 +688,7 @@ const AssetActionsDropdown: FunctionComponent<{
   );
 };
 
-const getIconId = (key: string): SpriteIconId => {
+const getIconId = (key: Action): SpriteIconId => {
   switch (key) {
     case "deposit":
       return "deposit";
@@ -696,7 +698,5 @@ const getIconId = (key: string): SpriteIconId => {
       return "arrows-swap";
     case "earn":
       return "chart-up";
-    default:
-      return "dots-three-vertical"; // fallback icon
   }
 };
