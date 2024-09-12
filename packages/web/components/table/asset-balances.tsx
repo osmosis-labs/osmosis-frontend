@@ -72,10 +72,6 @@ export const AssetBalancesTable: FunctionComponent<{
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
 
-  console.log("featureFlags alloyedAssets: ", featureFlags.alloyedAssets);
-
-  // State
-
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
   const onSearchInput = useCallback((input: string) => {
