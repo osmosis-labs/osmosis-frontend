@@ -237,6 +237,7 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const table = useReactTable({
     data: filteredAssetsData,
+    // @ts-expect-error
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
