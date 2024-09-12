@@ -497,13 +497,13 @@ const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   return [
     ...(showConvertButton
       ? [
-          { key: "deposit", label: t("portfolio.deposit") },
-          { key: "withdraw", label: t("portfolio.withdraw") },
+          { key: "deposit", label: t("portfolio.deposit"), icon: "deposit" },
+          { key: "withdraw", label: t("portfolio.withdraw"), icon: "withdraw" },
         ]
       : []),
-    { key: "trade", label: t("portfolio.trade") },
-    { key: "earn", label: t("portfolio.earn") },
-  ] as Array<{ key: Action; label: string }>;
+    { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
+    { key: "earn", label: t("portfolio.earn"), icon: "chart-up" },
+  ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
 };
 
 const handleSelectAction = (
@@ -642,6 +642,7 @@ const AssetActionsDropdown: FunctionComponent<{
   actionOptions: {
     key: Action;
     label: string;
+    icon: SpriteIconId;
   }[];
   onSelectAction: (key: Action) => void;
 }> = ({ actionOptions, onSelectAction }) => {
@@ -656,7 +657,7 @@ const AssetActionsDropdown: FunctionComponent<{
           <PopoverPanel className="absolute right-0 z-50 mt-3 w-[320px]">
             {({ close }) => (
               <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-3">
-                {actionOptions.map(({ key, label }) => (
+                {actionOptions.map(({ key, label, icon }) => (
                   <button
                     key={key}
                     className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
@@ -670,7 +671,7 @@ const AssetActionsDropdown: FunctionComponent<{
                     <span className="subtitle1 flex items-center gap-2 whitespace-nowrap text-white-full">
                       <span className="flex h-10 w-10 items-center justify-center">
                         <Icon
-                          id={getIconId(key)}
+                          id={icon}
                           width={24}
                           height={24}
                           className="text-wosmongton-300"
@@ -687,17 +688,4 @@ const AssetActionsDropdown: FunctionComponent<{
       )}
     </Popover>
   );
-};
-
-const getIconId = (key: Action): SpriteIconId => {
-  switch (key) {
-    case "deposit":
-      return "deposit";
-    case "withdraw":
-      return "withdraw";
-    case "trade":
-      return "arrows-swap";
-    case "earn":
-      return "chart-up";
-  }
 };
