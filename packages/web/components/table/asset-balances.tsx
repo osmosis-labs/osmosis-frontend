@@ -24,6 +24,7 @@ import {
 import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
+import { SpriteIconId } from "~/config";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -520,23 +521,29 @@ export const AssetActionsCell: AssetCellComponent<{
   const needsConversion = coinMinimalDenom !== variantGroupKey;
   const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
-  const getActionOptions = (t: (key: string) => string) => {
-    const options = [
+  const getActionOptions = (
+    t: (key: string) => string,
+    showConvertButton: boolean
+  ) => {
+    return [
+      ...(showConvertButton
+        ? [
+            { key: "deposit", label: t("portfolio.deposit") },
+            { key: "withdraw", label: t("portfolio.withdraw") },
+          ]
+        : []),
       { key: "trade", label: t("portfolio.trade") },
       { key: "earn", label: t("portfolio.earn") },
     ];
-
-    if (showConvertButton) {
-      options.push(
-        { key: "deposit", label: t("portfolio.deposit") },
-        { key: "withdraw", label: t("portfolio.withdraw") }
-      );
-    }
-
-    return options;
   };
 
-  const handleSelectAction = (action: string) => {
+  const actionOptions = getActionOptions(t, showConvertButton);
+
+  const handleSelectAction = (
+    action: string,
+    coinDenom: string,
+    router: any
+  ) => {
     if (action === "trade") {
       router.push(`/assets/${coinDenom}`);
     } else if (action === "earn") {
@@ -574,7 +581,7 @@ export const AssetActionsCell: AssetCellComponent<{
           {showConvertButton ? (
             <Button
               variant="secondary"
-              className="max-h-[48px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              className="max-h-12 w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
@@ -582,7 +589,7 @@ export const AssetActionsCell: AssetCellComponent<{
                 alert("Convert clicked");
               }}
             >
-              Convert
+              {t("portfolio.convert")}
             </Button>
           ) : (
             <>
@@ -619,8 +626,10 @@ export const AssetActionsCell: AssetCellComponent<{
             </>
           )}
           <AssetActionsDropdown
-            actionOptions={getActionOptions(t)}
-            onSelectAction={handleSelectAction}
+            actionOptions={actionOptions}
+            onSelectAction={(action) =>
+              handleSelectAction(action, coinDenom, router)
+            }
           />
         </div>
       )}
@@ -640,9 +649,9 @@ const AssetActionsDropdown: FunctionComponent<{
             <Icon id="dots-three-vertical" width={24} height={24} />
           </PopoverButton>
 
-          <PopoverPanel className="absolute right-0 z-50 mt-1">
+          <PopoverPanel className="absolute right-0 z-50 mt-3 w-[320px]">
             {({ close }) => (
-              <div className="flex flex-col gap-2 rounded-2xl bg-osmoverse-825 p-2">
+              <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-3">
                 {actionOptions.map(({ key, label }) => (
                   <button
                     key={key}
@@ -654,7 +663,17 @@ const AssetActionsDropdown: FunctionComponent<{
                       close();
                     }}
                   >
-                    <span className="whitespace-nowrap">{label}</span>
+                    <span className="subtitle1 flex items-center gap-2 whitespace-nowrap text-white-full">
+                      <span className="flex h-10 w-10 items-center justify-center">
+                        <Icon
+                          id={getIconId(key)}
+                          width={24}
+                          height={24}
+                          className="text-wosmongton-300"
+                        />
+                      </span>
+                      {label}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -664,4 +683,19 @@ const AssetActionsDropdown: FunctionComponent<{
       )}
     </Popover>
   );
+};
+
+const getIconId = (key: string): SpriteIconId => {
+  switch (key) {
+    case "deposit":
+      return "deposit";
+    case "withdraw":
+      return "withdraw";
+    case "trade":
+      return "arrows-swap";
+    case "earn":
+      return "chart-up";
+    default:
+      return "dots-three-vertical"; // fallback icon
+  }
 };

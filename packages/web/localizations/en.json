@@ -290,7 +290,8 @@
     "trade": "Trade",
     "earn": "Earn",
     "deposit": "Deposit",
-    "withdraw": "Withdraw"
+    "withdraw": "Withdraw",
+    "convert": "Convert"
   },
   "buyTokens": "Buy tokens",
   "components": {
