@@ -1,11 +1,11 @@
 import { getOsmosisCodec } from "../../codec";
 
 export async function makeAddAuthenticatorMsg({
-  type,
+  authenticatorType,
   data,
   sender,
 }: {
-  type: string;
+  authenticatorType: string;
   data: Uint8Array;
   sender: string;
 }) {
@@ -14,7 +14,7 @@ export async function makeAddAuthenticatorMsg({
     {
       data,
       sender,
-      type,
+      authenticatorType,
     }
   );
 }
