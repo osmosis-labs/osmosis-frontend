@@ -71,6 +71,8 @@ export const AssetBalancesTable: FunctionComponent<{
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
 
+  console.log("featureFlags alloyedAssets: ", featureFlags.alloyedAssets);
+
   // State
 
   // search
@@ -502,7 +504,6 @@ export const AssetActionsCell: AssetCellComponent<{
 }> = ({
   coinDenom,
   coinImageUrl,
-  amount,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
@@ -511,23 +512,47 @@ export const AssetActionsCell: AssetCellComponent<{
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
+  const featureFlags = useFeatureFlags();
 
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
   const needsConversion = coinMinimalDenom !== variantGroupKey;
+  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
-  const actionOptions = [
-    { key: "trade", label: t("portfolio.trade") },
-    { key: "earn", label: t("portfolio.earn") },
-  ];
+  const getActionOptions = (t: (key: string) => string) => {
+    const options = [
+      { key: "trade", label: t("portfolio.trade") },
+      { key: "earn", label: t("portfolio.earn") },
+    ];
 
-  if (needsConversion) {
-    actionOptions.push(
-      { key: "deposit", label: t("portfolio.deposit") },
-      { key: "withdraw", label: t("portfolio.withdraw") }
-    );
-  }
+    if (showConvertButton) {
+      options.push(
+        { key: "deposit", label: t("portfolio.deposit") },
+        { key: "withdraw", label: t("portfolio.withdraw") }
+      );
+    }
+
+    return options;
+  };
+
+  const handleSelectAction = (action: string) => {
+    if (action === "trade") {
+      router.push(`/assets/${coinDenom}`);
+    } else if (action === "earn") {
+      router.push(`/earn?search=${coinDenom}`);
+    } else if (action === "deposit") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "deposit",
+      });
+    } else if (action === "withdraw") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "withdraw",
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
@@ -546,15 +571,15 @@ export const AssetActionsCell: AssetCellComponent<{
       )}
       {!needsActivation && (
         <div className="flex gap-3 md:hidden">
-          {needsConversion ? (
+          {showConvertButton ? (
             <Button
               variant="secondary"
               className="max-h-[48px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // Add conversion logic here
-                console.log("Convert clicked");
+                // TODO - open conversion modal once clicked
+                alert("Convert clicked");
               }}
             >
               Convert
@@ -594,29 +619,8 @@ export const AssetActionsCell: AssetCellComponent<{
             </>
           )}
           <AssetActionsDropdown
-            actionOptions={actionOptions}
-            onSelectAction={(action) => {
-              switch (action) {
-                case "trade":
-                  router.push(`/assets/${coinDenom}`);
-                  break;
-                case "earn":
-                  router.push(`/earn?search=${coinDenom}`);
-                  break;
-                case "deposit":
-                  bridgeAsset({
-                    anyDenom: coinDenom,
-                    direction: "deposit",
-                  });
-                  break;
-                case "withdraw":
-                  bridgeAsset({
-                    anyDenom: coinDenom,
-                    direction: "withdraw",
-                  });
-                  break;
-              }
-            }}
+            actionOptions={getActionOptions(t)}
+            onSelectAction={handleSelectAction}
           />
         </div>
       )}
