@@ -81,8 +81,6 @@ import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
 
-const ONE_CLICK_TRADING_TIMEOUT_HEIGHT = BigInt(50); // 50 blocks for 1CT
-
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
     AccountStore<Injects>,
@@ -921,7 +919,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const txBodyBytes = registry.encodeTxBody({
       messages,
       memo,
-      timeoutHeight: ONE_CLICK_TRADING_TIMEOUT_HEIGHT,
       nonCriticalExtensionOptions: [
         {
           typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
