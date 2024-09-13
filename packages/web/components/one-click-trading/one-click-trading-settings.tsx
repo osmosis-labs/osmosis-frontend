@@ -405,9 +405,9 @@ export const OneClickTradingSettings = ({
                     </div>
                   )}
 
-                <div className="flex flex-col gap-2">
-                  {isOneClickTradingEnabled &&
-                    (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
+                {isOneClickTradingEnabled &&
+                  (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
+                    <div className="flex flex-col gap-2">
                       <SkeletonLoader
                         className="h-5 self-center"
                         isLoaded={!isLoadingEstimateRemoveTx}
@@ -431,8 +431,8 @@ export const OneClickTradingSettings = ({
                           )
                         </p>
                       </SkeletonLoader>
-                    )}
-                </div>
+                    </div>
+                  )}
               </div>
             </Screen>
 
