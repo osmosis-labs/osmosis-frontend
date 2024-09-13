@@ -70,7 +70,7 @@ export function getOneClickTradingSessionAuthenticator({
   allowedAmount: string;
   sessionPeriod: OneClickTradingTimeLimit;
 }): {
-  type: AuthenticatorType;
+  authenticatorType: AuthenticatorType;
   data: Uint8Array;
 } {
   const signatureVerification = {
@@ -112,8 +112,10 @@ export function getOneClickTradingSessionAuthenticator({
     messageFilterAnyOf,
   ];
 
+  // We return the message structure we want to broadcase here,
+  // not the structure of the authenticator returned from the chain.
   return {
-    type: "AllOf",
+    authenticatorType: "AllOf",
     data: new Uint8Array(
       Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
     ),
