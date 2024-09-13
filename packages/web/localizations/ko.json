@@ -442,8 +442,7 @@
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
       "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
-      "changeButton": "설정 수정",
-      "ledgerComingSoon": "Ledger 하드웨어 지갑이 곧 지원될 예정입니다."
+      "changeButton": "설정 수정"
     },
     "floatingBanner": {
       "newPill": "새로운",
