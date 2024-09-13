@@ -432,10 +432,6 @@ export const OneClickTradingSettings = ({
                         </p>
                       </SkeletonLoader>
                     )}
-
-                  <p className="px-8 text-center text-caption text-osmoverse-300">
-                    {t("oneClickTrading.introduction.ledgerComingSoon")}
-                  </p>
                 </div>
               </div>
             </Screen>
