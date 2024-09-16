@@ -118,7 +118,7 @@ export interface MsgSuperfluidUndelegateAndUnbondLockAmino {
   coin?: CoinAmino;
 }
 export interface MsgSuperfluidUndelegateAndUnbondLockAminoMsg {
-  type: "osmosis/superfluid-undelegate-and-unbond-lock";
+  type: "osmosis/superfluid-undelegate-unbond-lock";
   value: MsgSuperfluidUndelegateAndUnbondLockAmino;
 }
 export interface MsgSuperfluidUndelegateAndUnbondLockSDKType {
@@ -1185,7 +1185,7 @@ export const MsgSuperfluidUndelegateAndUnbondLock = {
     message: MsgSuperfluidUndelegateAndUnbondLock
   ): MsgSuperfluidUndelegateAndUnbondLockAminoMsg {
     return {
-      type: "osmosis/superfluid-undelegate-and-unbond-lock",
+      type: "osmosis/superfluid-undelegate-unbond-lock",
       value: MsgSuperfluidUndelegateAndUnbondLock.toAmino(message),
     };
   },

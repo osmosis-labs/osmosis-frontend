@@ -166,7 +166,7 @@ export interface MsgInstantiateContractResponseSDKType {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2 {
   /** Sender is the that actor that signed the messages */
@@ -195,7 +195,7 @@ export interface MsgInstantiateContract2ProtoMsg {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2Amino {
   /** Sender is the that actor that signed the messages */
@@ -224,7 +224,7 @@ export interface MsgInstantiateContract2AminoMsg {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2SDKType {
   sender: string;

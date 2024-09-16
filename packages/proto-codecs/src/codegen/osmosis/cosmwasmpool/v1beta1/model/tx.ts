@@ -18,7 +18,7 @@ export interface MsgCreateCosmWasmPoolAmino {
   sender?: string;
 }
 export interface MsgCreateCosmWasmPoolAminoMsg {
-  type: "osmosis/cosmwasmpool/create-cosm-wasm-pool";
+  type: "osmosis/MsgCreateCosmWasmPool";
   value: MsgCreateCosmWasmPoolAmino;
 }
 /** ===================== MsgCreateCosmwasmPool */
@@ -139,7 +139,7 @@ export const MsgCreateCosmWasmPool = {
   },
   toAminoMsg(message: MsgCreateCosmWasmPool): MsgCreateCosmWasmPoolAminoMsg {
     return {
-      type: "osmosis/cosmwasmpool/create-cosm-wasm-pool",
+      type: "osmosis/MsgCreateCosmWasmPool",
       value: MsgCreateCosmWasmPool.toAmino(message),
     };
   },

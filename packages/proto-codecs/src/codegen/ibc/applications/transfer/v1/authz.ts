@@ -15,6 +15,11 @@ export interface Allocation {
   spendLimit: Coin[];
   /** allow list of receivers, an empty allow list permits any receiver address */
   allowList: string[];
+  /**
+   * allow list of memo strings, an empty list prohibits all memo strings;
+   * a list only with "*" permits any memo string
+   */
+  allowedPacketData: string[];
 }
 export interface AllocationProtoMsg {
   typeUrl: "/ibc.applications.transfer.v1.Allocation";
@@ -30,6 +35,11 @@ export interface AllocationAmino {
   spend_limit?: CoinAmino[];
   /** allow list of receivers, an empty allow list permits any receiver address */
   allow_list?: string[];
+  /**
+   * allow list of memo strings, an empty list prohibits all memo strings;
+   * a list only with "*" permits any memo string
+   */
+  allowed_packet_data?: string[];
 }
 export interface AllocationAminoMsg {
   type: "cosmos-sdk/Allocation";
@@ -41,6 +51,7 @@ export interface AllocationSDKType {
   source_channel: string;
   spend_limit: CoinSDKType[];
   allow_list: string[];
+  allowed_packet_data: string[];
 }
 /**
  * TransferAuthorization allows the grantee to spend up to spend_limit coins from
@@ -81,6 +92,7 @@ function createBaseAllocation(): Allocation {
     sourceChannel: "",
     spendLimit: [],
     allowList: [],
+    allowedPacketData: [],
   };
 }
 export const Allocation = {
@@ -100,6 +112,9 @@ export const Allocation = {
     }
     for (const v of message.allowList) {
       writer.uint32(34).string(v!);
+    }
+    for (const v of message.allowedPacketData) {
+      writer.uint32(42).string(v!);
     }
     return writer;
   },
@@ -123,6 +138,9 @@ export const Allocation = {
         case 4:
           message.allowList.push(reader.string());
           break;
+        case 5:
+          message.allowedPacketData.push(reader.string());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -137,6 +155,7 @@ export const Allocation = {
     message.spendLimit =
       object.spendLimit?.map((e) => Coin.fromPartial(e)) || [];
     message.allowList = object.allowList?.map((e) => e) || [];
+    message.allowedPacketData = object.allowedPacketData?.map((e) => e) || [];
     return message;
   },
   fromAmino(object: AllocationAmino): Allocation {
@@ -150,6 +169,7 @@ export const Allocation = {
     message.spendLimit =
       object.spend_limit?.map((e) => Coin.fromAmino(e)) || [];
     message.allowList = object.allow_list?.map((e) => e) || [];
+    message.allowedPacketData = object.allowed_packet_data?.map((e) => e) || [];
     return message;
   },
   toAmino(message: Allocation): AllocationAmino {
@@ -169,6 +189,11 @@ export const Allocation = {
       obj.allow_list = message.allowList.map((e) => e);
     } else {
       obj.allow_list = message.allowList;
+    }
+    if (message.allowedPacketData) {
+      obj.allowed_packet_data = message.allowedPacketData.map((e) => e);
+    } else {
+      obj.allowed_packet_data = message.allowedPacketData;
     }
     return obj;
   },

@@ -245,14 +245,133 @@ export interface MsgSetDenomPairTakerFeeResponseAminoMsg {
 export interface MsgSetDenomPairTakerFeeResponseSDKType {
   success: boolean;
 }
+/** ===================== MsgSetTakerFeeShareAgreementForDenom */
+export interface MsgSetTakerFeeShareAgreementForDenom {
+  sender: string;
+  /**
+   * denom is the denom that the taker fee share agreement is being set for.
+   * Ex. If this is set to "nBTC", then any trade route that includes "nBTC"
+   * will have the skim_percent skimmed from the taker fees and sent to the
+   * skim_address.
+   */
+  denom: string;
+  /**
+   * skim_percent is the percentage of taker fees that will be skimmed for the
+   * bridge provider, in the event that the bridge provider's denom is included
+   * in the swap route.
+   */
+  skimPercent: string;
+  /**
+   * skim_address is the address belonging to the respective bridge provider
+   * that the skimmed taker fees will be sent to at the end of each epoch.
+   */
+  skimAddress: string;
+}
+export interface MsgSetTakerFeeShareAgreementForDenomProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom";
+  value: Uint8Array;
+}
+/** ===================== MsgSetTakerFeeShareAgreementForDenom */
+export interface MsgSetTakerFeeShareAgreementForDenomAmino {
+  sender?: string;
+  /**
+   * denom is the denom that the taker fee share agreement is being set for.
+   * Ex. If this is set to "nBTC", then any trade route that includes "nBTC"
+   * will have the skim_percent skimmed from the taker fees and sent to the
+   * skim_address.
+   */
+  denom?: string;
+  /**
+   * skim_percent is the percentage of taker fees that will be skimmed for the
+   * bridge provider, in the event that the bridge provider's denom is included
+   * in the swap route.
+   */
+  skim_percent?: string;
+  /**
+   * skim_address is the address belonging to the respective bridge provider
+   * that the skimmed taker fees will be sent to at the end of each epoch.
+   */
+  skim_address?: string;
+}
+export interface MsgSetTakerFeeShareAgreementForDenomAminoMsg {
+  type: "osmosis/poolmanager/set-taker-fee-share-agreement-for-denom";
+  value: MsgSetTakerFeeShareAgreementForDenomAmino;
+}
+/** ===================== MsgSetTakerFeeShareAgreementForDenom */
+export interface MsgSetTakerFeeShareAgreementForDenomSDKType {
+  sender: string;
+  denom: string;
+  skim_percent: string;
+  skim_address: string;
+}
+export interface MsgSetTakerFeeShareAgreementForDenomResponse {}
+export interface MsgSetTakerFeeShareAgreementForDenomResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenomResponse";
+  value: Uint8Array;
+}
+export interface MsgSetTakerFeeShareAgreementForDenomResponseAmino {}
+export interface MsgSetTakerFeeShareAgreementForDenomResponseAminoMsg {
+  type: "osmosis/poolmanager/set-taker-fee-share-agreement-for-denom-response";
+  value: MsgSetTakerFeeShareAgreementForDenomResponseAmino;
+}
+export interface MsgSetTakerFeeShareAgreementForDenomResponseSDKType {}
+/** ===================== MsgSetRegisteredAlloyedPool */
+export interface MsgSetRegisteredAlloyedPool {
+  sender: string;
+  /**
+   * pool_id is the id of the pool that is being registered as an alloyed pool.
+   * Only alloyed pools that intend to be used in taker fee revenue sharing
+   * should be registered.
+   */
+  poolId: bigint;
+}
+export interface MsgSetRegisteredAlloyedPoolProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool";
+  value: Uint8Array;
+}
+/** ===================== MsgSetRegisteredAlloyedPool */
+export interface MsgSetRegisteredAlloyedPoolAmino {
+  sender?: string;
+  /**
+   * pool_id is the id of the pool that is being registered as an alloyed pool.
+   * Only alloyed pools that intend to be used in taker fee revenue sharing
+   * should be registered.
+   */
+  pool_id?: string;
+}
+export interface MsgSetRegisteredAlloyedPoolAminoMsg {
+  type: "osmosis/poolmanager/set-registered-alloyed-pool";
+  value: MsgSetRegisteredAlloyedPoolAmino;
+}
+/** ===================== MsgSetRegisteredAlloyedPool */
+export interface MsgSetRegisteredAlloyedPoolSDKType {
+  sender: string;
+  pool_id: bigint;
+}
+export interface MsgSetRegisteredAlloyedPoolResponse {}
+export interface MsgSetRegisteredAlloyedPoolResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPoolResponse";
+  value: Uint8Array;
+}
+export interface MsgSetRegisteredAlloyedPoolResponseAmino {}
+export interface MsgSetRegisteredAlloyedPoolResponseAminoMsg {
+  type: "osmosis/poolmanager/set-registered-alloyed-pool-response";
+  value: MsgSetRegisteredAlloyedPoolResponseAmino;
+}
+export interface MsgSetRegisteredAlloyedPoolResponseSDKType {}
 export interface DenomPairTakerFee {
   /**
-   * denom0 and denom1 get automatically lexigographically sorted
-   * when being stored, so the order of input here does not matter.
+   * DEPRECATED: Now that we are using uni-directional trading pairs, we are
+   * using tokenInDenom and tokenOutDenom instead of denom0 and denom1 to
+   * prevent confusion.
    */
+  /** @deprecated */
   denom0: string;
+  /** @deprecated */
   denom1: string;
   takerFee: string;
+  tokenInDenom: string;
+  tokenOutDenom: string;
 }
 export interface DenomPairTakerFeeProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.DenomPairTakerFee";
@@ -260,21 +379,30 @@ export interface DenomPairTakerFeeProtoMsg {
 }
 export interface DenomPairTakerFeeAmino {
   /**
-   * denom0 and denom1 get automatically lexigographically sorted
-   * when being stored, so the order of input here does not matter.
+   * DEPRECATED: Now that we are using uni-directional trading pairs, we are
+   * using tokenInDenom and tokenOutDenom instead of denom0 and denom1 to
+   * prevent confusion.
    */
+  /** @deprecated */
   denom0?: string;
+  /** @deprecated */
   denom1?: string;
   taker_fee?: string;
+  tokenInDenom?: string;
+  tokenOutDenom?: string;
 }
 export interface DenomPairTakerFeeAminoMsg {
   type: "osmosis/poolmanager/denom-pair-taker-fee";
   value: DenomPairTakerFeeAmino;
 }
 export interface DenomPairTakerFeeSDKType {
+  /** @deprecated */
   denom0: string;
+  /** @deprecated */
   denom1: string;
   taker_fee: string;
+  tokenInDenom: string;
+  tokenOutDenom: string;
 }
 function createBaseMsgSwapExactAmountIn(): MsgSwapExactAmountIn {
   return {
@@ -1391,11 +1519,413 @@ export const MsgSetDenomPairTakerFeeResponse = {
     };
   },
 };
+function createBaseMsgSetTakerFeeShareAgreementForDenom(): MsgSetTakerFeeShareAgreementForDenom {
+  return {
+    sender: "",
+    denom: "",
+    skimPercent: "",
+    skimAddress: "",
+  };
+}
+export const MsgSetTakerFeeShareAgreementForDenom = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+  encode(
+    message: MsgSetTakerFeeShareAgreementForDenom,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    if (message.denom !== "") {
+      writer.uint32(18).string(message.denom);
+    }
+    if (message.skimPercent !== "") {
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.skimPercent, 18).atomics);
+    }
+    if (message.skimAddress !== "") {
+      writer.uint32(34).string(message.skimAddress);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetTakerFeeShareAgreementForDenom {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenom();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.denom = reader.string();
+          break;
+        case 3:
+          message.skimPercent = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
+          break;
+        case 4:
+          message.skimAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetTakerFeeShareAgreementForDenom>
+  ): MsgSetTakerFeeShareAgreementForDenom {
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenom();
+    message.sender = object.sender ?? "";
+    message.denom = object.denom ?? "";
+    message.skimPercent = object.skimPercent ?? "";
+    message.skimAddress = object.skimAddress ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgSetTakerFeeShareAgreementForDenomAmino
+  ): MsgSetTakerFeeShareAgreementForDenom {
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenom();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.denom !== undefined && object.denom !== null) {
+      message.denom = object.denom;
+    }
+    if (object.skim_percent !== undefined && object.skim_percent !== null) {
+      message.skimPercent = object.skim_percent;
+    }
+    if (object.skim_address !== undefined && object.skim_address !== null) {
+      message.skimAddress = object.skim_address;
+    }
+    return message;
+  },
+  toAmino(
+    message: MsgSetTakerFeeShareAgreementForDenom
+  ): MsgSetTakerFeeShareAgreementForDenomAmino {
+    const obj: any = {};
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.denom = message.denom === "" ? undefined : message.denom;
+    obj.skim_percent =
+      message.skimPercent === "" ? undefined : message.skimPercent;
+    obj.skim_address =
+      message.skimAddress === "" ? undefined : message.skimAddress;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetTakerFeeShareAgreementForDenomAminoMsg
+  ): MsgSetTakerFeeShareAgreementForDenom {
+    return MsgSetTakerFeeShareAgreementForDenom.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenom
+  ): MsgSetTakerFeeShareAgreementForDenomAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-taker-fee-share-agreement-for-denom",
+      value: MsgSetTakerFeeShareAgreementForDenom.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenomProtoMsg
+  ): MsgSetTakerFeeShareAgreementForDenom {
+    return MsgSetTakerFeeShareAgreementForDenom.decode(message.value);
+  },
+  toProto(message: MsgSetTakerFeeShareAgreementForDenom): Uint8Array {
+    return MsgSetTakerFeeShareAgreementForDenom.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenom
+  ): MsgSetTakerFeeShareAgreementForDenomProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+      value: MsgSetTakerFeeShareAgreementForDenom.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetTakerFeeShareAgreementForDenomResponse(): MsgSetTakerFeeShareAgreementForDenomResponse {
+  return {};
+}
+export const MsgSetTakerFeeShareAgreementForDenomResponse = {
+  typeUrl:
+    "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenomResponse",
+  encode(
+    _: MsgSetTakerFeeShareAgreementForDenomResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetTakerFeeShareAgreementForDenomResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenomResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    _: Partial<MsgSetTakerFeeShareAgreementForDenomResponse>
+  ): MsgSetTakerFeeShareAgreementForDenomResponse {
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenomResponse();
+    return message;
+  },
+  fromAmino(
+    _: MsgSetTakerFeeShareAgreementForDenomResponseAmino
+  ): MsgSetTakerFeeShareAgreementForDenomResponse {
+    const message = createBaseMsgSetTakerFeeShareAgreementForDenomResponse();
+    return message;
+  },
+  toAmino(
+    _: MsgSetTakerFeeShareAgreementForDenomResponse
+  ): MsgSetTakerFeeShareAgreementForDenomResponseAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetTakerFeeShareAgreementForDenomResponseAminoMsg
+  ): MsgSetTakerFeeShareAgreementForDenomResponse {
+    return MsgSetTakerFeeShareAgreementForDenomResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenomResponse
+  ): MsgSetTakerFeeShareAgreementForDenomResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-taker-fee-share-agreement-for-denom-response",
+      value: MsgSetTakerFeeShareAgreementForDenomResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenomResponseProtoMsg
+  ): MsgSetTakerFeeShareAgreementForDenomResponse {
+    return MsgSetTakerFeeShareAgreementForDenomResponse.decode(message.value);
+  },
+  toProto(message: MsgSetTakerFeeShareAgreementForDenomResponse): Uint8Array {
+    return MsgSetTakerFeeShareAgreementForDenomResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgSetTakerFeeShareAgreementForDenomResponse
+  ): MsgSetTakerFeeShareAgreementForDenomResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenomResponse",
+      value:
+        MsgSetTakerFeeShareAgreementForDenomResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetRegisteredAlloyedPool(): MsgSetRegisteredAlloyedPool {
+  return {
+    sender: "",
+    poolId: BigInt(0),
+  };
+}
+export const MsgSetRegisteredAlloyedPool = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+  encode(
+    message: MsgSetRegisteredAlloyedPool,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(16).uint64(message.poolId);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetRegisteredAlloyedPool {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetRegisteredAlloyedPool();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.poolId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetRegisteredAlloyedPool>
+  ): MsgSetRegisteredAlloyedPool {
+    const message = createBaseMsgSetRegisteredAlloyedPool();
+    message.sender = object.sender ?? "";
+    message.poolId =
+      object.poolId !== undefined && object.poolId !== null
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
+    return message;
+  },
+  fromAmino(
+    object: MsgSetRegisteredAlloyedPoolAmino
+  ): MsgSetRegisteredAlloyedPool {
+    const message = createBaseMsgSetRegisteredAlloyedPool();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.pool_id !== undefined && object.pool_id !== null) {
+      message.poolId = BigInt(object.pool_id);
+    }
+    return message;
+  },
+  toAmino(
+    message: MsgSetRegisteredAlloyedPool
+  ): MsgSetRegisteredAlloyedPoolAmino {
+    const obj: any = {};
+    obj.sender = message.sender === "" ? undefined : message.sender;
+    obj.pool_id =
+      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetRegisteredAlloyedPoolAminoMsg
+  ): MsgSetRegisteredAlloyedPool {
+    return MsgSetRegisteredAlloyedPool.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetRegisteredAlloyedPool
+  ): MsgSetRegisteredAlloyedPoolAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-registered-alloyed-pool",
+      value: MsgSetRegisteredAlloyedPool.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetRegisteredAlloyedPoolProtoMsg
+  ): MsgSetRegisteredAlloyedPool {
+    return MsgSetRegisteredAlloyedPool.decode(message.value);
+  },
+  toProto(message: MsgSetRegisteredAlloyedPool): Uint8Array {
+    return MsgSetRegisteredAlloyedPool.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetRegisteredAlloyedPool
+  ): MsgSetRegisteredAlloyedPoolProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+      value: MsgSetRegisteredAlloyedPool.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetRegisteredAlloyedPoolResponse(): MsgSetRegisteredAlloyedPoolResponse {
+  return {};
+}
+export const MsgSetRegisteredAlloyedPoolResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPoolResponse",
+  encode(
+    _: MsgSetRegisteredAlloyedPoolResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetRegisteredAlloyedPoolResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetRegisteredAlloyedPoolResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    _: Partial<MsgSetRegisteredAlloyedPoolResponse>
+  ): MsgSetRegisteredAlloyedPoolResponse {
+    const message = createBaseMsgSetRegisteredAlloyedPoolResponse();
+    return message;
+  },
+  fromAmino(
+    _: MsgSetRegisteredAlloyedPoolResponseAmino
+  ): MsgSetRegisteredAlloyedPoolResponse {
+    const message = createBaseMsgSetRegisteredAlloyedPoolResponse();
+    return message;
+  },
+  toAmino(
+    _: MsgSetRegisteredAlloyedPoolResponse
+  ): MsgSetRegisteredAlloyedPoolResponseAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetRegisteredAlloyedPoolResponseAminoMsg
+  ): MsgSetRegisteredAlloyedPoolResponse {
+    return MsgSetRegisteredAlloyedPoolResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetRegisteredAlloyedPoolResponse
+  ): MsgSetRegisteredAlloyedPoolResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-registered-alloyed-pool-response",
+      value: MsgSetRegisteredAlloyedPoolResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetRegisteredAlloyedPoolResponseProtoMsg
+  ): MsgSetRegisteredAlloyedPoolResponse {
+    return MsgSetRegisteredAlloyedPoolResponse.decode(message.value);
+  },
+  toProto(message: MsgSetRegisteredAlloyedPoolResponse): Uint8Array {
+    return MsgSetRegisteredAlloyedPoolResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetRegisteredAlloyedPoolResponse
+  ): MsgSetRegisteredAlloyedPoolResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPoolResponse",
+      value: MsgSetRegisteredAlloyedPoolResponse.encode(message).finish(),
+    };
+  },
+};
 function createBaseDenomPairTakerFee(): DenomPairTakerFee {
   return {
     denom0: "",
     denom1: "",
     takerFee: "",
+    tokenInDenom: "",
+    tokenOutDenom: "",
   };
 }
 export const DenomPairTakerFee = {
@@ -1414,6 +1944,12 @@ export const DenomPairTakerFee = {
       writer
         .uint32(26)
         .string(Decimal.fromUserInput(message.takerFee, 18).atomics);
+    }
+    if (message.tokenInDenom !== "") {
+      writer.uint32(34).string(message.tokenInDenom);
+    }
+    if (message.tokenOutDenom !== "") {
+      writer.uint32(42).string(message.tokenOutDenom);
     }
     return writer;
   },
@@ -1437,6 +1973,12 @@ export const DenomPairTakerFee = {
             18
           ).toString();
           break;
+        case 4:
+          message.tokenInDenom = reader.string();
+          break;
+        case 5:
+          message.tokenOutDenom = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1449,6 +1991,8 @@ export const DenomPairTakerFee = {
     message.denom0 = object.denom0 ?? "";
     message.denom1 = object.denom1 ?? "";
     message.takerFee = object.takerFee ?? "";
+    message.tokenInDenom = object.tokenInDenom ?? "";
+    message.tokenOutDenom = object.tokenOutDenom ?? "";
     return message;
   },
   fromAmino(object: DenomPairTakerFeeAmino): DenomPairTakerFee {
@@ -1462,6 +2006,12 @@ export const DenomPairTakerFee = {
     if (object.taker_fee !== undefined && object.taker_fee !== null) {
       message.takerFee = object.taker_fee;
     }
+    if (object.tokenInDenom !== undefined && object.tokenInDenom !== null) {
+      message.tokenInDenom = object.tokenInDenom;
+    }
+    if (object.tokenOutDenom !== undefined && object.tokenOutDenom !== null) {
+      message.tokenOutDenom = object.tokenOutDenom;
+    }
     return message;
   },
   toAmino(message: DenomPairTakerFee): DenomPairTakerFeeAmino {
@@ -1469,6 +2019,10 @@ export const DenomPairTakerFee = {
     obj.denom0 = message.denom0 === "" ? undefined : message.denom0;
     obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
     obj.taker_fee = message.takerFee === "" ? undefined : message.takerFee;
+    obj.tokenInDenom =
+      message.tokenInDenom === "" ? undefined : message.tokenInDenom;
+    obj.tokenOutDenom =
+      message.tokenOutDenom === "" ? undefined : message.tokenOutDenom;
     return obj;
   },
   fromAminoMsg(object: DenomPairTakerFeeAminoMsg): DenomPairTakerFee {

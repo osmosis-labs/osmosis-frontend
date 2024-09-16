@@ -307,7 +307,7 @@ export interface MsgDelegateBondedTokensAmino {
   lockID?: string;
 }
 export interface MsgDelegateBondedTokensAminoMsg {
-  type: "osmosis/valsetpref/delegate-bonded-tokens";
+  type: "osmosis/MsgDelegateBondedTokens";
   value: MsgDelegateBondedTokensAmino;
 }
 /**
@@ -1508,7 +1508,7 @@ export const MsgDelegateBondedTokens = {
     message: MsgDelegateBondedTokens
   ): MsgDelegateBondedTokensAminoMsg {
     return {
-      type: "osmosis/valsetpref/delegate-bonded-tokens",
+      type: "osmosis/MsgDelegateBondedTokens",
       value: MsgDelegateBondedTokens.toAmino(message),
     };
   },

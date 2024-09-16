@@ -26,14 +26,16 @@ export interface Params {
    */
   balancerSharesRewardDiscount: string;
   /**
-   * authorized_quote_denoms is a list of quote denoms that can be used as
-   * token1 when creating a pool. We limit the quote assets to a small set for
-   * the purposes of having convenient price increments stemming from tick to
-   * price conversion. These increments are in a human readable magnitude only
-   * for token1 as a quote. For limit orders in the future, this will be a
-   * desirable property in terms of UX as to allow users to set limit orders at
-   * prices in terms of token1 (quote asset) that are easy to reason about.
+   * DEPRECATED: authorized_quote_denoms is a list of quote denoms that can be
+   * used as token1 when creating a pool. We limit the quote assets to a small
+   * set for the purposes of having convenient price increments stemming from
+   * tick to price conversion. These increments are in a human readable
+   * magnitude only for token1 as a quote. For limit orders in the future, this
+   * will be a desirable property in terms of UX as to allow users to set limit
+   * orders at prices in terms of token1 (quote asset) that are easy to reason
+   * about.
    */
+  /** @deprecated */
   authorizedQuoteDenoms: string[];
   authorizedUptimes: Duration[];
   /**
@@ -76,14 +78,16 @@ export interface ParamsAmino {
    */
   balancer_shares_reward_discount?: string;
   /**
-   * authorized_quote_denoms is a list of quote denoms that can be used as
-   * token1 when creating a pool. We limit the quote assets to a small set for
-   * the purposes of having convenient price increments stemming from tick to
-   * price conversion. These increments are in a human readable magnitude only
-   * for token1 as a quote. For limit orders in the future, this will be a
-   * desirable property in terms of UX as to allow users to set limit orders at
-   * prices in terms of token1 (quote asset) that are easy to reason about.
+   * DEPRECATED: authorized_quote_denoms is a list of quote denoms that can be
+   * used as token1 when creating a pool. We limit the quote assets to a small
+   * set for the purposes of having convenient price increments stemming from
+   * tick to price conversion. These increments are in a human readable
+   * magnitude only for token1 as a quote. For limit orders in the future, this
+   * will be a desirable property in terms of UX as to allow users to set limit
+   * orders at prices in terms of token1 (quote asset) that are easy to reason
+   * about.
    */
+  /** @deprecated */
   authorized_quote_denoms?: string[];
   authorized_uptimes?: DurationAmino[];
   /**
@@ -111,6 +115,7 @@ export interface ParamsSDKType {
   authorized_tick_spacing: bigint[];
   authorized_spread_factors: string[];
   balancer_shares_reward_discount: string;
+  /** @deprecated */
   authorized_quote_denoms: string[];
   authorized_uptimes: DurationSDKType[];
   is_permissionless_pool_creation_enabled: boolean;
