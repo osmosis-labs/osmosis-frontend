@@ -290,7 +290,7 @@ export const GenesisState = {
       message.createLocalhost === false ? undefined : message.createLocalhost;
     obj.next_client_sequence =
       message.nextClientSequence !== BigInt(0)
-        ? message.nextClientSequence.toString()
+        ? (message.nextClientSequence?.toString)()
         : undefined;
     return obj;
   },

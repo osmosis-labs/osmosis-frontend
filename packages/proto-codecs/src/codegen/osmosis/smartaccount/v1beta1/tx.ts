@@ -29,7 +29,6 @@ export interface MsgAddAuthenticatorSDKType {
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponse {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success: boolean;
 }
 export interface MsgAddAuthenticatorResponseProtoMsg {
@@ -38,7 +37,6 @@ export interface MsgAddAuthenticatorResponseProtoMsg {
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponseAmino {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success?: boolean;
 }
 export interface MsgAddAuthenticatorResponseAminoMsg {
@@ -86,10 +84,6 @@ export interface MsgRemoveAuthenticatorSDKType {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponse {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseProtoMsg {
@@ -101,10 +95,6 @@ export interface MsgRemoveAuthenticatorResponseProtoMsg {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponseAmino {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success?: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseAminoMsg {
@@ -446,7 +436,7 @@ export const MsgRemoveAuthenticator = {
   toAmino(message: MsgRemoveAuthenticator): MsgRemoveAuthenticatorAmino {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
-    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? (message.id?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAuthenticatorAminoMsg): MsgRemoveAuthenticator {

@@ -703,11 +703,11 @@ export const Height = {
     const obj: any = {};
     obj.revision_number =
       message.revisionNumber !== BigInt(0)
-        ? message.revisionNumber.toString()
+        ? (message.revisionNumber?.toString)()
         : undefined;
     obj.revision_height =
       message.revisionHeight !== BigInt(0)
-        ? message.revisionHeight.toString()
+        ? (message.revisionHeight?.toString)()
         : undefined;
     return obj;
   },

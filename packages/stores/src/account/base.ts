@@ -26,6 +26,7 @@ import {
   Functionify,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
@@ -821,27 +822,51 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    if ("signAmino" in offlineSigner || "signAmino" in wallet.client) {
-      return this.signAmino({
-        wallet,
-        signerAddress: wallet.address ?? "",
-        messages,
-        fee,
-        memo,
-        signerData,
-        signOptions,
-      });
-    }
+    /**
+     * If the message is an authenticator message, force the direct signing.
+     * This is because the authenticator message should be signed with proto for now.
+     */
 
-    return this.signDirect({
-      wallet,
-      signerAddress: wallet.address ?? "",
-      messages,
-      fee,
-      memo,
-      signerData,
-      signOptions,
-    });
+    type TypeUrl = keyof typeof osmosisAminoConverters;
+    const getTypeUrl = (typeUrl: TypeUrl) => {
+      return typeUrl;
+    };
+
+    // TODO - update proto codec
+    const doesTxNeedDirectSigning = messages.some(
+      (message) =>
+        message.typeUrl ===
+          getTypeUrl(
+            "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+          ) ||
+        message.typeUrl ===
+          getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
+    );
+
+    const forceSignDirect = doesTxNeedDirectSigning;
+
+    console.log("forceSignDirect", forceSignDirect);
+
+    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
+      !forceSignDirect
+      ? this.signAmino({
+          wallet,
+          signerAddress: wallet.address ?? "",
+          messages,
+          fee,
+          memo,
+          signerData,
+          signOptions,
+        })
+      : this.signDirect({
+          wallet,
+          signerAddress: wallet.address ?? "",
+          messages,
+          fee,
+          memo,
+          signerData,
+          signOptions,
+        });
   }
 
   private async signOneClick({

@@ -324,7 +324,7 @@ export const Params = {
     }
     obj.hook_gas_limit =
       message.hookGasLimit !== BigInt(0)
-        ? message.hookGasLimit.toString()
+        ? (message.hookGasLimit?.toString)()
         : undefined;
     return obj;
   },

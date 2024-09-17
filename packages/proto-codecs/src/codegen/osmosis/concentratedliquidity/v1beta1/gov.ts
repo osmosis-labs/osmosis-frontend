@@ -473,10 +473,10 @@ export const PoolIdToTickSpacingRecord = {
   toAmino(message: PoolIdToTickSpacingRecord): PoolIdToTickSpacingRecordAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     obj.new_tick_spacing =
       message.newTickSpacing !== BigInt(0)
-        ? message.newTickSpacing.toString()
+        ? (message.newTickSpacing?.toString)()
         : undefined;
     return obj;
   },
@@ -618,7 +618,7 @@ export const PoolRecord = {
     obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
     obj.tick_spacing =
       message.tickSpacing !== BigInt(0)
-        ? message.tickSpacing.toString()
+        ? (message.tickSpacing?.toString)()
         : undefined;
     obj.exponent_at_price_one =
       message.exponentAtPriceOne === ""

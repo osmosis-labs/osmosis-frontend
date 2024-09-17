@@ -183,7 +183,7 @@ export const GenesisState = {
     }
     obj.next_pool_number =
       message.nextPoolNumber !== BigInt(0)
-        ? message.nextPoolNumber.toString()
+        ? (message.nextPoolNumber?.toString)()
         : undefined;
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     obj.migration_records = message.migrationRecords

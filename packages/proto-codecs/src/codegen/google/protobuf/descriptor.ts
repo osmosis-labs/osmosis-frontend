@@ -30,6 +30,7 @@ export enum FieldDescriptorProto_Type {
    * treat group fields as unknown fields.
    */
   TYPE_GROUP = 10,
+  /** TYPE_MESSAGE - Length-delimited aggregate. */
   TYPE_MESSAGE = 11,
   /** TYPE_BYTES - New in version 2. */
   TYPE_BYTES = 12,
@@ -199,12 +200,9 @@ export function fieldDescriptorProto_LabelToJSON(
 }
 /** Generated classes can be optimized for speed or code size. */
 export enum FileOptions_OptimizeMode {
-  /**
-   * SPEED - Generate complete code for parsing, serialization,
-   * etc.
-   */
+  /** SPEED - Generate complete code for parsing, serialization, */
   SPEED = 1,
-  /** CODE_SIZE - Use ReflectionOps to implement these methods. */
+  /** CODE_SIZE - etc. */
   CODE_SIZE = 2,
   /** LITE_RUNTIME - Generate code using MessageLite and the lite runtime. */
   LITE_RUNTIME = 3,
@@ -410,6 +408,7 @@ export interface FileDescriptorSetSDKType {
 export interface FileDescriptorProto {
   /** file name, relative to root of source tree */
   name: string;
+  /** e.g. "foo", "foo.bar", etc. */
   package: string;
   /** Names of files imported by this file. */
   dependency: string[];
@@ -447,6 +446,7 @@ export interface FileDescriptorProtoProtoMsg {
 export interface FileDescriptorProtoAmino {
   /** file name, relative to root of source tree */
   name?: string;
+  /** e.g. "foo", "foo.bar", etc. */
   package?: string;
   /** Names of files imported by this file. */
   dependency?: string[];
@@ -5311,11 +5311,11 @@ export const UninterpretedOption = {
       message.identifierValue === "" ? undefined : message.identifierValue;
     obj.positive_int_value =
       message.positiveIntValue !== BigInt(0)
-        ? message.positiveIntValue.toString()
+        ? (message.positiveIntValue?.toString)()
         : undefined;
     obj.negative_int_value =
       message.negativeIntValue !== BigInt(0)
-        ? message.negativeIntValue.toString()
+        ? (message.negativeIntValue?.toString)()
         : undefined;
     obj.double_value =
       message.doubleValue === 0 ? undefined : message.doubleValue;
