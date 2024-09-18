@@ -845,8 +845,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const forceSignDirect = doesTxNeedDirectSigning;
 
-    console.log("forceSignDirect", forceSignDirect);
-
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
       ? this.signAmino({
