@@ -7,7 +7,7 @@ export interface TokenData {
   denom: string;
   symbol: string;
   main: boolean;
-  liquidity: number;
+  liquidity: number | null;
   liquidity_24h_change: number | null;
   volume_24h: number;
   volume_24h_change: number | null;
