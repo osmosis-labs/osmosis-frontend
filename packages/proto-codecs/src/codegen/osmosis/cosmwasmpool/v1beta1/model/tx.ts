@@ -18,7 +18,7 @@ export interface MsgCreateCosmWasmPoolAmino {
   sender?: string;
 }
 export interface MsgCreateCosmWasmPoolAminoMsg {
-  type: "osmosis/cosmwasmpool/create-cosm-wasm-pool";
+  type: "osmosis/MsgCreateCosmWasmPool";
   value: MsgCreateCosmWasmPoolAmino;
 }
 /** ===================== MsgCreateCosmwasmPool */
@@ -127,7 +127,7 @@ export const MsgCreateCosmWasmPool = {
   toAmino(message: MsgCreateCosmWasmPool): MsgCreateCosmWasmPoolAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.instantiate_msg = message.instantiateMsg
       ? base64FromBytes(message.instantiateMsg)
       : undefined;
@@ -139,7 +139,7 @@ export const MsgCreateCosmWasmPool = {
   },
   toAminoMsg(message: MsgCreateCosmWasmPool): MsgCreateCosmWasmPoolAminoMsg {
     return {
-      type: "osmosis/cosmwasmpool/create-cosm-wasm-pool",
+      type: "osmosis/MsgCreateCosmWasmPool",
       value: MsgCreateCosmWasmPool.toAmino(message),
     };
   },
@@ -217,7 +217,7 @@ export const MsgCreateCosmWasmPoolResponse = {
   ): MsgCreateCosmWasmPoolResponseAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(

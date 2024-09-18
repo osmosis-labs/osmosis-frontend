@@ -574,7 +574,7 @@ export const GenesisState = {
     const obj: any = {};
     obj.next_pool_id =
       message.nextPoolId !== BigInt(0)
-        ? message.nextPoolId.toString()
+        ? (message.nextPoolId?.toString)()
         : undefined;
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     if (message.poolRoutes) {
@@ -1037,7 +1037,7 @@ export const TakerFeesTracker = {
     }
     obj.height_accounting_starts_from =
       message.heightAccountingStartsFrom !== BigInt(0)
-        ? message.heightAccountingStartsFrom.toString()
+        ? (message.heightAccountingStartsFrom?.toString)()
         : undefined;
     return obj;
   },
@@ -1126,7 +1126,7 @@ export const PoolVolume = {
   toAmino(message: PoolVolume): PoolVolumeAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     if (message.poolVolume) {
       obj.pool_volume = message.poolVolume.map((e) =>
         e ? Coin.toAmino(e) : undefined

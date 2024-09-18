@@ -193,7 +193,11 @@ async function getTickInfoAndTransformOrders(
       output,
       quoteAsset,
       baseAsset,
+<<<<<<< HEAD
       placed_at: dayjs(o.placed_at / 1000).unix(),
+=======
+      placed_at: dayjs(Math.floor(o.placed_at / 1000000)).unix(),
+>>>>>>> 1d030405a0ba06a3e7f757275a767e284abf6ec0
     };
   });
 }

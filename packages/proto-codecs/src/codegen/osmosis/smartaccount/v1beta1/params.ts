@@ -138,7 +138,7 @@ export const Params = {
     const obj: any = {};
     obj.maximum_unauthenticated_gas =
       message.maximumUnauthenticatedGas !== BigInt(0)
-        ? message.maximumUnauthenticatedGas.toString()
+        ? (message.maximumUnauthenticatedGas?.toString)()
         : undefined;
     obj.is_smart_account_active =
       message.isSmartAccountActive === false

@@ -442,8 +442,7 @@
       "learnMore": "Saber mais",
       "startTradingButton": "Comece a negociação com 1 clique",
       "defaultParameters": "As configurações padrão são definidas para 1 hora com um limite de proteção contra perdas de US$ 5.000.",
-      "changeButton": "Editar Configurações",
-      "ledgerComingSoon": "Suporte para carteira de hardware Ledger em breve."
+      "changeButton": "Editar Configurações"
     },
     "floatingBanner": {
       "newPill": "Novo",
