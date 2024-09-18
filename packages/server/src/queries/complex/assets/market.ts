@@ -227,7 +227,7 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
   return {
     price:
       tokenData.price !== null
-        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.price ?? 0)
+        ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.price)
         : undefined,
     denom: tokenData.denom,
     symbol: tokenData.symbol,
