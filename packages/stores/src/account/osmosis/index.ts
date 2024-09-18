@@ -1698,7 +1698,7 @@ export class OsmosisAccountImpl {
       lockIds.map(async (lockId) => {
         return makeBeginUnlockingMsg({
           owner: this.address,
-          ID: BigInt(lockId),
+          iD: BigInt(lockId),
           coins: [],
         });
       })
@@ -1754,7 +1754,7 @@ export class OsmosisAccountImpl {
         msgs.push(
           await makeBeginUnlockingMsg({
             owner: this.address,
-            ID: BigInt(lock.lockId),
+            iD: BigInt(lock.lockId),
             coins: [],
           })
         );
