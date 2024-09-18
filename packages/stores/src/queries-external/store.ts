@@ -24,7 +24,6 @@ import { ObservableQueryPoolAprs } from "./numia";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
-import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryMarketCap } from "./token-market-cap";
 
@@ -35,7 +34,6 @@ export class QueriesExternalStore {
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
-  public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
@@ -89,11 +87,6 @@ export class QueriesExternalStore {
     this.queryClPoolAvgAprs = new ObservableQueryClPoolAvgAprs(
       kvStore,
       indexerDataBaseUrl
-    );
-    this.queryTokenData = new ObservableQueryTokensData(
-      kvStore,
-      priceStore,
-      timeseriesDataBaseUrl
     );
     this.queryActiveGauges = new ObservableQueryActiveGauges(
       kvStore,
