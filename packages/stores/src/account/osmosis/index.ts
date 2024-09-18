@@ -1698,7 +1698,7 @@ export class OsmosisAccountImpl {
       lockIds.map(async (lockId) => {
         return makeBeginUnlockingMsg({
           owner: this.address,
-          ID: BigInt(lockId),
+          iD: BigInt(lockId),
           coins: [],
         });
       })
@@ -1754,7 +1754,7 @@ export class OsmosisAccountImpl {
         msgs.push(
           await makeBeginUnlockingMsg({
             owner: this.address,
-            ID: BigInt(lock.lockId),
+            iD: BigInt(lock.lockId),
             coins: [],
           })
         );
@@ -2204,7 +2204,7 @@ export class OsmosisAccountImpl {
     onBroadcasted,
     signOptions,
   }: {
-    addAuthenticators: { type: string; data: Uint8Array }[];
+    addAuthenticators: { authenticatorType: string; data: Uint8Array }[];
     removeAuthenticators: bigint[];
     memo?: string;
     onFulfill?: (tx: DeliverTxResponse) => void;
@@ -2213,7 +2213,7 @@ export class OsmosisAccountImpl {
   }) {
     const addAuthenticatorMsgs = addAuthenticators.map((authenticator) =>
       makeAddAuthenticatorMsg({
-        type: authenticator.type,
+        authenticatorType: authenticator.authenticatorType,
         data: authenticator.data,
         sender: this.address,
       })
@@ -2262,14 +2262,14 @@ export class OsmosisAccountImpl {
   }
 
   async sendAddAuthenticatorsMsg(
-    authenticators: { type: string; data: any }[],
+    authenticators: { authenticatorType: string; data: any }[],
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const addAuthenticatorMsgs = await Promise.all(
       authenticators.map((authenticator) =>
         makeAddAuthenticatorMsg({
-          type: authenticator.type,
+          authenticatorType: authenticator.authenticatorType,
           data: authenticator.data,
           sender: this.address,
         })

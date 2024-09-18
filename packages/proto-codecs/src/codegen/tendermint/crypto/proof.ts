@@ -218,9 +218,9 @@ export const Proof = {
   toAmino(message: Proof): ProofAmino {
     const obj: any = {};
     obj.total =
-      message.total !== BigInt(0) ? message.total.toString() : undefined;
+      message.total !== BigInt(0) ? (message.total?.toString)() : undefined;
     obj.index =
-      message.index !== BigInt(0) ? message.index.toString() : undefined;
+      message.index !== BigInt(0) ? (message.index?.toString)() : undefined;
     obj.leaf_hash = message.leafHash
       ? base64FromBytes(message.leafHash)
       : undefined;
