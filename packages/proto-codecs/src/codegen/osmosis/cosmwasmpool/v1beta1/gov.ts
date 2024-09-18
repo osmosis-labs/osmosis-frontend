@@ -443,7 +443,7 @@ export const MigratePoolContractsProposal = {
     }
     obj.new_code_id =
       message.newCodeId !== BigInt(0)
-        ? message.newCodeId.toString()
+        ? (message.newCodeId?.toString)()
         : undefined;
     obj.wasm_byte_code = message.wasmByteCode
       ? toBase64(message.wasmByteCode)

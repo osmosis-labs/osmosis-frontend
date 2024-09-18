@@ -6,7 +6,7 @@ GREEN='\033[0;32m' # Green color
 NC='\033[0m' # No Color
 
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="b07e6725f7d97b3321c8165fc1d95a9ab6fa963b"
+OSMOSIS_COMMIT_HASH="dd6442421a5643d8702200d6a46a6178160a8c76"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
@@ -26,9 +26,13 @@ git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
 
 
 # SDK PROTOS
-COSMOS_SDK_VERSION=$(awk -F '=>' '/github.com\/osmosis-labs\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | awk '{print $NF}' | tr -d '\n')
+# COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ')
+# COSMOS_SDK_VERSION=$(awk -F '=>' '/github.com\/osmosis-labs\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | awk '{print $NF}' | tr -d '\n')
+COSMOS_SDK_VERSION=v0.50.6-v26-osmo-2
+
 echo -e "${GREEN}COSMOS_SDK_VERSION: $COSMOS_SDK_VERSION${NC}"
 
+# git clone --filter=blob:none --sparse https://github.com/cosmos/cosmos-sdk.git .repos/cosmos-sdk
 git clone --filter=blob:none --sparse https://github.com/osmosis-labs/cosmos-sdk.git .repos/cosmos-sdk
 
 # Checkout to Cosmos hash commit
@@ -52,7 +56,8 @@ git -C .repos/ibc-go checkout $IBC_GO_VERSION
 # WASMD PROTOS
 
 # Extract the Wasmd version from the go.mod file
-WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod | awk '{print $NF}' | tr -d '\n')
+# WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod | awk '{print $NF}' | tr -d '\n')
+WASMD_VERSION=de7db0dc672e7beb201e06e7eb12b2de356ac7c9
 echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
 
 # TROUBLESHOOTING

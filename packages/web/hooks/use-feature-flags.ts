@@ -113,6 +113,10 @@ export function useFeatureFlags() {
       launchdarklyFlags.limitOrders &&
       (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
         LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
+    // To test chain upgrades easily on Edgenet, uncomment the flags below
+    // limitOrders: true,
+    // oneClickTrading: true,
+    // staking: true,
   } as Record<
     AvailableFlags | "_isInitialized" | "_isClientIDPresent",
     boolean

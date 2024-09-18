@@ -21,7 +21,11 @@ export interface GenesisState {
   /** metadata from each client */
   clientsMetadata: IdentifiedGenesisMetadata[];
   params: Params;
-  /** create localhost on initialization */
+  /**
+   * Deprecated: create_localhost has been deprecated.
+   * The localhost client is automatically created at genesis.
+   */
+  /** @deprecated */
   createLocalhost: boolean;
   /** the sequence for the next generated client identifier */
   nextClientSequence: bigint;
@@ -39,7 +43,11 @@ export interface GenesisStateAmino {
   /** metadata from each client */
   clients_metadata?: IdentifiedGenesisMetadataAmino[];
   params?: ParamsAmino;
-  /** create localhost on initialization */
+  /**
+   * Deprecated: create_localhost has been deprecated.
+   * The localhost client is automatically created at genesis.
+   */
+  /** @deprecated */
   create_localhost?: boolean;
   /** the sequence for the next generated client identifier */
   next_client_sequence?: string;
@@ -54,6 +62,7 @@ export interface GenesisStateSDKType {
   clients_consensus: ClientConsensusStatesSDKType[];
   clients_metadata: IdentifiedGenesisMetadataSDKType[];
   params: ParamsSDKType;
+  /** @deprecated */
   create_localhost: boolean;
   next_client_sequence: bigint;
 }
@@ -281,7 +290,7 @@ export const GenesisState = {
       message.createLocalhost === false ? undefined : message.createLocalhost;
     obj.next_client_sequence =
       message.nextClientSequence !== BigInt(0)
-        ? message.nextClientSequence.toString()
+        ? (message.nextClientSequence?.toString)()
         : undefined;
     return obj;
   },

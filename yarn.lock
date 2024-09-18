@@ -2792,15 +2792,14 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.32.3.tgz#5dcaee6dd7cc846cdc073e9a7a7f63242f5f7e31"
   integrity sha512-WCZK4yksj2hBDz4w7xFZQTRZQ/RJhBX26uFHmmQFIcNUUVAihrLO+RerqJgk0dZqC42wstM9pEUQGtPmLcIYvg==
 
-"@cosmology/ast@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@cosmology/ast/-/ast-1.5.1.tgz#e941690fdc91daca3ddbf17c3ed8e3f4ecacbf61"
-  integrity sha512-+zqdY4K+zDSNz7DCA2Z+5AqtGMgVmngsOjayNu7mLi/Lfm9r+JGoITrOGQRltRjg/G9yN/UH2VAHnIr5TH94Jg==
+"@cosmology/ast@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.npmjs.org/@cosmology/ast/-/ast-1.8.2.tgz#4e5fddb06860d308d670b2b360e77c1e5c2d384d"
+  integrity sha512-tBjgoXIccJmFvLgrRL22KGLTm7VbbicuaYzS1rdmyDgC2qj4Xg+f/Sco+7y2eTbHMNZDGd0BUyo0HxVn96OYsQ==
   dependencies:
-    "@babel/parser" "^7.23.6"
     "@babel/types" "7.23.6"
-    "@cosmology/types" "^1.5.0"
-    "@cosmology/utils" "^1.5.0"
+    "@cosmology/types" "^1.8.2"
+    "@cosmology/utils" "^1.8.2"
     case "1.6.3"
     dotty "0.1.2"
 
@@ -2813,6 +2812,20 @@
     "@cosmology/types" "^1.5.0"
     "@cosmology/utils" "^1.5.0"
     dotty "0.1.2"
+    glob "8.0.3"
+    minimatch "5.1.0"
+    mkdirp "3.0.0"
+
+"@cosmology/proto-parser@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.npmjs.org/@cosmology/proto-parser/-/proto-parser-1.8.2.tgz#d95dfa7be983a50d4d7cdd3edda11747e05f3df2"
+  integrity sha512-XMdG4T0gbb3oE2zKNFw+0k+lojP+qyGWcL/5s8eHwYJa+dhCdutHW6D6yuCXl98CmHA2iPtYSbY37dXk+P4K6A==
+  dependencies:
+    "@cosmology/protobufjs" "7.3.2"
+    "@cosmology/types" "^1.8.2"
+    "@cosmology/utils" "^1.8.2"
+    dotty "0.1.2"
+    fast-json-patch "3.1.1"
     glob "8.0.3"
     minimatch "5.1.0"
     mkdirp "3.0.0"
@@ -2836,20 +2849,39 @@
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
-"@cosmology/telescope@^1.5.1":
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/@cosmology/telescope/-/telescope-1.5.1.tgz#3e395d452fd97c1eee6fabf0deb2a9ba58bcaecf"
-  integrity sha512-nGB7AYv5kZeQ311HlYv3znBiKfnBu5E3OHgm2pjbFbl8iDbrL18hlHg0VSr5jRjTHAGRGQ1FnjEoP0XoccPUaA==
+"@cosmology/protobufjs@7.3.2":
+  version "7.3.2"
+  resolved "https://registry.npmjs.org/@cosmology/protobufjs/-/protobufjs-7.3.2.tgz#6c2acdaec9e4b7aab4647bb236da1258e7526a87"
+  integrity sha512-zHf/yqGQ7QSjIYvv7kvGKY9yXNjqj55kWdRyntrXwnte/tY8uMTuCFD/EWC48LGhGu3P7nbzTlhyCGMc3xm9bw==
+  dependencies:
+    "@protobufjs/aspromise" "^1.1.2"
+    "@protobufjs/base64" "^1.1.2"
+    "@protobufjs/codegen" "^2.0.4"
+    "@protobufjs/eventemitter" "^1.1.0"
+    "@protobufjs/fetch" "^1.1.0"
+    "@protobufjs/float" "^1.0.2"
+    "@protobufjs/inquire" "^1.1.0"
+    "@protobufjs/path" "^1.1.2"
+    "@protobufjs/pool" "^1.1.0"
+    "@protobufjs/utf8" "^1.1.0"
+    "@types/long" "^5.0.0"
+    "@types/node" ">=13.7.0"
+    long "^5.0.0"
+
+"@cosmology/telescope@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.npmjs.org/@cosmology/telescope/-/telescope-1.8.4.tgz#a960040f4b8869e7df789c636123161ffc8b5b12"
+  integrity sha512-Ao6g1KxX4D7sD7lXf5hX2+DdsZQTRjcFRyx6qqeIWv0wz8EjGgNsX0DzZ2IAufD3hOABseLfVYMBXtfYruBQqw==
   dependencies:
     "@babel/generator" "^7.23.6"
     "@babel/parser" "^7.23.6"
     "@babel/traverse" "7.23.6"
     "@babel/types" "7.23.6"
-    "@cosmology/ast" "^1.5.1"
-    "@cosmology/proto-parser" "^1.5.0"
-    "@cosmology/types" "^1.5.0"
-    "@cosmology/utils" "^1.5.0"
-    "@cosmwasm/ts-codegen" "0.34.0"
+    "@cosmology/ast" "^1.8.2"
+    "@cosmology/proto-parser" "^1.8.2"
+    "@cosmology/types" "^1.8.2"
+    "@cosmology/utils" "^1.8.2"
+    "@cosmwasm/ts-codegen" "0.35.7"
     "@types/parse-package-name" "0.1.0"
     case "1.6.3"
     dargs "7.0.0"
@@ -2864,6 +2896,7 @@
     mkdirp "3.0.0"
     parse-package-name "1.0.0"
     rimraf "5.0.0"
+    yaml "^2.3.4"
 
 "@cosmology/types@^1.5.0":
   version "1.5.0"
@@ -2872,12 +2905,28 @@
   dependencies:
     case "1.6.3"
 
+"@cosmology/types@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.npmjs.org/@cosmology/types/-/types-1.8.2.tgz#635e7775634c6c3f1dd4dc84027f974509bc28b3"
+  integrity sha512-cE8oov4ytxLwS5Q9F4I0LANh7HJwftQYhye0Yq60hFXruYHEJ3qkcHRGjtRSM9/Z1F7XG9S6xSXCT8nrH7+/IQ==
+  dependencies:
+    case "1.6.3"
+    fast-json-patch "3.1.1"
+
 "@cosmology/utils@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@cosmology/utils/-/utils-1.5.0.tgz#dafa16e3757b73898b5310fee41e82ae830c1d9b"
   integrity sha512-Jm53GUymOuXlPUjECEC2mrTOLmD7e0VdpRSSWgvmUZsfD3HfKw690asykoKTCPXWypO5zox1cTJIcmoNKdoOVw==
   dependencies:
     "@cosmology/types" "^1.5.0"
+    dotty "0.1.2"
+
+"@cosmology/utils@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.npmjs.org/@cosmology/utils/-/utils-1.8.2.tgz#114c2a1a7cbebc8b55703caab405a78da52f1fdf"
+  integrity sha512-KAy8Y/hJmF8OjJp55M3+AE2VDF+1qHsE0rPqCtj1ujoX/qYl5ZnZF3Hv7oEO1d8Hhh/625KrUOfUK9LlPviUFw==
+  dependencies:
+    "@cosmology/types" "^1.8.2"
     dotty "0.1.2"
 
 "@cosmos-kit/cdcwallet-extension@^2.13.2":
@@ -3091,10 +3140,10 @@
   resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.15.tgz#cdc6d8fce42217704c1c0d5814f0ee7ce27e8dab"
   integrity sha512-HlXYJjFrNpjiV/GUKhri1UL8/bhlOIFFLpRF78YDSqq16x0+plIqx5CAvEusFcKTDpVfpeD5sfUHiKvP7euNFg==
 
-"@cosmwasm/ts-codegen@0.34.0":
-  version "0.34.0"
-  resolved "https://registry.npmjs.org/@cosmwasm/ts-codegen/-/ts-codegen-0.34.0.tgz#659bb69fc5f74cbd623567f3090e69072f08b23c"
-  integrity sha512-Mt/aYj0be9GnA51Arysqr9L8KQNWUJJHoJvtru7hkHmukPSewZDilwHCOJAaehk5gjsP7LFey2o2KEdfzkANhA==
+"@cosmwasm/ts-codegen@0.35.7":
+  version "0.35.7"
+  resolved "https://registry.npmjs.org/@cosmwasm/ts-codegen/-/ts-codegen-0.35.7.tgz#b88c03b732824113fc765d560504516faca6f23b"
+  integrity sha512-qbOAYJPe5O5AjoWytZcsVvM0SBA39sMpiqnVIIgjJiqp4G4D5GjR2/UV3ePpygnIxxKZWMnOpPPUvLMjflblCw==
   dependencies:
     "@babel/core" "7.18.10"
     "@babel/generator" "7.18.12"
@@ -3122,7 +3171,7 @@
     parse-package-name "1.0.0"
     rimraf "3.0.2"
     shelljs "0.8.5"
-    wasm-ast-types "^0.25.0"
+    wasm-ast-types "^0.26.4"
 
 "@dao-dao/cosmiframe@^0.1.0":
   version "0.1.0"
@@ -7218,6 +7267,13 @@
   version "4.0.2"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.2.tgz#b74129719fc8d11c01868010082d483b7545591a"
   integrity sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==
+
+"@types/long@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/@types/long/-/long-5.0.0.tgz#daaa7b7f74c919c946ff74889d5ca2afe363b2cd"
+  integrity sha512-eQs9RsucA/LNjnMoJvWG/nXa7Pot/RbBzilF/QRIU/xRl+0ApxrSUFsV5lmf01SvSlqMzJ7Zwxe440wmz2SJGA==
+  dependencies:
+    long "*"
 
 "@types/mdast@^3.0.0":
   version "3.0.14"
@@ -12445,6 +12501,11 @@ fast-glob@^3.3.1:
     merge2 "^1.3.0"
     micromatch "^4.0.4"
 
+fast-json-patch@3.1.1:
+  version "3.1.1"
+  resolved "https://registry.npmjs.org/fast-json-patch/-/fast-json-patch-3.1.1.tgz#85064ea1b1ebf97a3f7ad01e23f9337e72c66947"
+  integrity sha512-vf6IHUX2SBcA+5/+4883dsIjpBTqmfBjmYiWK1savxQmFk4JfBMLa7ynTYOs1Rolp/T1betJxHiGD3g1Mn8lUQ==
+
 fast-json-stable-stringify@2.x, fast-json-stable-stringify@^2.0.0, fast-json-stable-stringify@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/fast-json-stable-stringify/-/fast-json-stable-stringify-2.1.0.tgz"
@@ -15889,7 +15950,7 @@ log-update@^4.0.0:
     slice-ansi "^4.0.0"
     wrap-ansi "^6.2.0"
 
-"long@^3 || ^4 || ^5", long@^5.0.0, long@^5.2.0, long@^5.2.1, long@^5.2.3:
+long@*, "long@^3 || ^4 || ^5", long@^5.0.0, long@^5.2.0, long@^5.2.1, long@^5.2.3:
   version "5.2.3"
   resolved "https://registry.npmjs.org/long/-/long-5.2.3.tgz"
   integrity sha512-lcHwpNoggQTObv5apGNCTdJrO69eHOZMi4BNC+rTLER8iHAqGrUVeLh/irVIM7zTw2bOXA8T6uNPeujwOLg/2Q==
@@ -21656,10 +21717,10 @@ warning@^4.0.3:
   dependencies:
     loose-envify "^1.0.0"
 
-wasm-ast-types@^0.25.0:
-  version "0.25.0"
-  resolved "https://registry.npmjs.org/wasm-ast-types/-/wasm-ast-types-0.25.0.tgz#9f4056803c99fae6899c1f226e46cf730d9fe2db"
-  integrity sha512-ZTjXuBqRf3ntxXmskO1TyTTr8UbmAZGr72JGGctizzpdokMtuLsk5q8jHaFUv/qgQni1KuBxZnHIyaj1lnZegQ==
+wasm-ast-types@^0.26.4:
+  version "0.26.4"
+  resolved "https://registry.npmjs.org/wasm-ast-types/-/wasm-ast-types-0.26.4.tgz#cade0616c7158a0d05df8d6b8cac5cc098385fd1"
+  integrity sha512-bMxkQzc/+e7s5W+EBfurl/Y7KnTm0YPeg/cXjyio3PHULKWQULMREgyuJXJWaIa+8sKI1+OI61YeFSJBilm9YQ==
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@babel/types" "7.18.10"
@@ -22078,6 +22139,11 @@ yaml@^1.10.2:
   version "1.10.2"
   resolved "https://registry.npmjs.org/yaml/-/yaml-1.10.2.tgz"
   integrity sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==
+
+yaml@^2.3.4:
+  version "2.5.1"
+  resolved "https://registry.npmjs.org/yaml/-/yaml-2.5.1.tgz#c9772aacf62cb7494a95b0c4f1fb065b563db130"
+  integrity sha512-bLQOjaX/ADgQ20isPJRvF0iRUHIxVhYvr53Of7wGcWlO2jvtUlH5m87DsmulFVxRpNLOnI4tB6p/oh8D7kpn9Q==
 
 yargs-parser@21.1.1, yargs-parser@^21.0.1, yargs-parser@^21.1.1:
   version "21.1.1"

@@ -456,8 +456,8 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         case "cancelled":
-          const dayDiff = dayjs(new Date()).diff(dayjs(placed_at), "d");
-          const hourDiff = dayjs(new Date()).diff(dayjs(placed_at), "h");
+          const dayDiff = dayjs(new Date()).diff(placedAt, "d");
+          const hourDiff = dayjs(new Date()).diff(placedAt, "h");
 
           return (
             <span className="body2 md:caption text-osmoverse-300">

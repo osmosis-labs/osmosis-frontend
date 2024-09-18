@@ -309,10 +309,10 @@ export const FullTick = {
   toAmino(message: FullTick): FullTickAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     obj.tick_index =
       message.tickIndex !== BigInt(0)
-        ? message.tickIndex.toString()
+        ? (message.tickIndex?.toString)()
         : undefined;
     obj.info = message.info ? TickInfo.toAmino(message.info) : undefined;
     return obj;
@@ -610,7 +610,7 @@ export const PositionData = {
       ? Position.toAmino(message.position)
       : undefined;
     obj.lock_id =
-      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
+      message.lockId !== BigInt(0) ? (message.lockId?.toString)() : undefined;
     obj.spread_reward_accum_record = message.spreadRewardAccumRecord
       ? Record.toAmino(message.spreadRewardAccumRecord)
       : undefined;
@@ -817,19 +817,19 @@ export const GenesisState = {
     }
     obj.next_position_id =
       message.nextPositionId !== BigInt(0)
-        ? message.nextPositionId.toString()
+        ? (message.nextPositionId?.toString)()
         : undefined;
     obj.next_incentive_record_id =
       message.nextIncentiveRecordId !== BigInt(0)
-        ? message.nextIncentiveRecordId.toString()
+        ? (message.nextIncentiveRecordId?.toString)()
         : undefined;
     obj.incentives_accumulator_pool_id_migration_threshold =
       message.incentivesAccumulatorPoolIdMigrationThreshold !== BigInt(0)
-        ? message.incentivesAccumulatorPoolIdMigrationThreshold.toString()
+        ? (message.incentivesAccumulatorPoolIdMigrationThreshold?.toString)()
         : undefined;
     obj.spread_factor_pool_id_migration_threshold =
       message.spreadFactorPoolIdMigrationThreshold !== BigInt(0)
-        ? message.spreadFactorPoolIdMigrationThreshold.toString()
+        ? (message.spreadFactorPoolIdMigrationThreshold?.toString)()
         : undefined;
     return obj;
   },

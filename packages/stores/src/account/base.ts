@@ -26,10 +26,10 @@ import {
   Functionify,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
-  getOsmosisCodec,
   QuoteStdFee,
   SimulateNotAvailableError,
   TxTracer,
@@ -822,21 +822,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    const osmosis = await getOsmosisCodec();
-
     /**
      * If the message is an authenticator message, force the direct signing.
      * This is because the authenticator message should be signed with proto for now.
      */
-    const isAuthenticatorMsg = messages.some(
+
+    type TypeUrl = keyof typeof osmosisAminoConverters;
+    const getTypeUrl = (typeUrl: TypeUrl) => {
+      return typeUrl;
+    };
+
+    // TODO - update proto codec
+    const doesTxNeedDirectSigning = messages.some(
       (message) =>
         message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
+          getTypeUrl(
+            "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+          ) ||
         message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
+          getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
     );
 
-    const forceSignDirect = isAuthenticatorMsg;
+    const forceSignDirect = doesTxNeedDirectSigning;
 
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
