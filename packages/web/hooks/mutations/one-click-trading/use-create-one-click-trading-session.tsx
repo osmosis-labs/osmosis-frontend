@@ -249,6 +249,8 @@ export const useCreateOneClickTradingSession = ({
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
         "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+        "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
+        "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
       ];
 
       let sessionPeriod: OneClickTradingTimeLimit;
