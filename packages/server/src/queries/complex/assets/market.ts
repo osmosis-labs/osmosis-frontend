@@ -231,14 +231,14 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
         : undefined,
     denom: tokenData.denom,
     symbol: tokenData.symbol,
-    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity),
+    liquidity: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.liquidity ?? 0),
     liquidity24hChange:
       tokenData.liquidity_24h_change !== null
         ? new RatePretty(
             new Dec(tokenData.liquidity_24h_change).quo(new Dec(100))
           )
         : undefined,
-    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h),
+    volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h ?? 0),
     volume24hChange:
       tokenData.volume_24h_change !== null
         ? new RatePretty(new Dec(tokenData.volume_24h_change).quo(new Dec(100)))
