@@ -249,7 +249,33 @@ export class RootStore {
       ),
       new SkipTransferStatusProvider(
         IS_TESTNET ? "testnet" : "mainnet",
-        ChainList
+        ChainList,
+        {
+          transactionStatus: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-tx-status?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to fetch transaction status: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+          trackTransaction: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-track-tx?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to track transaction: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+        }
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
     ];
