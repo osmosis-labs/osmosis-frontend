@@ -6,7 +6,6 @@ import { FunctionComponent, useEffect, useState } from "react";
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
-import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { EventName } from "~/config";
 import {
   Breakpoint,
@@ -15,6 +14,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import { formatFiatPrice } from "~/utils/formatter";
 
 const COLORS: Record<AllocationOptions, string[]> = {
   all: [
@@ -133,6 +133,7 @@ export const Allocation: FunctionComponent<{
             {selectedList.map(({ key, percentage, fiatValue }, index) => {
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
+
               return (
                 <div key={key} className="body2 flex w-full justify-between">
                   <div className="flex items-center space-x-1">
@@ -147,7 +148,7 @@ export const Allocation: FunctionComponent<{
                       {percentage.maxDecimals(0).toString()}
                     </span>
                   </div>
-                  <div>{displayFiatPrice(fiatValue, "", t)}</div>
+                  <div>{formatFiatPrice(fiatValue)}</div>
                 </div>
               );
             })}

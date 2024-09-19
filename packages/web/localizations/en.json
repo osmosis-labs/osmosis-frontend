@@ -442,8 +442,7 @@
       "learnMore": "Learn more",
       "startTradingButton": "Start 1-Click Trading",
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
-      "changeButton": "Edit settings",
-      "ledgerComingSoon": "Ledger hardware wallet support coming soon."
+      "changeButton": "Edit settings"
     },
     "floatingBanner": {
       "newPill": "New",
@@ -1158,7 +1157,6 @@
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
-    "noPriceData": "Price data unavailable",
     "viewAll": "View all",
     "history": "History",
     "orders": "Orders"

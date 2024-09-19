@@ -442,8 +442,7 @@
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
       "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
-      "changeButton": "Editeaza setarile",
-      "ledgerComingSoon": "Asistență pentru portofelul hardware Ledger va veni în curând."
+      "changeButton": "Editeaza setarile"
     },
     "floatingBanner": {
       "newPill": "Nou",
@@ -1158,7 +1157,6 @@
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
     "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
-    "noPriceData": "Datele de preț nu sunt disponibile",
     "viewAll": "A vedea tot",
     "history": "Istorie",
     "orders": "Comenzi"

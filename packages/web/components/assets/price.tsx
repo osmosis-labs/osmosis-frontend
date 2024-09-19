@@ -12,8 +12,8 @@ import { api } from "~/utils/trpc";
 import { Sparkline } from "../chart/sparkline";
 import { CustomClasses } from "../types";
 
-// 0.01%
-const THRESHOLD = 0.0001;
+// 0.1%
+const THRESHOLD = 0.001;
 
 /** Colored price change text with up/down arrow. */
 export const PriceChange: FunctionComponent<
@@ -23,13 +23,9 @@ export const PriceChange: FunctionComponent<
     value?: PricePretty;
   } & CustomClasses
 > = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
-  const isBullish = priceChange.toDec().gt(new Dec(THRESHOLD));
-  const isBearish = priceChange.toDec().lt(new Dec(-THRESHOLD));
+  const isBullish = priceChange.toDec().gte(new Dec(THRESHOLD));
+  const isBearish = priceChange.toDec().lte(new Dec(-THRESHOLD));
   const isFlat = !isBullish && !isBearish;
-
-  console.log("----");
-  console.log("priceChange.toDec(): ", priceChange.toDec().toString());
-  console.log("priceChange", priceChange.toDec().toString());
 
   // remove negative symbol since we're using arrows
   if (isBearish) {
@@ -38,12 +34,10 @@ export const PriceChange: FunctionComponent<
   }
 
   const priceChangeDisplay = priceChange
-    .maxDecimals(2)
+    .maxDecimals(1)
     .inequalitySymbol(false)
     .toString();
 
-  console.log("priceChangeDisplay: ", priceChangeDisplay);
-  console.log("----");
   const formattedPriceChangeDisplay =
     value !== undefined ? `(${priceChangeDisplay})` : priceChangeDisplay;
 
@@ -77,7 +71,7 @@ export const PriceChange: FunctionComponent<
       >
         {value !== undefined ? value.toString() + " " : null}
 
-        {isFlat ? "0.00%" : formattedPriceChangeDisplay}
+        {isFlat ? "0.0%" : formattedPriceChangeDisplay}
       </div>
     </div>
   );

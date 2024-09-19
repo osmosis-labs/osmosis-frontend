@@ -1,10 +1,12 @@
 /** # User Events Constants
  *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
  */
+import { AllocationOptions } from "~/components/complex/portfolio/types";
 
 /** Max value of USD event to check against to prevent
  *  outliers from corrupting dashboards. */
 export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
+
 
 export type AmountDefault = "half" | "max" | "input";
 
@@ -71,6 +73,20 @@ export type EventProperties = {
   isRecommendedVariant: boolean;
   walletName: string;
   transferDirection: "deposit" | "withdraw";
+  swapSource: "market" | "swap";
+  coinDenom: string;
+  appName: string;
+  isFeatured: boolean;
+  isBanner: boolean;
+  position: number;
+  allocationType: AllocationOptions;
+  section: string;
+  tokenIn: string;
+  tokenOut: string;
+  option: string;
+  numberOfValidators: number;
+  validatorNames: string[];
+  squadSize: number;
 };
 
 export type UserProperties = {

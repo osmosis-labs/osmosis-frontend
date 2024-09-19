@@ -1,5 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, Page, test } from "@playwright/test";
+import {
+  type BrowserContext,
+  chromium,
+  type Page,
+  test,
+} from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { TradePage } from "~/e2e/pages/trade-page";

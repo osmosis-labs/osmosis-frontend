@@ -442,8 +442,7 @@
       "learnMore": "Apprendre encore plus",
       "startTradingButton": "Commencez le trading en 1 clic",
       "defaultParameters": "Les paramètres par défaut sont définis sur 1 heure avec une limite de protection contre les pertes de 5 000 USD.",
-      "changeButton": "Modifier les paramètres",
-      "ledgerComingSoon": "La prise en charge du portefeuille matériel Ledger sera bientôt disponible."
+      "changeButton": "Modifier les paramètres"
     },
     "floatingBanner": {
       "newPill": "Nouveau",
@@ -1158,7 +1157,6 @@
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
-    "noPriceData": "Données de prix indisponibles",
     "viewAll": "Voir tout",
     "history": "Histoire",
     "orders": "Ordres"

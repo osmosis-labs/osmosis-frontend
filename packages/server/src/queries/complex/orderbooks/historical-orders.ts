@@ -139,12 +139,11 @@ async function mapHistoricalToMapped(
       order_direction: o.order_direction,
       order_id: parseInt(o.order_id),
       owner: userAddress,
-      placed_at:
-        dayjs(
-          o.place_timestamp && o.place_timestamp.length > 0
-            ? o.place_timestamp
-            : 0
-        ).unix() * 1000,
+      placed_at: dayjs(
+        o.place_timestamp && o.place_timestamp.length > 0
+          ? o.place_timestamp
+          : 0
+      ).unix(),
       placed_quantity: parseInt(o.quantity),
       placedQuantityMin,
       quantityMin,

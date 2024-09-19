@@ -442,8 +442,7 @@
       "learnMore": "Erfahren Sie mehr",
       "startTradingButton": "Starten Sie den 1-Klick-Handel",
       "defaultParameters": "Die Standardeinstellungen sind auf 1 Stunde mit einem Verlustschutzlimit von 5.000 USD festgelegt.",
-      "changeButton": "Einstellungen bearbeiten",
-      "ledgerComingSoon": "Unterstützung für Ledger-Hardware-Wallets in Kürze verfügbar."
+      "changeButton": "Einstellungen bearbeiten"
     },
     "floatingBanner": {
       "newPill": "Neu",
@@ -1158,7 +1157,6 @@
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
-    "noPriceData": "Preisdaten nicht verfügbar",
     "viewAll": "Alle ansehen",
     "history": "Geschichte",
     "orders": "Aufträge"

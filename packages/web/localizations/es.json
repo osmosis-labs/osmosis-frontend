@@ -442,8 +442,7 @@
       "learnMore": "Aprende más",
       "startTradingButton": "Comience a operar con 1 clic",
       "defaultParameters": "La configuración predeterminada está establecida en 1 hora con un límite de protección contra pérdidas de $5,000 USD.",
-      "changeButton": "Editar ajustes",
-      "ledgerComingSoon": "Próximamente se admitirá la billetera de hardware de Ledger."
+      "changeButton": "Editar ajustes"
     },
     "floatingBanner": {
       "newPill": "Nuevo",
@@ -1158,7 +1157,6 @@
     "transactionHash": "Hash de transacción",
     "viewOnExplorer": "Ver en el explorador",
     "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
-    "noPriceData": "Datos de precios no disponibles",
     "viewAll": "Ver todo",
     "history": "Historia",
     "orders": "Pedidos"
