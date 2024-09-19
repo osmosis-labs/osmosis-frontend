@@ -24,11 +24,7 @@ export type SkipStatusProvider = {
     txHash,
     env,
   }: Transaction) => Promise<SkipTxStatusResponse>;
-  trackTransaction: ({
-    chainID,
-    txHash,
-    env,
-  }: Transaction) => Promise<Promise<void>>;
+  trackTransaction: ({ chainID, txHash, env }: Transaction) => Promise<void>;
 };
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
