@@ -936,4 +936,5 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 }
 
+export * from "./client";
 export * from "./transfer-status";
