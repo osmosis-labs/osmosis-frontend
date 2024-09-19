@@ -7,7 +7,6 @@ import { AllocationOptions } from "~/components/complex/portfolio/types";
  *  outliers from corrupting dashboards. */
 export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
 
-
 export type AmountDefault = "half" | "max" | "input";
 
 export type EventPage = "Swap Page" | "Token Info Page" | "Pool Details Page";
