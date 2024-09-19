@@ -18,14 +18,14 @@ type Transaction = {
   env: BridgeEnvironment;
 };
 
-export type SkipStatusProvider = {
+export interface SkipStatusProvider {
   transactionStatus: ({
     chainID,
     txHash,
     env,
   }: Transaction) => Promise<SkipTxStatusResponse>;
   trackTransaction: ({ chainID, txHash, env }: Transaction) => Promise<void>;
-};
+}
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
