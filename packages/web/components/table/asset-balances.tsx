@@ -656,11 +656,11 @@ const AssetActionsDropdown: FunctionComponent<{
 
           <PopoverPanel className="absolute right-0 z-50 mt-3 w-[320px]">
             {({ close }) => (
-              <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-3">
+              <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-2">
                 {actionOptions.map(({ key, label, icon }) => (
                   <button
                     key={key}
-                    className="body2 flex place-content-between items-center gap-2 rounded-full px-4 py-3 text-osmoverse-200 hover:bg-osmoverse-700"
+                    className="body2 flex place-content-between items-center gap-2 rounded-full !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();
@@ -668,7 +668,7 @@ const AssetActionsDropdown: FunctionComponent<{
                       close();
                     }}
                   >
-                    <span className="subtitle1 flex items-center gap-2 whitespace-nowrap text-white-full">
+                    <span className="subtitle1 flex items-center gap-3 whitespace-nowrap text-white-full">
                       <span className="flex h-10 w-10 items-center justify-center">
                         <Icon
                           id={icon}
