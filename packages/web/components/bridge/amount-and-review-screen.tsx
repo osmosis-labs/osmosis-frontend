@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { getAddress } from "viem";
 
 import { Screen, useScreenManager } from "~/components/screen-manager";
-import { EventName } from "~/config";
+import { EventName, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useEvmWalletAccount } from "~/hooks/evm-wallet";
@@ -342,6 +342,18 @@ export const AmountAndReviewScreen = observer(
                             ? fromChain.chainName
                             : toChain.chainName;
 
+                        let valueUsd = Number(
+                          q.input.fiatValue.toDec().toString()
+                        );
+                        // Protect our data from outliers
+                        // Perhaps from upstream issues with price data providers
+                        if (
+                          isNaN(valueUsd) ||
+                          valueUsd > OUTLIER_USD_VALUE_THRESHOLD
+                        ) {
+                          valueUsd = 0;
+                        }
+
                         logEvent([
                           EventName.DepositWithdraw.started,
                           {
@@ -352,9 +364,7 @@ export const AmountAndReviewScreen = observer(
                             isRecommendedVariant,
                             network: networkName,
                             transferDirection: direction,
-                            valueUsd: Number(
-                              q.input.fiatValue.toDec().toString()
-                            ),
+                            valueUsd,
                             walletName,
                           },
                         ]);

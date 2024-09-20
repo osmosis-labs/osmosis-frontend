@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -30,8 +31,8 @@ function getBatchLoader() {
     ttl: 1000 * 60 * 10, // 10 minutes
     getFreshValue: () =>
       new EdgeDataLoader(
-        (coinMinimalDenoms: readonly string[]) => {
-          return queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
+        (coinMinimalDenoms: readonly string[]) =>
+          queryPrices(coinMinimalDenoms as string[]).then((priceMap) =>
             coinMinimalDenoms.map((baseCoinMinimalDenom) => {
               try {
                 const price =
@@ -39,6 +40,12 @@ function getBatchLoader() {
 
                 // trim to 18 decimals to silence Dec warnings
                 const p = price.replace(/(\.\d{18})\d*/, "$1");
+
+                if (isNil(p)) {
+                  return new Error(
+                    `No SQS price result for ${baseCoinMinimalDenom} and USDC`
+                  );
+                }
 
                 if (new Dec(p).isZero())
                   return new Error(
@@ -51,8 +58,7 @@ function getBatchLoader() {
                 );
               }
             })
-          );
-        },
+          ),
         {
           // SQS imposes a limit on URI length from its Nginx configuration, so we impose a limit to avoid hitting that limit.
           maxBatchSize: 100,

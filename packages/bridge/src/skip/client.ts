@@ -14,6 +14,7 @@ import {
 export class SkipApiClient {
   constructor(
     readonly env: BridgeEnvironment,
+    protected readonly apiKey = process.env.SKIP_API_KEY,
     readonly baseUrl = "https://api.skip.money"
   ) {}
 
@@ -122,7 +123,7 @@ export class SkipApiClient {
       return apiClient<Response>(args[0], args[1]);
     }
 
-    const key = process.env.SKIP_API_KEY;
+    const key = this.apiKey;
     if (!key) throw new Error("SKIP_API_KEY is not set");
 
     return apiClient<Response>(args[0], {

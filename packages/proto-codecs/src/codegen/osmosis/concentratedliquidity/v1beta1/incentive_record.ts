@@ -220,10 +220,10 @@ export const IncentiveRecord = {
     const obj: any = {};
     obj.incentive_id =
       message.incentiveId !== BigInt(0)
-        ? message.incentiveId.toString()
+        ? (message.incentiveId?.toString)()
         : undefined;
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     obj.incentive_record_body = message.incentiveRecordBody
       ? IncentiveRecordBody.toAmino(message.incentiveRecordBody)
       : undefined;

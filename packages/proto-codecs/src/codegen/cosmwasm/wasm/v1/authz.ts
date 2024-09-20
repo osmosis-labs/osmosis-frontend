@@ -1007,7 +1007,7 @@ export const MaxCallsLimit = {
     const obj: any = {};
     obj.remaining =
       message.remaining !== BigInt(0)
-        ? message.remaining.toString()
+        ? (message.remaining?.toString)()
         : undefined;
     return obj;
   },
@@ -1177,7 +1177,7 @@ export const CombinedLimit = {
     const obj: any = {};
     obj.calls_remaining =
       message.callsRemaining !== BigInt(0)
-        ? message.callsRemaining.toString()
+        ? (message.callsRemaining?.toString)()
         : undefined;
     if (message.amounts) {
       obj.amounts = message.amounts.map((e) =>

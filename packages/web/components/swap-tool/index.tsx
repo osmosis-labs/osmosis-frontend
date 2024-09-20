@@ -28,7 +28,7 @@ import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage } from "~/config";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -186,6 +186,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
+      let valueUsd = Number(
+        swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+      );
+
+      // Protect our data from outliers
+      // Perhaps from upstream issues with price data providers
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+        valueUsd = 0;
+      }
+
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
         tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
@@ -195,9 +205,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-        valueUsd: Number(
-          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-        ),
+        valueUsd,
         feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: swapState.quote?.timeMs,
