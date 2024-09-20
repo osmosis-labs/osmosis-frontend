@@ -507,7 +507,7 @@ const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
 };
 
 const handleSelectAction = (
-  action: string,
+  action: Action,
   coinDenom: string,
   router: NextRouter,
   bridgeAsset: ({
