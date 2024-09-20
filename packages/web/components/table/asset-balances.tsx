@@ -1,3 +1,4 @@
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
@@ -12,7 +13,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -23,6 +24,8 @@ import {
 import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
+import { SpriteIconId } from "~/config";
+import { MultiLanguageT } from "~/hooks";
 import {
   Breakpoint,
   useFeatureFlags,
@@ -56,6 +59,8 @@ type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
 
+type Action = "deposit" | "withdraw" | "trade" | "earn";
+
 const DUST_THRESHOLD = new Dec(0.01);
 
 export const AssetBalancesTable: FunctionComponent<{
@@ -69,8 +74,6 @@ export const AssetBalancesTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
-
-  // State
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -490,6 +493,48 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
+const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
+  return [
+    ...(showConvertButton
+      ? [
+          { key: "deposit", label: t("portfolio.deposit"), icon: "deposit" },
+          { key: "withdraw", label: t("portfolio.withdraw"), icon: "withdraw" },
+        ]
+      : []),
+    { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
+    { key: "earn", label: t("portfolio.earn"), icon: "chart-up" },
+  ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
+};
+
+const handleSelectAction = (
+  action: Action,
+  coinDenom: string,
+  router: NextRouter,
+  bridgeAsset: ({
+    anyDenom,
+    direction,
+  }: {
+    anyDenom: string | undefined;
+    direction: "deposit" | "withdraw" | undefined;
+  }) => void
+) => {
+  if (action === "trade") {
+    router.push(`/assets/${coinDenom}`);
+  } else if (action === "earn") {
+    router.push(`/earn?search=${coinDenom}`);
+  } else if (action === "deposit") {
+    bridgeAsset({
+      anyDenom: coinDenom,
+      direction: "deposit",
+    });
+  } else if (action === "withdraw") {
+    bridgeAsset({
+      anyDenom: coinDenom,
+      direction: "withdraw",
+    });
+  }
+};
+
 export const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
@@ -499,69 +544,148 @@ export const AssetActionsCell: AssetCellComponent<{
 }> = ({
   coinDenom,
   coinImageUrl,
-  amount,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
+  coinMinimalDenom,
+  variantGroupKey,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const featureFlags = useFeatureFlags();
 
   const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
+  const needsConversion = coinMinimalDenom !== variantGroupKey;
+  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
+
+  const actionOptions = getActionOptions(t, showConvertButton);
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
           variant="ghost"
-          className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+          className="flex gap-2 rounded-[48px] text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
-
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
           }}
         >
           {t("assets.table.activate")}
         </Button>
       )}
-      <div className="flex gap-3 md:hidden">
-        {!needsActivation && (
-          <Button
-            size="icon"
-            variant="secondary"
-            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              bridgeAsset({
-                anyDenom: coinDenom,
-                direction: "deposit",
-              });
-            }}
-          >
-            <Icon id="deposit" height={20} width={20} />
-          </Button>
-        )}
-        {!needsActivation && amount?.toDec().isPositive() && (
-          <Button
-            size="icon"
-            variant="secondary"
-            className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
-            onClick={(e) => {
-              e.stopPropagation();
-              e.preventDefault();
-              bridgeAsset({
-                anyDenom: coinDenom,
-                direction: "withdraw",
-              });
-            }}
-          >
-            <Icon id="withdraw" height={20} width={20} />
-          </Button>
-        )}
-      </div>
+      {!needsActivation && (
+        <div className="flex gap-3 md:hidden">
+          {showConvertButton ? (
+            <Button
+              variant="secondary"
+              className="max-h-12 w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // TODO - open conversion modal once clicked
+                alert("Convert clicked");
+              }}
+            >
+              {t("portfolio.convert")}
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "deposit",
+                  });
+                }}
+              >
+                <Icon id="deposit" height={20} width={20} />
+              </Button>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "withdraw",
+                  });
+                }}
+              >
+                <Icon id="withdraw" height={20} width={20} />
+              </Button>
+            </>
+          )}
+          <AssetActionsDropdown
+            actionOptions={actionOptions}
+            onSelectAction={(action) =>
+              handleSelectAction(action, coinDenom, router, bridgeAsset)
+            }
+          />
+        </div>
+      )}
     </div>
+  );
+};
+
+const AssetActionsDropdown: FunctionComponent<{
+  actionOptions: {
+    key: Action;
+    label: string;
+    icon: SpriteIconId;
+  }[];
+  onSelectAction: (key: Action) => void;
+}> = ({ actionOptions, onSelectAction }) => {
+  return (
+    <Popover className="relative shrink-0">
+      {() => (
+        <>
+          <PopoverButton as={Button} size="icon" variant="ghost">
+            <Icon id="dots-three-vertical" width={24} height={24} />
+          </PopoverButton>
+
+          <PopoverPanel className="absolute right-0 z-50 mt-3 w-[320px]">
+            {({ close }) => (
+              <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-2">
+                {actionOptions.map(({ key, label, icon }) => (
+                  <button
+                    key={key}
+                    className="body2 flex place-content-between items-center gap-2 rounded-full !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      onSelectAction(key);
+                      close();
+                    }}
+                  >
+                    <span className="subtitle1 flex items-center gap-3 whitespace-nowrap text-white-full">
+                      <span className="flex h-10 w-10 items-center justify-center">
+                        <Icon
+                          id={icon}
+                          width={24}
+                          height={24}
+                          className="text-wosmongton-300"
+                        />
+                      </span>
+                      {label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </PopoverPanel>
+        </>
+      )}
+    </Popover>
   );
 };

@@ -286,7 +286,12 @@
     "last7d": "अंतिम 7 दिन",
     "last30d": "अंतिम 30 दिन",
     "last1y": "पिछले 1 वर्ष",
-    "allTime": "पूरे समय"
+    "allTime": "पूरे समय",
+    "trade": "व्यापार",
+    "earn": "कमाना",
+    "deposit": "जमा",
+    "withdraw": "निकालना",
+    "convert": "बदलना"
   },
   "buyTokens": "टोकन खरीदें",
   "components": {
