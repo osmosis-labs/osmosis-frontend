@@ -6,7 +6,8 @@ export type AvailableOneClickTradingMessages =
   | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut"
   | "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut"
   | "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-  | "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference";
+  | "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference"
+  | "/osmosis.lockup.MsgBeginUnlocking";
 
 export type OneClickTradingResetPeriods = "day" | "week" | "month" | "year";
 export interface OneClickTradingTimeLimit {

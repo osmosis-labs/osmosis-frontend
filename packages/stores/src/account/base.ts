@@ -840,7 +840,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
           ) ||
         message.typeUrl ===
-          getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
+          getTypeUrl(
+            "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference"
+          ) ||
+        message.typeUrl === getTypeUrl("/osmosis.lockup.MsgBeginUnlocking")
     );
 
     const forceSignDirect = doesTxNeedDirectSigning;
