@@ -1025,10 +1025,11 @@ export const MsgWithdrawPosition = {
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
     }
+    // NOTE: Withdraw postion will break if we regenerate protos
+    // if you see this line being removed in a PR, flag it!
+    // TODO: Abstract to an override function.
     if (message.liquidityAmount !== "") {
-      writer
-        .uint32(26)
-        .string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
+      writer.uint32(26).string(message.liquidityAmount.replace(".", ""));
     }
     return writer;
   },
