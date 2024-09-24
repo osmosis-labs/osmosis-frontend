@@ -25,10 +25,11 @@ import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
-import { MultiLanguageT } from "~/hooks";
 import {
   Breakpoint,
+  MultiLanguageT,
   useFeatureFlags,
+  useLocalStorageState,
   useTranslation,
   useWalletSelect,
   useWindowSize,
@@ -169,6 +170,11 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
+  const [favoritesList, onSetFavoritesList] = useLocalStorageState(
+    "favoritesList",
+    ["OSMO", "ATOM", "TIA"]
+  );
+
   // Define columns
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
@@ -180,6 +186,16 @@ export const AssetBalancesTable: FunctionComponent<{
           <AssetCell
             {...asset}
             warnUnverified={showUnverifiedAssets && !asset.isVerified}
+            isInUserWatchlist={favoritesList.includes(asset.coinDenom)}
+            onClickWatchlist={() => {
+              if (favoritesList.includes(asset.coinDenom)) {
+                onSetFavoritesList(
+                  favoritesList.filter((d: string) => d !== asset.coinDenom)
+                );
+              } else {
+                onSetFavoritesList([...favoritesList, asset.coinDenom]);
+              }
+            }}
           />
         ),
       }),
@@ -225,7 +241,15 @@ export const AssetBalancesTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    setSortKey,
+    t,
+    favoritesList,
+    onSetFavoritesList,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
