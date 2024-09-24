@@ -25,11 +25,12 @@ import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
-import { MultiLanguageT } from "~/hooks";
 import {
   Breakpoint,
+  MultiLanguageT,
   useFeatureFlags,
   useTranslation,
+  useUserWatchlist,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
@@ -169,6 +170,8 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   // Define columns
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
@@ -180,6 +183,8 @@ export const AssetBalancesTable: FunctionComponent<{
           <AssetCell
             {...asset}
             warnUnverified={showUnverifiedAssets && !asset.isVerified}
+            isInUserWatchlist={watchListDenoms.includes(asset.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetDenom(asset.coinDenom)}
           />
         ),
       }),
@@ -225,7 +230,15 @@ export const AssetBalancesTable: FunctionComponent<{
         ),
       }),
     ];
-  }, [sortKey, sortDirection, showUnverifiedAssets, setSortKey, t]);
+  }, [
+    sortKey,
+    sortDirection,
+    showUnverifiedAssets,
+    setSortKey,
+    t,
+    watchListDenoms,
+    toggleWatchAssetDenom,
+  ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
