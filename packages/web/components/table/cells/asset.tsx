@@ -34,7 +34,6 @@ export const AssetCell: FunctionComponent<
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-
               onClickWatchlist();
             }}
             className={classNames(
