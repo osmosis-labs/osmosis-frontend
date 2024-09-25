@@ -27,6 +27,7 @@ import {
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { DepositAddressScreen } from "~/components/bridge/deposit-address-screen";
 import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
@@ -661,10 +662,115 @@ export const AmountScreen = observer(
             counterpartySupportedAssetsByChainId[toAsset.chainId]?.length > 1;
     }, [counterpartySupportedAssetsByChainId, direction, fromAsset, toAsset]);
 
-    // This condition will be met iff:
-    // * An asset is disabled, effectively its FF is turned off for whatever reason
-    // * There's no supportedAssets returned from providers, so we don't know the to/from asset/chain depending on direction
-    // * Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
+    const chainSelection = (
+      <div className="mb-6 flex w-full flex-col gap-2">
+        <div className="flex w-full gap-2">
+          <span className="body1 md:caption flex-1 text-osmoverse-300">
+            {t("transfer.fromNetwork")}
+          </span>
+          <Icon id="arrow-right" className="invisible md:h-4 md:w-4" />
+          <span className="body1 md:caption flex-1 text-osmoverse-300">
+            {t("transfer.toNetwork")}
+          </span>
+        </div>
+
+        <div className="flex items-center gap-3 md:gap-2">
+          <ChainSelectorButton
+            direction={direction}
+            chainColor={fromChain?.color}
+            chainLogo={fromChain?.logoUri}
+            chains={supportedChains}
+            toChain={toChain}
+            isLoading={!fromChain}
+            onSelectChain={(nextChain) => {
+              setFromChain(nextChain);
+              resetAssets();
+              if (fromChain?.chainId !== nextChain.chainId) {
+                setManualToAddress(undefined);
+                resetInput();
+              }
+              if (osmosisWalletConnected) {
+                checkChainAndConnectWallet(nextChain);
+              }
+              logEvent([
+                EventName.DepositWithdraw.networkSelected,
+                { network: nextChain.prettyName },
+              ]);
+            }}
+            readonly={direction === "withdraw" || supportedChains.length === 1}
+            isNetworkSelectVisible={
+              direction === "withdraw" ? false : isNetworkSelectVisible
+            }
+            setIsNetworkSelectVisible={
+              direction === "withdraw" ? noop : setIsNetworkSelectVisible
+            }
+            initialManualAddress={manualToAddress}
+            onConfirmManualAddress={(address) => {
+              setManualToAddress(address);
+            }}
+          >
+            {fromChain?.prettyName}
+          </ChainSelectorButton>
+
+          <Icon id="arrow-right" className="text-osmoverse-300 md:h-4 md:w-4" />
+
+          <ChainSelectorButton
+            direction={direction}
+            chainColor={toChain?.color}
+            chainLogo={toChain?.logoUri}
+            chains={supportedChains}
+            toChain={toChain!}
+            isLoading={!toChain}
+            onSelectChain={(nextChain) => {
+              setToChain(nextChain);
+              resetAssets();
+              if (fromChain?.chainId !== nextChain.chainId) {
+                setManualToAddress(undefined);
+                resetInput();
+              }
+              if (osmosisWalletConnected) {
+                checkChainAndConnectWallet(nextChain);
+              }
+              logEvent([
+                EventName.DepositWithdraw.networkSelected,
+                { network: nextChain.prettyName },
+              ]);
+            }}
+            readonly={direction === "deposit" || supportedChains.length === 1}
+            isNetworkSelectVisible={
+              direction === "deposit" ? false : isNetworkSelectVisible
+            }
+            setIsNetworkSelectVisible={
+              direction === "deposit" ? noop : setIsNetworkSelectVisible
+            }
+            initialManualAddress={manualToAddress}
+            onConfirmManualAddress={(address) => {
+              setManualToAddress(address);
+            }}
+          >
+            {toChain?.prettyName}
+          </ChainSelectorButton>
+        </div>
+      </div>
+    );
+
+    if (canonicalAsset && fromChain) {
+      return (
+        <DepositAddressScreen
+          canonicalAsset={canonicalAsset}
+          direction={direction}
+          chainSelection={chainSelection}
+          fromChain={fromChain}
+        />
+      );
+    }
+
+    /**
+     * This condition will be met if:
+     * - An asset is disabled, effectively its FF is turned off for whatever reason
+     * - There's no supportedAssets returned from providers, so we don't know the to/from asset/chain depending on direction
+     * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
+     */
     if (
       !isLoading &&
       (areAssetTransfersDisabled ||
@@ -739,100 +845,7 @@ export const AmountScreen = observer(
           )}
         </div>
 
-        <div className="mb-6 flex w-full flex-col gap-2">
-          <div className="flex w-full gap-2">
-            <span className="body1 md:caption flex-1 text-osmoverse-300">
-              {t("transfer.fromNetwork")}
-            </span>
-            <Icon id="arrow-right" className="invisible md:h-4 md:w-4" />
-            <span className="body1 md:caption flex-1 text-osmoverse-300">
-              {t("transfer.toNetwork")}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3 md:gap-2">
-            <ChainSelectorButton
-              direction={direction}
-              chainColor={fromChain?.color}
-              chainLogo={fromChain?.logoUri}
-              chains={supportedChains}
-              toChain={toChain}
-              isLoading={!fromChain}
-              onSelectChain={(nextChain) => {
-                setFromChain(nextChain);
-                resetAssets();
-                if (fromChain?.chainId !== nextChain.chainId) {
-                  setManualToAddress(undefined);
-                  resetInput();
-                }
-                if (osmosisWalletConnected) {
-                  checkChainAndConnectWallet(nextChain);
-                }
-                logEvent([
-                  EventName.DepositWithdraw.networkSelected,
-                  { network: nextChain.prettyName },
-                ]);
-              }}
-              readonly={
-                direction === "withdraw" || supportedChains.length === 1
-              }
-              isNetworkSelectVisible={
-                direction === "withdraw" ? false : isNetworkSelectVisible
-              }
-              setIsNetworkSelectVisible={
-                direction === "withdraw" ? noop : setIsNetworkSelectVisible
-              }
-              initialManualAddress={manualToAddress}
-              onConfirmManualAddress={(address) => {
-                setManualToAddress(address);
-              }}
-            >
-              {fromChain?.prettyName}
-            </ChainSelectorButton>
-
-            <Icon
-              id="arrow-right"
-              className="text-osmoverse-300 md:h-4 md:w-4"
-            />
-
-            <ChainSelectorButton
-              direction={direction}
-              chainColor={toChain?.color}
-              chainLogo={toChain?.logoUri}
-              chains={supportedChains}
-              toChain={toChain!}
-              isLoading={!toChain}
-              onSelectChain={(nextChain) => {
-                setToChain(nextChain);
-                resetAssets();
-                if (fromChain?.chainId !== nextChain.chainId) {
-                  setManualToAddress(undefined);
-                  resetInput();
-                }
-                if (osmosisWalletConnected) {
-                  checkChainAndConnectWallet(nextChain);
-                }
-                logEvent([
-                  EventName.DepositWithdraw.networkSelected,
-                  { network: nextChain.prettyName },
-                ]);
-              }}
-              readonly={direction === "deposit" || supportedChains.length === 1}
-              isNetworkSelectVisible={
-                direction === "deposit" ? false : isNetworkSelectVisible
-              }
-              setIsNetworkSelectVisible={
-                direction === "deposit" ? noop : setIsNetworkSelectVisible
-              }
-              initialManualAddress={manualToAddress}
-              onConfirmManualAddress={(address) => {
-                setManualToAddress(address);
-              }}
-            >
-              {toChain?.prettyName}
-            </ChainSelectorButton>
-          </div>
-        </div>
+        {chainSelection}
 
         <div className="flex w-full flex-col gap-6 md:gap-4">
           <CryptoFiatInput
