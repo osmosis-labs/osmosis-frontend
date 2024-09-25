@@ -1,16 +1,26 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import { shorten } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { SkeletonLoader } from "~/components/loaders";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
+import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+
+const QRCode = dynamic(
+  () => import("~/components/qrcode").then((module) => module.QRCode),
+  {
+    loading: () => <Spinner className="text-black" />,
+  }
+);
 
 interface DepositAddressScreenProps {
   direction: "deposit" | "withdraw";
@@ -28,6 +38,10 @@ export const DepositAddressScreen = observer(
   }: DepositAddressScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { t } = useTranslation();
+    const [showQrCode, setShowQrCode] = useState(false);
+
+    const { hasCopied, onCopy } = useClipboard("test", 3000);
+
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
         <div className="mb-8 flex flex-col gap-3">
@@ -65,34 +79,84 @@ export const DepositAddressScreen = observer(
 
         {chainSelection}
 
-        <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
-          <div className="flex items-center gap-2">
-            <Tooltip content="Show QR code">
-              <IconButton
-                icon={<Icon id="qr" className="text-osmoverse-400" />}
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-                aria-label="Show QR code"
+        {showQrCode ? (
+          <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
+            <div className="flex h-[180px] w-[180px] items-center justify-center">
+              <QRCode
+                value="test"
+                size={220}
+                logoUrl={canonicalAsset.coinImageUrl}
               />
-            </Tooltip>
-
-            <div className="flex flex-col">
-              <p className="subtitle1 text-white-full">
-                Your {canonicalAsset.coinDenom} deposit address
+            </div>
+            <div className="flex flex-1 flex-col items-center gap-3">
+              <Icon
+                id="scan-line"
+                className="text-osmoverse-400"
+                width={32}
+                height={32}
+              />
+              <p className="subtitle1 text-osmoverse-1000">
+                Scan with your mobile wallet
               </p>
-              <p className="text-osmoverse-300">
-                {shorten("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", {
-                  prefixLength: 9,
-                  suffixLength: 5,
-                })}
-              </p>
+              <p className="body2 text-osmoverse-600">or</p>
+              <button
+                onClick={onCopy}
+                className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
+              >
+                {hasCopied ? "Copied" : "Copy to clipboard"}
+              </button>
             </div>
           </div>
-          <IconButton
-            icon={<Icon id="copy" className="text-osmoverse-400" />}
-            className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-            aria-label="Copy address"
-          />
-        </div>
+        ) : (
+          <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
+            <div className="flex items-center gap-2">
+              <Tooltip content="Show QR code">
+                <IconButton
+                  icon={
+                    <Icon
+                      id="qr"
+                      className="transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
+                    />
+                  }
+                  className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
+                  aria-label="Show QR code"
+                  onClick={() => setShowQrCode(true)}
+                />
+              </Tooltip>
+
+              <div className="flex flex-col">
+                <p className="subtitle1 text-white-full">
+                  Your {canonicalAsset.coinDenom} deposit address
+                </p>
+                <p className="text-osmoverse-300">
+                  {shorten("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", {
+                    prefixLength: 9,
+                    suffixLength: 5,
+                  })}
+                </p>
+              </div>
+            </div>
+            <Tooltip
+              content={hasCopied ? "Copied" : "Copy address to clipboard"}
+            >
+              <IconButton
+                icon={
+                  <Icon
+                    id={hasCopied ? "check-mark-slim" : "copy"}
+                    className={
+                      hasCopied
+                        ? "text-white-full"
+                        : "transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
+                    }
+                  />
+                }
+                className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
+                aria-label="Copy address"
+                onClick={onCopy}
+              />
+            </Tooltip>
+          </div>
+        )}
 
         <div className="z-10 -mt-2 flex w-full items-center gap-4 rounded-b-2xl bg-osmoverse-1000 px-4 pb-4 pt-6">
           <Icon
@@ -103,12 +167,50 @@ export const DepositAddressScreen = observer(
           />
           <p className="body2 text-osmoverse-200">
             This address can only receive {canonicalAsset.coinDenom} from{" "}
-            {fromChain.prettyName} network.
-            <br />
-            Sending any other assets may result in permanent loss.
+            {fromChain.prettyName} network. Sending any other assets may result
+            in permanent loss.
           </p>
         </div>
+
+        <DepositInfoRow label={<span>Receive asset</span>}>
+          <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
+        </DepositInfoRow>
+        <DepositInfoRow label={<span>Minimum deposit</span>}>
+          <p className="text-osmoverse-100">0.0001207 BTC ($10.00)</p>
+        </DepositInfoRow>
+        <DepositInfoRow
+          label={
+            true ? (
+              <div className="flex items-center gap-2">
+                <Spinner className="text-wosmongton-500" />{" "}
+                <span>Estimating time</span>
+              </div>
+            ) : (
+              <span>Estimated time</span>
+            )
+          }
+        >
+          <p className="text-osmoverse-100">
+            {true ? (
+              <span className="text-osmoverse-300">Calculating fees</span>
+            ) : (
+              "test"
+            )}
+          </p>
+        </DepositInfoRow>
       </div>
     );
   }
 );
+
+const DepositInfoRow: FunctionComponent<{
+  label: ReactNode;
+  children: ReactNode;
+}> = ({ label, children }) => {
+  return (
+    <div className="body1 md:body2 flex w-full items-center justify-between py-3">
+      <p>{label}</p>
+      {children}
+    </div>
+  );
+};
