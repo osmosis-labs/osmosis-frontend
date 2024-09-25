@@ -286,7 +286,12 @@
     "last7d": "过去 7 天",
     "last30d": "过去 30 天",
     "last1y": "过去 1 年",
-    "allTime": "所有时间"
+    "allTime": "所有时间",
+    "trade": "贸易",
+    "earn": "赚",
+    "deposit": "订金",
+    "withdraw": "提取",
+    "convert": "转变"
   },
   "buyTokens": "购买代币",
   "components": {

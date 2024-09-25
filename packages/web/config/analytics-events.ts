@@ -1,11 +1,11 @@
 /** # User Events Constants
  *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
  */
-
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 
-// Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
-// For maintainability - all event logs should be in high level component
+/** Max value of USD event to check against to prevent
+ *  outliers from corrupting dashboards. */
+export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
 
 export type AmountDefault = "half" | "max" | "input";
 

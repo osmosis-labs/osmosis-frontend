@@ -832,15 +832,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       return typeUrl;
     };
 
-    // TODO - update proto codec
+    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+    // TODO: Copy what's been done there for this message below
     const doesTxNeedDirectSigning = messages.some(
       (message) =>
         message.typeUrl ===
-          getTypeUrl(
-            "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-          ) ||
-        message.typeUrl ===
-          getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
+        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
     );
 
     const forceSignDirect = doesTxNeedDirectSigning;

@@ -286,7 +286,12 @@
     "last7d": "Letzte 7 Tage",
     "last30d": "Letzte 30 Tage",
     "last1y": "Letztes 1 Jahr",
-    "allTime": "Alle Zeit"
+    "allTime": "Alle Zeit",
+    "trade": "Handel",
+    "earn": "Verdienen",
+    "deposit": "Kaution",
+    "withdraw": "Zurückziehen",
+    "convert": "Konvertieren"
   },
   "buyTokens": "Kaufen Sie Token",
   "components": {

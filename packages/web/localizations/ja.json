@@ -286,7 +286,12 @@
     "last7d": "過去7日間",
     "last30d": "過去30日間",
     "last1y": "過去1年間",
-    "allTime": "これまで"
+    "allTime": "これまで",
+    "trade": "貿易",
+    "earn": "得る",
+    "deposit": "デポジット",
+    "withdraw": "撤回する",
+    "convert": "変換する"
   },
   "buyTokens": "トークンを購入する",
   "components": {

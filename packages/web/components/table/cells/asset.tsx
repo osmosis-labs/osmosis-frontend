@@ -34,14 +34,13 @@ export const AssetCell: FunctionComponent<
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
-
               onClickWatchlist();
             }}
             className={classNames(
               "cursor-pointer transition-colors duration-150 ease-out hover:text-wosmongton-300",
               isInUserWatchlist ? "text-wosmongton-400" : "text-osmoverse-600"
             )}
-            id="star"
+            id={isInUserWatchlist ? "star" : "star-outlined"}
           />
         </div>
       )}

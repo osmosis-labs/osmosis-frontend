@@ -286,7 +286,12 @@
     "last7d": "ગત તા",
     "last30d": "છેલ્લા 30 ડી",
     "last1y": "છેલ્લા 1 વર્ષ",
-    "allTime": "બધા સમય"
+    "allTime": "બધા સમય",
+    "trade": "વેપાર",
+    "earn": "કમાઓ",
+    "deposit": "જમા",
+    "withdraw": "ઉપાડો",
+    "convert": "કન્વર્ટ કરો"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {

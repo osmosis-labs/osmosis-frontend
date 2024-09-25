@@ -286,7 +286,12 @@
     "last7d": "Last 7d",
     "last30d": "Last 30d",
     "last1y": "Last 1y",
-    "allTime": "All time"
+    "allTime": "All time",
+    "trade": "Trade",
+    "earn": "Earn",
+    "deposit": "Deposit",
+    "withdraw": "Withdraw",
+    "convert": "Convert"
   },
   "buyTokens": "Buy tokens",
   "components": {

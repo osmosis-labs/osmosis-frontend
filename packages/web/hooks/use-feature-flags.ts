@@ -31,7 +31,8 @@ export type AvailableFlags =
   | "cypherCard"
   | "newPortfolioPage"
   | "inGivenOut"
-  | "sqsActiveOrders";
+  | "sqsActiveOrders"
+  | "alloyedAssets";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
@@ -58,6 +59,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   newPortfolioPage: false,
   inGivenOut: false,
   sqsActiveOrders: false,
+  alloyedAssets: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =

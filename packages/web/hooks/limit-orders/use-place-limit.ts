@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
-import { EventName, EventPage } from "~/config";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   isValidNumericalRawInput,
   useAmountInput,
@@ -283,6 +283,16 @@ export const usePlaceLimit = ({
     }
 
     if (isMarket) {
+      let valueUsd = Number(
+        marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+      );
+
+      // Protect our data from outliers
+      // Perhaps from upstream issues with price data providers
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+        valueUsd = 0;
+      }
+
       const baseEvent = {
         fromToken: marketState.fromAsset?.coinDenom,
         tokenAmount: Number(
@@ -294,9 +304,7 @@ export const usePlaceLimit = ({
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (marketState.quote?.split.length ?? 0) > 1,
-        valueUsd: Number(
-          marketState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-        ),
+        valueUsd,
         feeValueUsd: Number(marketState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: marketState.quote?.timeMs,
@@ -328,12 +336,19 @@ export const usePlaceLimit = ({
 
     const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
+    let valueUsd = Number(paymentFiatValue?.toDec().toString() ?? "0");
+    // Protect our data from outliers
+    // Perhaps from upstream issues with price data providers
+    if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+      valueUsd = 0;
+    }
+
     const baseEvent = {
       type: orderDirection === "bid" ? "buy" : "sell",
       fromToken: paymentDenom,
       toToken:
         orderDirection === "bid" ? baseAsset?.coinDenom : quoteAsset?.coinDenom,
-      valueUsd: Number(paymentFiatValue?.toDec().toString() ?? "0"),
+      valueUsd,
       tokenAmount: Number(quantity),
       page,
       isOnHomePage: page === "Swap Page",

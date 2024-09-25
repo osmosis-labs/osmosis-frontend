@@ -286,7 +286,12 @@
     "last7d": "Ultimele 7 zile",
     "last30d": "Ultimele 30 de zile",
     "last1y": "Ultimul 1 an",
-    "allTime": "Tot timpul"
+    "allTime": "Tot timpul",
+    "trade": "Comerț",
+    "earn": "Câştiga",
+    "deposit": "Depozit",
+    "withdraw": "Retrage",
+    "convert": "Convertit"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
