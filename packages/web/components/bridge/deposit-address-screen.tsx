@@ -72,8 +72,8 @@ export const DepositAddressScreen = observer(
               </>
             )}
           </div>
-          <p className="text-h5 font-h5 text-white-full md:text-h6 md:font-h6">
-            Send from your wallet or exchange
+          <p className="text-center text-h5 font-h5 text-white-full md:text-h6 md:font-h6">
+            {t("transfer.sendFromWalletOrExchange")}
           </p>
         </div>
 
@@ -96,21 +96,23 @@ export const DepositAddressScreen = observer(
                 height={32}
               />
               <p className="subtitle1 text-osmoverse-1000">
-                Scan with your mobile wallet
+                {t("transfer.scanWithMobileWallet")}
               </p>
-              <p className="body2 text-osmoverse-600">or</p>
+              <p className="body2 text-osmoverse-600">{t("transfer.or")}</p>
               <button
                 onClick={onCopy}
                 className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
               >
-                {hasCopied ? "Copied" : "Copy to clipboard"}
+                {hasCopied
+                  ? t("transfer.copied")
+                  : t("transfer.copyToClipboard")}
               </button>
             </div>
           </div>
         ) : (
           <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
             <div className="flex items-center gap-2">
-              <Tooltip content="Show QR code">
+              <Tooltip content={t("transfer.showQrCode")}>
                 <IconButton
                   icon={
                     <Icon
@@ -119,14 +121,16 @@ export const DepositAddressScreen = observer(
                     />
                   }
                   className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-                  aria-label="Show QR code"
+                  aria-label={t("transfer.showQrCode")}
                   onClick={() => setShowQrCode(true)}
                 />
               </Tooltip>
 
               <div className="flex flex-col">
                 <p className="subtitle1 text-white-full">
-                  Your {canonicalAsset.coinDenom} deposit address
+                  {t("transfer.yourDepositAddress", {
+                    denom: canonicalAsset.coinDenom,
+                  })}
                 </p>
                 <p className="text-osmoverse-300">
                   {shorten("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", {
@@ -137,7 +141,11 @@ export const DepositAddressScreen = observer(
               </div>
             </div>
             <Tooltip
-              content={hasCopied ? "Copied" : "Copy address to clipboard"}
+              content={
+                hasCopied
+                  ? t("transfer.copied")
+                  : t("transfer.copyAddressToClipboard")
+              }
             >
               <IconButton
                 icon={
@@ -151,7 +159,7 @@ export const DepositAddressScreen = observer(
                   />
                 }
                 className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-                aria-label="Copy address"
+                aria-label={t("transfer.copyAddress")}
                 onClick={onCopy}
               />
             </Tooltip>
@@ -166,33 +174,38 @@ export const DepositAddressScreen = observer(
             className="flex-shrink-0 self-start text-rust-400"
           />
           <p className="body2 text-osmoverse-200">
-            This address can only receive {canonicalAsset.coinDenom} from{" "}
-            {fromChain.prettyName} network. Sending any other assets may result
-            in permanent loss.
+            {t("transfer.receiveOnlyAsset", {
+              denom: canonicalAsset.coinDenom,
+              network: fromChain.prettyName,
+            })}
           </p>
         </div>
 
-        <DepositInfoRow label={<span>Receive asset</span>}>
+        <DepositInfoRow label={<span>{t("transfer.receiveAsset")}</span>}>
           <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
         </DepositInfoRow>
-        <DepositInfoRow label={<span>Minimum deposit</span>}>
-          <p className="text-osmoverse-100">0.0001207 BTC ($10.00)</p>
+        <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
+          <p className="text-right text-osmoverse-100">
+            0.0001207 BTC ($10.00)
+          </p>
         </DepositInfoRow>
         <DepositInfoRow
           label={
             true ? (
               <div className="flex items-center gap-2">
                 <Spinner className="text-wosmongton-500" />{" "}
-                <span>Estimating time</span>
+                <span>{t("transfer.estimatingTime")}</span>
               </div>
             ) : (
-              <span>Estimated time</span>
+              <span>{t("transfer.estimatedTime")}</span>
             )
           }
         >
           <p className="text-osmoverse-100">
             {true ? (
-              <span className="text-osmoverse-300">Calculating fees</span>
+              <span className="text-osmoverse-300">
+                {t("transfer.calculatingFees")}
+              </span>
             ) : (
               "test"
             )}
@@ -208,7 +221,7 @@ const DepositInfoRow: FunctionComponent<{
   children: ReactNode;
 }> = ({ label, children }) => {
   return (
-    <div className="body1 md:body2 flex w-full items-center justify-between py-3">
+    <div className="body1 md:body2 flex w-full items-center justify-between gap-2 py-3">
       <p>{label}</p>
       {children}
     </div>
