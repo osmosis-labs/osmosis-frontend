@@ -51,6 +51,7 @@ import { DeliverTxResponse, SignOptions } from "../types";
 import { findNewClPositionId } from "./tx-response";
 
 const DEFAULT_SLIPPAGE = "2.5";
+const HIGH_DEFAULT_SLIPPAGE = "15";
 
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
@@ -1414,7 +1415,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#exit-pool
    * @param poolId Id of pool to exit.
    * @param shareInAmount LP shares to redeem.
-   * @param maxSlippage Max tolerated slippage. Default: 2.5.
+   * @param maxSlippage Max tolerated slippage. Default: 5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1444,6 +1445,12 @@ export class OsmosisAccountImpl {
       makeExitPoolMsg.shareCoinDecimals
     );
 
+    // If the token amount is very large, indicating high precision,
+    // increase slippage tolerance to allow for the high precision.
+    if (poolAssets.some(({ amount }) => amount.length > 18)) {
+      maxSlippage = HIGH_DEFAULT_SLIPPAGE;
+    }
+
     const maxSlippageDec = new Dec(maxSlippage).quo(
       DecUtils.getTenExponentNInPrecisionRange(2)
     );
@@ -1465,6 +1472,8 @@ export class OsmosisAccountImpl {
               .toString(),
           };
         });
+
+    console.log({ tokenOutMins });
 
     const msg = await makeExitPoolMsg({
       poolId: BigInt(poolId),
