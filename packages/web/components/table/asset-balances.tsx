@@ -250,8 +250,10 @@ export const AssetBalancesTable: FunctionComponent<{
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
-    if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.lg) {
+      collapsedColIds.push("price");
+      collapsedColIds.push("assetActions");
+    }
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
