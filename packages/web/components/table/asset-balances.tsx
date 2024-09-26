@@ -156,6 +156,8 @@ export const AssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
@@ -163,14 +165,19 @@ export const AssetBalancesTable: FunctionComponent<{
         if (hideDust && isDust) return null;
         return asset;
       })
-      .filter((asset) => asset !== null);
-  }, [assetsData, hideDust]);
+      .filter((asset): asset is AssetRow => asset !== null)
+      .sort((a, b) => {
+        const aIsFavorite = watchListDenoms.includes(a.coinDenom);
+        const bIsFavorite = watchListDenoms.includes(b.coinDenom);
+        if (aIsFavorite && !bIsFavorite) return -1;
+        if (!aIsFavorite && bIsFavorite) return 1;
+        return 0;
+      });
+  }, [assetsData, hideDust, watchListDenoms]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
-
-  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   // Define columns
   const columns = useMemo(() => {
