@@ -156,6 +156,8 @@ export const AssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
@@ -163,8 +165,15 @@ export const AssetBalancesTable: FunctionComponent<{
         if (hideDust && isDust) return null;
         return asset;
       })
-      .filter((asset) => asset !== null);
-  }, [assetsData, hideDust]);
+      .filter((asset): asset is AssetRow => asset !== null)
+      .sort((a, b) => {
+        const aIsFavorite = watchListDenoms.includes(a.coinDenom);
+        const bIsFavorite = watchListDenoms.includes(b.coinDenom);
+        if (aIsFavorite && !bIsFavorite) return -1;
+        if (!aIsFavorite && bIsFavorite) return 1;
+        return 0;
+      });
+  }, [assetsData, hideDust, watchListDenoms]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
@@ -243,14 +252,15 @@ export const AssetBalancesTable: FunctionComponent<{
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
-    if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.lg) {
+      collapsedColIds.push("price");
+      collapsedColIds.push("assetActions");
+    }
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
   const table = useReactTable({
     data: filteredAssetsData,
-    // @ts-expect-error
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
