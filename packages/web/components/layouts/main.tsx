@@ -1,8 +1,14 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, { type FunctionComponent, type PropsWithChildren } from "react";
+import React, {
+  type FunctionComponent,
+  type PropsWithChildren,
+  useEffect,
+} from "react";
 
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
 import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
@@ -33,6 +39,18 @@ export const MainLayout = observer(
     const selectedMenuItem = menus.find(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
     );
+
+    useEffect(() => {
+      displayToast(
+        {
+          titleTranslationKey: "transactionSuccessful",
+        },
+        ToastType.ALLOYED_ASSETS,
+        {
+          position: "bottom-right", // Add this option to position the toast
+        }
+      );
+    }, [router]);
 
     return (
       <React.Fragment>

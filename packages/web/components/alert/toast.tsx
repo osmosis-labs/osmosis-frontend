@@ -66,6 +66,9 @@ export function displayToast(
     case ToastType.ONE_CLICK_TRADING:
       showToast(<OneClickTradingToast {...alert} />, toastOptions);
       break;
+    case ToastType.ALLOYED_ASSETS:
+      showToast(<AlloyedAssetsToast {...alert} />, toastOptions);
+      break;
   }
 }
 
@@ -184,6 +187,34 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
       <Image
         alt="1-Click Trading Small Icon"
         src="/images/1ct-small-icon.svg"
+        height={32}
+        width={32}
+      />
+    </div>
+    <div className="text-white-high">
+      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
+      {captionElement}
+      {captionTranslationKey && (
+        <p className="text-sm text-osmoverse-300 md:text-xs">
+          {typeof captionTranslationKey === "string"
+            ? t(captionTranslationKey)
+            : t(...captionTranslationKey)}
+        </p>
+      )}
+    </div>
+  </div>
+);
+
+const AlloyedAssetsToast: FunctionComponent<Alert> = ({
+  titleTranslationKey,
+  captionTranslationKey,
+  captionElement,
+}) => (
+  <div className="flex items-center gap-3 md:gap-2">
+    <div className="h-8 w-8 shrink-0">
+      <Image
+        alt="Alloyed Assets Icon"
+        src="/images/alloyed-assets-icon.svg"
         height={32}
         width={32}
       />
