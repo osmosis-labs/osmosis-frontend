@@ -1415,7 +1415,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#exit-pool
    * @param poolId Id of pool to exit.
    * @param shareInAmount LP shares to redeem.
-   * @param maxSlippage Max tolerated slippage. Default: 5.
+   * @param maxSlippage Max tolerated slippage. Default: 2.5, 15 with high precision amounts.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
