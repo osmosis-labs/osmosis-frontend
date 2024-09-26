@@ -1473,8 +1473,6 @@ export class OsmosisAccountImpl {
           };
         });
 
-    console.log({ tokenOutMins });
-
     const msg = await makeExitPoolMsg({
       poolId: BigInt(poolId),
       sender: this.address,
