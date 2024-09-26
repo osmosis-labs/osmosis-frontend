@@ -1,3 +1,4 @@
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { shorten } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -6,6 +7,7 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import { Icon } from "~/components/assets";
+import { DepositAddressBridge } from "~/components/bridge/use-bridge-quotes";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
@@ -14,6 +16,8 @@ import { useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
+import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 const QRCode = dynamic(
   () => import("~/components/qrcode").then((module) => module.QRCode),
@@ -27,6 +31,7 @@ interface DepositAddressScreenProps {
   canonicalAsset: MinimalAsset;
   chainSelection: React.ReactNode;
   fromChain: BridgeChainWithDisplayInfo;
+  bridge: DepositAddressBridge;
 }
 
 export const DepositAddressScreen = observer(
@@ -35,12 +40,42 @@ export const DepositAddressScreen = observer(
     canonicalAsset,
     chainSelection,
     fromChain,
+    bridge,
   }: DepositAddressScreenProps) => {
+    const { accountStore } = useStore();
+
+    const osmosisAddress = accountStore.getWallet(
+      accountStore.osmosisChainId
+    )?.address;
+
     const { setCurrentScreen } = useScreenManager();
     const { t } = useTranslation();
     const [showQrCode, setShowQrCode] = useState(false);
 
-    const { hasCopied, onCopy } = useClipboard("test", 3000);
+    const { data, isLoading } = api.bridgeTransfer.getDepositAddress.useQuery(
+      {
+        bridge,
+        fromChain,
+        toAddress: osmosisAddress!,
+      },
+      {
+        enabled: !!osmosisAddress,
+        refetchOnWindowFocus: false,
+        useErrorBoundary: true,
+      }
+    );
+
+    const { hasCopied, onCopy } = useClipboard(
+      data?.depositData?.depositAddress ?? "",
+      3000
+    );
+
+    // TODO: improve loading
+    if (isLoading || !data) {
+      return <Spinner className="text-black" />;
+    }
+
+    console.log(data);
 
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
@@ -83,7 +118,7 @@ export const DepositAddressScreen = observer(
           <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
             <div className="flex h-[180px] w-[180px] items-center justify-center">
               <QRCode
-                value="test"
+                value={data?.depositData?.depositAddress}
                 size={220}
                 logoUrl={canonicalAsset.coinImageUrl}
               />
@@ -133,7 +168,7 @@ export const DepositAddressScreen = observer(
                   })}
                 </p>
                 <p className="text-osmoverse-300">
-                  {shorten("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa", {
+                  {shorten(data.depositData.depositAddress, {
                     prefixLength: 9,
                     suffixLength: 5,
                   })}
@@ -186,7 +221,11 @@ export const DepositAddressScreen = observer(
         </DepositInfoRow>
         <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
           <p className="text-right text-osmoverse-100">
-            0.0001207 BTC ($10.00)
+            {new CoinPretty(
+              canonicalAsset,
+              new Dec(data?.depositData?.minimumDeposit ?? 0)
+            ).toString()}{" "}
+            ($10.00)
           </p>
         </DepositInfoRow>
         <DepositInfoRow

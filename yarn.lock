@@ -17198,10 +17198,10 @@ nodemailer@^6.9.14:
   resolved "https://registry.yarnpkg.com/nodemailer/-/nodemailer-6.9.14.tgz#845fda981f9fd5ac264f4446af908a7c78027f75"
   integrity sha512-Dobp/ebDKBvz91sbtRKhcznLThrKxKt97GI2FAlAyy+fk19j73Uz3sBXolVtmcXjaorivqsbbbjDY+Jkt4/bQA==
 
-nomic-bitcoin@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-2.0.0.tgz#a98922b4aae9bbb8f8e040404734e7f99188dd80"
-  integrity sha512-I1QN6WhNTYMVoVdDpdcTYDApzyMwWJGiMowerjUd/D9TRJJzXRVgtXi1eMzLJ5n6h/achBYSiC8bcT9WP3hb6A==
+nomic-bitcoin@^4.1.0:
+  version "4.1.0"
+  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-4.1.0.tgz#1aad453205030178291fa034b06e821c3c4cb22b"
+  integrity sha512-V10GAsi2yVmFrDsut7ZxeuBdb4UmR7JCwbx8GiurTEjx/1b5SP5oEgoDITx6CL0kjTa/NUVMLQpvIWy2tO/x5w==
   dependencies:
     "@cosmjs/encoding" "^0.31.1"
     bitcoinjs-lib "^6.1.3"

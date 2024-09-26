@@ -239,30 +239,24 @@ export type GetBridgeSupportedAssetsParams = z.infer<
 
 export interface BridgeDepositAddress {
   depositAddress: string;
+  expirationTimeMs: number;
+  minimumDeposit: string;
 }
 
-export interface GetDepositAddressParams {
+export const getDepositAddressParamsSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: BridgeChain;
-  /**
-   * The destination chain information.
-   */
-  toChain: BridgeChain;
-  /**
-   * The asset on the originating chain.
-   */
-  fromAsset: BridgeAsset;
-  /**
-   * The asset on the destination chain.
-   */
-  toAsset: BridgeAsset;
+  fromChain: bridgeChainSchema,
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: string;
-}
+  toAddress: z.string(),
+});
+
+export type GetDepositAddressParams = z.infer<
+  typeof getDepositAddressParamsSchema
+>;
 
 export const getBridgeExternalUrlSchema = z.object({
   /**

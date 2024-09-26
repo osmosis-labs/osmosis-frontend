@@ -69,12 +69,14 @@ import {
   ProviderFeesRow,
   TotalFeesRow,
 } from "./quote-detail";
-import { BridgeQuote } from "./use-bridge-quotes";
+import { BridgeQuote, DepositAddressBridge } from "./use-bridge-quotes";
 import {
   SupportedAsset,
   SupportedChain,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
+
+const depositAddressBridges: DepositAddressBridge[] = ["Nomic"];
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
@@ -662,6 +664,16 @@ export const AmountScreen = observer(
             counterpartySupportedAssetsByChainId[toAsset.chainId]?.length > 1;
     }, [counterpartySupportedAssetsByChainId, direction, fromAsset, toAsset]);
 
+    const resetAssets = () => {
+      setFromAsset(undefined);
+      setToAsset(undefined);
+    };
+
+    const resetInput = () => {
+      setCryptoAmount("");
+      setFiatAmount("");
+    };
+
     const chainSelection = (
       <div className="mb-6 flex w-full flex-col gap-2">
         <div className="flex w-full gap-2">
@@ -754,13 +766,29 @@ export const AmountScreen = observer(
       </div>
     );
 
-    if (canonicalAsset && fromChain) {
+    const supportedAddressBridges = useMemo(
+      () =>
+        supportedBridges.filter((bridge) =>
+          depositAddressBridges.some(
+            (depositAddressBridge) => depositAddressBridge === bridge
+          )
+        ) as DepositAddressBridge[],
+      [supportedBridges]
+    );
+
+    if (
+      supportedAddressBridges.length > 0 &&
+      direction === "deposit" &&
+      canonicalAsset &&
+      fromChain
+    ) {
       return (
         <DepositAddressScreen
           canonicalAsset={canonicalAsset}
           direction={direction}
           chainSelection={chainSelection}
           fromChain={fromChain}
+          bridge={supportedAddressBridges[0]} // For now, only one bridge provider is supported
         />
       );
     }
@@ -782,17 +810,20 @@ export const AmountScreen = observer(
         !quote.enabled)
     ) {
       return (
-        <OnlyExternalBridgeSuggest
-          direction={direction}
-          toChain={toChain}
-          toAsset={toAsset}
-          canonicalAssetDenom={canonicalAsset?.coinDenom}
-          fromChain={fromChain}
-          fromAsset={fromAsset}
-          toAddress={toAddress}
-          bridges={supportedBridges}
-          onDone={onClose}
-        />
+        <>
+          {chainSelection}
+          <OnlyExternalBridgeSuggest
+            direction={direction}
+            toChain={toChain}
+            toAsset={toAsset}
+            canonicalAssetDenom={canonicalAsset?.coinDenom}
+            fromChain={fromChain}
+            fromAsset={fromAsset}
+            toAddress={toAddress}
+            bridges={supportedBridges}
+            onDone={onClose}
+          />
+        </>
       );
     }
 
@@ -806,16 +837,6 @@ export const AmountScreen = observer(
     if (!assetsInOsmosis && !isLoading) {
       throw new Error("Assets are not defined");
     }
-
-    const resetAssets = () => {
-      setFromAsset(undefined);
-      setToAsset(undefined);
-    };
-
-    const resetInput = () => {
-      setCryptoAmount("");
-      setFiatAmount("");
-    };
 
     return (
       <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">

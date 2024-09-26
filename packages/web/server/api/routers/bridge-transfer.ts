@@ -7,6 +7,7 @@ import {
   getBridgeExternalUrlSchema,
   getBridgeQuoteSchema,
   getBridgeSupportedAssetsParams,
+  getDepositAddressParamsSchema,
 } from "@osmosis-labs/bridge";
 import {
   DEFAULT_VS_CURRENCY,
@@ -610,6 +611,49 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       return {
         externalUrls,
+      };
+    }),
+
+  /**
+   * Provide the deposit address for a given bridge transfer.
+   */
+  getDepositAddress: publicProcedure
+    .input(getDepositAddressParamsSchema.extend({ bridge: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+        }
+      );
+
+      const bridgeProvider =
+        bridgeProviders.bridges[
+          input.bridge as keyof typeof bridgeProviders.bridges
+        ];
+
+      if (!bridgeProvider) {
+        throw new Error("Invalid bridge provider id: " + input.bridge);
+      }
+
+      if (!("getDepositAddress" in bridgeProvider)) {
+        throw new Error("Bridge does not support deposit addresses");
+      }
+
+      const depositData = await bridgeProvider.getDepositAddress({
+        toAddress: input.toAddress,
+        fromChain: input.fromChain,
+      });
+
+      if (!depositData) {
+        throw new Error("Failed to get deposit address");
+      }
+
+      return {
+        depositData,
       };
     }),
 });
