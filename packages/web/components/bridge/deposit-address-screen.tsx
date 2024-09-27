@@ -79,17 +79,6 @@ export const DepositAddressScreen = observer(
       3000
     );
 
-    // TODO: improve loading
-    if (isLoading || !data) {
-      return (
-        <div className="flex items-center justify-center">
-          <Spinner className="text-white-full" />
-        </div>
-      );
-    }
-
-    console.log(data, data.depositData.providerFee.toString());
-
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
         <div className="mb-8 flex flex-col gap-3">
@@ -130,11 +119,15 @@ export const DepositAddressScreen = observer(
         {showQrCode ? (
           <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
             <div className="flex h-[180px] w-[180px] items-center justify-center">
-              <QRCode
-                value={data?.depositData?.depositAddress}
-                size={220}
-                logoUrl={canonicalAsset.coinImageUrl}
-              />
+              {isLoading || !data?.depositData?.depositAddress ? (
+                <Spinner className="text-black" />
+              ) : (
+                <QRCode
+                  value={data?.depositData?.depositAddress}
+                  size={220}
+                  logoUrl={canonicalAsset.coinImageUrl}
+                />
+              )}
             </div>
             <div className="flex flex-1 flex-col items-center gap-3">
               <Icon
@@ -171,6 +164,7 @@ export const DepositAddressScreen = observer(
                   className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
                   aria-label={t("transfer.showQrCode")}
                   onClick={() => setShowQrCode(true)}
+                  disabled={isLoading}
                 />
               </Tooltip>
 
@@ -180,12 +174,19 @@ export const DepositAddressScreen = observer(
                     denom: canonicalAsset.coinDenom,
                   })}
                 </p>
-                <p className="text-osmoverse-300">
-                  {shorten(data.depositData.depositAddress, {
-                    prefixLength: 9,
-                    suffixLength: 5,
-                  })}
-                </p>
+                <SkeletonLoader
+                  isLoaded={!!data?.depositData?.depositAddress}
+                  className={
+                    !data?.depositData?.depositAddress ? "h-5 w-32" : undefined
+                  }
+                >
+                  <p className="text-osmoverse-300">
+                    {shorten(data?.depositData?.depositAddress ?? "", {
+                      prefixLength: 9,
+                      suffixLength: 5,
+                    })}
+                  </p>
+                </SkeletonLoader>
               </div>
             </div>
             <Tooltip
@@ -209,6 +210,7 @@ export const DepositAddressScreen = observer(
                 className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
                 aria-label={t("transfer.copyAddress")}
                 onClick={onCopy}
+                disabled={isLoading}
               />
             </Tooltip>
           </div>
@@ -233,16 +235,21 @@ export const DepositAddressScreen = observer(
           <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
         </DepositInfoRow>
         <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
-          <p className="text-right text-osmoverse-100">
-            {data.depositData.minimumDeposit.amount.toString()}{" "}
-            {data.depositData.minimumDeposit.fiatValue ? (
-              <>({data.depositData.minimumDeposit.fiatValue.toString()})</>
-            ) : null}
-          </p>
+          <SkeletonLoader
+            isLoaded={!!data?.depositData}
+            className={!data?.depositData ? "h-5 w-24" : undefined}
+          >
+            <p className="text-right text-osmoverse-100">
+              {data?.depositData?.minimumDeposit.amount.toString()}{" "}
+              {data?.depositData?.minimumDeposit.fiatValue ? (
+                <>({data.depositData.minimumDeposit.fiatValue.toString()})</>
+              ) : null}
+            </p>
+          </SkeletonLoader>
         </DepositInfoRow>
         <TransferDetails
           isLoading={isLoading}
-          depositData={data.depositData}
+          depositData={data?.depositData}
           fromChain={fromChain}
         />
       </div>
@@ -264,14 +271,16 @@ const DepositInfoRow: FunctionComponent<{
 
 const TransferDetails: FunctionComponent<{
   isLoading: boolean;
-  depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
+  depositData:
+    | RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"]
+    | undefined;
   fromChain: BridgeChainWithDisplayInfo;
 }> = ({ isLoading, depositData, fromChain }) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
 
-  const totalFees = depositData.networkFee.fiatValue;
+  const totalFees = depositData?.networkFee.fiatValue;
   const showTotalFeeIneqSymbol = totalFees
     ? totalFees
         .toDec()
@@ -302,11 +311,11 @@ const TransferDetails: FunctionComponent<{
                 <p className="subtitle1">{t("transfer.transferDetails")}</p>
               ) : null}
 
-              {!isLoading && depositData.estimatedTime && !open && (
+              {!isLoading && depositData?.estimatedTime && !open && (
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="body1 md:body2 text-osmoverse-300 first-letter:capitalize">
-                    {t(depositData.estimatedTime)}
+                  <p className="body1 md:body2 text-osmoverse-200 first-letter:capitalize">
+                    {t(depositData?.estimatedTime)}
                   </p>
                 </div>
               )}
@@ -347,19 +356,23 @@ const TransferDetails: FunctionComponent<{
             </div>
           </DisclosureButton>
           <DisclosurePanel ref={detailsRef} className="flex flex-col gap-3">
-            <EstimatedTimeRow
-              depositData={depositData}
-              isRefetchingQuote={isLoading}
-            />
-            <ProviderFeesRow
-              depositData={depositData}
-              isRefetchingQuote={isLoading}
-            />
-            <NetworkFeeRow
-              depositData={depositData}
-              isRefetchingQuote={isLoading}
-              fromChainName={fromChain.prettyName}
-            />
+            {!!depositData && (
+              <>
+                <EstimatedTimeRow
+                  depositData={depositData}
+                  isRefetchingQuote={isLoading}
+                />
+                <ProviderFeesRow
+                  depositData={depositData}
+                  isRefetchingQuote={isLoading}
+                />
+                <NetworkFeeRow
+                  depositData={depositData}
+                  isRefetchingQuote={isLoading}
+                  fromChainName={fromChain.prettyName}
+                />
+              </>
+            )}
           </DisclosurePanel>
         </div>
       )}
