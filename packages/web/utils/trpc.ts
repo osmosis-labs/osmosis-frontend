@@ -68,6 +68,7 @@ export const api = createTRPCNext<AppRouter>({
             const trpcKey = key.join(".") as RouterKeys;
             const excludedKeys: RouterKeys[] = [
               "local.bridgeTransfer.getSupportedAssetsBalances",
+              "bridgeTransfer.getDepositAddress",
             ];
 
             /**

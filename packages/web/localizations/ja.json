@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "アドレスをクリップボードにコピー",
     "copyAddress": "アドレスをコピー",
     "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
-    "minimumDeposit": "最低入金額"
+    "minimumDeposit": "最低入金額",
+    "nomic": {
+      "confirmations": "6件の確認"
+    }
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

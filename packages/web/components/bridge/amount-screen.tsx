@@ -766,7 +766,7 @@ export const AmountScreen = observer(
       </div>
     );
 
-    const supportedAddressBridges = useMemo(
+    const supportedDepositAddressBridges = useMemo(
       () =>
         supportedBridges.filter((bridge) =>
           depositAddressBridges.some(
@@ -777,7 +777,8 @@ export const AmountScreen = observer(
     );
 
     if (
-      supportedAddressBridges.length > 0 &&
+      !quote.enabled &&
+      supportedDepositAddressBridges.length > 0 &&
       direction === "deposit" &&
       canonicalAsset &&
       fromChain
@@ -788,7 +789,7 @@ export const AmountScreen = observer(
           direction={direction}
           chainSelection={chainSelection}
           fromChain={fromChain}
-          bridge={supportedAddressBridges[0]} // For now, only one bridge provider is supported
+          bridge={supportedDepositAddressBridges[0]} // For now, only one bridge provider is supported
         />
       );
     }

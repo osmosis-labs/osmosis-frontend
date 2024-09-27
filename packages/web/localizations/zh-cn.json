@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "将地址复制到剪贴板",
     "copyAddress": "复制地址",
     "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
-    "minimumDeposit": "最低存款"
+    "minimumDeposit": "最低存款",
+    "nomic": {
+      "confirmations": "6 次确认"
+    }
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Adresi panoya kopyala",
     "copyAddress": "Adresi kopyala",
     "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
-    "minimumDeposit": "Minimum mevduat"
+    "minimumDeposit": "Minimum mevduat",
+    "nomic": {
+      "confirmations": "6 onay"
+    }
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

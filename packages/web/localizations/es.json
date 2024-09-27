@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Copiar dirección al portapapeles",
     "copyAddress": "Copiar dirección",
     "receiveOnlyAsset": "Esta dirección solo puede recibir {denom} de la red {network} . El envío de otros activos puede provocar una pérdida permanente.",
-    "minimumDeposit": "Depósito mínimo"
+    "minimumDeposit": "Depósito mínimo",
+    "nomic": {
+      "confirmations": "6 confirmaciones"
+    }
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

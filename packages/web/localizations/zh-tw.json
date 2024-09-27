@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "將位址複製到剪貼簿",
     "copyAddress": "複製地址",
     "receiveOnlyAsset": "此位址只能從{denom} {network} \"denom\"}。發送任何其他資產可能會導致永久性損失。",
-    "minimumDeposit": "最低存款額"
+    "minimumDeposit": "最低存款額",
+    "nomic": {
+      "confirmations": "6 確認"
+    }
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

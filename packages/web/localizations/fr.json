@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Copier l'adresse dans le presse-papiers",
     "copyAddress": "Copier l'adresse",
     "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
-    "minimumDeposit": "Dépôt minimum"
+    "minimumDeposit": "Dépôt minimum",
+    "nomic": {
+      "confirmations": "6 confirmations"
+    }
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

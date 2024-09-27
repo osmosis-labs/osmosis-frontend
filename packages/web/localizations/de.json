@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Kopieren",
     "copyAddress": "Adresse kopieren",
     "receiveOnlyAsset": "Diese Adresse kann nur {denom} vom Netzwerk {network} empfangen. Das Senden anderer Assets kann zu einem dauerhaften Verlust führen.",
-    "minimumDeposit": "Mindesteinzahlung"
+    "minimumDeposit": "Mindesteinzahlung",
+    "nomic": {
+      "confirmations": "6 Bestätigungen"
+    }
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

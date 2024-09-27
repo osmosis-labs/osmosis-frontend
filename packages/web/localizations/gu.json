@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "ક્લિપબોર્ડ પર સરનામાંની નકલ કરો",
     "copyAddress": "સરનામું કૉપિ કરો",
     "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
-    "minimumDeposit": "ન્યૂનતમ થાપણ"
+    "minimumDeposit": "ન્યૂનતમ થાપણ",
+    "nomic": {
+      "confirmations": "6 પુષ્ટિકરણ"
+    }
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

@@ -1,3 +1,4 @@
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import { isCosmosAddressValid } from "@osmosis-labs/utils";
 import { generateDepositAddressIbc } from "nomic-bitcoin";
@@ -77,10 +78,25 @@ export class NomicBridgeProvider implements BridgeProvider {
     return {
       depositAddress: depositInfo.bitcoinAddress,
       expirationTimeMs: depositInfo.expirationTimeMs,
-      minimumDeposit: (
-        1000 / (1 - depositInfo.bridgeFeeRate) +
-        depositInfo.minerFeeRate * 1e8
-      ).toString(),
+      minimumDeposit: {
+        address: nomicBtc.coinMinimalDenom,
+        amount: (
+          1000 / (1 - depositInfo.bridgeFeeRate) +
+          depositInfo.minerFeeRate * 1e8
+        ).toString(),
+        decimals: 8,
+        denom: "BTC",
+        coinGeckoId: nomicBtc.coingeckoId,
+      },
+      networkFee: {
+        address: nomicBtc.coinMinimalDenom,
+        amount: (depositInfo.minerFeeRate * 1e8).toString(),
+        decimals: 8,
+        denom: "BTC",
+        coinGeckoId: nomicBtc.coingeckoId,
+      },
+      providerFee: new RatePretty(new Dec(depositInfo.bridgeFeeRate)),
+      estimatedTime: "transfer.nomic.confirmations",
     };
   }
 

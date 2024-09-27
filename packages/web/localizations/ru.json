@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Копировать адрес в буфер обмена",
     "copyAddress": "Копировать адрес",
     "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
-    "minimumDeposit": "Минимальный депозит"
+    "minimumDeposit": "Минимальный депозит",
+    "nomic": {
+      "confirmations": "6 подтверждений"
+    }
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

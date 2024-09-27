@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Copiați adresa în clipboard",
     "copyAddress": "Copiați adresa",
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
-    "minimumDeposit": "Depozit minim"
+    "minimumDeposit": "Depozit minim",
+    "nomic": {
+      "confirmations": "6 confirmări"
+    }
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

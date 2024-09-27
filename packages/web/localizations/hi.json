@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "पता क्लिपबोर्ड पर कॉपी करें",
     "copyAddress": "पता कॉपी करें",
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
-    "minimumDeposit": "न्यूनतम जमा"
+    "minimumDeposit": "न्यूनतम जमा",
+    "nomic": {
+      "confirmations": "6 पुष्टियां"
+    }
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

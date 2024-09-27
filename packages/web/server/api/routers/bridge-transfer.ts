@@ -70,6 +70,14 @@ const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Nitro: "/bridges/nitro.svg",
 };
 
+/** Include decimals with decimal-included price. */
+const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {
+  return new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(coin.amount).quo(DecUtils.getTenExponentN(coin.decimals)).mul(price)
+  );
+};
+
 export const bridgeTransferRouter = createTRPCRouter({
   /**
    * Provide the quote for a given bridge transfer.
@@ -236,17 +244,6 @@ export const bridgeTransferRouter = createTRPCRouter({
       if (!assetPrice) {
         throw new Error("Invalid quote: Missing toAsset or fromAsset price");
       }
-
-      /** Include decimals with decimal-included price. */
-      // TODO: can move somewhere else
-      const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {
-        return new PricePretty(
-          DEFAULT_VS_CURRENCY,
-          new Dec(coin.amount)
-            .quo(DecUtils.getTenExponentN(coin.decimals))
-            .mul(price)
-        );
-      };
 
       const transferFee = {
         amount: new CoinPretty(
@@ -652,8 +649,57 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new Error("Failed to get deposit address");
       }
 
+      const [assetPrice, feeAssetPrice] = await Promise.all([
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: depositData.minimumDeposit.address,
+            address: depositData.minimumDeposit.address,
+            coinGeckoId: depositData.minimumDeposit.coinGeckoId,
+          },
+        }),
+        getAssetPrice({
+          ...ctx,
+          asset: {
+            coinMinimalDenom: depositData.networkFee.address,
+            address: depositData.networkFee.address,
+            coinGeckoId: depositData.networkFee.coinGeckoId,
+          },
+        }),
+      ]);
+
       return {
-        depositData,
+        depositData: {
+          ...depositData,
+          minimumDeposit: {
+            amount: new CoinPretty(
+              {
+                coinDecimals: depositData.minimumDeposit.decimals,
+                coinDenom: depositData.minimumDeposit.denom,
+                coinMinimalDenom: depositData.minimumDeposit.address,
+                coinGeckoId: depositData.minimumDeposit.coinGeckoId,
+              },
+              new Dec(depositData.minimumDeposit.amount)
+            ),
+            fiatValue: assetPrice
+              ? priceFromBridgeCoin(depositData.minimumDeposit, assetPrice)
+              : undefined,
+          },
+          networkFee: {
+            amount: new CoinPretty(
+              {
+                coinDecimals: depositData.networkFee.decimals,
+                coinDenom: depositData.networkFee.denom,
+                coinMinimalDenom: depositData.networkFee.address,
+                coinGeckoId: depositData.networkFee.coinGeckoId,
+              },
+              new Dec(depositData.networkFee.amount)
+            ),
+            fiatValue: feeAssetPrice
+              ? priceFromBridgeCoin(depositData.networkFee, feeAssetPrice)
+              : undefined,
+          },
+        },
       };
     }),
 });

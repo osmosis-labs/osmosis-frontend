@@ -1,12 +1,20 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
+import { DecUtils } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
-import { shorten } from "@osmosis-labs/utils";
+import { isNil, shorten } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
+import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
+import { QuoteDetailRow } from "~/components/bridge/quote-detail";
 import { DepositAddressBridge } from "~/components/bridge/use-bridge-quotes";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
@@ -17,7 +25,8 @@ import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
+import { trimPlaceholderZeros } from "~/utils/number";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 const QRCode = dynamic(
   () => import("~/components/qrcode").then((module) => module.QRCode),
@@ -72,10 +81,14 @@ export const DepositAddressScreen = observer(
 
     // TODO: improve loading
     if (isLoading || !data) {
-      return <Spinner className="text-black" />;
+      return (
+        <div className="flex items-center justify-center">
+          <Spinner className="text-white-full" />
+        </div>
+      );
     }
 
-    console.log(data);
+    console.log(data, data.depositData.providerFee.toString());
 
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
@@ -221,35 +234,17 @@ export const DepositAddressScreen = observer(
         </DepositInfoRow>
         <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
           <p className="text-right text-osmoverse-100">
-            {new CoinPretty(
-              canonicalAsset,
-              new Dec(data?.depositData?.minimumDeposit ?? 0)
-            ).toString()}{" "}
-            ($10.00)
+            {data.depositData.minimumDeposit.amount.toString()}{" "}
+            {data.depositData.minimumDeposit.fiatValue ? (
+              <>({data.depositData.minimumDeposit.fiatValue.toString()})</>
+            ) : null}
           </p>
         </DepositInfoRow>
-        <DepositInfoRow
-          label={
-            true ? (
-              <div className="flex items-center gap-2">
-                <Spinner className="text-wosmongton-500" />{" "}
-                <span>{t("transfer.estimatingTime")}</span>
-              </div>
-            ) : (
-              <span>{t("transfer.estimatedTime")}</span>
-            )
-          }
-        >
-          <p className="text-osmoverse-100">
-            {true ? (
-              <span className="text-osmoverse-300">
-                {t("transfer.calculatingFees")}
-              </span>
-            ) : (
-              "test"
-            )}
-          </p>
-        </DepositInfoRow>
+        <TransferDetails
+          isLoading={isLoading}
+          depositData={data.depositData}
+          fromChain={fromChain}
+        />
       </div>
     );
   }
@@ -264,5 +259,206 @@ const DepositInfoRow: FunctionComponent<{
       <p>{label}</p>
       {children}
     </div>
+  );
+};
+
+const TransferDetails: FunctionComponent<{
+  isLoading: boolean;
+  depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
+  fromChain: BridgeChainWithDisplayInfo;
+}> = ({ isLoading, depositData, fromChain }) => {
+  const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
+    useMeasure<HTMLDivElement>();
+  const { t } = useTranslation();
+
+  const totalFees = depositData.networkFee.fiatValue;
+  const showTotalFeeIneqSymbol = totalFees
+    ? totalFees
+        .toDec()
+        .lt(DecUtils.getTenExponentN(totalFees.fiatCurrency.maxDecimals))
+    : false;
+
+  return (
+    <Disclosure>
+      {({ open }) => (
+        <div
+          className="flex w-full flex-col gap-3 overflow-clip py-3 transition-height duration-300 ease-inOutBack"
+          style={{
+            height: open
+              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              : 36,
+          }}
+        >
+          <DisclosureButton>
+            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <Spinner className="text-wosmongton-500" />
+                  <p className="body1 md:body2 text-osmoverse-100">
+                    {t("transfer.estimatingTime")}
+                  </p>
+                </div>
+              ) : open ? (
+                <p className="subtitle1">{t("transfer.transferDetails")}</p>
+              ) : null}
+
+              {!isLoading && depositData.estimatedTime && !open && (
+                <div className="flex items-center gap-1">
+                  <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
+                  <p className="body1 md:body2 text-osmoverse-300 first-letter:capitalize">
+                    {t(depositData.estimatedTime)}
+                  </p>
+                </div>
+              )}
+
+              {isLoading ? (
+                <span className="body1 md:body2 text-osmoverse-300">
+                  {t("transfer.calculatingFees")}
+                </span>
+              ) : null}
+
+              {!isLoading ? (
+                <div className="flex items-center gap-2 md:gap-1">
+                  <div className="flex items-center gap-2 md:gap-1">
+                    {!open && totalFees && (
+                      <span className="subtitle1 md:body2 text-osmoverse-100">
+                        {!showTotalFeeIneqSymbol && "~"}{" "}
+                        {totalFees
+                          .inequalitySymbol(showTotalFeeIneqSymbol)
+                          .toString()}{" "}
+                        {t("transfer.fees")}
+                      </span>
+                    )}
+
+                    <Icon
+                      id="chevron-down"
+                      width={16}
+                      height={16}
+                      className={classNames(
+                        "text-osmoverse-300 transition-transform duration-150",
+                        {
+                          "rotate-180": open,
+                        }
+                      )}
+                    />
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          </DisclosureButton>
+          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-3">
+            <EstimatedTimeRow
+              depositData={depositData}
+              isRefetchingQuote={isLoading}
+            />
+            <ProviderFeesRow
+              depositData={depositData}
+              isRefetchingQuote={isLoading}
+            />
+            <NetworkFeeRow
+              depositData={depositData}
+              isRefetchingQuote={isLoading}
+              fromChainName={fromChain.prettyName}
+            />
+          </DisclosurePanel>
+        </div>
+      )}
+    </Disclosure>
+  );
+};
+
+export const EstimatedTimeRow: FunctionComponent<{
+  depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
+  isRefetchingQuote: boolean;
+}> = ({ depositData, isRefetchingQuote }) => {
+  const { t } = useTranslation();
+
+  return (
+    <QuoteDetailRow
+      label={t("transfer.estimatedTime")}
+      isLoading={isRefetchingQuote}
+    >
+      <div className="flex items-center gap-1">
+        <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />{" "}
+        <p className="text-osmoverse-100 first-letter:capitalize">
+          {t(depositData.estimatedTime)}
+        </p>
+      </div>
+    </QuoteDetailRow>
+  );
+};
+
+export const ProviderFeesRow: FunctionComponent<{
+  depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
+  isRefetchingQuote: boolean;
+}> = ({ depositData, isRefetchingQuote }) => {
+  const { t } = useTranslation();
+  return (
+    <QuoteDetailRow
+      label={t("transfer.providerFees")}
+      isLoading={isRefetchingQuote}
+    >
+      <p className="text-osmoverse-100">{depositData.providerFee.toString()}</p>
+    </QuoteDetailRow>
+  );
+};
+
+export const NetworkFeeRow: FunctionComponent<{
+  depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
+  isRefetchingQuote: boolean;
+  fromChainName?: string;
+}> = ({ depositData, isRefetchingQuote, fromChainName }) => {
+  const { t } = useTranslation();
+  return (
+    <QuoteDetailRow
+      label={t("transfer.networkFee", {
+        networkName: fromChainName ?? "",
+      })}
+      isLoading={isRefetchingQuote}
+    >
+      <p className="text-osmoverse-100">
+        {isNil(depositData.networkFee.fiatValue) &&
+        isNil(depositData.networkFee.amount) ? (
+          <Tooltip
+            content={t("transfer.unknownFeeTooltip", {
+              networkName: fromChainName ?? "",
+            })}
+          >
+            <div className="flex items-center gap-2">
+              <Icon id="help-circle" className="h-4 w-4 text-osmoverse-400" />
+              <p className="text-osmoverse-300">{t("transfer.unknown")}</p>
+            </div>
+          </Tooltip>
+        ) : (
+          <>
+            {depositData.networkFee.fiatValue
+              ? depositData.networkFee.fiatValue.toString()
+              : depositData.networkFee.amount.toString()}
+            {depositData.networkFee.fiatValue &&
+            depositData.networkFee.amount ? (
+              <span
+                title={depositData.networkFee.amount.toString()}
+                className="text-osmoverse-300"
+              >
+                {" "}
+                (
+                {trimPlaceholderZeros(
+                  depositData.networkFee.amount.hideDenom(true).toString()
+                )}{" "}
+                <span>
+                  {shorten(depositData.networkFee.amount.denom, {
+                    prefixLength: 8,
+                    suffixLength: 3,
+                  })}
+                </span>
+                )
+              </span>
+            ) : (
+              ""
+            )}
+          </>
+        )}
+      </p>
+    </QuoteDetailRow>
   );
 };

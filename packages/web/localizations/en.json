@@ -972,7 +972,10 @@
     "copyAddressToClipboard": "Copy address to clipboard",
     "copyAddress": "Copy address",
     "receiveOnlyAsset": "This address can only receive {denom} from {network} network. Sending any other assets may result in permanent loss.",
-    "minimumDeposit": "Minimum deposit"
+    "minimumDeposit": "Minimum deposit",
+    "nomic": {
+      "confirmations": "6 confirmations"
+    }
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
