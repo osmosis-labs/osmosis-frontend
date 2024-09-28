@@ -128,68 +128,18 @@
     "secondaryCta": "30秒で学べる"
   },
   "assets": {
-    "bondedAssets": "保税済み",
     "historyTable": {
       "colums": {
-        "amount": "額",
         "deposit": "デポジット",
-        "status": "状態",
-        "transactionHash": "トランザクションハッシュ",
-        "type": "タイプ",
         "withdraw": "撤回する"
-      },
-      "errors": {
-        "insufficientFee": "不十分な料金"
-      },
-      "failed": "失敗した",
-      "failedWithReason": "失敗: {reason}",
-      "pending": "保留中",
-      "refunded": "返金されました",
-      "success": "成功",
-      "title": "転送履歴",
-      "connectionError": "接続エラー"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "追加",
-      "buttonEdit": "編集",
-      "buttonEnter": "入力",
-      "channelCongestedDeposit": "デポジット (チャネルが混雑している)",
-      "channelCongestedWithdraw": "撤退（チャンネル混雑中）",
-      "checkboxVerify": "交換用アドレスに送信していないことを確認しました。",
-      "estimatedTime": "予定時刻",
-      "selectAmount": "金額を選択してください",
-      "titleDeposit": "入金{coinDenom}",
-      "titleWithdraw": "出金{coinDenom}",
-      "waitTime": "20秒",
-      "warningLossFunds": "警告: 中央取引所アドレスに出金すると資金が失われます。",
-      "provider": "プロバイダー"
-    },
-    "myPools": "あなたのプール",
-    "poolCards": {
-      "APR": "4月",
-      "bonded": "保税済み",
-      "FeeAPY": "料金APY",
-      "liquidity": "私の流動性"
-    },
-    "stakedAssets": "ステークされたOSMO",
     "table": {
       "columns": {
-        "assetChain": "アセット/チェーン",
-        "balance": "バランス",
-        "deposit": "デポジット",
-        "transfer": "移行",
-        "withdraw": "撤回する"
+        "balance": "バランス"
       },
       "depositButton": "デポジット",
-      "hideZero": "ゼロ残高を非表示にする",
-      "hideBalances": "マスクされた残高",
       "search": "検索",
-      "sort": {
-        "balance": "バランス",
-        "network": "通信網",
-        "symbol": "シンボル"
-      },
-      "title": "すべての資産",
       "withdrawButton": "撤回する",
       "activate": "活性化",
       "marketCap": "時価総額",
@@ -199,27 +149,19 @@
       "lastWeek": "過去7日間",
       "asset": "資産"
     },
-    "totalAssets": "総資産",
     "totalBalance": "総合収支",
     "transfer": {
-      "availableMobile": "利用可能",
-      "availableOn": "{network}で利用可能",
       "approving": "承認中...",
       "approveInWallet": "ウォレットで承認",
       "errors": {
         "seeRequest": "{walletName}リクエストを参照してください。"
       },
-      "from": "から",
       "loading": "読み込み中",
       "to": "に",
-      "transferFee": "転送料",
-      "expectedOutput": "期待される出力",
-      "expectedOutputInfo": "使用するプロバイダーによっては、料金、スリッページ、価格への影響に応じて出力が低下する場合があります。",
       "priceImpact": "価格への影響",
       "sending": "送信...",
       "transferAnyway": "とにかく転送"
     },
-    "unbondedAssets": "利用可能",
     "activateUnverifiedAssetsModal": {
       "activate": "未検証のアセットをアクティブ化する",
       "description": "は未検証のトークンです。アクティブ化しますか?取引する前に必ずよく調べてください。",
@@ -593,9 +535,6 @@
       "token": "トークン",
       "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。",
       "weightedPool": "加重プール"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",
@@ -983,14 +922,6 @@
       "title": "Osmosis App Store",
       "description": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう"
     },
-    "assets": {
-      "title": "浸透アセット",
-      "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
-    },
-    "portfolio": {
-      "title": "浸透ポートフォリオ",
-      "description": "主要な分散型 Cosmos 取引所である Osmosis で資産を表示します"
-    },
     "disclaimer": {
       "title": "浸透に関する免責事項",
       "description": "主要な分散型コスモス取引所である Osmosis の免責事項とプライバシー ポリシーをお読みください。"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
-  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
-  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "positions": "ポジション",
@@ -1135,13 +1063,6 @@
     "hour": "時間",
     "hours": "時間"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}預金は不安定です",
-    "titleWithdraw": "{coinDenom}出金が不安定",
-    "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
-    "buttonContinue": "とにかく続けます",
-    "buttonCancel": "キャンセル"
-  },
   "transactions": {
     "noRecent": "最近の送金はありません",
     "recentShownHere": "このデバイスでの過去 3 日間の入金と出金 (特定のネットワーク間) がここに表示されます。",
@@ -1162,7 +1083,6 @@
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
     "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
-    "viewAll": "すべて表示",
     "history": "歴史",
     "orders": "注文"
   },
