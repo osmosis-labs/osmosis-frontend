@@ -128,68 +128,18 @@
     "secondaryCta": "Învață în 30 de secunde"
   },
   "assets": {
-    "bondedAssets": "Blocate",
     "historyTable": {
       "colums": {
-        "amount": "Suma",
         "deposit": "Depozit",
-        "status": "Status",
-        "transactionHash": "Hash Tranzactie",
-        "type": "Tip",
         "withdraw": "Retragere"
-      },
-      "errors": {
-        "insufficientFee": "Taxa insuficienta"
-      },
-      "failed": "A eșuat",
-      "failedWithReason": "A eșuat: {reason}",
-      "pending": "In Asteptare",
-      "refunded": "Rambursat",
-      "success": "Succes",
-      "title": "Istoric Transferuri",
-      "connectionError": "Eroare de conexiune"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Adăuga",
-      "buttonEdit": "Modifica",
-      "buttonEnter": "Intra",
-      "channelCongestedDeposit": "Depoziteaza (Channel congested)",
-      "channelCongestedWithdraw": "Retrage (Channel congested)",
-      "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
-      "estimatedTime": "Timp estimat",
-      "selectAmount": "Selecteaza suma",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "titleWithdraw": "Retrage {coinDenom}",
-      "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
-      "provider": "Furnizor"
-    },
-    "myPools": "Pool-urile Mele",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Blocate",
-      "FeeAPY": "APY din taxe",
-      "liquidity": "Lichiditate pool"
-    },
-    "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
-        "assetChain": "Active / Retea",
-        "balance": "Balanta",
-        "deposit": "Depozit",
-        "transfer": "Transfer",
-        "withdraw": "Retragere"
+        "balance": "Balanta"
       },
       "depositButton": "Depoziteaza",
-      "hideZero": "Ascunde balantele zero",
-      "hideBalances": "Balante mascate",
       "search": "Filtreaza dupa simbol",
-      "sort": {
-        "balance": "Balanta",
-        "network": "Retea",
-        "symbol": "Simbol"
-      },
-      "title": "Active",
       "withdrawButton": "Retrage",
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
@@ -199,27 +149,19 @@
       "lastWeek": "Ultimele 7 zile",
       "asset": "Atu"
     },
-    "totalAssets": "Total",
     "totalBalance": "Sold total",
     "transfer": {
-      "availableMobile": "Disponibil",
-      "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
       "approveInWallet": "Aprobați în portofel",
       "errors": {
         "seeRequest": "Vezi solicitarea în {walletName}"
       },
-      "from": "De la",
       "loading": "Se incarca",
       "to": "Catre",
-      "transferFee": "Taxa transfer",
-      "expectedOutput": "Rezultat așteptat",
-      "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
       "transferAnyway": "Transfer oricum"
     },
-    "unbondedAssets": "Deblocate",
     "activateUnverifiedAssetsModal": {
       "activate": "Activați activele neverificate",
       "description": "este un simbol neverificat. Doriți să-l activați? Asigurați-vă că cercetați temeinic înainte de a tranzacționa.",
@@ -593,9 +535,6 @@
       "token": "Token",
       "undersandCost": "Inteleg ca adaugarea unui nou pool costa {POOL_CREATION_FEE}.",
       "weightedPool": "pool ponderat"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "Lichiditatea mea",
@@ -983,14 +922,6 @@
       "title": "Magazin de aplicații Osmosis",
       "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
     },
-    "assets": {
-      "title": "Active de osmoză",
-      "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "portfolio": {
-      "title": "Portofoliu de osmoză",
-      "description": "Vizualizați-vă activele pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "Actualizări pentru osmoză!",
     "seeWhatsNew": "Vezi ce este nou"
   },
-  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
-  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
-  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "earnPage": {
     "title": "Câştiga",
     "positions": "Poziții",
@@ -1135,13 +1063,6 @@
     "hour": "ora",
     "hours": "ore"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depozite instabile",
-    "titleWithdraw": "{coinDenom} retrageri instabile",
-    "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
-    "buttonContinue": "Continua oricum",
-    "buttonCancel": "Anulare"
-  },
   "transactions": {
     "noRecent": "Fără transferuri recente",
     "recentShownHere": "Depunerile și retragerile din ultimele 3 zile pe acest dispozitiv (între anumite rețele) vor apărea aici.",
@@ -1162,7 +1083,6 @@
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
     "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
-    "viewAll": "A vedea tot",
     "history": "Istorie",
     "orders": "Comenzi"
   },

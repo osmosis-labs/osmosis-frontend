@@ -21,29 +21,8 @@ export function isString(value: any) {
   return typeof value === "string";
 }
 
-export function isNumber(value: any) {
-  return typeof value === "number";
-}
-
 export function isDefined(value: any) {
   return value !== undefined && value !== null;
-}
-
-export function isBoolean(value: any) {
-  return (
-    value === true ||
-    value === false ||
-    (isObjectLike(value) && getTag(value) == "[object Boolean]")
-  );
-}
-
-export function isObject(value: any) {
-  return typeof value === "object";
-}
-
-// Checks if `value` is object-like.
-export function isObjectLike(value: any) {
-  return isObject(value) && value !== null;
 }
 
 export function isArray(value: any) {
