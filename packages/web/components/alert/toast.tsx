@@ -9,6 +9,8 @@ import {
 
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { Checkbox } from "~/components/ui/checkbox";
 import { t } from "~/hooks";
 
 export type ToastOptions = Partial<ReactToastifyOptions> & {
@@ -22,7 +24,8 @@ export function displayToast(
 ) {
   toastOptions = {
     position: "top-right",
-    autoClose: type === ToastType.LOADING ? 2000 : 7000,
+    // autoClose: type === ToastType.LOADING ? 2000 : 7000,
+    autoClose: 9999999999999999999999,
     hideProgressBar: true,
     closeOnClick: false,
     pauseOnHover: true,
@@ -205,30 +208,52 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   </div>
 );
 
-const AlloyedAssetsToast: FunctionComponent<Alert> = ({
+export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
   titleTranslationKey,
   captionTranslationKey,
   captionElement,
-}) => (
-  <div className="flex items-center gap-3 md:gap-2">
-    <div className="h-8 w-8 shrink-0">
-      <Image
-        alt="Alloyed Assets Icon"
-        src="/images/alloyed-assets-icon.svg"
-        height={32}
-        width={32}
-      />
-    </div>
-    <div className="text-white-high">
-      <h6 className="mb-2 text-lg md:text-base">{t(titleTranslationKey)}</h6>
-      {captionElement}
-      {captionTranslationKey && (
-        <p className="text-sm text-osmoverse-300 md:text-xs">
-          {typeof captionTranslationKey === "string"
-            ? t(captionTranslationKey)
-            : t(...captionTranslationKey)}
+}) => {
+  console.log("titleTranslationKey:", titleTranslationKey);
+  console.log("captionTranslationKey:", captionTranslationKey);
+  console.log("captionElement:", captionElement);
+
+  return (
+    <div className="w-full flex-col items-center">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex -space-x-2">
+          <Icon id="usdc-static" height={32} width={32} className="z-10" />
+          <Icon id="bitcoin-static" height={32} width={32} className="z-20" />
+          <Icon id="eth-static" height={32} width={32} className="z-30" />
+        </div>
+        <Icon
+          id="arrow-right"
+          height={24}
+          width={24}
+          className="text-osmoverse-300"
+        />
+        <div className="flex -space-x-2">
+          <Icon id="usdc-static" height={32} width={32} className="z-10" />
+          <Icon id="bitcoin-static" height={32} width={32} className="z-20" />
+          <Icon id="eth-static" height={32} width={32} className="z-30" />
+        </div>
+      </div>
+      <div className="mt-8 flex flex-col gap-3">
+        <h6 className="text-h6 text-white-full">Variants Detected</h6>
+        <p className="text-body2 text-osmoverse-300">
+          Say goodbye to all those confusing asset variants. Say hello to a more
+          seamless experience on Osmosis.
         </p>
-      )}
+        <div className="flex items-center gap-2">
+          <Checkbox />
+          <span className="text-body2 text-osmoverse-300">Remind me later</span>
+        </div>
+        <div>
+          <div className="flex justify-between gap-3">
+            <Button mode="secondary">Dismiss</Button>
+            <Button>Convert</Button>
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};

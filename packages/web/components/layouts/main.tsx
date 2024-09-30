@@ -41,6 +41,7 @@ export const MainLayout = observer(
     );
 
     useEffect(() => {
+      // TODO - check if user has alloyed assets
       displayToast(
         {
           titleTranslationKey: "transactionSuccessful",
@@ -50,7 +51,7 @@ export const MainLayout = observer(
           position: "bottom-right", // Add this option to position the toast
         }
       );
-    }, [router]);
+    }, []);
 
     return (
       <React.Fragment>
