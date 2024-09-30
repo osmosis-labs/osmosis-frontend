@@ -204,7 +204,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
