@@ -128,68 +128,18 @@
     "secondaryCta": "Naucz się w 30 sekund"
   },
   "assets": {
-    "bondedAssets": "Związane",
     "historyTable": {
       "colums": {
-        "amount": "Ilość",
         "deposit": "Wpłata",
-        "status": "Status",
-        "transactionHash": "Hasz Transakcji",
-        "type": "Typ",
         "withdraw": "Wypłata"
-      },
-      "errors": {
-        "insufficientFee": "Niewystarczająca opłata"
-      },
-      "failed": "Przegrany",
-      "failedWithReason": "Przegrany: {reason}",
-      "pending": "Oczekujące",
-      "refunded": "Zwrócone",
-      "success": "Udane",
-      "title": "Historia Transferów",
-      "connectionError": "Błąd połączenia"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Dodać",
-      "buttonEdit": "Edytuj",
-      "buttonEnter": "Ok",
-      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
-      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
-      "checkboxVerify": "Potwierdzam, że nie wysyłam na adres giełdy.",
-      "estimatedTime": "Szacowany Czas",
-      "selectAmount": "Wybierz Ilość",
-      "titleDeposit": "Wpłać {coinDenom}",
-      "titleWithdraw": "Wypłać {coinDenom}",
-      "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
-      "provider": "Dostawca"
-    },
-    "myPools": "Moje Pule",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Związane",
-      "FeeAPY": "APY z Prowizji",
-      "liquidity": "Moja płynność"
-    },
-    "stakedAssets": "Stakowane OSMO",
     "table": {
       "columns": {
-        "assetChain": "Token / Sieć",
-        "balance": "Saldo",
-        "deposit": "Wpłać",
-        "transfer": "Transfer",
-        "withdraw": "Wypłać"
+        "balance": "Saldo"
       },
       "depositButton": "Wpłać",
-      "hideZero": "Ukryj puste salda",
-      "hideBalances": "Zamaskowane salda",
       "search": "Szukaj",
-      "sort": {
-        "balance": "Saldo",
-        "network": "Sieć",
-        "symbol": "Symbol"
-      },
-      "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać",
       "activate": "Aktywuj",
       "marketCap": "Kapitalizacja rynkowa",
@@ -199,27 +149,19 @@
       "lastWeek": "Ostatnie 7 dni",
       "asset": "Zaleta"
     },
-    "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
     "transfer": {
-      "availableMobile": "Dostępne",
-      "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
       "approveInWallet": "Zatwierdź w portfelu",
       "errors": {
         "seeRequest": "Zobacz żądanie w {walletName}"
       },
-      "from": "Od",
       "loading": "Ładowanie",
       "to": "Do",
-      "transferFee": "Prowizja za Transfer",
-      "expectedOutput": "Oczekiwany wynik",
-      "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
       "sending": "Wysyłanie...",
       "transferAnyway": "Transfer mimo wszystko"
     },
-    "unbondedAssets": "Rozwiązane",
     "activateUnverifiedAssetsModal": {
       "activate": "Aktywuj niezweryfikowane zasoby",
       "description": "jest tokenem niezweryfikowanym. Czy chcesz go aktywować? Przed przystąpieniem do handlu pamiętaj o dokładnym zbadaniu sytuacji.",
@@ -593,9 +535,6 @@
       "token": "Token",
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",
@@ -1000,14 +939,6 @@
       "title": "Sklep z aplikacjami Osmosis",
       "description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko"
     },
-    "assets": {
-      "title": "Aktywa Osmozy",
-      "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
-    "portfolio": {
-      "title": "Portfolio osmozy",
-      "description": "Przeglądaj swoje aktywa na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "Aktualizacje osmozy!",
     "seeWhatsNew": "Zobacz co nowego"
   },
-  "previewAssetsEnabled": "Włączono podgląd zasobów",
-  "previewAssetsDisabled": "Podgląd zasobów wyłączony",
-  "previewAssetsEnabledForSession": "Podgląd zasobów włączonych w tej sesji. Aby wyłączyć, otwórz nową kartę lub dodaj `show_preview_assets=false`.",
   "earnPage": {
     "title": "Zarabiać",
     "positions": "Pozycje",
@@ -1154,13 +1082,6 @@
     "day": "dzień",
     "days": "dni"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depozyty są niestabilne",
-    "titleWithdraw": "{coinDenom} wypłaty są niestabilne",
-    "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
-    "buttonContinue": "Kontynuować mimo to",
-    "buttonCancel": "Anulować"
-  },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",
     "recentShownHere": "Tutaj pojawią się wpłaty i wypłaty z ostatnich 3 dni na tym urządzeniu (między określonymi sieciami).",
@@ -1181,7 +1102,6 @@
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
     "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
-    "viewAll": "Pokaż wszystkie",
     "history": "Historia",
     "orders": "Zamówienia"
   },

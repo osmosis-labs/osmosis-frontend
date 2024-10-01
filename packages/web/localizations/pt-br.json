@@ -128,68 +128,18 @@
     "secondaryCta": "Aprenda em 30 segundos"
   },
   "assets": {
-    "bondedAssets": "Travado",
     "historyTable": {
       "colums": {
-        "amount": "Quantia",
         "deposit": "Depositar",
-        "status": "Status",
-        "transactionHash": "Hash da Transação",
-        "type": "Tipo",
         "withdraw": "Sacar"
-      },
-      "errors": {
-        "insufficientFee": "Taxa Insuficiente"
-      },
-      "failed": "Falhou",
-      "failedWithReason": "Falhou: {reason}",
-      "pending": "Pendente",
-      "refunded": "Reembolsado",
-      "success": "Sucesso",
-      "title": "Histórico de Transferências",
-      "connectionError": "Erro de conexão"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Adicionar",
-      "buttonEdit": "Editar",
-      "buttonEnter": "Entrar",
-      "channelCongestedDeposit": "Depositar (Canal congestionada)",
-      "channelCongestedWithdraw": "Sacar (Canal congestionado)",
-      "checkboxVerify": "Eu confirmo que não estou enviando para um endereço de exchange.",
-      "estimatedTime": "Tempo Estimado",
-      "selectAmount": "Selecionar Quantia",
-      "titleDeposit": "Depositar {coinDenom}",
-      "titleWithdraw": "Sacar {coinDenom}",
-      "waitTime": "20 segundos",
-      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
-      "provider": "Fornecedor"
-    },
-    "myPools": "Minhas Piscinas",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Travado",
-      "FeeAPY": "Taxa de APY",
-      "liquidity": "Minha Liquidez"
-    },
-    "stakedAssets": "OSMO em stake",
     "table": {
       "columns": {
-        "assetChain": "Ativo / Rede",
-        "balance": "Saldo",
-        "deposit": "Depositar",
-        "transfer": "Transferir",
-        "withdraw": "Sacar"
+        "balance": "Saldo"
       },
       "depositButton": "Depositar",
-      "hideZero": "Esconder saldos zerados",
-      "hideBalances": "Saldos mascarados",
       "search": "Buscar",
-      "sort": {
-        "balance": "Saldo",
-        "network": "Rede",
-        "symbol": "Símbolo"
-      },
-      "title": "Todos os ativos",
       "withdrawButton": "Sacar",
       "activate": "Ativar",
       "marketCap": "Valor de mercado",
@@ -199,27 +149,19 @@
       "lastWeek": "Últimos 7 dias",
       "asset": "Ativo"
     },
-    "totalAssets": "Total de ativos",
     "totalBalance": "Balanço total",
     "transfer": {
-      "availableMobile": "Disponível",
-      "availableOn": "Disponível em {network}",
       "approving": "Aprovando...",
       "approveInWallet": "Aprovar na carteira",
       "errors": {
         "seeRequest": "Ver solicitação em {walletName}"
       },
-      "from": "De",
       "loading": "Carregando",
       "to": "Para",
-      "transferFee": "Taxa de Transferência",
-      "expectedOutput": "Resultado Esperado",
-      "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
       "priceImpact": "Impacto no preço",
       "sending": "Enviando...",
       "transferAnyway": "Transferir de qualquer maneira"
     },
-    "unbondedAssets": "Destravado",
     "activateUnverifiedAssetsModal": {
       "activate": "Ativar ativos não verificados",
       "description": "é um token não verificado. Deseja ativá-lo? Certifique-se de pesquisar bem antes de negociar.",
@@ -593,9 +535,6 @@
       "token": "Token",
       "undersandCost": "Eu entendo que criando uma nova piscina custará {POOL_CREATION_FEE}.",
       "weightedPool": "Piscina ponderada"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",
@@ -1000,14 +939,6 @@
       "title": "App Store da Osmose",
       "description": "A negociação é apenas o primeiro passo. Coloque seus ativos para trabalhar e realize muito mais com alavancagem, cofres e muito mais"
     },
-    "assets": {
-      "title": "Ativos de Osmose",
-      "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
-    },
-    "portfolio": {
-      "title": "Portfólio de Osmose",
-      "description": "Veja seus ativos na Osmosis - a bolsa descentralizada líder do Cosmos"
-    },
     "disclaimer": {
       "title": "Isenção de responsabilidade de osmose",
       "description": "Leia o aviso de isenção de responsabilidade e a política de privacidade da Osmosis - a principal bolsa descentralizada do Cosmos"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "Atualizações de osmose!",
     "seeWhatsNew": "Veja o que é novo"
   },
-  "previewAssetsEnabled": "Pré-visualizar recursos ativados",
-  "previewAssetsDisabled": "Visualização de recursos desativada",
-  "previewAssetsEnabledForSession": "Visualize os ativos habilitados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_preview_assets=false`.",
   "earnPage": {
     "title": "Ganhar",
     "positions": "Posições",
@@ -1154,13 +1082,6 @@
     "day": "dia",
     "days": "dias"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depósitos instáveis",
-    "titleWithdraw": "{coinDenom} saques instáveis",
-    "description": "Devido a problemas técnicos incertos, as transferências entre Osmosis e {prettyChainName} podem sofrer atrasos significativos ou falhas na transação. Prossiga por sua conta e risco.",
-    "buttonContinue": "Continue de qualquer maneira",
-    "buttonCancel": "Cancelar"
-  },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",
     "recentShownHere": "Os depósitos e saques nos últimos 3 dias neste dispositivo (entre determinadas redes) aparecerão aqui.",
@@ -1181,7 +1102,6 @@
     "transactionHash": "Hash de transação",
     "viewOnExplorer": "Ver no explorador",
     "launchAlert": "Atualmente apenas o histórico de negociações é exibido. Suporte para mais tipos de transação em breve.",
-    "viewAll": "Ver tudo",
     "history": "História",
     "orders": "Pedidos"
   },

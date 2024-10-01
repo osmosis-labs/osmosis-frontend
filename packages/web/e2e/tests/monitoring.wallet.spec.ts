@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
+import { type BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
@@ -13,6 +13,7 @@ test.describe("Test Filled Limit Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
+  const TRX_SUCCESS_TIMEOUT = 10000;
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
@@ -88,6 +89,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await trxPage.isFilledByLimitPrice(highLimitPrice);
   });
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
     test(`User should be able to Market Buy ${name}`, async () => {
       await tradePage.goto();
@@ -97,12 +99,13 @@ test.describe("Test Filled Limit Order feature", () => {
       const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-      await tradePage.isTransactionSuccesful();
+      await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
       await tradePage.getTransactionUrl();
     });
   });
 
   // does not work for WBTC.eth.axl https://linear.app/osmosis/issue/FE-1058
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
     test(`User should be able to Market Sell ${name}`, async () => {
       await tradePage.goto();
@@ -112,7 +115,7 @@ test.describe("Test Filled Limit Order feature", () => {
       const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-      await tradePage.isTransactionSuccesful();
+      await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
       await tradePage.getTransactionUrl();
     });
   });

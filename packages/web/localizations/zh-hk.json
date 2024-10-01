@@ -128,68 +128,18 @@
     "secondaryCta": "30秒學會"
   },
   "assets": {
-    "bondedAssets": "已鎖定",
     "historyTable": {
       "colums": {
-        "amount": "數額",
         "deposit": "存入",
-        "status": "狀態",
-        "transactionHash": "交易編號",
-        "type": "種類",
         "withdraw": "轉出"
-      },
-      "errors": {
-        "insufficientFee": "費用不足"
-      },
-      "failed": "失敗的",
-      "failedWithReason": "失敗的: {reason}",
-      "pending": "待處理中",
-      "refunded": "已退款",
-      "success": "成功",
-      "title": "轉移歷史",
-      "connectionError": "連線錯誤"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "添加",
-      "buttonEdit": "編輯",
-      "buttonEnter": "輸入",
-      "channelCongestedDeposit": "存入 (通道擁擠緊)",
-      "channelCongestedWithdraw": "轉出 (通道擁擠緊)",
-      "checkboxVerify": "我確認我並非傳送到任何中心化交易所地址",
-      "estimatedTime": "預計所需時間",
-      "selectAmount": "選擇數量",
-      "titleDeposit": "存入 {coinDenom}",
-      "titleWithdraw": "轉出 {coinDenom}",
-      "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
-      "provider": "提供者"
-    },
-    "myPools": "我嘅流動性池",
-    "poolCards": {
-      "APR": "年利率(APR)",
-      "bonded": "已鎖定",
-      "FeeAPY": "交易費 APY",
-      "liquidity": "我嘅流動性"
-    },
-    "stakedAssets": "已質押嘅OSMO",
     "table": {
       "columns": {
-        "assetChain": "資產 / 鏈",
-        "balance": "結餘",
-        "deposit": "存入",
-        "transfer": "轉移",
-        "withdraw": "轉出"
+        "balance": "結餘"
       },
       "depositButton": "存入",
-      "hideZero": "隱藏結餘為零嘅項目",
-      "hideBalances": "隱藏餘額",
       "search": "搜索",
-      "sort": {
-        "balance": "結餘",
-        "network": "網絡",
-        "symbol": "符號"
-      },
-      "title": "所有資產",
       "withdrawButton": "轉出",
       "activate": "啟用",
       "marketCap": "市值",
@@ -199,27 +149,19 @@
       "lastWeek": "過去 7 天",
       "asset": "資產"
     },
-    "totalAssets": "總資產",
     "totalBalance": "總餘額",
     "transfer": {
-      "availableMobile": "可用",
-      "availableOn": "{network}上可用",
       "approving": "正在批准...",
       "approveInWallet": "在錢包中批准",
       "errors": {
         "seeRequest": "在{walletName}中查看請求"
       },
-      "from": "從",
       "loading": "載入中",
       "to": "到",
-      "transferFee": "交易費",
-      "expectedOutput": "預期輸出",
-      "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
       "priceImpact": "價格影響",
       "sending": "正在發送...",
       "transferAnyway": "無論如何轉移"
     },
-    "unbondedAssets": "未鎖定",
     "activateUnverifiedAssetsModal": {
       "activate": "啟動未驗證資產",
       "description": "是一個未經驗證的令牌。您想激活它嗎？交易前一定要徹底研究。",
@@ -593,9 +535,6 @@
       "token": "代幣",
       "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
       "weightedPool": "加權流動性池"
-    },
-    "externalIncentivized": {
-      "TVL": "總鎖定資產價值(TVL)"
     },
     "TVL": "TVL",
     "myLiquidity": "我嘅流動性",
@@ -1000,14 +939,6 @@
       "title": "滲透應用商店",
       "description": "交易只是第一步。利用槓桿、金庫等，讓您的資產發揮作用並取得更多成就"
     },
-    "assets": {
-      "title": "滲透資產",
-      "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
-    },
-    "portfolio": {
-      "title": "滲透產品組合",
-      "description": "在 Osmosis 上查看您的資產 - 領先的去中心化 Cosmos 交易所"
-    },
     "disclaimer": {
       "title": "滲透免責聲明",
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "滲透更新！",
     "seeWhatsNew": "看看有什麼新鮮事"
   },
-  "previewAssetsEnabled": "啟用預覽資源",
-  "previewAssetsDisabled": "預覽資源已停用",
-  "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "earnPage": {
     "title": "賺",
     "positions": "職位",
@@ -1154,13 +1082,6 @@
     "day": "天",
     "days": "天"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}存款不穩定",
-    "titleWithdraw": "{coinDenom}提款不穩定",
-    "description": "由於不確定的技術問題，Osmosis 和{prettyChainName}之間的轉帳可能會出現嚴重延遲或交易失敗。繼續需要您自擔風險。",
-    "buttonContinue": "無論如何繼續",
-    "buttonCancel": "取消"
-  },
   "transactions": {
     "noRecent": "最近沒有轉帳",
     "recentShownHere": "此處將顯示過去 3 天在此裝置上（某些網路之間）的存款和提款。",
@@ -1181,7 +1102,6 @@
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
     "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
-    "viewAll": "看全部",
     "history": "歷史",
     "orders": "命令"
   },

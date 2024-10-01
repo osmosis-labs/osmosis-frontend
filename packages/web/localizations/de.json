@@ -128,68 +128,18 @@
     "secondaryCta": "Lernen Sie in 30 Sekunden"
   },
   "assets": {
-    "bondedAssets": "Gebunden",
     "historyTable": {
       "colums": {
-        "amount": "Menge",
         "deposit": "Kaution",
-        "status": "Status",
-        "transactionHash": "Transaktions-Hash",
-        "type": "Typ",
         "withdraw": "Zurückziehen"
-      },
-      "errors": {
-        "insufficientFee": "Unzureichende Gebühr"
-      },
-      "failed": "Fehlgeschlagen",
-      "failedWithReason": "Fehlgeschlagen: {reason}",
-      "pending": "Ausstehend",
-      "refunded": "Erstattet",
-      "success": "Erfolg",
-      "title": "Übertragungsverlauf",
-      "connectionError": "Verbindungsfehler"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Hinzufügen",
-      "buttonEdit": "Bearbeiten",
-      "buttonEnter": "Eingeben",
-      "channelCongestedDeposit": "Kaution (Kanal überlastet)",
-      "channelCongestedWithdraw": "Zurückziehen (Kanal überlastet)",
-      "checkboxVerify": "Ich bestätige, dass ich nicht an eine Exchange-Adresse sende.",
-      "estimatedTime": "Geschätzte Zeit",
-      "selectAmount": "Wählen Sie Betrag aus",
-      "titleDeposit": "Einzahlung {coinDenom}",
-      "titleWithdraw": "Abheben {coinDenom}",
-      "waitTime": "20 Sekunden",
-      "warningLossFunds": "Warnung: Eine Auszahlung an die zentrale Börsenadresse führt zum Verlust von Geldern.",
-      "provider": "Anbieter"
-    },
-    "myPools": "Ihre Pools",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Gebunden",
-      "FeeAPY": "Gebühr APY",
-      "liquidity": "Meine Liquidität"
-    },
-    "stakedAssets": "Abgestecktes OSMO",
     "table": {
       "columns": {
-        "assetChain": "Vermögenswert/Kette",
-        "balance": "Gleichgewicht",
-        "deposit": "Kaution",
-        "transfer": "Überweisen",
-        "withdraw": "Zurückziehen"
+        "balance": "Gleichgewicht"
       },
       "depositButton": "Kaution",
-      "hideZero": "Nullsalden ausblenden",
-      "hideBalances": "Maskierte Salden",
       "search": "Suchen",
-      "sort": {
-        "balance": "Gleichgewicht",
-        "network": "Netzwerk",
-        "symbol": "Symbol"
-      },
-      "title": "Alle Vermögenswerte",
       "withdrawButton": "Zurückziehen",
       "activate": "aktivieren Sie",
       "marketCap": "Marktkapitalisierung",
@@ -199,27 +149,19 @@
       "lastWeek": "Letzten 7 Tage",
       "asset": "Vermögenswert"
     },
-    "totalAssets": "Gesamtvermögen",
     "totalBalance": "Gesamtsaldo",
     "transfer": {
-      "availableMobile": "Verfügbar",
-      "availableOn": "Verfügbar auf {network}",
       "approving": "Genehmigen...",
       "approveInWallet": "Im Wallet genehmigen",
       "errors": {
         "seeRequest": "Siehe Anfrage in {walletName}"
       },
-      "from": "Aus",
       "loading": "Wird geladen",
       "to": "Zu",
-      "transferFee": "Ablöse",
-      "expectedOutput": "Erwartete Ausgabe",
-      "expectedOutputInfo": "Abhängig vom genutzten Anbieter kann es aufgrund von Gebühren, Slippage und Preisauswirkungen zu einem geringeren Output kommen.",
       "priceImpact": "Preisauswirkungen",
       "sending": "Senden...",
       "transferAnyway": "Übertragen Sie trotzdem"
     },
-    "unbondedAssets": "Verfügbar",
     "activateUnverifiedAssetsModal": {
       "activate": "Aktivieren Sie nicht verifizierte Assets",
       "description": "ist ein nicht verifiziertes Token. Möchten Sie es aktivieren? Stellen Sie sicher, dass Sie vor dem Handel gründlich recherchieren.",
@@ -593,9 +535,6 @@
       "token": "Zeichen",
       "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird.",
       "weightedPool": "Gewichtsbecken"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "Meine Liquidität",
@@ -1000,14 +939,6 @@
       "title": "Osmose-App-Store",
       "description": "Der Handel ist nur der erste Schritt. Setzen Sie Ihr Vermögen ein und erreichen Sie mit Leverage, Tresoren und vielem mehr noch viel mehr"
     },
-    "assets": {
-      "title": "Osmose-Vermögenswerte",
-      "description": "Durchsuchen Sie alle auf Osmosis verfügbaren Vermögenswerte – der führenden dezentralen Cosmos-Börse"
-    },
-    "portfolio": {
-      "title": "Osmose-Portfolio",
-      "description": "Sehen Sie sich Ihr Vermögen auf Osmosis an – der führenden dezentralen Cosmos-Börse"
-    },
     "disclaimer": {
       "title": "Haftungsausschluss für Osmose",
       "description": "Lesen Sie den Haftungsausschluss und die Datenschutzrichtlinie für Osmosis – die führende dezentrale Cosmos-Börse"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "Osmose-Updates!",
     "seeWhatsNew": "Schau was neu ist"
   },
-  "previewAssetsEnabled": "Vorschau der Assets aktiviert",
-  "previewAssetsDisabled": "Vorschau der Assets deaktiviert",
-  "previewAssetsEnabledForSession": "Vorschau-Assets für diese Sitzung aktiviert. Zum Deaktivieren öffnen Sie einen neuen Tab oder hängen „show_preview_assets=false“ an.",
   "earnPage": {
     "title": "Verdienen",
     "positions": "Positionen",
@@ -1154,13 +1082,6 @@
     "day": "Tag",
     "days": "Tage"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} Einlagen instabil",
-    "titleWithdraw": "{coinDenom} Abhebungen instabil",
-    "description": "Aufgrund ungewisser technischer Probleme kann es bei Übertragungen zwischen Osmosis und {prettyChainName} zu erheblichen Verzögerungen oder Transaktionsfehlern kommen. Das Vorgehen erfolgt auf eigene Gefahr.",
-    "buttonContinue": "Mache trotzdem weiter",
-    "buttonCancel": "Stornieren"
-  },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",
     "recentShownHere": "Einzahlungen und Auszahlungen der letzten 3 Tage auf diesem Gerät (zwischen bestimmten Netzwerken) werden hier angezeigt.",
@@ -1181,7 +1102,6 @@
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
-    "viewAll": "Alle ansehen",
     "history": "Geschichte",
     "orders": "Aufträge"
   },

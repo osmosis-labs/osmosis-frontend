@@ -128,68 +128,18 @@
     "secondaryCta": "30 saniyede öğrenin"
   },
   "assets": {
-    "bondedAssets": "Bağlı",
     "historyTable": {
       "colums": {
-        "amount": "Miktar",
         "deposit": "Yatır",
-        "status": "Durum",
-        "transactionHash": "İşlem ID",
-        "type": "Tip",
         "withdraw": "Çek"
-      },
-      "errors": {
-        "insufficientFee": "yetersiz ücret"
-      },
-      "failed": "Arızalı",
-      "failedWithReason": "Arızalı: {reason}",
-      "pending": "Beklemede",
-      "refunded": "İade Edildi",
-      "success": "Başarılı",
-      "title": "Transfer Geçmişi",
-      "connectionError": "Bağlantı hatası"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Eklemek",
-      "buttonEdit": "Düzenle",
-      "buttonEnter": "Onay",
-      "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
-      "channelCongestedWithdraw": "Çek (Kanal çağrıldı)",
-      "checkboxVerify": "Borsa adresine göndermediğimi doğruluyorum.",
-      "estimatedTime": "Takribi Süre",
-      "selectAmount": "Miktar Seç",
-      "titleDeposit": "{coinDenom} Yatır",
-      "titleWithdraw": "{coinDenom} Çek",
-      "waitTime": "20 saniye",
-      "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur.",
-      "provider": "Sağlayıcı"
-    },
-    "myPools": "Havuzlarım",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Bağlı",
-      "FeeAPY": "APY ücreti",
-      "liquidity": "Likiditem"
-    },
-    "stakedAssets": "Stake Edilmiş OSMO",
     "table": {
       "columns": {
-        "assetChain": "Varlık / Ağ",
-        "balance": "Bakiye",
-        "deposit": "Yatır",
-        "transfer": "Transfer",
-        "withdraw": "Çek"
+        "balance": "Bakiye"
       },
       "depositButton": "Yatır",
-      "hideZero": "Sıfır bakiyeyi gizle",
-      "hideBalances": "Maskelenmiş bakiyeler",
       "search": "Arama",
-      "sort": {
-        "balance": "Bakiye",
-        "network": "Ağ",
-        "symbol": "Sembol"
-      },
-      "title": "Tüm Varlıklar",
       "withdrawButton": "Çek",
       "activate": "Etkinleştir",
       "marketCap": "Piyasa değeri",
@@ -199,27 +149,19 @@
       "lastWeek": "Son 7 gün",
       "asset": "Varlık"
     },
-    "totalAssets": "Toplam varlıklar",
     "totalBalance": "Toplam bakiye",
     "transfer": {
-      "availableMobile": "Kullanılabilir",
-      "availableOn": "{network} ağında mevcut",
       "approving": "Onaylanıyor...",
       "approveInWallet": "Cüzdanda onayla",
       "errors": {
         "seeRequest": "{walletName}'deki talebi gör"
       },
-      "from": "Ağından",
       "loading": "Yükleniyor",
       "to": "Ağına",
-      "transferFee": "İşlem Ücreti",
-      "expectedOutput": "Beklenen çıktı",
-      "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
       "priceImpact": "Fiyat Etkisi",
       "sending": "Gönderiliyor...",
       "transferAnyway": "Yine de Aktar"
     },
-    "unbondedAssets": "Bağlı Olmayan",
     "activateUnverifiedAssetsModal": {
       "activate": "Doğrulanmamış varlıkları etkinleştirin",
       "description": "doğrulanmamış bir simgedir. Etkinleştirmek istiyor musunuz? Ticaret yapmadan önce iyice araştırdığınızdan emin olun.",
@@ -593,9 +535,6 @@
       "token": "Token",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "weightedPool": "Ağırlıklı havuz"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "Likiditem",
@@ -1000,14 +939,6 @@
       "title": "Ozmoz Uygulama Mağazası",
       "description": "Ticaret sadece ilk adımdır. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın"
     },
-    "assets": {
-      "title": "Osmoz Varlıkları",
-      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
-    },
-    "portfolio": {
-      "title": "Osmoz Portföyü",
-      "description": "Varlıklarınızı önde gelen merkezi olmayan Cosmos borsası Osmosis'te görüntüleyin"
-    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "Osmoz güncellemeleri!",
     "seeWhatsNew": "Yenilikleri görün"
   },
-  "previewAssetsEnabled": "Varlıkların önizlemesi etkinleştirildi",
-  "previewAssetsDisabled": "Varlıkların önizlemesi devre dışı bırakıldı",
-  "previewAssetsEnabledForSession": "Bu oturum için etkinleştirilen varlıkların önizlemesini görüntüleyin. Devre dışı bırakmak için yeni bir sekme açın veya \"show_preview_assets=false\" ifadesini ekleyin.",
   "earnPage": {
     "title": "Para kazanmak",
     "positions": "Pozisyonlar",
@@ -1154,13 +1082,6 @@
     "day": "gün",
     "days": "günler"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} yatırma işlemleri kararsız",
-    "titleWithdraw": "{coinDenom} para çekme işlemleri kararsız",
-    "description": "Belirsiz teknik sorunlar nedeniyle Osmosis ile {prettyChainName} arasındaki aktarımlarda önemli gecikmeler veya işlem başarısızlıkları yaşanabilir. Riski size ait olmak üzere devam edin.",
-    "buttonContinue": "Her halükarda devam et",
-    "buttonCancel": "İptal etmek"
-  },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",
     "recentShownHere": "Bu cihaza son 3 gün içinde yapılan para yatırma ve çekme işlemleri (belirli ağlar arasında) burada görünecektir.",
@@ -1181,7 +1102,6 @@
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
     "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
-    "viewAll": "Hepsini gör",
     "history": "Tarih",
     "orders": "Emirler"
   },

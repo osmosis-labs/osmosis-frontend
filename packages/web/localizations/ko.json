@@ -128,68 +128,18 @@
     "secondaryCta": "30초 안에 배우기"
   },
   "assets": {
-    "bondedAssets": "예치된 자산",
     "historyTable": {
       "colums": {
-        "amount": "수량",
         "deposit": "입금",
-        "status": "상태",
-        "transactionHash": "트랜잭션 해시",
-        "type": "타입",
         "withdraw": "출금"
-      },
-      "errors": {
-        "insufficientFee": "수수료가 부족합니다"
-      },
-      "failed": "실패했습니다",
-      "failedWithReason": "실패: {reason}",
-      "pending": "보류중",
-      "refunded": "환불됨",
-      "success": "성공",
-      "title": "전송 내역",
-      "connectionError": "연결 오류"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "추가하다",
-      "buttonEdit": "수정",
-      "buttonEnter": "입력",
-      "channelCongestedDeposit": "입금 (채널 혼잡)",
-      "channelCongestedWithdraw": "출금 (채널 혼잡)",
-      "checkboxVerify": "중앙화 거래소 주소로 전송하지 않겠습니다.",
-      "estimatedTime": "Estimated Time",
-      "selectAmount": "수량 선택",
-      "titleDeposit": "{coinDenom} 입금",
-      "titleWithdraw": "{coinDenom} 출금",
-      "waitTime": "20초",
-      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다.",
-      "provider": "공급자"
-    },
-    "myPools": "내 풀",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "예치된 자산",
-      "FeeAPY": "수수료 APY",
-      "liquidity": "내 유동성"
-    },
-    "stakedAssets": "스테이킹된 OSMO",
     "table": {
       "columns": {
-        "assetChain": "자산 / 체인",
-        "balance": "수량",
-        "deposit": "입금",
-        "transfer": "전송",
-        "withdraw": "출금"
+        "balance": "수량"
       },
       "depositButton": "입금",
-      "hideZero": "소액 자산 숨기기",
-      "hideBalances": "자산 숨기기",
       "search": "검색",
-      "sort": {
-        "balance": "수량",
-        "network": "네트워크",
-        "symbol": "심볼"
-      },
-      "title": "모든 자산",
       "withdrawButton": "출금",
       "activate": "활성화",
       "marketCap": "시가총액",
@@ -199,27 +149,19 @@
       "lastWeek": "지난 7일",
       "asset": "유산"
     },
-    "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
     "transfer": {
-      "availableMobile": "잔고",
-      "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "approveInWallet": "지갑에서 승인",
       "errors": {
         "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
-      "from": "발신 체인",
       "loading": "로딩",
       "to": "수신 체인",
-      "transferFee": "전송 수수료",
-      "expectedOutput": "예상 출력",
-      "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
       "sending": "배상...",
       "transferAnyway": "무시하고 전송"
     },
-    "unbondedAssets": "예치해제된 자산",
     "activateUnverifiedAssetsModal": {
       "activate": "확인되지 않은 자산 활성화",
       "description": "확인되지 않은 토큰입니다. 활성화하시겠습니까? 거래하기 전에 철저히 조사하십시오.",
@@ -593,9 +535,6 @@
       "token": "토큰",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해했습니다.",
       "weightedPool": "가중비율 풀"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "내 유동성",
@@ -1000,14 +939,6 @@
       "title": "오스모시스 앱 스토어",
       "description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오."
     },
-    "assets": {
-      "title": "오스모시스 자산",
-      "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
-    },
-    "portfolio": {
-      "title": "삼투 포트폴리오",
-      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
-    },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
@@ -1064,9 +995,6 @@
     "osmosisUpdates": "오스모시스 업데이트!",
     "seeWhatsNew": "새로운 소식 보기"
   },
-  "previewAssetsEnabled": "자산 미리보기가 활성화되었습니다.",
-  "previewAssetsDisabled": "자산 미리보기가 비활성화되었습니다.",
-  "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
     "positions": "직위",
@@ -1154,13 +1082,6 @@
     "day": "낮",
     "days": "날"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} 예금이 불안정함",
-    "titleWithdraw": "{coinDenom} 출금이 불안정함",
-    "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
-    "buttonContinue": "계속 진행",
-    "buttonCancel": "취소"
-  },
   "transactions": {
     "noRecent": "최근 이적 없음",
     "recentShownHere": "지난 3일 동안 이 기기(특정 네트워크 간)의 입출금 내역이 여기에 표시됩니다.",
@@ -1181,7 +1102,6 @@
     "transactionHash": "거래 해시",
     "viewOnExplorer": "탐색기에서 보기",
     "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다.",
-    "viewAll": "모두보기",
     "history": "역사",
     "orders": "명령"
   },
