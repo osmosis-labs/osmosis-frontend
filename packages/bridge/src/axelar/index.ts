@@ -26,7 +26,6 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
-  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
@@ -521,7 +520,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   }): Promise<EvmBridgeTransactionRequest> {
     const { depositAddress } = simulated
       ? { depositAddress: fromAddress }
-      : await this.getDepositAddress({
+      : await this.getAxelarDepositAddress({
           fromChain,
           toChain,
           fromAsset,
@@ -563,7 +562,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     try {
       const { depositAddress } = simulated
         ? { depositAddress: fromAddress }
-        : await this.getDepositAddress({
+        : await this.getAxelarDepositAddress({
             fromChain,
             toChain,
             fromAsset,
@@ -629,13 +628,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
   }
 
-  async getDepositAddress({
+  async getAxelarDepositAddress({
     fromChain,
     toChain,
     fromAsset,
     toAsset,
     toAddress,
-  }: GetDepositAddressParams): Promise<BridgeDepositAddress> {
+  }: GetDepositAddressParams) {
     const fromChainAxelarId = await this.getAxelarChainId(fromChain);
     const toChainAxelarId = await this.getAxelarChainId(toChain);
     const autoUnwrapIntoNative =
@@ -649,7 +648,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         fromAsset.address
       }/${Boolean(autoUnwrapIntoNative)}`,
       ttl: process.env.NODE_ENV === "test" ? -1 : 30 * 60 * 1000, // 30 minutes
-      getFreshValue: async (): Promise<BridgeDepositAddress> => {
+      getFreshValue: async () => {
         const [depositClient, toAssetAxelarId] = await Promise.all([
           this.getAssetTransferClient(),
           this.getAxelarAssetId(fromChain, fromAsset),

@@ -96,7 +96,7 @@ describe("AxelarBridgeProvider", () => {
       .spyOn(provider, "getAssetTransferClient")
       .mockResolvedValue(mockDepositClient as unknown as AxelarAssetTransfer);
 
-    const depositAddress = await provider.getDepositAddress({
+    const depositAddress = await provider.getAxelarDepositAddress({
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       toChain: {
         chainId: "osmosis-1",
@@ -122,7 +122,7 @@ describe("AxelarBridgeProvider", () => {
 
   it("should throw an error for unsupported chains", async () => {
     await expect(
-      provider.getDepositAddress({
+      provider.getAxelarDepositAddress({
         fromChain: {
           chainId: 989898989898,
           chainName: "Unsupported",
