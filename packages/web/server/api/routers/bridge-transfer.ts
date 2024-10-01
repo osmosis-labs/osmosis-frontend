@@ -643,6 +643,9 @@ export const bridgeTransferRouter = createTRPCRouter({
       const depositData = await bridgeProvider.getDepositAddress({
         toAddress: input.toAddress,
         fromChain: input.fromChain,
+        fromAsset: input.fromAsset,
+        toAsset: input.toAsset,
+        toChain: input.toChain,
       });
 
       if (!depositData) {
