@@ -46,3 +46,6 @@ generated
 robots.txt
 sitemap-*.xml
 sitemap.xml
+
+# Million Lint
+.million

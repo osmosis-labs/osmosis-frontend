@@ -45,6 +45,7 @@
     "@keplr-wallet/crypto": "0.12.48",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@million/lint": "^1.0.0",
     "@next/bundle-analyzer": "^12.1.6",
     "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/api-logs": "^0.52.1",

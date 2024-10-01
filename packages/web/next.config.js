@@ -1,3 +1,4 @@
+const MillionLint = require("@million/lint");
 // @ts-check
 const path = require("path");
 
@@ -39,10 +40,8 @@ const config = {
       if (rule.test && Array.isArray(rule.test)) {
         return rule.test.some((exp) => exp.test(".svg"));
       }
-
       return rule.test && rule.test.test(".svg");
     });
-
     fileLoaderRule.exclude = /sprite\.svg$/;
 
     // Replace libsodium with a no-op API. It is only imported from within cosmJS to support
@@ -53,9 +52,11 @@ const config = {
     // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
     config.resolve = {
-      ...config.resolve, // This spreads existing resolve configuration (if any)
+      ...config.resolve,
+      // This spreads existing resolve configuration (if any)
       alias: {
-        ...config.resolve.alias, // This spreads any existing alias configurations
+        ...config.resolve.alias,
+        // This spreads any existing alias configurations
         libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
         "libsodium-wrappers": path.resolve(
           __dirname,
@@ -76,16 +77,13 @@ const config = {
         bip39: path.resolve(__dirname, "../../node_modules/bip39-light"),
       },
     };
-
     return config;
   },
   experimental: {
     instrumentationHook: true,
   },
 };
-
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
-
-module.exports = withBundleAnalyzer(config);
+module.exports = MillionLint.next()(withBundleAnalyzer(config));
