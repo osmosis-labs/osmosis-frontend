@@ -975,7 +975,10 @@
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
       "confirmations": "6 पुष्टियां"
-    }
+    },
+    "expiresIn": "में समाप्त होना",
+    "getNewAddress": "नया पता प्राप्त करें",
+    "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",
@@ -1147,7 +1150,9 @@
     "minute": "मिनट",
     "minutes": "मिनट",
     "hour": "घंटा",
-    "hours": "घंटे"
+    "hours": "घंटे",
+    "day": "दिन",
+    "days": "दिन"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} जमा अस्थिर है",

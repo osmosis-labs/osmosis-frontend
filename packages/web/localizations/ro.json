@@ -975,7 +975,10 @@
     "minimumDeposit": "Depozit minim",
     "nomic": {
       "confirmations": "6 confirmări"
-    }
+    },
+    "expiresIn": "Expiră în",
+    "getNewAddress": "Obțineți o nouă adresă",
+    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou."
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
@@ -1147,7 +1150,9 @@
     "minute": "minut",
     "minutes": "minute",
     "hour": "ora",
-    "hours": "ore"
+    "hours": "ore",
+    "day": "zi",
+    "days": "zile"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} depozite instabile",

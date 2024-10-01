@@ -975,7 +975,10 @@
     "minimumDeposit": "Depósito mínimo",
     "nomic": {
       "confirmations": "6 confirmações"
-    }
+    },
+    "expiresIn": "Expira em",
+    "getNewAddress": "Obter novo endereço",
+    "addressExpired": "Este endereço expirou. Solicite um novo."
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
@@ -1147,7 +1150,9 @@
     "minute": "minuto",
     "minutes": "minutos",
     "hour": "hora",
-    "hours": "horas"
+    "hours": "horas",
+    "day": "dia",
+    "days": "dias"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} depósitos instáveis",

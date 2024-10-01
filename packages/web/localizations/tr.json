@@ -975,7 +975,10 @@
     "minimumDeposit": "Minimum mevduat",
     "nomic": {
       "confirmations": "6 onay"
-    }
+    },
+    "expiresIn": "Sona eriyor",
+    "getNewAddress": "Yeni adres al",
+    "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin."
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
@@ -1147,7 +1150,9 @@
     "minute": "dakika",
     "minutes": "dakika",
     "hour": "saat",
-    "hours": "saat"
+    "hours": "saat",
+    "day": "gün",
+    "days": "günler"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} yatırma işlemleri kararsız",

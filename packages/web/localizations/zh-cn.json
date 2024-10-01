@@ -975,7 +975,10 @@
     "minimumDeposit": "最低存款",
     "nomic": {
       "confirmations": "6 次确认"
-    }
+    },
+    "expiresIn": "有效期：",
+    "getNewAddress": "获取新地址",
+    "addressExpired": "此地址已过期。请申请一个新地址。"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -1147,7 +1150,9 @@
     "minute": "分钟",
     "minutes": "分钟",
     "hour": "小时",
-    "hours": "小时"
+    "hours": "小时",
+    "day": "天",
+    "days": "天"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom}存款不稳定",

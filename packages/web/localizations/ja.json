@@ -975,7 +975,10 @@
     "minimumDeposit": "最低入金額",
     "nomic": {
       "confirmations": "6件の確認"
-    }
+    },
+    "expiresIn": "有効期限は",
+    "getNewAddress": "新しい住所を取得",
+    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -1147,7 +1150,9 @@
     "minute": "分",
     "minutes": "分",
     "hour": "時間",
-    "hours": "時間"
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom}預金は不安定です",

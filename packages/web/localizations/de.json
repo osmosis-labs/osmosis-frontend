@@ -975,7 +975,10 @@
     "minimumDeposit": "Mindesteinzahlung",
     "nomic": {
       "confirmations": "6 Bestätigungen"
-    }
+    },
+    "expiresIn": "Läuft ab in",
+    "getNewAddress": "Neue Adresse erhalten",
+    "addressExpired": "Diese Adresse ist abgelaufen. Bitte fordern Sie eine neue an."
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",
@@ -1147,7 +1150,9 @@
     "minute": "Minute",
     "minutes": "Protokoll",
     "hour": "Stunde",
-    "hours": "Std."
+    "hours": "Std.",
+    "day": "Tag",
+    "days": "Tage"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} Einlagen instabil",

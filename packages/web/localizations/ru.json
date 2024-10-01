@@ -975,7 +975,10 @@
     "minimumDeposit": "Минимальный депозит",
     "nomic": {
       "confirmations": "6 подтверждений"
-    }
+    },
+    "expiresIn": "Истекает через",
+    "getNewAddress": "Получить новый адрес",
+    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый."
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",
@@ -1147,7 +1150,9 @@
     "minute": "минута",
     "minutes": "минуты",
     "hour": "час",
-    "hours": "часы"
+    "hours": "часы",
+    "day": "день",
+    "days": "дней"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} депозиты нестабильны",

@@ -975,7 +975,10 @@
     "minimumDeposit": "ન્યૂનતમ થાપણ",
     "nomic": {
       "confirmations": "6 પુષ્ટિકરણ"
-    }
+    },
+    "expiresIn": "માં સમાપ્ત થાય છે",
+    "getNewAddress": "નવું સરનામું મેળવો",
+    "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો."
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
@@ -1147,7 +1150,9 @@
     "minute": "મિનિટ",
     "minutes": "મિનિટ",
     "hour": "કલાક",
-    "hours": "કલાક"
+    "hours": "કલાક",
+    "day": "દિવસ",
+    "days": "દિવસો"
   },
   "unstableAssetsWarning": {
     "titleDeposit": "{coinDenom} થાપણો અસ્થિર",

@@ -7,6 +7,7 @@ import { DecUtils } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
@@ -19,10 +20,11 @@ import { DepositAddressBridge } from "~/components/bridge/use-bridge-quotes";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
-import { IconButton } from "~/components/ui/button";
+import { Button, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
+import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
@@ -61,23 +63,31 @@ export const DepositAddressScreen = observer(
     const { t } = useTranslation();
     const [showQrCode, setShowQrCode] = useState(false);
 
-    const { data, isLoading } = api.bridgeTransfer.getDepositAddress.useQuery(
-      {
-        bridge,
-        fromChain,
-        toAddress: osmosisAddress!,
-      },
-      {
-        enabled: !!osmosisAddress,
-        refetchOnWindowFocus: false,
-        useErrorBoundary: true,
-      }
-    );
+    const { data, isLoading, refetch, remove } =
+      api.bridgeTransfer.getDepositAddress.useQuery(
+        {
+          bridge,
+          fromChain,
+          toAddress: osmosisAddress!,
+        },
+        {
+          enabled: !!osmosisAddress,
+          refetchOnWindowFocus: false,
+          useErrorBoundary: true,
+        }
+      );
 
     const { hasCopied, onCopy } = useClipboard(
       data?.depositData?.depositAddress ?? "",
       3000
     );
+
+    const expirationTimeDayjs = data?.depositData?.expirationTimeMs
+      ? dayjs(data.depositData.expirationTimeMs)
+      : undefined;
+
+    const isExpired =
+      expirationTimeDayjs && expirationTimeDayjs.isBefore(dayjs());
 
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
@@ -109,6 +119,7 @@ export const DepositAddressScreen = observer(
               </>
             )}
           </div>
+
           <p className="text-center text-h5 font-h5 text-white-full md:text-h6 md:font-h6">
             {t("transfer.sendFromWalletOrExchange")}
           </p>
@@ -116,105 +127,116 @@ export const DepositAddressScreen = observer(
 
         {chainSelection}
 
-        {showQrCode ? (
-          <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
-            <div className="flex h-[180px] w-[180px] items-center justify-center">
-              {isLoading || !data?.depositData?.depositAddress ? (
-                <Spinner className="text-black" />
-              ) : (
-                <QRCode
-                  value={data?.depositData?.depositAddress}
-                  size={220}
-                  logoUrl={canonicalAsset.coinImageUrl}
+        <div
+          className={classNames(
+            "relative flex w-full flex-col",
+            isExpired &&
+              "after:absolute after:inset-0 after:z-30 after:cursor-not-allowed after:rounded-2xl after:bg-osmoverse-1000/40"
+          )}
+        >
+          {showQrCode ? (
+            <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
+              <div className="flex h-[180px] w-[180px] items-center justify-center">
+                {isLoading || !data?.depositData?.depositAddress ? (
+                  <Spinner className="text-black" />
+                ) : (
+                  <QRCode
+                    value={data?.depositData?.depositAddress}
+                    size={220}
+                    logoUrl={canonicalAsset.coinImageUrl}
+                  />
+                )}
+              </div>
+              <div className="flex flex-1 flex-col items-center gap-3">
+                <Icon
+                  id="scan-line"
+                  className="text-osmoverse-400"
+                  width={32}
+                  height={32}
                 />
-              )}
+                <p className="subtitle1 text-osmoverse-1000">
+                  {t("transfer.scanWithMobileWallet")}
+                </p>
+                <p className="body2 text-osmoverse-600">{t("transfer.or")}</p>
+                <button
+                  disabled={isLoading || isExpired}
+                  onClick={onCopy}
+                  className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
+                >
+                  {hasCopied
+                    ? t("transfer.copied")
+                    : t("transfer.copyToClipboard")}
+                </button>
+              </div>
             </div>
-            <div className="flex flex-1 flex-col items-center gap-3">
-              <Icon
-                id="scan-line"
-                className="text-osmoverse-400"
-                width={32}
-                height={32}
-              />
-              <p className="subtitle1 text-osmoverse-1000">
-                {t("transfer.scanWithMobileWallet")}
-              </p>
-              <p className="body2 text-osmoverse-600">{t("transfer.or")}</p>
-              <button
-                onClick={onCopy}
-                className="subtitle1 text-wosmongton-700 hover:text-wosmongton-800"
+          ) : (
+            <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
+              <div className="flex items-center gap-2">
+                <Tooltip content={t("transfer.showQrCode")}>
+                  <IconButton
+                    icon={
+                      <Icon
+                        id="qr"
+                        className="transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
+                      />
+                    }
+                    className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
+                    aria-label={t("transfer.showQrCode")}
+                    onClick={() => setShowQrCode(true)}
+                    disabled={isLoading || isExpired}
+                  />
+                </Tooltip>
+
+                <div className="flex flex-col">
+                  <p className="subtitle1 text-white-full">
+                    {t("transfer.yourDepositAddress", {
+                      denom: canonicalAsset.coinDenom,
+                    })}
+                  </p>
+                  <SkeletonLoader
+                    isLoaded={!!data?.depositData?.depositAddress}
+                    className={
+                      !data?.depositData?.depositAddress
+                        ? "h-5 w-32"
+                        : undefined
+                    }
+                  >
+                    <p className="text-osmoverse-300">
+                      {shorten(data?.depositData?.depositAddress ?? "", {
+                        prefixLength: 9,
+                        suffixLength: 5,
+                      })}
+                    </p>
+                  </SkeletonLoader>
+                </div>
+              </div>
+              <Tooltip
+                content={
+                  hasCopied
+                    ? t("transfer.copied")
+                    : t("transfer.copyAddressToClipboard")
+                }
               >
-                {hasCopied
-                  ? t("transfer.copied")
-                  : t("transfer.copyToClipboard")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
-            <div className="flex items-center gap-2">
-              <Tooltip content={t("transfer.showQrCode")}>
                 <IconButton
                   icon={
                     <Icon
-                      id="qr"
-                      className="transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
+                      id={hasCopied ? "check-mark-slim" : "copy"}
+                      className={
+                        hasCopied
+                          ? "text-white-full"
+                          : "transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
+                      }
                     />
                   }
                   className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-                  aria-label={t("transfer.showQrCode")}
-                  onClick={() => setShowQrCode(true)}
-                  disabled={isLoading}
+                  aria-label={t("transfer.copyAddress")}
+                  onClick={onCopy}
+                  disabled={isLoading || isExpired}
                 />
               </Tooltip>
-
-              <div className="flex flex-col">
-                <p className="subtitle1 text-white-full">
-                  {t("transfer.yourDepositAddress", {
-                    denom: canonicalAsset.coinDenom,
-                  })}
-                </p>
-                <SkeletonLoader
-                  isLoaded={!!data?.depositData?.depositAddress}
-                  className={
-                    !data?.depositData?.depositAddress ? "h-5 w-32" : undefined
-                  }
-                >
-                  <p className="text-osmoverse-300">
-                    {shorten(data?.depositData?.depositAddress ?? "", {
-                      prefixLength: 9,
-                      suffixLength: 5,
-                    })}
-                  </p>
-                </SkeletonLoader>
-              </div>
             </div>
-            <Tooltip
-              content={
-                hasCopied
-                  ? t("transfer.copied")
-                  : t("transfer.copyAddressToClipboard")
-              }
-            >
-              <IconButton
-                icon={
-                  <Icon
-                    id={hasCopied ? "check-mark-slim" : "copy"}
-                    className={
-                      hasCopied
-                        ? "text-white-full"
-                        : "transition-color text-osmoverse-400 duration-200 group-hover:text-white-full"
-                    }
-                  />
-                }
-                className="group flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800 hover:!bg-osmoverse-700 active:!bg-osmoverse-800"
-                aria-label={t("transfer.copyAddress")}
-                onClick={onCopy}
-                disabled={isLoading}
-              />
-            </Tooltip>
-          </div>
-        )}
+          )}
+        </div>
 
         <div className="z-10 -mt-2 flex w-full items-center gap-4 rounded-b-2xl bg-osmoverse-1000 px-4 pb-4 pt-6">
           <Icon
@@ -223,35 +245,79 @@ export const DepositAddressScreen = observer(
             height={24}
             className="flex-shrink-0 self-start text-rust-400"
           />
-          <p className="body2 text-osmoverse-200">
-            {t("transfer.receiveOnlyAsset", {
-              denom: canonicalAsset.coinDenom,
-              network: fromChain.prettyName,
-            })}
-          </p>
+          {isExpired ? (
+            <p className="body2 text-osmoverse-300">
+              {t("transfer.addressExpired")}
+            </p>
+          ) : (
+            <p className="body2 text-osmoverse-200">
+              {t("transfer.receiveOnlyAsset", {
+                denom: canonicalAsset.coinDenom,
+                network: fromChain.prettyName,
+              })}
+            </p>
+          )}
         </div>
 
-        <DepositInfoRow label={<span>{t("transfer.receiveAsset")}</span>}>
-          <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
-        </DepositInfoRow>
-        <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
-          <SkeletonLoader
-            isLoaded={!!data?.depositData}
-            className={!data?.depositData ? "h-5 w-24" : undefined}
-          >
-            <p className="text-right text-osmoverse-100">
-              {data?.depositData?.minimumDeposit.amount.toString()}{" "}
-              {data?.depositData?.minimumDeposit.fiatValue ? (
-                <>({data.depositData.minimumDeposit.fiatValue.toString()})</>
-              ) : null}
-            </p>
-          </SkeletonLoader>
-        </DepositInfoRow>
-        <TransferDetails
-          isLoading={isLoading}
-          depositData={data?.depositData}
-          fromChain={fromChain}
-        />
+        {isExpired ? (
+          <div className="flex w-full flex-col gap-3 py-3">
+            <Button
+              className="md:body1 text-h6 font-h6"
+              onClick={() => {
+                remove();
+                refetch();
+              }}
+            >
+              {t("transfer.getNewAddress")}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => setCurrentScreen(BridgeScreen.Asset)}
+            >
+              <div className="md:body1 text-h6 font-h6">
+                {t("transfer.done")}
+              </div>
+            </Button>
+          </div>
+        ) : (
+          <>
+            <DepositInfoRow label={<span>{t("transfer.receiveAsset")}</span>}>
+              <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
+            </DepositInfoRow>
+            <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
+              <SkeletonLoader
+                isLoaded={!!data?.depositData}
+                className={!data?.depositData ? "h-5 w-24" : undefined}
+              >
+                <p className="text-right text-osmoverse-100">
+                  {data?.depositData?.minimumDeposit.amount.toString()}{" "}
+                  {data?.depositData?.minimumDeposit.fiatValue ? (
+                    <>
+                      ({data.depositData.minimumDeposit.fiatValue.toString()})
+                    </>
+                  ) : null}
+                </p>
+              </SkeletonLoader>
+            </DepositInfoRow>
+            <DepositInfoRow label={<span>{t("transfer.expiresIn")}</span>}>
+              <SkeletonLoader
+                isLoaded={!isLoading}
+                className={isLoading ? "h-5 w-24" : undefined}
+              >
+                {!!expirationTimeDayjs ? (
+                  <RemainingTime unix={expirationTimeDayjs.unix()} />
+                ) : (
+                  ""
+                )}
+              </SkeletonLoader>
+            </DepositInfoRow>
+            <TransferDetails
+              isLoading={isLoading}
+              depositData={data?.depositData}
+              fromChain={fromChain}
+            />
+          </>
+        )}
       </div>
     );
   }
@@ -473,5 +539,19 @@ export const NetworkFeeRow: FunctionComponent<{
         )}
       </p>
     </QuoteDetailRow>
+  );
+};
+
+const RemainingTime = ({ unix }: { unix: number }) => {
+  const { t } = useTranslation();
+  const { humanizedRemainingTime } = useHumanizedRemainingTime({ unix });
+
+  if (!humanizedRemainingTime) return null;
+
+  return (
+    <p className="text-osmoverse-100">
+      {humanizedRemainingTime?.value}{" "}
+      {t(humanizedRemainingTime?.unitTranslationKey)}
+    </p>
   );
 };

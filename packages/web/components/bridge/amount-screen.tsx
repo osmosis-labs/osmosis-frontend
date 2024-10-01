@@ -43,6 +43,7 @@ import {
   useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useDisclosure,
+  useFeatureFlags,
   useTranslation,
 } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
@@ -154,6 +155,7 @@ export const AmountScreen = observer(
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
 
     const {
       selectedQuote,
@@ -777,6 +779,7 @@ export const AmountScreen = observer(
     );
 
     if (
+      featureFlags.bridgeDepositAddress &&
       !quote.enabled &&
       supportedDepositAddressBridges.length > 0 &&
       direction === "deposit" &&
