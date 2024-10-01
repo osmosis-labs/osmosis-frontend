@@ -784,7 +784,10 @@ export const AmountScreen = observer(
       supportedDepositAddressBridges.length > 0 &&
       direction === "deposit" &&
       canonicalAsset &&
-      fromChain
+      fromChain &&
+      toChain &&
+      fromAsset &&
+      toAsset
     ) {
       return (
         <DepositAddressScreen
@@ -792,6 +795,9 @@ export const AmountScreen = observer(
           direction={direction}
           chainSelection={chainSelection}
           fromChain={fromChain}
+          toChain={toChain}
+          fromAsset={fromAsset}
+          toAsset={toAsset}
           bridge={supportedDepositAddressBridges[0]} // For now, only one bridge provider is supported
         />
       );

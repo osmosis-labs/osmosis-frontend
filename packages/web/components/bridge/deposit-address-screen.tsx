@@ -4,6 +4,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { DecUtils } from "@keplr-wallet/unit";
+import { BridgeAsset } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -42,6 +43,9 @@ interface DepositAddressScreenProps {
   canonicalAsset: MinimalAsset;
   chainSelection: React.ReactNode;
   fromChain: BridgeChainWithDisplayInfo;
+  toChain: BridgeChainWithDisplayInfo;
+  fromAsset: BridgeAsset;
+  toAsset: BridgeAsset;
   bridge: DepositAddressBridge;
 }
 
@@ -52,6 +56,9 @@ export const DepositAddressScreen = observer(
     chainSelection,
     fromChain,
     bridge,
+    toChain,
+    fromAsset,
+    toAsset,
   }: DepositAddressScreenProps) => {
     const { accountStore } = useStore();
 
@@ -68,6 +75,9 @@ export const DepositAddressScreen = observer(
         {
           bridge,
           fromChain,
+          toChain,
+          fromAsset,
+          toAsset,
           toAddress: osmosisAddress!,
         },
         {

@@ -253,6 +253,18 @@ export const getDepositAddressParamsSchema = z.object({
    */
   fromChain: bridgeChainSchema,
   /**
+   * The destination chain information.
+   */
+  toChain: bridgeChainSchema,
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: bridgeAssetSchema,
+  /**
+   * The asset on the destination chain.
+   */
+  toAsset: bridgeAssetSchema,
+  /**
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: z.string(),
