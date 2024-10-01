@@ -128,68 +128,18 @@
     "secondaryCta": "30秒学会"
   },
   "assets": {
-    "bondedAssets": "已绑定资产",
     "historyTable": {
       "colums": {
-        "amount": "数量",
         "deposit": "存入",
-        "status": "状态",
-        "transactionHash": "交易哈希",
-        "type": "类型",
         "withdraw": "提币"
-      },
-      "errors": {
-        "insufficientFee": "费用不足"
-      },
-      "failed": "失败的",
-      "failedWithReason": "失败的: {reason}",
-      "pending": "处理中",
-      "refunded": "退款",
-      "success": "成功",
-      "title": "转账记录",
-      "connectionError": "连接错误"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "添加",
-      "buttonEdit": "编辑",
-      "buttonEnter": "确定",
-      "channelCongestedDeposit": "存入 (频道争抢)",
-      "channelCongestedWithdraw": "提币 (频道争抢)",
-      "checkboxVerify": "我确认没有发送到一个交易所的地址.",
-      "estimatedTime": "预估时间",
-      "selectAmount": "选择数量",
-      "titleDeposit": "存入 {coinDenom}",
-      "titleWithdraw": "提币 {coinDenom}",
-      "waitTime": "20 秒",
-      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
-      "provider": "提供者"
-    },
-    "myPools": "我的资金池",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "已绑定",
-      "FeeAPY": "费用 APY",
-      "liquidity": "我的流动性"
-    },
-    "stakedAssets": "质押 OSMO",
     "table": {
       "columns": {
-        "assetChain": "资产 / 链",
-        "balance": "余额",
-        "deposit": "存入",
-        "transfer": "转账",
-        "withdraw": "提币"
+        "balance": "余额"
       },
       "depositButton": "存入",
-      "hideZero": "隐藏0余额",
-      "hideBalances": "隐藏余额",
       "search": "搜索",
-      "sort": {
-        "balance": "余额",
-        "network": "网络",
-        "symbol": "符号"
-      },
-      "title": "所有资产",
       "withdrawButton": "提币",
       "activate": "启用",
       "marketCap": "市值",
@@ -199,27 +149,19 @@
       "lastWeek": "过去 7 天",
       "asset": "资产"
     },
-    "totalAssets": "总资产",
     "totalBalance": "总余额",
     "transfer": {
-      "availableMobile": "可用",
-      "availableOn": "在 {network} 网络上可用",
       "approving": "正在批准...",
       "approveInWallet": "在钱包中批准",
       "errors": {
         "seeRequest": "在{walletName}中查看请求"
       },
-      "from": "从",
       "loading": "加载中",
       "to": "至",
-      "transferFee": "转账费",
-      "expectedOutput": "预期输出",
-      "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
       "priceImpact": "价格影响",
       "sending": "正在发送...",
       "transferAnyway": "无论如何转移"
     },
-    "unbondedAssets": "未绑定资产",
     "activateUnverifiedAssetsModal": {
       "activate": "激活未验证资产",
       "description": "是一个未经验证的令牌。您想激活它吗？交易前一定要彻底研究。",
@@ -593,9 +535,6 @@
       "token": "代币",
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
       "weightedPool": "加权池"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "我的流动性",
@@ -983,14 +922,6 @@
       "title": "渗透应用商店",
       "description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就"
     },
-    "assets": {
-      "title": "渗透资产",
-      "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
-    },
-    "portfolio": {
-      "title": "渗透产品组合",
-      "description": "在 Osmosis 上查看您的资产 - 领先的去中心化 Cosmos 交易所"
-    },
     "disclaimer": {
       "title": "渗透免责声明",
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "渗透更新！",
     "seeWhatsNew": "看看有什么新鲜事"
   },
-  "previewAssetsEnabled": "启用预览资产",
-  "previewAssetsDisabled": "预览资源已禁用",
-  "previewAssetsEnabledForSession": "预览为此会话启用的资产。要禁用打开新选项卡，或附加“show_preview_assets=false”。",
   "earnPage": {
     "title": "赚",
     "positions": "职位",
@@ -1135,13 +1063,6 @@
     "hour": "小时",
     "hours": "小时"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}存款不稳定",
-    "titleWithdraw": "{coinDenom}提款不稳定",
-    "description": "由于不确定的技术问题，Osmosis 和{prettyChainName}之间的转账可能会出现严重延迟或交易失败。继续需要您自担风险。",
-    "buttonContinue": "无论如何继续",
-    "buttonCancel": "取消"
-  },
   "transactions": {
     "noRecent": "最近没有转会",
     "recentShownHere": "此设备（某些网络之间）过去 3 天的存款和取款将显示在这里。",
@@ -1162,7 +1083,6 @@
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
     "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。",
-    "viewAll": "查看全部",
     "history": "历史",
     "orders": "命令"
   },

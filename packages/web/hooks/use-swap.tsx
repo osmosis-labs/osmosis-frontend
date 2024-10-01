@@ -981,7 +981,7 @@ export function useSwapAssets({
   };
 }
 
-export function useSwapAmountInput({
+function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
@@ -1097,7 +1097,7 @@ export function useSwapAmountInput({
  * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
  */
-export function useToFromDenoms({
+function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
