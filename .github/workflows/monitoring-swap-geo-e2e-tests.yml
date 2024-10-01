@@ -177,7 +177,6 @@ jobs:
   fe-swap-sg-tests:
     timeout-minutes: 15
     name: prod-fe-swap-sg-tests
-    needs: fe-swap-eu-tests
     runs-on: macos-latest
     steps:
       - name: Echo IP
