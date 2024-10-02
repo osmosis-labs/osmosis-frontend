@@ -35,8 +35,11 @@ export class NomicBridgeProvider implements BridgeProvider {
       .flatMap(({ assets }) => assets)
       .find(
         ({ coinMinimalDenom }) =>
-          coinMinimalDenom ===
-          "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
+          this.ctx.env === "mainnet"
+            ? coinMinimalDenom ===
+              "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
+            : coinMinimalDenom ===
+              "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D" // Testnet nBTC
       );
 
     if (!nomicBtc) {
@@ -48,7 +51,7 @@ export class NomicBridgeProvider implements BridgeProvider {
     );
 
     if (!transferMethod) {
-      throw new Error("Nomic Bitcoin asset not found in asset list.");
+      throw new Error("IBC transfer method not found for Nomic Bitcoin asset.");
     }
 
     if (fromChain.chainId !== "bitcoin") {
@@ -73,6 +76,14 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     if (depositInfo.code === 2) {
       throw new Error("Failed to generate deposit address. Bridge at capacity");
+    }
+
+    if (depositInfo.code !== 0) {
+      throw new Error(
+        "Failed to generate deposit address. Unknown error code: " +
+          // @ts-expect-error
+          depositInfo.code
+      );
     }
 
     return {
