@@ -128,68 +128,18 @@
     "secondaryCta": "Apprendre en 30 secondes"
   },
   "assets": {
-    "bondedAssets": "Actifs liés",
     "historyTable": {
       "colums": {
-        "amount": "Montant",
         "deposit": "Déposer",
-        "status": "Statut",
-        "transactionHash": "Hash Transaction",
-        "type": "Type",
         "withdraw": "Retirer"
-      },
-      "errors": {
-        "insufficientFee": "Frais insuffisants"
-      },
-      "failed": "Échoué",
-      "failedWithReason": "Échoué: {reason}",
-      "pending": "En cours",
-      "refunded": "Rembourser",
-      "success": "Succès",
-      "title": "Historique des transferts",
-      "connectionError": "Erreur de connexion"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Ajouter",
-      "buttonEdit": "Éditer",
-      "buttonEnter": "Entrer",
-      "channelCongestedDeposit": "Déposer (Canal conjecturé)",
-      "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
-      "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
-      "estimatedTime": "Temps estimé",
-      "selectAmount": "Sélectionnez le montant",
-      "titleDeposit": "Déposer {coinDenom}",
-      "titleWithdraw": "Retirer {coinDenom}",
-      "waitTime": "20 secondes",
-      "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds",
-      "provider": "Fournisseur"
-    },
-    "myPools": "Mes Bassins",
-    "poolCards": {
-      "APR": "TAP",
-      "bonded": "Liés",
-      "FeeAPY": "Frais PAR",
-      "liquidity": "Ma liquidité"
-    },
-    "stakedAssets": "OSMO cautionné",
     "table": {
       "columns": {
-        "assetChain": "Actif / Chaine",
-        "balance": "Solde",
-        "deposit": "Déposer",
-        "transfer": "Transfert",
-        "withdraw": "Retirer"
+        "balance": "Solde"
       },
       "depositButton": "Déposer",
-      "hideZero": "Cacher les fonds à zéro",
-      "hideBalances": "Soldes masqués",
       "search": "Chercher",
-      "sort": {
-        "balance": "Solde",
-        "network": "Réseau",
-        "symbol": "Devise"
-      },
-      "title": "Tous les actifs",
       "withdrawButton": "Retirer",
       "activate": "Activer",
       "marketCap": "Capitalisation boursière",
@@ -199,27 +149,19 @@
       "lastWeek": "Les 7 derniers jours",
       "asset": "Actif"
     },
-    "totalAssets": "Total des actifs",
     "totalBalance": "Solde total",
     "transfer": {
-      "availableMobile": "Disponible",
-      "availableOn": "Disponible sur {network}",
       "approving": "Approuvant...",
       "approveInWallet": "Approuver dans le portefeuille",
       "errors": {
         "seeRequest": "Voir la demande dans {walletName}"
       },
-      "from": "De",
       "loading": "Chargement",
       "to": "À",
-      "transferFee": "Frais de transfert",
-      "expectedOutput": "Production attendue",
-      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
       "priceImpact": "Impact sur les prix",
       "sending": "Envoi en cours...",
       "transferAnyway": "Transférer quand même"
     },
-    "unbondedAssets": "Actifs non liés",
     "activateUnverifiedAssetsModal": {
       "activate": "Activer les actifs non vérifiés",
       "description": "est un jeton non vérifié. Souhaitez-vous l'activer ? Assurez-vous de faire des recherches approfondies avant de négocier.",
@@ -593,9 +535,6 @@
       "token": "Jeton",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "weightedPool": "Piscine pondérée"
-    },
-    "externalIncentivized": {
-      "TVL": "VTB"
     },
     "TVL": "TVL",
     "myLiquidity": "Ma liquidité",
@@ -983,14 +922,6 @@
       "title": "App Store Osmose",
       "description": "Le commerce n'est que la première étape. Mettez vos actifs au travail et accomplissez bien plus avec l'effet de levier, les coffres-forts et bien plus encore"
     },
-    "assets": {
-      "title": "Actifs d'osmose",
-      "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
-    },
-    "portfolio": {
-      "title": "Portefeuille Osmose",
-      "description": "Consultez vos actifs sur Osmosis - le principal échange décentralisé Cosmos"
-    },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",
       "description": "Lisez la clause de non-responsabilité et la politique de confidentialité d'Osmosis - le principal échange Cosmos décentralisé"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "Mises à jour sur l'osmose !",
     "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
-  "previewAssetsEnabled": "Aperçu des éléments activé",
-  "previewAssetsDisabled": "Aperçu des éléments désactivé",
-  "previewAssetsEnabledForSession": "Aperçu des ressources activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_preview_assets=false ».",
   "earnPage": {
     "title": "Gagner",
     "positions": "Postes",
@@ -1135,13 +1063,6 @@
     "hour": "heure",
     "hours": "heures"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} dépôts instables",
-    "titleWithdraw": "{coinDenom} retraits instables",
-    "description": "En raison de problèmes techniques incertains, les transferts entre Osmosis et {prettyChainName} peuvent subir des retards importants ou un échec de transaction. Procédez à vos propres risques.",
-    "buttonContinue": "Continuer quand même",
-    "buttonCancel": "Annuler"
-  },
   "transactions": {
     "noRecent": "Aucun transfert récent",
     "recentShownHere": "Les dépôts et retraits des 3 derniers jours sur cet appareil (entre certains réseaux) apparaîtront ici.",
@@ -1162,7 +1083,6 @@
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
     "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
-    "viewAll": "Voir tout",
     "history": "Histoire",
     "orders": "Ordres"
   },
