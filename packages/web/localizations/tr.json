@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al",
-  "payAtMost": "En fazla öde"
+  "payAtMost": "En fazla öde",
+  "alloyedAssets": {
+    "remindMeLater": "Daha sonra hatırlat bana",
+    "dismiss": "Azletmek",
+    "convert": "Dönüştürmek"
+  }
 }

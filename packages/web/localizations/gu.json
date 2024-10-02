@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "વેપાર ફી",
   "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો",
-  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો"
+  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો",
+  "alloyedAssets": {
+    "remindMeLater": "મને પછીથી યાદ કરાવો",
+    "dismiss": "કાઢી નાખો",
+    "convert": "કન્વર્ટ કરો"
+  }
 }

@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "Handelsgebühr",
   "receiveAtLeast": "Erhalten Sie mindestens",
-  "payAtMost": "Bezahlen Sie höchstens"
+  "payAtMost": "Bezahlen Sie höchstens",
+  "alloyedAssets": {
+    "remindMeLater": "Später erinnern",
+    "dismiss": "Zurückweisen",
+    "convert": "Konvertieren"
+  }
 }

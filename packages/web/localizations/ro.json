@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin",
-  "payAtMost": "Plătește cel mult"
+  "payAtMost": "Plătește cel mult",
+  "alloyedAssets": {
+    "remindMeLater": "Amintește-mi mai târziu",
+    "dismiss": "Respingeți",
+    "convert": "Convertit"
+  }
 }

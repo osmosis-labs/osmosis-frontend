@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "Торговый сбор",
   "receiveAtLeast": "Получите по крайней мере",
-  "payAtMost": "Платить максимум"
+  "payAtMost": "Платить максимум",
+  "alloyedAssets": {
+    "remindMeLater": "Напомнить мне позже",
+    "dismiss": "Увольнять",
+    "convert": "Конвертировать"
+  }
 }

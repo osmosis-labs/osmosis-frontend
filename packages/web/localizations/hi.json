@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "व्यापार शुल्क",
   "receiveAtLeast": "कम से कम प्राप्त करें",
-  "payAtMost": "अधिकतम भुगतान करें"
+  "payAtMost": "अधिकतम भुगतान करें",
+  "alloyedAssets": {
+    "remindMeLater": "बाद में याद दिलाना",
+    "dismiss": "नकार देना",
+    "convert": "बदलना"
+  }
 }

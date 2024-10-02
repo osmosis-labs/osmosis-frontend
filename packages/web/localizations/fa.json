@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "کارمزد تجارت",
   "receiveAtLeast": "حداقل دریافت کنید",
-  "payAtMost": "حداکثر پرداخت کنید"
+  "payAtMost": "حداکثر پرداخت کنید",
+  "alloyedAssets": {
+    "remindMeLater": "بعدا به من یادآوری کن",
+    "dismiss": "رد کردن",
+    "convert": "تبدیل کنید"
+  }
 }

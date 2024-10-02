@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "交易费",
   "receiveAtLeast": "至少收到",
-  "payAtMost": "最多支付"
+  "payAtMost": "最多支付",
+  "alloyedAssets": {
+    "remindMeLater": "稍后提醒我",
+    "dismiss": "解雇",
+    "convert": "转变"
+  }
 }

@@ -1235,5 +1235,10 @@
   },
   "tradeFee": "Taxa de negociação",
   "receiveAtLeast": "Receba pelo menos",
-  "payAtMost": "Pague no máximo"
+  "payAtMost": "Pague no máximo",
+  "alloyedAssets": {
+    "remindMeLater": "Lembre-me mais tarde",
+    "dismiss": "Liberar",
+    "convert": "Converter"
+  }
 }

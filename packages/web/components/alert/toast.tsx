@@ -208,15 +208,7 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   </div>
 );
 
-export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
-  titleTranslationKey,
-  captionTranslationKey,
-  captionElement,
-}) => {
-  console.log("titleTranslationKey:", titleTranslationKey);
-  console.log("captionTranslationKey:", captionTranslationKey);
-  console.log("captionElement:", captionElement);
-
+export const AlloyedAssetsToast = () => {
   const onDismiss = () => {
     console.log("Dismiss clicked");
   };
@@ -261,14 +253,15 @@ export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-3">
-        <h6 className="text-h6 text-white-full">Variants Detected</h6>
+        <h6 className="text-h6 text-white-full">{t("alloyedAssets.title")}</h6>
         <p className="text-body2 text-osmoverse-300">
-          Say goodbye to all those confusing asset variants. Say hello to a more
-          seamless experience on Osmosis.
+          {t("alloyedAssets.caption")}
         </p>
         <div className="my-1 flex items-center gap-2">
           <Checkbox />
-          <span className="text-body2 text-osmoverse-300">Remind me later</span>
+          <span className="text-body2 text-osmoverse-300">
+            {t("alloyedAssets.remindMeLater")}
+          </span>
         </div>
         <div>
           <div className="flex justify-between gap-3">
@@ -277,10 +270,10 @@ export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
               onClick={onDismiss}
               className="!border !border-osmoverse-alpha-700 !text-wosmongton-200"
             >
-              Dismiss
+              {t("alloyedAssets.dismiss")}
             </Button>
             <Button className="text-white-full" onClick={onConvert}>
-              Convert
+              {t("alloyedAssets.convert")}
             </Button>
           </div>
         </div>
