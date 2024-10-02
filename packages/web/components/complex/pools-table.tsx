@@ -36,6 +36,8 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
+const FILTERABLE_IDS = ["2159"];
+
 export type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
@@ -176,10 +178,14 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     }
   );
 
-  const poolsData = useMemo(
-    () => poolsPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [poolsPagesData]
-  );
+  const poolsData = useMemo(() => {
+    const allItems =
+      poolsPagesData?.pages.flatMap((page) => {
+        return page?.items.filter((item) => !FILTERABLE_IDS.includes(item.id)); // Filter out ids in FILTERABLE_IDS
+      }) ?? [];
+
+    return allItems;
+  }, [poolsPagesData]);
 
   // If more than half of the pools have volume and fees data, we should format their respective columns.
   // Otherwise, we should not display them.
