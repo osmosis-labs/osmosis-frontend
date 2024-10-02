@@ -217,40 +217,71 @@ export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
   console.log("captionTranslationKey:", captionTranslationKey);
   console.log("captionElement:", captionElement);
 
+  const onDismiss = () => {
+    console.log("Dismiss clicked");
+  };
+
+  const onConvert = () => {
+    console.log("Convert clicked");
+  };
+
   return (
-    <div className="w-full flex-col items-center">
+    <div className="w-full flex-col items-center pt-3 pl-0.5 pb-1">
       <div className="flex w-full items-center justify-between">
         <div className="flex -space-x-2">
-          <Icon id="usdc-static" height={32} width={32} className="z-10" />
-          <Icon id="bitcoin-static" height={32} width={32} className="z-20" />
-          <Icon id="eth-static" height={32} width={32} className="z-30" />
+          <Icon
+            id="usdc-variant-static"
+            height={32}
+            width={32}
+            className="z-10"
+          />
+          <Icon
+            id="btc-variant-static"
+            height={32}
+            width={32}
+            className="z-20"
+          />
+          <Icon
+            id="eth-variant-static"
+            height={32}
+            width={32}
+            className="z-30"
+          />
         </div>
         <Icon
-          id="arrow-right"
-          height={24}
-          width={24}
+          id="arrow"
+          height={32}
+          width={32}
           className="text-osmoverse-300"
         />
         <div className="flex -space-x-2">
           <Icon id="usdc-static" height={32} width={32} className="z-10" />
-          <Icon id="bitcoin-static" height={32} width={32} className="z-20" />
+          <Icon id="btc-static" height={32} width={32} className="z-20" />
           <Icon id="eth-static" height={32} width={32} className="z-30" />
         </div>
       </div>
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="mt-6 flex flex-col gap-3">
         <h6 className="text-h6 text-white-full">Variants Detected</h6>
         <p className="text-body2 text-osmoverse-300">
           Say goodbye to all those confusing asset variants. Say hello to a more
           seamless experience on Osmosis.
         </p>
-        <div className="flex items-center gap-2">
+        <div className="my-1 flex items-center gap-2">
           <Checkbox />
           <span className="text-body2 text-osmoverse-300">Remind me later</span>
         </div>
         <div>
           <div className="flex justify-between gap-3">
-            <Button mode="secondary">Dismiss</Button>
-            <Button>Convert</Button>
+            <Button
+              mode="secondary"
+              onClick={onDismiss}
+              className="!border !border-osmoverse-alpha-700 !text-wosmongton-200"
+            >
+              Dismiss
+            </Button>
+            <Button className="text-white-full" onClick={onConvert}>
+              Convert
+            </Button>
           </div>
         </div>
       </div>
