@@ -15,7 +15,11 @@ import {
   getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
-import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  UserOsmoAddressSchema,
+} from "@osmosis-labs/trpc";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
@@ -703,6 +707,30 @@ export const bridgeTransferRouter = createTRPCRouter({
               : undefined,
           },
         },
+      };
+    }),
+
+  getNomicPendingDeposits: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+        }
+      );
+
+      const nomicBridgeProvider = bridgeProviders.bridges.Nomic;
+
+      const pendingDeposits = await nomicBridgeProvider.getPendingDeposits({
+        address: input.userOsmoAddress,
+      });
+
+      return {
+        pendingDeposits,
       };
     }),
 });

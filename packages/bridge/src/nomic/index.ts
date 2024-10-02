@@ -1,7 +1,7 @@
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { IbcTransferMethod } from "@osmosis-labs/types";
-import { isCosmosAddressValid } from "@osmosis-labs/utils";
-import { generateDepositAddressIbc } from "nomic-bitcoin";
+import { isCosmosAddressValid, timeout } from "@osmosis-labs/utils";
+import { generateDepositAddressIbc, getPendingDeposits } from "nomic-bitcoin";
 
 import {
   BridgeAsset,
@@ -21,7 +21,15 @@ export class NomicBridgeProvider implements BridgeProvider {
   static readonly ID = "Nomic";
   readonly providerName = NomicBridgeProvider.ID;
 
-  constructor(protected readonly ctx: BridgeProviderContext) {}
+  relayers: string[];
+
+  constructor(protected readonly ctx: BridgeProviderContext) {
+    this.relayers =
+      ["https://testnet-relayer.nomic.io:8443"] ??
+      (this.ctx.env === "testnet"
+        ? ["https://testnet-relayer.nomic.io:8443"]
+        : ["https://relayer.nomic.mappum.io:8443"]);
+  }
 
   async getDepositAddress({
     fromChain,
@@ -56,12 +64,10 @@ export class NomicBridgeProvider implements BridgeProvider {
     }
 
     const depositInfo = await generateDepositAddressIbc({
-      relayers:
-        this.ctx.env === "testnet"
-          ? ["https://testnet-relayer.nomic.io:8443"]
-          : ["https://relayer.nomic.mappum.io:8443"],
-      channel: transferMethod.counterparty.channelId, // IBC channel ID on Nomic
-      bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
+      relayers: this.relayers,
+      channel: "channel-2" ?? transferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork:
+        "testnet" ?? (this.ctx.env === "testnet" ? "testnet" : "bitcoin"),
       receiver: toAddress,
     });
 
@@ -157,5 +163,23 @@ export class NomicBridgeProvider implements BridgeProvider {
       urlProviderName: "Nomic",
       url,
     };
+  }
+
+  async getPendingDeposits({ address }: { address: string }) {
+    try {
+      const pendingDeposits = await timeout(
+        () => getPendingDeposits(this.relayers, address),
+        10000
+      )();
+
+      return pendingDeposits.map((deposit) => ({
+        transactionId: deposit.txid,
+        amount: deposit.amount,
+        confirmations: deposit.confirmations,
+      }));
+    } catch (error) {
+      console.error("Error getting pending Nomic deposits:", error);
+      return [];
+    }
   }
 }

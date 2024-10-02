@@ -87,6 +87,22 @@ export const DepositAddressScreen = observer(
         }
       );
 
+    const { data: pendingDepositsData, isLoading: isPendingDepositsLoading } =
+      api.bridgeTransfer.getNomicPendingDeposits.useQuery(
+        {
+          userOsmoAddress: osmosisAddress!,
+        },
+        {
+          enabled: !!osmosisAddress && bridge === "Nomic",
+          refetchInterval: 10000,
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
+        }
+      );
+
     const { hasCopied, onCopy } = useClipboard(
       data?.depositData?.depositAddress ?? "",
       3000
@@ -328,6 +344,22 @@ export const DepositAddressScreen = observer(
             />
           </>
         )}
+
+        <div className="flex w-full flex-col gap-3 py-3">
+          <h1 className="body1">Pending Deposits</h1>
+          {isPendingDepositsLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              {pendingDepositsData?.pendingDeposits?.map((deposit) => (
+                <div key={deposit.transactionId}>
+                  <p>{deposit.amount}</p>
+                  <p>{deposit.confirmations}</p>
+                </div>
+              ))}
+            </>
+          )}
+        </div>
       </div>
     );
   }
