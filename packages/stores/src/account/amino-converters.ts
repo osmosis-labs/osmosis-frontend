@@ -3,6 +3,10 @@ import type {
   MsgWithdrawPosition,
   MsgWithdrawPositionAmino,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/v1beta1/tx";
+import type {
+  MsgBeginUnlocking,
+  MsgBeginUnlockingAmino,
+} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import type { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 
@@ -86,6 +90,19 @@ export async function getAminoConverters() {
             message.liquidityAmount === ""
               ? undefined
               : message.liquidityAmount.replace(".", "");
+          return obj;
+        },
+      },
+      "/osmosis.lockup.MsgBeginUnlocking": {
+        ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
+        toAmino(message: MsgBeginUnlocking): MsgBeginUnlockingAmino {
+          const obj =
+            originalOsmosisAminoConverters[
+              "/osmosis.lockup.MsgBeginUnlocking"
+            ].toAmino(message);
+          if (obj.coins?.length === 0) {
+            delete obj.coins;
+          }
           return obj;
         },
       },
