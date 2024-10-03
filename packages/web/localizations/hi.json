@@ -128,68 +128,18 @@
     "secondaryCta": "30 सेकंड में जानें"
   },
   "assets": {
-    "bondedAssets": "बंधुआ",
     "historyTable": {
       "colums": {
-        "amount": "मात्रा",
         "deposit": "जमा",
-        "status": "स्थिति",
-        "transactionHash": "लेनदेन हैश",
-        "type": "प्रकार",
         "withdraw": "निकालना"
-      },
-      "errors": {
-        "insufficientFee": "अपर्याप्त शुल्क"
-      },
-      "failed": "असफल",
-      "failedWithReason": "विफल: {reason}",
-      "pending": "लंबित",
-      "refunded": "वापसी की गई है",
-      "success": "सफलता",
-      "title": "स्थानांतरण इतिहास",
-      "connectionError": "संपर्क त्रुटि"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "जोड़ना",
-      "buttonEdit": "संपादन करना",
-      "buttonEnter": "प्रवेश करना",
-      "channelCongestedDeposit": "जमा (चैनल भीड़भाड़)",
-      "channelCongestedWithdraw": "वापस लेना (चैनल भीड़भाड़ वाला)",
-      "checkboxVerify": "मैं सत्यापित करता हूं कि मैं विनिमय पते पर नहीं भेज रहा हूं।",
-      "estimatedTime": "अनुमानित समय",
-      "selectAmount": "राशि चुनें",
-      "titleDeposit": "जमा करें {coinDenom}",
-      "titleWithdraw": "{coinDenom} वापस लें",
-      "waitTime": "20 सेकंड",
-      "warningLossFunds": "चेतावनी: केंद्रीय विनिमय पते पर निकासी करने से धन की हानि होगी।",
-      "provider": "प्रदाता"
-    },
-    "myPools": "आपके तालाब",
-    "poolCards": {
-      "APR": "एपीआर",
-      "bonded": "बंधुआ",
-      "FeeAPY": "शुल्क एपीवाई",
-      "liquidity": "मेरी तरलता"
-    },
-    "stakedAssets": "स्टेक्ड OSMO",
     "table": {
       "columns": {
-        "assetChain": "संपत्ति/श्रृंखला",
-        "balance": "संतुलन",
-        "deposit": "जमा",
-        "transfer": "स्थानांतरण",
-        "withdraw": "निकालना"
+        "balance": "संतुलन"
       },
       "depositButton": "जमा",
-      "hideZero": "शून्य शेष छिपाएँ",
-      "hideBalances": "नकाबपोश तराजू",
       "search": "खोज",
-      "sort": {
-        "balance": "संतुलन",
-        "network": "नेटवर्क",
-        "symbol": "प्रतीक"
-      },
-      "title": "सभी संपत्तियां",
       "withdrawButton": "निकालना",
       "activate": "सक्रिय",
       "marketCap": "बाज़ार आकार",
@@ -199,27 +149,19 @@
       "lastWeek": "पिछले 7 दिन",
       "asset": "संपत्ति"
     },
-    "totalAssets": "कुल संपत्ति",
     "totalBalance": "कुल शेष",
     "transfer": {
-      "availableMobile": "उपलब्ध",
-      "availableOn": "{network} पर उपलब्ध है",
       "approving": "अनुमोदन...",
       "approveInWallet": "वॉलेट में स्वीकृति दें",
       "errors": {
         "seeRequest": "{walletName} में अनुरोध देखें"
       },
-      "from": "से",
       "loading": "लोड हो रहा है",
       "to": "को",
-      "transferFee": "हस्तांतरण शुल्क",
-      "expectedOutput": "अपेक्षित उत्पादन",
-      "expectedOutputInfo": "उपयोग किए गए प्रदाता के आधार पर, शुल्क, फिसलन और कीमत प्रभाव के अनुसार कम आउटपुट हो सकता है।",
       "priceImpact": "मूल्य प्रभाव",
       "sending": "भेजना...",
       "transferAnyway": "फिर भी स्थानांतरण"
     },
-    "unbondedAssets": "उपलब्ध",
     "activateUnverifiedAssetsModal": {
       "activate": "असत्यापित संपत्तियों को सक्रिय करें",
       "description": "एक असत्यापित टोकन है. क्या आप इसे सक्रिय करना चाहते हैं? ट्रेडिंग से पहले अच्छी तरह से शोध अवश्य कर लें।",
@@ -593,9 +535,6 @@
       "token": "टोकन",
       "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {POOL_CREATION_FEE} खर्च आएगा।",
       "weightedPool": "भारित पूल"
-    },
-    "externalIncentivized": {
-      "TVL": "टी वी लाइनों"
     },
     "TVL": "टी वी लाइनों",
     "myLiquidity": "मेरी तरलता",
@@ -983,14 +922,6 @@
       "title": "ऑस्मोसिस ऐप स्टोर",
       "description": "ट्रेडिंग सिर्फ पहला कदम है। अपनी संपत्तियों को काम में लगाएं और उत्तोलन, वॉल्ट और उससे भी आगे के साथ और भी बहुत कुछ हासिल करें"
     },
-    "assets": {
-      "title": "ऑस्मोसिस संपत्तियां",
-      "description": "अग्रणी विकेन्द्रीकृत कॉसमॉस एक्सचेंज - ऑस्मोसिस पर उपलब्ध सभी संपत्तियों को ब्राउज़ करें"
-    },
-    "portfolio": {
-      "title": "ऑस्मोसिस पोर्टफोलियो",
-      "description": "ऑस्मोसिस पर अपनी संपत्ति देखें - अग्रणी विकेन्द्रीकृत कॉसमॉस एक्सचेंज"
-    },
     "disclaimer": {
       "title": "परासरण अस्वीकरण",
       "description": "अग्रणी विकेन्द्रीकृत कॉसमॉस एक्सचेंज - ऑस्मोसिस के लिए अस्वीकरण और गोपनीयता नीति पढ़ें"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "ऑस्मोसिस अपडेट!",
     "seeWhatsNew": "देखें, क्या नया है"
   },
-  "previewAssetsEnabled": "संपत्तियों का पूर्वावलोकन सक्षम किया गया",
-  "previewAssetsDisabled": "संपत्तियों का पूर्वावलोकन अक्षम किया गया",
-  "previewAssetsEnabledForSession": "इस सत्र के लिए संपत्तियों का पूर्वावलोकन सक्षम किया गया। अक्षम करने के लिए एक नया टैब खोलें, या `show_preview_assets=false` जोड़ें।",
   "earnPage": {
     "title": "कमाना",
     "positions": "स्थितियां",
@@ -1135,13 +1063,6 @@
     "hour": "घंटा",
     "hours": "घंटे"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} जमा अस्थिर है",
-    "titleWithdraw": "{coinDenom} निकासी अस्थिर",
-    "description": "अनिश्चित तकनीकी समस्याओं के कारण, ऑस्मोसिस और {prettyChainName} बीच स्थानांतरण में महत्वपूर्ण देरी या लेनदेन विफलता का अनुभव हो सकता है। अपने जोख़िम पर आगे बढ़ें।",
-    "buttonContinue": "फिर भी जारी रखें",
-    "buttonCancel": "रद्द करना"
-  },
   "transactions": {
     "noRecent": "कोई हालिया स्थानांतरण नहीं",
     "recentShownHere": "इस डिवाइस पर पिछले 3 दिनों में की गई जमा और निकासी (कुछ नेटवर्कों के बीच) यहां दिखाई देंगी।",
@@ -1162,7 +1083,6 @@
     "transactionHash": "लेनदेन हैश",
     "viewOnExplorer": "एक्सप्लोरर पर देखें",
     "launchAlert": "वर्तमान में केवल व्यापार इतिहास प्रदर्शित किया जाता है। जल्द ही अधिक लेनदेन प्रकारों के लिए सहायता उपलब्ध होगी।",
-    "viewAll": "सभी को देखें",
     "history": "इतिहास",
     "orders": "आदेश"
   },

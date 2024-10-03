@@ -68,6 +68,8 @@ export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
 }> = observer(({ tableTopPadding = 0 }) => {
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
@@ -155,8 +157,6 @@ export const AssetBalancesTable: FunctionComponent<{
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
-
-  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const filteredAssetsData = useMemo(() => {
     return assetsData

@@ -128,68 +128,18 @@
     "secondaryCta": "Learn in 30 seconds"
   },
   "assets": {
-    "bondedAssets": "Bonded",
     "historyTable": {
       "colums": {
-        "amount": "Amount",
         "deposit": "Deposit",
-        "status": "Status",
-        "transactionHash": "Transaction Hash",
-        "type": "Type",
         "withdraw": "Withdraw"
-      },
-      "errors": {
-        "insufficientFee": "Insufficient Fee"
-      },
-      "failed": "Failed",
-      "failedWithReason": "Failed: {reason}",
-      "pending": "Pending",
-      "refunded": "Refunded",
-      "success": "Success",
-      "title": "Transfer History",
-      "connectionError": "Connection error"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Add",
-      "buttonEdit": "Edit",
-      "buttonEnter": "Enter",
-      "channelCongestedDeposit": "Deposit (Channel congested)",
-      "channelCongestedWithdraw": "Withdraw (Channel congested)",
-      "checkboxVerify": "I verify I am not sending to an exchange address.",
-      "estimatedTime": "Estimated Time",
-      "selectAmount": "Select Amount",
-      "titleDeposit": "Deposit {coinDenom}",
-      "titleWithdraw": "Withdraw {coinDenom}",
-      "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
-      "provider": "Provider"
-    },
-    "myPools": "Your Pools",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Bonded",
-      "FeeAPY": "Fee APY",
-      "liquidity": "My Liquidity"
-    },
-    "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
-        "assetChain": "Asset / Chain",
-        "balance": "Balance",
-        "deposit": "Deposit",
-        "transfer": "Transfer",
-        "withdraw": "Withdraw"
+        "balance": "Balance"
       },
       "depositButton": "Deposit",
-      "hideZero": "Hide zero balances",
-      "hideBalances": "Masked balances",
       "search": "Search",
-      "sort": {
-        "balance": "Balance",
-        "network": "Network",
-        "symbol": "Symbol"
-      },
-      "title": "All Assets",
       "withdrawButton": "Withdraw",
       "activate": "Activate",
       "marketCap": "Market cap",
@@ -199,27 +149,19 @@
       "lastWeek": "Last 7 days",
       "asset": "Asset"
     },
-    "totalAssets": "Total assets",
     "totalBalance": "Total balance",
     "transfer": {
-      "availableMobile": "Available",
-      "availableOn": "Available on {network}",
       "approving": "Approving...",
       "approveInWallet": "Approve in wallet",
       "errors": {
         "seeRequest": "See request in {walletName}"
       },
-      "from": "From",
       "loading": "Loading",
       "to": "To",
-      "transferFee": "Transfer Fee",
-      "expectedOutput": "Expected Output",
-      "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact",
       "sending": "Sending...",
       "transferAnyway": "Transfer Anyway"
     },
-    "unbondedAssets": "Available",
     "activateUnverifiedAssetsModal": {
       "activate": "Activate unverified assets",
       "description": "is an unverified token. Do you wish to activate it? Be sure to research thoroughly before trading.",
@@ -593,9 +535,6 @@
       "token": "Token",
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
       "weightedPool": "Weighted pool"
-    },
-    "externalIncentivized": {
-      "TVL": "TVL"
     },
     "TVL": "TVL",
     "myLiquidity": "My Liquidity",
@@ -983,14 +922,6 @@
       "title": "Osmosis App Store",
       "description": "Trading is just the first step. Put your assets to work and accomplish so much more with leverage, vaults, and beyond"
     },
-    "assets": {
-      "title": "Osmosis Assets",
-      "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
-    },
-    "portfolio": {
-      "title": "Osmosis Portfolio",
-      "description": "View your assets on Osmosis - the leading decentralized Cosmos exchange"
-    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "Osmosis updates!",
     "seeWhatsNew": "See what's new"
   },
-  "previewAssetsEnabled": "Preview assets enabled",
-  "previewAssetsDisabled": "Preview assets disabled",
-  "previewAssetsEnabledForSession": "Preview assets enabled for this session. To disable open a new tab, or append `show_preview_assets=false`.",
   "earnPage": {
     "title": "Earn",
     "positions": "Positions",
@@ -1135,13 +1063,6 @@
     "hour": "hour",
     "hours": "hours"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} deposits unstable",
-    "titleWithdraw": "{coinDenom} withdrawals unstable",
-    "description": "Due to uncertain technical issues, transfers between Osmosis and {prettyChainName} may experience significant delays or transaction failure. Proceed at your own risk.",
-    "buttonContinue": "Continue Anyway",
-    "buttonCancel": "Cancel"
-  },
   "transactions": {
     "noRecent": "No recent transactions",
     "recentShownHere": "Recent swaps will appear here.",
@@ -1162,7 +1083,6 @@
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
-    "viewAll": "View all",
     "history": "History",
     "orders": "Orders"
   },

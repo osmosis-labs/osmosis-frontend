@@ -17,15 +17,13 @@ import {
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
-} from "@osmosis-labs/stores";
-import {
-  makeIndexedKVStore,
-  makeLocalStorageKVStore,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
@@ -45,7 +43,6 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { ObservableAssets } from "~/stores/assets";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -80,8 +77,6 @@ export class RootStore {
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly transferHistoryStore: TransferHistoryStore;
-
-  public readonly assetsStore: ObservableAssets;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -215,16 +210,6 @@ export class RootStore {
         queriesStore: this.queriesStore,
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.assetsStore = new ObservableAssets(
-      assets,
-      this.chainStore,
-      this.accountStore,
-      this.queriesStore,
-      this.priceStore,
-      this.chainStore.osmosis.chainId,
-      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(

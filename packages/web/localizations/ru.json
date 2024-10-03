@@ -128,68 +128,18 @@
     "secondaryCta": "Научитесь за 30 секунд"
   },
   "assets": {
-    "bondedAssets": "Связанный",
     "historyTable": {
       "colums": {
-        "amount": "Количество",
         "deposit": "Депозит",
-        "status": "Положение дел",
-        "transactionHash": "Хэш транзакции",
-        "type": "Тип",
         "withdraw": "Отзывать"
-      },
-      "errors": {
-        "insufficientFee": "Недостаточная комиссия"
-      },
-      "failed": "Неуспешный",
-      "failedWithReason": "Ошибка: {reason}",
-      "pending": "В ожидании",
-      "refunded": "Возвращено",
-      "success": "Успех",
-      "title": "История трансферов",
-      "connectionError": "Ошибка подключения"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Добавлять",
-      "buttonEdit": "Редактировать",
-      "buttonEnter": "Входить",
-      "channelCongestedDeposit": "Депозит (канал перегружен)",
-      "channelCongestedWithdraw": "Вывод (канал перегружен)",
-      "checkboxVerify": "Я подтверждаю, что не отправляю деньги на адрес обмена.",
-      "estimatedTime": "Расчетное время",
-      "selectAmount": "Выберите сумму",
-      "titleDeposit": "Депозит {coinDenom}",
-      "titleWithdraw": "Вывести {coinDenom}",
-      "waitTime": "20 секунд",
-      "warningLossFunds": "Предупреждение: вывод средств на центральный адрес биржи приведет к потере средств.",
-      "provider": "Поставщик"
-    },
-    "myPools": "Ваши бассейны",
-    "poolCards": {
-      "APR": "АПРЕЛЬ",
-      "bonded": "Связанный",
-      "FeeAPY": "Комиссия APY",
-      "liquidity": "Моя ликвидность"
-    },
-    "stakedAssets": "Ставка ОСМО",
     "table": {
       "columns": {
-        "assetChain": "Актив / Цепочка",
-        "balance": "Баланс",
-        "deposit": "Депозит",
-        "transfer": "Передача",
-        "withdraw": "Отзывать"
+        "balance": "Баланс"
       },
       "depositButton": "Депозит",
-      "hideZero": "Скрыть нулевой баланс",
-      "hideBalances": "Маскированные балансы",
       "search": "Поиск",
-      "sort": {
-        "balance": "Баланс",
-        "network": "Сеть",
-        "symbol": "Символ"
-      },
-      "title": "Все активы",
       "withdrawButton": "Отзывать",
       "activate": "Активировать",
       "marketCap": "Рыночная капитализация",
@@ -199,27 +149,19 @@
       "lastWeek": "Последние 7 дней",
       "asset": "Объект"
     },
-    "totalAssets": "Всего активов",
     "totalBalance": "Итоговый баланс",
     "transfer": {
-      "availableMobile": "Доступный",
-      "availableOn": "Доступно в {network}",
       "approving": "Одобрение...",
       "approveInWallet": "Одобрить в кошельке",
       "errors": {
         "seeRequest": "См. запрос в {walletName}"
       },
-      "from": "От",
       "loading": "Загрузка",
       "to": "К",
-      "transferFee": "Комиссия за перевод",
-      "expectedOutput": "Ожидаемый результат",
-      "expectedOutputInfo": "В зависимости от используемого поставщика производительность может быть ниже в зависимости от комиссий, проскальзывания и влияния на цену.",
       "priceImpact": "Влияние на цену",
       "sending": "Отправка...",
       "transferAnyway": "Перенос в любом случае"
     },
-    "unbondedAssets": "Доступный",
     "activateUnverifiedAssetsModal": {
       "activate": "Активировать непроверенные активы",
       "description": "является непроверенным токеном. Вы хотите активировать его? Обязательно тщательно изучите рынок перед торговлей.",
@@ -593,9 +535,6 @@
       "token": "Токен",
       "undersandCost": "Я понимаю, что создание нового пула будет стоить {POOL_CREATION_FEE} .",
       "weightedPool": "Взвешенный пул"
-    },
-    "externalIncentivized": {
-      "TVL": "ТВЛ"
     },
     "TVL": "ТВЛ",
     "myLiquidity": "Моя ликвидность",
@@ -983,14 +922,6 @@
       "title": "Магазин приложений Осмос",
       "description": "Трейдинг – это только первый шаг. Заставьте свои активы работать и добивайтесь гораздо большего с помощью кредитного плеча, хранилищ и не только"
     },
-    "assets": {
-      "title": "Осмос Активы",
-      "description": "Просмотрите все активы, доступные на Osmosis — ведущей децентрализованной бирже Cosmos."
-    },
-    "portfolio": {
-      "title": "Портфолио осмоса",
-      "description": "Просматривайте свои активы на Osmosis — ведущей децентрализованной бирже Cosmos."
-    },
     "disclaimer": {
       "title": "Отказ от ответственности за осмос",
       "description": "Прочтите заявление об отказе от ответственности и политику конфиденциальности для Osmosis — ведущей децентрализованной биржи Cosmos."
@@ -1047,9 +978,6 @@
     "osmosisUpdates": "Обновления осмоса!",
     "seeWhatsNew": "Посмотрите, что нового"
   },
-  "previewAssetsEnabled": "Предварительный просмотр объектов включен",
-  "previewAssetsDisabled": "Предварительный просмотр объектов отключен",
-  "previewAssetsEnabledForSession": "Предварительный просмотр ресурсов включен для этого сеанса. Чтобы отключить, откройте новую вкладку или добавьте `show_preview_assets=false`.",
   "earnPage": {
     "title": "Зарабатывать",
     "positions": "Позиции",
@@ -1135,13 +1063,6 @@
     "hour": "час",
     "hours": "часы"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} депозиты нестабильны",
-    "titleWithdraw": "{coinDenom} вывод средств нестабильен",
-    "description": "Из-за неясных технических проблем при передаче между Osmosis и {prettyChainName} могут возникнуть значительные задержки или сбой транзакции. Действуйте на свой страх и риск.",
-    "buttonContinue": "Продолжай в любом случае",
-    "buttonCancel": "Отмена"
-  },
   "transactions": {
     "noRecent": "Нет недавних переводов",
     "recentShownHere": "Здесь будут отображаться депозиты и выводы средств на этом устройстве за последние 3 дня (между определенными сетями).",
@@ -1162,7 +1083,6 @@
     "transactionHash": "Хэш транзакции",
     "viewOnExplorer": "Посмотреть в проводнике",
     "launchAlert": "В настоящее время отображается только история торговли. Скоро появится поддержка большего количества типов транзакций.",
-    "viewAll": "Посмотреть все",
     "history": "История",
     "orders": "Заказы"
   },

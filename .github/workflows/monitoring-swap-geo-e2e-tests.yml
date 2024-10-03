@@ -177,7 +177,6 @@ jobs:
   fe-swap-sg-tests:
     timeout-minutes: 15
     name: prod-fe-swap-sg-tests
-    needs: fe-swap-eu-tests
     runs-on: macos-latest
     steps:
       - name: Echo IP
@@ -204,7 +203,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web

@@ -176,10 +176,14 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     }
   );
 
-  const poolsData = useMemo(
-    () => poolsPagesData?.pages.flatMap((page) => page?.items) ?? [],
-    [poolsPagesData]
-  );
+  const poolsData = useMemo(() => {
+    const allItems =
+      poolsPagesData?.pages.flatMap((page) => {
+        return page?.items;
+      }) ?? [];
+
+    return allItems;
+  }, [poolsPagesData]);
 
   // If more than half of the pools have volume and fees data, we should format their respective columns.
   // Otherwise, we should not display them.

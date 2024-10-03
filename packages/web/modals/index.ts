@@ -5,7 +5,6 @@ export * from "./create-pool";
 export * from "./external-links-modal";
 export * from "./fiat-on-ramp-selection";
 export * from "./fiat-ramps";
-export * from "./ibc-transfer";
 export * from "./lock-tokens";
 export * from "./menu-options";
 export * from "./one-click-trading-intro-modal";
