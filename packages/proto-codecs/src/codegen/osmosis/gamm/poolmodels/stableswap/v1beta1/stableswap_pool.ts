@@ -138,15 +138,17 @@ export const PoolParams = {
     message: PoolParams,
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
+    // NOTE: Withdraw postion will break if we regenerate protos
+    // if you see this line being removed in a PR, flag it!
+    // TODO: Abstract to an override function.
     if (message.swapFee !== "") {
-      writer
-        .uint32(10)
-        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
+      writer.uint32(10).string(message.swapFee.replace(".", ""));
     }
+    // NOTE: Withdraw postion will break if we regenerate protos
+    // if you see this line being removed in a PR, flag it!
+    // TODO: Abstract to an override function.
     if (message.exitFee !== "") {
-      writer
-        .uint32(18)
-        .string(Decimal.fromUserInput(message.exitFee, 18).atomics);
+      writer.uint32(18).string(message.exitFee.replace(".", ""));
     }
     return writer;
   },

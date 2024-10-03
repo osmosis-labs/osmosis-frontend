@@ -1,10 +1,10 @@
 import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
-import type { OfflineAminoSigner } from "@cosmjs/amino";
+import { type OfflineAminoSigner } from "@cosmjs/amino";
 import type { StdFee } from "@cosmjs/launchpad";
-import type {
-  EncodeObject,
-  OfflineDirectSigner,
-  Registry,
+import {
+  type EncodeObject,
+  type OfflineDirectSigner,
+  type Registry,
 } from "@cosmjs/proto-signing";
 import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {

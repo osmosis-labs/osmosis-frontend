@@ -1,8 +1,20 @@
 import type { AminoMsgTransfer } from "@cosmjs/stargate";
 import type {
+  MsgCreateConcentratedPool,
+  MsgCreateConcentratedPoolAmino,
+} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/poolmodel/concentrated/v1beta1/tx";
+import type {
   MsgWithdrawPosition,
   MsgWithdrawPositionAmino,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/v1beta1/tx";
+import type {
+  MsgCreateBalancerPool,
+  MsgCreateBalancerPoolAmino,
+} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/balancer/v1beta1/tx";
+import type {
+  MsgCreateStableswapPool,
+  MsgCreateStableswapPoolAmino,
+} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/poolmodels/stableswap/v1beta1/tx";
 import type {
   MsgBeginUnlocking,
   MsgBeginUnlockingAmino,
@@ -31,13 +43,6 @@ export async function getAminoConverters() {
       }
     > = {
       ...originalOsmosisAminoConverters,
-      "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
-        {
-          ...originalOsmosisAminoConverters[
-            "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
-          ],
-          aminoType: "osmosis/cl-create-pool",
-        },
       "/osmosis.superfluid.MsgUnbondConvertAndStake": {
         ...originalOsmosisAminoConverters[
           "/osmosis.superfluid.MsgUnbondConvertAndStake"
@@ -58,19 +63,12 @@ export async function getAminoConverters() {
         ...originalOsmosisAminoConverters[
           "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
         ],
-        aminoType: "osmosis/cl-withdraw-position",
         fromAmino(object: MsgWithdrawPositionAmino): MsgWithdrawPosition {
-          const message = {
-            positionId: BigInt(0),
-            sender: "",
-            liquidityAmount: "",
-          };
-          if (object.position_id !== undefined && object.position_id !== null) {
-            message.positionId = BigInt(object.position_id);
-          }
-          if (object.sender !== undefined && object.sender !== null) {
-            message.sender = object.sender;
-          }
+          const message =
+            originalOsmosisAminoConverters[
+              "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+            ].fromAmino(object);
+
           if (
             object.liquidity_amount !== undefined &&
             object.liquidity_amount !== null
@@ -80,12 +78,11 @@ export async function getAminoConverters() {
           return message;
         },
         toAmino(message: MsgWithdrawPosition): MsgWithdrawPositionAmino {
-          const obj: any = {};
-          obj.position_id =
-            message.positionId !== BigInt(0)
-              ? message.positionId.toString()
-              : undefined;
-          obj.sender = message.sender === "" ? undefined : message.sender;
+          const obj =
+            originalOsmosisAminoConverters[
+              "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+            ].toAmino(message);
+
           obj.liquidity_amount =
             message.liquidityAmount === ""
               ? undefined
@@ -103,6 +100,160 @@ export async function getAminoConverters() {
           if (obj.coins?.length === 0) {
             delete obj.coins;
           }
+          return obj;
+        },
+      },
+      "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool": {
+        ...originalOsmosisAminoConverters[
+          "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
+        ],
+        fromAmino(object: MsgCreateBalancerPoolAmino): MsgCreateBalancerPool {
+          const message =
+            originalOsmosisAminoConverters[
+              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
+            ].fromAmino(object);
+
+          if (message.poolParams) {
+            message.poolParams.exitFee = message.poolParams.exitFee.replace(
+              ".",
+              ""
+            );
+            message.poolParams.swapFee = message.poolParams.swapFee.replace(
+              ".",
+              ""
+            );
+          }
+
+          return message;
+        },
+        toAmino(message: MsgCreateBalancerPool): MsgCreateBalancerPoolAmino {
+          const obj =
+            originalOsmosisAminoConverters[
+              "/osmosis.gamm.poolmodels.balancer.v1beta1.MsgCreateBalancerPool"
+            ].toAmino(message);
+
+          if (obj.pool_params && obj.pool_params.exit_fee) {
+            obj.pool_params.exit_fee = obj.pool_params.exit_fee.replace(
+              ".",
+              ""
+            );
+            if (
+              obj.pool_params.exit_fee.split("").every((fee) => fee === "0")
+            ) {
+              obj.pool_params.exit_fee = "0";
+            }
+          }
+
+          if (obj.pool_params && obj.pool_params.swap_fee) {
+            obj.pool_params.swap_fee = obj.pool_params.swap_fee.replace(
+              ".",
+              ""
+            );
+            if (
+              obj.pool_params.swap_fee.split("").every((fee) => fee === "0")
+            ) {
+              obj.pool_params.swap_fee = "0";
+            }
+          }
+
+          return obj;
+        },
+      },
+      "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
+        {
+          ...originalOsmosisAminoConverters[
+            "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
+          ],
+          aminoType: "osmosis/cl-create-pool",
+          fromAmino(
+            object: MsgCreateConcentratedPoolAmino
+          ): MsgCreateConcentratedPool {
+            const message =
+              originalOsmosisAminoConverters[
+                "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
+              ].fromAmino(object);
+
+            if (message.spreadFactor) {
+              message.spreadFactor = message.spreadFactor.replace(".", "");
+            }
+
+            return message;
+          },
+          toAmino(
+            message: MsgCreateConcentratedPool
+          ): MsgCreateConcentratedPoolAmino {
+            const obj =
+              originalOsmosisAminoConverters[
+                "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
+              ].toAmino(message);
+
+            if (obj.spread_factor) {
+              obj.spread_factor = obj.spread_factor.replace(".", "");
+              if (obj.spread_factor.split("").every((fee) => fee === "0")) {
+                obj.spread_factor = "0";
+              }
+            }
+
+            return obj;
+          },
+        },
+      "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool": {
+        ...originalOsmosisAminoConverters[
+          "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"
+        ],
+        fromAmino(
+          object: MsgCreateStableswapPoolAmino
+        ): MsgCreateStableswapPool {
+          const message =
+            originalOsmosisAminoConverters[
+              "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"
+            ].fromAmino(object);
+
+          if (message.poolParams) {
+            message.poolParams.exitFee = message.poolParams.exitFee.replace(
+              ".",
+              ""
+            );
+            message.poolParams.swapFee = message.poolParams.swapFee.replace(
+              ".",
+              ""
+            );
+          }
+
+          return message;
+        },
+        toAmino(
+          message: MsgCreateStableswapPool
+        ): MsgCreateStableswapPoolAmino {
+          const obj =
+            originalOsmosisAminoConverters[
+              "/osmosis.gamm.poolmodels.stableswap.v1beta1.MsgCreateStableswapPool"
+            ].toAmino(message);
+
+          if (obj.pool_params && obj.pool_params.exit_fee) {
+            obj.pool_params.exit_fee = obj.pool_params.exit_fee.replace(
+              ".",
+              ""
+            );
+            if (
+              obj.pool_params.exit_fee.split("").every((fee) => fee === "0")
+            ) {
+              obj.pool_params.exit_fee = "0";
+            }
+          }
+
+          if (obj.pool_params && obj.pool_params.swap_fee) {
+            obj.pool_params.swap_fee = obj.pool_params.swap_fee.replace(
+              ".",
+              ""
+            );
+            if (
+              obj.pool_params.swap_fee.split("").every((fee) => fee === "0")
+            ) {
+              obj.pool_params.swap_fee = "0";
+            }
+          }
+
           return obj;
         },
       },
