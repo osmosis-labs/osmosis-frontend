@@ -108,7 +108,7 @@ export class Decimal {
         .toString()
         .padStart(this.data.fractionalDigits, "0");
       const trimmedFractionalPart = fullFractionalPart.replace(/0+$/, "");
-      return `${whole.toString()}.${trimmedFractionalPart}`;
+      return `${whole.toString()}${trimmedFractionalPart}`;
     }
   }
 }
