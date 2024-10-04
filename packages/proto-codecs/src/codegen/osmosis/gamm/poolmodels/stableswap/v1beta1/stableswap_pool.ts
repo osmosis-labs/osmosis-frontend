@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../../../decimals";
 /**
  * PoolParams defined the parameters that will be managed by the pool
  * governance in the future. This params are not managed by the chain
@@ -138,17 +137,15 @@ export const PoolParams = {
     message: PoolParams,
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
-    // NOTE: Withdraw postion will break if we regenerate protos
-    // if you see this line being removed in a PR, flag it!
-    // TODO: Abstract to an override function.
     if (message.swapFee !== "") {
-      writer.uint32(10).string(message.swapFee.replace(".", ""));
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
-    // NOTE: Withdraw postion will break if we regenerate protos
-    // if you see this line being removed in a PR, flag it!
-    // TODO: Abstract to an override function.
     if (message.exitFee !== "") {
-      writer.uint32(18).string(message.exitFee.replace(".", ""));
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.exitFee, 18).atomics);
     }
     return writer;
   },

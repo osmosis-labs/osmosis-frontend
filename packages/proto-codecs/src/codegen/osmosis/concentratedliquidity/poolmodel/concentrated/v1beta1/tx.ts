@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../../../binary";
+import { Decimal } from "../../../../../decimals";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
   sender: string;
@@ -82,11 +81,10 @@ export const MsgCreateConcentratedPool = {
     if (message.tickSpacing !== BigInt(0)) {
       writer.uint32(32).uint64(message.tickSpacing);
     }
-    // NOTE: Withdraw postion will break if we regenerate protos
-    // if you see this line being removed in a PR, flag it!
-    // TODO: Abstract to an override function.
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(message.spreadFactor.replace(".", ""));
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     return writer;
   },

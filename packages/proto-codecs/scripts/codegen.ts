@@ -69,9 +69,6 @@ telescope({
         decode: true,
         fromPartial: true,
 
-        // toSDK: true,
-        // fromSDK: true,
-
         toAmino: true,
         fromAmino: true,
         fromProto: true,
@@ -88,17 +85,12 @@ telescope({
         num64: "bigint",
         customTypes: {
           useCosmosSDKDec: true,
+          usePatchedDecimal: true,
         },
       },
     },
     aminoEncoding: {
       enabled: true,
-      exceptions: {
-        // '/cosmos-sdk/MsgWithdrawValCommission': {
-        //   aminoType: 'cosmos-sdk/MsgWithdrawValidatorCommission'
-        // },
-      },
-      // useRecursiveV2encoding: true,
     },
     interfaces: {
       enabled: true,

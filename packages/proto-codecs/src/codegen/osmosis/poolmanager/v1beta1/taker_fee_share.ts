@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../decimals";
 /**
  * TakerFeeShareAgreement represents the agreement between the Osmosis protocol
  * and a specific denom to share a certain percent of taker fees generated in
