@@ -45,14 +45,14 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
-  tfmProTradingNavbarButton: true,
+  tfmProTradingNavbarButton: false,
   positionRoi: true,
-  swapToolSimulateFee: false,
-  portfolioPageAndNewAssetsPage: false,
+  swapToolSimulateFee: true,
+  portfolioPageAndNewAssetsPage: true,
   newAssetsPage: true,
   displayDailyEarn: false,
-  newDepositWithdrawFlow: false,
-  oneClickTrading: false,
+  newDepositWithdrawFlow: true,
+  oneClickTrading: true,
   limitOrders: true,
   advancedChart: false,
   cypherCard: false,
@@ -104,17 +104,21 @@ export function useFeatureFlags() {
       isMobile || !isInitialized
         ? false
         : launchdarklyFlags.portfolioPageAndNewAssetsPage,
-    oneClickTrading:
-      !isMobile &&
-      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
-      launchdarklyFlags.oneClickTrading,
+    oneClickTrading: isDevModeWithoutClientID
+      ? defaultFlags.oneClickTrading
+      : !isMobile &&
+        launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+        launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-    limitOrders:
-      isInitialized &&
-      launchdarklyFlags.limitOrders &&
-      (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
-        LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
+    limitOrders: isDevModeWithoutClientID
+      ? defaultFlags.limitOrders
+      : isInitialized &&
+        launchdarklyFlags.limitOrders &&
+        (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
+          LIMIT_ORDER_COUNTRY_CODES.includes(
+            levanaGeoblock?.countryCode ?? ""
+          )),
     // To test chain upgrades easily on Edgenet, uncomment the flags below
     // limitOrders: true,
     // oneClickTrading: true,
