@@ -208,7 +208,11 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   </div>
 );
 
-export const AlloyedAssetsToast = () => {
+export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
+  titleTranslationKey,
+  captionTranslationKey,
+  // captionElement,
+}) => {
   const onDismiss = () => {
     console.log("Dismiss clicked");
   };
@@ -253,10 +257,14 @@ export const AlloyedAssetsToast = () => {
         </div>
       </div>
       <div className="mt-6 flex flex-col gap-3">
-        <h6 className="text-h6 text-white-full">{t("alloyedAssets.title")}</h6>
-        <p className="text-body2 text-osmoverse-300">
-          {t("alloyedAssets.caption")}
-        </p>
+        <h6 className="text-h6 text-white-full">{t(titleTranslationKey)}</h6>
+        {captionTranslationKey && (
+          <p className="text-body2 text-osmoverse-300">
+            {typeof captionTranslationKey === "string"
+              ? t(captionTranslationKey)
+              : t(...captionTranslationKey)}
+          </p>
+        )}
         <div className="my-1 flex items-center gap-2">
           <Checkbox />
           <span className="text-body2 text-osmoverse-300">

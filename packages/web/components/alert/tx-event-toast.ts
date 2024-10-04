@@ -28,8 +28,9 @@ export function toastOnBroadcastFailed(
 
     displayToast(
       {
-        titleTranslationKey: "alloyedAssets.title",
-        captionTranslationKey: "alloyedAssets.caption",
+        titleTranslationKey: "transactionFailed",
+        captionTranslationKey:
+          prettifyTxError(caption, getChain(chainId).currencies) ?? caption,
       },
       ToastType.ERROR
     );

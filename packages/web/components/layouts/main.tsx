@@ -1,11 +1,7 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, {
-  type FunctionComponent,
-  type PropsWithChildren,
-  useEffect,
-} from "react";
+import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
@@ -15,6 +11,8 @@ import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
 import { useCurrentLanguage, useFeatureFlags, useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export const MainLayout = observer(
   ({
@@ -40,18 +38,40 @@ export const MainLayout = observer(
       ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
     );
 
-    useEffect(() => {
-      // TODO - check if user has alloyed assets
-      displayToast(
-        {
-          titleTranslationKey: "transactionSuccessful",
+    const { accountStore } = useStore();
+
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+
+    console.log("featureFlags.alloyedAssets", featureFlags.alloyedAssets);
+
+    api.local.portfolio.getHasAssetVariants.useQuery(
+      {
+        address: wallet?.address ?? "",
+      },
+      {
+        enabled:
+          featureFlags.alloyedAssets &&
+          Boolean(wallet?.isWalletConnected && wallet?.address),
+        onSuccess: (data) => {
+          const hasAssetsToConvert = data?.hasAssetVariants ?? false;
+
+          const shouldDisplayToast = hasAssetsToConvert && !isMobile;
+
+          if (shouldDisplayToast) {
+            displayToast(
+              {
+                titleTranslationKey: "alloyedAssets.title",
+                captionTranslationKey: "alloyedAssets.caption",
+              },
+              ToastType.ALLOYED_ASSETS,
+              {
+                position: "bottom-right",
+              }
+            );
+          }
         },
-        ToastType.ALLOYED_ASSETS,
-        {
-          position: "bottom-right", // Add this option to position the toast
-        }
-      );
-    }, []);
+      }
+    );
 
     return (
       <React.Fragment>

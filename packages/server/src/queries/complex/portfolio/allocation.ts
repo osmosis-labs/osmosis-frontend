@@ -173,3 +173,38 @@ export async function getAllocation({
     totalCap,
   };
 }
+
+export async function getHasAssetVariants({
+  address,
+  assetLists,
+}: {
+  address: string;
+  assetLists: AssetList[];
+}): Promise<{ hasAssetVariants: boolean }> {
+  const data = await queryAllocation({
+    address,
+  });
+
+  // Extract all denom from account_coins_result in user-balances
+  const allAssets =
+    data?.categories?.["user-balances"]?.account_coins_result?.map(
+      (result) => result.coin.denom
+    ) ?? [];
+
+  console.log("allAssets", allAssets);
+
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
+
+  const hasAssetVariants = allAssets.some((coinMinimalDenom) => {
+    const matchingAsset = assetListAssets.find(
+      (assetListAsset) => coinMinimalDenom === assetListAsset.coinMinimalDenom
+    );
+
+    return (
+      matchingAsset &&
+      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
+    );
+  });
+
+  return { hasAssetVariants };
+}
