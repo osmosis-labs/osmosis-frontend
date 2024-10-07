@@ -168,11 +168,12 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
-  // Check for variants
   const userBalanceDenoms =
     categories["user-balances"]?.account_coins_result?.map(
       (result) => result.coin.denom
     ) ?? [];
+
+  // check for alloyed asset variants
   const hasVariants = checkHasAssetVariants(
     userBalanceDenoms,
     assetLists.flatMap((list) => list.assets)
