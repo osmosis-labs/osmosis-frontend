@@ -1,5 +1,5 @@
 import { getPortfolioOverTime } from "@osmosis-labs/server";
-import { getAllocation, getHasAssetVariants } from "@osmosis-labs/server";
+import { getAllocation } from "@osmosis-labs/server";
 import { ChartPortfolioOverTimeResponse } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
 import { z } from "zod";
 
@@ -32,24 +32,6 @@ export const portfolioRouter = createTRPCRouter({
     )
     .query(async ({ input: { address }, ctx }) => {
       const res = await getAllocation({
-        address,
-        assetLists: ctx.assetLists,
-      });
-      return res;
-    }),
-
-  getHasAssetVariants: publicProcedure
-    .input(
-      z.object({
-        address: z.string(),
-      })
-    )
-    .query(async ({ input: { address }, ctx }) => {
-      if (address === "") {
-        return { hasAssetVariants: false };
-      }
-
-      const res = await getHasAssetVariants({
         address,
         assetLists: ctx.assetLists,
       });

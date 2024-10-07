@@ -21,6 +21,8 @@ export interface GetAllocationResponse {
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
   totalCap: PricePretty;
+  /** Indicates there are variants that can be converted to canonical form. */
+  hasVariants: boolean;
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -166,11 +168,22 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
+  // Check for variants
+  const userBalanceDenoms =
+    categories["user-balances"]?.account_coins_result?.map(
+      (result) => result.coin.denom
+    ) ?? [];
+  const hasVariants = checkHasAssetVariants(
+    userBalanceDenoms,
+    assetLists.flatMap((list) => list.assets)
+  );
+
   return {
     all,
     assets,
     available,
     totalCap,
+    hasVariants,
   };
 }
 
@@ -190,30 +203,4 @@ export function checkHasAssetVariants(
       matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
     );
   });
-}
-
-export async function getHasAssetVariants({
-  address,
-  assetLists,
-}: {
-  address: string;
-  assetLists: AssetList[];
-}): Promise<{ hasAssetVariants: boolean }> {
-  const data = await queryAllocation({
-    address,
-  });
-
-  const userCoinMinimalDenoms =
-    data?.categories?.["user-balances"]?.account_coins_result?.map(
-      (result) => result.coin.denom
-    ) ?? [];
-
-  const assetListAssets = assetLists.flatMap((list) => list.assets);
-
-  const hasAssetVariants = checkHasAssetVariants(
-    userCoinMinimalDenoms,
-    assetListAssets
-  );
-
-  return { hasAssetVariants };
 }
