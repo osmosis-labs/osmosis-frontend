@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import {
@@ -14,6 +15,10 @@ export const useHasAssetVariants = () => {
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
 
+  // Check for component mounted
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => setIsMounted(true), []);
+
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
@@ -22,19 +27,18 @@ export const useHasAssetVariants = () => {
     false
   );
 
-  const enabled =
-    alloyedAssets &&
-    !doNotShowAgain &&
-    !isWalletLoading &&
-    Boolean(wallet?.isWalletConnected) &&
-    Boolean(wallet?.address);
-
   api.local.portfolio.getAllocation.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
-      enabled,
+      enabled:
+        isMounted &&
+        alloyedAssets &&
+        !doNotShowAgain &&
+        !isWalletLoading &&
+        Boolean(wallet?.isWalletConnected) &&
+        Boolean(wallet?.address),
       onSuccess: (data) => {
         const hasAssetsToConvert = data?.hasVariants ?? false;
         const shouldDisplayToast = hasAssetsToConvert && !isMobile;
