@@ -16,7 +16,7 @@ export const useHasAssetVariants = () => {
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
-  const [doNotShowAgain] = useLocalStorage(
+  const [doNotShowAgain, setDoNotShowAgain] = useLocalStorage(
     AlloyedAssetsToastDoNotShowKey,
     false
   );
@@ -48,6 +48,9 @@ export const useHasAssetVariants = () => {
             }
           );
         }
+      },
+      onError: (error) => {
+        console.error(error);
       },
     }
   );

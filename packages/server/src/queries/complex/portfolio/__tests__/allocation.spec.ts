@@ -3,7 +3,7 @@ import { Asset } from "@osmosis-labs/types";
 import { AssetLists as assetLists } from "../../../../queries/__tests__/mock-asset-lists";
 import { AllocationResponse } from "../../../sidecar/allocation";
 import { calculatePercentAndFiatValues, getAll } from "../allocation";
-import { checkHasAssetVariants } from "../allocation"; // Adjust the import path as necessary
+import { checkHasAssetVariants } from "../allocation";
 
 const MOCK_DATA: AllocationResponse = {
   categories: {

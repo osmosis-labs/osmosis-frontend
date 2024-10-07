@@ -302,15 +302,15 @@ export const AlloyedAssetsToast: FunctionComponent<
               : t(...captionTranslationKey)}
           </p>
         )}
-        <div className="my-1 flex items-center gap-2">
+        <label className="my-1 flex items-center gap-2">
           <Checkbox
             checked={isChecked}
             onCheckedChange={() => setIsChecked(!isChecked)}
-          />{" "}
+          />
           <span className="text-body2 text-osmoverse-300">
             {t("alloyedAssets.remindMeLater")}
           </span>
-        </div>
+        </label>
         <div>
           <div className="flex justify-between gap-3">
             <Button
