@@ -93,17 +93,6 @@ export class Decimal {
     };
   }
   public toString(): string {
-    const factor = BigInt(10) ** BigInt(this.data.fractionalDigits);
-    const whole = this.data.atomics / factor;
-    const fractional = this.data.atomics % factor;
-    if (fractional === 0n) {
-      return whole.toString();
-    } else {
-      const fullFractionalPart = fractional
-        .toString()
-        .padStart(this.data.fractionalDigits, "0");
-      const trimmedFractionalPart = fullFractionalPart.replace(/0+$/, "");
-      return `${whole.toString()}${trimmedFractionalPart}`;
-    }
+    return this.atomics;
   }
 }

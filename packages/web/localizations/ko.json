@@ -536,6 +536,11 @@
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해했습니다.",
       "weightedPool": "가중비율 풀"
     },
+    "createSupercharged": {
+      "base": "베이스",
+      "quote": "인용하다",
+      "buttonCreating": "생성"
+    },
     "TVL": "TVL",
     "myLiquidity": "내 유동성",
     "myPools": "내 풀",

@@ -1094,6 +1094,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         typeUrl: msg.typeUrl,
       } satisfies EncodeObject;
     });
+    console.log(messages, normalizedMessages);
 
     const msgs = normalizedMessages.map((msg) => {
       const res = aminoTypes.toAmino(msg);

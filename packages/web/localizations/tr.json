@@ -536,6 +536,11 @@
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "weightedPool": "Ağırlıklı havuz"
     },
+    "createSupercharged": {
+      "base": "Temel",
+      "quote": "Alıntı",
+      "buttonCreating": "Yaratmak"
+    },
     "TVL": "TVL",
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",

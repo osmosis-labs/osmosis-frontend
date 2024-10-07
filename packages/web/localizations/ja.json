@@ -536,6 +536,11 @@
       "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。",
       "weightedPool": "加重プール"
     },
+    "createSupercharged": {
+      "base": "ベース",
+      "quote": "引用",
+      "buttonCreating": "作成"
+    },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",
     "myPools": "あなたのプール",

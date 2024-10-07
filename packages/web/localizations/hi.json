@@ -536,6 +536,11 @@
       "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {POOL_CREATION_FEE} खर्च आएगा।",
       "weightedPool": "भारित पूल"
     },
+    "createSupercharged": {
+      "base": "आधार",
+      "quote": "उद्धरण",
+      "buttonCreating": "सृजन"
+    },
     "TVL": "टी वी लाइनों",
     "myLiquidity": "मेरी तरलता",
     "myPools": "आपके तालाब",

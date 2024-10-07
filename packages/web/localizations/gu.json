@@ -536,6 +536,11 @@
       "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {POOL_CREATION_FEE} ખર્ચ થશે.",
       "weightedPool": "ભારિત પૂલ"
     },
+    "createSupercharged": {
+      "base": "આધાર",
+      "quote": "ભાવ",
+      "buttonCreating": "બનાવી રહ્યા છે"
+    },
     "TVL": "ટીવીએલ",
     "myLiquidity": "મારી લિક્વિડિટી",
     "myPools": "તમારા પૂલ",

@@ -36,7 +36,7 @@ import { Decimal as DecimalPatch } from "../decimals-patch";
     expect(decimal.toString()).toBe("123456");
 
     const decimalNoFraction = Decimal.fromUserInput("123", 3);
-    expect(decimalNoFraction.toString()).toBe("123");
+    expect(decimalNoFraction.toString()).toBe("123000");
   });
 
   test("should handle edge cases", () => {
@@ -45,5 +45,10 @@ import { Decimal as DecimalPatch } from "../decimals-patch";
 
     const decimalMaxFraction = Decimal.fromUserInput("1.999", 3);
     expect(decimalMaxFraction.toString()).toBe("1999");
+  });
+
+  test("testing fractions", () => {
+    const decimal = Decimal.fromUserInput("0.01", 18);
+    expect(decimal.toString()).toBe("10000000000000000");
   });
 });

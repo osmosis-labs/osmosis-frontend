@@ -536,6 +536,11 @@
       "undersandCost": "Я понимаю, что создание нового пула будет стоить {POOL_CREATION_FEE} .",
       "weightedPool": "Взвешенный пул"
     },
+    "createSupercharged": {
+      "base": "База",
+      "quote": "Цитировать",
+      "buttonCreating": "Создание"
+    },
     "TVL": "ТВЛ",
     "myLiquidity": "Моя ликвидность",
     "myPools": "Ваши бассейны",

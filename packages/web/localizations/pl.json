@@ -536,6 +536,11 @@
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony"
     },
+    "createSupercharged": {
+      "base": "Opierać",
+      "quote": "Cytat",
+      "buttonCreating": "Tworzenie"
+    },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",

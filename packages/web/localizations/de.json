@@ -536,6 +536,11 @@
       "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird.",
       "weightedPool": "Gewichtsbecken"
     },
+    "createSupercharged": {
+      "base": "Base",
+      "quote": "Zitat",
+      "buttonCreating": "Erstellen"
+    },
     "TVL": "TVL",
     "myLiquidity": "Meine Liquidität",
     "myPools": "Ihre Pools",

@@ -536,6 +536,11 @@
       "undersandCost": "من می دانم هزینه ایجاد استخر {POOL_CREATION_FEE} می باشد.",
       "weightedPool": "وزن استخر"
     },
+    "createSupercharged": {
+      "base": "پایه",
+      "quote": "نقل قول",
+      "buttonCreating": "ایجاد"
+    },
     "TVL": "TVL",
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",

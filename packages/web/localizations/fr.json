@@ -536,6 +536,11 @@
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
       "weightedPool": "Piscine pondérée"
     },
+    "createSupercharged": {
+      "base": "Base",
+      "quote": "Citation",
+      "buttonCreating": "Créer"
+    },
     "TVL": "TVL",
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",

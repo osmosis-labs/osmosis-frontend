@@ -536,6 +536,11 @@
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "weightedPool": "Grupo ponderado"
     },
+    "createSupercharged": {
+      "base": "Base",
+      "quote": "Cita",
+      "buttonCreating": "Creando"
+    },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",
     "myPools": "Mis Piscinas",
