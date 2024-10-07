@@ -1,6 +1,6 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { Asset, AssetList } from "@osmosis-labs/types";
 import { sort } from "@osmosis-labs/utils";
 
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
@@ -174,6 +174,22 @@ export async function getAllocation({
   };
 }
 
+export function checkHasAssetVariants(
+  userCoinMinimalDenoms: string[],
+  assetListAssets: Asset[]
+): boolean {
+  return userCoinMinimalDenoms.some((coinMinimalDenom) => {
+    const matchingAsset = assetListAssets.find(
+      (assetListAsset) => coinMinimalDenom === assetListAsset.coinMinimalDenom
+    );
+
+    return (
+      matchingAsset &&
+      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
+    );
+  });
+}
+
 export async function getHasAssetVariants({
   address,
   assetLists,
@@ -185,26 +201,17 @@ export async function getHasAssetVariants({
     address,
   });
 
-  // Extract all denom from account_coins_result in user-balances
-  const allAssets =
+  const userCoinMinimalDenoms =
     data?.categories?.["user-balances"]?.account_coins_result?.map(
       (result) => result.coin.denom
     ) ?? [];
 
-  console.log("allAssets", allAssets);
-
   const assetListAssets = assetLists.flatMap((list) => list.assets);
 
-  const hasAssetVariants = allAssets.some((coinMinimalDenom) => {
-    const matchingAsset = assetListAssets.find(
-      (assetListAsset) => coinMinimalDenom === assetListAsset.coinMinimalDenom
-    );
-
-    return (
-      matchingAsset &&
-      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
-    );
-  });
+  const hasAssetVariants = checkHasAssetVariants(
+    userCoinMinimalDenoms,
+    assetListAssets
+  );
 
   return { hasAssetVariants };
 }
