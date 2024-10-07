@@ -5,13 +5,14 @@ import {
   displayToast,
 } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
-import { useFeatureFlags, useWindowSize } from "~/hooks";
+import { useFeatureFlags, useWalletSelect, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 export const useHasAssetVariants = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
@@ -24,7 +25,7 @@ export const useHasAssetVariants = () => {
   const enabled =
     alloyedAssets &&
     !doNotShowAgain &&
-    Boolean(wallet?.isWalletConnected && wallet?.address);
+    Boolean(wallet?.isWalletConnected && wallet?.address && !isWalletLoading);
 
   api.local.portfolio.getHasAssetVariants.useQuery(
     {
