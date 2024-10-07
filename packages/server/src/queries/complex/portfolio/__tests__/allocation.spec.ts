@@ -381,4 +381,18 @@ describe("Has Asset Variants", () => {
     );
     expect(result).toBe(false);
   });
+
+  it("should return false when user has no assets", () => {
+    const userCoinMinimalDenoms: string[] = [];
+    const assetListAssets: Asset[] = [
+      ASSET_OSMO, // OSMO
+      ASSET_SAIL, // SAIL
+    ];
+
+    const result = checkHasAssetVariants(
+      userCoinMinimalDenoms,
+      assetListAssets
+    );
+    expect(result).toBe(false);
+  });
 });
