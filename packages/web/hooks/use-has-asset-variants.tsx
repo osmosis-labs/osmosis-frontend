@@ -25,7 +25,9 @@ export const useHasAssetVariants = () => {
   const enabled =
     alloyedAssets &&
     !doNotShowAgain &&
-    Boolean(wallet?.isWalletConnected && wallet?.address && !isWalletLoading);
+    !isWalletLoading &&
+    Boolean(wallet?.isWalletConnected) &&
+    Boolean(wallet?.address);
 
   api.local.portfolio.getHasAssetVariants.useQuery(
     {

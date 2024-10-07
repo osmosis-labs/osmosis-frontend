@@ -45,6 +45,10 @@ export const portfolioRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { address }, ctx }) => {
+      if (address === "") {
+        return { hasAssetVariants: false };
+      }
+
       const res = await getHasAssetVariants({
         address,
         assetLists: ctx.assetLists,
