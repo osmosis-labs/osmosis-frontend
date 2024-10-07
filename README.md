@@ -51,7 +51,13 @@ npx turbo link
 ...press y (yes) and choose "OsmoLabs" as the Vercel build scope...
 ```
 
-2.  Run local server at [`localhost:3000`](localhost:3000)
+2. Run an initial build to create packages build artifacts:
+
+```bash
+yarn build
+```
+
+3.  Run local server at [`localhost:3000`](localhost:3000)
 
 ```bash
 yarn dev
