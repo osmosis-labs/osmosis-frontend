@@ -1,11 +1,12 @@
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import {
   Id,
   toast,
   ToastContent,
   ToastOptions as ReactToastifyOptions,
 } from "react-toastify";
+import { useLocalStorage } from "react-use";
 
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
@@ -24,8 +25,7 @@ export function displayToast(
 ) {
   toastOptions = {
     position: "top-right",
-    // autoClose: type === ToastType.LOADING ? 2000 : 7000,
-    autoClose: 9999999999999999999999,
+    autoClose: type === ToastType.LOADING ? 2000 : 7000,
     hideProgressBar: true,
     closeOnClick: false,
     pauseOnHover: true,
@@ -70,7 +70,17 @@ export function displayToast(
       showToast(<OneClickTradingToast {...alert} />, toastOptions);
       break;
     case ToastType.ALLOYED_ASSETS:
-      showToast(<AlloyedAssetsToast {...alert} />, toastOptions);
+      showToast(
+        ({ closeToast }) => (
+          <AlloyedAssetsToast {...alert} closeToast={closeToast} />
+        ),
+        {
+          ...toastOptions,
+          toastId: ToastType.ALLOYED_ASSETS, // prevents duplicate toasts by using an explicit toast id
+          autoClose: false, // prevents Alloyed Assets toast from closing automatically - https://fkhadra.github.io/react-toastify/autoClose/
+          closeButton: false,
+        }
+      );
       break;
   }
 }
@@ -208,17 +218,44 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
   </div>
 );
 
-export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
-  titleTranslationKey,
-  captionTranslationKey,
-  // captionElement,
-}) => {
+export const AlloyedAssetsToastDoNotShowKey =
+  "do-not-show-alloyed-assets-toast";
+
+export const AlloyedAssetsToast: FunctionComponent<
+  Alert & { closeToast: () => void }
+> = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  const [, setDoNotShowAgain] = useLocalStorage(
+    AlloyedAssetsToastDoNotShowKey,
+    false
+  );
+
+  const [isChecked, setIsChecked] = useState(false);
+
   const onDismiss = () => {
-    console.log("Dismiss clicked");
+    if (isChecked) {
+      setDoNotShowAgain(true);
+    } else {
+      setDoNotShowAgain(false);
+    }
+
+    closeToast();
   };
 
   const onConvert = () => {
-    console.log("Convert clicked");
+    // TODO: link to modal in other PR
+    // open modal
+    // Convert All
+    //   remind me later ✅
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    //   remind me later ❌
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    // Convert Selected
+    //   remind me later ✅
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    //   remind me later ❌ (still has remaining alloyed assets)
+    //     in modal, convert all invokes setDoNotShowAgain(false)
+
+    closeToast();
   };
 
   return (
@@ -266,7 +303,10 @@ export const AlloyedAssetsToast: FunctionComponent<Alert> = ({
           </p>
         )}
         <div className="my-1 flex items-center gap-2">
-          <Checkbox />
+          <Checkbox
+            checked={isChecked}
+            onCheckedChange={() => setIsChecked(!isChecked)}
+          />{" "}
           <span className="text-body2 text-osmoverse-300">
             {t("alloyedAssets.remindMeLater")}
           </span>

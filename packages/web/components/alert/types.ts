@@ -16,5 +16,5 @@ export const enum ToastType {
   ERROR = "ERROR",
   LOADING = "LOADING",
   ONE_CLICK_TRADING = "ONE_CLICK_TRADING",
-  ALLOYED_ASSETS = "ALLOYED_ASSETS", // Add this line
+  ALLOYED_ASSETS = "ALLOYED_ASSETS",
 }
