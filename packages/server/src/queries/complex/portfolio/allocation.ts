@@ -173,7 +173,7 @@ export async function getAllocation({
       (result) => result.coin.denom
     ) ?? [];
 
-  // check for alloyed asset variants
+  // check for asset variants, alloys and canonical assets such as USDC
   const hasVariants = checkHasAssetVariants(
     userBalanceDenoms,
     assetLists.flatMap((list) => list.assets)
