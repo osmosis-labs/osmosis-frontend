@@ -47,7 +47,7 @@ import { Decimal as DecimalPatch } from "../decimals-patch";
     expect(decimalMaxFraction.toString()).toBe("1999");
   });
 
-  test("testing fractions", () => {
+  test("toString should return the atomics", () => {
     const decimal = Decimal.fromUserInput("0.01", 18);
     expect(decimal.toString()).toBe("10000000000000000");
   });

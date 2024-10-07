@@ -56,13 +56,6 @@ export async function getAminoConverters() {
           return obj;
         },
       },
-      "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
-        {
-          ...originalOsmosisAminoConverters[
-            "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
-          ],
-          aminoType: "osmosis/cl-create-pool",
-        },
     };
 
     const ibcAminoConverters: Record<

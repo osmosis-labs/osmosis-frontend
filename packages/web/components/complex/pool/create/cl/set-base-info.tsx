@@ -146,8 +146,10 @@ export const SetBaseInfos = observer(
             </Label>
           </Field>
           <Button
-            disabled={isTxLoading || !isAgreementChecked || !selectedBase}
-            isLoading={isLoadingBaseTokens || isLoadingQuoteTokens}
+            disabled={!isAgreementChecked || !selectedBase}
+            isLoading={
+              isLoadingBaseTokens || isLoadingQuoteTokens || isTxLoading
+            }
             onClick={() => {
               setIsTxLoading(true);
               account?.osmosis
@@ -178,12 +180,9 @@ export const SetBaseInfos = observer(
                 .finally(() => setIsTxLoading(false));
             }}
           >
-            <h6>
-              {isTxLoading
-                ? t("pools.createSupercharged.buttonCreating")
-                : t("pools.createSupercharged.buttonCreate")}
-            </h6>
-            {isTxLoading && <Spinner />}
+            {isTxLoading
+              ? t("pools.createSupercharged.buttonCreating")
+              : t("pools.createSupercharged.buttonCreate")}
           </Button>
         </div>
       </>
