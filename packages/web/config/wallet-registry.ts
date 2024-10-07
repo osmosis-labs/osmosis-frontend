@@ -26,7 +26,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
       import("~/integrations/keplr-walletconnect").then(
         (m) => m.KeplrMobileWallet
       ),
-    supportsChain: async (chainId) => {
+    supportsChain: async (chainId: string) => {
       const keplrMobileAvailableChains: MainnetChainIds[] = [
         "cosmoshub-4",
         "osmosis-1",
@@ -78,7 +78,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     logo: "/wallets/leap.svg",
     lazyInstall: () =>
       import("@cosmos-kit/leap-mobile").then((m) => m.LeapMobileWallet),
-    supportsChain: async (chainId) => {
+    supportsChain: async (chainId: string) => {
       const leapMobileAvailableChains: MainnetChainIds[] = [
         "agoric-3",
         "akashnet-2",
@@ -162,7 +162,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
         (m) => m.OkxwalletExtensionWallet
       ),
     windowPropertyName: "okxwallet",
-    async supportsChain(chainId, retryCount = 0) {
+    async supportsChain(chainId: string, retryCount = 0) {
       if (typeof window === "undefined") return true;
 
       const okxWallet = (window as any)?.okxwallet?.keplr as {
@@ -262,7 +262,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
         (m) => m.CdcwalletExtensionWallet
       ),
     mobileDisabled: false,
-    async supportsChain(chainId) {
+    async supportsChain(chainId: string) {
       const cdcAvailableChains: MainnetChainIds[] = [
         "cosmoshub-4",
         "osmosis-1",
@@ -281,7 +281,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     lazyInstall: () =>
       import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
     windowPropertyName: "xfi",
-    async supportsChain(chainId) {
+    async supportsChain(chainId: string) {
       if (typeof window === "undefined") return true;
 
       const xfiWallet = (window as any)?.xfi?.keplr as {
@@ -318,7 +318,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
         (m) => m.StationExtensionWallet
       ),
     windowPropertyName: "station",
-    supportsChain: async (chainId) => {
+    supportsChain: async (chainId: string) => {
       if (typeof window === "undefined") return true;
 
       const stationWallet = (window as any)?.station?.keplr as {
@@ -334,5 +334,21 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
       preferNoSetFee: true,
     },
     features: [],
+  },
+  {
+    ...CosmosKitWalletList["imToken"],
+    logo: "/wallets/imtoken.svg",
+    mobileDisabled: false,
+    windowPropertyName: "cosmos",
+    features: [],
+    lazyInstall: () =>
+      import("@cosmos-kit/imtoken-extension").then((m) => m.IMTokenWallet),
+    async supportsChain(chainId: string) {
+      const cdcAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+      ];
+      return cdcAvailableChains.includes(chainId as MainnetChainIds);
+    },
   },
 ];

@@ -5,6 +5,7 @@ import path from "node:path";
 import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
+import { imTokenWalletInfo } from "@cosmos-kit/imtoken-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
@@ -38,6 +39,7 @@ const CosmosKitWalletList: Wallet[] = [
   cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
+  imTokenWalletInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {
@@ -106,7 +108,7 @@ async function generateCosmosKitWalletList() {
       ).join(",")}}
       export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet> = ${getStringifiedWallet(
         registryObject
-      )}     
+      )}
     `;
 
   const prettierConfig = await prettier.resolveConfig("./");
