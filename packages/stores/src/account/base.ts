@@ -1128,8 +1128,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    console.log(normalizedMessages, msgs);
-
     const signedTxBodyBytes = registry.encodeTxBody({
       messages,
       memo: signed.memo,
