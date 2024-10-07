@@ -16,7 +16,7 @@ export const useHasAssetVariants = () => {
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
-  const [doNotShowAgain, setDoNotShowAgain] = useLocalStorage(
+  const [doNotShowAgain] = useLocalStorage(
     AlloyedAssetsToastDoNotShowKey,
     false
   );

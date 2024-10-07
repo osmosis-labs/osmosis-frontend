@@ -178,10 +178,12 @@ export function checkHasAssetVariants(
   userCoinMinimalDenoms: string[],
   assetListAssets: Asset[]
 ): boolean {
+  const assetMap = new Map(
+    assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
+  );
+
   return userCoinMinimalDenoms.some((coinMinimalDenom) => {
-    const matchingAsset = assetListAssets.find(
-      (assetListAsset) => coinMinimalDenom === assetListAsset.coinMinimalDenom
-    );
+    const matchingAsset = assetMap.get(coinMinimalDenom);
 
     return (
       matchingAsset &&

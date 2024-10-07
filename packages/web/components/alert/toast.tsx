@@ -229,13 +229,13 @@ export const AlloyedAssetsToast: FunctionComponent<
     false
   );
 
-  const [isChecked, setIsChecked] = useState(false);
+  const [isRemindMeLaterChecked, setIsRemindMeLaterChecked] = useState(false);
 
   const onDismiss = () => {
-    if (isChecked) {
-      setDoNotShowAgain(true);
-    } else {
+    if (isRemindMeLaterChecked) {
       setDoNotShowAgain(false);
+    } else {
+      setDoNotShowAgain(true);
     }
 
     closeToast();
@@ -304,8 +304,10 @@ export const AlloyedAssetsToast: FunctionComponent<
         )}
         <label className="my-1 flex items-center gap-2">
           <Checkbox
-            checked={isChecked}
-            onCheckedChange={() => setIsChecked(!isChecked)}
+            checked={isRemindMeLaterChecked}
+            onCheckedChange={() =>
+              setIsRemindMeLaterChecked(!isRemindMeLaterChecked)
+            }
           />
           <span className="text-body2 text-osmoverse-300">
             {t("alloyedAssets.remindMeLater")}
