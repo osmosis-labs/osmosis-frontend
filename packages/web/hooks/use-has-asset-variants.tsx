@@ -26,14 +26,14 @@ export const useHasAssetVariants = () => {
     !doNotShowAgain &&
     Boolean(wallet?.isWalletConnected && wallet?.address);
 
-  api.local.portfolio.getHasAssetVariants.useQuery(
+  api.local.portfolio.getAllocation.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
       enabled,
       onSuccess: (data) => {
-        const hasAssetsToConvert = data?.hasAssetVariants ?? false;
+        const hasAssetsToConvert = data?.hasVariants ?? false;
         const shouldDisplayToast = hasAssetsToConvert && !isMobile;
 
         if (shouldDisplayToast) {
