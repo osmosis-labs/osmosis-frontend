@@ -1237,6 +1237,8 @@
   "receiveAtLeast": "Receba pelo menos",
   "payAtMost": "Pague no máximo",
   "alloyedAssets": {
+    "title": "Variantes Detectadas",
+    "caption": "Diga adeus a todas essas variantes de ativos confusas. Diga olá a uma experiência mais integrada no Osmosis.",
     "remindMeLater": "Lembre-me mais tarde",
     "dismiss": "Liberar",
     "convert": "Converter"

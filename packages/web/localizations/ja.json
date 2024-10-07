@@ -1237,6 +1237,8 @@
   "receiveAtLeast": "少なくとも受け取る",
   "payAtMost": "最大で支払う",
   "alloyedAssets": {
+    "title": "検出された変異体",
+    "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
     "remindMeLater": "後で通知する",
     "dismiss": "却下する",
     "convert": "変換する"

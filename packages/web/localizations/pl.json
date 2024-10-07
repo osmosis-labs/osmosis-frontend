@@ -1237,6 +1237,8 @@
   "receiveAtLeast": "Otrzymaj co najmniej",
   "payAtMost": "Zapłać maksymalnie",
   "alloyedAssets": {
+    "title": "Wykryto warianty",
+    "caption": "Pożegnaj się ze wszystkimi tymi mylącymi wariantami aktywów. Przywitaj się z bardziej płynnym doświadczeniem w Osmosis.",
     "remindMeLater": "Przypomnij mi później",
     "dismiss": "Odrzucać",
     "convert": "Konwertować"

@@ -1237,6 +1237,8 @@
   "receiveAtLeast": "至少收到",
   "payAtMost": "最多付錢",
   "alloyedAssets": {
+    "title": "偵測到變體",
+    "caption": "告別所有那些令人困惑的資產變體。迎接更無縫的 Osmosis 體驗。",
     "remindMeLater": "稍後提醒我",
     "dismiss": "解僱",
     "convert": "轉變"
