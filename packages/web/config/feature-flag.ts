@@ -13,5 +13,5 @@ export const RecommendedSwapDenoms = [
   "BTC",
   "ETH",
   "ATOM",
-  "TIA"
+  "TIA",
 ];
