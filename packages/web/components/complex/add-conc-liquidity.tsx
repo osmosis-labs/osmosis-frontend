@@ -46,6 +46,7 @@ import { api } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
+// TODO: don't think these dynamic imports are needed or are set up properly
 const ConcentratedLiquidityDepthChart = dynamic(
   () =>
     import("~/components/chart/concentrated-liquidity-depth").then(
