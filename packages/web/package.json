@@ -116,7 +116,7 @@
     "mobx-react-lite": "^3.2.2",
     "mobx-utils": "^6.0.4",
     "next": "^14.2.5",
-    "next-seo": "^6.0.0",
+    "next-seo": "^6.6.0",
     "next-sitemap": "^4.2.3",
     "nuqs": "^1.15.4",
     "polished": "^4.3.1",
