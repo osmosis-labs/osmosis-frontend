@@ -536,6 +536,17 @@
       "undersandCost": "Ich verstehe, dass die Erstellung eines neuen Pools {POOL_CREATION_FEE} kosten wird.",
       "weightedPool": "Gewichtsbecken"
     },
+    "createSupercharged": {
+      "createNew": "Neuen Supercharged-Pool erstellen",
+      "addInitialLiquidity": "Fügen Sie dem Pool # anfängliche Liquidität hinzu {poolNumber}",
+      "buttonAddToken": "Neues Token hinzufügen",
+      "base": "Base",
+      "quote": "Zitat",
+      "swapFee": "Swap-Gebühr festlegen",
+      "undersandCost": "Mir ist bewusst, dass das Erstellen eines neuen Pools {poolCreationFee} kostet.",
+      "buttonCreate": "Pool erstellen",
+      "buttonCreating": "Erstellen"
+    },
     "TVL": "TVL",
     "myLiquidity": "Meine Liquidität",
     "myPools": "Ihre Pools",
@@ -1254,5 +1265,12 @@
   },
   "tradeFee": "Handelsgebühr",
   "receiveAtLeast": "Erhalten Sie mindestens",
-  "payAtMost": "Bezahlen Sie höchstens"
+  "payAtMost": "Bezahlen Sie höchstens",
+  "alloyedAssets": {
+    "title": "Erkannte Varianten",
+    "caption": "Verabschieden Sie sich von all den verwirrenden Asset-Varianten. Begrüßen Sie ein nahtloseres Erlebnis mit Osmosis.",
+    "remindMeLater": "Später erinnern",
+    "dismiss": "Zurückweisen",
+    "convert": "Konvertieren"
+  }
 }

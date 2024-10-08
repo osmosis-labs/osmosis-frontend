@@ -19,6 +19,8 @@ const allPooltypes = [
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
 
+const FILTERABLE_IDS = IS_TESTNET ? [] : ["2159"];
+
 // PoolMarketMetrics is a partial type that contains the market metrics of a pool.
 type PoolMarketMetrics = Partial<{
   volume7dUsd: PricePretty;
@@ -91,6 +93,8 @@ export async function getPools(
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
   let pools = await poolProvider(params);
+
+  pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>

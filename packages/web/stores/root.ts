@@ -15,7 +15,6 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   DerivedDataStore,
-  IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   makeIndexedKVStore,
   makeLocalStorageKVStore,
@@ -75,7 +74,6 @@ export class RootStore {
 
   public readonly derivedDataStore: DerivedDataStore;
 
-  public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly transferHistoryStore: TransferHistoryStore;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -218,11 +216,6 @@ export class RootStore {
       this.queriesExternalStore,
       this.accountStore,
       this.priceStore,
-      this.chainStore
-    );
-
-    this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
-      makeIndexedKVStore("ibc_transfer_history"),
       this.chainStore
     );
 

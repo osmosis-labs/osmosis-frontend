@@ -10,6 +10,7 @@ export * from "./use-deterministic";
 export * from "./use-dimension";
 export * from "./use-disclosure";
 export * from "./use-feature-flags";
+export * from "./use-has-asset-variants";
 export * from "./use-nav-bar";
 export * from "./use-previous-when";
 export * from "./use-wallet-select";

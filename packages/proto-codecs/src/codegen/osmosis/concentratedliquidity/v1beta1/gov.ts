@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "../../../decimals";
 /**
  * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
  * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal

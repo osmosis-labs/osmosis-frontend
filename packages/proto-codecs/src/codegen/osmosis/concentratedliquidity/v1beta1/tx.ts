@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../decimals";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: bigint;
@@ -1025,11 +1024,10 @@ export const MsgWithdrawPosition = {
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
     }
-    // NOTE: Withdraw postion will break if we regenerate protos
-    // if you see this line being removed in a PR, flag it!
-    // TODO: Abstract to an override function.
     if (message.liquidityAmount !== "") {
-      writer.uint32(26).string(message.liquidityAmount.replace(".", ""));
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
     }
     return writer;
   },

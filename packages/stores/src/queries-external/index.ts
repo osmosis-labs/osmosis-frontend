@@ -3,7 +3,6 @@ export * from "./base";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./numia";
-export * from "./pool-fees";
 export * from "./pool-rewards";
 export * from "./pools";
 export * from "./store";

@@ -213,8 +213,8 @@ export class TradePage extends BasePage {
     return await this.exchangeRate.innerText();
   }
 
-  async isTransactionSuccesful(delay: number = 7) {
-    console.log("Wait for a transaction success for 7 seconds.");
+  async isTransactionSuccesful(delay = 7) {
+    console.log(`Wait for a transaction success for ${delay} seconds.`);
     await expect(this.trxSuccessful).toBeVisible({
       timeout: delay * 1000,
       visible: true,
@@ -224,11 +224,12 @@ export class TradePage extends BasePage {
   async getTransactionUrl() {
     const trxUrl = await this.trxLink.getAttribute("href");
     console.log(`Trx url: ${trxUrl}`);
+    await this.page.waitForTimeout(4000);
     return trxUrl;
   }
 
-  async isTransactionBroadcasted(delay: number = 5) {
-    console.log("Wait for a transaction broadcasting for 5 seconds.");
+  async isTransactionBroadcasted(delay = 5) {
+    console.log(`Wait for a transaction broadcasting for ${delay} seconds.`);
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
   }
 
@@ -282,7 +283,7 @@ export class TradePage extends BasePage {
     return `${fromTokenText}/${toTokenText}`;
   }
 
-  async buyAndGetWalletMsg(context: BrowserContext, limit: boolean = false) {
+  async buyAndGetWalletMsg(context: BrowserContext, limit = false) {
     // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalance(),
@@ -318,7 +319,7 @@ export class TradePage extends BasePage {
     return { msgContentAmount };
   }
 
-  async sellAndGetWalletMsg(context: BrowserContext, limit: boolean = false) {
+  async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
     // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalance(),

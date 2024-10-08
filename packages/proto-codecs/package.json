@@ -25,7 +25,7 @@
     "clean": "rm -rf node_modules; rm -rf build; rm -f tsconfig.tsbuildinfo",
     "build": "tsc",
     "dev": "tsc --watch",
-    "test:regression": "jest --passWithNoTests --runInBand",
+    "test": "jest",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "pre-commit": "lint-staged",
@@ -43,10 +43,11 @@
   },
   "devDependencies": {
     "@cosmology/proto-parser": "^1.5.0",
-    "@cosmology/telescope": "^1.8.4",
+    "@cosmology/telescope": "^1.10.0",
     "@types/node": "^20.14.1",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
+    "ts-jest": "^29.1.2",
     "tsx": "^4.6.2"
   },
   "dependencies": {

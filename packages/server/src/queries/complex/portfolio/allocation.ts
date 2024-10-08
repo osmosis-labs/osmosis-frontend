@@ -1,6 +1,6 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { AssetList } from "@osmosis-labs/types";
+import { Asset, AssetList } from "@osmosis-labs/types";
 import { sort } from "@osmosis-labs/utils";
 
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
@@ -21,6 +21,8 @@ export interface GetAllocationResponse {
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
   totalCap: PricePretty;
+  /** Indicates there are variants that can be converted to canonical form. */
+  hasVariants: boolean;
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -166,10 +168,40 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
+  const userBalanceDenoms =
+    categories["user-balances"]?.account_coins_result?.map(
+      (result) => result.coin.denom
+    ) ?? [];
+
+  // check for asset variants, alloys and canonical assets such as USDC
+  const hasVariants = checkHasAssetVariants(
+    userBalanceDenoms,
+    assetLists.flatMap((list) => list.assets)
+  );
+
   return {
     all,
     assets,
     available,
     totalCap,
+    hasVariants,
   };
+}
+
+export function checkHasAssetVariants(
+  userCoinMinimalDenoms: string[],
+  assetListAssets: Asset[]
+): boolean {
+  const assetMap = new Map(
+    assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
+  );
+
+  return userCoinMinimalDenoms.some((coinMinimalDenom) => {
+    const matchingAsset = assetMap.get(coinMinimalDenom);
+
+    return (
+      matchingAsset &&
+      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
+    );
+  });
 }

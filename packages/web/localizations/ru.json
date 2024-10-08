@@ -536,6 +536,17 @@
       "undersandCost": "Я понимаю, что создание нового пула будет стоить {POOL_CREATION_FEE} .",
       "weightedPool": "Взвешенный пул"
     },
+    "createSupercharged": {
+      "createNew": "Создать новый суперзаряженный пул",
+      "addInitialLiquidity": "Добавить начальную ликвидность в пул № {poolNumber}",
+      "buttonAddToken": "Добавить новый токен",
+      "base": "База",
+      "quote": "Цитировать",
+      "swapFee": "Установить комиссию за своп",
+      "undersandCost": "Я понимаю, что создание нового пула будет стоить {poolCreationFee} .",
+      "buttonCreate": "Создать пул",
+      "buttonCreating": "Создание"
+    },
     "TVL": "ТВЛ",
     "myLiquidity": "Моя ликвидность",
     "myPools": "Ваши бассейны",
@@ -1254,5 +1265,12 @@
   },
   "tradeFee": "Торговый сбор",
   "receiveAtLeast": "Получите по крайней мере",
-  "payAtMost": "Платить максимум"
+  "payAtMost": "Платить максимум",
+  "alloyedAssets": {
+    "title": "Обнаруженные варианты",
+    "caption": "Попрощайтесь со всеми этими запутанными вариантами активов. Поприветствуйте более плавный опыт на Osmosis.",
+    "remindMeLater": "Напомнить мне позже",
+    "dismiss": "Увольнять",
+    "convert": "Конвертировать"
+  }
 }
