@@ -1,4 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import * as fs from "node:fs";
+
 import { ProtoStore } from "@cosmology/proto-parser";
 import telescope from "@cosmology/telescope";
 import { join } from "path";
@@ -69,9 +71,6 @@ telescope({
         decode: true,
         fromPartial: true,
 
-        // toSDK: true,
-        // fromSDK: true,
-
         toAmino: true,
         fromAmino: true,
         fromProto: true,
@@ -88,17 +87,12 @@ telescope({
         num64: "bigint",
         customTypes: {
           useCosmosSDKDec: true,
+          usePatchedDecimal: true,
         },
       },
     },
     aminoEncoding: {
       enabled: true,
-      exceptions: {
-        // '/cosmos-sdk/MsgWithdrawValCommission': {
-        //   aminoType: 'cosmos-sdk/MsgWithdrawValidatorCommission'
-        // },
-      },
-      // useRecursiveV2encoding: true,
     },
     interfaces: {
       enabled: true,
@@ -113,6 +107,20 @@ telescope({
   },
 })
   .then(() => {
+    /**
+     * Read the content of the decimals-patch.ts file and write it to
+     * the decimals.ts file in the codegen directory This is to patch
+     * the decimals.ts file to fix the Decimal class
+     */
+    const decimalsPatchContent = fs.readFileSync(
+      join(__dirname, "./decimals-patch.ts"),
+      "utf8"
+    );
+    fs.writeFileSync(
+      join(__dirname, "../src/codegen/decimals.ts"),
+      decimalsPatchContent
+    );
+
     console.info("✨ all done!");
   })
   .catch((e) => {

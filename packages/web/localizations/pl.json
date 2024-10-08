@@ -536,6 +536,17 @@
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony"
     },
+    "createSupercharged": {
+      "createNew": "Utwórz nowy pulę doładowaną",
+      "addInitialLiquidity": "Dodaj początkową płynność do puli nr {poolNumber}",
+      "buttonAddToken": "Dodaj nowy token",
+      "base": "Opierać",
+      "quote": "Cytat",
+      "swapFee": "Ustaw opłatę za wymianę",
+      "undersandCost": "Rozumiem, że utworzenie nowego puli będzie kosztować {poolCreationFee} .",
+      "buttonCreate": "Utwórz pulę",
+      "buttonCreating": "Tworzenie"
+    },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",

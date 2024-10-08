@@ -536,6 +536,17 @@
       "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {POOL_CREATION_FEE} खर्च आएगा।",
       "weightedPool": "भारित पूल"
     },
+    "createSupercharged": {
+      "createNew": "नया सुपरचार्ज्ड पूल बनाएं",
+      "addInitialLiquidity": "पूल में प्रारंभिक तरलता जोड़ें # {poolNumber}",
+      "buttonAddToken": "नया टोकन जोड़ें",
+      "base": "आधार",
+      "quote": "उद्धरण",
+      "swapFee": "स्वैप शुल्क निर्धारित करें",
+      "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {poolCreationFee} खर्च आएगा।",
+      "buttonCreate": "पूल बनाएं",
+      "buttonCreating": "सृजन"
+    },
     "TVL": "टी वी लाइनों",
     "myLiquidity": "मेरी तरलता",
     "myPools": "आपके तालाब",

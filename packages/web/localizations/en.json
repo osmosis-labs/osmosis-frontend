@@ -536,6 +536,17 @@
       "undersandCost": "I understand that creating a new pool will cost {POOL_CREATION_FEE}.",
       "weightedPool": "Weighted pool"
     },
+    "createSupercharged": {
+      "createNew": "Create New Supercharged Pool",
+      "addInitialLiquidity": "Add initial liquidity to Pool #{poolNumber}",
+      "buttonAddToken": "Add new token",
+      "base": "Base",
+      "quote": "Quote",
+      "swapFee": "Set Swap Fee",
+      "undersandCost": "I understand that creating a new pool will cost {poolCreationFee}.",
+      "buttonCreate": "Create Pool",
+      "buttonCreating": "Creating"
+    },
     "TVL": "TVL",
     "myLiquidity": "My Liquidity",
     "myPools": "Your Pools",

@@ -536,6 +536,17 @@
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
       "weightedPool": "加权池"
     },
+    "createSupercharged": {
+      "createNew": "创建新的增压池",
+      "addInitialLiquidity": "向池子#添加初始流动性{poolNumber}",
+      "buttonAddToken": "添加新代币",
+      "base": "根据",
+      "quote": "引用",
+      "swapFee": "设置掉期费",
+      "undersandCost": "我了解创建一个新池将花费{poolCreationFee} 。",
+      "buttonCreate": "创建池",
+      "buttonCreating": "创建"
+    },
     "TVL": "TVL",
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",

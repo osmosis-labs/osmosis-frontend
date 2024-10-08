@@ -536,6 +536,17 @@
       "undersandCost": "Eu entendo que criando uma nova piscina custará {POOL_CREATION_FEE}.",
       "weightedPool": "Piscina ponderada"
     },
+    "createSupercharged": {
+      "createNew": "Criar nova piscina supercarregada",
+      "addInitialLiquidity": "Adicionar liquidez inicial ao Pool # {poolNumber}",
+      "buttonAddToken": "Adicionar novo token",
+      "base": "Base",
+      "quote": "Citar",
+      "swapFee": "Definir taxa de swap",
+      "undersandCost": "Entendo que criar um novo pool custará {poolCreationFee} .",
+      "buttonCreate": "Criar Pool",
+      "buttonCreating": "Criando"
+    },
     "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",

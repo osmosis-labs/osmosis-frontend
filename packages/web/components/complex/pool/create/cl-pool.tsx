@@ -6,6 +6,7 @@ import React, { useMemo, useState } from "react";
 import { Icon } from "~/components/assets/icon";
 import { AddInitialLiquidity } from "~/components/complex/pool/create/cl/add-initial-liquidity";
 import { SetBaseInfos } from "~/components/complex/pool/create/cl/set-base-info";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 
 interface CreateCLPoolProps {
   config: ObservableCreatePoolConfig;
@@ -44,6 +45,7 @@ export const CreateCLPool = observer(
     advanceStep,
     fullClose,
   }: CreateCLPoolProps) => {
+    const { t } = useTranslation();
     const [selectedBase, setSelectedBase] = useState<SelectionToken>();
     const [selectedQuote, setSelectedQuote] =
       useState<SelectionToken>(USDC_ASSET);
@@ -96,8 +98,8 @@ export const CreateCLPool = observer(
               className="text-osmoverse-400"
             />
           </button>
-          <h6 className="text-white-emphasis">
-            {getStepHeader(currentStep, poolId)}
+          <h6 className="text-white">
+            {getStepHeader(t, currentStep, poolId)}
           </h6>
           <button
             type="button"
@@ -118,12 +120,18 @@ export const CreateCLPool = observer(
   }
 );
 
-function getStepHeader(currentStep?: 0 | 1 | 2 | 3, poolNumber?: string) {
+function getStepHeader(
+  t: MultiLanguageT,
+  currentStep?: 0 | 1 | 2 | 3,
+  poolNumber?: string
+) {
   if (!currentStep) return;
   switch (currentStep) {
     case 1:
-      return "Create New Supercharged Pool";
+      return t("pools.createSupercharged.createNew");
     case 2:
-      return `Add initial liquidity to Pool #${poolNumber}`;
+      return t("pools.createSupercharged.addInitialLiquidity", {
+        poolNumber: poolNumber ?? "",
+      });
   }
 }
