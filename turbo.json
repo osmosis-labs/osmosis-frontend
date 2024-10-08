@@ -1,6 +1,7 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
+  "ui": "tui",
+  "tasks": {
     "build": {
       "outputs": [
         "build/**",
@@ -16,11 +17,55 @@
     },
     "lint": {},
     "lint:fix": {},
-    "dev": { "persistent": true },
-    "start": { "dependsOn": ["build"] },
-    "clean": { "cache": false },
-    "test": { "dependsOn": ["^build"] },
-    "test:e2e": { "dependsOn": ["^build"] },
+    "dev": {
+      "persistent": true
+    },
+    "start": {
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"]
+    },
     "analyze": {}
-  }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "NEXTAUTH_URL",
+    "VERCEL_URL",
+    "PORT",
+    "GITHUB_URL",
+    "CMS_REPOSITORY_PATH",
+    "NEXT_PUBLIC_TFM_API_BASE_URL",
+    "NEXT_PUBLIC_SQUID_INTEGRATOR_ID",
+    "NEXT_PUBLIC_SIDECAR_BASE_URL",
+    "TWITTER_API_URL",
+    "BLOCKAID_BASE_URL",
+    "NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS",
+    "NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID",
+    "NEXT_PUBLIC_IS_TESTNET",
+    "NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE",
+    "NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE",
+    "NEXT_PUBLIC_WALLETCONNECT_PROJECT_KEY",
+    "NEXT_PUBLIC_WALLETCONNECT_RELAY_URL",
+    "NEXT_PUBLIC_TIMESERIES_DATA_URL",
+    "NEXT_PUBLIC_INDEXER_DATA_URL",
+    "TWITTER_API_ACCESS_TOKEN",
+    "TWITTER_KV_STORE_REST_API_URL",
+    "TWITTER_KV_STORE_REST_API_TOKEN",
+    "COINGECKO_API_KEY",
+    "ASSET_LIST_COMMIT_HASH",
+    "GITHUB_API_TOKEN",
+    "NEXT_PUBLIC_FE_CONTENT_COMMIT_HASH",
+    "NEXT_PUBLIC_EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS",
+    "BLOCKAID_API_KEY"
+  ]
 }

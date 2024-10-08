@@ -16,7 +16,6 @@ test.describe("Test Transactions feature", () => {
   const walletId =
     process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
   let transactionsPage: TransactionsPage;
   let swapPage: SwapPage;
@@ -36,7 +35,7 @@ test.describe("Test Transactions feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Transactions", password);
+    await walletPage.setWalletNameAndPassword("Test Transactions");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -58,7 +57,7 @@ test.describe("Test Transactions feature", () => {
     await transactionsPage.viewTransactionByNumber(20);
     await transactionsPage.viewOnExplorerIsVisible();
     await transactionsPage.closeTransaction();
-    await transactionsPage.viewTransactionByNumber(55);
+    await transactionsPage.viewTransactionByNumber(35);
     await transactionsPage.viewOnExplorerIsVisible();
     await transactionsPage.closeTransaction();
   });

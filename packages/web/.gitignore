@@ -38,9 +38,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-# Sentry Auth Token
-.sentryclirc
-
 # config files
 generated
 

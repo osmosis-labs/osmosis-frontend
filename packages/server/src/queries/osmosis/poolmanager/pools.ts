@@ -107,6 +107,6 @@ export type PoolsResponse = {
   pools: PoolRawResponse[];
 };
 
-export const queryPools = createNodeQuery<PoolsResponse>({
+export const queryPoolsChain = createNodeQuery<PoolsResponse>({
   path: "/osmosis/poolmanager/v1beta1/all-pools",
 });

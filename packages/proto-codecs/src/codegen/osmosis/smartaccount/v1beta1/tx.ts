@@ -4,7 +4,7 @@ import { base64FromBytes, bytesFromBase64 } from "../../../helpers";
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticator {
   sender: string;
-  type: string;
+  authenticatorType: string;
   data: Uint8Array;
 }
 export interface MsgAddAuthenticatorProtoMsg {
@@ -14,7 +14,7 @@ export interface MsgAddAuthenticatorProtoMsg {
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticatorAmino {
   sender?: string;
-  type?: string;
+  authenticator_type?: string;
   data?: string;
 }
 export interface MsgAddAuthenticatorAminoMsg {
@@ -24,12 +24,11 @@ export interface MsgAddAuthenticatorAminoMsg {
 /** MsgAddAuthenticatorRequest defines the Msg/AddAuthenticator request type. */
 export interface MsgAddAuthenticatorSDKType {
   sender: string;
-  type: string;
+  authenticator_type: string;
   data: Uint8Array;
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponse {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success: boolean;
 }
 export interface MsgAddAuthenticatorResponseProtoMsg {
@@ -38,7 +37,6 @@ export interface MsgAddAuthenticatorResponseProtoMsg {
 }
 /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
 export interface MsgAddAuthenticatorResponseAmino {
-  /** MsgAddAuthenticatorResponse defines the Msg/AddAuthenticator response type. */
   success?: boolean;
 }
 export interface MsgAddAuthenticatorResponseAminoMsg {
@@ -86,10 +84,6 @@ export interface MsgRemoveAuthenticatorSDKType {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponse {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseProtoMsg {
@@ -101,10 +95,6 @@ export interface MsgRemoveAuthenticatorResponseProtoMsg {
  * type.
  */
 export interface MsgRemoveAuthenticatorResponseAmino {
-  /**
-   * MsgRemoveAuthenticatorResponse defines the Msg/RemoveAuthenticator response
-   * type.
-   */
   success?: boolean;
 }
 export interface MsgRemoveAuthenticatorResponseAminoMsg {
@@ -189,7 +179,7 @@ export interface TxExtensionSDKType {
 function createBaseMsgAddAuthenticator(): MsgAddAuthenticator {
   return {
     sender: "",
-    type: "",
+    authenticatorType: "",
     data: new Uint8Array(),
   };
 }
@@ -202,8 +192,8 @@ export const MsgAddAuthenticator = {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
-    if (message.type !== "") {
-      writer.uint32(18).string(message.type);
+    if (message.authenticatorType !== "") {
+      writer.uint32(18).string(message.authenticatorType);
     }
     if (message.data.length !== 0) {
       writer.uint32(26).bytes(message.data);
@@ -225,7 +215,7 @@ export const MsgAddAuthenticator = {
           message.sender = reader.string();
           break;
         case 2:
-          message.type = reader.string();
+          message.authenticatorType = reader.string();
           break;
         case 3:
           message.data = reader.bytes();
@@ -240,7 +230,7 @@ export const MsgAddAuthenticator = {
   fromPartial(object: Partial<MsgAddAuthenticator>): MsgAddAuthenticator {
     const message = createBaseMsgAddAuthenticator();
     message.sender = object.sender ?? "";
-    message.type = object.type ?? "";
+    message.authenticatorType = object.authenticatorType ?? "";
     message.data = object.data ?? new Uint8Array();
     return message;
   },
@@ -249,8 +239,11 @@ export const MsgAddAuthenticator = {
     if (object.sender !== undefined && object.sender !== null) {
       message.sender = object.sender;
     }
-    if (object.type !== undefined && object.type !== null) {
-      message.type = object.type;
+    if (
+      object.authenticator_type !== undefined &&
+      object.authenticator_type !== null
+    ) {
+      message.authenticatorType = object.authenticator_type;
     }
     if (object.data !== undefined && object.data !== null) {
       message.data = bytesFromBase64(object.data);
@@ -260,7 +253,8 @@ export const MsgAddAuthenticator = {
   toAmino(message: MsgAddAuthenticator): MsgAddAuthenticatorAmino {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
-    obj.type = message.type === "" ? undefined : message.type;
+    obj.authenticator_type =
+      message.authenticatorType === "" ? undefined : message.authenticatorType;
     obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
@@ -442,7 +436,7 @@ export const MsgRemoveAuthenticator = {
   toAmino(message: MsgRemoveAuthenticator): MsgRemoveAuthenticatorAmino {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
-    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? (message.id?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgRemoveAuthenticatorAminoMsg): MsgRemoveAuthenticator {

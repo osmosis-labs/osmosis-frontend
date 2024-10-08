@@ -1,3 +1,5 @@
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
@@ -11,7 +13,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { useRouter } from "next/router";
+import { NextRouter, useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -19,15 +21,20 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useLocalStorage } from "react-use";
 
 import { AssetCell } from "~/components/table/cells/asset";
+import { SpriteIconId } from "~/config";
 import {
   Breakpoint,
+  MultiLanguageT,
   useFeatureFlags,
   useTranslation,
+  useUserWatchlist,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
@@ -53,22 +60,23 @@ type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
 
+type Action = "deposit" | "withdraw" | "trade" | "earn";
+
+const DUST_THRESHOLD = new Dec(0.01);
+
 export const AssetBalancesTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
-  /** Memoized function for handling deposits from table row. */
-  onDeposit: (coinDenom: string) => void;
-  /** Memoized function for handling withdrawals from table row. */
-  onWithdraw: (coinDenom: string) => void;
-}> = observer(({ tableTopPadding = 0, onDeposit, onWithdraw }) => {
+}> = observer(({ tableTopPadding = 0 }) => {
+  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
+
   const { accountStore, userSettings } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
-
-  // State
+  const featureFlags = useFeatureFlags();
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -142,11 +150,34 @@ export const AssetBalancesTable: FunctionComponent<{
       },
     }
   );
+
+  const [hideDust, setHideDust] = useLocalStorage("portfolio-hide-dust", true);
+
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
   );
-  const noSearchResults = Boolean(searchQuery) && !assetsData.length;
+
+  const filteredAssetsData = useMemo(() => {
+    return assetsData
+      .map((asset) => {
+        const isDust = asset?.usdValue?.toDec()?.lte(DUST_THRESHOLD);
+        if (hideDust && isDust) return null;
+        return asset;
+      })
+      .filter((asset): asset is AssetRow => asset !== null)
+      .sort((a, b) => {
+        const aIsFavorite = watchListDenoms.includes(a.coinDenom);
+        const bIsFavorite = watchListDenoms.includes(b.coinDenom);
+        if (aIsFavorite && !bIsFavorite) return -1;
+        if (!aIsFavorite && bIsFavorite) return 1;
+        return 0;
+      });
+  }, [assetsData, hideDust, watchListDenoms]);
+
+  const hiddenDustCount = assetsData.length - filteredAssetsData.length;
+
+  const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
   // Define columns
   const columns = useMemo(() => {
@@ -159,6 +190,8 @@ export const AssetBalancesTable: FunctionComponent<{
           <AssetCell
             {...asset}
             warnUnverified={showUnverifiedAssets && !asset.isVerified}
+            isInUserWatchlist={watchListDenoms.includes(asset.coinDenom)}
+            onClickWatchlist={() => toggleWatchAssetDenom(asset.coinDenom)}
           />
         ),
       }),
@@ -198,9 +231,6 @@ export const AssetBalancesTable: FunctionComponent<{
         cell: ({ row: { original: asset } }) => (
           <AssetActionsCell
             {...asset}
-            onDeposit={onDeposit}
-            onWithdraw={onWithdraw}
-            onExternalTransferUrl={setExternalUrl}
             showUnverifiedAssetsSetting={showUnverifiedAssets}
             confirmUnverifiedAsset={setVerifiedAsset}
           />
@@ -211,22 +241,24 @@ export const AssetBalancesTable: FunctionComponent<{
     sortKey,
     sortDirection,
     showUnverifiedAssets,
-    onDeposit,
-    onWithdraw,
     setSortKey,
     t,
+    watchListDenoms,
+    toggleWatchAssetDenom,
   ]);
 
   /** Columns collapsed for screen size responsiveness. */
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
-    if (width < Breakpoint.lg) collapsedColIds.push("price");
-    if (width < Breakpoint.md) collapsedColIds.push("assetActions");
+    if (width < Breakpoint.lg) {
+      collapsedColIds.push("price");
+      collapsedColIds.push("assetActions");
+    }
     return columns.filter(({ id }) => id && !collapsedColIds.includes(id));
   }, [columns, width]);
 
   const table = useReactTable({
-    data: assetsData,
+    data: filteredAssetsData,
     columns: collapsedColumns,
     manualSorting: true,
     manualFiltering: true,
@@ -298,17 +330,20 @@ export const AssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-4 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
-        placeholder={t("assets.table.search")}
+        placeholder={t("portfolio.searchBalances")}
         debounce={500}
       />
       <table
         className={classNames(
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
+          {
+            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
+          }
         )}
       >
         <thead>
@@ -318,10 +353,8 @@ export const AssetBalancesTable: FunctionComponent<{
                 <th
                   className={classNames(
                     {
-                      // defines column width
-                      "w-56 lg:w-36":
-                        index !== 0 && index !== headers.length - 1,
-                      "w-36": index === headers.length - 1,
+                      "w-64": index === 0,
+                      "flex-grow": index !== 0,
                     },
                     index === headers.length - 1 ? "text-right" : "text-left"
                   )}
@@ -353,16 +386,18 @@ export const AssetBalancesTable: FunctionComponent<{
             </tr>
           )}
           {virtualRows.map((virtualRow) => {
-            const pushUrl = `/assets/${
-              rows[virtualRow.index].original.coinDenom
-            }?ref=portfolio`;
+            const pushUrl = rows?.[virtualRow.index]?.original?.coinDenom
+              ? `/assets/${
+                  rows?.[virtualRow.index]?.original?.coinDenom ?? ""
+                }?ref=portfolio`
+              : "/assets/?ref=portfolio";
             const unverified =
-              !rows[virtualRow.index].original.isVerified &&
+              !rows?.[virtualRow.index]?.original?.isVerified &&
               !showUnverifiedAssets;
 
             return (
               <tr
-                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850/80"
                 key={rows[virtualRow.index].id}
                 onClick={() => router.push(pushUrl)}
               >
@@ -410,6 +445,28 @@ export const AssetBalancesTable: FunctionComponent<{
           )}
         </tbody>
       </table>
+      {assetsData.length > 0 && (
+        <div className="flex items-center justify-end gap-4 py-2 px-4">
+          <Button
+            onClick={() => setHideDust(!hideDust)}
+            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
+            variant="outline"
+            size="lg-full"
+          >
+            {hideDust
+              ? t("portfolio.showHidden", {
+                  hiddenDustCount: hiddenDustCount.toString(),
+                })
+              : t("portfolio.hideSmallBalances")}
+            <Icon
+              id="chevron-down"
+              className={classNames("h-4 w-4 transition-transform", {
+                "rotate-180": !hideDust,
+              })}
+            />
+          </Button>
+        </div>
+      )}
       {noSearchResults && searchQuery?.query && (
         <NoSearchResultsSplash
           className="mx-auto w-fit py-8"
@@ -447,7 +504,7 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
     )}
     {priceChange24h ? (
       <PriceChange
-        className="justify-start"
+        className="h-fit justify-start"
         overrideTextClasses="body2"
         priceChange={priceChange24h}
       />
@@ -457,10 +514,49 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
+const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
+  return [
+    ...(showConvertButton
+      ? [
+          { key: "deposit", label: t("portfolio.deposit"), icon: "deposit" },
+          { key: "withdraw", label: t("portfolio.withdraw"), icon: "withdraw" },
+        ]
+      : []),
+    { key: "trade", label: t("portfolio.trade"), icon: "arrows-swap" },
+    { key: "earn", label: t("portfolio.earn"), icon: "chart-up" },
+  ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
+};
+
+const handleSelectAction = (
+  action: Action,
+  coinDenom: string,
+  router: NextRouter,
+  bridgeAsset: ({
+    anyDenom,
+    direction,
+  }: {
+    anyDenom: string | undefined;
+    direction: "deposit" | "withdraw" | undefined;
+  }) => void
+) => {
+  if (action === "trade") {
+    router.push(`/assets/${coinDenom}`);
+  } else if (action === "earn") {
+    router.push(`/earn?search=${coinDenom}`);
+  } else if (action === "deposit") {
+    bridgeAsset({
+      anyDenom: coinDenom,
+      direction: "deposit",
+    });
+  } else if (action === "withdraw") {
+    bridgeAsset({
+      anyDenom: coinDenom,
+      direction: "withdraw",
+    });
+  }
+};
+
 export const AssetActionsCell: AssetCellComponent<{
-  onDeposit: (coinDenom: string) => void;
-  onWithdraw: (coinDenom: string) => void;
-  onExternalTransferUrl: (url: string) => void;
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;
@@ -469,82 +565,148 @@ export const AssetActionsCell: AssetCellComponent<{
 }> = ({
   coinDenom,
   coinImageUrl,
-  amount,
-  transferMethods,
-  counterparty,
-  onDeposit,
-  onWithdraw,
-  onExternalTransferUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
+  coinMinimalDenom,
+  variantGroupKey,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
   const featureFlags = useFeatureFlags();
 
-  // if it's the first transfer method it's considered the preferred method
-  // the new d/w flow handles this, so we only need to check for the old flow
-  const externalTransfer =
-    Boolean(transferMethods.length) &&
-    transferMethods[0].type === "external_interface" &&
-    !featureFlags.newDepositWithdrawFlow
-      ? transferMethods[0]
-      : undefined;
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const needsActivation = !isVerified && !showUnverifiedAssetsSetting;
+  const needsConversion = coinMinimalDenom !== variantGroupKey;
+  const showConvertButton = featureFlags.alloyedAssets && needsConversion;
+
+  const actionOptions = getActionOptions(t, showConvertButton);
 
   return (
-    <div className="flex items-center gap-2 text-wosmongton-200">
+    <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
           variant="ghost"
-          className="flex gap-2 text-wosmongton-200 hover:text-rust-200"
+          className="flex gap-2 rounded-[48px] text-wosmongton-200 hover:text-rust-200"
           onClick={(e) => {
+            e.stopPropagation();
             e.preventDefault();
-
             confirmUnverifiedAsset({ coinDenom, coinImageUrl });
           }}
         >
           {t("assets.table.activate")}
         </Button>
       )}
-      {!needsActivation &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.depositUrl) {
-                onExternalTransferUrl(externalTransfer.depositUrl);
-              } else {
-                onDeposit(coinDenom);
-              }
-            }}
-          >
-            <Icon className="m-auto " id="deposit" width={16} height={16} />
-          </button>
-        )}
-      {!needsActivation &&
-        amount?.toDec().isPositive() &&
-        Boolean(counterparty.length) &&
-        Boolean(transferMethods.length) && (
-          <button
-            className="h-11 w-11 rounded-full bg-osmoverse-825 p-1 transition-[color] duration-150 ease-out hover:bg-osmoverse-800 hover:text-white-full"
-            onClick={(e) => {
-              e.preventDefault();
-
-              if (externalTransfer && externalTransfer.withdrawUrl) {
-                onExternalTransferUrl(externalTransfer.withdrawUrl);
-              } else {
-                onWithdraw(coinDenom);
-              }
-            }}
-          >
-            <Icon className="m-auto" id="withdraw" width={16} height={16} />
-          </button>
-        )}
+      {!needsActivation && (
+        <div className="flex gap-3 md:hidden">
+          {showConvertButton ? (
+            <Button
+              variant="secondary"
+              className="max-h-12 w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                // TODO - open conversion modal once clicked
+                alert("Convert clicked");
+              }}
+            >
+              {t("portfolio.convert")}
+            </Button>
+          ) : (
+            <>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "deposit",
+                  });
+                }}
+              >
+                <Icon id="deposit" height={20} width={20} />
+              </Button>
+              <Button
+                size="icon"
+                variant="secondary"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  bridgeAsset({
+                    anyDenom: coinDenom,
+                    direction: "withdraw",
+                  });
+                }}
+              >
+                <Icon id="withdraw" height={20} width={20} />
+              </Button>
+            </>
+          )}
+          <AssetActionsDropdown
+            actionOptions={actionOptions}
+            onSelectAction={(action) =>
+              handleSelectAction(action, coinDenom, router, bridgeAsset)
+            }
+          />
+        </div>
+      )}
     </div>
+  );
+};
+
+const AssetActionsDropdown: FunctionComponent<{
+  actionOptions: {
+    key: Action;
+    label: string;
+    icon: SpriteIconId;
+  }[];
+  onSelectAction: (key: Action) => void;
+}> = ({ actionOptions, onSelectAction }) => {
+  return (
+    <Popover className="relative shrink-0">
+      {() => (
+        <>
+          <PopoverButton as={Button} size="icon" variant="ghost">
+            <Icon id="dots-three-vertical" width={24} height={24} />
+          </PopoverButton>
+
+          <PopoverPanel className="absolute right-0 z-50 mt-3 w-[320px]">
+            {({ close }) => (
+              <div className="flex flex-col gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-2">
+                {actionOptions.map(({ key, label, icon }) => (
+                  <button
+                    key={key}
+                    className="body2 flex place-content-between items-center gap-2 rounded-full !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      onSelectAction(key);
+                      close();
+                    }}
+                  >
+                    <span className="subtitle1 flex items-center gap-3 whitespace-nowrap text-white-full">
+                      <span className="flex h-10 w-10 items-center justify-center">
+                        <Icon
+                          id={icon}
+                          width={24}
+                          height={24}
+                          className="text-wosmongton-300"
+                        />
+                      </span>
+                      {label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </PopoverPanel>
+        </>
+      )}
+    </Popover>
   );
 };

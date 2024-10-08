@@ -4,7 +4,11 @@ import { rest } from "msw";
 import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
 import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
-import { SkipTransferStatusProvider } from "../transfer-status";
+import { SkipApiClient } from "../client";
+import {
+  SkipStatusProvider,
+  SkipTransferStatusProvider,
+} from "../transfer-status";
 
 jest.mock("@osmosis-labs/utils", () => ({
   ...jest.requireActual("@osmosis-labs/utils"),
@@ -19,6 +23,14 @@ jest.mock("@osmosis-labs/utils", () => ({
   }),
 }));
 
+const SkipStatusProvider: SkipStatusProvider = {
+  transactionStatus: ({ chainID, txHash, env }) => {
+    const client = new SkipApiClient(env);
+    return client.transactionStatus({ chainID, txHash });
+  },
+  trackTransaction: () => Promise.resolve(),
+};
+
 // silence console errors
 jest.spyOn(console, "error").mockImplementation(() => {});
 
@@ -31,7 +43,8 @@ describe("SkipTransferStatusProvider", () => {
   beforeEach(() => {
     provider = new SkipTransferStatusProvider(
       "mainnet" as BridgeEnvironment,
-      MockChains
+      MockChains,
+      SkipStatusProvider
     );
     provider.statusReceiverDelegate = mockReceiver;
   });
@@ -108,7 +121,8 @@ describe("SkipTransferStatusProvider", () => {
   it("should generate correct explorer URL for testnet", () => {
     const testnetProvider = new SkipTransferStatusProvider(
       "testnet" as BridgeEnvironment,
-      MockChains
+      MockChains,
+      SkipStatusProvider
     );
     const url = testnetProvider.makeExplorerUrl(
       JSON.stringify({
@@ -123,7 +137,8 @@ describe("SkipTransferStatusProvider", () => {
   it("should generate correct explorer URL for a cosmos chain", () => {
     const cosmosProvider = new SkipTransferStatusProvider(
       "mainnet" as BridgeEnvironment,
-      MockChains
+      MockChains,
+      SkipStatusProvider
     );
     const url = cosmosProvider.makeExplorerUrl(
       JSON.stringify({

@@ -122,7 +122,7 @@ export const Params = {
     }
     obj.pool_migration_limit =
       message.poolMigrationLimit !== BigInt(0)
-        ? message.poolMigrationLimit.toString()
+        ? (message.poolMigrationLimit?.toString)()
         : undefined;
     return obj;
   },

@@ -12,7 +12,7 @@ export const TransactionDetailsModal: FunctionComponent<
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onRequestClose}
-      className="max-w-[32.25rem]" // 516px
+      className="max-w-[32.25rem] !bg-osmoverse-1000 xl:!bg-osmoverse-850 sm:h-full sm:max-h-[100vh] sm:!rounded-none sm:py-0 sm:pt-2" // 516px
     >
       <TransactionDetailsContent
         onRequestClose={onRequestClose}

@@ -30,7 +30,7 @@ const refetchInterval = 30 * 1000; // 30 seconds
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
 /** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole">;
+export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
@@ -62,12 +62,20 @@ export const useBridgeQuotes = ({
 
   inputAmount: string;
 
-  fromAsset: (BridgeAsset & { amount: CoinPretty }) | undefined;
-  fromChain: BridgeChain | undefined;
+  fromAsset:
+    | (BridgeAsset & {
+        amount: CoinPretty;
+        imageUrl: string | undefined;
+        isUnstable: boolean;
+      })
+    | undefined;
+  fromChain: (BridgeChain & { prettyName: string }) | undefined;
   fromAddress: string | undefined;
 
-  toAsset: BridgeAsset | undefined;
-  toChain: BridgeChain | undefined;
+  toAsset:
+    | (BridgeAsset & { imageUrl: string | undefined; isUnstable: boolean })
+    | undefined;
+  toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
   bridges: QuotableBridge[];
@@ -307,7 +315,9 @@ export const useBridgeQuotes = ({
 
     const bestQuote = quoteResults_
       // only those that have fetched
-      .filter((quoteResult) => Boolean(quoteResult.isFetched))
+      .filter(
+        (quoteResult) => Boolean(quoteResult.isFetched) && !quoteResult.isError
+      )
       // Sort by response time. The fastest and highest quality quote will be first.
       .sort((a, b) => {
         // This means the quote is for a basic IBC transfer:
@@ -422,23 +432,42 @@ export const useBridgeQuotes = ({
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: Bridge, params: GetTransferStatusParams) => {
+    ({
+      estimatedArrivalUnix,
+      providerId,
+      params,
+    }: {
+      estimatedArrivalUnix: number;
+      providerId: Bridge;
+      params: GetTransferStatusParams;
+    }) => {
       if (inputAmountRaw !== "" && availableBalance && inputCoin) {
-        transferHistoryStore.pushTxNow(
-          `${providerId}${JSON.stringify(params)}`,
-          inputCoin.trim(true).toString(),
+        transferHistoryStore.pushTxNow({
+          prefixedKey: `${providerId}${JSON.stringify(params)}`,
+          amount: inputCoin.trim(true).toString(),
+          amountLogo: isWithdraw ? toAsset?.imageUrl : fromAsset.imageUrl,
           isWithdraw,
-          (isWithdraw ? fromAddress : toAddress) ?? "" // use osmosis account (destinationAddress) for account keys (vs any EVM account)
-        );
+          chainPrettyName:
+            direction === "deposit"
+              ? fromChain?.prettyName ?? ""
+              : toChain?.prettyName ?? "",
+          estimatedArrivalUnix,
+          accountAddress: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account)
+        });
       }
     },
     [
       availableBalance,
-      inputCoin,
-      toAddress,
+      direction,
       fromAddress,
+      fromAsset?.imageUrl,
+      fromChain?.prettyName,
       inputAmountRaw,
+      inputCoin,
       isWithdraw,
+      toAddress,
+      toAsset?.imageUrl,
+      toChain?.prettyName,
       transferHistoryStore,
     ]
   );
@@ -522,10 +551,14 @@ export const useBridgeQuotes = ({
         hash: sendTxHash,
       });
 
-      trackTransferStatus(quote.provider.id, {
-        sendTxHash: sendTxHash as string,
-        fromChainId: quote.fromChain.chainId,
-        toChainId: quote.toChain.chainId,
+      trackTransferStatus({
+        estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+        providerId: quote.provider.id,
+        params: {
+          sendTxHash: sendTxHash as string,
+          fromChainId: quote.fromChain.chainId,
+          toChainId: quote.toChain.chainId,
+        },
       });
 
       // TODO: Investigate if this is still needed
@@ -605,10 +638,14 @@ export const useBridgeQuotes = ({
               queryBalance.fetch();
             }
 
-            trackTransferStatus(quote.provider.id, {
-              sendTxHash: tx.transactionHash,
-              fromChainId: quote.fromChain.chainId,
-              toChainId: quote.toChain.chainId,
+            trackTransferStatus({
+              estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+              providerId: quote.provider.id,
+              params: {
+                sendTxHash: tx.transactionHash,
+                fromChainId: quote.fromChain.chainId,
+                toChainId: quote.toChain.chainId,
+              },
             });
 
             onTransferProp?.();
@@ -654,27 +691,40 @@ export const useBridgeQuotes = ({
   const isWrongEvmChainSelected =
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
-  let buttonErrorMessage: string | undefined;
-  if (!fromAddress) {
-    buttonErrorMessage = t("assets.transfer.errors.missingAddress");
+  let errorBoxMessage: { heading: string; description: string } | undefined;
+  if (isInsufficientFee) {
+    errorBoxMessage = {
+      heading: t("transfer.insufficientFundsForFees"),
+      description: t("transfer.youNeedFundsToPay", {
+        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+      }),
+    };
   } else if (hasNoQuotes) {
-    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  } else if (!isEvmWalletConnected && fromChain?.chainType === "evm") {
-    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: evmConnector?.name ?? "EVM Wallet",
-    });
-  } else if (isWrongEvmChainSelected) {
-    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: evmConnector?.name ?? "EVM Wallet",
-    });
-  } else if (bridgeTransaction.error) {
-    buttonErrorMessage = t("assets.transfer.errors.transactionError");
-  } else if (isInsufficientFee) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
-  } else if (isInsufficientBal) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
-  } else if (Boolean(someError)) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
+    errorBoxMessage = {
+      heading: isWithdraw
+        ? t("transfer.assetsWithdrawsUnavailable", {
+            asset: toAsset?.denom ?? "",
+          })
+        : t("transfer.assetsDepositsUnavailable", {
+            asset: toAsset?.denom ?? "",
+          }),
+      description: isWithdraw
+        ? t("transfer.noAvailableWithdraws")
+        : t("transfer.noAvailableDeposits"),
+    };
+  } else if (bridgeTransaction.error || Boolean(someError)) {
+    errorBoxMessage = {
+      heading: t("transfer.somethingIsntWorking"),
+      description: t("transfer.sorryForTheInconvenience"),
+    };
+  }
+
+  let warningBoxMessage: { heading: string; description: string } | undefined;
+  if (toAsset?.isUnstable) {
+    warningBoxMessage = {
+      heading: t("transfer.assetIsCurrentlyUnstable", { asset: toAsset.denom }),
+      description: t("transfer.transferWillLikelyTakeLonger"),
+    };
   }
 
   /** User can interact with any of the controls on the modal. */
@@ -702,12 +752,11 @@ export const useBridgeQuotes = ({
     !isLoadingBridgeQuote &&
     !isLoadingBridgeTransaction &&
     !isTxPending &&
+    !errorBoxMessage &&
     Boolean(selectedQuote);
 
   let buttonText: string;
-  if (buttonErrorMessage) {
-    buttonText = buttonErrorMessage;
-  } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
+  if (warnUserOfSlippage || warnUserOfPriceImpact) {
     buttonText = t("assets.transfer.transferAnyway");
   } else {
     buttonText =
@@ -734,7 +783,8 @@ export const useBridgeQuotes = ({
 
     txButtonText,
     buttonText,
-    buttonErrorMessage,
+    errorBoxMessage,
+    warningBoxMessage,
 
     userCanAdvance,
     isTxPending,

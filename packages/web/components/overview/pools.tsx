@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import dayjs from "dayjs";
-import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 
@@ -8,7 +7,6 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { SkeletonLoader } from "../loaders/skeleton-loader";
@@ -17,12 +15,8 @@ const REWARD_EPOCH_IDENTIFIER = "day";
 
 export const PoolsOverview: FunctionComponent<
   { setIsCreatingPool: () => void } & CustomClasses
-> = observer(({ className, setIsCreatingPool }) => {
-  const { chainStore, queriesStore } = useStore();
+> = ({ className, setIsCreatingPool }) => {
   const { width } = useWindowSize();
-
-  const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const { t } = useTranslation();
 
   const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
@@ -30,17 +24,20 @@ export const PoolsOverview: FunctionComponent<
       coinMinimalDenom: "uosmo",
     }
   );
+  const { data: epochs } = api.local.params.getEpochs.useQuery();
 
   // update time every second
   const [timeRemaining, setTimeRemaining] = useState<string | null>(null);
   useEffect(() => {
     const updateTimeRemaining = () => {
-      const queryEpoch = queryOsmosis.queryEpochs.getEpoch(
-        REWARD_EPOCH_IDENTIFIER
+      if (!epochs) return;
+      const epoch = epochs.find(
+        (e) => e.identifier === REWARD_EPOCH_IDENTIFIER
       );
+      if (!epoch) return;
       const now = new Date();
       const epochRemainingTime = dayjs.duration(
-        dayjs(queryEpoch.endTime).diff(dayjs(now), "second"),
+        dayjs(epoch.endTime).diff(dayjs(now), "second"),
         "second"
       );
       const epochRemainingTimeString =
@@ -57,7 +54,7 @@ export const PoolsOverview: FunctionComponent<
     updateTimeRemaining();
 
     return () => clearInterval(intervalId);
-  }, [queryOsmosis.queryEpochs, queryOsmosis.queryEpochs.response]);
+  }, [epochs]);
 
   return (
     <div
@@ -134,4 +131,4 @@ export const PoolsOverview: FunctionComponent<
       </div>
     </div>
   );
-});
+};

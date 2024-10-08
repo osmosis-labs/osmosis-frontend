@@ -66,6 +66,53 @@ export function tickToSqrtPrice(tickIndex: Int): Dec {
   return approxSqrt(price);
 }
 
+export function tickToPrice(tickIndex: Int): Dec {
+  if (tickIndex.isZero()) {
+    return new Dec(1);
+  }
+
+  const geometricExponentIncrementDistanceInTicks = nine.mul(
+    powTenBigDec(new Int(exponentAtPriceOne).neg()).toDec()
+  );
+
+  if (tickIndex.lt(minTick) || tickIndex.gt(maxTick)) {
+    throw new Error(
+      `tickIndex is out of range: ${tickIndex.toString()}, min: ${minTick.toString()}, max: ${maxTick.toString()}`
+    );
+  }
+
+  const geometricExponentDelta = new Dec(tickIndex)
+    .quoTruncate(new Dec(geometricExponentIncrementDistanceInTicks.truncate()))
+    .truncate();
+
+  let exponentAtCurTick = new Int(exponentAtPriceOne).add(
+    geometricExponentDelta
+  );
+  if (tickIndex.lt(new Int(0))) {
+    exponentAtCurTick = exponentAtCurTick.sub(new Int(1));
+  }
+
+  const currentAdditiveIncrementInTicks = powTenBigDec(exponentAtCurTick);
+
+  const numAdditiveTicks = tickIndex.sub(
+    geometricExponentDelta.mul(
+      geometricExponentIncrementDistanceInTicks.truncate()
+    )
+  );
+
+  const price = powTenBigDec(geometricExponentDelta)
+    .add(new BigDec(numAdditiveTicks).mul(currentAdditiveIncrementInTicks))
+    .toDec();
+
+  if (price.gt(maxSpotPrice) || price.lt(minSpotPrice)) {
+    throw new Error(
+      `price is out of range: ${price.toString()}, min: ${minSpotPrice.toString()}, max: ${maxSpotPrice.toString()}`
+    );
+  }
+
+  return price;
+}
+
 /** PriceToTick takes a price and returns the corresponding tick index
  *  This function does not take into consideration tick spacing.
  */

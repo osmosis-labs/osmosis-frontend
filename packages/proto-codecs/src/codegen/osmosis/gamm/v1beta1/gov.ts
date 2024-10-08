@@ -604,7 +604,7 @@ export const PoolRecordWithCFMMLink = {
     obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
     obj.tick_spacing =
       message.tickSpacing !== BigInt(0)
-        ? message.tickSpacing.toString()
+        ? (message.tickSpacing?.toString)()
         : undefined;
     obj.exponent_at_price_one =
       message.exponentAtPriceOne === ""
@@ -614,7 +614,7 @@ export const PoolRecordWithCFMMLink = {
       message.spreadFactor === "" ? undefined : message.spreadFactor;
     obj.balancer_pool_id =
       message.balancerPoolId !== BigInt(0)
-        ? message.balancerPoolId.toString()
+        ? (message.balancerPoolId?.toString)()
         : undefined;
     return obj;
   },
@@ -889,7 +889,7 @@ export const SetScalingFactorControllerProposal = {
     obj.description =
       message.description === "" ? undefined : message.description;
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     obj.controller_address =
       message.controllerAddress === "" ? undefined : message.controllerAddress;
     return obj;

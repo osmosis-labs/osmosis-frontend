@@ -126,7 +126,7 @@ export async function basicIbcTransfer(
     };
 
     await cosmwasmAccount?.cosmwasm.sendExecuteContractMsg(
-      "ibcTransfer" as any,
+      "ibcTransfer",
       contractAddress,
       {
         send: {

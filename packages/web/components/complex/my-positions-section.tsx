@@ -11,68 +11,73 @@ import { api } from "~/utils/trpc";
 const INITIAL_POSITION_CNT = 3;
 
 /** List of position cards for a user. Optionally show positions only for a give pool ID via `forPoolId` prop. */
-export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
-  observer(({ forPoolId }) => {
-    const { accountStore, chainStore } = useStore();
-    const { chainId } = chainStore.osmosis;
-    const account = accountStore.getWallet(chainId);
-    const { isLoading: isWalletLoading } = useWalletSelect();
-    const [viewMore, setViewMore] = useState(false);
+export const MyPositionsSection: FunctionComponent<{
+  forPoolId?: string;
+  showRoi?: boolean;
+  showSelectedRange?: boolean;
+}> = observer(({ forPoolId, showRoi = true, showSelectedRange = true }) => {
+  const { accountStore, chainStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
+  const [viewMore, setViewMore] = useState(false);
 
-    const { data: positions, isLoading } =
-      api.local.concentratedLiquidity.getUserPositions.useQuery(
-        {
-          userOsmoAddress: account?.address ?? "",
-          forPoolId,
-        },
-        {
-          enabled: Boolean(account?.address) && !isWalletLoading,
+  const { data: positions, isLoading } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+        forPoolId,
+      },
+      {
+        enabled: Boolean(account?.address) && !isWalletLoading,
 
-          // expensive query
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
+        // expensive query
+        trpc: {
+          context: {
+            skipBatch: true,
           },
-        }
-      );
-
-    const visiblePositions = (positions ?? []).slice(
-      0,
-      viewMore ? undefined : INITIAL_POSITION_CNT
+        },
+      }
     );
 
-    if (!account?.address) return null;
-    if (!isLoading && positions && !positions.length) return null;
+  const visiblePositions = (positions ?? []).slice(
+    0,
+    viewMore ? undefined : INITIAL_POSITION_CNT
+  );
 
-    return (
-      <div className="my-5 flex flex-col gap-3">
-        {isLoading ? (
-          <>
-            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
-            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
-            <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
-          </>
-        ) : (
-          <>
-            {visiblePositions.map((position) => (
-              <MyPositionCard
-                key={position.id}
-                position={position}
-                showLinkToPool={!Boolean(forPoolId)}
+  if (!account?.address) return null;
+  if (!isLoading && positions && !positions.length) return null;
+
+  return (
+    <div className="my-5 flex flex-col gap-3">
+      {isLoading ? (
+        <>
+          <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+          <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+          <SkeletonLoader className="h-[102px] w-full rounded-[20px]" />
+        </>
+      ) : (
+        <>
+          {visiblePositions.map((position) => (
+            <MyPositionCard
+              key={position.id}
+              position={position}
+              showLinkToPool={!Boolean(forPoolId)}
+              showRoi={showRoi}
+              showSelectedRange={showSelectedRange}
+            />
+          ))}
+          {positions &&
+            visiblePositions.length > 0 &&
+            positions.length > INITIAL_POSITION_CNT && (
+              <ShowMoreButton
+                className="mx-auto"
+                isOn={viewMore}
+                onToggle={() => setViewMore((v) => !v)}
               />
-            ))}
-            {positions &&
-              visiblePositions.length > 0 &&
-              positions.length > INITIAL_POSITION_CNT && (
-                <ShowMoreButton
-                  className="mx-auto"
-                  isOn={viewMore}
-                  onToggle={() => setViewMore((v) => !v)}
-                />
-              )}
-          </>
-        )}
-      </div>
-    );
-  });
+            )}
+        </>
+      )}
+    </div>
+  );
+});

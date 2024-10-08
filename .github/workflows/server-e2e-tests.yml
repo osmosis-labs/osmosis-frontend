@@ -52,44 +52,7 @@ jobs:
 
       - name: Run Tests
         id: tests
-        run: yarn test:e2e --filter=server
+        run: yarn test:e2e --filter=@osmosis-labs/server
         env:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ matrix.server-url }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
-
-      # Send Slack alert if 'tests' job fails
-      - name: Send Slack alert if test fails
-        id: slack
-        if: failure()
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "text": "🚨 Server to SQS E2E Tests Failure Alert 🚨",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "Server to SQS E2E Tests Failure"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Environment:* ${{ matrix.env }}\n*Server URL:* ${{ matrix.server-url }}\n*Timeseries URL:* ${{ matrix.timeseries-url }}"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

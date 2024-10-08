@@ -1,7 +1,6 @@
 import type { Chain } from "@chain-registry/types";
-import { AminoMsg } from "@cosmjs/amino/build/signdoc";
-import { Uint53 } from "@cosmjs/math";
-import { StdFee } from "@cosmjs/stargate";
+import type { AminoMsg } from "@cosmjs/amino/build/signdoc";
+import type { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,
   Endpoints,
@@ -70,7 +69,7 @@ export function changeDecStringToProtoBz(decStr: string): string {
 }
 
 // Creates the document to be signed from given parameters.
-export function makeSignDocAmino(
+export async function makeSignDocAmino(
   msgs: readonly AminoMsg[],
   fee: StdFee,
   chainId: string,
@@ -78,7 +77,8 @@ export function makeSignDocAmino(
   accountNumber: number | string,
   sequence: number | string,
   timeout_height?: bigint
-): StdSignDoc {
+): Promise<StdSignDoc> {
+  const { Uint53 } = await import("@cosmjs/math");
   return {
     chain_id: chainId,
     account_number: Uint53.fromString(accountNumber.toString()).toString(),
@@ -141,9 +141,9 @@ export const UseOneClickTradingLocalStorageKey = "use-one-click-enabled";
 export const HasUsedOneClickTradingLocalStorageKey = "has-used-one-click";
 
 // The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
+// 75 heights * 2 second block time = 150 seconds before transaction
 // timeout and mempool eviction.
-const defaultTimeoutHeightOffset = 30;
+const defaultTimeoutHeightOffset = 75;
 
 export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
   process.env.TIMEOUT_HEIGHT_OFFSET

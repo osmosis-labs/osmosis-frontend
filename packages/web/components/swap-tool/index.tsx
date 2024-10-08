@@ -5,13 +5,14 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ellipsisText, isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { ReactNode, useMemo } from "react";
 import {
   Fragment,
   FunctionComponent,
   MouseEvent,
+  ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -27,12 +28,13 @@ import { Popover } from "~/components/popover";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
-import { EventName, EventPage } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
+  useFeatureFlags,
   useSlippageConfig,
+  useTranslation,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
@@ -184,6 +186,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
       if (!swapState.inAmountInput.amount) return;
 
+      let valueUsd = Number(
+        swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
+      );
+
+      // Protect our data from outliers
+      // Perhaps from upstream issues with price data providers
+      if (isNaN(valueUsd) || valueUsd > OUTLIER_USD_VALUE_THRESHOLD) {
+        valueUsd = 0;
+      }
+
       const baseEvent = {
         fromToken: swapState.fromAsset?.coinDenom,
         tokenAmount: Number(swapState.inAmountInput.amount.toDec().toString()),
@@ -193,13 +205,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           ({ pools }) => pools.length !== 1
         ),
         isMultiRoute: (swapState.quote?.split.length ?? 0) > 1,
-        valueUsd: Number(
-          swapState.inAmountInput.fiatValue?.toDec().toString() ?? "0"
-        ),
+        valueUsd,
         feeValueUsd: Number(swapState.totalFee?.toString() ?? "0"),
         page,
         quoteTimeMilliseconds: swapState.quote?.timeMs,
-        router: swapState.quote?.name,
       };
       logEvent([EventName.Swap.swapStarted, baseEvent]);
       setIsSendingTx(true);

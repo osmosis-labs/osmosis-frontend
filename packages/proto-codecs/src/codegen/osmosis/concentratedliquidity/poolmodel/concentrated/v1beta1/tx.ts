@@ -23,7 +23,7 @@ export interface MsgCreateConcentratedPoolAmino {
   spread_factor?: string;
 }
 export interface MsgCreateConcentratedPoolAminoMsg {
-  type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool";
+  type: "osmosis/create-concentrated-pool";
   value: MsgCreateConcentratedPoolAmino;
 }
 /** ===================== MsgCreateConcentratedPool */
@@ -165,7 +165,7 @@ export const MsgCreateConcentratedPool = {
     obj.denom1 = message.denom1 === "" ? undefined : message.denom1;
     obj.tick_spacing =
       message.tickSpacing !== BigInt(0)
-        ? message.tickSpacing.toString()
+        ? (message.tickSpacing?.toString)()
         : undefined;
     obj.spread_factor =
       message.spreadFactor === "" ? undefined : message.spreadFactor;
@@ -180,7 +180,7 @@ export const MsgCreateConcentratedPool = {
     message: MsgCreateConcentratedPool
   ): MsgCreateConcentratedPoolAminoMsg {
     return {
-      type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool",
+      type: "osmosis/create-concentrated-pool",
       value: MsgCreateConcentratedPool.toAmino(message),
     };
   },
@@ -264,7 +264,7 @@ export const MsgCreateConcentratedPoolResponse = {
   ): MsgCreateConcentratedPoolResponseAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(
