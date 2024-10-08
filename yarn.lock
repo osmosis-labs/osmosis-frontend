@@ -7614,6 +7614,11 @@
   resolved "https://registry.yarnpkg.com/@vercel/otel/-/otel-1.9.1.tgz#5ec83247f307738c95a0c7ddd3993fe4a0aac719"
   integrity sha512-ZSTqgvd+w/lcB1nxEW8EHSBBqd4ZdeJ1t5op1CFo/nKFdG/EshwMon0qKc2ZxVEZXOZJI/x+LKf8Y5/Y/VHqEA==
 
+"@vercel/speed-insights@^1.0.12":
+  version "1.0.12"
+  resolved "https://registry.yarnpkg.com/@vercel/speed-insights/-/speed-insights-1.0.12.tgz#71c2edffdedae98d34e306d7b0a573e6816898b4"
+  integrity sha512-ZGQ+a7bcfWJD2VYEp2R1LHvRAMyyaFBYytZXsfnbOMkeOvzGNVxUL7aVUvisIrTZjXTSsxG45DKX7yiw6nq2Jw==
+
 "@visx/annotation@2.18.0":
   version "2.18.0"
   resolved "https://registry.npmjs.org/@visx/annotation/-/annotation-2.18.0.tgz"

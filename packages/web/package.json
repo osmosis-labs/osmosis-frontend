@@ -81,6 +81,7 @@
     "@trpc/react-query": "^10.45.1",
     "@trpc/server": "^10.45.1",
     "@vercel/otel": "^1.9.1",
+    "@vercel/speed-insights": "^1.0.12",
     "@visx/curve": "^2.17.0",
     "@visx/gradient": "^3.3.0",
     "@visx/responsive": "^2.17.0",
