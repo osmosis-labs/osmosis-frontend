@@ -55,7 +55,6 @@ import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
 import { StoreProvider, useStore } from "../stores";
-import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
@@ -82,7 +81,6 @@ function MyApp({ Component, pageProps }: AppProps) {
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
               <SEO />
-              <IbcNotifier />
               <ToastContainer
                 toastStyle={{
                   backgroundColor: "#2d2755",
