@@ -537,8 +537,14 @@
       "weightedPool": "Gewichtsbecken"
     },
     "createSupercharged": {
+      "createNew": "Neuen Supercharged-Pool erstellen",
+      "addInitialLiquidity": "Fügen Sie dem Pool # anfängliche Liquidität hinzu {poolNumber}",
+      "buttonAddToken": "Neues Token hinzufügen",
       "base": "Base",
       "quote": "Zitat",
+      "swapFee": "Swap-Gebühr festlegen",
+      "undersandCost": "Mir ist bewusst, dass das Erstellen eines neuen Pools {poolCreationFee} kostet.",
+      "buttonCreate": "Pool erstellen",
       "buttonCreating": "Erstellen"
     },
     "TVL": "TVL",

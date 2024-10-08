@@ -537,8 +537,14 @@
       "weightedPool": "ભારિત પૂલ"
     },
     "createSupercharged": {
+      "createNew": "નવો સુપરચાર્જ્ડ પૂલ બનાવો",
+      "addInitialLiquidity": "પૂલ # {poolNumber} માં પ્રારંભિક પ્રવાહિતા ઉમેરો",
+      "buttonAddToken": "નવું ટોકન ઉમેરો",
       "base": "આધાર",
       "quote": "ભાવ",
+      "swapFee": "સ્વેપ ફી સેટ કરો",
+      "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {poolCreationFee} ખર્ચ થશે.",
+      "buttonCreate": "પૂલ બનાવો",
       "buttonCreating": "બનાવી રહ્યા છે"
     },
     "TVL": "ટીવીએલ",

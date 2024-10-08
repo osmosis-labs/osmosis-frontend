@@ -537,8 +537,14 @@
       "weightedPool": "pool ponderat"
     },
     "createSupercharged": {
+      "createNew": "Creați un nou bazin supraalimentat",
+      "addInitialLiquidity": "Adăugați lichiditate inițială la pool-ul # {poolNumber}",
+      "buttonAddToken": "Adăugați un nou token",
       "base": "Baza",
       "quote": "Citat",
+      "swapFee": "Setați taxa de schimb",
+      "undersandCost": "Înțeleg că crearea unui pool nou va costa {poolCreationFee} .",
+      "buttonCreate": "Creați pool",
       "buttonCreating": "Crearea"
     },
     "TVL": "TVL",

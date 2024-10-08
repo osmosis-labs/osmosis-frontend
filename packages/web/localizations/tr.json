@@ -537,8 +537,14 @@
       "weightedPool": "Ağırlıklı havuz"
     },
     "createSupercharged": {
+      "createNew": "Yeni Süper Şarjlı Havuz Oluşturun",
+      "addInitialLiquidity": "Havuz # {poolNumber} a ilk likiditeyi ekleyin",
+      "buttonAddToken": "Yeni token ekle",
       "base": "Temel",
       "quote": "Alıntı",
+      "swapFee": "Takas Ücretini Ayarla",
+      "undersandCost": "Yeni bir havuz oluşturmanın {poolCreationFee} maliyeti olacağını anlıyorum.",
+      "buttonCreate": "Havuz Oluştur",
       "buttonCreating": "Yaratmak"
     },
     "TVL": "TVL",

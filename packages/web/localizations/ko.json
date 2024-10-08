@@ -537,8 +537,14 @@
       "weightedPool": "가중비율 풀"
     },
     "createSupercharged": {
+      "createNew": "새로운 슈퍼차지 풀 생성",
+      "addInitialLiquidity": "풀 # {poolNumber} 에 초기 유동성을 추가합니다.",
+      "buttonAddToken": "새로운 토큰 추가",
       "base": "베이스",
       "quote": "인용하다",
+      "swapFee": "스왑 수수료 설정",
+      "undersandCost": "새 풀을 만드는 데 {poolCreationFee} 의 비용이 발생한다는 것을 알고 있습니다.",
+      "buttonCreate": "풀 생성",
       "buttonCreating": "생성"
     },
     "TVL": "TVL",

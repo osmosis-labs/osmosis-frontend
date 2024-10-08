@@ -537,8 +537,14 @@
       "weightedPool": "Grupo ponderado"
     },
     "createSupercharged": {
+      "createNew": "Crear un nuevo grupo de supercargadores",
+      "addInitialLiquidity": "Agregar liquidez inicial al Pool # {poolNumber}",
+      "buttonAddToken": "Agregar nuevo token",
       "base": "Base",
       "quote": "Cita",
+      "swapFee": "Establecer tarifa de intercambio",
+      "undersandCost": "Entiendo que crear un nuevo grupo costará {poolCreationFee} .",
+      "buttonCreate": "Crear Pool",
       "buttonCreating": "Creando"
     },
     "TVL": "TVL",

@@ -537,8 +537,14 @@
       "weightedPool": "加重プール"
     },
     "createSupercharged": {
+      "createNew": "新しいスーパーチャージプールを作成する",
+      "addInitialLiquidity": "プール # {poolNumber}に初期流動性を追加します",
+      "buttonAddToken": "新しいトークンを追加",
       "base": "ベース",
       "quote": "引用",
+      "swapFee": "スワップ手数料の設定",
+      "undersandCost": "新しいプールを作成するには{poolCreationFee}の費用がかかることを理解しています。",
+      "buttonCreate": "プールを作成",
       "buttonCreating": "作成"
     },
     "TVL": "TVL",

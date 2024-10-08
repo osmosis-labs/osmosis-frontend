@@ -537,8 +537,14 @@
       "weightedPool": "加權流動性池"
     },
     "createSupercharged": {
+      "createNew": "建立新的增壓池",
+      "addInitialLiquidity": "將初始流動性加入到池 # {poolNumber}",
+      "buttonAddToken": "新增令牌",
       "base": "根據",
       "quote": "引用",
+      "swapFee": "設定隔夜利息",
+      "undersandCost": "我了解建立新池將花費{poolCreationFee} 。",
+      "buttonCreate": "建立池",
       "buttonCreating": "創造"
     },
     "TVL": "TVL",
