@@ -224,7 +224,7 @@ export class TradePage extends BasePage {
   async getTransactionUrl() {
     const trxUrl = await this.trxLink.getAttribute("href");
     console.log(`Trx url: ${trxUrl}`);
-    await this.page.waitForTimeout(4000);
+    await this.page.reload();
     return trxUrl;
   }
 
