@@ -21,7 +21,6 @@ import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryMarketCaps } from "./mcap";
 import { ObservableQueryPoolAprs } from "./numia";
-import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
@@ -29,7 +28,6 @@ import { ObservableQueryMarketCap } from "./token-market-cap";
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
-  public readonly queryPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
@@ -57,10 +55,6 @@ export class QueriesExternalStore {
   ) {
     this.queryQuasarVaults = new ObservableQueryQuasarVaultsByPoolsId(kvStore);
 
-    this.queryPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
-      kvStore,
-      timeseriesDataBaseUrl
-    );
     this.queryAccountsPoolRewards = new ObservableQueryAccountsPoolRewards(
       kvStore,
       priceStore,
