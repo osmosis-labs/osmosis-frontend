@@ -8,7 +8,7 @@ import { SkeletonLoader } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -16,7 +16,7 @@ import { api } from "~/utils/trpc";
 
 export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { chainStore, accountStore } = useStore();
-  const { bridgeAsset } = useBridge();
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();

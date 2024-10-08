@@ -1,5 +1,5 @@
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -15,20 +15,23 @@ import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { ComponentType, useMemo } from "react";
-import { FunctionComponent } from "react";
-import { ReactNode } from "react";
-import { useEffect } from "react";
+import {
+  ComponentType,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useMemo,
+} from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
+import { LimitOrdersToast } from "~/components/alert/limit-orders-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { OneClickToast } from "~/components/one-click-trading/one-click-trading-toast";
 import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {
@@ -37,7 +40,7 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { BridgeProvider } from "~/hooks/bridge";
+import { ImmersiveBridge } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -78,20 +81,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <StoreProvider>
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
-              <BridgeProvider>
-                <SEO />
-                <IbcNotifier />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-              </BridgeProvider>
+              <SEO />
+              <IbcNotifier />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                {Component && <Component {...pageProps} />}
+              </MainLayoutWrapper>
+              <ImmersiveBridge />
             </ErrorBoundary>
           </WalletSelectProvider>
         </StoreProvider>
@@ -134,6 +136,14 @@ const MainLayoutWrapper: FunctionComponent<{
     onOpen: onOpenLeavingOsmosisToLevana,
     onClose: onCloseLeavingOsmosisToLevana,
   } = useDisclosure();
+
+  useEffect(() => {
+    if (flags.limitOrders && flags._isInitialized) {
+      document.body.classList.add("!bg-osmoverse-1000");
+    } else {
+      document.body.classList.remove("!bg-osmoverse-1000");
+    }
+  }, [flags.limitOrders, flags._isInitialized]);
 
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
@@ -195,7 +205,7 @@ const MainLayoutWrapper: FunctionComponent<{
 
     let menuItems: (MainLayoutMenu | null)[] = [
       {
-        label: t("menu.swap"),
+        label: t("limitOrders.trade"),
         link: "/",
         icon: <Icon id="trade" className="h-6 w-6" />,
         selectionTest: /\/$/,
@@ -332,9 +342,9 @@ const MainLayoutWrapper: FunctionComponent<{
       {flags.oneClickTrading && (
         <>
           <OneClickTradingIntroModal />
-          <OneClickToast />
         </>
       )}
+      {flags.limitOrders && <LimitOrdersToast />}
     </MainLayout>
   );
 });

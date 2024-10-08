@@ -323,7 +323,7 @@ export const Pool = {
       message.spreadRewardsAddress === ""
         ? undefined
         : message.spreadRewardsAddress;
-    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? (message.id?.toString)() : undefined;
     obj.current_tick_liquidity =
       message.currentTickLiquidity === ""
         ? undefined
@@ -334,15 +334,15 @@ export const Pool = {
       message.currentSqrtPrice === "" ? undefined : message.currentSqrtPrice;
     obj.current_tick =
       message.currentTick !== BigInt(0)
-        ? message.currentTick.toString()
+        ? (message.currentTick?.toString)()
         : undefined;
     obj.tick_spacing =
       message.tickSpacing !== BigInt(0)
-        ? message.tickSpacing.toString()
+        ? (message.tickSpacing?.toString)()
         : undefined;
     obj.exponent_at_price_one =
       message.exponentAtPriceOne !== BigInt(0)
-        ? message.exponentAtPriceOne.toString()
+        ? (message.exponentAtPriceOne?.toString)()
         : undefined;
     obj.spread_factor =
       message.spreadFactor === "" ? undefined : message.spreadFactor;

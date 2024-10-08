@@ -16,3 +16,12 @@ coverage
 
 tsconfig.tsbuildinfo
 packages/web/e2e/keplr-extension-manifest
+
+# Vim backup, undo files
+*.orig
+*~
+
+# Vim swap files
+.*.swp
+.*.swo
+packages/web/e2e/metamask-extension-manifest/

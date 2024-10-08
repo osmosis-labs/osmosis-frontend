@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { RouteWithInAmount } from "./route";
+import { RouteWithInAmount, RouteWithOutAmount } from "./route";
 
 export type Token = {
   /** Denom of the token. */
@@ -8,15 +8,6 @@ export type Token = {
   /** Base/min amount of the token. */
   amount: Int;
 };
-
-export interface TokenOutGivenInRouter {
-  /** Route, with splits, given an in token and out denom. */
-  routeByTokenIn(
-    tokenIn: Token,
-    tokenOutDenom: string,
-    forcePoolId?: string
-  ): Promise<SplitTokenInQuote>;
-}
 
 export interface RoutablePool {
   /** Unique identifier across pools. */
@@ -59,6 +50,14 @@ export type Quote = {
 /** Quote with potential split of in token amount across multiple routes. */
 export type SplitTokenInQuote = Quote & {
   split: RouteWithInAmount[];
+  /** In amount after fees paid are subtracted. */
+  tokenInFeeAmount?: Int;
+  swapFee?: Dec;
+};
+
+/** Quote with potential split of in token amount across multiple routes. */
+export type SplitTokenOutQuote = Quote & {
+  split: RouteWithOutAmount[];
   /** In amount after fees paid are subtracted. */
   tokenInFeeAmount?: Int;
   swapFee?: Dec;

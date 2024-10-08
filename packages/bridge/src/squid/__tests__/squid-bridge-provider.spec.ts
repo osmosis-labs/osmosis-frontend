@@ -527,7 +527,7 @@ describe("SquidBridgeProvider", () => {
         chainId: 137,
         nativeCurrency: {
           name: "Polygon",
-          symbol: "MATIC",
+          symbol: "POL",
           decimals: 18,
           icon: "https://raw.githubusercontent.com/axelarnetwork/axelar-docs/main/public/images/chains/polygon.svg",
         },

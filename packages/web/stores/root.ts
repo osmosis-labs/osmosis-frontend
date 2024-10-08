@@ -17,15 +17,13 @@ import {
   DerivedDataStore,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
   TxEvents,
   UnsafeIbcCurrencyRegistrar,
-} from "@osmosis-labs/stores";
-import {
-  makeIndexedKVStore,
-  makeLocalStorageKVStore,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
@@ -45,7 +43,6 @@ import {
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { ObservableAssets } from "~/stores/assets";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -80,8 +77,6 @@ export class RootStore {
 
   public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
   public readonly transferHistoryStore: TransferHistoryStore;
-
-  public readonly assetsStore: ObservableAssets;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -213,28 +208,8 @@ export class RootStore {
       }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator(chainId) {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.assetsStore = new ObservableAssets(
-      assets,
-      this.chainStore,
-      this.accountStore,
-      this.queriesStore,
-      this.priceStore,
-      this.chainStore.osmosis.chainId,
-      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -259,7 +234,33 @@ export class RootStore {
       ),
       new SkipTransferStatusProvider(
         IS_TESTNET ? "testnet" : "mainnet",
-        ChainList
+        ChainList,
+        {
+          transactionStatus: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-tx-status?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to fetch transaction status: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+          trackTransaction: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-track-tx?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to track transaction: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+        }
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
     ];

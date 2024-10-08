@@ -11,9 +11,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
-import { useCallback, useState } from "react";
-import { useMemo } from "react";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -28,7 +26,7 @@ import { api } from "~/utils/trpc";
  */
 export function useAmountInput({
   currency,
-  inputDebounceMs = 500,
+  inputDebounceMs = 200,
   gasAmount,
 }: {
   currency: Currency | undefined;
@@ -55,17 +53,19 @@ export function useAmountInput({
 
   const setAmount = useCallback(
     (amount: string) => {
-      // check validity of raw input
-      if (!isValidNumericalRawInput(amount)) return;
-      if (amount.startsWith(".")) {
-        amount = "0" + amount;
+      let updatedAmount = amount.trim();
+      if (updatedAmount.startsWith(".")) {
+        updatedAmount = "0" + updatedAmount;
       }
+
+      // check validity of raw input
+      if (!isValidNumericalRawInput(updatedAmount)) return;
 
       if (fraction != null) {
         setFraction(null);
       }
 
-      setAmount_(amount);
+      setAmount_(updatedAmount);
     },
     [fraction]
   );
@@ -203,10 +203,7 @@ export function useAmountInput({
   return {
     inputAmount: inputAmountWithFraction,
     debouncedInAmount,
-    isTyping:
-      debouncedInAmount && amount
-        ? !amount.toDec().equals(debouncedInAmount.toDec())
-        : false,
+    isTyping: debouncedInAmount?.toString() !== amount?.toString(),
     amount,
     balance,
     fiatValue,

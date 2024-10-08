@@ -18,42 +18,93 @@ import { getDecimalCount } from "~/utils/number";
 
 import { Chart } from "./light-weight-charts/chart";
 
-const seriesOpt: DeepPartial<AreaSeriesOptions> = {
-  lineColor: theme.colors.wosmongton[300],
-  lineWidth: 2,
-  lineType: LineType.Curved,
-  topColor: theme.colors.osmoverse[700],
-  bottomColor: theme.colors.osmoverse[850],
-  priceLineVisible: false,
-  lastValueVisible: false,
-  priceScaleId: "right",
-  crosshairMarkerBorderWidth: 4,
-  crosshairMarkerBorderColor: theme.colors.osmoverse[900],
-  crosshairMarkerRadius: 4,
-  priceFormat: {
-    type: "custom",
-    formatter: priceFormatter,
-    minMove: 0.0000000001,
-  },
+const getSeriesOpt = (config: Style): DeepPartial<AreaSeriesOptions> => {
+  let lineColor, topColor, bottomColor, crosshairMarkerBorderColor;
+
+  switch (config) {
+    case "bullish":
+      lineColor = theme.colors.bullish[500];
+      topColor = `${theme.colors.bullish[500]}33`; // 20% opacity
+      bottomColor = `${theme.colors.bullish[500]}00`; // 0% opacity
+      crosshairMarkerBorderColor = theme.colors.bullish[500];
+      break;
+    case "bearish":
+      lineColor = theme.colors.rust[500];
+      topColor = `${theme.colors.rust[500]}33`; // 20% opacity
+      bottomColor = `${theme.colors.rust[500]}00`; // 0% opacity
+      crosshairMarkerBorderColor = theme.colors.rust[500];
+      break;
+    case "neutral":
+    default:
+      lineColor = theme.colors.wosmongton[400];
+      topColor = "rgba(70, 42, 223, 0.2)";
+      bottomColor = "rgba(165, 19, 153, 0.01)";
+      crosshairMarkerBorderColor = theme.colors.osmoverse[900];
+      break;
+  }
+
+  return {
+    lineColor,
+    lineWidth: 2,
+    lineType: LineType.Simple,
+    topColor,
+    bottomColor,
+    priceLineVisible: false,
+    lastValueVisible: false,
+    priceScaleId: "right",
+    crosshairMarkerBorderWidth: 4,
+    crosshairMarkerBorderColor,
+    crosshairMarkerRadius: 4,
+    priceFormat: {
+      type: "custom",
+      formatter: priceFormatter,
+      minMove: 0.0000000001,
+    },
+  };
 };
+
+type Style = "bullish" | "bearish" | "neutral";
 
 interface HistoricalChartProps {
   data: AreaData<Time>[];
   onPointerHover?: (price: number, time: Time) => void;
   onPointerOut?: () => void;
+  style?: Style;
+  hideScales?: boolean;
 }
 
 export const HistoricalChart = memo((props: HistoricalChartProps) => {
-  const { data = [], onPointerHover, onPointerOut } = props;
+  const {
+    data = [],
+    onPointerHover,
+    onPointerOut,
+    style = "neutral",
+    hideScales = false,
+  } = props;
+
+  const options = hideScales
+    ? {
+        rightPriceScale: {
+          visible: false,
+        },
+        leftPriceScale: {
+          visible: false,
+        },
+        timeScale: {
+          visible: false,
+        },
+      }
+    : {};
 
   return (
     <Chart
       Controller={AreaChartController}
+      options={options}
       series={[
         {
           type: "Area",
           options: {
-            ...seriesOpt,
+            ...getSeriesOpt(style),
             autoscaleInfoProvider: () => {
               const values = data
                 .map((entry) => entry.value)
@@ -126,15 +177,16 @@ export const HistoricalChartHeader: FunctionComponent<{
   );
 };
 
-export const HistoricalChartSkeleton = () => {
+export const HistoricalChartSkeleton = ({ hideScales = false }) => {
   return (
-    <div className="flex h-full w-full flex-1 flex-row gap-3">
-      <div className="flex flex-1 flex-col items-end justify-end">
+    <div className="flex h-full w-full grow flex-row gap-3">
+      <div className="flex grow flex-col items-end justify-end">
         <svg
           className="h-auto w-full animate-pulse"
           viewBox="0 0 700 346"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          preserveAspectRatio="none"
         >
           <g clipPath="url(#clip0_2029_22138)">
             <path
@@ -172,7 +224,21 @@ export const HistoricalChartSkeleton = () => {
           </defs>
         </svg>
 
-        <div className="flex w-full flex-row justify-between py-3">
+        {!hideScales && (
+          <div className="flex w-full flex-row justify-between py-3">
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+            <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
+          </div>
+        )}
+      </div>
+
+      {!hideScales && (
+        <div className="flex flex-col justify-between pb-7 pt-2">
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
@@ -181,17 +247,7 @@ export const HistoricalChartSkeleton = () => {
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
           <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
         </div>
-      </div>
-
-      <div className="flex flex-col justify-between pb-7 pt-2">
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-        <Skeleton className="h-[14px] w-11 rounded-xl bg-osmoverse-825" />
-      </div>
+      )}
     </div>
   );
 };

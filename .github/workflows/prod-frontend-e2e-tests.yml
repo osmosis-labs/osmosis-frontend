@@ -37,6 +37,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -55,6 +57,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          USE_TRADE: "use"
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"

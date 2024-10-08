@@ -54,7 +54,9 @@ export function getAssetFromAssetList({
 }
 
 /** Convert an asset list asset into an asset with minimal content and that
- *  is compliant with the `Currency` type. */
+ *  is compliant with the `Currency` type.
+ *  This was done as a way to provide a proxy into the asset list (derisk) type and
+ *  provide future flexibility/adaptability. */
 export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
   const {
     decimals,
@@ -64,6 +66,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     coingeckoId,
     name,
     unstable,
+    disabled,
     verified,
     isAlloyed,
     contract,
@@ -78,6 +81,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     coinGeckoId: coingeckoId,
     coinImageUrl: relative_image_url,
     isUnstable: unstable,
+    areTransfersDisabled: disabled,
     isVerified: verified,
     variantGroupKey,
     isAlloyed,

@@ -25,15 +25,15 @@ import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import { PoolComposition } from "~/components/chart/pool-composition";
 import { Spinner } from "~/components/loaders";
-import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLockTokenConfig,
   useSuperfluidPool,
+  useTranslation,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import {
@@ -89,13 +89,6 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     const { data: sharePool } = api.edge.pools.getSharePool.useQuery({
       poolId: pool.id,
     });
-
-    const { data: poolIncentives, isLoading: isPoolIncentivesLoading } =
-      api.edge.pools.getPoolIncentives.useQuery({
-        poolId: pool.id,
-      });
-    const { data: poolMarketMetrics, isLoading: isPoolMarketMetricsLoading } =
-      api.edge.pools.getPoolMarketMetrics.useQuery({ poolId: pool.id });
 
     const {
       data: bondDurations_,
@@ -316,7 +309,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
     );
 
     return (
-      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+      <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
         {pool && showAddLiquidityModal && (
           <AddLiquidityModal
             isOpen={true}
@@ -376,7 +369,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
             />
           )}
         <section className="flex flex-col gap-4">
-          <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
+          <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-900 pb-4">
             <div
               ref={poolDetailsContainerRef}
               className={classNames(
@@ -433,24 +426,14 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
-                  {(poolMarketMetrics?.volume24hUsd ||
-                    isPoolMarketMetricsLoading) && (
+                  {pool.market?.volume24hUsd && (
                     <div className="space-y-2">
                       <span className="body2 gap-2 text-osmoverse-400">
                         {t("pool.24hrTradingVolume")}
                       </span>
-                      <SkeletonLoader
-                        className={classNames(
-                          isPoolMarketMetricsLoading ? "h-full w-32" : null
-                        )}
-                        isLoaded={!isPoolMarketMetricsLoading}
-                      >
-                        {poolMarketMetrics?.volume24hUsd && (
-                          <h4 className="text-osmoverse-100">
-                            {poolMarketMetrics.volume24hUsd.toString()}
-                          </h4>
-                        )}
-                      </SkeletonLoader>
+                      <h4 className="text-osmoverse-100">
+                        {pool.market.volume24hUsd.toString()}
+                      </h4>
                     </div>
                   )}
 
@@ -531,7 +514,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
           </div>
           {userSharePool && userSharePool.totalValue.toDec().isPositive() && (
             <div className="flex w-full gap-4 1.5lg:flex-col">
-              <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-1000 px-8 py-7">
+              <div className="flex flex-col gap-3 rounded-4xl bg-osmoverse-900 px-8 py-7">
                 <span className="body2 text-osmoverse-300">
                   {t("pool.yourStats")}
                 </span>
@@ -555,7 +538,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
               </div>
 
               <div className="flex flex-1 gap-4 1.5md:flex-col">
-                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-1000 px-8 pb-4 pt-2">
+                <div className="flex flex-1 flex-col space-y-3 rounded-4xl bg-osmoverse-900 px-8 pb-4 pt-2">
                   <PriceBreakdownChart
                     prices={[
                       {
@@ -607,14 +590,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         <h6 className="md:text-h6 md:font-h6">
                           {t("pool.earnSwapFees")}
                         </h6>
-                        {isPoolIncentivesLoading ? (
-                          <Spinner />
-                        ) : (
-                          poolIncentives?.aprBreakdown?.swapFee?.upper && (
-                            <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${poolIncentives.aprBreakdown.swapFee.upper
-                              .maxDecimals(2)
-                              .toString()} ${t("pool.APR")}`}</h6>
-                          )
+                        {pool.incentives?.aprBreakdown?.swapFee?.upper && (
+                          <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${pool.incentives.aprBreakdown.swapFee.upper
+                            .maxDecimals(2)
+                            .toString()} ${t("pool.APR")}`}</h6>
                         )}
                       </div>
                     </div>

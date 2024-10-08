@@ -13,7 +13,7 @@ export async function getEvmBalance({
   userAddress: string;
   chainId: number;
 }) {
-  const evmChain = Object.values(EthereumChainInfo).find(
+  const evmChain = EthereumChainInfo.find(
     (chain) => String(chain.id) === String(chainId)
   );
 

@@ -2,10 +2,9 @@ import type {
   AxelarAssetTransfer,
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
-import { Registry } from "@cosmjs/proto-signing";
+import type { Registry } from "@cosmjs/proto-signing";
 import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { cosmosMsgOpts, estimateGasFee } from "@osmosis-labs/tx";
+import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
@@ -50,7 +49,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
   // initialized via dynamic import
   protected _queryClient: AxelarQueryAPI | null = null;
   protected _assetTransferClient: AxelarAssetTransfer | null = null;
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
+  protected axelarChainId: string;
 
   protected readonly axelarScanBaseUrl: string;
   protected readonly axelarApiBaseUrl: string;
@@ -64,6 +64,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
       this.ctx.env === "mainnet"
         ? "https://api.axelarscan.io"
         : "https://testnet.api.axelarscan.io";
+    this.axelarChainId =
+      ctx.env === "mainnet" ? "axelar-dojo-1" : "axelar-testnet-lisbon-3";
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
@@ -417,14 +419,16 @@ export class AxelarBridgeProvider implements BridgeProvider {
       chainList: this.ctx.chainList,
       body: {
         messages: [
-          this.protoRegistry.encodeAsAny({
+          (
+            await this.getProtoRegistry()
+          ).encodeAsAny({
             typeUrl: transactionData.msgTypeUrl,
             value: transactionData.msg,
           }),
         ],
       },
       bech32Address: params.fromAddress,
-      fallbackGasLimit: cosmosMsgOpts.ibcTransfer.gas,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
     }).catch((e) => {
       if (
         e instanceof Error &&
@@ -470,7 +474,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams,
     transactionData: EvmBridgeTransactionRequest
   ) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       ({ id: chainId }) => String(chainId) === String(params.fromChain.chainId)
     );
 
@@ -568,7 +572,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           });
 
       const timeoutHeight = await this.ctx.getTimeoutHeight({
-        destinationAddress: depositAddress,
+        chainId: this.axelarChainId,
       });
 
       const ibcAsset = getAssetFromAssetList({
@@ -578,11 +582,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
       });
 
       if (!ibcAsset) {
-        throw new BridgeQuoteError({
-          bridgeId: AxelarBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message: "Could not find IBC asset info",
-        });
+        throw new Error("Could not find IBC asset info:  " + fromAsset.denom);
       }
 
       const ibcTransferMethod = ibcAsset.rawAsset.transferMethods.find(
@@ -590,28 +590,24 @@ export class AxelarBridgeProvider implements BridgeProvider {
       ) as IbcTransferMethod | undefined;
 
       if (!ibcTransferMethod) {
-        throw new BridgeQuoteError({
-          bridgeId: AxelarBridgeProvider.ID,
-          errorType: "CreateCosmosTxError",
-          message: "Could not find IBC asset transfer info",
-        });
+        throw new Error(
+          "Could not find IBC asset transfer info: " + ibcAsset.symbol
+        );
       }
 
-      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
-        {
-          receiver: depositAddress,
-          sender: fromAddress,
-          sourceChannel: ibcTransferMethod.chain.channelId,
-          sourcePort: "transfer",
-          timeoutTimestamp: "0" as any,
-          // @ts-ignore
-          timeoutHeight,
-          token: {
-            amount: fromAmount,
-            denom: fromAsset.address,
-          },
-        }
-      );
+      const { typeUrl, value: msg } = await makeIBCTransferMsg({
+        receiver: depositAddress,
+        sender: fromAddress,
+        sourceChannel: ibcTransferMethod.chain.channelId,
+        sourcePort: "transfer",
+        timeoutTimestamp: "0" as any,
+        // @ts-ignore
+        timeoutHeight,
+        token: {
+          amount: fromAmount,
+          denom: fromAsset.address,
+        },
+      });
 
       return {
         type: "cosmos",
@@ -812,6 +808,17 @@ export class AxelarBridgeProvider implements BridgeProvider {
     return this._assetTransferClient!;
   }
 
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
+  }
+
   async getExternalUrl({
     fromChain,
     toChain,
@@ -819,9 +826,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toAddress,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     const [fromChainId, toChainId, toAssetId] = await Promise.all([
-      this.getAxelarChainId(fromChain),
-      this.getAxelarChainId(toChain),
-      this.getAxelarAssetId(fromChain, fromAsset),
+      fromChain ? await this.getAxelarChainId(fromChain) : undefined,
+      toChain ? await this.getAxelarChainId(toChain) : undefined,
+      fromChain && fromAsset
+        ? await this.getAxelarAssetId(fromChain, fromAsset)
+        : undefined,
     ]);
 
     const url = new URL(
@@ -829,15 +838,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
         ? "https://satellite.money/"
         : "https://testnet.satellite.money/"
     );
-    url.searchParams.set("source", fromChainId);
-    url.searchParams.set("destination", toChainId);
-    // asset_denom denotes the selection of the from asset
-    url.searchParams.set("asset_denom", toAssetId);
+    if (fromChainId) url.searchParams.set("source", fromChainId);
+    if (toChainId) url.searchParams.set("destination", toChainId);
+    if (toAssetId) url.searchParams.set("asset_denom", toAssetId);
     if (toAddress) url.searchParams.set("destination_address", toAddress);
 
     return { urlProviderName: "Satellite Money", url };
   }
 }
 
-export * from "./tokens";
 export * from "./transfer-status";

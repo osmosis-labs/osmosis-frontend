@@ -2,6 +2,10 @@ import { sleep } from "@axelar-network/axelarjs-sdk";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import { PricePretty } from "@keplr-wallet/unit";
 import { EarnStrategy } from "@osmosis-labs/server";
+import {
+  makeExecuteCosmwasmContractMsg,
+  makeWithdrawDelegationRewardsMsg,
+} from "@osmosis-labs/tx";
 import { useCallback } from "react";
 
 import { Button } from "~/components/ui/button";
@@ -41,18 +45,18 @@ export const EarnRewards = ({
 
     if (!account) return;
 
-    filteredUnclaimedRewards.forEach(({ id, platform }) => {
+    for (const { id, platform } of filteredUnclaimedRewards) {
       switch (platform) {
         case "Osmosis":
           messages.push(
-            account?.osmosis.msgOpts.withdrawDelegationRewards.messageComposer({
+            await makeWithdrawDelegationRewardsMsg({
               delegator: account.address ?? "",
             })
           );
           break;
         case "Quasar":
           messages.push(
-            account.cosmwasm.msgOpts.executeWasm.messageComposer({
+            await makeExecuteCosmwasmContractMsg({
               contract: id,
               msg: Buffer.from(
                 JSON.stringify({
@@ -68,7 +72,7 @@ export const EarnRewards = ({
           break;
         case "Levana":
           messages.push(
-            account.cosmwasm.msgOpts.executeWasm.messageComposer({
+            await makeExecuteCosmwasmContractMsg({
               contract: id.split("-")[0], // this strips the -x|lp part of the contract id
               msg: Buffer.from(
                 JSON.stringify({
@@ -81,7 +85,7 @@ export const EarnRewards = ({
           );
           break;
       }
-    });
+    }
 
     try {
       await accountStore.signAndBroadcast(
@@ -120,19 +124,6 @@ export const EarnRewards = ({
       <h5 className="text-lg font-semibold text-osmoverse-100">
         {t("earnPage.rewards")}
       </h5>
-      {/* <div className="mt-5 flex flex-col gap-1">
-        <h5 className="text-xl font-semibold text-bullish-400">$221.64</h5>
-        <div className="flex items-center gap-1">
-          <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
-            {t("earnPage.estimatedInYearlyRewards")}
-          </small>
-          <Tooltip
-            content={"Lorem ipsum dolor sit amet, consecteur adisciping elit."}
-          >
-            <Icon id="info" className="h-4 w-4" />
-          </Tooltip>
-        </div>
-      </div> */}
       <div className="mt-3.5 flex justify-between">
         <h4 className="text-osmoverse-200">
           {formatPretty(totalUnclaimedRewards)}

@@ -40,7 +40,7 @@ export const AminoConverter = {
     fromAmino: MsgWithdrawDelegationRewards.fromAmino,
   },
   "/osmosis.valsetpref.v1beta1.MsgDelegateBondedTokens": {
-    aminoType: "osmosis/valsetpref/delegate-bonded-tokens",
+    aminoType: "osmosis/MsgDelegateBondedTokens",
     toAmino: MsgDelegateBondedTokens.toAmino,
     fromAmino: MsgDelegateBondedTokens.fromAmino,
   },

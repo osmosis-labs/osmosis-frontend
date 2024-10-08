@@ -3,10 +3,8 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
-import { displayFiatPrice } from "~/components/transactions/transaction-utils";
-import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 import { Spinner } from "../loaders";
 
@@ -14,7 +12,7 @@ export type TransactionStatus = "pending" | "success" | "failed";
 
 type Effect = "swap" | "deposit" | "withdraw";
 
-interface Transaction {
+export interface TransactionRow {
   isSelected?: boolean;
   status: TransactionStatus;
   /** At a high level- what this transaction does. */
@@ -39,9 +37,10 @@ interface Transaction {
     value?: PricePretty;
   };
   onClick?: () => void;
+  hash?: string;
 }
 
-export const TransactionRow: FunctionComponent<Transaction> = ({
+export const TransactionRow: FunctionComponent<TransactionRow> = ({
   isSelected = false,
   status,
   effect,
@@ -50,11 +49,13 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
   tokenConversion,
   transfer,
   onClick,
+  hash,
 }) => {
   const effectIconId = effect === "swap" ? "swap" : "down-arrow";
 
   return (
     <div
+      data-transaction-hash={hash}
       className={classNames(
         "-mx-4 flex justify-between gap-4 rounded-2xl p-4 md:-mx-2 md:gap-2 md:rounded-lg md:p-2",
         // Highlight the selected transaction
@@ -127,10 +128,9 @@ export const TransactionRow: FunctionComponent<Transaction> = ({
 /** UI for displaying one token being converted into another by this transaction. */
 const TokenConversion: FunctionComponent<
   { status: TransactionStatus; effect: Effect } & NonNullable<
-    Transaction["tokenConversion"]
+    TransactionRow["tokenConversion"]
   >
 > = ({ status, tokenIn, tokenOut, effect }) => {
-  const { t } = useTranslation();
   return (
     <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
       <div className="flex w-60 items-center justify-end gap-4 md:hidden">
@@ -147,7 +147,7 @@ const TokenConversion: FunctionComponent<
             </div>
           )}
           <div className="body2 text-osmoverse-400">
-            {displayFiatPrice(tokenIn?.value, "-", t)}
+            {tokenIn.value && `- ${formatFiatPrice(tokenIn.value)}`}
           </div>
         </div>
         <FallbackImg
@@ -187,7 +187,7 @@ const TokenConversion: FunctionComponent<
             </div>
           )}
           <div className="md:caption body2 mt-0 md:mt-1">
-            {displayFiatPrice(tokenOut?.value, "+", t)}
+            {tokenOut.value && `+ ${formatFiatPrice(tokenOut.value)}`}
           </div>
         </div>
       </div>
@@ -199,7 +199,7 @@ const TokenConversion: FunctionComponent<
 export const TokenTransfer: FunctionComponent<
   {
     status: TransactionStatus;
-  } & NonNullable<Transaction["transfer"]>
+  } & NonNullable<TransactionRow["transfer"]>
 > = ({ status, direction, amount, value }) => (
   <div className="flex items-center gap-4">
     <FallbackImg

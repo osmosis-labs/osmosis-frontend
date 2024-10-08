@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
-import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { TestConfig } from "~/e2e/test-config";
 
@@ -17,43 +16,57 @@ test.describe("Test Select Pool feature", () => {
       new TestConfig().getBrowserConfig(true)
     );
     page = context.pages()[0];
-    await page.coverage.startJSCoverage({
-      resetOnNavigation: false,
-    });
     poolsPage = new PoolsPage(page);
   });
 
   test.afterAll(async () => {
-    const coverage = await page.coverage.stopJSCoverage();
-    // coverage report
-    const report = await attachCoverageReport(coverage, test.info());
-    console.log(report.summary);
-
-    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 
-  test("User should be able to select ATOM/USDC", async () => {
+  test("User should be able to see at least 10 pools", async () => {
     await poolsPage.goto();
-    const poolPage = await poolsPage.viewPool(1282, "ATOM/USDC");
-    const balance = await poolPage.getBalance();
-    expect(balance).toEqual("$0");
-    const tradeModal = await poolPage.getTradeModal();
-    const pair = await tradeModal.getSelectedPair();
-    expect(pair).toEqual("ATOM/USDC");
-    await tradeModal.enterAmount("1");
-    await tradeModal.showSwapInfo();
+    expect(await poolsPage.getPoolsNumber()).toBeGreaterThan(10);
+    const topLiquidity = await poolsPage.getTopTenPoolsByLiquidity();
+    topLiquidity.every(function (element) {
+      expect(element).toBeGreaterThan(10_000);
+    });
+    const topVolume = await poolsPage.getTopTenPoolsByVolume();
+    topVolume.every(function (element) {
+      expect(element).toBeGreaterThan(10_000);
+    });
+    const topAPR = await poolsPage.getTopTenPoolsByAPR();
+    topAPR.every(function (element) {
+      expect(element).toContain("%");
+    });
   });
 
-  test("User should be able to select OSMO/USDC Pool", async () => {
+  test("User should be able to select ATOM/USDC pool", async () => {
+    const poolName = "ATOM/USDC";
     await poolsPage.goto();
-    const poolPage = await poolsPage.viewPool(1464, "OSMO/USDC");
+    await poolsPage.searchForPool(poolName);
+    const poolPage = await poolsPage.viewPool(1282, poolName);
     const balance = await poolPage.getBalance();
     expect(balance).toEqual("$0");
     const tradeModal = await poolPage.getTradeModal();
-    const pair = await tradeModal.getSelectedPair();
-    expect(pair).toEqual("OSMO/USDC");
     await tradeModal.enterAmount("1");
+    const rate = await tradeModal.getExchangeRate();
     await tradeModal.showSwapInfo();
+    expect(rate).toContain("ATOM");
+    expect(rate).toContain("USDC");
+  });
+
+  test("User should be able to select OSMO/USDC pool", async () => {
+    const poolName = "OSMO/USDC";
+    await poolsPage.goto();
+    await poolsPage.searchForPool(poolName);
+    const poolPage = await poolsPage.viewPool(1464, poolName);
+    const balance = await poolPage.getBalance();
+    expect(balance).toEqual("$0");
+    const tradeModal = await poolPage.getTradeModal();
+    await tradeModal.enterAmount("1");
+    const rate = await tradeModal.getExchangeRate();
+    await tradeModal.showSwapInfo();
+    expect(rate).toContain("OSMO");
+    expect(rate).toContain("USDC");
   });
 });

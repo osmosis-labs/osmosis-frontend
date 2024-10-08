@@ -95,8 +95,10 @@
     "totalBalance": "કુલ બેલેન્સ",
     "numPositions": "{numPositions} સ્થિતિ",
     "onePosition": "1 સ્થિતિ",
-    "goToPool": "પૂલ #{poolId} પર જાઓ"
+    "goToPool": "પૂલ #{poolId} પર જાઓ",
+    "errorFetchingPositions": "સ્થિતિ વિગતો મેળવવામાં નિષ્ફળ. કૃપા કરીને પૃષ્ઠને તાજું કરવાનો પ્રયાસ કરો. જો સમસ્યા ચાલુ રહે, તો સપોર્ટનો સંપર્ક કરો."
   },
+  "copied": "નકલ કરી!",
   "app": {
     "banner": {
       "backToOsmosis": "ઓસ્મોસિસ પર પાછા જાઓ",
@@ -126,85 +128,18 @@
     "secondaryCta": "30 સેકન્ડમાં શીખો"
   },
   "assets": {
-    "bondedAssets": "બંધાયેલા",
     "historyTable": {
       "colums": {
-        "amount": "રકમ",
         "deposit": "જમા",
-        "status": "સ્થિતિ",
-        "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
-        "type": "પ્રકાર",
         "withdraw": "ઉપાડો"
-      },
-      "errors": {
-        "insufficientFee": "અપૂરતી ફી"
-      },
-      "failed": "નિષ્ફળ",
-      "failedWithReason": "નિષ્ફળ: {reason}",
-      "pending": "બાકી છે",
-      "refunded": "રિફંડ",
-      "success": "સફળતા",
-      "title": "ટ્રાન્સફર ઇતિહાસ",
-      "pendingDeposit": "બાકી થાપણ",
-      "pendingWithdraw": "બાકી ઉપાડ",
-      "successDeposit": "જમા કરાવ્યું",
-      "successWithdraw": "પાછી ખેંચી લીધી",
-      "failDeposit": "ડિપોઝિટ નિષ્ફળ",
-      "failWithdraw": "ઉપાડ નિષ્ફળ",
-      "connectionError": "કનેક્શન ભૂલ"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "ઉમેરો",
-      "buttonEdit": "સંપાદિત કરો",
-      "buttonEnter": "દાખલ કરો",
-      "channelCongestedDeposit": "ડિપોઝિટ (ચેનલ ગીચ)",
-      "channelCongestedWithdraw": "ઉપાડ (ચેનલ ગીચ)",
-      "checkboxVerify": "હું ચકાસો છું કે હું એક્સચેન્જ એડ્રેસ પર મોકલી રહ્યો નથી.",
-      "estimatedTime": "અંદાજિત સમય",
-      "selectAmount": "રકમ પસંદ કરો",
-      "titleDeposit": "જમા {coinDenom}",
-      "titleWithdraw": "પાછી ખેંચો {coinDenom}",
-      "waitTime": "20 સેકન્ડ",
-      "warningLossFunds": "ચેતવણી: કેન્દ્રીય વિનિમય સરનામું પાછું ખેંચવાથી ભંડોળની ખોટ થશે.",
-      "provider": "પ્રદાતા"
-    },
-    "myPools": "તમારા પૂલ",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "બંધાયેલા",
-      "FeeAPY": "ફી APY",
-      "liquidity": "મારી લિક્વિડિટી"
-    },
-    "selectAssetSource": {
-      "installWallet": "ઇન્સ્ટોલ કરો {walletName}",
-      "next": "આગળ",
-      "titleDeposit": "થી જમા",
-      "titleWithdraw": "માટે પાછી ખેંચો"
-    },
-    "stakedAssets": "સ્ટેક્ડ OSMO",
     "table": {
       "columns": {
-        "assetChain": "સંપત્તિ / સાંકળ",
-        "balance": "સંતુલન",
-        "deposit": "જમા",
-        "transfer": "ટ્રાન્સફર",
-        "withdraw": "ઉપાડો"
+        "balance": "સંતુલન"
       },
       "depositButton": "જમા",
-      "hideZero": "શૂન્ય બેલેન્સ છુપાવો",
-      "hideBalances": "માસ્ક બેલેન્સ",
-      "preTransfer": {
-        "currentBal": "વર્તમાન રકમ",
-        "deposit": "જમા",
-        "withdraw": "ઉપાડો"
-      },
       "search": "શોધો",
-      "sort": {
-        "balance": "સંતુલન",
-        "network": "નેટવર્ક",
-        "symbol": "પ્રતીક"
-      },
-      "title": "તમામ અસ્કયામતો",
       "withdrawButton": "ઉપાડો",
       "activate": "સક્રિય કરો",
       "marketCap": "માર્કેટ કેપ",
@@ -214,72 +149,18 @@
       "lastWeek": "છેલ્લા 7 દિવસ",
       "asset": "એસેટ"
     },
-    "totalAssets": "કુલ સંપતિ",
     "totalBalance": "કુલ બેલેન્સ",
     "transfer": {
-      "availableMobile": "ઉપલબ્ધ છે",
-      "availableOn": "{network} પર ઉપલબ્ધ",
       "approving": "મંજૂર કરી રહ્યાં છીએ...",
       "approveInWallet": "વૉલેટમાં મંજૂર કરો",
-      "enterAddress": "{network} સરનામું",
       "errors": {
-        "insufficientBal": "અપર્યાપ્ત બેલેન્સ",
-        "insufficientFee": "અપૂરતી ફી",
-        "reconnectWallet": "ફરીથી કનેક્ટ કરો {walletName}",
-        "wrongNetworkInWallet": "{walletName} માં ખોટું નેટવર્ક",
-        "seeRequest": "{walletName} માં વિનંતી જુઓ",
-        "noQuotesAvailable": "કોઈ અવતરણ ઉપલબ્ધ નથી",
-        "unexpectedError": "અનપેક્ષિત ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
-        "transactionError": "વ્યવહાર મેળવવામાં ભૂલ. મહેરબાની કરીને ફરીથી પ્રયતન કરો.",
-        "invalidAddress": "અમાન્ય સરનામું",
-        "missingAddress": "સરનામું ખૂટે છે"
+        "seeRequest": "{walletName} માં વિનંતી જુઓ"
       },
-      "from": "થી",
       "loading": "લોડ કરી રહ્યું છે",
-      "titleDeposit": "જમા {coinDenom}",
-      "titleWithdraw": "પાછી ખેંચો {coinDenom}",
       "to": "પ્રતિ",
-      "transferFee": "ટ્રાન્સફર ફી",
-      "waitTime": "{minutes} મિનિટ",
-      "warnDepositAddressDifferent": "ચેતવણી: {address} માં પસંદ કરેલ ખાતું તમે છેલ્લે જમા કરાવેલ ખાતાથી અલગ છે.",
-      "expectedOutput": "અપેક્ષિત આઉટપુટ",
-      "expectedOutputInfo": "ઉપયોગમાં લેવાતા પ્રદાતાના આધારે, ફી, સ્લિપેજ અને કિંમતની અસર અનુસાર ઓછું આઉટપુટ હોઈ શકે છે.",
       "priceImpact": "ભાવની અસર",
       "sending": "મોકલી રહ્યું છે...",
       "transferAnyway": "કોઈપણ રીતે ટ્રાન્સફર કરો"
-    },
-    "transferAssetSelect": {
-      "buttonNext": "આગળ",
-      "deposit": "જમા",
-      "network": "નેટવર્ક",
-      "withdraw": "ઉપાડો"
-    },
-    "unbondedAssets": "ઉપલબ્ધ છે",
-    "nomic": {
-      "addresses": "સરનામાં",
-      "bitcoin": "બિટકોઇન (BTC)",
-      "bitcoinMinerFee": "Bitcoin ખાણિયો ફી",
-      "bridgeAtCapacity": "બ્રિજ હાલમાં ક્ષમતા પર છે. પછીથી ફરી પ્રયત્ન કરો.",
-      "bridgeFee": "નોમિક બ્રિજ ફી",
-      "confirmations": "6 પુષ્ટિકરણ",
-      "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો",
-      "estimatedArrival": "અંદાજિત આગમન",
-      "estimatedTimeTag": "અંદાજિત સમય",
-      "estimatedTime": "5 મિનિટ",
-      "expirationTime": "4 દિવસ",
-      "learnMore": "પર વધુ જાણો",
-      "lossOfFunds": "આ સમય પછી સરનામાના ઉપયોગથી ભંડોળની ખોટ થશે.",
-      "minDeposit": "ન્યૂનતમ થાપણ",
-      "minWithdrawal": "ન્યૂનતમ ઉપાડ",
-      "nomicCapacityLimit": "નોમિકની ક્ષમતા મર્યાદા છે",
-      "onlyUse": "ફક્ત ઉપયોગ કરો",
-      "pendingDeposits": "બાકી થાપણો",
-      "poweredBy": "દ્વારા સંચાલિત",
-      "proceed": "આગળ વધો",
-      "depositExpiration": "આ ડિપોઝિટ એડ્રેસની સમયસીમા સમાપ્ત થાય છે",
-      "undergoAudit": "જ્યારે ઓડિટ થઈ રહ્યું છે (અંદાજે જાન્યુઆરી 2024 પૂર્ણ થશે).",
-      "warning": "ચેતવણી:",
-      "loading": "લોડ કરી રહ્યું છે..."
     },
     "activateUnverifiedAssetsModal": {
       "activate": "ચકાસાયેલ અસ્કયામતો સક્રિય કરો",
@@ -315,19 +196,50 @@
   },
   "portfolio": {
     "buy": "ખરીદો",
-    "yourAssets": "તમારી સંપત્તિ",
+    "sell": "વેચો",
+    "yourBalances": "તમારું બેલેન્સ",
     "yourPositions": "તમારી સ્થિતિ",
-    "recentTransfers": "તાજેતરના ટ્રાન્સફર",
+    "searchBalances": "બેલેન્સ શોધો",
     "yourSuperchargedPositions": "તમારી સુપરચાર્જ્ડ પોઝિશન્સ",
     "yourLiquidityPools": "તમારા લિક્વિડિટી પૂલ",
     "connectWallet": "ઓસ્મોસિસ પર તમારા બેલેન્સ અને સ્થિતિને ટ્રૅક કરવાનું પ્રારંભ કરવા માટે તમારા વૉલેટને કનેક્ટ કરો.",
     "noAssets": "તમારી પાસે {osmosis} પર કોઈ બેલેન્સ નથી",
     "getStarted": "પ્રારંભ કરવા માટે અસ્કયામતો જમા કરો",
     "noPositions": "તમારી પાસે કોઈ હોદ્દા નથી",
-    "unlockPotential": "તમારી સંપૂર્ણ કમાણીની સંભાવનાને અનલૉક કરો અને તમારી સંપત્તિઓને લિક્વિડિટી પૂલ સાથે કામ કરવા માટે મૂકો"
+    "unlockPotential": "તમારી સંપૂર્ણ કમાણીની સંભાવનાને અનલૉક કરો અને તમારી સંપત્તિઓને લિક્વિડિટી પૂલ સાથે કામ કરવા માટે મૂકો",
+    "allocation": "ફાળવણી",
+    "available": "ઉપલબ્ધ છે",
+    "staked": "દાવ પર લગાવ્યો",
+    "unstaking": "અનસ્ટેકિંગ",
+    "unclaimedRewards": "દાવા વગરના પુરસ્કારો",
+    "pooled": "પૂલ",
+    "other": "અન્ય",
+    "all": "બધા",
+    "assets": "અસ્કયામતો",
+    "recentActivity": "તાજેતરની પ્રવૃત્તિ",
+    "seeAll": "બધા જુઓ",
+    "showHidden": "છુપાયેલ બતાવો ( {hiddenDustCount} )",
+    "hideSmallBalances": "નાના બેલેન્સ છુપાવો",
+    "cypherSpend": "ઓસ્મોસિસ પે",
+    "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
+    "cypherBeta": "બેટા",
+    "openOrders": "ઓર્ડર ખોલો",
+    "last24h": "છેલ્લા 24 કલાક",
+    "last7d": "ગત તા",
+    "last30d": "છેલ્લા 30 ડી",
+    "last1y": "છેલ્લા 1 વર્ષ",
+    "allTime": "બધા સમય",
+    "trade": "વેપાર",
+    "earn": "કમાઓ",
+    "deposit": "જમા",
+    "withdraw": "ઉપાડો",
+    "convert": "કન્વર્ટ કરો"
   },
   "buyTokens": "ટોકન્સ ખરીદો",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "અપૂરતું ભંડોળ"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "ફિયાટ ઓનરેમ્પ પસંદ કરો",
       "kadoSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
@@ -406,10 +318,12 @@
     "txTimedOutError": "વ્યવહારનો સમય સમાપ્ત થયો. કૃપા કરીને ફરી પ્રયાસ કરો.",
     "insufficientFee": "વ્યવહાર શુલ્ક માટે અપર્યાપ્ત બેલેન્સ. ચાલુ રાખવા માટે કૃપા કરીને ભંડોળ ઉમેરો.",
     "noData": "કોઈ ડેટા નથી",
+    "noOrderbook": "જોડી માટે કોઈ ઓર્ડરબુક નથી",
     "uhOhSomethingWentWrong": "ઓહ, કંઈક ખોટું થયું",
     "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
     "startAgain": "ફરી શરૂ કરો"
   },
+  "estimated": "અંદાજિત",
   "frontierMigration": {
     "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
     "simplifiedExperience": "તમારો અનુભવ સરળ કરવામાં આવ્યો છે!",
@@ -441,7 +355,6 @@
     "pools": "પૂલ",
     "stake": "દાવ",
     "store": "એપ્સ",
-    "swap": "સ્વેપ",
     "vote": "મત આપો",
     "featureRequests": "સુવિધા વિનંતીઓ",
     "trade": "પ્રો ટ્રેડિંગ",
@@ -476,8 +389,7 @@
       "learnMore": "વધુ શીખો",
       "startTradingButton": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "defaultParameters": "ડિફોલ્ટ સેટિંગ્સ $5,000 USD નુકશાન સંરક્ષણ મર્યાદા સાથે 1 કલાક પર સેટ છે.",
-      "changeButton": "સેટિંગ્સ સંપાદિત કરો",
-      "ledgerComingSoon": "લેજર હાર્ડવેર વૉલેટ સપોર્ટ ટૂંક સમયમાં આવી રહ્યું છે."
+      "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "floatingBanner": {
       "newPill": "નવી",
@@ -623,9 +535,6 @@
       "token": "ટોકન",
       "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {POOL_CREATION_FEE} ખર્ચ થશે.",
       "weightedPool": "ભારિત પૂલ"
-    },
-    "externalIncentivized": {
-      "TVL": "ટીવીએલ"
     },
     "TVL": "ટીવીએલ",
     "myLiquidity": "મારી લિક્વિડિટી",
@@ -792,9 +701,11 @@
     "MAX": "MAX",
     "minimumSlippage": "સ્લિપેજ પછી પ્રાપ્ત ન્યૂનતમ ( {slippage} )",
     "pool": "પૂલ # {id}",
-    "priceImpact": "ભાવની અસર",
+    "priceImpact": "બજારની અસર",
     "routerTooltipFee": "ફી",
     "routerTooltipSpreadFactor": "સ્પ્રેડ ફેક્ટર",
+    "showDetails": "વિગતો બતાવો",
+    "hideDetails": "છુપાવો",
     "continueAnyway": "કોઈપણ રીતે ચાલુ રાખો",
     "warning": {
       "exceedsSpendLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી બાકીની ખર્ચ મર્યાદાને ઓળંગે છે.",
@@ -806,7 +717,18 @@
       "title": "વ્યવહાર સેટિંગ્સ"
     },
     "title": "સ્વેપ",
-    "dynamicSpreadFactor": "ગતિશીલ"
+    "dynamicSpreadFactor": "ગતિશીલ",
+    "gas": {
+      "oneClickTradingError": "આ સમયે નેટવર્ક ફીનો અંદાજ લગાવી શકાતો નથી. જો ફી તમારી 1-ક્લિક ટ્રેડિંગ નેટવર્ક ફી મર્યાદા કરતાં વધી જાય, તો તમે તમારા વૉલેટમાં મેન્યુઅલ મંજૂરી સાથે આગળ વધી શકશો.",
+      "error": "આ સમયે નેટવર્ક ફીનો અંદાજ લગાવી શકાતો નથી. વ્યવહારને મંજૂરી આપતા પહેલા તમારા વૉલેટમાં નેટવર્ક ફીની સમીક્ષા કરો.",
+      "gasEstimationError": "નેટવર્ક ફીનો અંદાજ લગાવી શકાતો નથી",
+      "unknown": "અજ્ઞાત",
+      "additionalNetworkFee": "વધારાની નેટવર્ક ફી"
+    },
+    "noRoutes": "કોઈ રૂટ મળ્યા નથી",
+    "route": "માર્ગ",
+    "routes": "માર્ગો",
+    "slippageOverBalance": "સ્લિપેજને આવરી લેવા માટે અપૂરતું ભંડોળ"
   },
   "walletSelect": {
     "gettingStarted": "શરૂઆત કરવી",
@@ -909,6 +831,8 @@
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",
       "titleWithdraw": "વધુ ઉપાડ વિકલ્પો",
+      "depositDescriptionUnknown": "{denom} જમા કરાવવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
+      "withdrawDescriptionUnknown": "{denom} પાછી ખેંચવા માટે, કૃપા કરીને વૈકલ્પિક પ્રદાતાનો ઉપયોગ કરો.",
       "singleDescriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "singleDescriptionWithdraw": "{denom} ને {networkA} માંથી {networkB} માં પાછી ખેંચી લેવા {networkB} , કૃપા કરીને {service} નો ઉપયોગ કરો.",
       "descriptionDeposit": "{denom} {networkA} થી {networkB} , કૃપા કરીને નીચેના વૈકલ્પિક પ્રદાતાઓમાંથી એકનો ઉપયોગ કરો.",
@@ -927,8 +851,11 @@
       "title": "નેટવર્ક પસંદ કરો",
       "searchPlaceholder": "સપોર્ટેડ નેટવર્ક્સ શોધો"
     },
-    "pendingWithdraw": "બાકી ઉપાડ",
-    "pendingDeposit": "બાકી થાપણ",
+    "pendingWithdraw": "પાછી ખેંચવાની પ્રક્રિયા ચાલુ છે",
+    "pendingDeposit": "ડિપોઝીટ ચાલુ છે",
+    "amountToChain": "{amount} થી {chain}",
+    "amountFromChain": "{amount} {chain}",
+    "amountFailedToWithdraw": "{amount} પાછી ખેંચવામાં નિષ્ફળ",
     "completedWithdraw": "ઉપાડ પૂર્ણ",
     "completedDeposit": "ડિપોઝિટ પૂર્ણ",
     "failedWithdraw": "ઉપાડ નિષ્ફળ",
@@ -943,7 +870,6 @@
     "estimatedAmountReceived": "પ્રાપ્ત થયેલ અંદાજિત રકમ",
     "slippageWarning": "આ ટ્રાન્ઝેક્શન માટે અપેક્ષિત આઉટપુટ ઇનપુટ રકમ કરતાં નોંધપાત્ર રીતે ઓછું છે, જેના પરિણામે અપેક્ષા કરતાં અલગ અંતિમ રકમ પ્રાપ્ત થઈ શકે છે.",
     "priceImpactWarning": "આ વ્યવહારની કિંમતની અસર {priceImpact} છે, જે પ્રાપ્ત થયેલી અંતિમ રકમને પ્રભાવિત કરી શકે છે.",
-    "connect": "જોડાવા",
     "confirm": "પુષ્ટિ કરો",
     "cancel": "રદ કરો",
     "confirmDepositTo": "{chain} માં જમા કરાવવાની પુષ્ટિ કરો",
@@ -964,7 +890,17 @@
     "transferWithNoun": "{noun} વડે ટ્રાન્સફર કરો",
     "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
     "learnMore": "વધુ શીખો",
-    "openNoun": "{noun} ખોલો"
+    "openNoun": "{noun} ખોલો",
+    "insufficientFundsForFees": "ફી માટે અપૂરતું ભંડોળ",
+    "youNeedFundsToPay": "તમારે {chain} પર નેટવર્ક અને બ્રિજિંગ ફી ચૂકવવા માટે ભંડોળની જરૂર છે.",
+    "assetsDepositsUnavailable": "{asset} થાપણો અનુપલબ્ધ છે",
+    "assetsWithdrawsUnavailable": "{asset} ઉપાડ અનુપલબ્ધ છે",
+    "noAvailableDeposits": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
+    "noAvailableWithdraws": "હાલમાં કોઈ ઉપલબ્ધ રૂટ અથવા પ્રદાતાઓ શોધી શકાતા નથી. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો અથવા ઓસ્મોસિસમાંથી તમારા ભંડોળને ટ્રાન્સફર કરવા માટે વૈકલ્પિક એપ્લિકેશન સેટ કરો.",
+    "somethingIsntWorking": "કંઈક કામ કરતું નથી...",
+    "sorryForTheInconvenience": "અસુવીધી બદલ માફી. કૃપા કરીને પૃષ્ઠને તાજું કરો અને ફરીથી પ્રયાસ કરો અથવા તમારા ભંડોળને ઓસ્મોસિસમાં સ્થાનાંતરિત કરવા માટે વૈકલ્પિક એપ્લિકેશનનો ઉપયોગ કરો.",
+    "assetIsCurrentlyUnstable": "{asset} ટ્રાન્સફર હાલમાં અસ્થિર છે",
+    "transferWillLikelyTakeLonger": "સ્થાનાંતરણ સામાન્ય કરતાં વધુ સમય લેશે અથવા સંપૂર્ણપણે નિષ્ફળ થઈ શકે છે. તમારા પોતાના જોખમે આગળ વધો."
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
@@ -985,14 +921,6 @@
     "apps": {
       "title": "ઓસ્મોસિસ એપ સ્ટોર",
       "description": "વેપાર એ માત્ર પ્રથમ પગલું છે. તમારી સંપત્તિઓને કામ કરવા માટે મૂકો અને લીવરેજ, વૉલ્ટ્સ અને તેનાથી આગળ ઘણું બધું પૂર્ણ કરો"
-    },
-    "assets": {
-      "title": "અભિસરણ અસ્કયામતો",
-      "description": "ઓસ્મોસિસ પર ઉપલબ્ધ તમામ સંપત્તિઓ બ્રાઉઝ કરો - અગ્રણી વિકેન્દ્રિત કોસ્મોસ એક્સચેન્જ"
-    },
-    "portfolio": {
-      "title": "ઓસ્મોસિસ પોર્ટફોલિયો",
-      "description": "ઓસ્મોસિસ પર તમારી સંપત્તિ જુઓ - અગ્રણી વિકેન્દ્રિત કોસ્મોસ એક્સચેન્જ"
     },
     "disclaimer": {
       "title": "અભિસરણ અસ્વીકરણ",
@@ -1050,9 +978,6 @@
     "osmosisUpdates": "ઓસ્મોસિસ અપડેટ્સ!",
     "seeWhatsNew": "નવું શું છે તે જુઓ"
   },
-  "previewAssetsEnabled": "પૂર્વાવલોકન સંપત્તિ સક્ષમ",
-  "previewAssetsDisabled": "પૂર્વાવલોકન સંપત્તિ અક્ષમ છે",
-  "previewAssetsEnabledForSession": "આ સત્ર માટે પૂર્વાવલોકન સંપત્તિઓ સક્ષમ છે. અક્ષમ કરવા માટે નવી ટેબ ખોલો, અથવા `show_preview_assets=false` ઉમેરો.",
   "earnPage": {
     "title": "કમાઓ",
     "positions": "હોદ્દાઓ",
@@ -1076,7 +1001,6 @@
     "resetFilters": "ફિલ્ટર્સ રીસેટ કરો",
     "saveFilters": "ફિલ્ટર્સ સાચવો",
     "rewards": "પારિતોષિકો",
-    "estimatedInYearlyRewards": "વાર્ષિક પુરસ્કારોમાં અંદાજિત",
     "availableToClaim": "દાવો કરવા માટે ઉપલબ્ધ છે",
     "claimAllRewards": "બધા પુરસ્કારોનો દાવો કરો",
     "join": "જોડાઓ",
@@ -1130,7 +1054,6 @@
       "veryHigh": "ખૂબ જ ઊંચી"
     }
   },
-  "disclaimer": "અસ્વીકરણ",
   "remaining": "બાકી",
   "timeUnits": {
     "second": "બીજું",
@@ -1139,13 +1062,6 @@
     "minutes": "મિનિટ",
     "hour": "કલાક",
     "hours": "કલાક"
-  },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} થાપણો અસ્થિર",
-    "titleWithdraw": "{coinDenom} ઉપાડ અસ્થિર",
-    "description": "અનિશ્ચિત તકનીકી સમસ્યાઓને લીધે, ઓસ્મોસિસ અને {prettyChainName} વચ્ચેના સ્થાનાંતરણમાં નોંધપાત્ર વિલંબ અથવા વ્યવહાર નિષ્ફળતાનો અનુભવ થઈ શકે છે. તમારા પોતાના જોખમે આગળ વધો.",
-    "buttonContinue": "કોઈપણ રીતે ચાલુ રાખો",
-    "buttonCancel": "રદ કરો"
   },
   "transactions": {
     "noRecent": "કોઈ તાજેતરના ટ્રાન્સફર નથી",
@@ -1167,8 +1083,8 @@
     "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
     "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
     "launchAlert": "હાલમાં માત્ર વેપાર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
-    "noPriceData": "કિંમત ડેટા ઉપલબ્ધ નથી",
-    "viewAll": "બધુજ જુઓ"
+    "history": "ઇતિહાસ",
+    "orders": "ઓર્ડર"
   },
   "date": {
     "earlierToday": "આજેવહેલા",
@@ -1178,5 +1094,146 @@
   "pagination": {
     "older": "જૂની",
     "newer": "નવું"
-  }
+  },
+  "limitOrders": {
+    "floatingBanner": {
+      "title": "તમારી કિંમત પસંદ કરો",
+      "tryLimitOrders": "મર્યાદા ઓર્ડરનો પ્રયાસ કરો"
+    },
+    "historyTable": {
+      "columns": {
+        "order": "ઓર્ડર",
+        "amount": "રકમ",
+        "price": "કિંમત",
+        "orderPlaced": "ઓર્ડર આપ્યો",
+        "status": "સ્થિતિ"
+      },
+      "emptyState": {
+        "title": "કોઈ તાજેતરના ઓર્ડર નથી",
+        "subtitle": "તમારો ટ્રેડ ઓર્ડર ઇતિહાસ અહીં દેખાશે.",
+        "connectTitle": "તમારો ઓર્ડર ઇતિહાસ જોવા માટે તમારા વૉલેટને કનેક્ટ કરો",
+        "connectSubtitle": "ઓસ્મોસિસ પરના તમારા ભૂતકાળના મર્યાદા ઓર્ડર અહીં દેખાશે."
+      }
+    },
+    "aboveMarket": {
+      "title": "બજાર કિંમત ઉપર મર્યાદા કિંમત",
+      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+    },
+    "belowMarket": {
+      "title": "બજાર કિંમત નીચે કિંમત મર્યાદા",
+      "description": "જો તમે આગળ વધો છો, તો તમારા ઓર્ડરની બજાર કિંમત પર બજાર ઓર્ડર તરીકે પ્રક્રિયા કરવામાં આવશે."
+    },
+    "enterAnAmountTo": "માટે રકમ દાખલ કરો",
+    "toSell": "વેચવા માટે",
+    "toBuy": "ખરીદવા માટે",
+    "sell": "વેચો",
+    "sold": "વેચાય છે",
+    "percentFilled": "ટકા ભરેલ",
+    "status": "સ્થિતિ",
+    "price": "કિંમત",
+    "buy": "ખરીદો",
+    "pay": "પે",
+    "open": "ખુલ્લા",
+    "filled": "ભરેલ",
+    "claimable": "દાવો કરવા યોગ્ય",
+    "claimAndClose": "દાવો કરો અને બંધ કરો",
+    "close": "બંધ કરો",
+    "claim": "દાવો કરો",
+    "accept": "સ્વીકારો",
+    "cancelled": "રદ કરેલ",
+    "cancel": "રદ કરો",
+    "daysAgo": "{days} દિવસ પહેલા",
+    "hoursAgo": "{hours} કલાક પહેલા",
+    "buyWith": "{coinA} અથવા {coinB} વડે ખરીદો",
+    "orderHistory": "ઓર્ડર ઇતિહાસ",
+    "tradeAnotherAssetOr": "{coinA} અથવા {coinB} માટે બીજી સંપત્તિનો વેપાર કરો",
+    "tradeAnotherAsset": "{coinDenom} માટે બીજી સંપત્તિનો વેપાર કરો",
+    "sellAnAsset": "સંપત્તિ વેચો",
+    "swapAnAsset": "સંપત્તિ સ્વેપ કરો",
+    "of": "ના",
+    "insufficientFunds": "અપૂરતું ભંડોળ",
+    "startTrading": "વેપાર શરૂ કરો",
+    "tradeFees": "વેપાર ફી (જ્યારે ઓર્ડર ભરવામાં આવે છે)",
+    "youNeed": "તમને જરૂર છે",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "અવતરણ અપડેટ કર્યું",
+    "fundsOsmosisToBuyAssets": "અસ્કયામતો ખરીદવા માટે ઓસ્મોસિસ પર ભંડોળ.",
+    "chooseAnOption": "ચાલુ રાખવા માટે એક વિકલ્પ પસંદ કરો.",
+    "lowerSlippageToleranceRecommended": "ઓછી સ્લિપેજ સહિષ્ણુતાની ભલામણ કરવામાં આવે છે.",
+    "tryHigherSlippage": "ઉચ્ચ મહત્તમ સ્લિપેજ સહિષ્ણુતાનો પ્રયાસ કરો.",
+    "reviewTrade": "વેપારની સમીક્ષા કરો",
+    "errors": {
+      "noAssetAvailable": "તમારી પાસે ઓસ્મોસિસ પર વેપાર કરવા માટે કોઈ {coinName} ફંડ નથી. ચાલુ રાખવા માટે એક વિકલ્પ પસંદ કરો.",
+      "tradeMayResultInLossOfValue": "તમારા વેપારના પરિણામે મૂલ્યમાં નોંધપાત્ર નુકસાન થઈ શકે છે",
+      "tradeMayNotExecuted": "તમારો વેપાર કદાચ અમલમાં ન આવે"
+    },
+    "transferFromAnotherNetwork": "બીજા નેટવર્ક અથવા વૉલેટમાંથી ટ્રાન્સફર કરો",
+    "whatIsOrderClaim": {
+      "title": "ઓર્ડરનો દાવો શું છે?",
+      "description": "મોટા ભાગના કિસ્સાઓમાં, જ્યારે મર્યાદા ઓર્ડર ભરવામાં આવે છે, ત્યારે ભંડોળ આપમેળે તમારા બેલેન્સમાં ઉમેરવામાં આવે છે. જો કે કેટલાક દુર્લભ કિસ્સાઓમાં, ભરેલા ઓર્ડરમાંથી મેન્યુઅલી ભંડોળનો દાવો કરવો આવશ્યક છે.<inlang-LineFeed>\nઆ દાવો કરવાની પ્રક્રિયામાં તમારા વૉલેટમાં એક જ વ્યવહારને મંજૂર કરવાનો સમાવેશ થાય છે, જેના માટે નજીવી નેટવર્ક ફી લેવામાં આવે છે."
+    },
+    "whatIsAStablecoin": {
+      "title": "સ્ટેબલકોઈન શું છે?",
+      "description": "સ્ટેબલકોઇન્સ એ ક્રિપ્ટોકરન્સીનો એક પ્રકાર છે જેની કિંમત સ્થિર કિંમત જાળવવા માટે અન્ય સંપત્તિ, જેમ કે ફિયાટ ચલણ અથવા સોનામાં મૂકવામાં આવે છે. ઓસ્મોસિસ પર, અસ્કયામતો ખરીદવા અને વેચવા માટેના પ્રાથમિક સ્ટેબલકોઈન્સ USDC અને USDT છે."
+    },
+    "claimAll": "બધાનો દાવો કરો",
+    "addFunds": "ભંડોળ ઉમેરો",
+    "selectAnAssetTo": {
+      "buy": "ખરીદવા માટે સંપત્તિ પસંદ કરો",
+      "sell": "વેચવા માટે સંપત્તિ પસંદ કરો"
+    },
+    "payWith": "સાથે ચૂકવો",
+    "receive": "પ્રાપ્ત કરો",
+    "swapFromAnotherAsset": "અન્ય સંપત્તિમાંથી સ્વેપ કરો",
+    "connectYourWallet": "તમારું વૉલેટ કનેક્ટ કરો",
+    "toSeeYourBalances": "તમારા બેલેન્સ જોવા માટે",
+    "searchAssets": "સંપત્તિ શોધો",
+    "below": "નીચે",
+    "above": "ઉપર",
+    "currentPrice": "વર્તમાન ભાવ",
+    "whenDenomPriceIs": "જ્યારે {denom} કિંમત હોય છે",
+    "orderType": "ઓર્ડરનો પ્રકાર",
+    "confirm": "પુષ્ટિ કરો",
+    "market": "બજાર",
+    "limit": "મર્યાદા",
+    "trade": "વેપાર",
+    "swapToAnotherAsset": "અન્ય સંપત્તિમાં સ્વેપ કરો",
+    "invalidPrice": "અમાન્ય કિંમત",
+    "priceTooLow": "કિંમત ખૂબ ઓછી છે",
+    "priceTooHigh": "કિંમત ખૂબ ઊંચી છે",
+    "unavailable": "{denom} માટે અનુપલબ્ધ",
+    "orderHistoryHeaders": {
+      "past": "ભૂતકાળ",
+      "pending": "બાકી છે",
+      "filled": "દાવો કરવાના આદેશો ભર્યા"
+    },
+    "priceReaches": "જો {denom} કિંમત {price} સુધી પહોંચે છે",
+    "belowMinimumAmount": "{amount} ન્યૂનતમ"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "ભાવની અસર શું છે?",
+      "content": "બજારની તરલતાની તમારી એક્ઝિક્યુશન કિંમત પર આ અસર પડે છે. મોટા સોદાઓ મોટા બજાર પર અસર કરે છે."
+    },
+    "expectedRate": {
+      "header": "અપેક્ષિત દર શું છે?",
+      "content": "આ તે કિંમત છે જે તમને પ્રાપ્ત થવાની અપેક્ષા છે. કિંમતો વારંવાર બદલાતી રહે છે, તેથી જો તમે ચોક્કસ કિંમતે વેપાર કરવા માંગતા હો, તો તેના બદલે મર્યાદા ઓર્ડર અજમાવો."
+    },
+    "swapFees": {
+      "header": "સ્વેપ ફી શું છે?",
+      "content": "તરલતા પ્રદાતાઓને પુરસ્કાર આપવા અને નેટવર્ક જાળવવા માટે આ ઓસ્મોસિસ પ્રોટોકોલ દ્વારા લેવામાં આવતી ફી છે."
+    },
+    "tradeRoute": {
+      "header": "વેપાર માર્ગ શું છે?",
+      "contentTop": " જો તમે જે અસ્કયામતોનો વેપાર કરી રહ્યાં છો તે વચ્ચે કોઈ સીધું બજાર ન હોય, તો ઓસ્મોસિસ કોઈપણ સમયે શ્રેષ્ઠ કિંમત મેળવવા માટે અન્ય અસ્કયામતો સાથે શ્રેણીબદ્ધ સોદા કરીને વેપાર થાય તેવો પ્રયાસ કરશે.",
+      "contentBottom": "ઉપલબ્ધ તરલતાના આધારે શ્રેષ્ઠ કાર્યક્ષમતા માટે, કેટલીકવાર વિવિધ અસ્કયામતો સાથે સોદાને બહુવિધ રૂટમાં વિભાજિત કરવામાં આવશે."
+    },
+    "outputDifference": {
+      "header": "આઉટપુટ તફાવત શું છે?",
+      "content": "તમે જે ચૂકવો છો અને મેળવો છો તે વચ્ચેના મૂલ્યમાં આ તફાવત છે. સકારાત્મક સંખ્યાઓનો અર્થ એ છે કે તમે જે રકમ ખરીદી રહ્યાં છો તે વધુ મૂલ્યવાન છે, જ્યારે નકારાત્મક સંખ્યાઓનો અર્થ છે કે તમે જે રકમ વેચી રહ્યાં છો તે વધુ મૂલ્યવાન છે."
+    }
+  },
+  "tradeFee": "વેપાર ફી",
+  "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો",
+  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો"
 }

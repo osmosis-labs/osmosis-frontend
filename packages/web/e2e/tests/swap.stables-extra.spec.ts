@@ -12,7 +12,6 @@ test.describe("Test Swap Stables Extra feature", () => {
   const walletId =
     process.env.WALLET_ID_S ?? "osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c";
   const privateKey = process.env.PRIVATE_KEY_S ?? "private_key_s";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let swapPage: SwapPage;
   let USDTa =
     "ibc/8242AD24008032E457D2E12D46588FD39FB54FB29680C6C7663D296B383C37C4";
@@ -34,7 +33,7 @@ test.describe("Test Swap Stables Extra feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Stables", password);
+    await walletPage.setWalletNameAndPassword("Test Stables Extra");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
