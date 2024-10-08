@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least",
-  "payAtMost": "Sell at most"
+  "payAtMost": "Sell at most",
+  "alloyedAssets": {
+    "title": "Variants Detected",
+    "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis.",
+    "remindMeLater": "Remind me later",
+    "dismiss": "Dismiss",
+    "convert": "Convert"
+  }
 }

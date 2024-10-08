@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "交易费",
   "receiveAtLeast": "至少收到",
-  "payAtMost": "最多支付"
+  "payAtMost": "最多支付",
+  "alloyedAssets": {
+    "title": "检测到的变体",
+    "caption": "告别所有那些令人困惑的资产变体。迎接 Osmosis 上更加无缝的体验。",
+    "remindMeLater": "稍后提醒我",
+    "dismiss": "解雇",
+    "convert": "转变"
+  }
 }

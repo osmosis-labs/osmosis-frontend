@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "거래 수수료",
   "receiveAtLeast": "최소한 받다",
-  "payAtMost": "최대 지불"
+  "payAtMost": "최대 지불",
+  "alloyedAssets": {
+    "title": "변종 감지됨",
+    "caption": "혼란스러운 자산 변형에 작별 인사를 전하세요. Osmosis에서 더욱 매끄러운 경험을 만나보세요.",
+    "remindMeLater": "나중에 다시 알려주세요",
+    "dismiss": "해고하다",
+    "convert": "전환하다"
+  }
 }

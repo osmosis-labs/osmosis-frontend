@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin",
-  "payAtMost": "Plătește cel mult"
+  "payAtMost": "Plătește cel mult",
+  "alloyedAssets": {
+    "title": "Variante detectate",
+    "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
+    "remindMeLater": "Amintește-mi mai târziu",
+    "dismiss": "Respingeți",
+    "convert": "Convertit"
+  }
 }

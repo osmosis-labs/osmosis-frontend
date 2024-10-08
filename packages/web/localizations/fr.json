@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "Frais de transaction",
   "receiveAtLeast": "Recevez au moins",
-  "payAtMost": "Payer au maximum"
+  "payAtMost": "Payer au maximum",
+  "alloyedAssets": {
+    "title": "Variantes détectées",
+    "caption": "Dites adieu à toutes ces variantes d'actifs déroutantes. Dites bonjour à une expérience plus fluide sur Osmosis.",
+    "remindMeLater": "Rappelle-moi plus tard",
+    "dismiss": "Rejeter",
+    "convert": "Convertir"
+  }
 }

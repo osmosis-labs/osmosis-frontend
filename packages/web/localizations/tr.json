@@ -1246,5 +1246,12 @@
   },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al",
-  "payAtMost": "En fazla öde"
+  "payAtMost": "En fazla öde",
+  "alloyedAssets": {
+    "title": "Varyantlar Tespit Edildi",
+    "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
+    "remindMeLater": "Daha sonra hatırlat bana",
+    "dismiss": "Azletmek",
+    "convert": "Dönüştürmek"
+  }
 }
