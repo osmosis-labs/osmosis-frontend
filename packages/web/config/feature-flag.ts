@@ -10,8 +10,8 @@ export const RecommendedSwapDenoms = [
   "OSMO",
   "USDC",
   "USDT",
-  "ATOM",
-  "TIA",
-  "WBTC",
+  "BTC",
   "ETH",
+  "ATOM",
+  "TIA"
 ];
