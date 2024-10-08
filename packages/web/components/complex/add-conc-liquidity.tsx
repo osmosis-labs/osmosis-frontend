@@ -1,5 +1,6 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import type { Pool } from "@osmosis-labs/server";
+import { QuasarVault } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -41,6 +42,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
@@ -68,19 +70,14 @@ export const AddConcLiquidity: FunctionComponent<
 > = observer(
   ({ className, addLiquidityConfig, actionButton, onRequestClose }) => {
     const { poolId } = addLiquidityConfig;
-    const {
-      queriesStore,
-      chainStore: {
-        osmosis: { chainId },
-      },
-      queriesExternalStore,
-    } = useStore();
+    const { queriesExternalStore } = useStore();
 
     const { queryQuasarVaults } = queriesExternalStore;
     const { vaults: quasarVaults } = queryQuasarVaults.get(poolId);
 
-    // initialize pool data stores once root pool store is loaded
-    const pool = queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId);
+    const { data: pool } = api.edge.pools.getPool.useQuery({
+      poolId,
+    });
 
     return (
       <div
@@ -125,23 +122,21 @@ export const AddConcLiquidity: FunctionComponent<
 
 const Overview: FunctionComponent<
   {
-    pool?: ObservableQueryPool;
+    pool?: Pool;
     quasarVaults: QuasarVault[];
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
-  const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
+> = ({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
   const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
-  const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
-
-  const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
-    addLiquidityConfig.poolId
-  );
 
   const hasProvidersVaults = quasarVaults.length;
+
+  const isSuperfluid = Boolean(
+    pool?.incentives?.incentiveTypes?.includes("superfluid")
+  );
 
   return (
     <>
@@ -174,25 +169,21 @@ const Overview: FunctionComponent<
             {pool && (
               <>
                 <PoolAssetsIcon
-                  assets={pool.poolAssets.map(
-                    (asset: { amount: CoinPretty }) => ({
-                      coinDenom: asset.amount.denom,
-                      coinImageUrl: asset.amount.currency.coinImageUrl,
-                    })
-                  )}
+                  assets={pool.reserveCoins.map((asset) => ({
+                    coinDenom: asset.denom,
+                    coinImageUrl: asset.currency.coinImageUrl,
+                  }))}
                   size="sm"
                 />
                 <PoolAssetsName
                   size="md"
                   className="max-w-xs truncate"
-                  assetDenoms={pool.poolAssets.map(
-                    (asset: { amount: CoinPretty }) => asset.amount.denom
-                  )}
+                  assetDenoms={pool.reserveCoins.map(({ denom }) => denom)}
                 />
               </>
             )}
           </div>
-          {superfluidPoolDetail?.isSuperfluid && (
+          {isSuperfluid && (
             <span className="body2 text-superfluid-gradient">
               {t("pool.superfluidEnabled")}
             </span>
@@ -204,9 +195,7 @@ const Overview: FunctionComponent<
               {t("pool.24hrTradingVolume")}
             </span>
             <h6 className="text-osmoverse-100">
-              {queryPoolFeeMetrics
-                .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
-                .volume24h.toString()}
+              {pool?.market?.volume24hUsd?.toString() ?? ""}
             </h6>
           </div>
           <div className="gap-[3px]">
@@ -214,14 +203,16 @@ const Overview: FunctionComponent<
               {t("pool.liquidity")}
             </span>
             <h6 className="text-osmoverse-100">
-              {pool?.computeTotalValueLocked(priceStore).toString()}
+              {pool?.totalFiatValueLocked?.toString() ?? ""}
             </h6>
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
               {t("pool.spreadFactor")}
             </span>
-            <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
+            <h6 className="text-osmoverse-100">
+              {pool?.spreadFactor.toString()}
+            </h6>
           </div>
         </div>
       </div>
@@ -269,7 +260,7 @@ const Overview: FunctionComponent<
       </div>
     </>
   );
-});
+};
 
 const StrategySelector: FunctionComponent<{
   title: string;
@@ -325,7 +316,7 @@ const StrategySelector: FunctionComponent<{
 
 const AddConcLiqView: FunctionComponent<
   {
-    pool?: ObservableQueryPool;
+    pool?: Pool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
   } & CustomClasses
@@ -579,7 +570,7 @@ const AddConcLiqView: FunctionComponent<
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
-            currency={pool?.poolAssets[0]?.amount.currency}
+            currency={pool?.reserveCoins[0]?.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
@@ -595,7 +586,7 @@ const AddConcLiqView: FunctionComponent<
             percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
-            currency={pool?.poolAssets[1]?.amount.currency}
+            currency={pool?.reserveCoins[1]?.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
