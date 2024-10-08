@@ -3,6 +3,7 @@ import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
@@ -81,6 +82,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
               <SEO />
+              <SpeedInsights />
               <ToastContainer
                 toastStyle={{
                   backgroundColor: "#2d2755",
