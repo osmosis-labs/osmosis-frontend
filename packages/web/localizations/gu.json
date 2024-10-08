@@ -536,6 +536,17 @@
       "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {POOL_CREATION_FEE} ખર્ચ થશે.",
       "weightedPool": "ભારિત પૂલ"
     },
+    "createSupercharged": {
+      "createNew": "નવો સુપરચાર્જ્ડ પૂલ બનાવો",
+      "addInitialLiquidity": "પૂલ # {poolNumber} માં પ્રારંભિક પ્રવાહિતા ઉમેરો",
+      "buttonAddToken": "નવું ટોકન ઉમેરો",
+      "base": "આધાર",
+      "quote": "ભાવ",
+      "swapFee": "સ્વેપ ફી સેટ કરો",
+      "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {poolCreationFee} ખર્ચ થશે.",
+      "buttonCreate": "પૂલ બનાવો",
+      "buttonCreating": "બનાવી રહ્યા છે"
+    },
     "TVL": "ટીવીએલ",
     "myLiquidity": "મારી લિક્વિડિટી",
     "myPools": "તમારા પૂલ",
@@ -1254,5 +1265,12 @@
   },
   "tradeFee": "વેપાર ફી",
   "receiveAtLeast": "ઓછામાં ઓછું પ્રાપ્ત કરો",
-  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો"
+  "payAtMost": "વધુમાં વધુ ચૂકવણી કરો",
+  "alloyedAssets": {
+    "title": "વેરિઅન્ટ્સ મળી આવ્યા",
+    "caption": "તે બધા મૂંઝવણભર્યા એસેટ વેરિઅન્ટ્સને ગુડબાય કહો. ઓસ્મોસિસ પર વધુ સીમલેસ અનુભવ માટે હેલો કહો.",
+    "remindMeLater": "મને પછીથી યાદ કરાવો",
+    "dismiss": "કાઢી નાખો",
+    "convert": "કન્વર્ટ કરો"
+  }
 }

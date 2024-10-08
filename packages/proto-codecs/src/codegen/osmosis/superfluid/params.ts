@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { Decimal } from "../../decimals";
 /** Params holds parameters for the superfluid module */
 export interface Params {
   /**

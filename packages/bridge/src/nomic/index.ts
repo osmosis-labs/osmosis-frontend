@@ -3,6 +3,7 @@ import { IbcTransferMethod } from "@osmosis-labs/types";
 import { isCosmosAddressValid, timeout } from "@osmosis-labs/utils";
 import { generateDepositAddressIbc, getPendingDeposits } from "nomic-bitcoin";
 
+import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
@@ -39,13 +40,14 @@ export class NomicBridgeProvider implements BridgeProvider {
       throw new Error("Invalid Cosmos address");
     }
 
+    const nBTCMinimalDenom =
+      this.ctx.env === "mainnet"
+        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
+        : "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D"; // Testnet nBTC
+
     const nomicBtc = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find(
-        ({ coinMinimalDenom }) =>
-          coinMinimalDenom ===
-          "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-      );
+      .find(({ coinMinimalDenom }) => coinMinimalDenom === nBTCMinimalDenom);
 
     if (!nomicBtc) {
       throw new Error("Nomic Bitcoin asset not found in asset list.");
@@ -56,7 +58,7 @@ export class NomicBridgeProvider implements BridgeProvider {
     );
 
     if (!transferMethod) {
-      throw new Error("Nomic Bitcoin asset not found in asset list.");
+      throw new Error("IBC transfer method not found for Nomic Bitcoin asset.");
     }
 
     if (fromChain.chainId !== "bitcoin") {
@@ -72,13 +74,31 @@ export class NomicBridgeProvider implements BridgeProvider {
     });
 
     if (depositInfo.code === 1) {
-      throw new Error(
-        "Failed to generate deposit address. Cause: " + depositInfo.reason
-      );
+      throw new BridgeQuoteError({
+        bridgeId: "Nomic",
+        errorType: "NoQuotesError",
+        message:
+          "Failed to generate deposit address. Cause: " + depositInfo.reason,
+      });
     }
 
     if (depositInfo.code === 2) {
-      throw new Error("Failed to generate deposit address. Bridge at capacity");
+      throw new BridgeQuoteError({
+        bridgeId: "Nomic",
+        errorType: "NoQuotesError",
+        message: "Failed to generate deposit address. Bridge at capacity",
+      });
+    }
+
+    if (depositInfo.code !== 0) {
+      throw new BridgeQuoteError({
+        bridgeId: "Nomic",
+        errorType: "UnsupportedQuoteError",
+        message:
+          "Failed to generate deposit address. Unknown error code: " +
+          // @ts-expect-error
+          depositInfo.code,
+      });
     }
 
     return {

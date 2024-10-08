@@ -1,10 +1,10 @@
 import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
-import type { OfflineAminoSigner } from "@cosmjs/amino";
+import { type OfflineAminoSigner } from "@cosmjs/amino";
 import type { StdFee } from "@cosmjs/launchpad";
-import type {
-  EncodeObject,
-  OfflineDirectSigner,
-  Registry,
+import {
+  type EncodeObject,
+  type OfflineDirectSigner,
+  type Registry,
 } from "@cosmjs/proto-signing";
 import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {
@@ -1071,7 +1071,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const aminoTypes = await this.getAminoTypes();
-    const msgs = messages.map((msg) => {
+    const registry = await this.getRegistry();
+
+    /**
+     * Encode the messages to the proto format to normalize data types like Decimals.
+     * Then, convert the messages to their amino representations.
+     *
+     * This is necessary due to changes in Decimals in Osmosis v26.
+     * It will fix the following transactions:
+     * - Unbonding Weighted pool shares
+     * - Withdrawing concentrated liquidity positions
+     * - Creating all types of pools
+     */
+    const normalizedMessages = messages.map((msg) => {
+      const encodedMessage = registry.encode(msg);
+      const decodedMessage = registry.decode({
+        typeUrl: msg.typeUrl,
+        value: encodedMessage,
+      });
+      return {
+        value: decodedMessage,
+        typeUrl: msg.typeUrl,
+      } satisfies EncodeObject;
+    });
+
+    const msgs = normalizedMessages.map((msg) => {
       const res = aminoTypes.toAmino(msg);
       // Include the 'memo' field again because the 'registry' omits it
       if (msg.value.memo) {
@@ -1104,16 +1128,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const registry = await this.getRegistry();
     const signedTxBodyBytes = registry.encodeTxBody({
-      messages: signed.msgs.map((msg) => {
-        const res = aminoTypes.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
+      messages,
       memo: signed.memo,
       timeoutHeight: BigInt(signDoc.timeout_height ?? "0"),
     });
@@ -1231,7 +1247,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
 
     const registry = await this.getRegistry();
-    const txBodyBytes = registry.encode(txBodyEncodeObject) as Uint8Array;
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],

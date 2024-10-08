@@ -116,8 +116,7 @@ export const DepositAddressScreen = observer(
       ? dayjs(data.depositData.expirationTimeMs)
       : undefined;
 
-    const isExpired =
-      expirationTimeDayjs && expirationTimeDayjs.isBefore(dayjs());
+    const isExpired = expirationTimeDayjs?.isBefore(dayjs());
 
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">

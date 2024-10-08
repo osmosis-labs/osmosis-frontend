@@ -1,14 +1,17 @@
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useState } from "react";
 import {
   Id,
   toast,
   ToastContent,
   ToastOptions as ReactToastifyOptions,
 } from "react-toastify";
+import { useLocalStorage } from "react-use";
 
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { Checkbox } from "~/components/ui/checkbox";
 import { t } from "~/hooks";
 
 export type ToastOptions = Partial<ReactToastifyOptions> & {
@@ -65,6 +68,19 @@ export function displayToast(
       break;
     case ToastType.ONE_CLICK_TRADING:
       showToast(<OneClickTradingToast {...alert} />, toastOptions);
+      break;
+    case ToastType.ALLOYED_ASSETS:
+      showToast(
+        ({ closeToast }) => (
+          <AlloyedAssetsToast {...alert} closeToast={closeToast} />
+        ),
+        {
+          ...toastOptions,
+          toastId: ToastType.ALLOYED_ASSETS, // prevents duplicate toasts by using an explicit toast id
+          autoClose: false, // prevents Alloyed Assets toast from closing automatically - https://fkhadra.github.io/react-toastify/autoClose/
+          closeButton: false,
+        }
+      );
       break;
   }
 }
@@ -201,3 +217,117 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
     </div>
   </div>
 );
+
+export const AlloyedAssetsToastDoNotShowKey =
+  "do-not-show-alloyed-assets-toast";
+
+export const AlloyedAssetsToast: FunctionComponent<
+  Alert & { closeToast: () => void }
+> = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  const [, setDoNotShowAgain] = useLocalStorage(
+    AlloyedAssetsToastDoNotShowKey,
+    false
+  );
+
+  const [isRemindMeLaterChecked, setIsRemindMeLaterChecked] = useState(false);
+
+  const onDismiss = () => {
+    if (isRemindMeLaterChecked) {
+      setDoNotShowAgain(false);
+    } else {
+      setDoNotShowAgain(true);
+    }
+
+    closeToast();
+  };
+
+  const onConvert = () => {
+    // TODO: link to modal in other PR
+    // open modal
+    // Convert All
+    //   remind me later ✅
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    //   remind me later ❌
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    // Convert Selected
+    //   remind me later ✅
+    //     in modal, convert all invokes setDoNotShowAgain(true)
+    //   remind me later ❌ (still has remaining alloyed assets)
+    //     in modal, convert all invokes setDoNotShowAgain(false)
+
+    closeToast();
+  };
+
+  return (
+    <div className="w-full flex-col items-center pt-3 pl-0.5 pb-1">
+      <div className="flex w-full items-center justify-between">
+        <div className="flex -space-x-2">
+          <Icon
+            id="usdc-variant-static"
+            height={32}
+            width={32}
+            className="z-10"
+          />
+          <Icon
+            id="btc-variant-static"
+            height={32}
+            width={32}
+            className="z-20"
+          />
+          <Icon
+            id="eth-variant-static"
+            height={32}
+            width={32}
+            className="z-30"
+          />
+        </div>
+        <Icon
+          id="arrow"
+          height={32}
+          width={32}
+          className="text-osmoverse-300"
+        />
+        <div className="flex -space-x-2">
+          <Icon id="usdc-static" height={32} width={32} className="z-10" />
+          <Icon id="btc-static" height={32} width={32} className="z-20" />
+          <Icon id="eth-static" height={32} width={32} className="z-30" />
+        </div>
+      </div>
+      <div className="mt-6 flex flex-col gap-3">
+        <h6 className="text-h6 text-white-full">{t(titleTranslationKey)}</h6>
+        {captionTranslationKey && (
+          <p className="text-body2 text-osmoverse-300">
+            {typeof captionTranslationKey === "string"
+              ? t(captionTranslationKey)
+              : t(...captionTranslationKey)}
+          </p>
+        )}
+        <label className="my-1 flex items-center gap-2">
+          <Checkbox
+            checked={isRemindMeLaterChecked}
+            onCheckedChange={() =>
+              setIsRemindMeLaterChecked(!isRemindMeLaterChecked)
+            }
+          />
+          <span className="text-body2 text-osmoverse-300">
+            {t("alloyedAssets.remindMeLater")}
+          </span>
+        </label>
+        <div>
+          <div className="flex justify-between gap-3">
+            <Button
+              mode="secondary"
+              onClick={onDismiss}
+              className="!border !border-osmoverse-alpha-700 !text-wosmongton-200"
+            >
+              {t("alloyedAssets.dismiss")}
+            </Button>
+            <Button className="text-white-full" onClick={onConvert}>
+              {t("alloyedAssets.convert")}
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

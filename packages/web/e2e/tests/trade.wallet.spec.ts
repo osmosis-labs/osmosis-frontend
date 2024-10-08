@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, test } from "@playwright/test";
+import { type BrowserContext, chromium, expect, test } from "@playwright/test";
 import process from "process";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
@@ -13,14 +13,14 @@ test.describe("Test Trade feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  let USDC =
+  const USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  let ATOM =
+  const ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
-    console.log("\nSetup Wallet Extension before tests.");
+    console.log("\nSetup Keplr Wallet Extension before tests.");
     // Launch Chrome with a Keplr wallet extension
     context = await chromium.launchPersistentContext(
       "",
@@ -56,10 +56,9 @@ test.describe("Test Trade feature", () => {
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain(`denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
-    // https://www.mintscan.io/osmosis/txs
   });
 
   test("User should be able to Sell ATOM", async () => {
@@ -69,9 +68,9 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount("1.11");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("denom: " + USDC);
+    expect(msgContentAmount).toContain(`denom: ${USDC}`);
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    expect(msgContentAmount).toContain("denom: " + ATOM);
+    expect(msgContentAmount).toContain(`denom: ${ATOM}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });

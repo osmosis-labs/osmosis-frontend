@@ -8,24 +8,20 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
-import { getAssets } from "@osmosis-labs/server";
-import { ConcentratedLiquidityParams } from "@osmosis-labs/stores";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
-import classNames from "classnames";
+import { RatePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
-import { Spinner } from "~/components/loaders";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { useDisclosure, useFilteredData } from "~/hooks";
+import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { Button } from "~/components/ui/button";
+import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
   advanceStep?: () => void;
@@ -45,83 +41,22 @@ export const SetBaseInfos = observer(
     setSelectedQuote,
     setPoolId,
   }: SetBaseInfosProps) => {
-    const { accountStore, queriesStore } = useStore();
+    const { t } = useTranslation();
 
-    const queryConcentratedLiquidityParams = queriesStore.get(
-      accountStore.osmosisChainId
-    ).osmosis?.queryConcentratedLiquidityParams;
-
-    const { data: clParams, isLoading: isLoadingCLParams } = useQuery({
-      queryFn: () => queryConcentratedLiquidityParams?.waitResponse(),
-      queryKey: ["queryConcentratedLiquidityParams"],
-      select: (d) =>
-        (d?.data as unknown as { params: ConcentratedLiquidityParams }).params,
-      cacheTime: 1000 * 60 * 60,
-    });
+    const { accountStore } = useStore();
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+    const { data: baseTokens, isLoading: isLoadingBaseTokens } =
+      api.local.concentratedLiquidity.getBaseTokens.useQuery();
+    const { data: quoteTokens, isLoading: isLoadingQuoteTokens } =
+      api.local.concentratedLiquidity.getQuoteTokens.useQuery();
+    const { data: clParams } =
+      api.local.concentratedLiquidity.getClParams.useQuery();
 
     const [selectedSpread, setSelectedSpread] = useState(
       "0.000000000000000000"
     );
-
-    const { baseTokens, quoteTokens } = useMemo(() => {
-      return {
-        baseTokens: getAssets({
-          assetLists: AssetLists,
-          onlyVerified: true,
-        }).map((asset) => {
-          const assetListAsset = getAssetFromAssetList({
-            assetLists: AssetLists,
-            coinMinimalDenom: asset.coinMinimalDenom,
-          });
-
-          return {
-            chainName: assetListAsset?.rawAsset.chainName,
-            token: new CoinPretty(
-              {
-                coinDenom: asset.coinDenom,
-                coinDecimals: asset.coinDecimals,
-                coinMinimalDenom: asset.coinMinimalDenom,
-                coinImageUrl: asset.coinImageUrl,
-              },
-              0
-            ).currency,
-          };
-        }) as SelectionToken[],
-        quoteTokens: clParams
-          ? (clParams.authorized_quote_denoms
-              .map((qa): SelectionToken | undefined => {
-                const asset = getAssetFromAssetList({
-                  assetLists: AssetLists,
-                  coinMinimalDenom: qa,
-                });
-
-                if (!asset) return;
-
-                const {
-                  symbol,
-                  decimals,
-                  coinMinimalDenom,
-                  rawAsset: { logoURIs },
-                } = asset;
-                return {
-                  token: new CoinPretty(
-                    {
-                      coinDenom: symbol,
-                      coinDecimals: decimals,
-                      coinMinimalDenom,
-                      coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
-                    },
-                    0
-                  ).currency,
-                  chainName: asset.rawAsset.chainName,
-                };
-              })
-              .filter(Boolean) as SelectionToken[])
-          : [],
-      };
-    }, [clParams]);
 
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
@@ -131,31 +66,46 @@ export const SetBaseInfos = observer(
         <div className="flex flex-col gap-10">
           <div className="flex items-center justify-center gap-13">
             <div className="flex flex-col gap-2 pl-4">
-              <span className="subtitle1 text-white-emphasis">Base</span>
-              <TokenSelector
-                assets={baseTokens.filter(
-                  (qc) => qc.token.coinDenom !== selectedQuote?.token.coinDenom
-                )}
-                selectedAsset={selectedBase}
-                setSelectedAsset={setSelectedBase}
-              />
+              <span className="subtitle1 text-white">
+                {t("pools.createSupercharged.base")}
+              </span>
+              {baseTokens ? (
+                <TokenSelector
+                  assets={baseTokens.filter(
+                    (qc) =>
+                      qc.token.coinDenom !== selectedQuote?.token.coinDenom
+                  )}
+                  selectedAsset={selectedBase}
+                  setSelectedAsset={setSelectedBase}
+                />
+              ) : (
+                <SkeletonLoader className="h-[92px] w-[260px] rounded-3xl" />
+              )}
             </div>
             <div className="flex flex-col gap-2 pl-4">
-              <span className="subtitle1 text-white-emphasis">Quote</span>
-              <TokenSelector
-                assets={quoteTokens.filter(
-                  (qc) => qc.token.coinDenom !== selectedBase?.token.coinDenom
-                )}
-                selectedAsset={selectedQuote}
-                setSelectedAsset={setSelectedQuote}
-              />
+              <span className="subtitle1 text-white">
+                {t("pools.createSupercharged.quote")}
+              </span>
+              {quoteTokens ? (
+                <TokenSelector
+                  assets={quoteTokens.filter(
+                    (qc) => qc.token.coinDenom !== selectedBase?.token.coinDenom
+                  )}
+                  selectedAsset={selectedQuote}
+                  setSelectedAsset={setSelectedQuote}
+                />
+              ) : (
+                <SkeletonLoader className="h-[92px] w-[260px] rounded-3xl" />
+              )}
             </div>
           </div>
           <div className="flex items-center justify-center gap-5">
-            <span className="subtitle1">Set swap fee to</span>
+            <span className="subtitle1">
+              {t("pools.createSupercharged.swapFee")}
+            </span>
             {clParams ? (
               <SpreadSelector
-                options={clParams.authorized_spread_factors}
+                options={clParams.authorizedSpreadFactors}
                 value={selectedSpread}
                 onChange={setSelectedSpread}
               />
@@ -190,19 +140,16 @@ export const SetBaseInfos = observer(
               </svg>
             </Checkbox>
             <Label className="body2">
-              I understand that creating a new pool will cost 20 USDC
+              {t("pools.createSupercharged.undersandCost", {
+                poolCreationFee: "20 USDC",
+              })}
             </Label>
           </Field>
-          <button
-            disabled={
-              isTxLoading ||
-              !isAgreementChecked ||
-              isLoadingCLParams ||
-              !selectedBase
+          <Button
+            disabled={!isAgreementChecked || !selectedBase}
+            isLoading={
+              isLoadingBaseTokens || isLoadingQuoteTokens || isTxLoading
             }
-            className={classNames(
-              "flex h-13 w-[520px] items-center justify-center gap-2.5 rounded-xl bg-wosmongton-700 transition-all hover:bg-wosmongton-800 focus:bg-wosmongton-900 disabled:pointer-events-none disabled:bg-osmoverse-500"
-            )}
             onClick={() => {
               setIsTxLoading(true);
               account?.osmosis
@@ -233,9 +180,10 @@ export const SetBaseInfos = observer(
                 .finally(() => setIsTxLoading(false));
             }}
           >
-            <h6>{isTxLoading ? "Creating" : "Create"} Pool</h6>
-            {isTxLoading && <Spinner />}
-          </button>
+            {isTxLoading
+              ? t("pools.createSupercharged.buttonCreating")
+              : t("pools.createSupercharged.buttonCreate")}
+          </Button>
         </div>
       </>
     );
@@ -250,6 +198,7 @@ export interface TokenSelectorProps {
 
 const TokenSelector = observer(
   ({ selectedAsset, assets, setSelectedAsset }: TokenSelectorProps) => {
+    const { t } = useTranslation();
     const { isOpen, onClose, onOpen } = useDisclosure();
 
     const [query, setQuery, results] = useFilteredData(assets, [
@@ -281,7 +230,7 @@ const TokenSelector = observer(
                 <div className="flex h-13 w-13 items-center justify-center rounded-full bg-wosmongton-400">
                   <Icon id="close-button-icon" className="rotate-45" />
                 </div>
-                <h6>Add token</h6>
+                <h6>{t("pools.createSupercharged.buttonAddToken")}</h6>
               </>
             )}
           </div>
