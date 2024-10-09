@@ -36,8 +36,11 @@ export const useHasAssetVariants = () => {
   const { hasSeenToastThisSession, setHasSeenToast } =
     useHasAssetVariantsStore();
 
-  const enabled = isMounted && alloyedAssets && !hasSeenToastThisSession;
-  !isWalletLoading &&
+  const enabled =
+    isMounted &&
+    alloyedAssets &&
+    !hasSeenToastThisSession &&
+    !isWalletLoading &&
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
