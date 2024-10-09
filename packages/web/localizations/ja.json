@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
     "minimumDeposit": "最低入金額",
     "nomic": {
-      "confirmations": "6件の確認"
+      "estimatedTime": "約1時間"
     },
     "expiresIn": "有効期限は",
-    "getNewAddress": "新しい住所を取得",
     "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。"
   },
   "unknownError": "不明なエラー",

@@ -729,8 +729,32 @@ export const bridgeTransferRouter = createTRPCRouter({
         address: input.userOsmoAddress,
       });
 
+      //   {
+      //     transactionId: string;
+      //     amount: number;
+      //     confirmations: number;
+      // }[]
+
+      const mockPendingDeposits = [
+        {
+          transactionId: "123",
+          amount: 100,
+          confirmations: 1,
+        },
+        {
+          transactionId: "456",
+          amount: 200,
+          confirmations: 3,
+        },
+        {
+          transactionId: "789",
+          amount: 300,
+          confirmations: 6,
+        },
+      ];
+
       return {
-        pendingDeposits,
+        pendingDeposits: [...pendingDeposits, ...mockPendingDeposits],
       };
     }),
 });

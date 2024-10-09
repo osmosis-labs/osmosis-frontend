@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
     "minimumDeposit": "最低存款",
     "nomic": {
-      "confirmations": "6 次确认"
+      "estimatedTime": "约1小时"
     },
     "expiresIn": "有效期：",
-    "getNewAddress": "获取新地址",
     "addressExpired": "此地址已过期。请申请一个新地址。"
   },
   "unknownError": "未知错误",

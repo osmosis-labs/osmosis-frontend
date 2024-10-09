@@ -122,7 +122,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         coinGeckoId: nomicBtc.coingeckoId,
       },
       providerFee: new RatePretty(new Dec(depositInfo.bridgeFeeRate)),
-      estimatedTime: "transfer.nomic.confirmations",
+      estimatedTime: "transfer.nomic.estimatedTime", // About 1 hour
     };
   }
 

@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
-      "confirmations": "6 पुष्टियां"
+      "estimatedTime": "लगभग 1 घंटा"
     },
     "expiresIn": "में समाप्त होना",
-    "getNewAddress": "नया पता प्राप्त करें",
     "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।"
   },
   "unknownError": "अज्ञात त्रुटि",

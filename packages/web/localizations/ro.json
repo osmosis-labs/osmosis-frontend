@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "confirmations": "6 confirmări"
+      "estimatedTime": "Aproximativ 1 oră"
     },
     "expiresIn": "Expiră în",
-    "getNewAddress": "Obțineți o nouă adresă",
     "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou."
   },
   "unknownError": "Eroare necunoscuta",

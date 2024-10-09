@@ -117,6 +117,9 @@ export const DepositAddressScreen = observer(
       : undefined;
 
     const isExpired = expirationTimeDayjs?.isBefore(dayjs());
+    const willExpireIn4Hours = expirationTimeDayjs?.isBefore(
+      dayjs().add(4, "hour")
+    );
 
     return (
       <div className="relative flex w-full flex-col items-center justify-center p-4 text-osmoverse-200 md:py-2 md:px-0">
@@ -215,7 +218,13 @@ export const DepositAddressScreen = observer(
                         : undefined
                     }
                   >
-                    <p className="text-osmoverse-300">
+                    <p
+                      className={
+                        willExpireIn4Hours
+                          ? "text-rust-400"
+                          : "text-osmoverse-300"
+                      }
+                    >
                       {shorten(data?.depositData?.depositAddress ?? "", {
                         prefixLength: 9,
                         suffixLength: 5,
@@ -291,11 +300,18 @@ export const DepositAddressScreen = observer(
               </SkeletonLoader>
             </p>
             {isExpired ? (
-              <p className="body2 text-osmoverse-300">
+              <p className="body2 text-osmoverse-200">
+                <span className="font-bold">
+                  {t("transfer.doNotSendFundsToThisAddress")}
+                </span>{" "}
                 {t("transfer.addressExpired")}
               </p>
-            ) : (
+            ) : willExpireIn4Hours ? (
               <p className="body2 text-osmoverse-200">
+                {t("transfer.addressAboutToExpire")}
+              </p>
+            ) : (
+              <p className="body2 text-o smoverse-200">
                 {t("transfer.receiveOnlyAsset", {
                   denom: canonicalAsset.coinDenom,
                   network: fromChain.prettyName,
@@ -305,8 +321,8 @@ export const DepositAddressScreen = observer(
           </div>
         </div>
 
-        {isExpired ? (
-          <div className="flex w-full flex-col gap-3 py-3">
+        {isExpired || willExpireIn4Hours ? (
+          <div className="flex w-full flex-col py-3">
             <Button
               className="md:body1 text-h6 font-h6"
               onClick={() => {
@@ -314,15 +330,7 @@ export const DepositAddressScreen = observer(
                 refetch();
               }}
             >
-              {t("transfer.getNewAddress")}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setCurrentScreen(BridgeScreen.Asset)}
-            >
-              <div className="md:body1 text-h6 font-h6">
-                {t("transfer.done")}
-              </div>
+              {t("transfer.createNewDepositAddress")}
             </Button>
           </div>
         ) : (
@@ -364,7 +372,9 @@ export const DepositAddressScreen = observer(
                 refetchInterval={30000}
                 dataUpdatedAt={nomicDepositsDataUpdatedAt}
               />
-              <p>Awaiting BTC</p>
+              <p className="text-white-full">
+                {t("transfer.nomic.awaitingBtc")}
+              </p>
               {pendingDepositsData?.pendingDeposits?.map((deposit) => (
                 <div key={deposit.transactionId}>
                   <p>{deposit.amount}</p>

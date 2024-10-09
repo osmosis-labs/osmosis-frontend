@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "Este endereço só pode receber {denom} da rede {network} . Enviar quaisquer outros ativos pode resultar em perda permanente.",
     "minimumDeposit": "Depósito mínimo",
     "nomic": {
-      "confirmations": "6 confirmações"
+      "estimatedTime": "Cerca de 1 hora"
     },
     "expiresIn": "Expira em",
-    "getNewAddress": "Obter novo endereço",
     "addressExpired": "Este endereço expirou. Solicite um novo."
   },
   "unknownError": "Erro desconhecido",

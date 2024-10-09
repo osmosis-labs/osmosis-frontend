@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
     "minimumDeposit": "ન્યૂનતમ થાપણ",
     "nomic": {
-      "confirmations": "6 પુષ્ટિકરણ"
+      "estimatedTime": "લગભગ 1 કલાક"
     },
     "expiresIn": "માં સમાપ્ત થાય છે",
-    "getNewAddress": "નવું સરનામું મેળવો",
     "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો."
   },
   "unknownError": "અજાણી ભૂલ",

@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "此位址只能從{denom} {network} \"denom\"}。發送任何其他資產可能會導致永久性損失。",
     "minimumDeposit": "最低存款額",
     "nomic": {
-      "confirmations": "6 確認"
+      "estimatedTime": "約1小時"
     },
     "expiresIn": "到期時間",
-    "getNewAddress": "取得新地址",
     "addressExpired": "該地址已過期。請索取一份新的。"
   },
   "unknownError": "未知錯誤",

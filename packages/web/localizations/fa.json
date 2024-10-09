@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
     "minimumDeposit": "حداقل سپرده",
     "nomic": {
-      "confirmations": "6 تائید"
+      "estimatedTime": "حدود 1 ساعت"
     },
     "expiresIn": "منقضی می شود",
-    "getNewAddress": "آدرس جدید دریافت کنید",
     "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید."
   },
   "unknownError": "خطای نا شناس",

@@ -924,10 +924,9 @@
     "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
     "minimumDeposit": "Minimum mevduat",
     "nomic": {
-      "confirmations": "6 onay"
+      "estimatedTime": "Yaklaşık 1 saat"
     },
     "expiresIn": "Sona eriyor",
-    "getNewAddress": "Yeni adres al",
     "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin."
   },
   "unknownError": "Bilinmeyen hata",
