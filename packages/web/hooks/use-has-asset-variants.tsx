@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
+import { create } from "zustand";
+
+const useHasAssetVariantsStore = create<{
+  hasSeenToastThisSession: boolean;
+  setHasSeenToast: (value: boolean) => void;
+}>((set) => ({
+  hasSeenToastThisSession: false,
+  setHasSeenToast: (value: boolean) => set({ hasSeenToastThisSession: value }),
+}));
 
 import {
   AlloyedAssetsToastDoNotShowKey,
@@ -29,20 +38,12 @@ export const useHasAssetVariants = () => {
   const enabled =
     isMounted &&
     alloyedAssets &&
-    doNotShowAgain !== false &&
     !isWalletLoading &&
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  console.log("isMounted:", isMounted);
-  console.log("alloyedAssets:", alloyedAssets);
-  console.log("doNotShowAgain:", doNotShowAgain);
-  console.log("isWalletLoading:", isWalletLoading);
-  console.log("wallet?.isWalletConnected:", wallet?.isWalletConnected);
-  console.log("wallet?.address:", wallet?.address);
-  console.log("enabled:", enabled);
-
-  console.log("enabled: ", enabled);
+  const { hasSeenToastThisSession, setHasSeenToast } =
+    useHasAssetVariantsStore();
 
   api.local.portfolio.getAllocation.useQuery(
     {
@@ -51,10 +52,12 @@ export const useHasAssetVariants = () => {
     {
       enabled,
       onSuccess: (data) => {
+        // note - there is some local storage order issues when navigating between pages, so hasSeenToastThisSession is a failsafe
+        if (doNotShowAgain === true || hasSeenToastThisSession) return;
+
         const hasAssetsToConvert = data?.hasVariants ?? false;
 
-        const shouldDisplayToast =
-          hasAssetsToConvert && !isMobile && !doNotShowAgain;
+        const shouldDisplayToast = hasAssetsToConvert && !isMobile;
 
         if (shouldDisplayToast) {
           displayToast(
@@ -67,6 +70,8 @@ export const useHasAssetVariants = () => {
               position: "bottom-right",
             }
           );
+
+          setHasSeenToast(true);
         }
       },
       onError: (error) => {
