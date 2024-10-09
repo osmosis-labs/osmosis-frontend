@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 import { create } from "zustand";
@@ -35,15 +33,13 @@ export const useHasAssetVariants = () => {
 
   const [doNotShowAgain] = useLocalStorage(AlloyedAssetsToastDoNotShowKey);
 
-  const enabled =
-    isMounted &&
-    alloyedAssets &&
-    !isWalletLoading &&
-    Boolean(wallet?.isWalletConnected) &&
-    Boolean(wallet?.address);
-
   const { hasSeenToastThisSession, setHasSeenToast } =
     useHasAssetVariantsStore();
+
+  const enabled = isMounted && alloyedAssets && !hasSeenToastThisSession;
+  !isWalletLoading &&
+    Boolean(wallet?.isWalletConnected) &&
+    Boolean(wallet?.address);
 
   api.local.portfolio.getAllocation.useQuery(
     {
