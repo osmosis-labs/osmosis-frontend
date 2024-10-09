@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -22,25 +24,35 @@ export const useHasAssetVariants = () => {
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
-  const [doNotShowAgain] = useLocalStorage(
-    AlloyedAssetsToastDoNotShowKey,
-    false
-  );
+  const [doNotShowAgain] = useLocalStorage(AlloyedAssetsToastDoNotShowKey);
+
+  const enabled =
+    isMounted &&
+    alloyedAssets &&
+    doNotShowAgain !== false &&
+    !isWalletLoading &&
+    Boolean(wallet?.isWalletConnected) &&
+    Boolean(wallet?.address);
+
+  console.log("isMounted:", isMounted);
+  console.log("alloyedAssets:", alloyedAssets);
+  console.log("doNotShowAgain:", doNotShowAgain);
+  console.log("isWalletLoading:", isWalletLoading);
+  console.log("wallet?.isWalletConnected:", wallet?.isWalletConnected);
+  console.log("wallet?.address:", wallet?.address);
+  console.log("enabled:", enabled);
+
+  console.log("enabled: ", enabled);
 
   api.local.portfolio.getAllocation.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
-      enabled:
-        isMounted &&
-        alloyedAssets &&
-        !doNotShowAgain &&
-        !isWalletLoading &&
-        Boolean(wallet?.isWalletConnected) &&
-        Boolean(wallet?.address),
+      enabled,
       onSuccess: (data) => {
         const hasAssetsToConvert = data?.hasVariants ?? false;
+
         const shouldDisplayToast =
           hasAssetsToConvert && !isMobile && !doNotShowAgain;
 
