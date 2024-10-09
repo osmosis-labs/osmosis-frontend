@@ -20,7 +20,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
+import { QueryRemainingTime } from "./bridge-quote-remaining-time";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -361,7 +361,7 @@ const TransferDetails: FunctionComponent<
             ) : (
               <div className="flex items-center gap-3 text-osmoverse-300 md:gap-1.5">
                 {selectedQuoteUpdatedAt && (
-                  <BridgeQuoteRemainingTime
+                  <QueryRemainingTime
                     className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
                     dataUpdatedAt={selectedQuoteUpdatedAt}
                     refetchInterval={refetchInterval}
@@ -369,7 +369,7 @@ const TransferDetails: FunctionComponent<
                     strokeWidth={2}
                   >
                     <Icon id="down-arrow" className="md:h-4 md:w-4" />
-                  </BridgeQuoteRemainingTime>
+                  </QueryRemainingTime>
                 )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />

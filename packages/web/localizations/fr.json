@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
     "minimumDeposit": "Dépôt minimum",
     "nomic": {
-      "estimatedTime": "Environ 1 heure"
+      "estimatedTime": "Environ 1 heure",
+      "awaitingBtc": "En attente de BTC",
+      "transferringYourBtc": "Transférer votre BTC",
+      "depositSuccess": "Succès du dépôt"
     },
     "expiresIn": "Expire dans",
-    "addressExpired": "Cette adresse a expiré. Veuillez en demander une nouvelle."
+    "doNotSendFundsToThisAddress": "N'envoyez pas de fonds à cette adresse.",
+    "addressExpired": "Cette adresse a expiré. Veuillez en demander une nouvelle.",
+    "addressAboutToExpire": "Cette adresse est sur le point d'expirer. Veuillez demander une nouvelle adresse pour éviter de perdre des fonds.",
+    "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
+    "transactionDetails": "Détails de la transaction"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",

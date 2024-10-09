@@ -16,10 +16,10 @@ import { FunctionComponent, ReactNode, useState } from "react";
 import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
-import { BridgeQuoteRemainingTime } from "~/components/bridge/bridge-quote-remaining-time";
 import { QuoteDetailRow } from "~/components/bridge/quote-detail";
 import { DepositAddressBridge } from "~/components/bridge/use-bridge-quotes";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { NomicPendingTransfers } from "~/components/nomic/nomic-pending-transfers";
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button, IconButton } from "~/components/ui/button";
@@ -87,25 +87,6 @@ export const DepositAddressScreen = observer(
           useErrorBoundary: true,
         }
       );
-
-    const {
-      data: pendingDepositsData,
-      isLoading: isPendingDepositsLoading,
-      dataUpdatedAt: nomicDepositsDataUpdatedAt,
-    } = api.bridgeTransfer.getNomicPendingDeposits.useQuery(
-      {
-        userOsmoAddress: osmosisAddress!,
-      },
-      {
-        enabled: !!osmosisAddress && bridge === "Nomic",
-        refetchInterval: 30000,
-        trpc: {
-          context: {
-            skipBatch: true,
-          },
-        },
-      }
-    );
 
     const { hasCopied, onCopy } = useClipboard(
       data?.depositData?.depositAddress ?? "",
@@ -363,27 +344,7 @@ export const DepositAddressScreen = observer(
 
         <div className="mb-3 mt-6 h-[1px] w-full border border-osmoverse-800" />
 
-        <DepositInfoRow label={<span>Deposit status</span>}>
-          {isPendingDepositsLoading ? (
-            <Spinner />
-          ) : (
-            <div className="flex items-center gap-2">
-              <BridgeQuoteRemainingTime
-                refetchInterval={30000}
-                dataUpdatedAt={nomicDepositsDataUpdatedAt}
-              />
-              <p className="text-white-full">
-                {t("transfer.nomic.awaitingBtc")}
-              </p>
-              {pendingDepositsData?.pendingDeposits?.map((deposit) => (
-                <div key={deposit.transactionId}>
-                  <p>{deposit.amount}</p>
-                  <p>{deposit.confirmations}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </DepositInfoRow>
+        {bridge === "Nomic" && <NomicPendingTransfers />}
       </div>
     );
   }

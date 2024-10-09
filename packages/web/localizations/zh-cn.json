@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
     "minimumDeposit": "最低存款",
     "nomic": {
-      "estimatedTime": "约1小时"
+      "estimatedTime": "约1小时",
+      "awaitingBtc": "等待比特币",
+      "transferringYourBtc": "转移你的比特币",
+      "depositSuccess": "存款成功"
     },
     "expiresIn": "有效期：",
-    "addressExpired": "此地址已过期。请申请一个新地址。"
+    "doNotSendFundsToThisAddress": "请勿向该地址汇款。",
+    "addressExpired": "此地址已过期。请申请一个新地址。",
+    "addressAboutToExpire": "此地址即将过期。请申请新地址以避免资金损失。",
+    "createNewDepositAddress": "创建新的存款地址",
+    "transactionDetails": "交易详情"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

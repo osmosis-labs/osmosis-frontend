@@ -925,13 +925,16 @@
     "minimumDeposit": "Minimum deposit",
     "nomic": {
       "estimatedTime": "About 1 hour",
-      "awaitingBtc": "Awaiting BTC"
+      "awaitingBtc": "Awaiting BTC",
+      "transferringYourBtc": "Transferring your BTC",
+      "depositSuccess": "Deposit success"
     },
     "expiresIn": "Expires in",
     "doNotSendFundsToThisAddress": "Do not send funds to this address.",
     "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
     "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
-    "createNewDepositAddress": "Create new deposit address"
+    "createNewDepositAddress": "Create new deposit address",
+    "transactionDetails": "Transaction details"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
     "minimumDeposit": "ન્યૂનતમ થાપણ",
     "nomic": {
-      "estimatedTime": "લગભગ 1 કલાક"
+      "estimatedTime": "લગભગ 1 કલાક",
+      "awaitingBtc": "BTC ની રાહ જોઈ રહ્યા છીએ",
+      "transferringYourBtc": "તમારું BTC ટ્રાન્સફર કરી રહ્યાં છીએ",
+      "depositSuccess": "જમા કરાવવામાં સફળતા"
     },
     "expiresIn": "માં સમાપ્ત થાય છે",
-    "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો."
+    "doNotSendFundsToThisAddress": "આ સરનામે ભંડોળ મોકલશો નહીં.",
+    "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો.",
+    "addressAboutToExpire": "આ સરનામું સમાપ્ત થવામાં છે. ભંડોળ ગુમાવવાનું ટાળવા માટે કૃપા કરીને નવા સરનામાની વિનંતી કરો.",
+    "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
+    "transactionDetails": "વ્યવહારની વિગતો"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

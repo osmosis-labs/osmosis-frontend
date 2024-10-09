@@ -729,32 +729,59 @@ export const bridgeTransferRouter = createTRPCRouter({
         address: input.userOsmoAddress,
       });
 
-      //   {
-      //     transactionId: string;
-      //     amount: number;
-      //     confirmations: number;
-      // }[]
+      const btcMinimalDenom = IS_TESTNET
+        ? "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D"
+        : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
+
+      const btcPrice = await getAssetPrice({
+        ...ctx,
+        asset: {
+          coinMinimalDenom: btcMinimalDenom,
+        },
+      });
 
       const mockPendingDeposits = [
         {
           transactionId: "123",
-          amount: 100,
+          amount: 0.001,
           confirmations: 1,
+          fiatValue: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            btcPrice.mul(new Dec(0.001))
+          ),
         },
         {
           transactionId: "456",
-          amount: 200,
+          amount: 0.1,
           confirmations: 3,
+          fiatValue: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            btcPrice.mul(new Dec(0.1))
+          ),
         },
         {
           transactionId: "789",
-          amount: 300,
+          amount: 0.01,
           confirmations: 6,
+          fiatValue: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            btcPrice.mul(new Dec(0.01))
+          ),
         },
       ];
 
       return {
-        pendingDeposits: [...pendingDeposits, ...mockPendingDeposits],
+        pendingDeposits: [
+          ...pendingDeposits.map((deposit) => ({
+            ...deposit,
+            amount: deposit.amount,
+            fiatValue: new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              btcPrice.mul(new Dec(deposit.amount))
+            ),
+          })),
+          ...mockPendingDeposits,
+        ],
       };
     }),
 });

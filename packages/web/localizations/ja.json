@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
     "minimumDeposit": "最低入金額",
     "nomic": {
-      "estimatedTime": "約1時間"
+      "estimatedTime": "約1時間",
+      "awaitingBtc": "BTCを待つ",
+      "transferringYourBtc": "BTCの送金",
+      "depositSuccess": "入金成功"
     },
     "expiresIn": "有効期限は",
-    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。"
+    "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
+    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
+    "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",
+    "createNewDepositAddress": "新しい入金アドレスを作成する",
+    "transactionDetails": "取引の詳細"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

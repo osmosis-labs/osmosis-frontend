@@ -9,7 +9,7 @@ import { t } from "~/hooks";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
-import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
+import { QueryRemainingTime } from "./bridge-quote-remaining-time";
 import { BridgeQuote } from "./use-bridge-quotes";
 
 export const BridgeProviderDropdownRow: FunctionComponent<{
@@ -229,7 +229,7 @@ export const ExpandDetailsControlContent: FunctionComponent<{
   return (
     <div className="flex items-center gap-2 md:gap-1">
       {!isNil(selectedQuoteUpdatedAt) && showRemainingTime && (
-        <BridgeQuoteRemainingTime
+        <QueryRemainingTime
           dataUpdatedAt={selectedQuoteUpdatedAt}
           refetchInterval={refetchInterval}
           isPaused={isRemainingTimePaused}

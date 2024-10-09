@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
     "minimumDeposit": "Минимальный депозит",
     "nomic": {
-      "estimatedTime": "Около 1 часа"
+      "estimatedTime": "Около 1 часа",
+      "awaitingBtc": "Ожидание BTC",
+      "transferringYourBtc": "Перевод ваших BTC",
+      "depositSuccess": "Успех депозита"
     },
     "expiresIn": "Истекает через",
-    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый."
+    "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",
+    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
+    "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
+    "createNewDepositAddress": "Создать новый адрес депозита",
+    "transactionDetails": "Подробности транзакции"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

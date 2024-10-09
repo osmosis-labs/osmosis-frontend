@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "estimatedTime": "Aproximativ 1 oră"
+      "estimatedTime": "Aproximativ 1 oră",
+      "awaitingBtc": "În așteptarea BTC",
+      "transferringYourBtc": "Transferul dvs. BTC",
+      "depositSuccess": "Depozit cu succes"
     },
     "expiresIn": "Expiră în",
-    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou."
+    "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
+    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
+    "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",
+    "createNewDepositAddress": "Creați o nouă adresă de depozit",
+    "transactionDetails": "Detalii tranzacție"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
     "minimumDeposit": "حداقل سپرده",
     "nomic": {
-      "estimatedTime": "حدود 1 ساعت"
+      "estimatedTime": "حدود 1 ساعت",
+      "awaitingBtc": "در انتظار بیت کوین",
+      "transferringYourBtc": "انتقال بیت کوین شما",
+      "depositSuccess": "موفقیت در سپرده گذاری"
     },
     "expiresIn": "منقضی می شود",
-    "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید."
+    "doNotSendFundsToThisAddress": "از ارسال وجوه به این آدرس خودداری کنید.",
+    "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید.",
+    "addressAboutToExpire": "این آدرس رو به اتمام است. لطفاً برای جلوگیری از از دست دادن وجوه، یک آدرس جدید درخواست کنید.",
+    "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
+    "transactionDetails": "جزئیات معامله"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

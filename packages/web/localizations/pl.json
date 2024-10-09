@@ -924,10 +924,17 @@
     "receiveOnlyAsset": "Ten adres może odbierać tylko {denom} z sieci {network} . Wysyłanie innych zasobów może skutkować trwałą utratą.",
     "minimumDeposit": "Minimalny depozyt",
     "nomic": {
-      "estimatedTime": "Około 1 godziny"
+      "estimatedTime": "Około 1 godziny",
+      "awaitingBtc": "Oczekiwanie na BTC",
+      "transferringYourBtc": "Przesyłanie BTC",
+      "depositSuccess": "Wpłata zakończona sukcesem"
     },
     "expiresIn": "Wygasa za",
-    "addressExpired": "Ten adres wygasł. Poproś o nowy."
+    "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",
+    "addressExpired": "Ten adres wygasł. Poproś o nowy.",
+    "addressAboutToExpire": "Ten adres wkrótce wygaśnie. Poproś o nowy adres, aby uniknąć utraty środków.",
+    "createNewDepositAddress": "Utwórz nowy adres depozytowy",
+    "transactionDetails": "Szczegóły transakcji"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
