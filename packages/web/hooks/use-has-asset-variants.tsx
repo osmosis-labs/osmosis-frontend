@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
+import { create } from "zustand";
+
+const useHasAssetVariantsStore = create<{
+  hasSeenToastThisSession: boolean;
+  setHasSeenToast: (value: boolean) => void;
+}>((set) => ({
+  hasSeenToastThisSession: false,
+  setHasSeenToast: (value: boolean) => set({ hasSeenToastThisSession: value }),
+}));
 
 import {
   AlloyedAssetsToastDoNotShowKey,
@@ -22,25 +31,31 @@ export const useHasAssetVariants = () => {
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
-  const [doNotShowAgain] = useLocalStorage(
-    AlloyedAssetsToastDoNotShowKey,
-    false
-  );
+  const [doNotShowAgain] = useLocalStorage(AlloyedAssetsToastDoNotShowKey);
+
+  const { hasSeenToastThisSession, setHasSeenToast } =
+    useHasAssetVariantsStore();
+
+  const enabled =
+    isMounted &&
+    alloyedAssets &&
+    !hasSeenToastThisSession &&
+    !isWalletLoading &&
+    Boolean(wallet?.isWalletConnected) &&
+    Boolean(wallet?.address);
 
   api.local.portfolio.getAllocation.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
-      enabled:
-        isMounted &&
-        alloyedAssets &&
-        !doNotShowAgain &&
-        !isWalletLoading &&
-        Boolean(wallet?.isWalletConnected) &&
-        Boolean(wallet?.address),
+      enabled,
       onSuccess: (data) => {
+        // note - there is some local storage order issues when navigating between pages, so hasSeenToastThisSession is a failsafe
+        if (doNotShowAgain === true || hasSeenToastThisSession) return;
+
         const hasAssetsToConvert = data?.hasVariants ?? false;
+
         const shouldDisplayToast = hasAssetsToConvert && !isMobile;
 
         if (shouldDisplayToast) {
@@ -54,11 +69,14 @@ export const useHasAssetVariants = () => {
               position: "bottom-right",
             }
           );
+
+          setHasSeenToast(true);
         }
       },
       onError: (error) => {
         console.error(error);
       },
+      refetchOnWindowFocus: false,
     }
   );
 };
