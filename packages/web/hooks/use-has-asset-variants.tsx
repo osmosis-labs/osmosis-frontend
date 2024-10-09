@@ -56,7 +56,8 @@ export const useHasAssetVariants = () => {
 
         const hasAssetsToConvert = data?.hasVariants ?? false;
 
-        const shouldDisplayToast = hasAssetsToConvert && !isMobile;
+        const shouldDisplayToast =
+          alloyedAssets && hasAssetsToConvert && !isMobile;
 
         if (shouldDisplayToast) {
           displayToast(
