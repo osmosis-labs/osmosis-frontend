@@ -41,7 +41,8 @@ export const useHasAssetVariants = () => {
         Boolean(wallet?.address),
       onSuccess: (data) => {
         const hasAssetsToConvert = data?.hasVariants ?? false;
-        const shouldDisplayToast = hasAssetsToConvert && !isMobile;
+        const shouldDisplayToast =
+          hasAssetsToConvert && !isMobile && !doNotShowAgain;
 
         if (shouldDisplayToast) {
           displayToast(
@@ -59,6 +60,7 @@ export const useHasAssetVariants = () => {
       onError: (error) => {
         console.error(error);
       },
+      refetchOnWindowFocus: false,
     }
   );
 };
