@@ -1253,5 +1253,17 @@
     "remindMeLater": "Amintește-mi mai târziu",
     "dismiss": "Respingeți",
     "convert": "Convertit"
+  },
+  "assetVariantsConversion": {
+    "title": "Standardizați activele",
+    "description": "Convertiți următoarele elemente în versiunea lor standardizată pe Osmosis pentru mai multă flexibilitate și compatibilitate sporită.",
+    "learnMore": "Află mai multe",
+    "errorLoading": "Eroare la încărcarea variantelor de material, încercați din nou mai târziu.",
+    "selectAll": "Selectați Toate",
+    "convertSelected": "Convertiți selectat",
+    "variantsDetected": "Variante detectate",
+    "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
+    "tooltipTitle": "{coinName} pe osmoză",
+    "tooltipDescription": "Osmoza consolidează numeroase variante de {coinDenom} într-un singur activ pentru mai multă flexibilitate și ușurință în utilizare."
   }
 }

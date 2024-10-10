@@ -1253,5 +1253,17 @@
     "remindMeLater": "Lembre-me mais tarde",
     "dismiss": "Liberar",
     "convert": "Converter"
+  },
+  "assetVariantsConversion": {
+    "title": "Padronizar Ativos",
+    "description": "Converta os seguintes ativos para sua versão padronizada no Osmosis para obter mais flexibilidade e compatibilidade aprimorada.",
+    "learnMore": "Saber mais",
+    "errorLoading": "Erro ao carregar variantes de ativos. Tente novamente mais tarde.",
+    "selectAll": "Selecionar tudo",
+    "convertSelected": "Converter selecionado",
+    "variantsDetected": "Variantes Detectadas",
+    "caption": "Diga adeus a todas essas variantes de ativos confusas. Diga olá a uma experiência mais integrada no Osmosis.",
+    "tooltipTitle": "{coinName} em Osmose",
+    "tooltipDescription": "O Osmosis consolida diversas variantes de {coinDenom} em um único ativo simples para maior flexibilidade e facilidade de uso."
   }
 }

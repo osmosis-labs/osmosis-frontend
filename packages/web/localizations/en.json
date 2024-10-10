@@ -1258,11 +1258,12 @@
     "title": "Standardize Assets",
     "description": "Convert the following assets to their standardized version on Osmosis for more flexibility and increased compatibility.",
     "learnMore": "Learn more",
-    "loading": "Loading...",
-    "errorLoading": "Error loading asset variants.",
+    "errorLoading": "Error loading asset variants, please try again later.",
     "selectAll": "Select All",
     "convertSelected": "Convert Selected",
     "variantsDetected": "Variants Detected",
-    "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis."
+    "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis.",
+    "tooltipTitle": "{coinName} on Osmosis",
+    "tooltipDescription": "Osmosis consolidates numerous variants of {coinDenom} into one simple asset for more flexibility and ease of use."
   }
 }

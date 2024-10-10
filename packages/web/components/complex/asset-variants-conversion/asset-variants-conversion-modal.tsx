@@ -202,12 +202,16 @@ const AssetVariantsConversion = observer(
                           </div>
                           <div className="flex flex-col gap-1">
                             <span className="caption">
-                              {variant.canonicalAsset?.coinName}
+                              {t("assetVariantsConversion.tooltipTitle", {
+                                coinName:
+                                  variant.canonicalAsset?.coinName ?? "",
+                              })}
                             </span>
                             <span className="caption text-osmoverse-300">
-                              Osmosis consolidates numerous variants of{" "}
-                              {variant.canonicalAsset?.coinDenom} into one
-                              simple asset for more flexibility and ease of use.
+                              {t("assetVariantsConversion.tooltipDescription", {
+                                coinDenom:
+                                  variant.canonicalAsset?.coinDenom ?? "",
+                              })}
                             </span>
                           </div>
                         </div>
