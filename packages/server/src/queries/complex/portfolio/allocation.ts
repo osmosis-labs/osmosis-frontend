@@ -203,11 +203,6 @@ export function checkAssetVariants(
   amount: Dec;
   canonicalAsset: MinimalAsset | null;
 }[] {
-  const filteredAssetListAssets = assetListAssets.filter(
-    (asset) =>
-      asset.variantGroupKey ===
-      "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH"
-  );
   const assetMap = new Map(
     assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
   );
