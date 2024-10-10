@@ -51,7 +51,6 @@ export const useHasAssetVariants = () => {
     {
       enabled,
       onSuccess: (data) => {
-        console.log("data", data);
         // note - there is some local storage order issues when navigating between pages, so hasSeenToastThisSession is a failsafe
         if (doNotShowAgain === true || hasSeenToastThisSession) return;
 

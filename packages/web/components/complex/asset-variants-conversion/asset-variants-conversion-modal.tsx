@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { create } from "zustand";
 
 // Import useTranslation
@@ -11,7 +11,7 @@ import { Tooltip } from "~/components/tooltip"; // Ensure Tooltip is imported
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Skeleton } from "~/components/ui/skeleton"; // Ensure Skeleton is imported
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -50,12 +50,9 @@ interface AssetVariantsConversionProps {
 const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
     const { accountStore } = useStore();
-    console.log("onRequestClose: ", onRequestClose);
-
     const account = accountStore.getWallet(accountStore.osmosisChainId);
-
+    const { isMobile } = useWindowSize();
     const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
-
     const { t } = useTranslation();
 
     const { data, error, isLoading } =
@@ -77,6 +74,14 @@ const AssetVariantsConversion = observer(
           },
         }
       );
+
+    // should close toast if screen size changes to mobile while shown
+    useEffect(() => {
+      if (isMobile) {
+        // Use timeout to avoid the maximum update depth exceeded error
+        setTimeout(onRequestClose, 0);
+      }
+    }, [isMobile, onRequestClose]);
 
     const handleSelectAll = () => {
       setCheckedVariants(
@@ -246,6 +251,11 @@ const AssetVariantsConversion = observer(
               //     in modal, convert all invokes setDoNotShowAgain(true)
               //   remind me later ❌ (still has remaining alloyed assets)
               //     in modal, convert all invokes setDoNotShowAgain(false)
+
+              // TODO - remove this
+              setTimeout(() => {
+                onRequestClose();
+              }, 3000);
             }}
             className="w-full"
           >
