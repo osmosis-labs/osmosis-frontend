@@ -179,8 +179,6 @@ export const AssetBalancesTable: FunctionComponent<{
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
-  const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
-
   // Define columns
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
