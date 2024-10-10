@@ -3,11 +3,14 @@ import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import React, { memo, useState } from "react";
 
+// Import useTranslation
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip"; // Ensure Tooltip is imported
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { Skeleton } from "~/components/ui/skeleton"; // Ensure Skeleton is imported
+import { useTranslation } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -47,6 +50,8 @@ const AssetVariantsConversion = observer(
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
+
+    const { t } = useTranslation();
 
     const { data, error, isLoading } =
       api.local.portfolio.getAllocation.useQuery(
@@ -91,31 +96,38 @@ const AssetVariantsConversion = observer(
     return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
         <p className="body1 text-center text-osmoverse-300">
-          Convert the following assets to their standardized version on Osmosis
-          for more flexibility and increased compatibility.{" "}
+          {t("assetVariantsConversion.description")}{" "}
           <Link
             href="/learn/asset-variants"
             className="text-wosmongton-300 hover:underline"
           >
-            Learn more
+            {t("assetVariantsConversion.learnMore")}
           </Link>
         </p>
         <div className="-mx-3 mt-6 flex h-14 items-center">
           <Button
-            disabled={checkedVariants.length === data?.assetVariants?.length}
+            disabled={
+              isLoading ||
+              checkedVariants.length === data?.assetVariants?.length
+            }
             size="md"
             variant="ghost"
             className="text-wosmongton-200" // Added h-14 for 56px height
             onClick={handleSelectAll}
           >
-            Select All
+            {t("assetVariantsConversion.selectAll")}
           </Button>
         </div>
         <div className="flex flex-col">
           {isLoading ? (
-            <p>Loading...</p>
+            <div className="flex flex-col gap-3">
+              {" "}
+              {/* Added gap for spacing */}
+              <Skeleton className="h-[90px] w-full" /> {/* First skeleton */}
+              <Skeleton className="h-[90px] w-full" /> {/* Second skeleton */}
+            </div>
           ) : error ? (
-            <p>Error loading asset variants.</p>
+            <p>{t("assetVariantsConversion.errorLoading")}</p>
           ) : (
             data?.assetVariants?.map((variant) => (
               <div
@@ -221,7 +233,7 @@ const AssetVariantsConversion = observer(
             }}
             className="w-full"
           >
-            Convert Selected
+            {t("assetVariantsConversion.convertSelected")}
           </Button>
         </div>
       </div>
