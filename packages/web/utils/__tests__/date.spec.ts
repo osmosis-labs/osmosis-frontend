@@ -62,8 +62,8 @@ cases(
       name: "should return formatted date for more than a day",
       input: 25 * 60 * 60, // 25 hours from now
       expected: {
-        value: dayjs().add(25, "hour").format("MMM D, YYYY"),
-        unit: "", // No unit expected for dates
+        value: 1,
+        unit: "day", // No unit expected for dates
       },
     },
   ]

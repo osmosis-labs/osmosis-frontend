@@ -911,7 +911,24 @@
     "somethingIsntWorking": "何かがうまくいかない…",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。ページを更新してもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
     "assetIsCurrentlyUnstable": "{asset}の転送は現在不安定です",
-    "transferWillLikelyTakeLonger": "転送には通常より時間がかかるか、完全に失敗する可能性があります。自己責任で進めてください。"
+    "transferWillLikelyTakeLonger": "転送には通常より時間がかかるか、完全に失敗する可能性があります。自己責任で進めてください。",
+    "sendFromWalletOrExchange": "ウォレットまたは取引所から送金する",
+    "scanWithMobileWallet": "モバイルウォレットでスキャン",
+    "or": "または",
+    "copied": "コピーしました",
+    "copyToClipboard": "クリップボードにコピー",
+    "showQrCode": "QRコードを表示",
+    "yourDepositAddress": "{denom}入金アドレス",
+    "copyAddressToClipboard": "アドレスをクリップボードにコピー",
+    "copyAddress": "アドレスをコピー",
+    "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
+    "minimumDeposit": "最低入金額",
+    "nomic": {
+      "confirmations": "6件の確認"
+    },
+    "expiresIn": "有効期限は",
+    "getNewAddress": "新しい住所を取得",
+    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -1072,7 +1089,9 @@
     "minute": "分",
     "minutes": "分",
     "hour": "時間",
-    "hours": "時間"
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
   },
   "transactions": {
     "noRecent": "最近の送金はありません",

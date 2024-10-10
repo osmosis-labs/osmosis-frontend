@@ -911,7 +911,24 @@
     "somethingIsntWorking": "Algo não está funcionando…",
     "sorryForTheInconvenience": "Desculpe pela inconveniência. Atualize a página e tente novamente ou use um aplicativo alternativo para transferir seus fundos para o Osmosis.",
     "assetIsCurrentlyUnstable": "As transferências {asset} estão instáveis no momento",
-    "transferWillLikelyTakeLonger": "As transferências provavelmente levarão mais tempo do que o normal ou poderão falhar totalmente. Prossiga por sua conta e risco."
+    "transferWillLikelyTakeLonger": "As transferências provavelmente levarão mais tempo do que o normal ou poderão falhar totalmente. Prossiga por sua conta e risco.",
+    "sendFromWalletOrExchange": "Envie da sua carteira ou bolsa",
+    "scanWithMobileWallet": "Digitalize com sua carteira móvel",
+    "or": "ou",
+    "copied": "Copiado",
+    "copyToClipboard": "Copiar para área de transferência",
+    "showQrCode": "Mostrar código QR",
+    "yourDepositAddress": "Seu endereço de depósito {denom}",
+    "copyAddressToClipboard": "Copiar endereço para área de transferência",
+    "copyAddress": "Copiar endereço",
+    "receiveOnlyAsset": "Este endereço só pode receber {denom} da rede {network} . Enviar quaisquer outros ativos pode resultar em perda permanente.",
+    "minimumDeposit": "Depósito mínimo",
+    "nomic": {
+      "confirmations": "6 confirmações"
+    },
+    "expiresIn": "Expira em",
+    "getNewAddress": "Obter novo endereço",
+    "addressExpired": "Este endereço expirou. Solicite um novo."
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
@@ -1072,7 +1089,9 @@
     "minute": "minuto",
     "minutes": "minutos",
     "hour": "hora",
-    "hours": "horas"
+    "hours": "horas",
+    "day": "dia",
+    "days": "dias"
   },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",

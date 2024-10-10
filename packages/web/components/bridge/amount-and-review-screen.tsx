@@ -30,7 +30,7 @@ interface AmountAndConfirmationScreenProps {
   onClose: () => void;
 }
 
-const unsupportedBridges: Exclude<Bridge, QuotableBridge>[] = [
+const unquotableBridges: Exclude<Bridge, QuotableBridge>[] = [
   "Nomic",
   "Wormhole",
   "Nitro",
@@ -178,9 +178,8 @@ export const AmountAndReviewScreen = observer(
       () =>
         bridges.filter(
           (bridge) =>
-            !unsupportedBridges.includes(
-              // @ts-expect-error
-              bridge
+            !unquotableBridges.includes(
+              bridge as Exclude<Bridge, QuotableBridge>
             )
         ) as QuotableBridge[],
       [bridges]
