@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
@@ -42,7 +42,8 @@ const AssetVariantsConversion = observer(
     const { accountStore } = useStore();
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-    // Call the query at the top of the component
+    const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
+
     const { data, error, isLoading } =
       api.local.portfolio.getAllocation.useQuery(
         {
@@ -51,8 +52,32 @@ const AssetVariantsConversion = observer(
         {
           enabled: !!account?.address,
           refetchOnWindowFocus: false,
+          onSuccess: (data) => {
+            if (data?.assetVariants) {
+              setCheckedVariants(
+                data.assetVariants.map(
+                  (variant) => variant.asset.coinMinimalDenom
+                )
+              );
+            }
+          },
         }
       );
+
+    const handleSelectAll = () => {
+      setCheckedVariants(
+        data?.assetVariants.map((variant) => variant.asset.coinMinimalDenom)
+      );
+    };
+
+    const handleVariantCheck = (coinMinimalDenom: string) => {
+      console.log("coinMinimalDenom", coinMinimalDenom);
+      setCheckedVariants((prevState) =>
+        prevState.includes(coinMinimalDenom)
+          ? prevState.filter((variant) => variant !== coinMinimalDenom)
+          : [...prevState, coinMinimalDenom]
+      );
+    };
 
     return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
@@ -66,7 +91,18 @@ const AssetVariantsConversion = observer(
             Learn more
           </Link>
         </p>
-        <div className="mt-6 flex flex-col">
+        <div className="-mx-3 mt-6 flex h-14 items-center">
+          <Button
+            disabled={checkedVariants.length === data?.assetVariants.length}
+            size="md"
+            variant="ghost"
+            className="text-wosmongton-200" // Added h-14 for 56px height
+            onClick={handleSelectAll}
+          >
+            Select All
+          </Button>
+        </div>
+        <div className="flex flex-col">
           {isLoading ? (
             <p>Loading...</p>
           ) : error ? (
@@ -77,7 +113,15 @@ const AssetVariantsConversion = observer(
                 key={variant.asset.coinMinimalDenom}
                 className="-mx-4 flex items-center justify-between gap-3 p-4" // Ensure gap-3 is applied here
               >
-                <Checkbox className="mr-2" />
+                <Checkbox
+                  checked={checkedVariants.includes(
+                    variant.asset.coinMinimalDenom
+                  )}
+                  onCheckedChange={() =>
+                    handleVariantCheck(variant.asset.coinMinimalDenom)
+                  }
+                  className="mr-2"
+                />
                 <div className="flex min-w-[262px] items-center gap-3 py-2 px-4">
                   <FallbackImg
                     src={variant.asset.coinImageUrl}
