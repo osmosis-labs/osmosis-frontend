@@ -927,7 +927,17 @@
       "estimatedTime": "约1小时",
       "awaitingBtc": "等待比特币",
       "transferringYourBtc": "转移你的比特币",
-      "depositSuccess": "存款成功"
+      "depositStatus": "存款状态",
+      "depositSuccess": "存款成功",
+      "pendingDeposit": "待存款",
+      "estimatedAboutTime": "估计约为{time}",
+      "from": "从",
+      "to": "到",
+      "asset": "资产",
+      "amountBtc": "数量 BTC",
+      "totalValue": "总价值",
+      "transactionHash": "交易哈希",
+      "viewOnExplorer": "在资源管理器中查看"
     },
     "expiresIn": "有效期：",
     "doNotSendFundsToThisAddress": "请勿向该地址汇款。",

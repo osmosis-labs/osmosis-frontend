@@ -927,7 +927,17 @@
       "estimatedTime": "લગભગ 1 કલાક",
       "awaitingBtc": "BTC ની રાહ જોઈ રહ્યા છીએ",
       "transferringYourBtc": "તમારું BTC ટ્રાન્સફર કરી રહ્યાં છીએ",
-      "depositSuccess": "જમા કરાવવામાં સફળતા"
+      "depositStatus": "ડિપોઝિટ સ્થિતિ",
+      "depositSuccess": "જમા કરાવવામાં સફળતા",
+      "pendingDeposit": "બાકી થાપણ",
+      "estimatedAboutTime": "{time} વિશે અંદાજિત",
+      "from": "થી",
+      "to": "થી",
+      "asset": "એસેટ",
+      "amountBtc": "BTC રકમ",
+      "totalValue": "કુલ મૂલ્ય",
+      "transactionHash": "વ્યવહાર હેશ",
+      "viewOnExplorer": "એક્સપ્લોરર પર જુઓ"
     },
     "expiresIn": "માં સમાપ્ત થાય છે",
     "doNotSendFundsToThisAddress": "આ સરનામે ભંડોળ મોકલશો નહીં.",

@@ -927,7 +927,17 @@
       "estimatedTime": "約1時間",
       "awaitingBtc": "BTCを待つ",
       "transferringYourBtc": "BTCの送金",
-      "depositSuccess": "入金成功"
+      "depositStatus": "預金状況",
+      "depositSuccess": "入金成功",
+      "pendingDeposit": "保留中の入金",
+      "estimatedAboutTime": "推定約{time}",
+      "from": "から",
+      "to": "に",
+      "asset": "資産",
+      "amountBtc": "金額 BTC",
+      "totalValue": "合計金額",
+      "transactionHash": "トランザクションハッシュ",
+      "viewOnExplorer": "エクスプローラーで見る"
     },
     "expiresIn": "有効期限は",
     "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",

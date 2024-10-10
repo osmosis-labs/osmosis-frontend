@@ -927,7 +927,17 @@
       "estimatedTime": "लगभग 1 घंटा",
       "awaitingBtc": "बीटीसी की प्रतीक्षा में",
       "transferringYourBtc": "अपना BTC स्थानांतरित करना",
-      "depositSuccess": "जमा सफल"
+      "depositStatus": "जमा स्थिति",
+      "depositSuccess": "जमा सफल",
+      "pendingDeposit": "लंबित जमा",
+      "estimatedAboutTime": "अनुमानित लगभग {time}",
+      "from": "से",
+      "to": "को",
+      "asset": "संपत्ति",
+      "amountBtc": "राशि बीटीसी",
+      "totalValue": "कुल मूल्य",
+      "transactionHash": "लेनदेन हैश",
+      "viewOnExplorer": "एक्सप्लोरर पर देखें"
     },
     "expiresIn": "में समाप्त होना",
     "doNotSendFundsToThisAddress": "इस पते पर धनराशि न भेजें।",

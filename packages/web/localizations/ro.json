@@ -927,7 +927,17 @@
       "estimatedTime": "Aproximativ 1 oră",
       "awaitingBtc": "În așteptarea BTC",
       "transferringYourBtc": "Transferul dvs. BTC",
-      "depositSuccess": "Depozit cu succes"
+      "depositStatus": "Starea depozitului",
+      "depositSuccess": "Depozit cu succes",
+      "pendingDeposit": "Depunerea în așteptare",
+      "estimatedAboutTime": "Estimată aproximativ {time}",
+      "from": "Din",
+      "to": "La",
+      "asset": "Atu",
+      "amountBtc": "Suma BTC",
+      "totalValue": "Valoarea totală",
+      "transactionHash": "Hash de tranzacție",
+      "viewOnExplorer": "Vizualizare pe explorer"
     },
     "expiresIn": "Expiră în",
     "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",

@@ -927,7 +927,17 @@
       "estimatedTime": "Yaklaşık 1 saat",
       "awaitingBtc": "BTC bekleniyor",
       "transferringYourBtc": "BTC'nizi transfer etme",
-      "depositSuccess": "Para yatırma başarısı"
+      "depositStatus": "Mevduat durumu",
+      "depositSuccess": "Para yatırma başarısı",
+      "pendingDeposit": "Bekleyen mevduat",
+      "estimatedAboutTime": "{time} hakkında tahmin edildi",
+      "from": "İtibaren",
+      "to": "İle",
+      "asset": "Varlık",
+      "amountBtc": "Miktar BTC",
+      "totalValue": "Toplam değer",
+      "transactionHash": "İşlem karması",
+      "viewOnExplorer": "Explorer'da görüntüle"
     },
     "expiresIn": "Sona eriyor",
     "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",

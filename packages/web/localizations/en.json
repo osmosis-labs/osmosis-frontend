@@ -927,7 +927,17 @@
       "estimatedTime": "About 1 hour",
       "awaitingBtc": "Awaiting BTC",
       "transferringYourBtc": "Transferring your BTC",
-      "depositSuccess": "Deposit success"
+      "depositStatus": "Deposit status",
+      "depositSuccess": "Deposit successful",
+      "pendingDeposit": "Pending deposit",
+      "estimatedAboutTime": "Estimated about {time}",
+      "from": "From",
+      "to": "To",
+      "asset": "Asset",
+      "amountBtc": "Amount BTC",
+      "totalValue": "Total value",
+      "transactionHash": "Transaction hash",
+      "viewOnExplorer": "View on explorer"
     },
     "expiresIn": "Expires in",
     "doNotSendFundsToThisAddress": "Do not send funds to this address.",

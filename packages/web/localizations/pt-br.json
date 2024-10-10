@@ -927,7 +927,17 @@
       "estimatedTime": "Cerca de 1 hora",
       "awaitingBtc": "Aguardando BTC",
       "transferringYourBtc": "Transferindo seu BTC",
-      "depositSuccess": "Depósito bem-sucedido"
+      "depositStatus": "Status do depósito",
+      "depositSuccess": "Depósito bem-sucedido",
+      "pendingDeposit": "Depósito pendente",
+      "estimatedAboutTime": "Estimado em cerca de {time}",
+      "from": "De",
+      "to": "Para",
+      "asset": "Ativo",
+      "amountBtc": "Quantidade BTC",
+      "totalValue": "Valor total",
+      "transactionHash": "Hash de transação",
+      "viewOnExplorer": "Ver no Explorer"
     },
     "expiresIn": "Expira em",
     "doNotSendFundsToThisAddress": "Não envie fundos para este endereço.",

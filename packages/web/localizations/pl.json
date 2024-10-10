@@ -927,7 +927,17 @@
       "estimatedTime": "Około 1 godziny",
       "awaitingBtc": "Oczekiwanie na BTC",
       "transferringYourBtc": "Przesyłanie BTC",
-      "depositSuccess": "Wpłata zakończona sukcesem"
+      "depositStatus": "Status depozytu",
+      "depositSuccess": "Wpłata zakończona sukcesem",
+      "pendingDeposit": "Oczekujący depozyt",
+      "estimatedAboutTime": "Szacunkowo około {time}",
+      "from": "Z",
+      "to": "Do",
+      "asset": "Zaleta",
+      "amountBtc": "Kwota BTC",
+      "totalValue": "Wartość całkowita",
+      "transactionHash": "Hash transakcji",
+      "viewOnExplorer": "Widok w Eksploratorze"
     },
     "expiresIn": "Wygasa za",
     "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",

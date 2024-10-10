@@ -927,7 +927,17 @@
       "estimatedTime": "Около 1 часа",
       "awaitingBtc": "Ожидание BTC",
       "transferringYourBtc": "Перевод ваших BTC",
-      "depositSuccess": "Успех депозита"
+      "depositStatus": "Статус депозита",
+      "depositSuccess": "Успех депозита",
+      "pendingDeposit": "Ожидаемый депозит",
+      "estimatedAboutTime": "Оценивается примерно {time}",
+      "from": "От",
+      "to": "К",
+      "asset": "Объект",
+      "amountBtc": "Сумма BTC",
+      "totalValue": "Общая стоимость",
+      "transactionHash": "Хэш транзакции",
+      "viewOnExplorer": "Посмотреть в проводнике"
     },
     "expiresIn": "Истекает через",
     "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",

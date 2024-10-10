@@ -927,7 +927,17 @@
       "estimatedTime": "حدود 1 ساعت",
       "awaitingBtc": "در انتظار بیت کوین",
       "transferringYourBtc": "انتقال بیت کوین شما",
-      "depositSuccess": "موفقیت در سپرده گذاری"
+      "depositStatus": "وضعیت سپرده",
+      "depositSuccess": "موفقیت در سپرده گذاری",
+      "pendingDeposit": "سپرده معلق",
+      "estimatedAboutTime": "تخمین زده شده درباره {time}",
+      "from": "از",
+      "to": "به",
+      "asset": "دارایی",
+      "amountBtc": "مقدار BTC",
+      "totalValue": "ارزش کل",
+      "transactionHash": "هش تراکنش",
+      "viewOnExplorer": "مشاهده در اکسپلورر"
     },
     "expiresIn": "منقضی می شود",
     "doNotSendFundsToThisAddress": "از ارسال وجوه به این آدرس خودداری کنید.",

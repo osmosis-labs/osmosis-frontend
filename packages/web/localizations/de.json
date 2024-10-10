@@ -927,7 +927,17 @@
       "estimatedTime": "Etwa 1 Stunde",
       "awaitingBtc": "Warten auf BTC",
       "transferringYourBtc": "Übertragen Sie Ihre BTC",
-      "depositSuccess": "Einzahlung erfolgreich"
+      "depositStatus": "Einzahlungsstatus",
+      "depositSuccess": "Einzahlung erfolgreich",
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "estimatedAboutTime": "Geschätzt ca. {time}",
+      "from": "Aus",
+      "to": "Zu",
+      "asset": "Vermögenswert",
+      "amountBtc": "Betrag BTC",
+      "totalValue": "Gesamtwert",
+      "transactionHash": "Transaktions-Hash",
+      "viewOnExplorer": "Im Explorer anzeigen"
     },
     "expiresIn": "Läuft ab in",
     "doNotSendFundsToThisAddress": "Senden Sie kein Geld an diese Adresse.",
