@@ -24,9 +24,9 @@ export interface GetAllocationResponse {
   /** Indicates there are variants that can be converted to canonical form. */
   hasVariants: boolean;
   assetVariants: {
-    asset: Asset;
+    asset: MinimalAsset | null;
     amount: Dec;
-    assetVariant: MinimalAsset | null;
+    canonicalAsset: MinimalAsset | null;
   }[]; // Updated type
 }
 
@@ -215,8 +215,13 @@ export function checkAssetVariants(
           anyDenom: asset.variantGroupKey ?? "",
         });
 
+        const userAsset = getAsset({
+          assetLists,
+          anyDenom: denom,
+        });
+
         return {
-          asset,
+          asset: userAsset,
           amount,
           canonicalAsset: canonicalAsset || null,
         };
@@ -224,7 +229,7 @@ export function checkAssetVariants(
       return null;
     })
     .filter((item) => item !== null) as {
-    asset: Asset;
+    asset: MinimalAsset | null;
     amount: Dec;
     canonicalAsset: MinimalAsset | null;
   }[];
