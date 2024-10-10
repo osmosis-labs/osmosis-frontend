@@ -23,6 +23,7 @@ import {
 } from "react";
 import { useLocalStorage } from "react-use";
 
+import { useAssetVariantsModalStore } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -583,6 +584,8 @@ export const AssetActionsCell: AssetCellComponent<{
 
   const actionOptions = getActionOptions(t, showConvertButton);
 
+  const { setIsOpen } = useAssetVariantsModalStore();
+
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
@@ -607,8 +610,7 @@ export const AssetActionsCell: AssetCellComponent<{
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // TODO - open conversion modal once clicked
-                alert("Convert clicked");
+                setIsOpen(true);
               }}
             >
               {t("portfolio.convert")}
