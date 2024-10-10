@@ -536,6 +536,17 @@
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
       "weightedPool": "Grupo ponderado"
     },
+    "createSupercharged": {
+      "createNew": "Crear un nuevo grupo de supercargadores",
+      "addInitialLiquidity": "Agregar liquidez inicial al Pool # {poolNumber}",
+      "buttonAddToken": "Agregar nuevo token",
+      "base": "Base",
+      "quote": "Cita",
+      "swapFee": "Establecer tarifa de intercambio",
+      "undersandCost": "Entiendo que crear un nuevo grupo costará {poolCreationFee} .",
+      "buttonCreate": "Crear Pool",
+      "buttonCreating": "Creando"
+    },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",
     "myPools": "Mis Piscinas",
@@ -1235,5 +1246,12 @@
   },
   "tradeFee": "Tarifa de comercio",
   "receiveAtLeast": "Recibir al menos",
-  "payAtMost": "Pagar como máximo"
+  "payAtMost": "Pagar como máximo",
+  "alloyedAssets": {
+    "title": "Variantes detectadas",
+    "caption": "Dile adiós a todas esas variantes de activos confusas. Saluda a una experiencia más fluida en Osmosis.",
+    "remindMeLater": "Recuérdamelo más tarde",
+    "dismiss": "Despedir",
+    "convert": "Convertir"
+  }
 }

@@ -1,9 +1,5 @@
 import type { AminoMsgTransfer } from "@cosmjs/stargate";
-import type {
-  MsgWithdrawPosition,
-  MsgWithdrawPositionAmino,
-} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/concentratedliquidity/v1beta1/tx";
-import type {
+import {
   MsgBeginUnlocking,
   MsgBeginUnlockingAmino,
 } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
@@ -31,13 +27,6 @@ export async function getAminoConverters() {
       }
     > = {
       ...originalOsmosisAminoConverters,
-      "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
-        {
-          ...originalOsmosisAminoConverters[
-            "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
-          ],
-          aminoType: "osmosis/cl-create-pool",
-        },
       "/osmosis.superfluid.MsgUnbondConvertAndStake": {
         ...originalOsmosisAminoConverters[
           "/osmosis.superfluid.MsgUnbondConvertAndStake"
@@ -53,45 +42,6 @@ export async function getAminoConverters() {
             ? cosmos.base.v1beta1.Coin.fromAmino(msg.shares_to_convert)
             : undefined,
         }),
-      },
-      "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition": {
-        ...originalOsmosisAminoConverters[
-          "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
-        ],
-        aminoType: "osmosis/cl-withdraw-position",
-        fromAmino(object: MsgWithdrawPositionAmino): MsgWithdrawPosition {
-          const message = {
-            positionId: BigInt(0),
-            sender: "",
-            liquidityAmount: "",
-          };
-          if (object.position_id !== undefined && object.position_id !== null) {
-            message.positionId = BigInt(object.position_id);
-          }
-          if (object.sender !== undefined && object.sender !== null) {
-            message.sender = object.sender;
-          }
-          if (
-            object.liquidity_amount !== undefined &&
-            object.liquidity_amount !== null
-          ) {
-            message.liquidityAmount = object.liquidity_amount.replace(".", "");
-          }
-          return message;
-        },
-        toAmino(message: MsgWithdrawPosition): MsgWithdrawPositionAmino {
-          const obj: any = {};
-          obj.position_id =
-            message.positionId !== BigInt(0)
-              ? message.positionId.toString()
-              : undefined;
-          obj.sender = message.sender === "" ? undefined : message.sender;
-          obj.liquidity_amount =
-            message.liquidityAmount === ""
-              ? undefined
-              : message.liquidityAmount.replace(".", "");
-          return obj;
-        },
       },
       "/osmosis.lockup.MsgBeginUnlocking": {
         ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],

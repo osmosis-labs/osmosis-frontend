@@ -536,6 +536,17 @@
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony"
     },
+    "createSupercharged": {
+      "createNew": "Utwórz nowy pulę doładowaną",
+      "addInitialLiquidity": "Dodaj początkową płynność do puli nr {poolNumber}",
+      "buttonAddToken": "Dodaj nowy token",
+      "base": "Opierać",
+      "quote": "Cytat",
+      "swapFee": "Ustaw opłatę za wymianę",
+      "undersandCost": "Rozumiem, że utworzenie nowego puli będzie kosztować {poolCreationFee} .",
+      "buttonCreate": "Utwórz pulę",
+      "buttonCreating": "Tworzenie"
+    },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",
@@ -1235,5 +1246,12 @@
   },
   "tradeFee": "Opłata za handel",
   "receiveAtLeast": "Otrzymaj co najmniej",
-  "payAtMost": "Zapłać maksymalnie"
+  "payAtMost": "Zapłać maksymalnie",
+  "alloyedAssets": {
+    "title": "Wykryto warianty",
+    "caption": "Pożegnaj się ze wszystkimi tymi mylącymi wariantami aktywów. Przywitaj się z bardziej płynnym doświadczeniem w Osmosis.",
+    "remindMeLater": "Przypomnij mi później",
+    "dismiss": "Odrzucać",
+    "convert": "Konwertować"
+  }
 }

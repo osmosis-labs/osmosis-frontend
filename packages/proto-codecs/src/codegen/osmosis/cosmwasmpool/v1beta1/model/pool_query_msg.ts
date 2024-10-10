@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../../decimals";
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsg {
   /** get_swap_fee is the query structure to get swap fee. */
