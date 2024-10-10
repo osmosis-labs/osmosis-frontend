@@ -5,6 +5,7 @@ import React, { memo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip"; // Ensure Tooltip is imported
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { ModalBase } from "~/modals";
@@ -13,19 +14,21 @@ import { api } from "~/utils/trpc";
 
 interface AssetVariantsConversionModalProps {
   onRequestClose: () => void;
+  isOpen: boolean;
 }
 
 export const AssetVariantsConversionModal = memo(
-  ({ onRequestClose }: AssetVariantsConversionModalProps) => {
+  ({ onRequestClose, isOpen }: AssetVariantsConversionModalProps) => {
     return (
       <ModalBase
-        isOpen={true}
+        isOpen={isOpen}
         onRequestClose={onRequestClose}
         title={
           <h6 className="h6 mt-1 w-full self-center text-center">
             Standardize Assets
           </h6>
         }
+        className="bg-osmoverse-900" // Added pink background color
       >
         <AssetVariantsConversion onRequestClose={onRequestClose} />
       </ModalBase>
@@ -40,6 +43,7 @@ interface AssetVariantsConversionProps {
 const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
     const { accountStore } = useStore();
+    console.log("onRequestClose: ", onRequestClose);
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
@@ -55,9 +59,9 @@ const AssetVariantsConversion = observer(
           onSuccess: (data) => {
             if (data?.assetVariants) {
               setCheckedVariants(
-                data.assetVariants.map(
-                  (variant) => variant.asset.coinMinimalDenom
-                )
+                data?.assetVariants?.map(
+                  (variant) => variant?.asset?.coinMinimalDenom ?? ""
+                ) ?? []
               );
             }
           },
@@ -66,18 +70,23 @@ const AssetVariantsConversion = observer(
 
     const handleSelectAll = () => {
       setCheckedVariants(
-        data?.assetVariants.map((variant) => variant.asset.coinMinimalDenom)
+        data?.assetVariants?.map(
+          (variant) => variant?.asset?.coinMinimalDenom ?? ""
+        ) ?? []
       );
     };
 
     const handleVariantCheck = (coinMinimalDenom: string) => {
-      console.log("coinMinimalDenom", coinMinimalDenom);
       setCheckedVariants((prevState) =>
         prevState.includes(coinMinimalDenom)
           ? prevState.filter((variant) => variant !== coinMinimalDenom)
           : [...prevState, coinMinimalDenom]
       );
     };
+
+    // Define the isAlloyed function
+    const isAlloyedAsset = (coinMinimalDenom?: string) =>
+      coinMinimalDenom?.includes("/alloyed/");
 
     return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
@@ -93,7 +102,7 @@ const AssetVariantsConversion = observer(
         </p>
         <div className="-mx-3 mt-6 flex h-14 items-center">
           <Button
-            disabled={checkedVariants.length === data?.assetVariants.length}
+            disabled={checkedVariants.length === data?.assetVariants?.length}
             size="md"
             variant="ghost"
             className="text-wosmongton-200" // Added h-14 for 56px height
@@ -108,24 +117,25 @@ const AssetVariantsConversion = observer(
           ) : error ? (
             <p>Error loading asset variants.</p>
           ) : (
-            data.assetVariants.map((variant) => (
+            data?.assetVariants?.map((variant) => (
               <div
-                key={variant.asset.coinMinimalDenom}
-                className="-mx-4 flex items-center justify-between gap-3 p-4" // Ensure gap-3 is applied here
+                key={variant?.asset?.coinMinimalDenom}
+                className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-osmoverse-alpha-850" // Added cursor-pointer for better UX
+                onClick={() =>
+                  handleVariantCheck(variant?.asset?.coinMinimalDenom ?? "")
+                }
               >
                 <Checkbox
+                  // note - check change occurs when row is clicked, not checkbox
                   checked={checkedVariants.includes(
-                    variant.asset.coinMinimalDenom
+                    variant?.asset?.coinMinimalDenom ?? ""
                   )}
-                  onCheckedChange={() =>
-                    handleVariantCheck(variant.asset.coinMinimalDenom)
-                  }
                   className="mr-2"
                 />
                 <div className="flex min-w-[262px] items-center gap-3 py-2 px-4">
                   <FallbackImg
-                    src={variant.asset.coinImageUrl}
-                    alt={variant.asset.coinDenom}
+                    src={variant?.asset?.coinImageUrl ?? ""}
+                    alt={variant?.asset?.coinDenom ?? ""}
                     fallbacksrc="/icons/question-mark.svg"
                     height={40}
                     width={40}
@@ -135,7 +145,7 @@ const AssetVariantsConversion = observer(
                       {variant.asset?.coinName}
                     </span>
                     <span className="body2 truncate text-osmoverse-300">
-                      {variant.asset.coinDenom}
+                      {variant?.asset?.coinDenom ?? ""}
                     </span>
                   </div>
                 </div>
@@ -149,8 +159,8 @@ const AssetVariantsConversion = observer(
                 </div>
                 <div className="flex w-[262px] items-center gap-3 py-2 px-4">
                   <FallbackImg
-                    src={variant.canonicalAsset.coinImageUrl}
-                    alt={variant.canonicalAsset.coinDenom}
+                    src={variant?.canonicalAsset?.coinImageUrl ?? ""}
+                    alt={variant?.canonicalAsset?.coinDenom ?? ""}
                     fallbacksrc="/icons/question-mark.svg"
                     height={40}
                     width={40}
@@ -160,18 +170,46 @@ const AssetVariantsConversion = observer(
                       {variant.canonicalAsset?.coinName}
                     </span>
                     <span className="body2 truncate text-osmoverse-300">
-                      {variant.canonicalAsset.coinDenom}
+                      {variant?.canonicalAsset?.coinDenom ?? ""}
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center">
-                  <Icon
-                    id="alloyed"
-                    height={24}
-                    width={24}
-                    className="text-osmoverse-300"
-                  />
-                </div>
+                {isAlloyedAsset(variant.canonicalAsset?.coinMinimalDenom) && ( // Use the isAlloyed function
+                  <div className="flex items-center justify-center">
+                    <Tooltip
+                      arrow={true}
+                      content={
+                        <div className="flex gap-3">
+                          <div>
+                            <Icon
+                              id="alloyed"
+                              height={16}
+                              width={16}
+                              className="text-ammelia-400"
+                            />
+                          </div>
+                          <div className="flex flex-col gap-1">
+                            <span className="caption">
+                              {variant.canonicalAsset?.coinName}
+                            </span>
+                            <span className="caption text-osmoverse-300">
+                              Osmosis consolidates numerous variants of{" "}
+                              {variant.canonicalAsset?.coinDenom} into one
+                              simple asset for more flexibility and ease of use.
+                            </span>
+                          </div>
+                        </div>
+                      }
+                    >
+                      <Icon
+                        id="alloyed"
+                        height={24}
+                        width={24}
+                        className="text-osmoverse-alpha-700"
+                      />
+                    </Tooltip>
+                  </div>
+                )}
               </div>
             ))
           )}

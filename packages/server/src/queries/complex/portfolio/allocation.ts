@@ -21,13 +21,11 @@ export interface GetAllocationResponse {
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
   totalCap: PricePretty;
-  /** Indicates there are variants that can be converted to canonical form. */
-  hasVariants: boolean;
   assetVariants: {
     asset: MinimalAsset | null;
     amount: Dec;
     canonicalAsset: MinimalAsset | null;
-  }[]; // Updated type
+  }[];
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -200,7 +198,11 @@ export function checkAssetVariants(
   userBalanceDenoms: { denom: string; amount: Dec }[],
   assetListAssets: Asset[],
   assetLists: AssetList[]
-): { asset: Asset; amount: Dec; canonicalAsset: MinimalAsset | null }[] {
+): {
+  asset: MinimalAsset | null;
+  amount: Dec;
+  canonicalAsset: MinimalAsset | null;
+}[] {
   const assetMap = new Map(
     assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
   );
