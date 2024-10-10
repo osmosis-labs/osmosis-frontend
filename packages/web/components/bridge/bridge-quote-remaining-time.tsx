@@ -9,7 +9,7 @@ import {
 import { Spinner } from "~/components/loaders";
 import { RadialProgress } from "~/components/radial-progress";
 
-export const BridgeQuoteRemainingTime: FunctionComponent<
+export const QueryRemainingTime: FunctionComponent<
   PropsWithChildren<{
     className?: string;
     refetchInterval: number;
