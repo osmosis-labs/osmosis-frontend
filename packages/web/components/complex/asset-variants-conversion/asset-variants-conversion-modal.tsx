@@ -47,6 +47,7 @@ const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
     const { accountStore } = useStore();
     console.log("onRequestClose: ", onRequestClose);
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
@@ -88,10 +89,6 @@ const AssetVariantsConversion = observer(
           : [...prevState, coinMinimalDenom]
       );
     };
-
-    // Define the isAlloyed function
-    const isAlloyedAsset = (coinMinimalDenom?: string) =>
-      coinMinimalDenom?.includes("/alloyed/");
 
     return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
@@ -186,7 +183,7 @@ const AssetVariantsConversion = observer(
                     </span>
                   </div>
                 </div>
-                {isAlloyedAsset(variant.canonicalAsset?.coinMinimalDenom) && ( // Use the isAlloyed function
+                {variant.canonicalAsset?.isAlloyed && ( // Use the isAlloyed function
                   <div className="flex items-center justify-center">
                     <Tooltip
                       arrow={true}
