@@ -3,7 +3,7 @@ import { Asset } from "@osmosis-labs/types";
 import { AssetLists as assetLists } from "../../../../queries/__tests__/mock-asset-lists";
 import { AllocationResponse } from "../../../sidecar/allocation";
 import { calculatePercentAndFiatValues, getAll } from "../allocation";
-import { checkHasAssetVariants } from "../allocation";
+import { checkAssetVariants } from "../allocation";
 
 const MOCK_DATA: AllocationResponse = {
   categories: {
@@ -358,10 +358,7 @@ describe("Has Asset Variants", () => {
       ASSET_ETH_AXL, // <- this is the variant
     ];
 
-    const result = checkHasAssetVariants(
-      userCoinMinimalDenoms,
-      assetListAssets
-    );
+    const result = checkAssetVariants(userCoinMinimalDenoms, assetListAssets);
     expect(result).toBe(true);
   });
 
@@ -375,10 +372,7 @@ describe("Has Asset Variants", () => {
       ASSET_SAIL, // SAIL
     ];
 
-    const result = checkHasAssetVariants(
-      userCoinMinimalDenoms,
-      assetListAssets
-    );
+    const result = checkAssetVariants(userCoinMinimalDenoms, assetListAssets);
     expect(result).toBe(false);
   });
 
@@ -389,10 +383,7 @@ describe("Has Asset Variants", () => {
       ASSET_SAIL, // SAIL
     ];
 
-    const result = checkHasAssetVariants(
-      userCoinMinimalDenoms,
-      assetListAssets
-    );
+    const result = checkAssetVariants(userCoinMinimalDenoms, assetListAssets);
     expect(result).toBe(false);
   });
 });

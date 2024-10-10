@@ -1,6 +1,6 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { Asset, AssetList } from "@osmosis-labs/types";
+import { Asset, AssetList, MinimalAsset } from "@osmosis-labs/types";
 import { sort } from "@osmosis-labs/utils";
 
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
@@ -23,6 +23,11 @@ export interface GetAllocationResponse {
   totalCap: PricePretty;
   /** Indicates there are variants that can be converted to canonical form. */
   hasVariants: boolean;
+  assetVariants: {
+    asset: Asset;
+    amount: Dec;
+    assetVariant: MinimalAsset | null;
+  }[]; // Updated type
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
@@ -168,15 +173,18 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
+  // Update userBalanceDenoms to be a list of objects with denom and amount
   const userBalanceDenoms =
-    categories["user-balances"]?.account_coins_result?.map(
-      (result) => result.coin.denom
-    ) ?? [];
+    categories["user-balances"]?.account_coins_result?.map((result) => ({
+      denom: result.coin.denom,
+      amount: new Dec(result.coin.amount), // Assuming amount is stored in result.coin.amount
+    })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
-  const hasVariants = checkHasAssetVariants(
-    userBalanceDenoms,
-    assetLists.flatMap((list) => list.assets)
+  const assetVariants = checkAssetVariants(
+    userBalanceDenoms, // Pass the updated userBalanceDenoms
+    assetLists.flatMap((list) => list.assets),
+    assetLists // Pass assetLists to checkHasAssetVariants
   );
 
   return {
@@ -184,24 +192,40 @@ export async function getAllocation({
     assets,
     available,
     totalCap,
-    hasVariants,
+    assetVariants,
   };
 }
 
-export function checkHasAssetVariants(
-  userCoinMinimalDenoms: string[],
-  assetListAssets: Asset[]
-): boolean {
+export function checkAssetVariants(
+  userBalanceDenoms: { denom: string; amount: Dec }[],
+  assetListAssets: Asset[],
+  assetLists: AssetList[]
+): { asset: Asset; amount: Dec; canonicalAsset: MinimalAsset | null }[] {
   const assetMap = new Map(
     assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
   );
 
-  return userCoinMinimalDenoms.some((coinMinimalDenom) => {
-    const matchingAsset = assetMap.get(coinMinimalDenom);
+  return userBalanceDenoms
+    .map(({ denom, amount }) => {
+      const asset = assetMap.get(denom);
 
-    return (
-      matchingAsset &&
-      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
-    );
-  });
+      if (asset && asset.coinMinimalDenom !== asset.variantGroupKey) {
+        const canonicalAsset = getAsset({
+          assetLists,
+          anyDenom: asset.variantGroupKey ?? "",
+        });
+
+        return {
+          asset,
+          amount,
+          canonicalAsset: canonicalAsset || null,
+        };
+      }
+      return null;
+    })
+    .filter((item) => item !== null) as {
+    asset: Asset;
+    amount: Dec;
+    canonicalAsset: MinimalAsset | null;
+  }[];
 }
