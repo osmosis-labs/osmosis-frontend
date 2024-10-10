@@ -84,7 +84,7 @@ export const MainLayout = observer(
         <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
-        <AssetVariantsConversionModal isOpen={true} onRequestClose={() => {}} />
+        <AssetVariantsConversionModal />
       </React.Fragment>
     );
   }

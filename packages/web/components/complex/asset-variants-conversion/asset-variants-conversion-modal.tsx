@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { memo, useState } from "react";
+import React, { useState } from "react";
+import { create } from "zustand";
 
 // Import useTranslation
 import { Icon } from "~/components/assets";
@@ -15,29 +16,32 @@ import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-interface AssetVariantsConversionModalProps {
-  onRequestClose: () => void;
+export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
-}
+  setIsOpen: (value: boolean) => void;
+}>((set) => ({
+  isOpen: false,
+  setIsOpen: (value: boolean) => set({ isOpen: value }),
+}));
 
-export const AssetVariantsConversionModal = memo(
-  ({ onRequestClose, isOpen }: AssetVariantsConversionModalProps) => {
-    return (
-      <ModalBase
-        isOpen={isOpen}
-        onRequestClose={onRequestClose}
-        title={
-          <h6 className="h6 mt-1 w-full self-center text-center">
-            Standardize Assets
-          </h6>
-        }
-        className="bg-osmoverse-900" // Added pink background color
-      >
-        <AssetVariantsConversion onRequestClose={onRequestClose} />
-      </ModalBase>
-    );
-  }
-);
+export const AssetVariantsConversionModal = () => {
+  const { isOpen, setIsOpen } = useAssetVariantsModalStore();
+
+  return (
+    <ModalBase
+      isOpen={isOpen}
+      onRequestClose={() => setIsOpen(false)}
+      title={
+        <h6 className="h6 mt-1 w-full self-center text-center">
+          Standardize Assets
+        </h6>
+      }
+      className="bg-osmoverse-900"
+    >
+      <AssetVariantsConversion onRequestClose={() => setIsOpen(false)} />
+    </ModalBase>
+  );
+};
 
 interface AssetVariantsConversionProps {
   onRequestClose: () => void;
@@ -230,7 +234,18 @@ const AssetVariantsConversion = observer(
         <div className="mt-4 flex w-full">
           <Button
             onClick={() => {
-              // TODO: Implement select all functionality
+              // TODO: link up conversion local state logic
+              // open modal
+              // Convert All
+              //   remind me later ✅
+              //     in modal, convert all invokes setDoNotShowAgain(true)
+              //   remind me later ❌
+              //     in modal, convert all invokes setDoNotShowAgain(true)
+              // Convert Selected
+              //   remind me later ✅
+              //     in modal, convert all invokes setDoNotShowAgain(true)
+              //   remind me later ❌ (still has remaining alloyed assets)
+              //     in modal, convert all invokes setDoNotShowAgain(false)
             }}
             className="w-full"
           >

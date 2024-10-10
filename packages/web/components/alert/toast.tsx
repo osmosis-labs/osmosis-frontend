@@ -11,6 +11,7 @@ import { useLocalStorage } from "react-use";
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useAssetVariantsModalStore } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { Checkbox } from "~/components/ui/checkbox";
 import { t } from "~/hooks";
 
@@ -224,6 +225,8 @@ export const AlloyedAssetsToastDoNotShowKey =
 export const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  const { setIsOpen } = useAssetVariantsModalStore();
+
   const [, setDoNotShowAgain] = useLocalStorage(
     AlloyedAssetsToastDoNotShowKey,
     false
@@ -242,19 +245,7 @@ export const AlloyedAssetsToast: FunctionComponent<
   };
 
   const onConvert = () => {
-    // TODO: link to modal in other PR
-    // open modal
-    // Convert All
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    // Convert Selected
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌ (still has remaining alloyed assets)
-    //     in modal, convert all invokes setDoNotShowAgain(false)
-
+    setIsOpen(true);
     closeToast();
   };
 
