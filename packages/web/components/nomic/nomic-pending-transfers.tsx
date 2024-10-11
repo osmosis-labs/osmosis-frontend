@@ -1,8 +1,13 @@
 import { BridgeAsset } from "@osmosis-labs/bridge";
+import { superjson } from "@osmosis-labs/server";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
 import dayjs from "dayjs";
 import { useState } from "react";
+import type { SuperJSONResult } from "superjson";
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
@@ -25,6 +30,45 @@ interface NomicPendingTransfersProps {
   toAsset: BridgeAsset;
 }
 
+interface TransactionStore {
+  transactions: Map<
+    RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number]["transactionId"],
+    RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number]
+  >;
+  upsertTransaction: (
+    transactions: RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"]
+  ) => void;
+}
+
+const useNomicTransactionsStore = create(
+  persist<TransactionStore>(
+    (set) => ({
+      transactions: new Map(),
+      upsertTransaction: (transactions) => {
+        set((state) => {
+          const nextTransactions = state.transactions;
+          transactions.forEach((transaction) => {
+            nextTransactions.set(transaction.transactionId, transaction);
+          });
+
+          return { transactions: nextTransactions };
+        });
+      },
+    }),
+    {
+      name: "nomic-txs",
+      storage: createJSONStorage(() => localStorage, {
+        reviver: (_key, value) => {
+          return superjson.deserialize(value as SuperJSONResult);
+        },
+        replacer: (_key, value) => {
+          return superjson.serialize(value);
+        },
+      }),
+    }
+  )
+);
+
 const successThreshold = 6;
 
 export const NomicPendingTransfers = ({
@@ -34,6 +78,12 @@ export const NomicPendingTransfers = ({
 }: NomicPendingTransfersProps) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
+  const { upsertTransaction, transactions } = useNomicTransactionsStore(
+    useShallow((state) => ({
+      upsertTransaction: state.upsertTransaction,
+      transactions: state.transactions,
+    }))
+  );
 
   const osmosisAddress = accountStore.getWallet(
     accountStore.osmosisChainId
@@ -50,6 +100,10 @@ export const NomicPendingTransfers = ({
     {
       enabled: !!osmosisAddress,
       refetchInterval: 30000,
+      select(data) {
+        upsertTransaction(data.pendingDeposits);
+        return data;
+      },
       trpc: {
         context: {
           skipBatch: true,
@@ -89,7 +143,7 @@ export const NomicPendingTransfers = ({
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        {pendingDepositsData?.pendingDeposits?.map((deposit) => {
+        {Array.from(transactions.values()).map((deposit) => {
           const confirmationPercentage =
             (deposit.confirmations / successThreshold) * 100;
           const isSuccess = deposit.confirmations === successThreshold;
@@ -183,7 +237,7 @@ const TransactionDetailsModal = ({
       </button>
 
       <ModalBase
-        className="max-w-[512px]"
+        className="!max-w-[512px]"
         isOpen={isOpen}
         onRequestClose={() => setIsOpen(false)}
       >

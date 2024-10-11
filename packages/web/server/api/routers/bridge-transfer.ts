@@ -740,48 +740,15 @@ export const bridgeTransferRouter = createTRPCRouter({
         },
       });
 
-      const mockPendingDeposits = [
-        {
-          transactionId: "123",
-          amount: 0.001,
-          confirmations: 1,
-          fiatValue: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            btcPrice.mul(new Dec(0.001))
-          ),
-        },
-        {
-          transactionId: "456",
-          amount: 0.1,
-          confirmations: 3,
-          fiatValue: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            btcPrice.mul(new Dec(0.1))
-          ),
-        },
-        {
-          transactionId: "789",
-          amount: 0.01,
-          confirmations: 6,
-          fiatValue: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            btcPrice.mul(new Dec(0.01))
-          ),
-        },
-      ];
-
       return {
-        pendingDeposits: [
-          ...pendingDeposits.map((deposit) => ({
-            ...deposit,
-            amount: deposit.amount,
-            fiatValue: new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              btcPrice.mul(new Dec(deposit.amount))
-            ),
-          })),
-          ...mockPendingDeposits,
-        ],
+        pendingDeposits: pendingDeposits.map((deposit) => ({
+          ...deposit,
+          amount: deposit.amount / 1e8,
+          fiatValue: new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            btcPrice.mul(new Dec(deposit.amount))
+          ),
+        })),
       };
     }),
 });

@@ -317,7 +317,10 @@ export const DepositAddressScreen = observer(
         ) : (
           <>
             <DepositInfoRow label={<span>{t("transfer.receiveAsset")}</span>}>
-              <p className="text-osmoverse-100">{canonicalAsset.coinDenom}</p>
+              {/* TODO: Remove this conditional when alloyed BTC is supported */}
+              <p className="text-osmoverse-100">
+                {bridge === "Nomic" ? "nBTC" : toAsset.denom}
+              </p>
             </DepositInfoRow>
             <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
               <SkeletonLoader
