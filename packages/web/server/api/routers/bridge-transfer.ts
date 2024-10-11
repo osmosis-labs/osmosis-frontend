@@ -741,14 +741,18 @@ export const bridgeTransferRouter = createTRPCRouter({
       });
 
       return {
-        pendingDeposits: pendingDeposits.map((deposit) => ({
-          ...deposit,
-          amount: deposit.amount / 1e8,
-          fiatValue: new PricePretty(
-            DEFAULT_VS_CURRENCY,
-            btcPrice.mul(new Dec(deposit.amount))
-          ),
-        })),
+        pendingDeposits: pendingDeposits.map((deposit) => {
+          const amount = deposit.amount / 1e8;
+
+          return {
+            ...deposit,
+            amount,
+            fiatValue: new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              btcPrice.mul(new Dec(amount))
+            ),
+          };
+        }),
       };
     }),
 });

@@ -51,6 +51,28 @@ const useNomicTransactionsStore = create(
             nextTransactions.set(transaction.transactionId, transaction);
           });
 
+          const transactionIds: Record<string, boolean> = {};
+          transactions.forEach((transaction) => {
+            transactionIds[transaction.transactionId] = true;
+          });
+
+          state.transactions.forEach((transaction) => {
+            if (transactionIds[transaction.transactionId]) return;
+            const existingTransaction = nextTransactions.get(
+              transaction.transactionId
+            );
+            /**
+             * If the transaction is in our history but not in pending transfers then
+             * it means it has been completed.
+             */
+            if (existingTransaction) {
+              nextTransactions.set(transaction.transactionId, {
+                ...existingTransaction,
+                confirmations: successThreshold,
+              });
+            }
+          });
+
           return { transactions: nextTransactions };
         });
       },
