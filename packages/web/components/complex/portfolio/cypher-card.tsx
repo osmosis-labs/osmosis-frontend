@@ -7,7 +7,7 @@ export const CypherCard = () => {
   const { t } = useTranslation();
   return (
     <Link
-      href="https://osmosis.cyphercard.io"
+      href="https://pay.osmosis.zone"
       target="_blank"
       rel="noopener noreferrer"
     >
