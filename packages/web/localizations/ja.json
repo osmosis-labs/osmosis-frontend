@@ -939,7 +939,6 @@
       "transactionHash": "トランザクションハッシュ",
       "viewOnExplorer": "エクスプローラーで見る"
     },
-    "expiresIn": "有効期限は",
     "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
     "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
     "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",

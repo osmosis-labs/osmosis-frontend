@@ -939,7 +939,6 @@
       "transactionHash": "Transaction hash",
       "viewOnExplorer": "View on explorer"
     },
-    "expiresIn": "Expires in",
     "doNotSendFundsToThisAddress": "Do not send funds to this address.",
     "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
     "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",

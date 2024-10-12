@@ -939,7 +939,6 @@
       "transactionHash": "交易哈希",
       "viewOnExplorer": "在资源管理器中查看"
     },
-    "expiresIn": "有效期：",
     "doNotSendFundsToThisAddress": "请勿向该地址汇款。",
     "addressExpired": "此地址已过期。请申请一个新地址。",
     "addressAboutToExpire": "此地址即将过期。请申请新地址以避免资金损失。",

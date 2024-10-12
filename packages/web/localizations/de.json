@@ -939,7 +939,6 @@
       "transactionHash": "Transaktions-Hash",
       "viewOnExplorer": "Im Explorer anzeigen"
     },
-    "expiresIn": "Läuft ab in",
     "doNotSendFundsToThisAddress": "Senden Sie kein Geld an diese Adresse.",
     "addressExpired": "Diese Adresse ist abgelaufen. Bitte fordern Sie eine neue an.",
     "addressAboutToExpire": "Diese Adresse läuft bald ab. Bitte fordern Sie eine neue Adresse an, um Geldverluste zu vermeiden.",

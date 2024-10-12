@@ -939,7 +939,6 @@
       "transactionHash": "거래 해시",
       "viewOnExplorer": "탐색기에서 보기"
     },
-    "expiresIn": "만료됨",
     "doNotSendFundsToThisAddress": "이 주소로 자금을 보내지 마십시오.",
     "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",
     "addressAboutToExpire": "이 주소는 곧 만료됩니다. 자금 손실을 피하려면 새 주소를 요청하세요.",

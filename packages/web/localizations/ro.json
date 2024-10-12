@@ -939,7 +939,6 @@
       "transactionHash": "Hash de tranzacție",
       "viewOnExplorer": "Vizualizare pe explorer"
     },
-    "expiresIn": "Expiră în",
     "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
     "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
     "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",

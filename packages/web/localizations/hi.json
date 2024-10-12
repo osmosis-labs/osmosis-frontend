@@ -939,7 +939,6 @@
       "transactionHash": "लेनदेन हैश",
       "viewOnExplorer": "एक्सप्लोरर पर देखें"
     },
-    "expiresIn": "में समाप्त होना",
     "doNotSendFundsToThisAddress": "इस पते पर धनराशि न भेजें।",
     "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।",
     "addressAboutToExpire": "यह पता समाप्त होने वाला है। कृपया धनराशि खोने से बचने के लिए नया पता मांगें।",

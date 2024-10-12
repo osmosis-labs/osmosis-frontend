@@ -939,7 +939,6 @@
       "transactionHash": "İşlem karması",
       "viewOnExplorer": "Explorer'da görüntüle"
     },
-    "expiresIn": "Sona eriyor",
     "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",
     "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin.",
     "addressAboutToExpire": "Bu adresin süresi dolmak üzere. Lütfen para kaybetmemek için yeni bir adres talep edin.",

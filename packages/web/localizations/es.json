@@ -939,7 +939,6 @@
       "transactionHash": "Hash de transacción",
       "viewOnExplorer": "Ver en el explorador"
     },
-    "expiresIn": "Caduca en",
     "doNotSendFundsToThisAddress": "No envíe fondos a esta dirección.",
     "addressExpired": "Esta dirección ha expirado. Por favor, solicite una nueva.",
     "addressAboutToExpire": "Esta dirección está a punto de caducar. Solicite una nueva dirección para evitar perder fondos.",
