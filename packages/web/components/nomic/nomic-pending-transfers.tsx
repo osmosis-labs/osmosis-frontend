@@ -3,8 +3,7 @@ import { superjson } from "@osmosis-labs/server";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
 import dayjs from "dayjs";
-import { useState } from "react";
-import type { SuperJSONResult } from "superjson";
+import { useEffect, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
@@ -73,6 +72,13 @@ const useNomicTransactionsStore = create(
             }
           });
 
+          if (
+            superjson.stringify(nextTransactions) ===
+            superjson.stringify(state.transactions)
+          ) {
+            return {};
+          }
+
           return { transactions: nextTransactions };
         });
       },
@@ -80,12 +86,8 @@ const useNomicTransactionsStore = create(
     {
       name: "nomic-txs",
       storage: createJSONStorage(() => localStorage, {
-        reviver: (_key, value) => {
-          return superjson.deserialize(value as SuperJSONResult);
-        },
-        replacer: (_key, value) => {
-          return superjson.serialize(value);
-        },
+        reviver: (_key, value) => superjson.parse(value as string),
+        replacer: (_key, value) => superjson.stringify(value),
       }),
     }
   )
@@ -122,10 +124,6 @@ export const NomicPendingTransfers = ({
     {
       enabled: !!osmosisAddress,
       refetchInterval: 30000,
-      select(data) {
-        upsertTransaction(data.pendingDeposits);
-        return data;
-      },
       trpc: {
         context: {
           skipBatch: true,
@@ -133,6 +131,12 @@ export const NomicPendingTransfers = ({
       },
     }
   );
+
+  useEffect(() => {
+    if (pendingDepositsData) {
+      upsertTransaction(pendingDepositsData.pendingDeposits);
+    }
+  }, [pendingDepositsData, upsertTransaction]);
 
   return (
     <>
@@ -383,12 +387,20 @@ const TransactionDetailsModal = ({
                 {t("transfer.nomic.transactionHash")}
               </p>
               <div className="flex items-center gap-2">
-                <p className="body2 text-wosmongton-300">
+                <a
+                  className="body2 text-wosmongton-300 hover:text-wosmongton-400"
+                  href={getBitcoinExplorerUrl({
+                    txHash: depositData.transactionId,
+                    isTestnet: IS_TESTNET,
+                  })}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
                   {shorten(depositData.transactionId, {
                     prefixLength: 6,
                     suffixLength: 6,
                   })}
-                </p>
+                </a>
                 <IconButton
                   icon={<Icon id={hasCopied ? "check-mark" : "copy"} />}
                   aria-label="Copy"
