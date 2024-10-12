@@ -26,10 +26,9 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.relayers =
-      ["https://testnet-relayer.nomic.io:8443"] ??
-      (this.ctx.env === "testnet"
+      this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
-        : ["https://relayer.nomic.mappum.io:8443"]);
+        : ["https://relayer.nomic.mappum.io:8443"];
   }
 
   async getDepositAddress({
@@ -67,9 +66,8 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: "channel-2" ?? transferMethod.counterparty.channelId, // IBC channel ID on Nomic
-      bitcoinNetwork:
-        "testnet" ?? (this.ctx.env === "testnet" ? "testnet" : "bitcoin"),
+      channel: transferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       receiver: toAddress,
     });
 
