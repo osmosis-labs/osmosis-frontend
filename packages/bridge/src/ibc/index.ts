@@ -20,6 +20,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   CosmosBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
@@ -95,7 +96,9 @@ export class IbcBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const assetListAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
@@ -120,6 +123,7 @@ export class IbcBridgeProvider implements BridgeProvider {
           address: assetListAsset.sourceDenom,
           denom: assetListAsset.symbol,
           decimals: assetListAsset.decimals,
+          type: "quote",
         },
       ];
     } catch (e) {

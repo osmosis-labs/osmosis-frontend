@@ -38,6 +38,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -289,7 +290,9 @@ export class SquidBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const [tokens, chains] = await Promise.all([
         this.getTokens(),
@@ -305,7 +308,9 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       if (!token) throw new Error("Token not found: " + asset.address);
 
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
@@ -334,6 +339,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
+            type: "quote",
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -346,6 +352,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
+            type: "quote",
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -388,6 +395,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         foundVariants.setAsset(variant.chainId.toString(), variant.address, {
           // squid chain list IDs are canonical
           ...chainInfo,
+          type: "quote",
           chainName: variant.chainName,
           denom: variant.symbol,
           address: variant.address,

@@ -30,6 +30,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -226,7 +227,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       // get origin axelar asset info from given toAsset
       const [axelarAssets, axelarChains] = await Promise.all([
@@ -271,7 +274,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
             axelarChainId
         );
 
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // return just origin asset and the unwrapped version for now, but
       // can return other axl-versions later if wanted
@@ -319,6 +324,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         axelarSourceAsset.denom,
         {
           ...chainInfo,
+          type: "quote",
           chainName: axelarChain.name,
           denom: addressAsset.symbol,
           address: assetAddress,
@@ -349,6 +355,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             address: NativeEVMTokenConstantAddress,
             decimals: axelarChain.native_token.decimals,
             coinGeckoId: axelarSourceAsset.coingecko_id,
+            type: "quote",
           }
         );
       }

@@ -5,13 +5,13 @@ import { generateDepositAddressIbc, getPendingDeposits } from "nomic-bitcoin";
 
 import { BridgeQuoteError } from "../errors";
 import {
-  BridgeAsset,
   BridgeChain,
   BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeSupportedAssetsParams,
@@ -130,7 +130,10 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+    chain,
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     // just supports BTC from Bitcoin
 
     const assetListAsset = this.ctx.assetLists
@@ -145,8 +148,10 @@ export class NomicBridgeProvider implements BridgeProvider {
       );
 
       if (bitcoinCounterparty) {
+        const isWithdraw = chain.chainType === "cosmos";
         return [
           {
+            type: isWithdraw ? "quote" : "deposit-address",
             chainId: "bitcoin",
             chainName: "Bitcoin",
             chainType: "bitcoin",

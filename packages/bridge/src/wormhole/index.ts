@@ -1,10 +1,10 @@
 import {
-  BridgeAsset,
   BridgeChain,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeSupportedAssetsParams,
@@ -22,7 +22,9 @@ export class WormholeBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     // just supports SOL via Wormhole
 
     const assetListAsset = this.ctx.assetLists
@@ -39,6 +41,7 @@ export class WormholeBridgeProvider implements BridgeProvider {
       if (solanaCounterparty) {
         return [
           {
+            type: "external-url",
             chainId: "solana",
             chainName: "Solana",
             chainType: "solana",

@@ -60,7 +60,7 @@ export interface BridgeProvider {
    */
   getSupportedAssets(
     params: GetBridgeSupportedAssetsParams
-  ): Promise<(BridgeChain & BridgeAsset)[]>;
+  ): Promise<(BridgeChain & BridgeSupportedAsset)[]>;
 
   /**
    * If the provider supports deposit address transfers:
@@ -222,6 +222,13 @@ export const bridgeAssetSchema = z.object({
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
+
+// TODO: Add comment explaining this
+export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
+  type: z.enum(["quote", "deposit-address", "external-url"]),
+});
+
+export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
 
 export const getBridgeSupportedAssetsParams = z.object({
   /**

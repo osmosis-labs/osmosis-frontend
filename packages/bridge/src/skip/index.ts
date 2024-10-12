@@ -32,6 +32,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -258,7 +259,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -269,7 +272,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       // find variants
       const assets = await this.getAssets();
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
@@ -319,6 +324,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
+            type: "quote",
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -332,6 +338,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
+            type: "quote",
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -375,6 +382,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
+            type: "quote",
             address: sharedOriginAsset.denom,
             denom:
               sharedOriginAsset.recommended_symbol ??
