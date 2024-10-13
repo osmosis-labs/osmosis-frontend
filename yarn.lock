@@ -2792,14 +2792,14 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.32.3.tgz#5dcaee6dd7cc846cdc073e9a7a7f63242f5f7e31"
   integrity sha512-WCZK4yksj2hBDz4w7xFZQTRZQ/RJhBX26uFHmmQFIcNUUVAihrLO+RerqJgk0dZqC42wstM9pEUQGtPmLcIYvg==
 
-"@cosmology/ast@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/@cosmology/ast/-/ast-1.8.2.tgz#4e5fddb06860d308d670b2b360e77c1e5c2d384d"
-  integrity sha512-tBjgoXIccJmFvLgrRL22KGLTm7VbbicuaYzS1rdmyDgC2qj4Xg+f/Sco+7y2eTbHMNZDGd0BUyo0HxVn96OYsQ==
+"@cosmology/ast@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@cosmology/ast/-/ast-1.8.4.tgz#43d18b9a7066937207109e5135a0f017eb783b0c"
+  integrity sha512-FCTViPrKvTKMoOR6KR/GlQ2Xdsla7uBcG28QRU29ybicI1EWI9UJCs3UPiJ+ntOc8bjv6tdQmpdg24NpxLQyQw==
   dependencies:
     "@babel/types" "7.23.6"
-    "@cosmology/types" "^1.8.2"
-    "@cosmology/utils" "^1.8.2"
+    "@cosmology/types" "^1.10.0"
+    "@cosmology/utils" "^1.8.4"
     case "1.6.3"
     dotty "0.1.2"
 
@@ -2816,14 +2816,14 @@
     minimatch "5.1.0"
     mkdirp "3.0.0"
 
-"@cosmology/proto-parser@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/@cosmology/proto-parser/-/proto-parser-1.8.2.tgz#d95dfa7be983a50d4d7cdd3edda11747e05f3df2"
-  integrity sha512-XMdG4T0gbb3oE2zKNFw+0k+lojP+qyGWcL/5s8eHwYJa+dhCdutHW6D6yuCXl98CmHA2iPtYSbY37dXk+P4K6A==
+"@cosmology/proto-parser@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@cosmology/proto-parser/-/proto-parser-1.8.4.tgz#160e6141ea460559af1b5e71842400113b63cb73"
+  integrity sha512-faZGhQVMENDRGB5o/KNOmPmvfbGaz4Yz/Irf09Kz+TEYFrw2HG2aLYyNAPRqU9oREXpmm1dX8+nRN0OzVpc5bg==
   dependencies:
     "@cosmology/protobufjs" "7.3.2"
-    "@cosmology/types" "^1.8.2"
-    "@cosmology/utils" "^1.8.2"
+    "@cosmology/types" "^1.10.0"
+    "@cosmology/utils" "^1.8.4"
     dotty "0.1.2"
     fast-json-patch "3.1.1"
     glob "8.0.3"
@@ -2868,19 +2868,19 @@
     "@types/node" ">=13.7.0"
     long "^5.0.0"
 
-"@cosmology/telescope@^1.8.4":
-  version "1.8.4"
-  resolved "https://registry.npmjs.org/@cosmology/telescope/-/telescope-1.8.4.tgz#a960040f4b8869e7df789c636123161ffc8b5b12"
-  integrity sha512-Ao6g1KxX4D7sD7lXf5hX2+DdsZQTRjcFRyx6qqeIWv0wz8EjGgNsX0DzZ2IAufD3hOABseLfVYMBXtfYruBQqw==
+"@cosmology/telescope@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@cosmology/telescope/-/telescope-1.10.0.tgz#1338c26929e8111243d795c2340cd7132d3dd4fd"
+  integrity sha512-5heMZatNllljyidaUyMZr5q1US/TEGrC3rQXNl0LxCLxM4xY44NtXE6O/+5MjC1Ti0x4+2i0kDbJXBjp1WtP7Q==
   dependencies:
     "@babel/generator" "^7.23.6"
     "@babel/parser" "^7.23.6"
     "@babel/traverse" "7.23.6"
     "@babel/types" "7.23.6"
-    "@cosmology/ast" "^1.8.2"
-    "@cosmology/proto-parser" "^1.8.2"
-    "@cosmology/types" "^1.8.2"
-    "@cosmology/utils" "^1.8.2"
+    "@cosmology/ast" "^1.8.4"
+    "@cosmology/proto-parser" "^1.8.4"
+    "@cosmology/types" "^1.10.0"
+    "@cosmology/utils" "^1.8.4"
     "@cosmwasm/ts-codegen" "0.35.7"
     "@types/parse-package-name" "0.1.0"
     case "1.6.3"
@@ -2898,20 +2898,20 @@
     rimraf "5.0.0"
     yaml "^2.3.4"
 
+"@cosmology/types@^1.10.0":
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/@cosmology/types/-/types-1.10.0.tgz#aa28230cd3a26c5af1639c92864735beb351eb35"
+  integrity sha512-XB8GFGAkBcd/vmZ5oEsg9Q9Cy/tEI9EBvrZ7K8BT4MxNzN/1f/JptYX74388b55uRYEuJX9hoMCBF0LX5gSZmw==
+  dependencies:
+    case "1.6.3"
+    fast-json-patch "3.1.1"
+
 "@cosmology/types@^1.5.0":
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/@cosmology/types/-/types-1.5.0.tgz#0279cd32899e5ec7493ed1e306d2985483a1665c"
   integrity sha512-wJhCsDGpscxIhZm9IbNbRUnjtiFhSuyBf5ou0y/utLBGheReXgtbriBdXEqqhVXcRSKqImXqMUHGwKWaBDVAIQ==
   dependencies:
     case "1.6.3"
-
-"@cosmology/types@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/@cosmology/types/-/types-1.8.2.tgz#635e7775634c6c3f1dd4dc84027f974509bc28b3"
-  integrity sha512-cE8oov4ytxLwS5Q9F4I0LANh7HJwftQYhye0Yq60hFXruYHEJ3qkcHRGjtRSM9/Z1F7XG9S6xSXCT8nrH7+/IQ==
-  dependencies:
-    case "1.6.3"
-    fast-json-patch "3.1.1"
 
 "@cosmology/utils@^1.5.0":
   version "1.5.0"
@@ -2921,12 +2921,12 @@
     "@cosmology/types" "^1.5.0"
     dotty "0.1.2"
 
-"@cosmology/utils@^1.8.2":
-  version "1.8.2"
-  resolved "https://registry.npmjs.org/@cosmology/utils/-/utils-1.8.2.tgz#114c2a1a7cbebc8b55703caab405a78da52f1fdf"
-  integrity sha512-KAy8Y/hJmF8OjJp55M3+AE2VDF+1qHsE0rPqCtj1ujoX/qYl5ZnZF3Hv7oEO1d8Hhh/625KrUOfUK9LlPviUFw==
+"@cosmology/utils@^1.8.4":
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/@cosmology/utils/-/utils-1.8.4.tgz#1254fd9d9b5fd43389beeb0408e823eee44a3da8"
+  integrity sha512-7nDmwGol7P7SD6xjBTOE2tfjt7spaq+mDxY9wc9Sr9XodVjnO+cnBILw/rX1cA4F6hTszwN/IScA+W6BrdAKmQ==
   dependencies:
-    "@cosmology/types" "^1.8.2"
+    "@cosmology/types" "^1.10.0"
     dotty "0.1.2"
 
 "@cosmos-kit/cdcwallet-extension@^2.13.2":

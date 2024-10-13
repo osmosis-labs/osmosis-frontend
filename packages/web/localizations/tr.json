@@ -536,6 +536,17 @@
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
       "weightedPool": "Ağırlıklı havuz"
     },
+    "createSupercharged": {
+      "createNew": "Yeni Süper Şarjlı Havuz Oluşturun",
+      "addInitialLiquidity": "Havuz # {poolNumber} a ilk likiditeyi ekleyin",
+      "buttonAddToken": "Yeni token ekle",
+      "base": "Temel",
+      "quote": "Alıntı",
+      "swapFee": "Takas Ücretini Ayarla",
+      "undersandCost": "Yeni bir havuz oluşturmanın {poolCreationFee} maliyeti olacağını anlıyorum.",
+      "buttonCreate": "Havuz Oluştur",
+      "buttonCreating": "Yaratmak"
+    },
     "TVL": "TVL",
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",
@@ -1235,5 +1246,12 @@
   },
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al",
-  "payAtMost": "En fazla öde"
+  "payAtMost": "En fazla öde",
+  "alloyedAssets": {
+    "title": "Varyantlar Tespit Edildi",
+    "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
+    "remindMeLater": "Daha sonra hatırlat bana",
+    "dismiss": "Azletmek",
+    "convert": "Dönüştürmek"
+  }
 }

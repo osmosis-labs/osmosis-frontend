@@ -536,6 +536,17 @@
       "undersandCost": "من می دانم هزینه ایجاد استخر {POOL_CREATION_FEE} می باشد.",
       "weightedPool": "وزن استخر"
     },
+    "createSupercharged": {
+      "createNew": "استخر سوپرشارژ جدید ایجاد کنید",
+      "addInitialLiquidity": "نقدینگی اولیه را به Pool # اضافه کنید {poolNumber}",
+      "buttonAddToken": "توکن جدید اضافه کنید",
+      "base": "پایه",
+      "quote": "نقل قول",
+      "swapFee": "کارمزد مبادله را تنظیم کنید",
+      "undersandCost": "من متوجه هستم که ایجاد یک استخر جدید هزینه {poolCreationFee} را در بر خواهد داشت.",
+      "buttonCreate": "استخر ایجاد کنید",
+      "buttonCreating": "ایجاد"
+    },
     "TVL": "TVL",
     "myLiquidity": "نقدینگی های من",
     "myPools": "استخر های من",
@@ -1235,5 +1246,12 @@
   },
   "tradeFee": "کارمزد تجارت",
   "receiveAtLeast": "حداقل دریافت کنید",
-  "payAtMost": "حداکثر پرداخت کنید"
+  "payAtMost": "حداکثر پرداخت کنید",
+  "alloyedAssets": {
+    "title": "انواع مختلف شناسایی شد",
+    "caption": "با همه آن گونه های دارایی گیج کننده خداحافظی کنید. به تجربه یکپارچه تر در اسموز سلام کنید.",
+    "remindMeLater": "بعدا به من یادآوری کن",
+    "dismiss": "رد کردن",
+    "convert": "تبدیل کنید"
+  }
 }

@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "../../../decimals";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { fromTimestamp, toTimestamp } from "../../../helpers";
 export interface Pool {
