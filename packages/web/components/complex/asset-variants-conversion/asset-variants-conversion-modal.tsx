@@ -174,7 +174,7 @@ const AssetVariantsConversion = observer(
                   checked={checkedVariants.includes(variant ?? {})}
                   className="mr-2"
                 />
-                <div className="flex min-w-[262px] items-center gap-3 py-2 px-4">
+                <div className="flex w-[262px] min-w-[262px] max-w-[262px] items-center gap-3 py-2 px-4">
                   <FallbackImg
                     src={variant?.asset?.coinImageUrl ?? ""}
                     alt={variant?.asset?.coinDenom ?? ""}
