@@ -1,3 +1,4 @@
+import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -7,10 +8,10 @@ import { create } from "zustand";
 // Import useTranslation
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
-import { Tooltip } from "~/components/tooltip"; // Ensure Tooltip is imported
+import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Skeleton } from "~/components/ui/skeleton"; // Ensure Skeleton is imported
+import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
@@ -52,8 +53,10 @@ const AssetVariantsConversion = observer(
     const { accountStore } = useStore();
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const { isMobile } = useWindowSize();
-    const [checkedVariants, setCheckedVariants] = useState<string[]>([]);
+    const [checkedVariants, setCheckedVariants] = useState<AssetVariant[]>([]);
     const { t } = useTranslation();
+
+    console.log("checkedVariants: ", checkedVariants);
 
     const { data, error, isLoading } =
       api.local.portfolio.getAllocation.useQuery(
@@ -66,14 +69,14 @@ const AssetVariantsConversion = observer(
           onSuccess: (data) => {
             if (data?.assetVariants) {
               setCheckedVariants(
-                data?.assetVariants?.map(
-                  (variant) => variant?.asset?.coinMinimalDenom ?? ""
-                ) ?? []
+                data?.assetVariants?.map((variant) => variant ?? {}) ?? []
               );
             }
           },
         }
       );
+
+    console.log("data: ", data);
 
     // should close toast if screen size changes to mobile while shown
     useEffect(() => {
@@ -83,19 +86,45 @@ const AssetVariantsConversion = observer(
       }
     }, [isMobile, onRequestClose]);
 
+    // const convertSelectedAssets = async () => {
+    //     console.log("convertSelectedAssets", checkedVariants);
+
+    //     // Iterate over each selected variant
+    //     for (const variantDenom of checkedVariants) {
+    //         const variant = data?.assetVariants?.find(v => v?.asset?.coinMinimalDenom === variantDenom);
+    //         if (variant) {
+    //             const canonicalAsset = variant.canonicalAsset; // Get the canonical asset
+
+    //             // Call sendSwapExactAmountInMsg for the canonical asset
+    //             try {
+    //                 await account?.osmosis.sendSwapExactAmountInMsg(
+    //                     // Assuming you need to pass pools and other parameters
+    //                     [/* pools */], // Replace with actual pools
+    //                     {
+    //                         coinMinimalDenom: canonicalAsset?.coinMinimalDenom ?? "",
+    //                         amount: /* amount to swap */, // Replace with actual amount
+    //                     },
+    //                     /* tokenOutMinAmount */ undefined, // Replace with actual min amount if needed
+    //                     /* signOptions */ undefined // Replace with actual sign options if needed
+    //                 );
+    //             } catch (error) {
+    //                 console.error("Error sending swap message:", error);
+    //             }
+    //         }
+    //     }
+    // };
+
     const handleSelectAll = () => {
       setCheckedVariants(
-        data?.assetVariants?.map(
-          (variant) => variant?.asset?.coinMinimalDenom ?? ""
-        ) ?? []
+        data?.assetVariants?.map((variant) => variant ?? {}) ?? []
       );
     };
 
-    const handleVariantCheck = (coinMinimalDenom: string) => {
+    const handleVariantCheck = (variant: AssetVariant) => {
       setCheckedVariants((prevState) =>
-        prevState.includes(coinMinimalDenom)
-          ? prevState.filter((variant) => variant !== coinMinimalDenom)
-          : [...prevState, coinMinimalDenom]
+        prevState.includes(variant)
+          ? prevState.filter((v) => v !== variant)
+          : [...prevState, variant]
       );
     };
 
@@ -118,7 +147,7 @@ const AssetVariantsConversion = observer(
             }
             size="md"
             variant="ghost"
-            className="text-wosmongton-200" // Added h-14 for 56px height
+            className="text-wosmongton-200"
             onClick={handleSelectAll}
           >
             {t("assetVariantsConversion.selectAll")}
@@ -128,9 +157,8 @@ const AssetVariantsConversion = observer(
           {isLoading ? (
             <div className="flex flex-col gap-3">
               {" "}
-              {/* Added gap for spacing */}
-              <Skeleton className="h-[90px] w-full" /> {/* First skeleton */}
-              <Skeleton className="h-[90px] w-full" /> {/* Second skeleton */}
+              <Skeleton className="h-[90px] w-full" />
+              <Skeleton className="h-[90px] w-full" />
             </div>
           ) : error ? (
             <p>{t("assetVariantsConversion.errorLoading")}</p>
@@ -139,15 +167,11 @@ const AssetVariantsConversion = observer(
               <div
                 key={variant?.asset?.coinMinimalDenom}
                 className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-osmoverse-alpha-850" // Added cursor-pointer for better UX
-                onClick={() =>
-                  handleVariantCheck(variant?.asset?.coinMinimalDenom ?? "")
-                }
+                onClick={() => handleVariantCheck(variant ?? {})}
               >
                 <Checkbox
                   // note - check change occurs when row is clicked, not checkbox
-                  checked={checkedVariants.includes(
-                    variant?.asset?.coinMinimalDenom ?? ""
-                  )}
+                  checked={checkedVariants.includes(variant ?? {})}
                   className="mr-2"
                 />
                 <div className="flex min-w-[262px] items-center gap-3 py-2 px-4">
@@ -192,7 +216,7 @@ const AssetVariantsConversion = observer(
                     </span>
                   </div>
                 </div>
-                {variant.canonicalAsset?.isAlloyed && ( // Use the isAlloyed function
+                {variant.canonicalAsset?.isAlloyed && (
                   <div className="flex items-center justify-center">
                     <Tooltip
                       arrow={true}
@@ -239,6 +263,7 @@ const AssetVariantsConversion = observer(
         <div className="mt-4 flex w-full">
           <Button
             onClick={() => {
+              // convertSelectedAssets();
               // TODO: link up conversion local state logic
               // open modal
               // Convert All
@@ -257,6 +282,7 @@ const AssetVariantsConversion = observer(
                 onRequestClose();
               }, 3000);
             }}
+            disabled={checkedVariants.length === 0}
             className="w-full"
           >
             {t("assetVariantsConversion.convertSelected")}

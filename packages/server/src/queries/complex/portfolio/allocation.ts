@@ -16,16 +16,18 @@ interface FormattedAllocation {
   asset?: CoinPretty;
 }
 
+export interface AssetVariant {
+  asset: MinimalAsset | null;
+  amount: Dec;
+  canonicalAsset: MinimalAsset | null;
+}
+
 export interface GetAllocationResponse {
   all: FormattedAllocation[];
   assets: FormattedAllocation[];
   available: FormattedAllocation[];
   totalCap: PricePretty;
-  assetVariants: {
-    asset: MinimalAsset | null;
-    amount: Dec;
-    canonicalAsset: MinimalAsset | null;
-  }[];
+  assetVariants: AssetVariant[];
 }
 
 export function getAll(categories: Categories): FormattedAllocation[] {
