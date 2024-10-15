@@ -372,7 +372,7 @@ const PendingTransferLoadingIcon: FunctionComponent<{
         const circles = progressRef.current.querySelectorAll("circle");
         const radius = 20;
         const circumference = 2 * Math.PI * radius;
-        const offset = (progressPercentage / 100) * circumference;
+        const offset = Math.max((progressPercentage / 100) * circumference, 7);
 
         circles.forEach((circle, index) => {
           if (index === 1) {
