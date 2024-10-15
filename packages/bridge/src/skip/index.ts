@@ -324,7 +324,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
-            type: "quote",
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -338,7 +338,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
-            type: "quote",
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -382,7 +382,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
-            type: "quote",
+            transferTypes: ["quote"],
             address: sharedOriginAsset.denom,
             denom:
               sharedOriginAsset.recommended_symbol ??

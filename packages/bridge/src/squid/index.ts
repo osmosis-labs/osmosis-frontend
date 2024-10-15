@@ -339,7 +339,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
-            type: "quote",
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -352,7 +352,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
-            type: "quote",
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -395,7 +395,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         foundVariants.setAsset(variant.chainId.toString(), variant.address, {
           // squid chain list IDs are canonical
           ...chainInfo,
-          type: "quote",
+          transferTypes: ["quote"],
           chainName: variant.chainName,
           denom: variant.symbol,
           address: variant.address,

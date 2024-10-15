@@ -131,6 +131,7 @@ export class NomicBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     asset,
     chain,
+    direction,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
@@ -148,10 +149,10 @@ export class NomicBridgeProvider implements BridgeProvider {
       );
 
       if (bitcoinCounterparty) {
-        const isWithdraw = chain.chainType === "cosmos";
         return [
           {
-            type: isWithdraw ? "quote" : "deposit-address",
+            transferTypes:
+              direction === "withdraw" ? ["quote"] : ["deposit-address"],
             chainId: "bitcoin",
             chainName: "Bitcoin",
             chainType: "bitcoin",

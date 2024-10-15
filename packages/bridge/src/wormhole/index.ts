@@ -41,7 +41,7 @@ export class WormholeBridgeProvider implements BridgeProvider {
       if (solanaCounterparty) {
         return [
           {
-            type: "external-url",
+            transferTypes: ["external-url"],
             chainId: "solana",
             chainName: "Solana",
             chainType: "solana",

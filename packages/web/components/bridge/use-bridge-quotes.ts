@@ -29,11 +29,6 @@ const refetchInterval = 30 * 1000; // 30 seconds
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
-/** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
-
-export type DepositAddressBridge = Extract<Bridge, "Nomic">;
-
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
  * the from and to chain & asset info. Defaults selection to the cheapest quote.
@@ -80,7 +75,7 @@ export const useBridgeQuotes = ({
   toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
-  bridges: QuotableBridge[];
+  bridges: Bridge[];
 
   onRequestClose: () => void;
   onTransfer?: () => void;

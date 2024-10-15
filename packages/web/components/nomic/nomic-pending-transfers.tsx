@@ -10,7 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
-import { QueryRemainingTime } from "~/components/bridge/bridge-quote-remaining-time";
+import { QueryRemainingTime } from "~/components/bridge/query-remaining-time";
 import { Spinner } from "~/components/loaders";
 import { buttonVariants, IconButton } from "~/components/ui/button";
 import { ProgressBar } from "~/components/ui/progress-bar";

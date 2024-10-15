@@ -123,7 +123,7 @@ export class IbcBridgeProvider implements BridgeProvider {
           address: assetListAsset.sourceDenom,
           denom: assetListAsset.symbol,
           decimals: assetListAsset.decimals,
-          type: "quote",
+          transferTypes: ["quote"],
         },
       ];
     } catch (e) {

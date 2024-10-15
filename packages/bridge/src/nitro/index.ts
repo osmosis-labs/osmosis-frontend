@@ -74,7 +74,7 @@ export class NitroBridgeProvider implements BridgeProvider {
 
           return [
             {
-              type: "external-url",
+              transferTypes: ["external-url"],
               chainType: "tron",
               chainId: TronChainInfo.chainId,
               chainName: TronChainInfo.chainName,

@@ -8,7 +8,6 @@ import {
   MenuItems,
 } from "@headlessui/react";
 import { IntPretty } from "@keplr-wallet/unit";
-import { Bridge } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -54,7 +53,10 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { ChainLogo } from "../assets/chain-logo";
-import { SupportedAssetWithAmount } from "./amount-and-review-screen";
+import {
+  SupportedAssetWithAmount,
+  SupportedBridgeInfo,
+} from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
 import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
 import {
@@ -70,14 +72,12 @@ import {
   ProviderFeesRow,
   TotalFeesRow,
 } from "./quote-detail";
-import { BridgeQuote, DepositAddressBridge } from "./use-bridge-quotes";
+import { BridgeQuote } from "./use-bridge-quotes";
 import {
   SupportedAsset,
   SupportedChain,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
-
-const depositAddressBridges: DepositAddressBridge[] = ["Nomic"];
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
@@ -87,7 +87,7 @@ interface AmountScreenProps {
   isLoadingAssetsInOsmosis: boolean;
 
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
-  supportedBridges: Bridge[];
+  supportedBridgeInfo: SupportedBridgeInfo;
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -126,7 +126,7 @@ export const AmountScreen = observer(
       supportedChains,
       isLoading: isLoadingSupportedAssets,
     },
-    supportedBridges,
+    supportedBridgeInfo,
 
     fromChain,
     setFromChain,
@@ -377,8 +377,9 @@ export const AmountScreen = observer(
             chainType: fromChain.chainType,
             denom: selectedAsset.coinDenom,
             supportedVariants: {
-              [selectedAsset.coinMinimalDenom]: [],
+              [selectedAsset.coinMinimalDenom]: {},
             },
+            transferTypes: [],
           },
         ];
       }
@@ -511,6 +512,7 @@ export const AmountScreen = observer(
           denom: destinationAsset.coinDenom,
           // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
           supportedVariants: {},
+          transferTypes: [],
         });
       }
     }, [
@@ -768,20 +770,10 @@ export const AmountScreen = observer(
       </div>
     );
 
-    const supportedDepositAddressBridges = useMemo(
-      () =>
-        supportedBridges.filter((bridge) =>
-          depositAddressBridges.some(
-            (depositAddressBridge) => depositAddressBridge === bridge
-          )
-        ) as DepositAddressBridge[],
-      [supportedBridges]
-    );
-
     if (
       featureFlags.bridgeDepositAddress &&
       !quote.enabled &&
-      supportedDepositAddressBridges.length > 0 &&
+      supportedBridgeInfo.depositAddressBridges.length > 0 &&
       direction === "deposit" &&
       canonicalAsset &&
       fromChain &&
@@ -798,7 +790,7 @@ export const AmountScreen = observer(
           toChain={toChain}
           fromAsset={fromAsset}
           toAsset={toAsset}
-          bridge={supportedDepositAddressBridges[0]} // For now, only one bridge provider is supported
+          bridge={supportedBridgeInfo.depositAddressBridges[0]} // For now, only one bridge provider is supported
         />
       );
     }
@@ -830,7 +822,7 @@ export const AmountScreen = observer(
             fromChain={fromChain}
             fromAsset={fromAsset}
             toAddress={toAddress}
-            bridges={supportedBridges}
+            bridges={supportedBridgeInfo.allBridges}
             onDone={onClose}
           />
         </>
@@ -1187,6 +1179,7 @@ export const AmountScreen = observer(
                                   denom: asset.coinDenom,
                                   // Can be left empty because for deposits we don't rely on the supported variants within the destination asset
                                   supportedVariants: {},
+                                  transferTypes: [],
                                 });
                               };
 
@@ -1432,7 +1425,7 @@ export const AmountScreen = observer(
                   fromChain={fromChain}
                   toChain={toChain}
                   toAddress={toAddress}
-                  bridges={supportedBridges}
+                  bridges={supportedBridgeInfo.allBridges}
                   onRequestClose={() => setAreMoreOptionsVisible(false)}
                 />
               </Screen>

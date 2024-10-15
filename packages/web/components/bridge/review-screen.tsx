@@ -20,7 +20,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-import { QueryRemainingTime } from "./bridge-quote-remaining-time";
+import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,

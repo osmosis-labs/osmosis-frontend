@@ -324,7 +324,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         axelarSourceAsset.denom,
         {
           ...chainInfo,
-          type: "quote",
+          transferTypes: ["quote"],
           chainName: axelarChain.name,
           denom: addressAsset.symbol,
           address: assetAddress,
@@ -355,7 +355,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             address: NativeEVMTokenConstantAddress,
             decimals: axelarChain.native_token.decimals,
             coinGeckoId: axelarSourceAsset.coingecko_id,
-            type: "quote",
+            transferTypes: ["quote"],
           }
         );
       }

@@ -225,7 +225,7 @@ export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
 // TODO: Add comment explaining this
 export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
-  type: z.enum(["quote", "deposit-address", "external-url"]),
+  transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
 });
 
 export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
@@ -239,6 +239,10 @@ export const getBridgeSupportedAssetsParams = z.object({
    * The asset on the originating chain.
    */
   asset: bridgeAssetSchema,
+  /**
+   * The direction of the transfer.
+   */
+  direction: z.enum(["deposit", "withdraw"]),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<

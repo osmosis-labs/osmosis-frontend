@@ -9,7 +9,7 @@ import { t } from "~/hooks";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 import { BridgeProviderDropdown } from "./bridge-provider-dropdown";
-import { QueryRemainingTime } from "./bridge-quote-remaining-time";
+import { QueryRemainingTime } from "./query-remaining-time";
 import { BridgeQuote } from "./use-bridge-quotes";
 
 export const BridgeProviderDropdownRow: FunctionComponent<{
