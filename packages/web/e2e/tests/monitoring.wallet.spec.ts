@@ -95,7 +95,7 @@ test.describe("Test Filled Limit Order feature", () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.25");
+      await tradePage.enterAmount("0.52");
       const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
@@ -111,7 +111,8 @@ test.describe("Test Filled Limit Order feature", () => {
       await tradePage.goto();
       await tradePage.openSellTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.24");
+      await tradePage.enterAmount("0.51");
+      await tradePage.isSufficientBalanceForTrade();
       const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");

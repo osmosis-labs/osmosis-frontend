@@ -126,10 +126,10 @@ jobs:
   fe-bot-alert:
     runs-on: ubuntu-latest
     needs: [fe-trade-eu-tests, fe-trade-us-tests, fe-trade-sg-tests]
+    if: failure()
     steps:
       - name: Send Slack alert if test fails
         id: slack
-        if: failure()
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |

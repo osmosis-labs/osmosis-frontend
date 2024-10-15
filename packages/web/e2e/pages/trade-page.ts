@@ -247,6 +247,14 @@ export class TradePage extends BasePage {
     return await issufBalanceBtn.isVisible({ timeout: 2000 });
   }
 
+  async isSufficientBalanceForTrade() {
+    // Make sure to have sufficient balance for a trade
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+  }
+
   async isError() {
     const errorBtn = this.page.locator('//button[.="Error"]');
     return await errorBtn.isVisible({ timeout: 2000 });
@@ -320,11 +328,7 @@ export class TradePage extends BasePage {
   }
 
   async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
+    // Make sure Sell button is enabled
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: 7000,
     });
