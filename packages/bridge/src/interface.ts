@@ -18,7 +18,7 @@ export interface BridgeProviderContext {
     chainId?: string;
     destinationAddress?: string;
   }): Promise<{
-    revisionNumber: string | undefined;
+    revisionNumber?: string;
     revisionHeight: string;
   }>;
 }
