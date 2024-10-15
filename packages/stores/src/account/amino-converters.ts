@@ -1,4 +1,4 @@
-import type { AminoMsgTransfer } from "@cosmjs/stargate";
+import { MsgTransferAmino } from "@osmosis-labs/proto-codecs/build/codegen/ibc/applications/transfer/v1/tx";
 import {
   MsgBeginUnlocking,
   MsgBeginUnlockingAmino,
@@ -79,7 +79,7 @@ export async function getAminoConverters() {
           sender,
           receiver,
           timeoutHeight,
-        }: MsgTransfer) => ({
+        }: MsgTransfer): MsgTransferAmino => ({
           source_port: sourcePort,
           source_channel: sourceChannel,
           token: {
@@ -91,7 +91,10 @@ export async function getAminoConverters() {
           timeout_height: timeoutHeight
             ? {
                 revision_height: timeoutHeight.revisionHeight?.toString(),
-                revision_number: timeoutHeight.revisionNumber?.toString(),
+                revision_number:
+                  timeoutHeight.revisionNumber?.toString() !== "0"
+                    ? timeoutHeight.revisionNumber?.toString()
+                    : undefined,
               }
             : {},
         }),
@@ -103,16 +106,16 @@ export async function getAminoConverters() {
           receiver,
           timeout_height,
           timeout_timestamp,
-        }: AminoMsgTransfer["value"]): MsgTransfer => {
+        }: MsgTransferAmino): MsgTransfer => {
           return {
-            sourcePort: source_port,
-            sourceChannel: source_channel,
+            sourcePort: source_port ?? "",
+            sourceChannel: source_channel ?? "",
             token: {
               denom: token?.denom ?? "",
               amount: token?.amount ?? "",
             },
-            sender,
-            receiver,
+            sender: sender ?? "",
+            receiver: receiver ?? "",
             timeoutHeight: timeout_height
               ? {
                   revisionHeight: Long.fromString(
