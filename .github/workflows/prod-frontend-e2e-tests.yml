@@ -22,7 +22,6 @@ jobs:
           VERCEL_TARGET: "production"
         run: |
           echo "$BRANCH_NAME"
-          python -m pip install requests
           cd .github && python await_deployment.py
       - name: Echo GITHUB_OUTPUT environment_url
         env:
