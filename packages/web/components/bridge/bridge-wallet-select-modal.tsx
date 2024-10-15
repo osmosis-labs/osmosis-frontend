@@ -1,4 +1,5 @@
 import {
+  isBitcoinAddressValid,
   isCosmosAddressValid,
   isEvmAddressValid,
   isNil,
@@ -216,7 +217,13 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     const transferWithSameWallet = fromChain.chainType === toChain.chainType;
 
     return (
-      <ScreenManager defaultScreen={WalletSelectScreens.WalletSelect}>
+      <ScreenManager
+        defaultScreen={
+          toChain.chainType === "bitcoin"
+            ? WalletSelectScreens.SendToAnotherAddress
+            : WalletSelectScreens.WalletSelect
+        }
+      >
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName={WalletSelectScreens.SendToAnotherAddress}>
@@ -505,14 +512,18 @@ const SendToAnotherAddressForm: FunctionComponent<
           id="withdraw-address-textarea"
           currentValue={address}
           onInput={(nextValue) => {
-            const isValid =
-              toChain.chainType === "cosmos"
-                ? isCosmosAddressValid({
-                    address: nextValue,
-                    bech32Prefix: toChain.bech32Prefix,
-                  })
-                : toChain.chainType === "evm" &&
-                  isEvmAddressValid({ address: nextValue });
+            let isValid = false;
+
+            if (toChain.chainType === "cosmos") {
+              isValid = isCosmosAddressValid({
+                address: nextValue,
+                bech32Prefix: toChain.bech32Prefix,
+              });
+            } else if (toChain.chainType === "evm") {
+              isValid = isEvmAddressValid({ address: nextValue });
+            } else if (toChain.chainType === "bitcoin") {
+              isValid = isBitcoinAddressValid({ address: nextValue });
+            }
 
             if (!nextValue) setIsInvalidAddress(false);
             else setIsInvalidAddress(!isValid);

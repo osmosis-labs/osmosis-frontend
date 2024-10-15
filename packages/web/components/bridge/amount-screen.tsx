@@ -203,7 +203,7 @@ export const AmountScreen = observer(
 
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
-    const accountThatNeedsWalletConnection =
+    const cosmosAccountRequiringConnection =
       !isNil(chainThatNeedsWalletConnection) &&
       chainThatNeedsWalletConnection.chainType === "cosmos"
         ? accountStore.getWallet(chainThatNeedsWalletConnection.chainId)
@@ -217,9 +217,13 @@ export const AmountScreen = observer(
         return isEvmWalletConnected;
       }
 
-      return !!accountThatNeedsWalletConnection?.address;
+      if (chainThatNeedsWalletConnection.chainType === "bitcoin") {
+        return !isNil(manualToAddress);
+      }
+
+      return !!cosmosAccountRequiringConnection?.address;
     }, [
-      accountThatNeedsWalletConnection?.address,
+      cosmosAccountRequiringConnection?.address,
       chainThatNeedsWalletConnection,
       isEvmWalletConnected,
       manualToAddress,
@@ -328,6 +332,8 @@ export const AmountScreen = observer(
               }
             })
             .finally(() => setPendingChainApproval(false));
+        } else if (chain.chainType === "bitcoin") {
+          onOpenBridgeWalletSelect();
         }
       },
       [
@@ -773,12 +779,12 @@ export const AmountScreen = observer(
     if (
       featureFlags.bridgeDepositAddress &&
       !quote.enabled &&
+      fromAsset &&
       supportedBridgeInfo.depositAddressBridges.length > 0 &&
       direction === "deposit" &&
       canonicalAsset &&
       fromChain &&
       toChain &&
-      fromAsset &&
       toAsset
     ) {
       return (

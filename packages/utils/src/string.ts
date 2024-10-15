@@ -1,4 +1,5 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
+import * as bitcoin from "bitcoinjs-lib";
 import * as viem from "viem";
 
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
@@ -71,6 +72,19 @@ export const camelCaseToSnakeCase = (input: string) => {
 
 export function isEvmAddressValid({ address }: { address: string }): boolean {
   return viem.isAddress(address);
+}
+
+export function isBitcoinAddressValid({
+  address,
+}: {
+  address: string;
+}): boolean {
+  try {
+    bitcoin.address.toOutputScript(address);
+    return true;
+  } catch (e) {
+    return false;
+  }
 }
 
 export function isCosmosAddressValid({

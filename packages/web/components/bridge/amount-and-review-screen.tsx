@@ -135,7 +135,7 @@ export const AmountAndReviewScreen = observer(
       },
       direction,
     });
-    console.log(supportedAssets);
+
     const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
       supportedAssets;
 
