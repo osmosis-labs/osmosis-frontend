@@ -1,8 +1,10 @@
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { create } from "zustand";
 
 // Import useTranslation
@@ -56,27 +58,72 @@ const AssetVariantsConversion = observer(
     const [checkedVariants, setCheckedVariants] = useState<AssetVariant[]>([]);
     const { t } = useTranslation();
 
-    console.log("checkedVariants: ", checkedVariants);
-
-    const { data, error, isLoading } =
-      api.local.portfolio.getAllocation.useQuery(
-        {
-          address: account?.address ?? "",
+    const {
+      data: allocationData,
+      error: allocationError,
+      isLoading: isAllocationLoading,
+    } = api.local.portfolio.getAllocation.useQuery(
+      {
+        address: account?.address ?? "",
+      },
+      {
+        enabled: !!account?.address,
+        refetchOnWindowFocus: false,
+        onSuccess: (data) => {
+          if (data?.assetVariants) {
+            setCheckedVariants(
+              data?.assetVariants?.map((variant) => variant ?? {}) ?? []
+            );
+          }
         },
-        {
-          enabled: !!account?.address,
-          refetchOnWindowFocus: false,
-          onSuccess: (data) => {
-            if (data?.assetVariants) {
-              setCheckedVariants(
-                data?.assetVariants?.map((variant) => variant ?? {}) ?? []
-              );
-            }
-          },
-        }
-      );
+      }
+    );
 
-    console.log("data: ", data);
+    const prepareRouteInput = useCallback(() => {
+      return (
+        allocationData?.assetVariants?.map((variant) => ({
+          tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
+          // tokenInAmount: variant.amount?.toString() ?? "0",
+          tokenInAmount: "100000000000000000", // TODO - update this value to use variant.amount and validate
+          tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
+          forcePoolId: undefined,
+        })) ?? []
+      );
+    }, [allocationData]);
+
+    const {
+      data: routeData,
+      error: routeError,
+      isLoading: isRouteLoading,
+    } = api.local.quoteRouter.routeTokensOutGivenIn.useQuery(
+      prepareRouteInput(),
+      {
+        enabled: !!allocationData,
+        refetchOnWindowFocus: false,
+      }
+    );
+
+    console.log("routeData: ", routeData);
+
+    // TODO - verify the logic with amount of decimals is correct
+    const totalSwapFee = useMemo(() => {
+      if (!routeData || checkedVariants.length === 0) return new Dec(0);
+
+      return checkedVariants.reduce(
+        (sum: Dec, variant: AssetVariant, index: number) => {
+          const route = routeData[index];
+          if (route?.swapFee?.amount) {
+            return sum.add(route.swapFee.amount);
+          }
+          return sum;
+        },
+        new Dec(0)
+      );
+    }, [routeData, checkedVariants]);
+
+    console.log("Route Data: ", routeData);
+    console.log("Route Error: ", routeError);
+    console.log("Is Route Loading: ", isRouteLoading);
 
     // should close toast if screen size changes to mobile while shown
     useEffect(() => {
@@ -86,37 +133,9 @@ const AssetVariantsConversion = observer(
       }
     }, [isMobile, onRequestClose]);
 
-    // const convertSelectedAssets = async () => {
-    //     console.log("convertSelectedAssets", checkedVariants);
-
-    //     // Iterate over each selected variant
-    //     for (const variantDenom of checkedVariants) {
-    //         const variant = data?.assetVariants?.find(v => v?.asset?.coinMinimalDenom === variantDenom);
-    //         if (variant) {
-    //             const canonicalAsset = variant.canonicalAsset; // Get the canonical asset
-
-    //             // Call sendSwapExactAmountInMsg for the canonical asset
-    //             try {
-    //                 await account?.osmosis.sendSwapExactAmountInMsg(
-    //                     // Assuming you need to pass pools and other parameters
-    //                     [/* pools */], // Replace with actual pools
-    //                     {
-    //                         coinMinimalDenom: canonicalAsset?.coinMinimalDenom ?? "",
-    //                         amount: /* amount to swap */, // Replace with actual amount
-    //                     },
-    //                     /* tokenOutMinAmount */ undefined, // Replace with actual min amount if needed
-    //                     /* signOptions */ undefined // Replace with actual sign options if needed
-    //                 );
-    //             } catch (error) {
-    //                 console.error("Error sending swap message:", error);
-    //             }
-    //         }
-    //     }
-    // };
-
     const handleSelectAll = () => {
       setCheckedVariants(
-        data?.assetVariants?.map((variant) => variant ?? {}) ?? []
+        allocationData?.assetVariants?.map((variant) => variant ?? {}) ?? []
       );
     };
 
@@ -142,8 +161,8 @@ const AssetVariantsConversion = observer(
         <div className="-mx-3 mt-6 flex h-14 items-center">
           <Button
             disabled={
-              isLoading ||
-              checkedVariants.length === data?.assetVariants?.length
+              isAllocationLoading ||
+              checkedVariants.length === allocationData?.assetVariants?.length
             }
             size="md"
             variant="ghost"
@@ -154,16 +173,16 @@ const AssetVariantsConversion = observer(
           </Button>
         </div>
         <div className="flex flex-col">
-          {isLoading ? (
+          {isAllocationLoading ? (
             <div className="flex flex-col gap-3">
               {" "}
               <Skeleton className="h-[90px] w-full" />
               <Skeleton className="h-[90px] w-full" />
             </div>
-          ) : error ? (
+          ) : allocationError ? (
             <p>{t("assetVariantsConversion.errorLoading")}</p>
           ) : (
-            data?.assetVariants?.map((variant) => (
+            allocationData?.assetVariants?.map((variant) => (
               <div
                 key={variant?.asset?.coinMinimalDenom}
                 className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-osmoverse-alpha-850" // Added cursor-pointer for better UX
@@ -260,6 +279,18 @@ const AssetVariantsConversion = observer(
             ))
           )}
         </div>
+        {!isRouteLoading && routeData && (
+          <div className="my-3 flex w-full flex-col gap-2">
+            <div className="flex w-full">
+              <span className="body2 flex flex-1 items-center text-osmoverse-300">
+                Conversion fees
+              </span>
+              <p className="body2 text-white-full">
+                {new PricePretty(DEFAULT_VS_CURRENCY, totalSwapFee).toString()}
+              </p>
+            </div>
+          </div>
+        )}
         <div className="mt-4 flex w-full">
           <Button
             onClick={() => {
@@ -282,10 +313,12 @@ const AssetVariantsConversion = observer(
                 onRequestClose();
               }, 3000);
             }}
-            disabled={checkedVariants.length === 0}
+            disabled={checkedVariants.length === 0 || isRouteLoading}
             className="w-full"
           >
-            {t("assetVariantsConversion.convertSelected")}
+            {isRouteLoading
+              ? t("assetVariantsConversion.calculating")
+              : t("assetVariantsConversion.convertSelected")}
           </Button>
         </div>
       </div>
