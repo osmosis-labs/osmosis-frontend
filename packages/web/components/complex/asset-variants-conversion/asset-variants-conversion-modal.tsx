@@ -83,8 +83,8 @@ const AssetVariantsConversion = observer(
       return (
         allocationData?.assetVariants?.map((variant) => ({
           tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-          // tokenInAmount: variant.amount?.toString() ?? "0",
-          tokenInAmount: "100000000000000000", // TODO - update this value to use variant.amount and validate
+          tokenInAmount: variant.amount?.toString() ?? "0",
+          // tokenInAmount: "100000000000000000", // TODO - update this value to use variant.amount and validate
           tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
           forcePoolId: undefined,
         })) ?? []
@@ -316,9 +316,7 @@ const AssetVariantsConversion = observer(
             disabled={checkedVariants.length === 0 || isRouteLoading}
             className="w-full"
           >
-            {isRouteLoading
-              ? t("assetVariantsConversion.calculating")
-              : t("assetVariantsConversion.convertSelected")}
+            {t("assetVariantsConversion.convertSelected")}
           </Button>
         </div>
       </div>

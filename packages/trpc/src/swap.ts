@@ -130,6 +130,7 @@ export const swapRouter = createTRPCRouter({
         };
       }
     ),
+  // TODO - this will sometimes fail, ex wBTC - figure out why
   routeTokensOutGivenIn: publicProcedure
     .input(
       z.array(
