@@ -121,8 +121,8 @@ export class TradePage extends BasePage {
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
     await this.inputAmount.fill(amount, { timeout: 2000 });
-    await this.page.waitForTimeout(2000);
-    await expect(this.inputAmount).toHaveValue(amount, { timeout: 3000 });
+    await this.page.waitForTimeout(1000);
+    await expect(this.inputAmount).toHaveValue(amount, { timeout: 1000 });
     const exchangeRate = await this.getExchangeRate();
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
@@ -262,8 +262,7 @@ export class TradePage extends BasePage {
 
   async showSwapInfo() {
     const swapInfo = this.page.locator("//button//span[.='Show details']");
-    await swapInfo.click();
-    console.log(`Price Impact: ${await this.getPriceInpact()}`);
+    await swapInfo.click({ timeout: 2000 });
   }
 
   async getPriceInpact() {
