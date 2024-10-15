@@ -83,8 +83,7 @@ const AssetVariantsConversion = observer(
       return (
         allocationData?.assetVariants?.map((variant) => ({
           tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-          tokenInAmount: variant.amount?.toString() ?? "0",
-          // tokenInAmount: "100000000000000000", // TODO - update this value to use variant.amount and validate
+          tokenInAmount: variant.amount.truncate().toString(),
           tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
           forcePoolId: undefined,
         })) ?? []
