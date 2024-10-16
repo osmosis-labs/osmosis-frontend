@@ -1,3 +1,4 @@
+import { RatePretty } from "@keplr-wallet/unit";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
@@ -239,30 +240,39 @@ export type GetBridgeSupportedAssetsParams = z.infer<
 
 export interface BridgeDepositAddress {
   depositAddress: string;
+  expirationTimeMs: number;
+  minimumDeposit: BridgeCoin;
+  networkFee: BridgeCoin;
+  providerFee: RatePretty;
+  estimatedTime: string;
 }
 
-export interface GetDepositAddressParams {
+export const getDepositAddressParamsSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: BridgeChain;
+  fromChain: bridgeChainSchema,
   /**
    * The destination chain information.
    */
-  toChain: BridgeChain;
+  toChain: bridgeChainSchema,
   /**
    * The asset on the originating chain.
    */
-  fromAsset: BridgeAsset;
+  fromAsset: bridgeAssetSchema,
   /**
    * The asset on the destination chain.
    */
-  toAsset: BridgeAsset;
+  toAsset: bridgeAssetSchema,
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: string;
-}
+  toAddress: z.string(),
+});
+
+export type GetDepositAddressParams = z.infer<
+  typeof getDepositAddressParamsSchema
+>;
 
 export const getBridgeExternalUrlSchema = z.object({
   /**
