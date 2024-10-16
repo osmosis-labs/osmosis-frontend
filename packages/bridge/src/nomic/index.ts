@@ -111,13 +111,13 @@ export class NomicBridgeProvider implements BridgeProvider {
     });
 
     const swapMessages = await getSwapMessages({
-      coinAmount: swapRoute.amount.toString(),
-      maxSlippage: "0.5",
+      coinAmount: fromAmount,
+      maxSlippage: "0.005",
       quote: swapRoute,
       tokenInCoinDecimals: fromAsset.decimals,
       tokenInCoinMinimalDenom: fromAsset.address,
       tokenOutCoinDecimals: nomicBtc.decimals,
-      tokenOutCoinMinimalDenom: this.nBtcMinimalDenom,
+      tokenOutCoinMinimalDenom: nomicBtc.coinMinimalDenom,
       userOsmoAddress: fromAddress,
       quoteType: "out-given-in",
     });
@@ -130,8 +130,6 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
-    console.log(swapMessages);
-
     const nomicBridgeAsset: BridgeAsset = {
       address: nomicBtc.coinMinimalDenom,
       decimals: nomicBtc.decimals,
@@ -142,7 +140,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const transactionDataParams: GetBridgeQuoteParams = {
       ...params,
-      fromAmount: swapRoute.amount.toString(),
+      fromAmount: swapRoute.amount.toCoin().amount,
       fromAsset: nomicBridgeAsset,
       toChain: {
         chainId: nomicChain.chain_id,
@@ -157,7 +155,10 @@ export class NomicBridgeProvider implements BridgeProvider {
     };
 
     const [signDoc, estimatedTime] = await Promise.all([
-      ibcProvider.getTransactionData(transactionDataParams),
+      ibcProvider.getTransactionData({
+        ...transactionDataParams,
+        memo: destMemo,
+      }),
       ibcProvider.estimateTransferTime(
         transactionDataParams.fromChain.chainId.toString(),
         transactionDataParams.toChain.chainId.toString()
@@ -184,6 +185,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         amount: "0",
       },
       estimatedTime,
+      // TODO: Add gas fee
       // estimatedGasFee: gasFee
       //   ? {
       //       address: gasAsset?.address ?? gasFee.denom,
@@ -193,7 +195,11 @@ export class NomicBridgeProvider implements BridgeProvider {
       //       amount: gasFee.amount,
       //     }
       //   : undefined,
-      transactionRequest: signDoc,
+      transactionRequest: {
+        type: "cosmos",
+        msgs: [...swapMessages, ...signDoc.msgs],
+        // TODO: Add gas fee
+      },
     };
   }
 

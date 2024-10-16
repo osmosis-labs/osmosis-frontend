@@ -588,13 +588,8 @@ export const useBridgeQuotes = ({
     const gasFee = transactionRequest.gasFee;
     return accountStore.signAndBroadcast(
       fromChain.chainId,
-      transactionRequest.msgTypeUrl,
-      [
-        {
-          typeUrl: transactionRequest.msgTypeUrl,
-          value: transactionRequest.msg,
-        },
-      ],
+      `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
+      transactionRequest.msgs,
       "",
       // Setting the fee from the transaction request
       // ensures the user is using the same fee token & amount as seen in the quote.

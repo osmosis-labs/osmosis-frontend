@@ -569,8 +569,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           type: "cosmos",
-          msgTypeUrl: typeUrl,
-          msg,
+          msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
       } else if (parsedData.msgTypeUrl === WasmTransferType) {
@@ -593,8 +592,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           type: "cosmos",
-          msgTypeUrl: typeUrl,
-          msg,
+          msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
       }

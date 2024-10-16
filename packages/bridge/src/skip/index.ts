@@ -486,8 +486,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
+        msgs: [{ typeUrl, value: msg }],
         fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
       };
     } else {
@@ -519,8 +518,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg: value,
+        msgs: [{ typeUrl, value }],
         fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
@@ -795,14 +793,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainId: params.fromChain.chainId.toString(),
         chainList: this.ctx.chainList,
         body: {
-          messages: [
-            (
-              await this.getProtoRegistry()
-            ).encodeAsAny({
-              typeUrl: txData.msgTypeUrl,
-              value: txData.msg,
-            }),
-          ],
+          messages: await Promise.all(
+            txData.msgs.map(async (msg) =>
+              (await this.getProtoRegistry()).encodeAsAny(msg)
+            )
+          ),
         },
         bech32Address: params.fromAddress,
         fallbackGasLimit: txData.fallbackGasLimit,

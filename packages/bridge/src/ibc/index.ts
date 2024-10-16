@@ -145,7 +145,7 @@ export class IbcBridgeProvider implements BridgeProvider {
    * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
    */
   async getTransactionData(
-    params: GetBridgeQuoteParams
+    params: GetBridgeQuoteParams & { memo?: string }
   ): Promise<CosmosBridgeTransactionRequest & { gasAsset?: BridgeAsset }> {
     this.validate(params);
 
@@ -167,6 +167,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         amount: params.fromAmount,
         denom: address,
       },
+      memo: params.memo ?? "",
     });
 
     const txSimulation = await estimateGasFee({
@@ -209,8 +210,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     return {
       type: "cosmos",
-      msgTypeUrl: typeUrl,
-      msg,
+      msgs: [{ typeUrl, value: msg }],
       gasFee: {
         gas: txSimulation.gas,
         amount: gasFee.amount,

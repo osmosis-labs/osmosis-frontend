@@ -424,14 +424,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
       chainId: params.fromChain.chainId.toString(),
       chainList: this.ctx.chainList,
       body: {
-        messages: [
-          (
-            await this.getProtoRegistry()
-          ).encodeAsAny({
-            typeUrl: transactionData.msgTypeUrl,
-            value: transactionData.msg,
-          }),
-        ],
+        messages: await Promise.all(
+          transactionData.msgs.map(async (msg) =>
+            (await this.getProtoRegistry()).encodeAsAny(msg)
+          )
+        ),
       },
       bech32Address: params.fromAddress,
       fallbackGasLimit: makeIBCTransferMsg.gas,
@@ -617,8 +614,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
+        msgs: [{ typeUrl, value: msg }],
       };
     } catch (e) {
       const error = e as Error | BridgeQuoteError;

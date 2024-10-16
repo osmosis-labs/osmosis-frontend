@@ -1,3 +1,4 @@
+import { EncodeObject } from "@cosmjs/proto-signing";
 import { RatePretty } from "@keplr-wallet/unit";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
@@ -368,8 +369,7 @@ export interface EvmBridgeTransactionRequest {
 
 export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
-  msgTypeUrl: string;
-  msg: Record<string, any>;
+  msgs: EncodeObject[];
   gasFee?: {
     gas: string;
     denom: string;
@@ -377,14 +377,9 @@ export interface CosmosBridgeTransactionRequest {
   };
 }
 
-interface QRCodeBridgeTransactionRequest {
-  type: "qrcode";
-}
-
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest
-  | QRCodeBridgeTransactionRequest;
+  | CosmosBridgeTransactionRequest;
 
 /**
  * Bridge asset with raw base amount (without decimals).
