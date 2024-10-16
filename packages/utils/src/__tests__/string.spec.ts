@@ -8,7 +8,7 @@ import { TextDecoder, TextEncoder } from "util";
 (global as any).TextEncoder = TextEncoder;
 (global as any).TextDecoder = TextDecoder;
 
-import { isBitcoinAddressValid, shorten } from "../string";
+import { deriveCosmosAddress, isBitcoinAddressValid, shorten } from "../string";
 
 describe("shorten", () => {
   it("should return an empty string if input is empty", () => {
@@ -86,5 +86,33 @@ describe("isBitcoinAddressValid", () => {
   it("should return false for a malformed address", () => {
     const malformedAddress = "12345";
     expect(isBitcoinAddressValid({ address: malformedAddress })).toBe(false);
+  });
+});
+
+describe("deriveCosmosAddress", () => {
+  it("should derive a new Cosmos address with the desired Bech32 prefix", () => {
+    const originalAddress = "osmo13t8prr8hu7hkuksnfrd25vpvvnrfxr223k59ph";
+    const desiredPrefix = "nomic";
+
+    // Assuming the original address is valid and the data part is correct
+    const expectedAddress = "nomic13t8prr8hu7hkuksnfrd25vpvvnrfxr229450y0";
+
+    const result = deriveCosmosAddress({
+      address: originalAddress,
+      desiredBech32Prefix: desiredPrefix,
+    });
+
+    expect(result).toBe(expectedAddress);
+  });
+
+  it("should throw an error if the address is invalid", () => {
+    const invalidAddress = "invalidAddress";
+
+    expect(() =>
+      deriveCosmosAddress({
+        address: invalidAddress,
+        desiredBech32Prefix: "newprefix",
+      })
+    ).toThrow();
   });
 });

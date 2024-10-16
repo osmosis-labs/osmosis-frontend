@@ -104,3 +104,14 @@ export function isCosmosAddressValid({
     return false;
   }
 }
+
+export function deriveCosmosAddress({
+  address,
+  desiredBech32Prefix,
+}: {
+  address: string;
+  desiredBech32Prefix: string;
+}) {
+  const { data } = cosmjsEncoding.fromBech32(address);
+  return cosmjsEncoding.toBech32(desiredBech32Prefix, data);
+}
