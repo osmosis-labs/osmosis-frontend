@@ -1,7 +1,5 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
-
 export interface TokenData {
   price: number | null;
   denom: string;
@@ -27,7 +25,10 @@ export async function queryTokenData({
   coinDenom: string;
 }): Promise<TokenData> {
   // collect params
-  const url = new URL(`/tokens/v2/${coinDenom}`, TIMESERIES_DATA_URL);
+  const url = new URL(
+    `/tokens/v2/${coinDenom}`,
+    "https://data.numia-stage.osmosis.zone/"
+  );
 
   // for some reason it returns in an array format, but let's return the first item
   return (await apiClient<TokenData[]>(url.toString()))?.[0];
@@ -35,6 +36,9 @@ export async function queryTokenData({
 
 export async function queryAllTokenData(): Promise<TokenData[]> {
   // collect params
-  const url = new URL("/tokens/v2/all", TIMESERIES_DATA_URL);
+  const url = new URL(
+    "/tokens/v2/all",
+    "https://data.numia-stage.osmosis.zone/"
+  );
   return await apiClient<TokenData[]>(url.toString());
 }
