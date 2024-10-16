@@ -19,7 +19,7 @@ const allPooltypes = [
 ] as const;
 export type PoolType = (typeof allPooltypes)[number];
 
-const FILTERABLE_IDS = IS_TESTNET ? [] : ["2159"];
+const FILTERABLE_IDS = IS_TESTNET ? [] : ["2159","2217","2218"];
 
 // PoolMarketMetrics is a partial type that contains the market metrics of a pool.
 type PoolMarketMetrics = Partial<{
