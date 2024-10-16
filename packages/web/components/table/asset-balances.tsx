@@ -159,6 +159,8 @@ export const AssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  console.log("assetsData: ", assetsData);
+
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
@@ -175,6 +177,8 @@ export const AssetBalancesTable: FunctionComponent<{
         return 0;
       });
   }, [assetsData, hideDust, watchListDenoms]);
+
+  console.log("filteredAssetsData: ", filteredAssetsData);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
