@@ -17,6 +17,7 @@ export interface TokenData {
   price_7d_change: number | null;
   exponent: number;
   display: string;
+  coingecko_mcap: number | null;
 }
 
 export async function queryTokenData({
