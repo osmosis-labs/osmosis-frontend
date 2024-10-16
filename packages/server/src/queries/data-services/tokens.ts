@@ -1,6 +1,5 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
 import { PoolToken } from "./filtered-pools";
 
 export interface ImperatorToken extends PoolToken {
@@ -12,7 +11,7 @@ export interface ImperatorToken extends PoolToken {
 
 export async function queryAllTokens(): Promise<ImperatorToken[]> {
   // collect params
-  const url = new URL("/tokens/v2/all", TIMESERIES_DATA_URL);
+  const url = new URL("/tokens/v2/all", "https://data.numia-stage.osmosis.zone/");
 
   return await apiClient<ImperatorToken[]>(url.toString());
 }
