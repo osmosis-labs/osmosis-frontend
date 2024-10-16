@@ -566,6 +566,10 @@ export class CosmosAccountImpl {
                     return "/injective.crypto.v1beta1.ethsecp256k1.PubKey";
                   }
 
+                  if (this.chainId.startsWith("stratos")) {
+                    return "/stratos.crypto.v1.ethsecp256k1.PubKey";
+                  }
+
                   return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
                 })(),
                 value: PubKey.encode({
@@ -625,6 +629,7 @@ export class CosmosAccountImpl {
         .features?.includes("eth-key-sign") === true;
 
     const chainIsInjective = this.chainId.startsWith("injective");
+    const chainIsStratos = this.chainId.startsWith("stratos");
 
     const signed = await keplr.signDirect(
       this.chainId,
@@ -647,6 +652,10 @@ export class CosmosAccountImpl {
 
                   if (chainIsInjective) {
                     return "/injective.crypto.v1beta1.ethsecp256k1.PubKey";
+                  }
+
+                  if (chainIsStratos) {
+                    return "/stratos.crypto.v1.ethsecp256k1.PubKey";
                   }
 
                   return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
