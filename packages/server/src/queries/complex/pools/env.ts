@@ -1,7 +1,7 @@
 import { IS_TESTNET } from "../../../env";
 
 /** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
-const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
+const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148", "814", "867", "996"];
 const AstroportPclPoolCodeIds = IS_TESTNET ? ["8611"] : ["842"];
 const WhitewhalePoolCodeIds = IS_TESTNET ? ["?"] : ["503", "641"];
 
