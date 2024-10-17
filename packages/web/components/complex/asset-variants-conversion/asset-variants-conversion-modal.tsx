@@ -138,6 +138,7 @@ const AssetVariantsConversion = observer(
       const allSwapMessages = [];
 
       for (const quote of dataQuotes) {
+        console.log("quote", quote);
         if (!quote) continue;
 
         // add slippage to out amount from quote
@@ -171,7 +172,7 @@ const AssetVariantsConversion = observer(
             )?.asset?.coinMinimalDenom ?? "",
           maxSlippage: slippage.toString(),
           // coinAmount: quote.amount.toCoin().amount,
-          coinAmount: quote.split[0].initialAmount,
+          coinAmount: quote.split[0].initialAmount.toString(),
           userOsmoAddress: account?.address ?? "",
           quoteType: "out-given-in" as QuoteType,
         };
@@ -181,6 +182,19 @@ const AssetVariantsConversion = observer(
       }
 
       console.log("allSwapMessages", allSwapMessages);
+
+      // const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
+      //   useOneClickTrading: shouldBeSignedWithOneClickTrading,
+      //   ...(featureFlags.swapToolSimulateFee && networkFee
+      //     ? {
+      //         preferNoSetFee: true,
+      //         fee: {
+      //           gas: networkFee.gasLimit,
+      //           amount: networkFee.amount,
+      //         },
+      //       }
+      //     : {}),
+      // };
 
       accountStore
         .signAndBroadcast(
