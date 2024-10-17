@@ -1,6 +1,7 @@
+import type { Registry } from "@cosmjs/proto-signing";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
-import { getSwapMessages } from "@osmosis-labs/tx";
+import { estimateGasFee, getSwapMessages } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   deriveCosmosAddress,
@@ -30,6 +31,7 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
+import { getGasAsset } from "../utils/gas";
 
 export class NomicBridgeProvider implements BridgeProvider {
   static readonly ID = "Nomic";
@@ -37,6 +39,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   relayers: string[];
   nBTCMinimalDenom: string;
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.nBTCMinimalDenom =
@@ -153,8 +156,8 @@ export class NomicBridgeProvider implements BridgeProvider {
       }),
     };
 
-    const [signDoc, estimatedTime] = await Promise.all([
-      ibcProvider.getTransactionData({
+    const [ibcTxMessages, estimatedTime] = await Promise.all([
+      ibcProvider.getTxMessages({
         ...transactionDataParams,
         memo: destMemo,
       }),
@@ -163,6 +166,45 @@ export class NomicBridgeProvider implements BridgeProvider {
         transactionDataParams.toChain.chainId.toString()
       ),
     ]);
+
+    const msgs = [...swapMessages, ...ibcTxMessages];
+
+    const txSimulation = await estimateGasFee({
+      chainId: params.fromChain.chainId as string,
+      chainList: this.ctx.chainList,
+      body: {
+        messages: await Promise.all(
+          msgs.map(async (msg) =>
+            (await this.getProtoRegistry()).encodeAsAny(msg)
+          )
+        ),
+      },
+      bech32Address: params.fromAddress,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: NomicBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
+    });
+
+    const gasFee = txSimulation.amount[0];
+    const gasAsset = await getGasAsset({
+      fromChainId: params.fromChain.chainId as string,
+      denom: gasFee.denom,
+      assetLists: this.ctx.assetLists,
+      chainList: this.ctx.chainList,
+      cache: this.ctx.cache,
+    });
 
     return {
       input: {
@@ -184,20 +226,23 @@ export class NomicBridgeProvider implements BridgeProvider {
         amount: "0",
       },
       estimatedTime,
-      // TODO: Add gas fee
-      // estimatedGasFee: gasFee
-      //   ? {
-      //       address: gasAsset?.address ?? gasFee.denom,
-      //       denom: gasAsset?.denom ?? gasFee.denom,
-      //       decimals: gasAsset?.decimals ?? 0,
-      //       coinGeckoId: gasAsset?.coinGeckoId,
-      //       amount: gasFee.amount,
-      //     }
-      //   : undefined,
+      estimatedGasFee: gasFee
+        ? {
+            address: gasAsset?.address ?? gasFee.denom,
+            denom: gasAsset?.denom ?? gasFee.denom,
+            decimals: gasAsset?.decimals ?? 0,
+            coinGeckoId: gasAsset?.coinGeckoId,
+            amount: gasFee.amount,
+          }
+        : undefined,
       transactionRequest: {
         type: "cosmos",
-        msgs: [...swapMessages, ...signDoc.msgs],
-        // TODO: Add gas fee
+        msgs,
+        gasFee: {
+          gas: txSimulation.gas,
+          amount: gasFee.amount,
+          denom: gasFee.denom,
+        },
       },
     };
   }
@@ -410,5 +455,20 @@ export class NomicBridgeProvider implements BridgeProvider {
       console.error("Error getting pending Nomic deposits:", error);
       return [];
     }
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry, osmosisProtoRegistry }, { Registry }] =
+        await Promise.all([
+          import("@osmosis-labs/proto-codecs"),
+          import("@cosmjs/proto-signing"),
+        ]);
+      this.protoRegistry = new Registry([
+        ...ibcProtoRegistry,
+        ...osmosisProtoRegistry,
+      ]);
+    }
+    return this.protoRegistry;
   }
 }

@@ -40,7 +40,7 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { BridgeAssetMap } from "../utils";
+import { BridgeAssetMap } from "../utils/asset";
 import { SkipApiClient } from "./client";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 

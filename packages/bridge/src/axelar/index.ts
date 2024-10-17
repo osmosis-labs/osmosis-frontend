@@ -39,7 +39,7 @@ import {
   GetBridgeSupportedAssetsParams,
   GetDepositAddressParams,
 } from "../interface";
-import { BridgeAssetMap } from "../utils";
+import { BridgeAssetMap } from "../utils/asset";
 import { getAxelarAssets, getAxelarChains } from "./queries";
 
 export class AxelarBridgeProvider implements BridgeProvider {

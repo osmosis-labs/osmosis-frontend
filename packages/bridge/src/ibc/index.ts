@@ -1,16 +1,11 @@
-import type { Registry } from "@cosmjs/proto-signing";
-import {
-  Chain,
-  queryGeneratedChains,
-  queryRPCStatus,
-} from "@osmosis-labs/server";
+import type { EncodeObject, Registry } from "@cosmjs/proto-signing";
+import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   calcAverageBlockTimeMs,
   estimateGasFee,
   makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
-import cachified from "cachified";
 
 import { BridgeQuoteError } from "../errors";
 import {
@@ -26,6 +21,7 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
+import { getGasAsset } from "../utils/gas";
 
 export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
@@ -139,14 +135,9 @@ export class IbcBridgeProvider implements BridgeProvider {
     }
   }
 
-  /**
-   * Gets cosmos tx for for signing.
-   *
-   * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
-   */
-  async getTransactionData(
+  async getTxMessages(
     params: GetBridgeQuoteParams & { memo?: string }
-  ): Promise<CosmosBridgeTransactionRequest & { gasAsset?: BridgeAsset }> {
+  ): Promise<EncodeObject[]> {
     this.validate(params);
 
     const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
@@ -170,18 +161,30 @@ export class IbcBridgeProvider implements BridgeProvider {
       memo: params.memo ?? "",
     });
 
+    return [{ typeUrl, value: msg }];
+  }
+
+  /**
+   * Gets cosmos tx for for signing.
+   *
+   * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
+   */
+  async getTransactionData(
+    params: GetBridgeQuoteParams & { memo?: string }
+  ): Promise<CosmosBridgeTransactionRequest & { gasAsset?: BridgeAsset }> {
+    this.validate(params);
+
+    const txMessages = await this.getTxMessages(params);
+
     const txSimulation = await estimateGasFee({
       chainId: params.fromChain.chainId as string,
       chainList: this.ctx.chainList,
       body: {
-        messages: [
-          (
-            await this.getProtoRegistry()
-          ).encodeAsAny({
-            typeUrl: typeUrl,
-            value: msg,
-          }),
-        ],
+        messages: await Promise.all(
+          txMessages.map(async (msg) =>
+            (await this.getProtoRegistry()).encodeAsAny(msg)
+          )
+        ),
       },
       bech32Address: params.fromAddress,
       fallbackGasLimit: makeIBCTransferMsg.gas,
@@ -203,14 +206,17 @@ export class IbcBridgeProvider implements BridgeProvider {
     });
 
     const gasFee = txSimulation.amount[0];
-    const gasAsset = await this.getGasAsset(
-      params.fromChain.chainId as string,
-      gasFee.denom
-    );
+    const gasAsset = await getGasAsset({
+      fromChainId: params.fromChain.chainId as string,
+      denom: gasFee.denom,
+      assetLists: this.ctx.assetLists,
+      chainList: this.ctx.chainList,
+      cache: this.ctx.cache,
+    });
 
     return {
       type: "cosmos",
-      msgs: [{ typeUrl, value: msg }],
+      msgs: txMessages,
       gasFee: {
         gas: txSimulation.gas,
         amount: gasFee.amount,
@@ -218,47 +224,6 @@ export class IbcBridgeProvider implements BridgeProvider {
       },
       gasAsset,
     };
-  }
-
-  /**
-   * Gets gas asset from asset list or chain list, attempting to match the coinMinimalDenom or chainSuggestionDenom.
-   * @returns gas bridge asset, or undefined if not found.
-   */
-  async getGasAsset(
-    fromChainId: string,
-    denom: string
-  ): Promise<BridgeAsset | undefined> {
-    // try to get asset list fee asset first, or otherwise the chain fee currency
-    const assetListAsset = this.ctx.assetLists
-      .flatMap(({ assets }) => assets)
-      .find(
-        (asset) => asset.coinMinimalDenom.toLowerCase() === denom.toLowerCase()
-      );
-
-    if (assetListAsset) {
-      return {
-        address: assetListAsset.coinMinimalDenom,
-        denom: assetListAsset.symbol,
-        decimals: assetListAsset.decimals,
-        coinGeckoId: assetListAsset.coingeckoId,
-      };
-    }
-
-    const chains = await this.getChains();
-    const chain = chains.find((c) => c.chain_id === fromChainId);
-    const feeCurrency = chain?.feeCurrencies.find(
-      ({ chainSuggestionDenom }) =>
-        chainSuggestionDenom.toLowerCase() === denom.toLowerCase()
-    );
-
-    if (feeCurrency) {
-      return {
-        address: feeCurrency.chainSuggestionDenom,
-        denom: feeCurrency.coinDenom,
-        decimals: feeCurrency.coinDecimals,
-        coinGeckoId: feeCurrency.coinGeckoId,
-      };
-    }
   }
 
   /**
@@ -409,16 +374,6 @@ export class IbcBridgeProvider implements BridgeProvider {
     }
 
     return { urlProviderName: "TFM", url };
-  }
-
-  getChains(): Promise<Chain[]> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "queryGeneratedChains" + this.ctx.chainList[0].chain_id,
-      ttl: 60 * 60 * 24, // 1 day
-      getFreshValue: () =>
-        queryGeneratedChains({ zoneChainId: this.ctx.chainList[0].chain_id }),
-    });
   }
 
   async getProtoRegistry() {
