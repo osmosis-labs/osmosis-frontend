@@ -12,8 +12,7 @@ import { FallbackImg } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useSlippageConfig, useTranslation, useWindowSize } from "~/hooks";
-import { getSwapMessages, getSwapTxParameters } from "~/hooks/use-swap";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -53,49 +52,25 @@ interface AssetVariantsConversionProps {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   account: any;
-}> = ({ variant, account }) => {
+}> = observer(({ variant, account }) => {
   const { t } = useTranslation();
 
   const amount = variant.amount.toCoin().amount;
 
-  // console.log("amount: ", amount);
-
   // TODO - handle loading and error
-  const { refetch: refetchRoute } =
+  const { refetch: refetchRoute, isError: isQuoteError } =
     api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
       {
         tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
         tokenInAmount: amount,
         tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-        forcePoolId: undefined,
       },
       {
         enabled: false,
         refetchOnWindowFocus: false,
+        cacheTime: 0,
       }
     );
-
-  // console.log("routeData: ", routeData);
-  // console.log("routeError: ", routeError);
-
-  const slippageConfig = useSlippageConfig({
-    defaultSlippage: "0.5",
-    selectedIndex: 0,
-  });
-
-  // const swapState = useSwap({
-  //   initialFromDenom: variant.asset?.coinMinimalDenom ?? "",
-  //   initialToDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-  //   useQueryParams: false,
-  //   maxSlippage: slippageConfig.slippage.toDec(),
-  //   quoteType: "out-given-in",
-  // });
-
-  // useEffect(() => {
-  //   swapState.inAmountInput.setAmount(variant.amount.truncate().toString());
-  // }, [variant.amount, swapState.inAmountInput]);
-
-  // console.log("swapState: ", swapState);
 
   return (
     <div className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4">
@@ -112,9 +87,9 @@ const AssetVariantRow: React.FC<{
           <span className="body2 truncate text-osmoverse-300">
             {variant?.asset?.coinDenom ?? ""}
           </span>
-          <span className="caption text-osmoverse-200">
+          {/* <span className="caption text-osmoverse-200">
             Amount: {variant.amount.toDec().toString()}
-          </span>
+          </span> */}
         </div>
       </div>
       <div className="flex items-center justify-center">
@@ -187,64 +162,85 @@ const AssetVariantRow: React.FC<{
           onClick={async () => {
             // TODO - handle loading and error
             const { data: quote } = await refetchRoute();
-            console.log("ROUTE data: ", quote);
 
-            const getSwapMessagesConfig = {
-              quote: quote,
+            if (quote === undefined) return;
 
-              tokenOutCoinMinimalDenom:
-                variant.canonicalAsset?.coinMinimalDenom ?? "",
-              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals!,
+            const tokenInDenom = variant.asset?.coinMinimalDenom;
+            const tokenInAmount = variant.amount.toCoin().amount;
 
-              tokenInCoinDecimals: variant.asset?.coinDecimals!,
-              tokenInCoinMinimalDenom: variant.asset?.coinMinimalDenom ?? "",
+            const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
 
-              maxSlippage: new Dec(0.5).toString(),
-              coinAmount: amount,
-              userOsmoAddress: account.address,
+            if (!tokenInDenom || !tokenOutDenom) {
+              throw new Error("Missing token denoms");
+            }
+
+            const tokenIn = {
+              coinMinimalDenom: tokenInDenom,
+              amount: tokenInAmount,
             };
 
-            console.log("getSwapMessagesConfig: ", getSwapMessagesConfig);
+            // const quote =
+            //   prevQuote ??
+            //   (await apiUtils.local.quoteRouter.routeTokenOutGivenIn.fetch(
+            //     {
+            //       tokenInDenom,
+            //       tokenInAmount,
+            //       tokenOutDenom,
+            //     },
+            //     {}
+            //   ));
 
-            const messages = await getSwapMessages(getSwapMessagesConfig);
+            console.log("quote: ", quote);
 
-            console.log("messages: ", messages);
+            // add slippage to out amount from quote
+            let slippage = new Dec(0.05);
+            // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
+            // so, let's remove slippage to convert more of the asset
+            if (
+              quote.split.length === 1 &&
+              quote.split[0].pools.length === 0 &&
+              quote.split[0].pools[0].type.startsWith("cosmwasm")
+            ) {
+              slippage = new Dec(0);
+            }
+            const outAmount = quote.amount
+              .mul(new Dec(1).sub(slippage))
+              .toCoin().amount;
 
-            const txParams = getSwapTxParameters({
-              coinAmount: amount,
-              maxSlippage: new Dec(0.5).toString(),
-              tokenOutCoinMinimalDenom:
-                variant.canonicalAsset?.coinMinimalDenom ?? "",
-              tokenInCoinMinimalDenom: variant.asset?.coinMinimalDenom!,
-              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals!,
-              tokenInCoinDecimals: variant.asset?.coinDecimals!,
-              quote: quote,
-              quoteType: "out-given-in",
-            });
+            if (quote.split.length === 1) {
+              const pools = quote.split[0].pools;
 
-            const { routes, tokenIn, tokenOutMinAmount } = txParams;
+              const route = pools.map((pool) => ({
+                id: pool.id,
+                tokenOutDenom: pool?.outCurrency?.coinMinimalDenom,
+              }));
 
-            console.log("routes: ", routes);
-            console.log("tokenIn: ", tokenIn);
-            console.log("tokenOutMinAmount: ", tokenOutMinAmount);
+              // make array of swaps
 
-            // TODO - map sign options and network fee
-            account.osmosis
-              .sendSwapExactAmountInMsg(
-                pools,
-                tokenIn!,
-                tokenOutMinAmount!,
-                undefined,
-                signOptions,
-                ({ code }) => {
-                  if (code)
-                    reject(
-                      new Error("Failed to send swap exact amount in message")
-                    );
-                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
-                }
-              )
-              .catch(reject);
+              // account.signAndBroadcast()
+
+              account.osmosis
+                .sendSwapExactAmountInMsg(route, tokenIn, outAmount)
+                .catch((e: any) => {
+                  console.error("Error converting variant", e);
+                });
+            } else if (quote.split.length > 1) {
+              account.osmosis
+                .sendSplitRouteSwapExactAmountInMsg(
+                  quote.split.map(({ pools, initialAmount }) => ({
+                    pools: pools.map((pool) => ({
+                      id: pool.id,
+                      tokenOutDenom: pool?.outCurrency?.coinMinimalDenom,
+                    })),
+                    tokenInAmount: initialAmount.toString(),
+                  })),
+                  tokenIn,
+                  outAmount
+                )
+                .catch((e: any) => {
+                  console.error("Error converting variant", e);
+                });
+            }
           }}
         >
           Convert
@@ -252,7 +248,7 @@ const AssetVariantRow: React.FC<{
       </div>
     </div>
   );
-};
+});
 
 const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
