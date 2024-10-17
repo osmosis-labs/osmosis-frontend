@@ -937,7 +937,8 @@
       "amountBtc": "Amount BTC",
       "totalValue": "Total value",
       "transactionHash": "Transaction hash",
-      "viewOnExplorer": "View on explorer"
+      "viewOnExplorer": "View on explorer",
+      "totalFees": "Total fees"
     },
     "doNotSendFundsToThisAddress": "Do not send funds to this address.",
     "addressExpired": "This deposit address has expired. Please request a new deposit address now.",

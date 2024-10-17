@@ -746,11 +746,47 @@ export const bridgeTransferRouter = createTRPCRouter({
 
           return {
             ...deposit,
-            amount,
+            amount: new CoinPretty(
+              {
+                coinDecimals: deposit.networkFee.decimals,
+                coinDenom: deposit.networkFee.denom,
+                coinMinimalDenom: deposit.networkFee.address,
+                coinGeckoId: deposit.networkFee.coinGeckoId,
+              },
+              new Dec(deposit.networkFee.amount)
+            ),
             fiatValue: new PricePretty(
               DEFAULT_VS_CURRENCY,
               btcPrice.mul(new Dec(amount))
             ),
+            networkFee: {
+              amount: new CoinPretty(
+                {
+                  coinDecimals: deposit.networkFee.decimals,
+                  coinDenom: deposit.networkFee.denom,
+                  coinMinimalDenom: deposit.networkFee.address,
+                  coinGeckoId: deposit.networkFee.coinGeckoId,
+                },
+                new Dec(deposit.networkFee.amount)
+              ),
+              fiatValue: btcPrice
+                ? priceFromBridgeCoin(deposit.networkFee, btcPrice)
+                : undefined,
+            },
+            providerFee: {
+              amount: new CoinPretty(
+                {
+                  coinDecimals: deposit.providerFee.decimals,
+                  coinDenom: deposit.providerFee.denom,
+                  coinMinimalDenom: deposit.providerFee.address,
+                  coinGeckoId: deposit.providerFee.coinGeckoId,
+                },
+                new Dec(deposit.providerFee.amount)
+              ),
+              fiatValue: btcPrice
+                ? priceFromBridgeCoin(deposit.providerFee, btcPrice)
+                : undefined,
+            },
           };
         }),
       };

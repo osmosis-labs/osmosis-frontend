@@ -937,7 +937,8 @@
       "amountBtc": "BTC રકમ",
       "totalValue": "કુલ મૂલ્ય",
       "transactionHash": "વ્યવહાર હેશ",
-      "viewOnExplorer": "એક્સપ્લોરર પર જુઓ"
+      "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
+      "totalFees": "કુલ ફી"
     },
     "doNotSendFundsToThisAddress": "આ સરનામે ભંડોળ મોકલશો નહીં.",
     "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો.",

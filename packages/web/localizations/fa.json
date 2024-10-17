@@ -937,7 +937,8 @@
       "amountBtc": "مقدار BTC",
       "totalValue": "ارزش کل",
       "transactionHash": "هش تراکنش",
-      "viewOnExplorer": "مشاهده در اکسپلورر"
+      "viewOnExplorer": "مشاهده در اکسپلورر",
+      "totalFees": "مجموع هزینه ها"
     },
     "doNotSendFundsToThisAddress": "از ارسال وجوه به این آدرس خودداری کنید.",
     "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید.",

@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { BridgeAsset } from "@osmosis-labs/bridge";
 import { superjson } from "@osmosis-labs/server";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
@@ -183,7 +184,7 @@ export const NomicPendingTransfers = ({
                 <p className="text-osmoverse-100">
                   {deposit.fiatValue.toString()}{" "}
                   <span className="text-osmoverse-300">
-                    ({deposit.amount} BTC)
+                    ({deposit.amount.toString()})
                   </span>
                 </p>
                 <TransactionDetailsModal
@@ -360,14 +361,30 @@ const TransactionDetailsModal = ({
               <p className="body2 text-white-full">
                 {t("transfer.nomic.asset")}
               </p>
-              <p className="body2 text-osmoverse-300">{toAsset.denom}</p>
+              <p className="body2 text-osmoverse-300">nBTC</p>
             </div>
             <div className="flex items-center justify-between py-2">
               <p className="body2 text-white-full">
                 {t("transfer.nomic.amountBtc")}
               </p>
               <p className="body2 text-osmoverse-300">
-                {depositData.amount} BTC
+                {depositData.fiatValue.toString()} (
+                {depositData.amount.toString()})
+              </p>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <p className="body2 text-white-full">
+                {t("transfer.nomic.totalFees")}
+              </p>
+              <p className="body2 text-osmoverse-300">
+                {depositData.networkFee.fiatValue
+                  ?.add(depositData.providerFee.fiatValue ?? new Dec(0))
+                  .toString()}{" "}
+                (
+                {depositData.networkFee.amount
+                  .add(depositData.providerFee.amount)
+                  .toString()}
+                )
               </p>
             </div>
             <div className="flex items-center justify-between py-2">
@@ -375,13 +392,18 @@ const TransactionDetailsModal = ({
                 {t("transfer.nomic.totalValue")}
               </p>
               <p className="body2 text-osmoverse-300">
-                {depositData.fiatValue.toString()}
+                {depositData.fiatValue
+                  ?.sub(depositData.networkFee.fiatValue ?? new Dec(0))
+                  .sub(depositData.providerFee.fiatValue ?? new Dec(0))
+                  .toString()}{" "}
+                (
+                {depositData.amount
+                  .sub(depositData.networkFee.amount)
+                  .sub(depositData.providerFee.amount)
+                  .toString()}{" "}
+                nBTC)
               </p>
             </div>
-            {/* <div className="flex items-center justify-between py-2">
-              <p className="body2 text-white-full">Total fees</p>
-              <p className="body2 text-osmoverse-300">0.00001 BTC</p>
-            </div> */}
             <div className="flex items-center justify-between py-2">
               <p className="body2 text-white-full">
                 {t("transfer.nomic.transactionHash")}

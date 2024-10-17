@@ -937,7 +937,8 @@
       "amountBtc": "金額 BTC",
       "totalValue": "合計金額",
       "transactionHash": "トランザクションハッシュ",
-      "viewOnExplorer": "エクスプローラーで見る"
+      "viewOnExplorer": "エクスプローラーで見る",
+      "totalFees": "合計料金"
     },
     "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
     "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",

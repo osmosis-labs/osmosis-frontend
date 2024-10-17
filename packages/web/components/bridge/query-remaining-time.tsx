@@ -51,9 +51,9 @@ export const QueryRemainingTime: FunctionComponent<
 
   return (
     <div className={classNames("relative h-7 w-7 md:h-5 md:w-5", className)}>
-      <div className="absolute top-0 left-0 h-full w-full">
+      <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center">
         {progress <= 0 ? (
-          <Spinner className="relative top-0 left-0 !h-full !w-full text-wosmongton-500" />
+          <Spinner className="relative top-0 left-0 !h-6 !w-6 text-wosmongton-500" />
         ) : (
           <RadialProgress progress={progress} strokeWidth={strokeWidth} />
         )}
