@@ -3,21 +3,15 @@ import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { EdgeDataLoader } from "../../../utils/batching";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
-  queryCoingeckoCoins,
 } from "../../coingecko";
 import { querySupplyTotal } from "../../cosmos";
-import {
-  queryAllTokenData,
-  queryTokenMarketCaps,
-  TokenData,
-} from "../../data-services";
+import { queryAllTokenData, TokenData } from "../../data-services";
 import { AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
@@ -51,10 +45,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
     key: `market-asset-${asset.coinMinimalDenom}`,
     ttl: 1000 * 60 * 5, // 5 minutes
     getFreshValue: async () => {
-      const [marketCap, assetMarketActivity, totalSupply] = await Promise.all([
-        getAssetMarketCap(asset).catch((e) =>
-          captureErrorAndReturn(e, undefined)
-        ),
+      const [assetMarketActivity, totalSupply] = await Promise.all([
         getAssetMarketActivity(asset).catch((e) =>
           captureErrorAndReturn(e, undefined)
         ),
@@ -68,9 +59,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
 
       return {
         currentPrice: assetMarketActivity?.price,
-        marketCap: marketCap
-          ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
-          : undefined,
+        marketCap: assetMarketActivity?.marketCap,
         totalSupply: totalSupply
           ? new CoinPretty(asset, totalSupply.amount.amount)
           : undefined,
@@ -100,35 +89,6 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
 
   return await Promise.all(
     assets.map((asset) => getMarketAsset({ asset, ...params }))
-  );
-}
-
-const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
-
-/** Fetches and caches asset market capitalization. */
-async function getAssetMarketCap({
-  coinDenom,
-  coinGeckoId,
-}: {
-  coinDenom: string;
-  coinGeckoId?: string;
-}): Promise<number | undefined> {
-  const marketCapsMap = await cachified({
-    cache: marketInfoCache,
-    key: "assetMarketCaps",
-    ttl: 1000 * 20, // 20 seconds
-    getFreshValue: async () => {
-      const marketCaps = await queryTokenMarketCaps();
-
-      return marketCaps.reduce((map, mCap) => {
-        return map.set(mCap.symbol.toUpperCase(), mCap.market_cap);
-      }, new Map<string, number>());
-    },
-  });
-
-  return (
-    marketCapsMap.get(coinDenom.toUpperCase()) ??
-    (await getCoingeckoCoin({ coinGeckoId }))?.market_cap
   );
 }
 
@@ -194,6 +154,8 @@ export async function getAssetCoingeckoCoin({
   });
 }
 
+const assetMarketCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
  *  configured outside of our asset list (from data services).
  *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
@@ -238,6 +200,9 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
             new Dec(tokenData.liquidity_24h_change).quo(new Dec(100))
           )
         : undefined,
+    marketCap: tokenData.coingecko_mcap
+      ? new PricePretty(DEFAULT_VS_CURRENCY, tokenData.coingecko_mcap)
+      : undefined,
     volume24h: new PricePretty(DEFAULT_VS_CURRENCY, tokenData.volume_24h ?? 0),
     volume24hChange:
       tokenData.volume_24h_change !== null
@@ -261,18 +226,6 @@ function makeMarketActivityFromTokenData(tokenData: TokenData) {
   };
 }
 
-/** Used with `DataLoader` to make batched calls to CoinGecko.
- *  This allows us to provide IDs in a batch to CoinGecko, which is more efficient than making individual calls. */
-async function batchFetchCoingeckoCoins(keys: readonly string[]) {
-  const coins = await queryCoingeckoCoins(keys as string[]);
-  return keys.map(
-    (key) =>
-      coins.find(({ id }) => id === key) ??
-      new Error(`No CoinGecko coin result for ${key}`)
-  );
-}
-const coingeckoCoinBatchLoader = new EdgeDataLoader(batchFetchCoingeckoCoins);
-
 /** Set of active CoinGecko IDs that CoinGecko has data for (is "active"). */
 export async function getActiveCoingeckoCoins() {
   return await cachified({
@@ -283,25 +236,5 @@ export async function getActiveCoingeckoCoins() {
       queryCoingeckoCoinIds().then(
         (coins) => new Set(coins.map(({ id }) => id))
       ),
-  });
-}
-
-/** Gets the CoinGecko coin object for a given CoinGecko ID.
- *  Returns `undefined` if the token ID is not actively listed on CoinGecko. */
-async function getCoingeckoCoin({
-  coinGeckoId,
-}: {
-  coinGeckoId: string | undefined;
-}) {
-  if (!coinGeckoId) return;
-
-  // Given ID should be supported by CoinGecko
-  if (!(await getActiveCoingeckoCoins()).has(coinGeckoId)) return;
-
-  return await cachified({
-    cache: assetMarketCache,
-    ttl: 1000 * 60 * 5, // 5 minutes
-    key: "coingecko-coin-" + coinGeckoId,
-    getFreshValue: () => coingeckoCoinBatchLoader.load(coinGeckoId),
   });
 }
