@@ -18,7 +18,8 @@ interface FormattedAllocation {
 
 export interface AssetVariant {
   asset: MinimalAsset | null;
-  amount: Dec;
+  // TODO - now that this is a CoinPretty, update the name
+  amount: CoinPretty;
   canonicalAsset: MinimalAsset | null;
 }
 
@@ -173,11 +174,10 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
-  // Update userBalanceDenoms to be a list of objects with denom and amount
   const userBalanceDenoms =
     categories["user-balances"]?.account_coins_result?.map((result) => ({
       denom: result.coin.denom,
-      amount: new Dec(result.coin.amount), // Assuming amount is stored in result.coin.amount
+      amount: result.coin.amount,
     })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
@@ -197,12 +197,12 @@ export async function getAllocation({
 }
 
 export function checkAssetVariants(
-  userBalanceDenoms: { denom: string; amount: Dec }[],
+  userBalanceDenoms: { denom: string; amount: string }[],
   assetListAssets: Asset[],
   assetLists: AssetList[]
 ): {
   asset: MinimalAsset | null;
-  amount: Dec;
+  amount: CoinPretty;
   canonicalAsset: MinimalAsset | null;
 }[] {
   const assetMap = new Map(
@@ -226,7 +226,7 @@ export function checkAssetVariants(
 
         return {
           asset: userAsset,
-          amount,
+          amount: new CoinPretty(userAsset, amount),
           canonicalAsset: canonicalAsset || null,
         };
       }
@@ -234,7 +234,7 @@ export function checkAssetVariants(
     })
     .filter((item) => item !== null) as {
     asset: MinimalAsset | null;
-    amount: Dec;
+    amount: CoinPretty;
     canonicalAsset: MinimalAsset | null;
   }[];
 }

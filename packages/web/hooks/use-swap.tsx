@@ -1343,7 +1343,7 @@ function getSwapTxParameters({
   }
 }
 
-async function getSwapMessages({
+export async function getSwapMessages({
   coinAmount,
   maxSlippage,
   quote,

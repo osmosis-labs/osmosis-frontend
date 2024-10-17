@@ -1,10 +1,10 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec } from "@keplr-wallet/unit";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
+import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { create } from "zustand";
 
 // Import useTranslation
@@ -15,6 +15,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { getSwapMessages, QuoteType } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -23,7 +24,8 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  isOpen: false,
+  // isOpen: false,
+  isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
@@ -52,7 +54,9 @@ interface AssetVariantsConversionProps {
 
 const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
-    const { accountStore } = useStore();
+    const { accountStore, chainStore } = useStore();
+    const osmosisChainId = chainStore.osmosis.chainId;
+
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const { isMobile } = useWindowSize();
     const [checkedVariants, setCheckedVariants] = useState<AssetVariant[]>([]);
@@ -79,50 +83,135 @@ const AssetVariantsConversion = observer(
       }
     );
 
-    const prepareRouteInput = useCallback(() => {
-      return (
+    // console.log("Asset Variants:", allocationData?.assetVariants);
+
+    const prepareRouteInputs = useMemo(
+      () =>
         allocationData?.assetVariants?.map((variant) => ({
           tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-          tokenInAmount: variant.amount.truncate().toString(),
+          tokenInAmount: variant.amount.toCoin().amount,
           tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-          forcePoolId: undefined,
-        })) ?? []
-      );
-    }, [allocationData]);
-
-    const {
-      data: routeData,
-      error: routeError,
-      isLoading: isRouteLoading,
-    } = api.local.quoteRouter.routeTokensOutGivenIn.useQuery(
-      prepareRouteInput(),
-      {
-        enabled: !!allocationData,
-        refetchOnWindowFocus: false,
-      }
+        })) ?? [],
+      [allocationData]
     );
 
-    console.log("routeData: ", routeData);
+    const apiUtils = api.useUtils();
+
+    const quotes = useQueries({
+      queries: prepareRouteInputs.map(
+        ({ tokenInDenom, tokenInAmount, tokenOutDenom }) => ({
+          queryKey: [
+            "routeTokenOutGivenIn",
+            tokenInDenom,
+            tokenInAmount,
+            tokenOutDenom,
+          ],
+          queryFn: () =>
+            apiUtils.local.quoteRouter.routeTokenOutGivenIn.fetch(
+              {
+                tokenInDenom,
+                tokenInAmount,
+                tokenOutDenom,
+              },
+              {}
+            ),
+          staleTime: Infinity,
+        })
+      ),
+    });
+
+    const isLoadingQuotes = quotes.some((result) => result.isLoading);
+
+    const dataQuotes = quotes.map((result) => result.data);
+
+    // console.log("dataQuotes:", dataQuotes);
+
+    // const { data: routeData, isLoading: isRouteLoading } =
+    //   api.local.quoteRouter.routeTokensOutGivenIn.useQuery(prepareRouteInputs, {
+    //     enabled: !!allocationData,
+    //     refetchOnWindowFocus: false,
+    //   });
+
+    const convertSelectedAssets = async () => {
+      const allSwapMessages = [];
+
+      for (const quote of dataQuotes) {
+        if (!quote) continue;
+
+        // add slippage to out amount from quote
+        let slippage = new Dec(0.05);
+        // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
+        // so, let's remove slippage to convert more of the asset
+        if (
+          quote.split.length === 1 &&
+          quote.split[0].pools.length === 0 &&
+          quote.split[0].pools[0].type.startsWith("cosmwasm")
+        ) {
+          slippage = new Dec(0);
+        }
+
+        const swapMessagesConfig = {
+          quote: quote,
+          // TODO - refactor this to be cleaner
+          tokenOutCoinMinimalDenom: quote.amount.currency.coinMinimalDenom,
+          tokenOutCoinDecimals: quote.amount.currency.coinDecimals,
+          tokenInCoinDecimals:
+            checkedVariants.find(
+              (variant) =>
+                variant.canonicalAsset?.coinMinimalDenom ===
+                quote.amount.currency.coinMinimalDenom
+            )?.asset?.coinDecimals ?? 0,
+          tokenInCoinMinimalDenom:
+            checkedVariants.find(
+              (variant) =>
+                variant.canonicalAsset?.coinMinimalDenom ===
+                quote.amount.currency.coinMinimalDenom
+            )?.asset?.coinMinimalDenom ?? "",
+          maxSlippage: slippage.toString(),
+          coinAmount: quote.amount.toCoin().amount,
+          userOsmoAddress: account?.address ?? "",
+          quoteType: "out-given-in" as QuoteType,
+        };
+
+        const swapMessages = await getSwapMessages(swapMessagesConfig);
+        swapMessages && allSwapMessages.push(...swapMessages);
+      }
+
+      console.log("allSwapMessages", allSwapMessages);
+
+      accountStore
+        .signAndBroadcast(
+          osmosisChainId,
+          "convertAssetVariants",
+          allSwapMessages,
+          "FE",
+          undefined,
+          undefined,
+          (tx) => {
+            console.log("tx", tx);
+          }
+        )
+        .catch((e: any) => {
+          console.error("Error converting variants", e);
+        });
+    };
 
     // TODO - verify the logic with amount of decimals is correct
-    const totalSwapFee = useMemo(() => {
-      if (!routeData || checkedVariants.length === 0) return new Dec(0);
+    // const totalSwapFee = useMemo(() => {
+    //   if (!routeData || checkedVariants.length === 0) return new Dec(0);
 
-      return checkedVariants.reduce(
-        (sum: Dec, variant: AssetVariant, index: number) => {
-          const route = routeData[index];
-          if (route?.swapFee?.amount) {
-            return sum.add(route.swapFee.amount);
-          }
-          return sum;
-        },
-        new Dec(0)
-      );
-    }, [routeData, checkedVariants]);
-
-    console.log("Route Data: ", routeData);
-    console.log("Route Error: ", routeError);
-    console.log("Is Route Loading: ", isRouteLoading);
+    //   return checkedVariants.reduce(
+    //     (sum: Dec, variant: AssetVariant, index: number) => {
+    //       console.log("variant", variant);
+    //       const route = routeData[index];
+    //       if (route?.swapFee?.amount) {
+    //         return sum.add(route.swapFee.amount);
+    //       }
+    //       return sum;
+    //     },
+    //     new Dec(0)
+    //   );
+    // }, [routeData, checkedVariants]);
 
     // should close toast if screen size changes to mobile while shown
     useEffect(() => {
@@ -278,22 +367,23 @@ const AssetVariantsConversion = observer(
             ))
           )}
         </div>
-        {!isRouteLoading && routeData && (
-          <div className="my-3 flex w-full flex-col gap-2">
-            <div className="flex w-full">
-              <span className="body2 flex flex-1 items-center text-osmoverse-300">
-                Conversion fees
-              </span>
-              <p className="body2 text-white-full">
-                {new PricePretty(DEFAULT_VS_CURRENCY, totalSwapFee).toString()}
-              </p>
-            </div>
+        {/* {!isRouteLoading && routeData && ( */}
+        <div className="my-3 flex w-full flex-col gap-2">
+          <div className="flex w-full">
+            <span className="body2 flex flex-1 items-center text-osmoverse-300">
+              Conversion fees
+            </span>
+            <p className="body2 text-white-full">
+              TBD
+              {/* {new PricePretty(DEFAULT_VS_CURRENCY, totalSwapFee).toString()} */}
+            </p>
           </div>
-        )}
+        </div>
+        {/* )} */}
         <div className="mt-4 flex w-full">
           <Button
             onClick={() => {
-              // convertSelectedAssets();
+              convertSelectedAssets();
               // TODO: link up conversion local state logic
               // open modal
               // Convert All
@@ -308,11 +398,11 @@ const AssetVariantsConversion = observer(
               //     in modal, convert all invokes setDoNotShowAgain(false)
 
               // TODO - remove this
-              setTimeout(() => {
-                onRequestClose();
-              }, 3000);
+              // setTimeout(() => {
+              //   onRequestClose();
+              // }, 3000);
             }}
-            disabled={checkedVariants.length === 0 || isRouteLoading}
+            disabled={checkedVariants.length === 0 || isLoadingQuotes}
             className="w-full"
           >
             {t("assetVariantsConversion.convertSelected")}

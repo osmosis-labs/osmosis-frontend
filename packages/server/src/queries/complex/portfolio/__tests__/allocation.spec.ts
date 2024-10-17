@@ -372,6 +372,7 @@ describe("Has Asset Variants", () => {
     ];
 
     const result = checkAssetVariants(
+      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists
@@ -400,6 +401,7 @@ describe("Has Asset Variants", () => {
     // TODO - update tests
     // @ts-ignore
     const result = checkAssetVariants(
+      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists
@@ -417,6 +419,7 @@ describe("Has Asset Variants", () => {
     // TODO - update tests
     // @ts-ignore
     const result = checkAssetVariants(
+      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists
