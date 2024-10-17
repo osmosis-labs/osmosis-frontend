@@ -95,6 +95,8 @@ const AssetVariantsConversion = observer(
       [allocationData]
     );
 
+    console.log("prepareRouteInputs", prepareRouteInputs);
+
     const apiUtils = api.useUtils();
 
     const quotes = useQueries({
@@ -168,7 +170,8 @@ const AssetVariantsConversion = observer(
                 quote.amount.currency.coinMinimalDenom
             )?.asset?.coinMinimalDenom ?? "",
           maxSlippage: slippage.toString(),
-          coinAmount: quote.amount.toCoin().amount,
+          // coinAmount: quote.amount.toCoin().amount,
+          coinAmount: quote.split[0].initialAmount,
           userOsmoAddress: account?.address ?? "",
           quoteType: "out-given-in" as QuoteType,
         };
@@ -184,7 +187,7 @@ const AssetVariantsConversion = observer(
           osmosisChainId,
           "convertAssetVariants",
           allSwapMessages,
-          "FE",
+          undefined,
           undefined,
           undefined,
           (tx) => {
