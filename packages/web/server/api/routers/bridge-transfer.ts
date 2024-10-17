@@ -15,7 +15,11 @@ import {
   getChain,
   getTimeoutHeight,
 } from "@osmosis-labs/server";
-import { createTRPCRouter, publicProcedure } from "@osmosis-labs/trpc";
+import {
+  createTRPCRouter,
+  publicProcedure,
+  UserOsmoAddressSchema,
+} from "@osmosis-labs/trpc";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
@@ -703,6 +707,88 @@ export const bridgeTransferRouter = createTRPCRouter({
               : undefined,
           },
         },
+      };
+    }),
+
+  getNomicPendingDeposits: publicProcedure
+    .input(UserOsmoAddressSchema.required())
+    .query(async ({ input, ctx }) => {
+      const bridgeProviders = new BridgeProviders(
+        process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
+        {
+          ...ctx,
+          env: IS_TESTNET ? "testnet" : "mainnet",
+          cache: lruCache,
+          getTimeoutHeight: (params) => getTimeoutHeight({ ...ctx, ...params }),
+        }
+      );
+
+      const nomicBridgeProvider = bridgeProviders.bridges.Nomic;
+
+      const pendingDeposits = await nomicBridgeProvider.getPendingDeposits({
+        address: input.userOsmoAddress,
+      });
+
+      const btcMinimalDenom = IS_TESTNET
+        ? "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D"
+        : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
+
+      const btcPrice = await getAssetPrice({
+        ...ctx,
+        asset: {
+          coinMinimalDenom: btcMinimalDenom,
+        },
+      });
+
+      return {
+        pendingDeposits: pendingDeposits.map((deposit) => {
+          const amount = deposit.amount / 1e8;
+
+          return {
+            ...deposit,
+            amount: new CoinPretty(
+              {
+                coinDecimals: deposit.networkFee.decimals,
+                coinDenom: deposit.networkFee.denom,
+                coinMinimalDenom: deposit.networkFee.address,
+                coinGeckoId: deposit.networkFee.coinGeckoId,
+              },
+              new Dec(deposit.networkFee.amount)
+            ),
+            fiatValue: new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              btcPrice.mul(new Dec(amount))
+            ),
+            networkFee: {
+              amount: new CoinPretty(
+                {
+                  coinDecimals: deposit.networkFee.decimals,
+                  coinDenom: deposit.networkFee.denom,
+                  coinMinimalDenom: deposit.networkFee.address,
+                  coinGeckoId: deposit.networkFee.coinGeckoId,
+                },
+                new Dec(deposit.networkFee.amount)
+              ),
+              fiatValue: btcPrice
+                ? priceFromBridgeCoin(deposit.networkFee, btcPrice)
+                : undefined,
+            },
+            providerFee: {
+              amount: new CoinPretty(
+                {
+                  coinDecimals: deposit.providerFee.decimals,
+                  coinDenom: deposit.providerFee.denom,
+                  coinMinimalDenom: deposit.providerFee.address,
+                  coinGeckoId: deposit.providerFee.coinGeckoId,
+                },
+                new Dec(deposit.providerFee.amount)
+              ),
+              fiatValue: btcPrice
+                ? priceFromBridgeCoin(deposit.providerFee, btcPrice)
+                : undefined,
+            },
+          };
+        }),
       };
     }),
 });

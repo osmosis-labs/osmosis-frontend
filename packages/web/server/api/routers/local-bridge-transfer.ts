@@ -21,80 +21,37 @@ import {
 import { getAddress } from "viem";
 import { z } from "zod";
 
+const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
+  type: T,
+  schema: U
+) => {
+  return z
+    .object({
+      type: z.literal(type),
+      assets: z.array(
+        bridgeChainSchema.and(bridgeAssetSchema).and(
+          z.object({
+            supportedVariants: z.record(
+              z.string(),
+              z.array(z.string().transform((v) => v as Bridge))
+            ),
+          })
+        )
+      ),
+    })
+    .merge(schema);
+};
+
 export const localBridgeTransferRouter = createTRPCRouter({
   getSupportedAssetsBalances: publicProcedure
     .input(
       z.object({
         source: z.discriminatedUnion("type", [
-          z
-            .object({
-              type: z.literal("evm"),
-              assets: z.array(
-                bridgeChainSchema.and(bridgeAssetSchema).and(
-                  z.object({
-                    supportedVariants: z.record(
-                      z.string(),
-                      z.array(z.string().transform((v) => v as Bridge))
-                    ),
-                  })
-                )
-              ),
-            })
-            .merge(UserEvmAddressSchema),
-          z
-            .object({
-              type: z.literal("cosmos"),
-              assets: z.array(
-                bridgeChainSchema.and(bridgeAssetSchema).and(
-                  z.object({
-                    supportedVariants: z.record(
-                      z.string(),
-                      z.array(z.string().transform((v) => v as Bridge))
-                    ),
-                  })
-                )
-              ),
-            })
-            .merge(UserCosmosAddressSchema),
-          z.object({
-            type: z.literal("bitcoin"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
-          z.object({
-            type: z.literal("solana"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
-          z.object({
-            type: z.literal("tron"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
+          createAssetObject("evm", UserEvmAddressSchema),
+          createAssetObject("cosmos", UserCosmosAddressSchema),
+          createAssetObject("bitcoin", z.object({})),
+          createAssetObject("solana", z.object({})),
+          createAssetObject("tron", z.object({})),
         ]),
       })
     )

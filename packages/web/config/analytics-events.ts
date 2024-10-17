@@ -265,6 +265,8 @@ export const EventName = {
     variantSelected: "DepositWithdraw: Variant selected",
     started: "DepositWithdraw: Started",
     walletSelected: "DepositWithdraw: Wallet selected",
+    addressCopied: "DepositWithdraw: Address copied",
+    qrOpened: "DepositWithdraw: QR opened",
   },
   Portfolio: {
     pageViewed: "Portfolio: Page viewed",
