@@ -937,7 +937,8 @@
       "amountBtc": "राशि बीटीसी",
       "totalValue": "कुल मूल्य",
       "transactionHash": "लेनदेन हैश",
-      "viewOnExplorer": "एक्सप्लोरर पर देखें"
+      "viewOnExplorer": "एक्सप्लोरर पर देखें",
+      "totalFees": "कुल शुल्क"
     },
     "doNotSendFundsToThisAddress": "इस पते पर धनराशि न भेजें।",
     "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।",

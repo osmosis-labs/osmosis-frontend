@@ -937,7 +937,8 @@
       "amountBtc": "数量 BTC",
       "totalValue": "总价值",
       "transactionHash": "交易哈希",
-      "viewOnExplorer": "在资源管理器中查看"
+      "viewOnExplorer": "在资源管理器中查看",
+      "totalFees": "总费用"
     },
     "doNotSendFundsToThisAddress": "请勿向该地址汇款。",
     "addressExpired": "此地址已过期。请申请一个新地址。",

@@ -937,7 +937,8 @@
       "amountBtc": "Miktar BTC",
       "totalValue": "Toplam değer",
       "transactionHash": "İşlem karması",
-      "viewOnExplorer": "Explorer'da görüntüle"
+      "viewOnExplorer": "Explorer'da görüntüle",
+      "totalFees": "Toplam ücretler"
     },
     "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",
     "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin.",

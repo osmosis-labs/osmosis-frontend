@@ -937,7 +937,8 @@
       "amountBtc": "金額 比特幣",
       "totalValue": "總價值",
       "transactionHash": "交易哈希",
-      "viewOnExplorer": "在資源管理器上查看"
+      "viewOnExplorer": "在資源管理器上查看",
+      "totalFees": "總費用"
     },
     "doNotSendFundsToThisAddress": "請勿將資金寄至該地址。",
     "addressExpired": "該地址已過期。請索取一份新的。",

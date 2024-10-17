@@ -937,7 +937,8 @@
       "amountBtc": "Kwota BTC",
       "totalValue": "Wartość całkowita",
       "transactionHash": "Hash transakcji",
-      "viewOnExplorer": "Widok w Eksploratorze"
+      "viewOnExplorer": "Widok w Eksploratorze",
+      "totalFees": "Łączne opłaty"
     },
     "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",
     "addressExpired": "Ten adres wygasł. Poproś o nowy.",

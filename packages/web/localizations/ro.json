@@ -937,7 +937,8 @@
       "amountBtc": "Suma BTC",
       "totalValue": "Valoarea totală",
       "transactionHash": "Hash de tranzacție",
-      "viewOnExplorer": "Vizualizare pe explorer"
+      "viewOnExplorer": "Vizualizare pe explorer",
+      "totalFees": "Taxele totale"
     },
     "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
     "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",

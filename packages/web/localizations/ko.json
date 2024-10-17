@@ -937,7 +937,8 @@
       "amountBtc": "금액 BTC",
       "totalValue": "총 가치",
       "transactionHash": "거래 해시",
-      "viewOnExplorer": "탐색기에서 보기"
+      "viewOnExplorer": "탐색기에서 보기",
+      "totalFees": "총 수수료"
     },
     "doNotSendFundsToThisAddress": "이 주소로 자금을 보내지 마십시오.",
     "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",

@@ -23,8 +23,13 @@ export class NomicBridgeProvider implements BridgeProvider {
   readonly providerName = NomicBridgeProvider.ID;
 
   relayers: string[];
+  nBTCMinimalDenom: string;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
+    this.nBTCMinimalDenom =
+      this.ctx.env === "mainnet"
+        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
+        : "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"; // Testnet nBTC
     this.relayers =
       this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
@@ -39,14 +44,11 @@ export class NomicBridgeProvider implements BridgeProvider {
       throw new Error("Invalid Cosmos address");
     }
 
-    const nBTCMinimalDenom =
-      this.ctx.env === "mainnet"
-        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-        : "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D"; // Testnet nBTC
-
     const nomicBtc = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
-      .find(({ coinMinimalDenom }) => coinMinimalDenom === nBTCMinimalDenom);
+      .find(
+        ({ coinMinimalDenom }) => coinMinimalDenom === this.nBTCMinimalDenom
+      );
 
     if (!nomicBtc) {
       throw new Error("Nomic Bitcoin asset not found in asset list.");
@@ -190,10 +192,36 @@ export class NomicBridgeProvider implements BridgeProvider {
         10000
       )();
 
+      const nomicBtc = this.ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find(
+          ({ coinMinimalDenom }) => coinMinimalDenom === this.nBTCMinimalDenom
+        );
+
+      if (!nomicBtc) {
+        throw new Error("Nomic Bitcoin asset not found in asset list.");
+      }
+
       return pendingDeposits.map((deposit) => ({
         transactionId: deposit.txid,
         amount: deposit.amount,
         confirmations: deposit.confirmations,
+        networkFee: {
+          address: nomicBtc.coinMinimalDenom,
+          amount: ((deposit.minerFeeRate ?? 0) * 1e8).toString(),
+          decimals: 8,
+          // TODO: Handle case when we can receive allBTC
+          denom: nomicBtc.symbol,
+          coinGeckoId: nomicBtc.coingeckoId,
+        },
+        providerFee: {
+          address: nomicBtc.coinMinimalDenom,
+          amount: ((deposit.bridgeFeeRate ?? 0) * deposit.amount).toString(),
+          decimals: 8,
+          // TODO: Handle case when we can receive allBTC
+          denom: nomicBtc.symbol,
+          coinGeckoId: nomicBtc.coingeckoId,
+        },
       }));
     } catch (error) {
       console.error("Error getting pending Nomic deposits:", error);

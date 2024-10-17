@@ -937,7 +937,8 @@
       "amountBtc": "Сумма BTC",
       "totalValue": "Общая стоимость",
       "transactionHash": "Хэш транзакции",
-      "viewOnExplorer": "Посмотреть в проводнике"
+      "viewOnExplorer": "Посмотреть в проводнике",
+      "totalFees": "Общая сумма сборов"
     },
     "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",
     "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
