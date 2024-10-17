@@ -1,4 +1,5 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
+import * as bitcoin from "bitcoinjs-lib";
 import * as viem from "viem";
 
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
@@ -73,6 +74,19 @@ export function isEvmAddressValid({ address }: { address: string }): boolean {
   return viem.isAddress(address);
 }
 
+export function isBitcoinAddressValid({
+  address,
+}: {
+  address: string;
+}): boolean {
+  try {
+    bitcoin.address.toOutputScript(address);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function isCosmosAddressValid({
   address,
   bech32Prefix,
@@ -89,4 +103,15 @@ export function isCosmosAddressValid({
   } catch {
     return false;
   }
+}
+
+export function deriveCosmosAddress({
+  address,
+  desiredBech32Prefix,
+}: {
+  address: string;
+  desiredBech32Prefix: string;
+}) {
+  const { data } = cosmjsEncoding.fromBech32(address);
+  return cosmjsEncoding.toBech32(desiredBech32Prefix, data);
 }

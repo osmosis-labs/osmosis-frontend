@@ -32,6 +32,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
@@ -39,7 +40,7 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { BridgeAssetMap } from "../utils";
+import { BridgeAssetMap } from "../utils/asset";
 import { SkipApiClient } from "./client";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
@@ -258,7 +259,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -269,7 +272,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       // find variants
       const assets = await this.getAssets();
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
@@ -319,6 +324,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -332,6 +338,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -375,6 +382,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
+            transferTypes: ["quote"],
             address: sharedOriginAsset.denom,
             denom:
               sharedOriginAsset.recommended_symbol ??
@@ -478,8 +486,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
+        msgs: [{ typeUrl, value: msg }],
         fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
       };
     } else {
@@ -511,8 +518,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg: value,
+        msgs: [{ typeUrl, value }],
         fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
@@ -787,14 +793,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainId: params.fromChain.chainId.toString(),
         chainList: this.ctx.chainList,
         body: {
-          messages: [
-            (
-              await this.getProtoRegistry()
-            ).encodeAsAny({
-              typeUrl: txData.msgTypeUrl,
-              value: txData.msg,
-            }),
-          ],
+          messages: await Promise.all(
+            txData.msgs.map(async (msg) =>
+              (await this.getProtoRegistry()).encodeAsAny(msg)
+            )
+          ),
         },
         bech32Address: params.fromAddress,
         fallbackGasLimit: txData.fallbackGasLimit,

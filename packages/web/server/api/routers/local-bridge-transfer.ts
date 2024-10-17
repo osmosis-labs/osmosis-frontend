@@ -1,8 +1,9 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
-  bridgeAssetSchema,
   bridgeChainSchema,
+  BridgeSupportedAsset,
+  bridgeSupportedAssetSchema,
 } from "@osmosis-labs/bridge";
 import {
   calcAssetValue,
@@ -29,11 +30,20 @@ const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
     .object({
       type: z.literal(type),
       assets: z.array(
-        bridgeChainSchema.and(bridgeAssetSchema).and(
+        bridgeChainSchema.and(bridgeSupportedAssetSchema).and(
           z.object({
             supportedVariants: z.record(
               z.string(),
-              z.array(z.string().transform((v) => v as Bridge))
+              z.record(
+                z.string().transform((v) => v as Bridge),
+                z.array(
+                  z
+                    .string()
+                    .transform(
+                      (v) => v as BridgeSupportedAsset["transferTypes"][number]
+                    )
+                )
+              )
             ),
           })
         )

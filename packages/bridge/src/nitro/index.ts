@@ -11,6 +11,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeSupportedAssetsParams,
@@ -31,7 +32,9 @@ export class NitroBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       // just supports TRX, TRX.rt from Tron
 
@@ -71,6 +74,7 @@ export class NitroBridgeProvider implements BridgeProvider {
 
           return [
             {
+              transferTypes: ["external-url"],
               chainType: "tron",
               chainId: TronChainInfo.chainId,
               chainName: TronChainInfo.chainName,
