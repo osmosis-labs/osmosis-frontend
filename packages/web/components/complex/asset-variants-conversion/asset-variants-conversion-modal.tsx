@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -12,7 +13,7 @@ import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useSlippageConfig, useTranslation, useWindowSize } from "~/hooks";
-import { useSwap } from "~/hooks/use-swap";
+import { getSwapMessages, getSwapTxParameters } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -51,38 +52,44 @@ interface AssetVariantsConversionProps {
 
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
-}> = ({ variant }) => {
+  account: any;
+}> = ({ variant, account }) => {
   const { t } = useTranslation();
 
-  // const {
-  //   data: routeData,
-  //   error: routeError,
-  //   isLoading: isRouteLoading,
-  // } = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
-  //   {
-  //     tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-  //     tokenInAmount: variant.amount.truncate().toString(),
-  //     tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-  //     forcePoolId: undefined,
-  //   },
-  //   {
-  //     enabled: !!variant,
-  //     refetchOnWindowFocus: false,
-  //   }
-  // );
+  const amount = variant.amount.toCoin().amount;
+
+  // console.log("amount: ", amount);
+
+  // TODO - handle loading and error
+  const { refetch: refetchRoute } =
+    api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+      {
+        tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
+        tokenInAmount: amount,
+        tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
+        forcePoolId: undefined,
+      },
+      {
+        enabled: false,
+        refetchOnWindowFocus: false,
+      }
+    );
+
+  // console.log("routeData: ", routeData);
+  // console.log("routeError: ", routeError);
 
   const slippageConfig = useSlippageConfig({
     defaultSlippage: "0.5",
     selectedIndex: 0,
   });
 
-  const swapState = useSwap({
-    initialFromDenom: variant.asset?.coinMinimalDenom ?? "",
-    initialToDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-    useQueryParams: false,
-    maxSlippage: slippageConfig.slippage.toDec(),
-    quoteType: "out-given-in",
-  });
+  // const swapState = useSwap({
+  //   initialFromDenom: variant.asset?.coinMinimalDenom ?? "",
+  //   initialToDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
+  //   useQueryParams: false,
+  //   maxSlippage: slippageConfig.slippage.toDec(),
+  //   quoteType: "out-given-in",
+  // });
 
   // useEffect(() => {
   //   swapState.inAmountInput.setAmount(variant.amount.truncate().toString());
@@ -106,7 +113,7 @@ const AssetVariantRow: React.FC<{
             {variant?.asset?.coinDenom ?? ""}
           </span>
           <span className="caption text-osmoverse-200">
-            Amount: {variant.amount.toString()}
+            Amount: {variant.amount.toDec().toString()}
           </span>
         </div>
       </div>
@@ -177,9 +184,67 @@ const AssetVariantRow: React.FC<{
         <Button
           size="md"
           className="w-full"
-          onClick={() => {
-            swapState.inAmountInput.setAmount(variant.amount.toString());
-            swapState.sendTradeTokenInTx();
+          onClick={async () => {
+            // TODO - handle loading and error
+            const { data: quote } = await refetchRoute();
+            console.log("ROUTE data: ", quote);
+
+            const getSwapMessagesConfig = {
+              quote: quote,
+
+              tokenOutCoinMinimalDenom:
+                variant.canonicalAsset?.coinMinimalDenom ?? "",
+              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals!,
+
+              tokenInCoinDecimals: variant.asset?.coinDecimals!,
+              tokenInCoinMinimalDenom: variant.asset?.coinMinimalDenom ?? "",
+
+              maxSlippage: new Dec(0.5).toString(),
+              coinAmount: amount,
+              userOsmoAddress: account.address,
+            };
+
+            console.log("getSwapMessagesConfig: ", getSwapMessagesConfig);
+
+            const messages = await getSwapMessages(getSwapMessagesConfig);
+
+            console.log("messages: ", messages);
+
+            const txParams = getSwapTxParameters({
+              coinAmount: amount,
+              maxSlippage: new Dec(0.5).toString(),
+              tokenOutCoinMinimalDenom:
+                variant.canonicalAsset?.coinMinimalDenom ?? "",
+              tokenInCoinMinimalDenom: variant.asset?.coinMinimalDenom!,
+              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals!,
+              tokenInCoinDecimals: variant.asset?.coinDecimals!,
+              quote: quote,
+              quoteType: "out-given-in",
+            });
+
+            const { routes, tokenIn, tokenOutMinAmount } = txParams;
+
+            console.log("routes: ", routes);
+            console.log("tokenIn: ", tokenIn);
+            console.log("tokenOutMinAmount: ", tokenOutMinAmount);
+
+            // TODO - map sign options and network fee
+            account.osmosis
+              .sendSwapExactAmountInMsg(
+                pools,
+                tokenIn!,
+                tokenOutMinAmount!,
+                undefined,
+                signOptions,
+                ({ code }) => {
+                  if (code)
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
+                }
+              )
+              .catch(reject);
           }}
         >
           Convert
@@ -251,6 +316,7 @@ const AssetVariantsConversion = observer(
               <AssetVariantRow
                 key={variant?.asset?.coinMinimalDenom}
                 variant={variant ?? {}}
+                account={account}
               />
             ))
           )}

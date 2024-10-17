@@ -1232,7 +1232,7 @@ type SwapTxRouteInGivenOut = {
   tokenOutAmount: string;
 };
 
-function getSwapTxParameters({
+export function getSwapTxParameters({
   coinAmount,
   maxSlippage,
   quote,
@@ -1343,7 +1343,7 @@ function getSwapTxParameters({
   }
 }
 
-async function getSwapMessages({
+export async function getSwapMessages({
   coinAmount,
   maxSlippage,
   quote,
@@ -1496,6 +1496,8 @@ function useQueryRouterBestQuote(
       },
     },
   };
+
+  // console.log("input.tokenInAmount : ", input.tokenInAmount);
 
   const inGivenOutQuote =
     trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
