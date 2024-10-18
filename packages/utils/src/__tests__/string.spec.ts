@@ -1,7 +1,3 @@
-/**
- * @jest-environment node
- */
-
 // Polyfill for TextEncoder and TextDecoder
 import { TextDecoder, TextEncoder } from "util";
 
