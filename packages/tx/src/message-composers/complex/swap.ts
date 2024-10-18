@@ -1,7 +1,9 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import type { swapRouter } from "@osmosis-labs/trpc";
+import type {
+  getRouteTokenInGivenOut,
+  getRouteTokenOutGivenIn,
+} from "@osmosis-labs/server";
 import { isNil } from "@osmosis-labs/utils";
-import type { inferRouterOutputs } from "@trpc/server";
 
 import {
   makeSplitRoutesSwapExactAmountInMsg,
@@ -10,7 +12,6 @@ import {
   makeSwapExactAmountOutMsg,
 } from "../osmosis";
 
-type RouterOutputs = inferRouterOutputs<typeof swapRouter>;
 export type SwapTxPoolOutGivenIn = {
   id: string;
   tokenOutDenom: string;
@@ -31,8 +32,8 @@ export type SwapTxRouteInGivenOut = {
 
 export type QuoteType = "out-given-in" | "in-given-out";
 
-type QuoteOutGivenIn = Omit<RouterOutputs["routeTokenOutGivenIn"], "name">;
-type QuoteInGivenOut = Omit<RouterOutputs["routeTokenInGivenOut"], "name">;
+type QuoteOutGivenIn = Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>;
+type QuoteInGivenOut = Awaited<ReturnType<typeof getRouteTokenInGivenOut>>;
 type RouteOutGivenIn = QuoteOutGivenIn["split"][number];
 type RouteInGivenOut = QuoteInGivenOut["split"][number];
 
