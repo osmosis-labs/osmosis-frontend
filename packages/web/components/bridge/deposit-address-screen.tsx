@@ -356,11 +356,7 @@ export const DepositAddressScreen = observer(
         <div className="mb-3 mt-6 h-[1px] w-full border border-osmoverse-800" />
 
         {bridge === "Nomic" && (
-          <NomicPendingTransfers
-            fromChain={fromChain}
-            toChain={toChain}
-            toAsset={toAsset}
-          />
+          <NomicPendingTransfers fromChain={fromChain} toChain={toChain} />
         )}
       </div>
     );

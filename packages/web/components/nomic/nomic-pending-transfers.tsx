@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { BridgeAsset } from "@osmosis-labs/bridge";
 import { superjson } from "@osmosis-labs/server";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
@@ -27,7 +26,6 @@ import { api, RouterOutputs } from "~/utils/trpc";
 interface NomicPendingTransfersProps {
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
-  toAsset: BridgeAsset;
 }
 
 interface TransactionStore {
@@ -100,7 +98,6 @@ const refetchInterval = 30000;
 export const NomicPendingTransfers = ({
   fromChain,
   toChain,
-  toAsset,
 }: NomicPendingTransfersProps) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
