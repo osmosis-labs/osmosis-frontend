@@ -944,7 +944,9 @@
     "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
     "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
     "createNewDepositAddress": "Создать новый адрес депозита",
-    "transactionDetails": "Подробности транзакции"
+    "transactionDetails": "Подробности транзакции",
+    "continue": "Продолжать",
+    "inputBitcoinAddress": "Введите адрес Bitcoin"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

@@ -105,24 +105,34 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
-    const swapRoute = await getRouteTokenOutGivenIn({
-      assetLists: this.ctx.assetLists,
-      tokenInAmount: fromAmount,
-      tokenInDenom: fromAsset.address,
-      tokenOutDenom: this.nBTCMinimalDenom,
-    });
+    let swapMessages: Awaited<ReturnType<typeof getSwapMessages>>;
+    let swapRoute:
+      | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
+      | undefined;
 
-    const swapMessages = await getSwapMessages({
-      coinAmount: fromAmount,
-      maxSlippage: "0.005",
-      quote: swapRoute,
-      tokenInCoinDecimals: fromAsset.decimals,
-      tokenInCoinMinimalDenom: fromAsset.address,
-      tokenOutCoinDecimals: nomicBtc.decimals,
-      tokenOutCoinMinimalDenom: nomicBtc.coinMinimalDenom,
-      userOsmoAddress: fromAddress,
-      quoteType: "out-given-in",
-    });
+    if (fromAsset.address !== this.nBTCMinimalDenom) {
+      swapRoute = await getRouteTokenOutGivenIn({
+        assetLists: this.ctx.assetLists,
+        tokenInAmount: fromAmount,
+        tokenInDenom: fromAsset.address,
+        tokenOutDenom: this.nBTCMinimalDenom,
+      });
+
+      swapMessages = await getSwapMessages({
+        coinAmount: fromAmount,
+        maxSlippage: "0.005",
+        quote: swapRoute,
+        tokenInCoinDecimals: fromAsset.decimals,
+        tokenInCoinMinimalDenom: fromAsset.address,
+        tokenOutCoinDecimals: nomicBtc.decimals,
+        tokenOutCoinMinimalDenom: nomicBtc.coinMinimalDenom,
+        userOsmoAddress: fromAddress,
+        quoteType: "out-given-in",
+      });
+    } else {
+      swapMessages = [];
+      swapRoute = undefined;
+    }
 
     if (!swapMessages) {
       throw new BridgeQuoteError({
@@ -131,7 +141,6 @@ export class NomicBridgeProvider implements BridgeProvider {
         message: "Failed to get swap messages.",
       });
     }
-
     const nomicBridgeAsset: BridgeAsset = {
       address: nomicBtc.coinMinimalDenom,
       decimals: nomicBtc.decimals,
@@ -142,7 +151,9 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const transactionDataParams: GetBridgeQuoteParams = {
       ...params,
-      fromAmount: swapRoute.amount.toCoin().amount,
+      fromAmount: !!swapRoute
+        ? swapRoute.amount.toCoin().amount
+        : params.fromAmount,
       fromAsset: nomicBridgeAsset,
       toChain: {
         chainId: nomicChain.chain_id,
@@ -212,10 +223,12 @@ export class NomicBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: swapRoute.amount.toCoin().amount,
+        amount: !!swapRoute
+          ? swapRoute.amount.toCoin().amount
+          : params.fromAmount,
         ...nomicBridgeAsset,
         denom: "BTC",
-        priceImpact: swapRoute?.priceImpactTokenOut?.toString() ?? "0",
+        priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
@@ -359,8 +372,6 @@ export class NomicBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    // just supports BTC from Bitcoin
-
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
       .find(
@@ -372,7 +383,11 @@ export class NomicBridgeProvider implements BridgeProvider {
         (c) => c.chainName === "bitcoin"
       );
 
-      if (bitcoinCounterparty) {
+      const isNomicBtc =
+        assetListAsset.coinMinimalDenom.toLowerCase() ===
+        this.nBTCMinimalDenom.toLowerCase();
+
+      if (bitcoinCounterparty || isNomicBtc) {
         return [
           {
             transferTypes:

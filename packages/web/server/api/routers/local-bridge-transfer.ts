@@ -195,23 +195,14 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               return {
                 ...asset,
-                amount:
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    balance.amount
-                  ) ??
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    0
-                  ),
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  balance.amount
+                ),
                 usdValue: new PricePretty(DEFAULT_VS_CURRENCY, usdValue ?? 0),
               };
             })

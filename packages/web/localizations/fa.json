@@ -944,7 +944,9 @@
     "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید.",
     "addressAboutToExpire": "این آدرس رو به اتمام است. لطفاً برای جلوگیری از از دست دادن وجوه، یک آدرس جدید درخواست کنید.",
     "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
-    "transactionDetails": "جزئیات معامله"
+    "transactionDetails": "جزئیات معامله",
+    "continue": "ادامه دهید",
+    "inputBitcoinAddress": "آدرس بیت کوین را وارد کنید"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

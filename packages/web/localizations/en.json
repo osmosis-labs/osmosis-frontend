@@ -944,7 +944,9 @@
     "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
     "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
     "createNewDepositAddress": "Create new deposit address",
-    "transactionDetails": "Transaction details"
+    "transactionDetails": "Transaction details",
+    "continue": "Continue",
+    "inputBitcoinAddress": "Input Bitcoin address"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

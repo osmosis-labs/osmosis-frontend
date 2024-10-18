@@ -76,11 +76,16 @@ export function isEvmAddressValid({ address }: { address: string }): boolean {
 
 export function isBitcoinAddressValid({
   address,
+  isTestnet = false,
 }: {
   address: string;
+  isTestnet?: boolean;
 }): boolean {
   try {
-    bitcoin.address.toOutputScript(address);
+    bitcoin.address.toOutputScript(
+      address,
+      isTestnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
+    );
     return true;
   } catch (e) {
     return false;

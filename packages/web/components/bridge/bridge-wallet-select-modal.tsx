@@ -25,7 +25,7 @@ import {
 import { Button, GoBackButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import {
@@ -57,18 +57,26 @@ export const BridgeWalletSelectModal: FunctionComponent<
   const { t } = useTranslation();
   const [removeMinHeight, setRemoveMinHeight] = useState(false);
 
+  let modalTitle = "";
+  if (props.direction === "deposit") {
+    modalTitle = t("transfer.selectDepositWallet", {
+      network: props.fromChain.prettyName,
+    });
+  } else if (
+    props.direction === "withdraw" &&
+    props.toChain.chainType === "bitcoin"
+  ) {
+    modalTitle = t("transfer.inputBitcoinAddress");
+  } else {
+    modalTitle = t("transfer.selectWithdrawWallet", {
+      network: props.toChain.prettyName,
+    });
+  }
+
   return (
     <ModalBase
       title={
-        <div className="md:subtitle1 mx-auto text-h6 font-h6">
-          {props.direction === "deposit"
-            ? t("transfer.selectDepositWallet", {
-                network: props.fromChain.prettyName,
-              })
-            : t("transfer.selectWithdrawWallet", {
-                network: props.toChain.prettyName,
-              })}
-        </div>
+        <div className="md:subtitle1 mx-auto text-h6 font-h6">{modalTitle}</div>
       }
       className={classNames("!max-w-lg", { "min-h-[50vh]": !removeMinHeight })}
       {...props}
@@ -522,7 +530,10 @@ const SendToAnotherAddressForm: FunctionComponent<
             } else if (toChain.chainType === "evm") {
               isValid = isEvmAddressValid({ address: nextValue });
             } else if (toChain.chainType === "bitcoin") {
-              isValid = isBitcoinAddressValid({ address: nextValue });
+              isValid = isBitcoinAddressValid({
+                address: nextValue,
+                isTestnet: IS_TESTNET,
+              });
             }
 
             if (!nextValue) setIsInvalidAddress(false);

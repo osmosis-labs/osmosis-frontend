@@ -310,8 +310,6 @@ export const AmountAndReviewScreen = observer(
                 toChain &&
                 fromAddress &&
                 toAddress &&
-                fromWalletIcon &&
-                toWalletIcon &&
                 fromAsset &&
                 toAsset && (
                   <ReviewScreen

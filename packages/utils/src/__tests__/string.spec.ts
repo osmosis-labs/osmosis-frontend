@@ -73,6 +73,13 @@ describe("isBitcoinAddressValid", () => {
     expect(isBitcoinAddressValid({ address: validAddress })).toBe(true);
   });
 
+  it("should return true for a valid testnet Bitcoin address ", () => {
+    const validAddress = "tb1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq";
+    expect(
+      isBitcoinAddressValid({ address: validAddress, isTestnet: true })
+    ).toBe(true);
+  });
+
   it("should return false for an invalid Bitcoin address", () => {
     const invalidAddress = "invalidBitcoinAddress";
     expect(isBitcoinAddressValid({ address: invalidAddress })).toBe(false);

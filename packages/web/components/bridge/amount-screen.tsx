@@ -1328,7 +1328,7 @@ export const AmountScreen = observer(
                 }
 
                 if (!isWalletNeededConnected) {
-                  return "counterparty-cosmos-chain-not-connected";
+                  return "counterparty-chain-not-connected";
                 }
 
                 if (quote.isWrongEvmChainSelected) {
@@ -1356,14 +1356,17 @@ export const AmountScreen = observer(
                 </Button>
               </Screen>
 
-              <Screen screenName="counterparty-cosmos-chain-not-connected">
+              <Screen screenName="counterparty-chain-not-connected">
                 <Button
                   onClick={() => checkChainAndConnectWallet()}
                   className="w-full"
                   disabled={pendingChainApproval}
                 >
                   <h6 className="flex items-center gap-3">
-                    {pendingChainApproval
+                    {toChain?.chainType === "bitcoin" &&
+                    direction === "withdraw"
+                      ? t("transfer.continue")
+                      : pendingChainApproval
                       ? t("transfer.pendingApproval")
                       : t("transfer.connectTo", {
                           network:
