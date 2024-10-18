@@ -2884,6 +2884,7 @@ describe("SquidBridgeProvider", () => {
             "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
           decimals: 6,
         },
+        direction: "deposit",
       });
 
       expect(sourceVariants).toEqual([
@@ -2918,6 +2919,7 @@ describe("SquidBridgeProvider", () => {
             "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
           decimals: 6,
         },
+        direction: "deposit",
       });
 
       expect(sourceVariants).toEqual([
@@ -3285,6 +3287,7 @@ describe("SquidBridgeProvider", () => {
             "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
           decimals: 6,
         },
+        direction: "deposit",
       });
 
       expect(sourceVariants).toEqual([
