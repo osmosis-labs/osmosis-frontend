@@ -23,7 +23,6 @@ import {
 } from "react";
 import { useLocalStorage } from "react-use";
 
-import { useAssetVariantsModalStore } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -41,6 +40,7 @@ import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
+import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion-modal";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";

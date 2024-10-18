@@ -11,10 +11,10 @@ import { useLocalStorage } from "react-use";
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { useAssetVariantsModalStore } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
+import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion-modal";
 
 export type ToastOptions = Partial<ReactToastifyOptions> & {
   updateToastId?: Id;
