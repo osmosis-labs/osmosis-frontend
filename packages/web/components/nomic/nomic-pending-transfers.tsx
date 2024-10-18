@@ -201,7 +201,6 @@ export const NomicPendingTransfers = ({
                   depositData={deposit}
                   fromChain={fromChain}
                   toChain={toChain}
-                  toAsset={toAsset}
                 />
               </div>
               {isSuccess ? (
@@ -234,7 +233,6 @@ export const NomicPendingTransfers = ({
 interface TransactionDetailsModalProps {
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
-  toAsset: BridgeAsset;
   confirmationPercentage: number;
   depositData: RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number];
 }
@@ -243,7 +241,6 @@ const TransactionDetailsModal = ({
   confirmationPercentage,
   fromChain,
   toChain,
-  toAsset,
   depositData,
 }: TransactionDetailsModalProps) => {
   const { t } = useTranslation();
