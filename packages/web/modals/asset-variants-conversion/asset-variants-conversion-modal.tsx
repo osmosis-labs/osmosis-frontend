@@ -1,5 +1,6 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { FormattedQuote } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -131,9 +132,19 @@ const AssetVariantsConversion = observer(
       ),
     });
 
-    const isLoadingQuotes = quotes.some((result) => result.isLoading);
+    const isFetchingQuotes = quotes.some((result) => result.isFetching);
 
     const dataQuotes = quotes.map((result) => result.data);
+
+    const totalConversionFee: Dec = useMemo(() => {
+      if (!dataQuotes || checkedVariants.length === 0) return new Dec(0);
+
+      return dataQuotes.reduce((total, quote) => {
+        const swapFee = quote?.swapFee;
+        total.add(swapFee?.toDec() ?? new Dec(0));
+        return total;
+      }, new Dec(0));
+    }, [dataQuotes, checkedVariants]);
 
     const convertSelectedAssets = async () => {
       setIsConverting(true);
@@ -190,7 +201,7 @@ const AssetVariantsConversion = observer(
           accountStore.osmosisChainId,
           "convertAssetVariants",
           allSwapMessages,
-          undefined,
+          "Convert Asset Variants -",
           undefined,
           undefined,
           (tx) => {
@@ -288,12 +299,22 @@ const AssetVariantsConversion = observer(
             <span className="body2 flex flex-1 items-center text-osmoverse-300">
               Conversion fees
             </span>
-            <p className="body2 text-white-full">TBD</p>
+            {isFetchingQuotes ? (
+              <Skeleton className="h-5 w-24" />
+            ) : (
+              <p className="body2 text-white-full">
+                ~
+                {new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  totalConversionFee
+                ).toString()}
+              </p>
+            )}
           </div>
         </div>
         <div className="mt-4 flex w-full">
           <Button
-            isLoading={isConverting || isLoadingQuotes}
+            isLoading={isConverting || isFetchingQuotes}
             onClick={() => {
               convertSelectedAssets();
               // TODO: link up conversion local state logic
@@ -310,7 +331,7 @@ const AssetVariantsConversion = observer(
               //     in modal, convert all invokes setDoNotShowAgain(false)
             }}
             disabled={
-              checkedVariants.length === 0 || isLoadingQuotes || isConverting
+              checkedVariants.length === 0 || isFetchingQuotes || isConverting
             }
             className="w-full"
           >
