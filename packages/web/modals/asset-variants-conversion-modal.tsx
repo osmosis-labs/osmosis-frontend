@@ -23,8 +23,8 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  isOpen: false,
-  // isOpen: true,
+  // isOpen: false,
+  isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
@@ -53,13 +53,15 @@ interface AssetVariantsConversionProps {
 
 const AssetVariantsConversion = observer(
   ({ onRequestClose }: AssetVariantsConversionProps) => {
-    const { accountStore, chainStore } = useStore();
-    const osmosisChainId = chainStore.osmosis.chainId;
+    const { accountStore } = useStore();
+    const { isMobile } = useWindowSize();
+    const { t } = useTranslation();
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { isMobile } = useWindowSize();
+    const apiUtils = api.useUtils();
+
     const [checkedVariants, setCheckedVariants] = useState<AssetVariant[]>([]);
-    const { t } = useTranslation();
+    const [isConverting, setIsConverting] = useState(false);
 
     const {
       data: allocationData,
@@ -84,15 +86,15 @@ const AssetVariantsConversion = observer(
 
     const prepareRouteInputs = useMemo(
       () =>
-        allocationData?.assetVariants?.map((variant) => ({
-          tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-          tokenInAmount: variant.amount.toCoin().amount,
-          tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-        })) ?? [],
+        allocationData?.assetVariants?.map((variant) => {
+          return {
+            tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
+            tokenInAmount: variant.amount.toCoin().amount,
+            tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
+          };
+        }) ?? [],
       [allocationData]
     );
-
-    const apiUtils = api.useUtils();
 
     const quotes = useQueries({
       queries: prepareRouteInputs.map(
@@ -122,9 +124,31 @@ const AssetVariantsConversion = observer(
     const dataQuotes = quotes.map((result) => result.data);
 
     const convertSelectedAssets = async () => {
+      setIsConverting(true);
+      // filter out dataQuotes for unchecked asset variants
+      const filteredDataQuotes = dataQuotes.reduce((acc, quote, index) => {
+        const variant = allocationData?.assetVariants?.[index];
+        if (
+          variant &&
+          checkedVariants.some(
+            (checkedVariant) =>
+              checkedVariant.asset?.coinMinimalDenom ===
+              variant.asset?.coinMinimalDenom
+          )
+        ) {
+          acc.push({ quote, checkedVariant: variant });
+        }
+        return acc;
+      }, [] as { quote: any; checkedVariant: AssetVariant }[]);
+
+      if (filteredDataQuotes.length === 0) {
+        console.warn("No checked variants to convert");
+        return;
+      }
+
       const allSwapMessages = [];
 
-      for (const quote of dataQuotes) {
+      for (const { quote, checkedVariant } of filteredDataQuotes) {
         console.log("quote", quote);
         if (!quote) continue;
 
@@ -141,27 +165,17 @@ const AssetVariantsConversion = observer(
 
         const swapMessagesConfig = {
           quote: quote,
-          // TODO - refactor this to be cleaner
           tokenOutCoinMinimalDenom: quote.amount.currency.coinMinimalDenom,
           tokenOutCoinDecimals: quote.amount.currency.coinDecimals,
-          tokenInCoinDecimals:
-            checkedVariants.find(
-              (variant) =>
-                variant.canonicalAsset?.coinMinimalDenom ===
-                quote.amount.currency.coinMinimalDenom
-            )?.asset?.coinDecimals ?? 0,
-          tokenInCoinMinimalDenom:
-            checkedVariants.find(
-              (variant) =>
-                variant.canonicalAsset?.coinMinimalDenom ===
-                quote.amount.currency.coinMinimalDenom
-            )?.asset?.coinMinimalDenom ?? "",
+          tokenInCoinDecimals: checkedVariant.asset?.coinDecimals ?? 0,
+          tokenInCoinMinimalDenom: checkedVariant.asset?.coinMinimalDenom ?? "",
           maxSlippage: slippage.toString(),
-          // coinAmount: quote.amount.toCoin().amount,
-          coinAmount: quote.split[0].initialAmount.toString(),
+          coinAmount: quote.split[0].initialAmount.toString(), // coinAmount: quote.amount.toCoin().amount,
           userOsmoAddress: account?.address ?? "",
           quoteType: "out-given-in" as QuoteType,
         };
+
+        console.log("swapMessagesConfig", swapMessagesConfig);
 
         const swapMessages = await getSwapMessages(swapMessagesConfig);
         swapMessages && allSwapMessages.push(...swapMessages);
@@ -171,7 +185,7 @@ const AssetVariantsConversion = observer(
 
       accountStore
         .signAndBroadcast(
-          osmosisChainId,
+          accountStore.osmosisChainId,
           "convertAssetVariants",
           allSwapMessages,
           undefined,
@@ -183,16 +197,11 @@ const AssetVariantsConversion = observer(
         )
         .catch((e: any) => {
           console.error("Error converting variants", e);
+        })
+        .finally(() => {
+          setIsConverting(false);
         });
     };
-
-    // should close toast if screen size changes to mobile while shown
-    useEffect(() => {
-      if (isMobile) {
-        // Use timeout to avoid the maximum update depth exceeded error
-        setTimeout(onRequestClose, 0);
-      }
-    }, [isMobile, onRequestClose]);
 
     const handleSelectAll = () => {
       setCheckedVariants(
@@ -207,6 +216,24 @@ const AssetVariantsConversion = observer(
           : [...prevState, variant]
       );
     };
+
+    // should close modal if screen size changes to mobile while shown
+    useEffect(() => {
+      if (isMobile) {
+        setTimeout(onRequestClose, 0);
+      }
+    }, [isMobile, onRequestClose]);
+
+    // close modal once user has no variants left to convert
+    useEffect(() => {
+      if (
+        !isAllocationLoading &&
+        allocationData &&
+        allocationData.assetVariants?.length === 0
+      ) {
+        setTimeout(onRequestClose, 0);
+      }
+    }, [isAllocationLoading, allocationData, onRequestClose]);
 
     return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
@@ -247,12 +274,15 @@ const AssetVariantsConversion = observer(
               <div
                 key={variant?.asset?.coinMinimalDenom}
                 className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-osmoverse-alpha-850" // Added cursor-pointer for better UX
-                onClick={() => handleVariantCheck(variant ?? {})}
+                onClick={() =>
+                  !isConverting && handleVariantCheck(variant ?? {})
+                }
               >
                 <Checkbox
                   // note - check change occurs when row is clicked, not checkbox
                   checked={checkedVariants.includes(variant ?? {})}
                   className="mr-2"
+                  disabled={isConverting}
                 />
                 <div className="flex w-[262px] min-w-[262px] max-w-[262px] items-center gap-3 py-2 px-4">
                   <FallbackImg
@@ -350,6 +380,7 @@ const AssetVariantsConversion = observer(
         </div>
         <div className="mt-4 flex w-full">
           <Button
+            isLoading={isConverting || isLoadingQuotes}
             onClick={() => {
               convertSelectedAssets();
               // TODO: link up conversion local state logic
@@ -365,7 +396,9 @@ const AssetVariantsConversion = observer(
               //   remind me later ❌ (still has remaining alloyed assets)
               //     in modal, convert all invokes setDoNotShowAgain(false)
             }}
-            disabled={checkedVariants.length === 0 || isLoadingQuotes}
+            disabled={
+              checkedVariants.length === 0 || isLoadingQuotes || isConverting
+            }
             className="w-full"
           >
             {t("assetVariantsConversion.convertSelected")}
