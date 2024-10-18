@@ -29,6 +29,7 @@ export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.local.bridgeTransfer.getSupportedAssetsBalances.invalidate();
   apiUtils.edge.assets.getImmersiveBridgeAssets.invalidate();
   apiUtils.local.orderbooks.getAllOrdersSQS.invalidate();
+  apiUtils.local.portfolio.getAllocation.invalidate();
 }
 
 const EXCEEDS_1CT_NETWORK_FEE_LIMIT_TOAST_ID = "exceeds-1ct-network-fee-limit";

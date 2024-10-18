@@ -40,6 +40,7 @@ import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
+import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion-modal";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -583,6 +584,8 @@ export const AssetActionsCell: AssetCellComponent<{
 
   const actionOptions = getActionOptions(t, showConvertButton);
 
+  const { setIsOpen } = useAssetVariantsModalStore();
+
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
@@ -607,8 +610,7 @@ export const AssetActionsCell: AssetCellComponent<{
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // TODO - open conversion modal once clicked
-                alert("Convert clicked");
+                setIsOpen(true);
               }}
             >
               {t("portfolio.convert")}
