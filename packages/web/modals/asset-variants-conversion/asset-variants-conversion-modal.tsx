@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import { FormattedQuote } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -24,6 +25,20 @@ export const useAssetVariantsModalStore = create<{
   isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
+
+const getSlippage = (quote: FormattedQuote) => {
+  let slippage = new Dec(0.05);
+  // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
+  // so, let's remove slippage to convert more of the asset
+  if (
+    quote.split.length === 1 &&
+    quote.split[0].pools.length === 0 &&
+    quote.split[0].pools[0].type.startsWith("cosmwasm")
+  ) {
+    slippage = new Dec(0);
+  }
+  return slippage;
+};
 
 export const AssetVariantsConversionModal = () => {
   const { isOpen, setIsOpen } = useAssetVariantsModalStore();
@@ -136,7 +151,7 @@ const AssetVariantsConversion = observer(
           acc.push({ quote, checkedVariant: variant });
         }
         return acc;
-      }, [] as { quote: any; checkedVariant: AssetVariant }[]);
+      }, [] as { quote: FormattedQuote | undefined; checkedVariant: AssetVariant }[]);
 
       if (filteredDataQuotes.length === 0) {
         console.warn("No checked variants to convert");
@@ -146,19 +161,9 @@ const AssetVariantsConversion = observer(
       const allSwapMessages = [];
 
       for (const { quote, checkedVariant } of filteredDataQuotes) {
-        console.log("quote", quote);
         if (!quote) continue;
 
-        let slippage = new Dec(0.05);
-        // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
-        // so, let's remove slippage to convert more of the asset
-        if (
-          quote.split.length === 1 &&
-          quote.split[0].pools.length === 0 &&
-          quote.split[0].pools[0].type.startsWith("cosmwasm")
-        ) {
-          slippage = new Dec(0);
-        }
+        const slippage = getSlippage(quote);
 
         const swapMessagesConfig = {
           quote: quote,
@@ -192,7 +197,7 @@ const AssetVariantsConversion = observer(
             console.log("tx", tx);
           }
         )
-        .catch((e: any) => {
+        .catch((e: Error | unknown) => {
           console.error("Error converting variants", e);
         })
         .finally(() => {
