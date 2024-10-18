@@ -18,7 +18,7 @@ interface FormattedAllocation {
 
 export interface AssetVariant {
   asset: MinimalAsset | null;
-  // TODO - now that this is a CoinPretty, update the name
+  // TODO - now that this is a CoinPretty, combine asset and amount
   amount: CoinPretty;
   canonicalAsset: MinimalAsset | null;
 }
