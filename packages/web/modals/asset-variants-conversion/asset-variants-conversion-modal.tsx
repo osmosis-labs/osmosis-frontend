@@ -196,6 +196,10 @@ const AssetVariantsConversion = observer(
 
       console.log("allSwapMessages", allSwapMessages);
 
+      const signOptions = {
+        preferNoSetFee: true,
+      };
+
       accountStore
         .signAndBroadcast(
           accountStore.osmosisChainId,
@@ -203,7 +207,7 @@ const AssetVariantsConversion = observer(
           allSwapMessages,
           "Convert Asset Variants -",
           undefined,
-          undefined,
+          signOptions,
           (tx) => {
             console.log("tx", tx);
           }
