@@ -74,7 +74,7 @@ describe("isBitcoinAddressValid", () => {
   });
 
   it("should return true for a valid testnet Bitcoin address ", () => {
-    const validAddress = "tb1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq";
+    const validAddress = "tb1qq9epaj33z79vwz5zu9gw40j00yma7cm7g2ympl";
     expect(
       isBitcoinAddressValid({ address: validAddress, isTestnet: true })
     ).toBe(true);
