@@ -54,7 +54,7 @@ export const useHasAssetVariants = () => {
         // note - there is some local storage order issues when navigating between pages, so hasSeenToastThisSession is a failsafe
         if (doNotShowAgain === true || hasSeenToastThisSession) return;
 
-        const hasAssetsToConvert = data?.assetVariants?.length > 0 || false;
+        const hasAssetsToConvert = data?.assetVariants?.length > 0;
 
         const shouldDisplayToast =
           alloyedAssets && hasAssetsToConvert && !isMobile;

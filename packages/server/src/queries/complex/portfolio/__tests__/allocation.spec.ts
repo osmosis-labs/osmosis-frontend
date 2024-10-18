@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
 
 import { AssetLists as assetLists } from "../../../__tests__/mock-asset-lists";
@@ -352,17 +351,17 @@ describe("Has Asset Variants", () => {
       {
         denom:
           "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4", // OSMO
-        amount: new Dec(0.2),
+        amount: "2",
       },
       {
         denom:
           "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail", // SAIL
-        amount: new Dec(0.2),
+        amount: "2",
       },
       {
         denom:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5", // ETH.axl <- this is the variant
-        amount: new Dec(0.2),
+        amount: "2",
       },
     ];
     const assetListAssets: Asset[] = [
@@ -372,7 +371,6 @@ describe("Has Asset Variants", () => {
     ];
 
     const result = checkAssetVariants(
-      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists
@@ -385,12 +383,12 @@ describe("Has Asset Variants", () => {
       {
         denom:
           "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4", // OSMO
-        amount: new Dec(0.2),
+        amount: "2",
       },
       {
         denom:
           "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail", // SAIL
-        amount: new Dec(0.2),
+        amount: "2",
       },
     ];
     const assetListAssets: Asset[] = [
@@ -398,10 +396,7 @@ describe("Has Asset Variants", () => {
       ASSET_SAIL, // SAIL
     ];
 
-    // TODO - update tests
-    // @ts-ignore
     const result = checkAssetVariants(
-      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists
@@ -410,16 +405,13 @@ describe("Has Asset Variants", () => {
   });
 
   it("should return empty array when user has no asset variants", () => {
-    const userCoinMinimalDenoms: { denom: string; amount: Dec }[] = [];
+    const userCoinMinimalDenoms: { denom: string; amount: string }[] = [];
     const assetListAssets: Asset[] = [
       ASSET_OSMO, // OSMO
       ASSET_SAIL, // SAIL
     ];
 
-    // TODO - update tests
-    // @ts-ignore
     const result = checkAssetVariants(
-      // @ts-ignore - update these tests with CoinPretty
       userCoinMinimalDenoms,
       assetListAssets,
       assetLists

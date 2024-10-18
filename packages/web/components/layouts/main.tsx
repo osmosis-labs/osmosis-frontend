@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import React, { type FunctionComponent, type PropsWithChildren } from "react";
 
 import { IconButton } from "~/components/buttons/icon-button";
-import { AssetVariantsConversionModal } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
@@ -15,6 +14,7 @@ import {
   useHasAssetVariants,
   useWindowSize,
 } from "~/hooks";
+import { AssetVariantsConversionModal } from "~/modals/asset-variants-conversion-modal";
 
 export const MainLayout = observer(
   ({

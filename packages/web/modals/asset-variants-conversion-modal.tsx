@@ -7,7 +7,6 @@ import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { create } from "zustand";
 
-// Import useTranslation
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
@@ -24,8 +23,8 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  // isOpen: false,
-  isOpen: true,
+  isOpen: false,
+  // isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
@@ -83,8 +82,6 @@ const AssetVariantsConversion = observer(
       }
     );
 
-    // console.log("Asset Variants:", allocationData?.assetVariants);
-
     const prepareRouteInputs = useMemo(
       () =>
         allocationData?.assetVariants?.map((variant) => ({
@@ -94,8 +91,6 @@ const AssetVariantsConversion = observer(
         })) ?? [],
       [allocationData]
     );
-
-    console.log("prepareRouteInputs", prepareRouteInputs);
 
     const apiUtils = api.useUtils();
 
@@ -126,14 +121,6 @@ const AssetVariantsConversion = observer(
 
     const dataQuotes = quotes.map((result) => result.data);
 
-    // console.log("dataQuotes:", dataQuotes);
-
-    // const { data: routeData, isLoading: isRouteLoading } =
-    //   api.local.quoteRouter.routeTokensOutGivenIn.useQuery(prepareRouteInputs, {
-    //     enabled: !!allocationData,
-    //     refetchOnWindowFocus: false,
-    //   });
-
     const convertSelectedAssets = async () => {
       const allSwapMessages = [];
 
@@ -141,7 +128,6 @@ const AssetVariantsConversion = observer(
         console.log("quote", quote);
         if (!quote) continue;
 
-        // add slippage to out amount from quote
         let slippage = new Dec(0.05);
         // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
         // so, let's remove slippage to convert more of the asset
@@ -183,19 +169,6 @@ const AssetVariantsConversion = observer(
 
       console.log("allSwapMessages", allSwapMessages);
 
-      // const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
-      //   useOneClickTrading: shouldBeSignedWithOneClickTrading,
-      //   ...(featureFlags.swapToolSimulateFee && networkFee
-      //     ? {
-      //         preferNoSetFee: true,
-      //         fee: {
-      //           gas: networkFee.gasLimit,
-      //           amount: networkFee.amount,
-      //         },
-      //       }
-      //     : {}),
-      // };
-
       accountStore
         .signAndBroadcast(
           osmosisChainId,
@@ -212,23 +185,6 @@ const AssetVariantsConversion = observer(
           console.error("Error converting variants", e);
         });
     };
-
-    // TODO - verify the logic with amount of decimals is correct
-    // const totalSwapFee = useMemo(() => {
-    //   if (!routeData || checkedVariants.length === 0) return new Dec(0);
-
-    //   return checkedVariants.reduce(
-    //     (sum: Dec, variant: AssetVariant, index: number) => {
-    //       console.log("variant", variant);
-    //       const route = routeData[index];
-    //       if (route?.swapFee?.amount) {
-    //         return sum.add(route.swapFee.amount);
-    //       }
-    //       return sum;
-    //     },
-    //     new Dec(0)
-    //   );
-    // }, [routeData, checkedVariants]);
 
     // should close toast if screen size changes to mobile while shown
     useEffect(() => {
@@ -384,19 +340,14 @@ const AssetVariantsConversion = observer(
             ))
           )}
         </div>
-        {/* {!isRouteLoading && routeData && ( */}
         <div className="my-3 flex w-full flex-col gap-2">
           <div className="flex w-full">
             <span className="body2 flex flex-1 items-center text-osmoverse-300">
               Conversion fees
             </span>
-            <p className="body2 text-white-full">
-              TBD
-              {/* {new PricePretty(DEFAULT_VS_CURRENCY, totalSwapFee).toString()} */}
-            </p>
+            <p className="body2 text-white-full">TBD</p>
           </div>
         </div>
-        {/* )} */}
         <div className="mt-4 flex w-full">
           <Button
             onClick={() => {
@@ -413,11 +364,6 @@ const AssetVariantsConversion = observer(
               //     in modal, convert all invokes setDoNotShowAgain(true)
               //   remind me later ❌ (still has remaining alloyed assets)
               //     in modal, convert all invokes setDoNotShowAgain(false)
-
-              // TODO - remove this
-              // setTimeout(() => {
-              //   onRequestClose();
-              // }, 3000);
             }}
             disabled={checkedVariants.length === 0 || isLoadingQuotes}
             className="w-full"
