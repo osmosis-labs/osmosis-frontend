@@ -1,5 +1,6 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteType } from "@osmosis-labs/tx";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -40,7 +41,6 @@ import {
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";

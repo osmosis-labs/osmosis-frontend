@@ -1,6 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteType } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -41,7 +42,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
   useSwap,

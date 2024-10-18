@@ -1,7 +1,7 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
+import { makeExecuteCosmwasmContractMsg, QuoteType } from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
@@ -16,7 +16,7 @@ import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { QuoteType, useSwap, useSwapAssets } from "~/hooks/use-swap";
+import { useSwap, useSwapAssets } from "~/hooks/use-swap";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
