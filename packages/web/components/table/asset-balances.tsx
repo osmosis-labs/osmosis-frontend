@@ -40,7 +40,7 @@ import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
-import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion-modal";
+import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion/asset-variants-conversion-modal";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";

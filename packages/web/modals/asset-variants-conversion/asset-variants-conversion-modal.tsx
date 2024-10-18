@@ -12,10 +12,9 @@ import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { getSwapMessages, QuoteType } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
+import { AssetVariantRow } from "~/modals/asset-variants-conversion/asset-variant-row";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-import { AssetVariantRow } from "./asset-variants-conversion/asset-variant-row";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;

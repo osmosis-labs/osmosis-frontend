@@ -14,7 +14,7 @@ import { Button } from "~/components/buttons";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
-import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion-modal";
+import { useAssetVariantsModalStore } from "~/modals/asset-variants-conversion/asset-variants-conversion-modal";
 
 export type ToastOptions = Partial<ReactToastifyOptions> & {
   updateToastId?: Id;

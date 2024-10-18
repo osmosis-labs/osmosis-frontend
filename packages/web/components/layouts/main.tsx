@@ -14,7 +14,7 @@ import {
   useHasAssetVariants,
   useWindowSize,
 } from "~/hooks";
-import { AssetVariantsConversionModal } from "~/modals/asset-variants-conversion-modal";
+import { AssetVariantsConversionModal } from "~/modals/asset-variants-conversion/asset-variants-conversion-modal";
 
 export const MainLayout = observer(
   ({
