@@ -415,16 +415,20 @@ describe("SkipBridgeProvider", () => {
 
     const txData: BridgeTransactionRequest = {
       type: "cosmos",
-      msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-      msg: {
-        // mock data
-        source_channel: "channel-123",
-        source_port: "port-123",
-        sender: "osmo1ABC123",
-        receiver: "0xdef",
-        denom: "asset1",
-        amount: "1000",
-      },
+      msgs: [
+        {
+          typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+          value: {
+            // mock data
+            source_channel: "channel-123",
+            source_port: "port-123",
+            sender: "osmo1ABC123",
+            receiver: "0xdef",
+            denom: "asset1",
+            amount: "1000",
+          },
+        },
+      ],
     };
 
     (estimateGasFee as jest.Mock).mockResolvedValue({
