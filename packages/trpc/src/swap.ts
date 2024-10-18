@@ -5,6 +5,7 @@ import type {
 } from "@osmosis-labs/pools";
 import {
   captureIfError,
+  FormattedQuote,
   getAsset,
   getCosmwasmPoolTypeFromCodeId,
   getSidecarRouter,
@@ -49,7 +50,7 @@ export const swapRouter = createTRPCRouter({
           anyDenom: tokenOutDenom,
         });
 
-        return {
+        const response: FormattedQuote = {
           ...quote,
           split: makeDisplayableSplit(quote.split, ctx.assetLists),
           // supplementary data with display types
@@ -61,6 +62,8 @@ export const swapRouter = createTRPCRouter({
             : undefined,
           swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
         };
+
+        return response;
       }
     ),
   routeTokenInGivenOut: publicProcedure

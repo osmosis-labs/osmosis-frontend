@@ -14,6 +14,7 @@ import {
   useHasAssetVariants,
   useWindowSize,
 } from "~/hooks";
+import { AssetVariantsConversionModal } from "~/modals/asset-variants-conversion/asset-variants-conversion-modal";
 
 export const MainLayout = observer(
   ({
@@ -83,6 +84,7 @@ export const MainLayout = observer(
         <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
+        <AssetVariantsConversionModal />
       </React.Fragment>
     );
   }

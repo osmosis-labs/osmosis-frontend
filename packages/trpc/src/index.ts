@@ -13,4 +13,5 @@ export * from "./pools";
 export * from "./portfolio";
 export * from "./staking";
 export * from "./swap";
+export * from "./swap";
 export * from "./transactions";

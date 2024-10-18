@@ -588,6 +588,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
+      console.log("fee", fee);
+
       const txRaw = await this.sign({
         wallet,
         fee,
