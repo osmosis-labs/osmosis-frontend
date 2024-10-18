@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { BridgeAsset } from "@osmosis-labs/bridge";
 import { superjson } from "@osmosis-labs/server";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
@@ -27,7 +26,6 @@ import { api, RouterOutputs } from "~/utils/trpc";
 interface NomicPendingTransfersProps {
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
-  toAsset: BridgeAsset;
 }
 
 interface TransactionStore {
@@ -99,7 +97,6 @@ const successThreshold = 6;
 export const NomicPendingTransfers = ({
   fromChain,
   toChain,
-  toAsset,
 }: NomicPendingTransfersProps) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
@@ -192,7 +189,6 @@ export const NomicPendingTransfers = ({
                   depositData={deposit}
                   fromChain={fromChain}
                   toChain={toChain}
-                  toAsset={toAsset}
                 />
               </div>
               {isSuccess ? (
@@ -225,7 +221,6 @@ export const NomicPendingTransfers = ({
 interface TransactionDetailsModalProps {
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
-  toAsset: BridgeAsset;
   confirmationPercentage: number;
   depositData: RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number];
 }
@@ -234,7 +229,6 @@ const TransactionDetailsModal = ({
   confirmationPercentage,
   fromChain,
   toChain,
-  toAsset,
   depositData,
 }: TransactionDetailsModalProps) => {
   const { t } = useTranslation();
