@@ -273,7 +273,13 @@ const AssetVariantsConversion = observer(
             allocationData?.assetVariants?.map((variant) => (
               <div
                 key={variant?.asset?.coinMinimalDenom}
-                className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4 hover:bg-osmoverse-alpha-850" // Added cursor-pointer for better UX
+                className={classNames(
+                  "-mx-4 flex items-center justify-between gap-3 rounded-2xl p-4",
+                  {
+                    "cursor-pointer hover:bg-osmoverse-alpha-850":
+                      !isConverting,
+                  }
+                )}
                 onClick={() =>
                   !isConverting && handleVariantCheck(variant ?? {})
                 }
