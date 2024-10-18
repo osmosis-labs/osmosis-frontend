@@ -7,6 +7,7 @@ import {
 } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import { QuoteType } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -27,7 +28,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
-import { QuoteType, useSwap } from "~/hooks/use-swap";
+import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import {
   formatFiatPrice,

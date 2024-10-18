@@ -4,7 +4,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import { DecUtils } from "@keplr-wallet/unit";
-import { BridgeAsset } from "@osmosis-labs/bridge";
+import { Bridge, BridgeAsset } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -17,7 +17,6 @@ import { useMeasure } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { QuoteDetailRow } from "~/components/bridge/quote-detail";
-import { DepositAddressBridge } from "~/components/bridge/use-bridge-quotes";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { NomicPendingTransfers } from "~/components/nomic/nomic-pending-transfers";
 import { useScreenManager } from "~/components/screen-manager";
@@ -49,7 +48,7 @@ interface DepositAddressScreenProps {
   toChain: BridgeChainWithDisplayInfo;
   fromAsset: BridgeAsset;
   toAsset: BridgeAsset;
-  bridge: DepositAddressBridge;
+  bridge: Bridge;
 }
 
 export const DepositAddressScreen = observer(

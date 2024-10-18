@@ -944,7 +944,9 @@
     "addressExpired": "આ સરનામું સમાપ્ત થઈ ગયું છે. કૃપા કરીને એક નવી વિનંતી કરો.",
     "addressAboutToExpire": "આ સરનામું સમાપ્ત થવામાં છે. ભંડોળ ગુમાવવાનું ટાળવા માટે કૃપા કરીને નવા સરનામાની વિનંતી કરો.",
     "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
-    "transactionDetails": "વ્યવહારની વિગતો"
+    "transactionDetails": "વ્યવહારની વિગતો",
+    "continue": "ચાલુ રાખો",
+    "inputBitcoinAddress": "ઇનપુટ Bitcoin સરનામું"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

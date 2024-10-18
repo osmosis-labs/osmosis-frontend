@@ -944,7 +944,9 @@
     "addressExpired": "Diese Adresse ist abgelaufen. Bitte fordern Sie eine neue an.",
     "addressAboutToExpire": "Diese Adresse läuft bald ab. Bitte fordern Sie eine neue Adresse an, um Geldverluste zu vermeiden.",
     "createNewDepositAddress": "Neue Einzahlungsadresse erstellen",
-    "transactionDetails": "Details der Transaktion"
+    "transactionDetails": "Details der Transaktion",
+    "continue": "Weitermachen",
+    "inputBitcoinAddress": "Bitcoin-Adresse eingeben"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

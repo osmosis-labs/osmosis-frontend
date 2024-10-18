@@ -944,7 +944,9 @@
     "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
     "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",
     "createNewDepositAddress": "新しい入金アドレスを作成する",
-    "transactionDetails": "取引の詳細"
+    "transactionDetails": "取引の詳細",
+    "continue": "続く",
+    "inputBitcoinAddress": "Bitcoinアドレスを入力"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",

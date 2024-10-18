@@ -1,4 +1,5 @@
 import {
+  isBitcoinAddressValid,
   isCosmosAddressValid,
   isEvmAddressValid,
   isNil,
@@ -24,7 +25,7 @@ import {
 import { Button, GoBackButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import {
@@ -56,18 +57,26 @@ export const BridgeWalletSelectModal: FunctionComponent<
   const { t } = useTranslation();
   const [removeMinHeight, setRemoveMinHeight] = useState(false);
 
+  let modalTitle = "";
+  if (props.direction === "deposit") {
+    modalTitle = t("transfer.selectDepositWallet", {
+      network: props.fromChain.prettyName,
+    });
+  } else if (
+    props.direction === "withdraw" &&
+    props.toChain.chainType === "bitcoin"
+  ) {
+    modalTitle = t("transfer.inputBitcoinAddress");
+  } else {
+    modalTitle = t("transfer.selectWithdrawWallet", {
+      network: props.toChain.prettyName,
+    });
+  }
+
   return (
     <ModalBase
       title={
-        <div className="md:subtitle1 mx-auto text-h6 font-h6">
-          {props.direction === "deposit"
-            ? t("transfer.selectDepositWallet", {
-                network: props.fromChain.prettyName,
-              })
-            : t("transfer.selectWithdrawWallet", {
-                network: props.toChain.prettyName,
-              })}
-        </div>
+        <div className="md:subtitle1 mx-auto text-h6 font-h6">{modalTitle}</div>
       }
       className={classNames("!max-w-lg", { "min-h-[50vh]": !removeMinHeight })}
       {...props}
@@ -216,7 +225,13 @@ export const BridgeWalletSelectScreens: FunctionComponent<
     const transferWithSameWallet = fromChain.chainType === toChain.chainType;
 
     return (
-      <ScreenManager defaultScreen={WalletSelectScreens.WalletSelect}>
+      <ScreenManager
+        defaultScreen={
+          toChain.chainType === "bitcoin"
+            ? WalletSelectScreens.SendToAnotherAddress
+            : WalletSelectScreens.WalletSelect
+        }
+      >
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName={WalletSelectScreens.SendToAnotherAddress}>
@@ -505,14 +520,21 @@ const SendToAnotherAddressForm: FunctionComponent<
           id="withdraw-address-textarea"
           currentValue={address}
           onInput={(nextValue) => {
-            const isValid =
-              toChain.chainType === "cosmos"
-                ? isCosmosAddressValid({
-                    address: nextValue,
-                    bech32Prefix: toChain.bech32Prefix,
-                  })
-                : toChain.chainType === "evm" &&
-                  isEvmAddressValid({ address: nextValue });
+            let isValid = false;
+
+            if (toChain.chainType === "cosmos") {
+              isValid = isCosmosAddressValid({
+                address: nextValue,
+                bech32Prefix: toChain.bech32Prefix,
+              });
+            } else if (toChain.chainType === "evm") {
+              isValid = isEvmAddressValid({ address: nextValue });
+            } else if (toChain.chainType === "bitcoin") {
+              isValid = isBitcoinAddressValid({
+                address: nextValue,
+                isTestnet: IS_TESTNET,
+              });
+            }
 
             if (!nextValue) setIsInvalidAddress(false);
             else setIsInvalidAddress(!isValid);

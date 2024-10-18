@@ -944,7 +944,9 @@
     "addressExpired": "此地址已过期。请申请一个新地址。",
     "addressAboutToExpire": "此地址即将过期。请申请新地址以避免资金损失。",
     "createNewDepositAddress": "创建新的存款地址",
-    "transactionDetails": "交易详情"
+    "transactionDetails": "交易详情",
+    "continue": "继续",
+    "inputBitcoinAddress": "输入比特币地址"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

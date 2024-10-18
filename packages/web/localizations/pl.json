@@ -944,7 +944,9 @@
     "addressExpired": "Ten adres wygasł. Poproś o nowy.",
     "addressAboutToExpire": "Ten adres wkrótce wygaśnie. Poproś o nowy adres, aby uniknąć utraty środków.",
     "createNewDepositAddress": "Utwórz nowy adres depozytowy",
-    "transactionDetails": "Szczegóły transakcji"
+    "transactionDetails": "Szczegóły transakcji",
+    "continue": "Kontynuować",
+    "inputBitcoinAddress": "Wprowadź adres Bitcoin"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

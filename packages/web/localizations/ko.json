@@ -944,7 +944,9 @@
     "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",
     "addressAboutToExpire": "이 주소는 곧 만료됩니다. 자금 손실을 피하려면 새 주소를 요청하세요.",
     "createNewDepositAddress": "새로운 입금 주소 생성",
-    "transactionDetails": "거래내역"
+    "transactionDetails": "거래내역",
+    "continue": "계속하다",
+    "inputBitcoinAddress": "비트코인 주소를 입력하세요"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

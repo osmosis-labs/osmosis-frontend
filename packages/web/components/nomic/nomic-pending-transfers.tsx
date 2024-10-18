@@ -93,6 +93,7 @@ const useNomicTransactionsStore = create(
 );
 
 const successThreshold = 6;
+const refetchInterval = 30000;
 
 export const NomicPendingTransfers = ({
   fromChain,
@@ -121,7 +122,7 @@ export const NomicPendingTransfers = ({
     },
     {
       enabled: !!osmosisAddress,
-      refetchInterval: 30000,
+      refetchInterval,
       trpc: {
         context: {
           skipBatch: true,
@@ -154,7 +155,7 @@ export const NomicPendingTransfers = ({
             ) : (
               <div className="flex items-center gap-2">
                 <QueryRemainingTime
-                  refetchInterval={30000}
+                  refetchInterval={refetchInterval}
                   dataUpdatedAt={nomicDepositsDataUpdatedAt}
                 />
                 <p className="text-white-full">
@@ -179,9 +180,17 @@ export const NomicPendingTransfers = ({
             >
               <div className="flex w-full flex-col">
                 <p className="text-osmoverse-100">
-                  {deposit.fiatValue.toString()}{" "}
+                  {deposit.fiatValue
+                    ?.sub(deposit.networkFee.fiatValue ?? new Dec(0))
+                    .sub(deposit.providerFee.fiatValue ?? new Dec(0))
+                    .toString()}{" "}
                   <span className="text-osmoverse-300">
-                    ({deposit.amount.toString()})
+                    (
+                    {deposit.amount
+                      .sub(deposit.networkFee.amount)
+                      .sub(deposit.providerFee.amount)
+                      .toString()}
+                    )
                   </span>
                 </p>
                 <TransactionDetailsModal
@@ -394,8 +403,8 @@ const TransactionDetailsModal = ({
                 {depositData.amount
                   .sub(depositData.networkFee.amount)
                   .sub(depositData.providerFee.amount)
-                  .toString()}{" "}
-                nBTC)
+                  .toString()}
+                )
               </p>
             </div>
             <div className="flex items-center justify-between py-2">

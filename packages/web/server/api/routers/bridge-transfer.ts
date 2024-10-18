@@ -730,7 +730,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       });
 
       const btcMinimalDenom = IS_TESTNET
-        ? "ibc/DC0EB16363A369425F3E77AD52BAD3CF76AE966D27506058959515867B5B267D"
+        ? "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"
         : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
 
       const btcPrice = await getAssetPrice({
@@ -742,7 +742,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       return {
         pendingDeposits: pendingDeposits.map((deposit) => {
-          const amount = deposit.amount / 1e8;
+          const amount = new Dec(deposit.amount);
 
           return {
             ...deposit,
@@ -753,11 +753,15 @@ export const bridgeTransferRouter = createTRPCRouter({
                 coinMinimalDenom: deposit.networkFee.address,
                 coinGeckoId: deposit.networkFee.coinGeckoId,
               },
-              new Dec(deposit.networkFee.amount)
+              amount
             ),
             fiatValue: new PricePretty(
               DEFAULT_VS_CURRENCY,
-              btcPrice.mul(new Dec(amount))
+              btcPrice.mul(
+                amount.quo(
+                  DecUtils.getTenExponentN(deposit.networkFee.decimals)
+                )
+              )
             ),
             networkFee: {
               amount: new CoinPretty(
