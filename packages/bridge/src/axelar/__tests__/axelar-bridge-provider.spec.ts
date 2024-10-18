@@ -336,23 +336,27 @@ describe("AxelarBridgeProvider", () => {
 
     expect(transaction).toEqual({
       type: "cosmos",
-      msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-      msg: {
-        receiver: "0x1234567890abcdef1234567890abcdef12345678",
-        sender: "cosmos1...",
-        sourceChannel: "channel-208",
-        sourcePort: "transfer",
-        timeoutHeight: {
-          revisionHeight: "1000",
-          revisionNumber: "1",
+      msgs: [
+        {
+          typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+          value: {
+            receiver: "0x1234567890abcdef1234567890abcdef12345678",
+            sender: "cosmos1...",
+            sourceChannel: "channel-208",
+            sourcePort: "transfer",
+            timeoutHeight: {
+              revisionHeight: "1000",
+              revisionNumber: "1",
+            },
+            timeoutTimestamp: "0",
+            token: {
+              amount: "1000000",
+              denom:
+                "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+            },
+          },
         },
-        timeoutTimestamp: "0",
-        token: {
-          amount: "1000000",
-          denom:
-            "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
-        },
-      },
+      ],
     });
   });
 
@@ -527,6 +531,7 @@ describe("AxelarBridgeProvider", () => {
           coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
+          transferTypes: ["quote"],
         },
       ]);
     });
@@ -555,6 +560,7 @@ describe("AxelarBridgeProvider", () => {
           coinGeckoId: "weth",
           decimals: 18,
           denom: "WETH",
+          transferTypes: ["quote"],
         },
         {
           // this is the denom accepted by Axelar APIs
@@ -565,6 +571,7 @@ describe("AxelarBridgeProvider", () => {
           coinGeckoId: "weth",
           decimals: 18,
           denom: "ETH",
+          transferTypes: ["quote"],
         },
       ]);
     });

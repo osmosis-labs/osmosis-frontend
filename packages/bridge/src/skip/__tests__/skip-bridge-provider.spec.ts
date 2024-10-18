@@ -162,25 +162,29 @@ describe("SkipBridgeProvider", () => {
       estimatedTime: 30,
       transactionRequest: {
         type: "cosmos",
-        msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-        msg: {
-          sourcePort: "transfer",
-          sourceChannel: "channel-208",
-          token: {
-            denom:
-              "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
-            amount: "10000000000000000000",
+        msgs: [
+          {
+            typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+            value: {
+              sourcePort: "transfer",
+              sourceChannel: "channel-208",
+              token: {
+                denom:
+                  "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+                amount: "10000000000000000000",
+              },
+              sender: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+              receiver:
+                "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+              timeoutHeight: {
+                revisionNumber: "1",
+                revisionHeight: "1000",
+              },
+              timeoutTimestamp: "0",
+              memo: '{"destination_chain":"Ethereum","destination_address":"0xD397883c12b71ea39e0d9f6755030205f31A1c96","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,120,99,236,5,177,35,136,92,118,9,176,92,53,223,119,127,63,24,2,88],"type":2,"fee":{"amount":"7725420487422623","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
+            },
           },
-          sender: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
-          receiver:
-            "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
-          timeoutHeight: {
-            revisionNumber: "1",
-            revisionHeight: "1000",
-          },
-          timeoutTimestamp: "0",
-          memo: '{"destination_chain":"Ethereum","destination_address":"0xD397883c12b71ea39e0d9f6755030205f31A1c96","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,120,99,236,5,177,35,136,92,118,9,176,92,53,223,119,127,63,24,2,88],"type":2,"fee":{"amount":"7725420487422623","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
-        },
+        ],
         gasFee: {
           amount: "1232",
           denom: "uosmo",
@@ -600,6 +604,7 @@ describe("SkipBridgeProvider", () => {
           coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
+          transferTypes: ["quote"],
         },
         {
           address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
@@ -608,6 +613,7 @@ describe("SkipBridgeProvider", () => {
           coinGeckoId: "usd-coin",
           decimals: 6,
           denom: "USDC",
+          transferTypes: ["quote"],
         },
         {
           address:
@@ -617,6 +623,7 @@ describe("SkipBridgeProvider", () => {
           coinGeckoId: "usd-coin",
           denom: "USDC",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           address:
@@ -626,6 +633,7 @@ describe("SkipBridgeProvider", () => {
           coinGeckoId: "usd-coin",
           denom: "USDC",
           decimals: 6,
+          transferTypes: ["quote"],
         },
       ]);
     });
@@ -653,6 +661,7 @@ describe("SkipBridgeProvider", () => {
         coinGeckoId: "usd-coin",
         decimals: 6,
         denom: "USDC",
+        transferTypes: ["quote"],
       });
     });
 
@@ -679,6 +688,7 @@ describe("SkipBridgeProvider", () => {
         coinGeckoId: "usd-coin",
         decimals: 6,
         denom: "USDC",
+        transferTypes: ["quote"],
       });
     });
   });

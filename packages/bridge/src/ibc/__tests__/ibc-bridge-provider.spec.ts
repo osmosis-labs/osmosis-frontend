@@ -281,6 +281,7 @@ describe("IbcBridgeProvider", () => {
           denom: "ATOM",
           address: "uatom",
           decimals: 6,
+          transferTypes: ["quote"],
         },
       ]);
     });

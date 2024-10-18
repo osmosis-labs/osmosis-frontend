@@ -254,25 +254,29 @@ describe("SquidBridgeProvider", () => {
       },
       transactionRequest: {
         type: "cosmos",
-        msgTypeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
-        msg: {
-          memo: '{"destination_chain":"ethereum","destination_address":"0xce16F69375520ab01377ce7B88f5BA8C48F8D666","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,108,81,91,65,191,190,224,170,117,79,48,96,152,186,0,81,82,201,40,185,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,68,169,5,156,187,0,0,0,0,0,0,0,0,0,0,0,0,108,81,91,65,191,190,224,170,117,79,48,96,152,186,0,81,82,201,40,185,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],"type":2,"fee":{"amount":"4179305998974229","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
-          receiver:
-            "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
-          sender: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
-          sourceChannel: "channel-208",
-          sourcePort: "transfer",
-          timeoutHeight: {
-            revisionHeight: "1000",
-            revisionNumber: "1",
+        msgs: [
+          {
+            typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
+            value: {
+              memo: '{"destination_chain":"ethereum","destination_address":"0xce16F69375520ab01377ce7B88f5BA8C48F8D666","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,108,81,91,65,191,190,224,170,117,79,48,96,152,186,0,81,82,201,40,185,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,192,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,32,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,160,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,32,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,68,169,5,156,187,0,0,0,0,0,0,0,0,0,0,0,0,108,81,91,65,191,190,224,170,117,79,48,96,152,186,0,81,82,201,40,185,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,64,0,0,0,0,0,0,0,0,0,0,0,0,192,42,170,57,178,35,254,141,10,14,92,79,39,234,217,8,60,117,108,194,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],"type":2,"fee":{"amount":"4179305998974229","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
+              receiver:
+                "axelar1dv4u5k73pzqrxlzujxg3qp8kvc3pje7jtdvu72npnt5zhq05ejcsn5qme5",
+              sender: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+              sourceChannel: "channel-208",
+              sourcePort: "transfer",
+              timeoutHeight: {
+                revisionHeight: "1000",
+                revisionNumber: "1",
+              },
+              timeoutTimestamp: "1718987965889999872",
+              token: {
+                amount: "1000000000000000000000",
+                denom:
+                  "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+              },
+            },
           },
-          timeoutTimestamp: "1718987965889999872",
-          token: {
-            amount: "1000000000000000000000",
-            denom:
-              "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
-          },
-        },
+        ],
       },
     });
   });
@@ -2895,6 +2899,7 @@ describe("SquidBridgeProvider", () => {
           address: "uusdc",
           denom: "USDC",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 1,
@@ -2903,6 +2908,7 @@ describe("SquidBridgeProvider", () => {
           address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
           denom: "USDC",
           decimals: 6,
+          transferTypes: ["quote"],
         },
       ]);
     });
@@ -2931,6 +2937,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "uusdc",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 1,
@@ -2940,6 +2947,7 @@ describe("SquidBridgeProvider", () => {
           denom: "USDC",
           address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "agoric-3",
@@ -2950,6 +2958,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/295548A78785A1007F232DE286149A6FF512F180AF5657780FC89C009E2C348F",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 42161,
@@ -2959,6 +2968,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "archway-1",
@@ -2969,6 +2979,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/B9E4FD154C92D3A23BEA029906C4C5FF2FE74CB7E3A058290B77197A263CF88B",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "mantle-1",
@@ -2979,6 +2990,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/616E26A85AD20A3DDEAEBDDE7262E3BA9356C557BC15CACEA86768D7D51FA703",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 43114,
@@ -2988,6 +3000,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xfaB550568C688d5D8A52C7d794cb93Edc26eC0eC",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 8453,
@@ -2997,6 +3010,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 56,
@@ -3006,6 +3020,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0x4268B8F0B87b6Eae5d897996E6b845ddbD99Adf3",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 81457,
@@ -3015,6 +3030,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "carbon-1",
@@ -3025,6 +3041,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/7C0807A56073C4A27B0DE1C21BA3EB75DF75FD763F4AD37BC159917FC01145F0",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 42220,
@@ -3034,6 +3051,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "comdex-1",
@@ -3044,6 +3062,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/E1616E7C19EA474C565737709A628D6F8A23FF9D3E9A7A6871306CF5E0A5341E",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "crescent-1",
@@ -3054,6 +3073,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/BFF0D3805B50D93E2FA5C0B2DDF7E0B30A631076CD80BC12A48C0E95404B4A41",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "dymension_1100-1",
@@ -3064,6 +3084,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/BFAAB7870A9AAABF64A7366DAAA0B8E5065EAA1FCE762F45677DC24BE796EF65",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "evmos_9001-2",
@@ -3073,6 +3094,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "uusdc",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 250,
@@ -3082,6 +3104,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0x1B6382DBDEa11d97f24495C9A90b7c88469134a4",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 314,
@@ -3091,6 +3114,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 252,
@@ -3100,6 +3124,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 13371,
@@ -3109,6 +3134,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "injective-1",
@@ -3119,6 +3145,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/7E1AF94AD246BE522892751046F0C959B768642E5671CC3742264068D49553C0",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "juno-1",
@@ -3129,6 +3156,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/EAC38D55372F38F1AFD68DF7FE9EF762DCF69F26520643CF3F9D292A738D8034",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 2222,
@@ -3138,6 +3166,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "kaiyo-1",
@@ -3148,6 +3177,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/295548A78785A1007F232DE286149A6FF512F180AF5657780FC89C009E2C348F",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 59144,
@@ -3157,6 +3187,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 5000,
@@ -3166,6 +3197,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 1284,
@@ -3175,6 +3207,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xCa01a1D0993565291051daFF390892518ACfAD3A",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "neutron-1",
@@ -3185,6 +3218,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 10,
@@ -3194,6 +3228,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 137,
@@ -3203,6 +3238,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0x750e4C4984a9e0f12978eA6742Bc1c5D248f40ed",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "regen-1",
@@ -3213,6 +3249,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/334740505537E9894A64E8561030695016481830D7B36E6A9B6D13C608B55653",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: 534352,
@@ -3222,6 +3259,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "0xEB466342C4d449BC9f53A865D5Cb90586f405215",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "secret-4",
@@ -3231,6 +3269,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlUSDC",
           address: "secret1vkq022x4q8t8kx9de3r84u669l65xnwf2lg3e6",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "stargaze-1",
@@ -3241,6 +3280,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/96274e25174ee93314d8b5636d2d2f70963e207c22f643ec41949a3cbeda4c72",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "columbus-5",
@@ -3251,6 +3291,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/E1E3674A0E4E1EF9C69646F9AF8D9497173821826074622D831BAB73CCB99A2D",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "phoenix-1",
@@ -3261,6 +3302,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/B3504E092456BA618CC28AC671A71FB08C6CA0FD0BE7C8A5B5A3E2DD933CC9E4",
           decimals: 6,
+          transferTypes: ["quote"],
         },
         {
           chainId: "umee-1",
@@ -3271,6 +3313,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/49788C29CD84E08D25CA7BE960BC1F61E88FEFC6333F58557D236D693398466A",
           decimals: 6,
+          transferTypes: ["quote"],
         },
       ]);
     });
@@ -3299,6 +3342,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlWETH",
           address: "weth-wei",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 1,
@@ -3308,6 +3352,7 @@ describe("SquidBridgeProvider", () => {
           denom: "WETH",
           address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 1,
@@ -3317,6 +3362,7 @@ describe("SquidBridgeProvider", () => {
           denom: "ETH",
           address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "agoric-3",
@@ -3327,6 +3373,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/1B38805B1C75352B28169284F96DF56BDEBD9E8FAC005BDCC8CF0378C82AA8E7",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 42161,
@@ -3336,6 +3383,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "archway-1",
@@ -3346,6 +3394,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/13C5990F84FA5D472E1F8BB1BAAEA8774DA5F24128EC02B119107AD21FB52A61",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "mantle-1",
@@ -3356,6 +3405,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/3EFE89848528B4A5665D0102DB818C6B19E04E17455197E92BECC3C41A7F7D78",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 81457,
@@ -3365,6 +3415,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 42220,
@@ -3374,6 +3425,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "comdex-1",
@@ -3384,6 +3436,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/81C3A46287D7664A8FD19843AC8D0CFD6C284EF1F750C661C48B3544277B1B29",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "crescent-1",
@@ -3394,6 +3447,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/F1806958CA98757B91C3FA1573ECECD24F6FA3804F074A6977658914A49E65A3",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "dymension_1100-1",
@@ -3404,6 +3458,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/E3AB0DFDE9E782262B770C32DF94AC2A92B93DC4825376D6F6C874D3C877864E",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "evmos_9001-2",
@@ -3413,6 +3468,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlWETH",
           address: "weth-wei",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 250,
@@ -3422,6 +3478,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xfe7eDa5F2c56160d406869A8aA4B2F365d544C7B",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 314,
@@ -3431,6 +3488,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 252,
@@ -3440,6 +3498,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "injective-1",
@@ -3450,6 +3509,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/65A6973F7A4013335AE5FFE623FE019A78A1FEEE9B8982985099978837D764A7",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "juno-1",
@@ -3460,6 +3520,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/95A45A81521EAFDBEDAEEB6DA975C02E55B414C95AD3CE50709272366A90CA17",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 2222,
@@ -3469,6 +3530,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "kaiyo-1",
@@ -3479,6 +3541,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/1B38805B1C75352B28169284F96DF56BDEBD9E8FAC005BDCC8CF0378C82AA8E7",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 59144,
@@ -3488,6 +3551,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 5000,
@@ -3497,6 +3561,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "neutron-1",
@@ -3507,6 +3572,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/A585C2D15DCD3B010849B453A2CFCB5E213208A5AB665691792684C26274304D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "pirin-1",
@@ -3517,6 +3583,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/A7C4A3FB19E88ABE60416125F9189DA680800F4CDD14E3C10C874E022BEFF04C",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "regen-1",
@@ -3527,6 +3594,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/62B27C470C859CBCB57DC12FCBBD357DD44CAD673362B47503FAA77523ABA028",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: 534352,
@@ -3536,6 +3604,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "0xb829b68f57CC546dA7E5806A929e53bE32a4625D",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "secret-4",
@@ -3545,6 +3614,7 @@ describe("SquidBridgeProvider", () => {
           denom: "axlETH",
           address: "secret139qfh3nmuzfgwsx2npnmnjl4hrvj3xq5rmq8a0",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "columbus-5",
@@ -3555,6 +3625,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/9B68CC79EFF12D25AF712EB805C5062B8F97B2CCE5F3FE55B107EE03095514A3",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "phoenix-1",
@@ -3565,6 +3636,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/BC8A77AFBD872FDC32A348D3FB10CC09277C266CFE52081DE341C7EC6752E674",
           decimals: 18,
+          transferTypes: ["quote"],
         },
         {
           chainId: "umee-1",
@@ -3575,6 +3647,7 @@ describe("SquidBridgeProvider", () => {
           address:
             "ibc/04CE51E6E02243E565AE676DD60336E48D455F8AAD0611FA0299A22FDAC448D6",
           decimals: 18,
+          transferTypes: ["quote"],
         },
       ]);
     });
