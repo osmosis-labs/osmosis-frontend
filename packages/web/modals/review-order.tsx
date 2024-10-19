@@ -7,7 +7,7 @@ import {
 } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
-import { QuoteType } from "@osmosis-labs/tx";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -61,7 +61,7 @@ interface ReviewOrderProps {
   fromAsset?: ReturnType<typeof useSwap>["fromAsset"];
   toAsset?: ReturnType<typeof useSwap>["toAsset"];
   page?: EventPage;
-  quoteType?: QuoteType;
+  quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
 }
 

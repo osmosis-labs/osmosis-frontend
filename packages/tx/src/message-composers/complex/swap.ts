@@ -30,7 +30,7 @@ export type SwapTxRouteInGivenOut = {
   tokenOutAmount: string;
 };
 
-export type QuoteType = "out-given-in" | "in-given-out";
+export type QuoteDirection = "out-given-in" | "in-given-out";
 
 type QuoteOutGivenIn = Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>;
 type QuoteInGivenOut = Awaited<ReturnType<typeof getRouteTokenInGivenOut>>;
@@ -54,7 +54,7 @@ export function getSwapTxParameters({
   tokenOutCoinMinimalDenom: string;
   tokenInCoinDecimals: number;
   tokenOutCoinDecimals: number;
-  quoteType: QuoteType;
+  quoteType: QuoteDirection;
 }) {
   if (isNil(quote)) {
     throw new Error(
@@ -167,7 +167,7 @@ export async function getSwapMessages({
   tokenOutCoinDecimals: number;
   tokenInCoinDecimals: number;
   userOsmoAddress: string | undefined;
-  quoteType?: QuoteType;
+  quoteType?: QuoteDirection;
 }) {
   if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
 

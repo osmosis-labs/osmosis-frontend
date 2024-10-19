@@ -1,7 +1,10 @@
 import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { makeExecuteCosmwasmContractMsg, QuoteType } from "@osmosis-labs/tx";
+import {
+  makeExecuteCosmwasmContractMsg,
+  QuoteDirection,
+} from "@osmosis-labs/tx";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
@@ -44,7 +47,7 @@ export interface UsePlaceLimitParams {
   type: "limit" | "market";
   page: EventPage;
   maxSlippage?: Dec;
-  quoteType?: QuoteType;
+  quoteType?: QuoteDirection;
 }
 
 export type PlaceLimitState = ReturnType<typeof usePlaceLimit>;

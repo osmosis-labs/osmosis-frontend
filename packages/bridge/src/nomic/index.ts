@@ -37,8 +37,8 @@ export class NomicBridgeProvider implements BridgeProvider {
   static readonly ID = "Nomic";
   readonly providerName = NomicBridgeProvider.ID;
 
-  relayers: string[];
-  nBTCMinimalDenom: string;
+  readonly relayers: string[];
+  readonly nBTCMinimalDenom: string;
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {

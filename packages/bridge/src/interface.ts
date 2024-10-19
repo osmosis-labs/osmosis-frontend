@@ -224,7 +224,11 @@ export const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
-// TODO: Add comment explaining this
+/**
+ * Specifies the types of transfers supported by the asset.
+ * This helps the frontend determine which assets can be quoted,
+ * used for deposit addresses, or have external URLs.
+ */
 export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
   transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
 });

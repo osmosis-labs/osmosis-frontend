@@ -54,6 +54,7 @@ export async function getGasAsset({
   }
 }
 
+/** Fetches generated chains from Osmosis assetlists repo. */
 export function getChains({
   cache,
   chainList,

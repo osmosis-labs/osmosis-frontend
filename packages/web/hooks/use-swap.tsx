@@ -16,7 +16,7 @@ import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   getSwapMessages,
   getSwapTxParameters,
-  QuoteType,
+  QuoteDirection,
   SwapTxRouteInGivenOut,
   SwapTxRouteOutGivenIn,
 } from "@osmosis-labs/tx";
@@ -74,7 +74,7 @@ type SwapOptions = {
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
-  quoteType?: QuoteType;
+  quoteType?: QuoteDirection;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -1232,7 +1232,7 @@ function useQueryRouterBestQuote(
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
-  quoteType: QuoteType = "out-given-in"
+  quoteType: QuoteDirection = "out-given-in"
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -1448,7 +1448,7 @@ export function useAmountWithSlippage({
 }: {
   swapState: SwapState;
   slippageConfig: ObservableSlippageConfig;
-  quoteType: QuoteType;
+  quoteType: QuoteDirection;
 }) {
   const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
     if (quoteType === "out-given-in") {
@@ -1525,7 +1525,7 @@ export function useDynamicSlippageConfig({
 }: {
   slippageConfig: ObservableSlippageConfig;
   feeError?: Error | null;
-  quoteType: QuoteType;
+  quoteType: QuoteDirection;
 }) {
   useEffect(() => {
     if (feeError) {
