@@ -391,6 +391,16 @@
       "defaultParameters": "Default settings are set to 1 hour with a $5,000 USD Loss Protection limit.",
       "changeButton": "Edit settings"
     },
+    "reviewSwapModal": {
+      "title": "Start 1-Click Trading",
+      "subtitle": "Quicker, easier trading",
+      "limitInfoLabel": "1-Click Trading limit",
+      "details": "{time} session with a {limit} USD loss protection limit · "
+    },
+    "tooltipExceeded": {
+      "title": "Exceeds current loss-protection limit",
+      "description": "You will have to manually approve this transaction in your wallet."
+    },
     "floatingBanner": {
       "newPill": "New",
       "title": "1-Click Trading",
@@ -1244,6 +1254,9 @@
       "content": "This is the difference in value between what you pay and receive. Positive numbers mean the amount you're buying is worth more, while negative numbers mean the amount you're selling is worth more."
     }
   },
+  "edit": "Edit",
+  "change": "Change",
+  "exceeded": "Exceeded",
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least",
   "payAtMost": "Sell at most",
