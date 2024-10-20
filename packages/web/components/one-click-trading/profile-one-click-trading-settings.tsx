@@ -54,13 +54,15 @@ export const ProfileOneClickTradingSettings = ({
     reset: reset1CTParams,
   } = useOneClickTradingParams({
     oneClickTradingInfo,
-    defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
+    defaultIsOneClickEnabled: !!isOneClickTradingEnabled,
+    scopeKey: "profile-one-click-trading-settings",
   });
 
   return (
     <OneClickTradingSettings
       transaction1CTParams={transaction1CTParams}
       setTransaction1CTParams={setTransaction1CTParams}
+      resetTransaction1CTParams={reset1CTParams}
       isLoading={
         isLoading1CTParams ||
         (shouldFetchSessionAuthenticator

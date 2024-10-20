@@ -1,3 +1,5 @@
+import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import type { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
@@ -7,6 +9,7 @@ import { useAsync } from "react-use";
 import { useTranslation } from "~/hooks/language";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 /**
  * This hook manages and provides information about the one-click trading session.
@@ -48,12 +51,18 @@ export const useOneClickTradingSession = ({
     }
 
     return { info, isEnabled, isExpired };
-  }, [
-    accountStore,
-    isExpired,
-    accountStore.oneClickTradingInfo,
-    account?.address,
-  ]);
+  }, [accountStore, isExpired, account?.address]);
+
+  const { data: amountSpentData, isLoading: amountSpentIsLoading } =
+    api.local.oneClickTrading.getAmountSpent.useQuery(
+      {
+        authenticatorId: value?.info?.authenticatorId!,
+        userOsmoAddress: value?.info?.userOsmoAddress!,
+      },
+      {
+        enabled: !!value?.info && value.isEnabled,
+      }
+    );
 
   // Set a timeout to update the isExpired state
   useEffect(() => {
@@ -73,6 +82,22 @@ export const useOneClickTradingSession = ({
 
     return () => clearTimeout(timeoutId);
   }, [isExpired, t, value?.info, onExpire]);
+
+  const getSpendingLimitRemaining = useCallback(() => {
+    const oneClickTradingInfo = value?.info;
+    if (!oneClickTradingInfo || !amountSpentData) {
+      return new PricePretty(DEFAULT_VS_CURRENCY, 0);
+    }
+
+    const spendLimit = new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      new Dec(oneClickTradingInfo.spendLimit.amount).quo(
+        DecUtils.getTenExponentN(oneClickTradingInfo.spendLimit.decimals)
+      )
+    );
+
+    return spendLimit.sub(amountSpentData.amountSpent);
+  }, [value?.info, amountSpentData]);
 
   const getTimeRemaining = useCallback(() => {
     const oneClickTradingInfo = value?.info;
@@ -96,12 +121,14 @@ export const useOneClickTradingSession = ({
 
   return {
     oneClickTradingInfo: featureFlags.oneClickTrading ? value?.info : undefined,
+    amountSpentData: featureFlags.oneClickTrading ? amountSpentData : undefined,
     isOneClickTradingEnabled: featureFlags.oneClickTrading
       ? value?.isEnabled
       : false,
     isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
     getTimeRemaining,
+    getSpendingLimitRemaining,
     getTotalSessionTime,
-    isLoadingInfo: loading,
+    isLoadingInfo: loading || amountSpentIsLoading,
   };
 };

@@ -8,7 +8,6 @@ import React, {
   Dispatch,
   FunctionComponent,
   SetStateAction,
-  useEffect,
   useState,
 } from "react";
 import { useAsync } from "react-use";
@@ -52,13 +51,15 @@ interface OneClickTradingSettingsProps {
   setTransaction1CTParams: Dispatch<
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
+  resetTransaction1CTParams?: () => void;
   onStartTrading: () => void;
   onEndSession?: () => void;
-  onClose: () => void;
+  onClose?: () => void;
   isLoading?: boolean;
   isSendingTx?: boolean;
   isEndingSession?: boolean;
   hideBackButton?: boolean;
+  showCreationButton?: boolean;
   hasExistingSession?: boolean;
 }
 
@@ -105,13 +106,18 @@ export const OneClickTradingSettings = ({
   hasExistingSession,
   onEndSession,
   onClose,
+  resetTransaction1CTParams,
+  showCreationButton = true,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
     Array<"spendLimit" | "resetPeriod" | "sessionPeriod">
   >([]);
-  const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
-    useState<OneClickTradingTransactionParams>();
+
+  const handleOnStartSession = () => {
+    onStartTrading();
+    setChanges([]);
+  };
 
   const { chainStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
@@ -144,11 +150,6 @@ export const OneClickTradingSettings = ({
       enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
     });
 
-  useEffect(() => {
-    if (!transaction1CTParams || initialTransaction1CTParams) return;
-    setInitialTransaction1CTParams(transaction1CTParams);
-  }, [initialTransaction1CTParams, transaction1CTParams]);
-
   const {
     isOpen: isDiscardDialogOpen,
     onOpen: onOpenDiscardDialog,
@@ -172,7 +173,7 @@ export const OneClickTradingSettings = ({
       const nextParams = runIfFn(newParamsOrFn, prevParams);
       setChanges(
         compare1CTTransactionParams({
-          prevParams: initialTransaction1CTParams!,
+          prevParams: prevParams!,
           nextParams: nextParams!,
         })
       );
@@ -185,12 +186,10 @@ export const OneClickTradingSettings = ({
     !transaction1CTParams?.isOneClickEnabled || isSendingTx || isLoading;
 
   const remainingSpendLimit =
-    initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
+    transaction1CTParams?.spendLimit && amountSpentData?.amountSpent
       ? `${formatSpendLimit(
-          initialTransaction1CTParams.spendLimit.sub(
-            amountSpentData.amountSpent
-          )
-        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+          transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
+        )} / ${formatSpendLimit(transaction1CTParams.spendLimit)}`
       : undefined;
 
   return (
@@ -199,7 +198,9 @@ export const OneClickTradingSettings = ({
         isOpen={isDiscardDialogOpen}
         onCancel={onCloseDiscardDialog}
         onDiscard={() => {
-          setTransaction1CTParams(initialTransaction1CTParams);
+          onCloseDiscardDialog();
+          setChanges([]);
+          resetTransaction1CTParams?.();
           onGoBack();
         }}
       />
@@ -211,7 +212,7 @@ export const OneClickTradingSettings = ({
       {onClose && (
         <ModalCloseButton
           onClick={() => {
-            if (changes.length > 0) {
+            if (isOneClickTradingEnabled && changes.length > 0) {
               return openCloseConfirmDialog();
             }
 
@@ -228,7 +229,7 @@ export const OneClickTradingSettings = ({
                   <GoBackButton
                     className="absolute left-7 top-7"
                     onClick={() => {
-                      if (changes.length > 0) {
+                      if (isOneClickTradingEnabled && changes.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
@@ -384,7 +385,7 @@ export const OneClickTradingSettings = ({
                     <div className="px-8">
                       <Button
                         className="w-full text-h6 font-h6"
-                        onClick={onStartTrading}
+                        onClick={handleOnStartSession}
                         isLoading={isSendingTx || isEndingSession}
                       >
                         {t("oneClickTrading.settings.editSessionButton")}
@@ -392,12 +393,13 @@ export const OneClickTradingSettings = ({
                     </div>
                   )}
 
-                {!hasExistingSession &&
+                {showCreationButton &&
+                  !hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button
                         className="w-full text-h6 font-h6"
-                        onClick={onStartTrading}
+                        onClick={handleOnStartSession}
                         isLoading={isSendingTx}
                       >
                         {t("oneClickTrading.settings.startButton")}
