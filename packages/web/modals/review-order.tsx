@@ -10,11 +10,17 @@ import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { OneClickTradingCallToAction } from "~/components/one-click-trading/one-click-trading-call-to-action";
+import {
+  OneClickTradingInReviewModal,
+  OneClickTradingInReviewModalRef,
+} from "~/components/one-click-trading/one-click-trading-in-review-modal";
+import { OneClickTradingLimitRemaining } from "~/components/one-click-trading/one-click-trading-limit-remaining";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -22,6 +28,7 @@ import { EventName, EventPage } from "~/config/analytics-events";
 import {
   Breakpoint,
   useAmplitudeAnalytics,
+  useOneClickTradingParams,
   useOneClickTradingSession,
   useTranslation,
   useWindowSize,
@@ -96,13 +103,30 @@ export function ReviewOrder({
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
+  const [show1CTSettings, setShow1CTSettings] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
-  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+  const oneClickTradingRef = useRef<OneClickTradingInReviewModalRef>(null);
+  const {
+    isOneClickTradingEnabled,
+    oneClickTradingInfo,
+    getSpendingLimitRemaining,
+  } = useOneClickTradingSession();
   const [orderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
+
+  const {
+    transaction1CTParams,
+    setTransaction1CTParams,
+    isLoading: isLoading1CTParams,
+    spendLimitTokenDecimals,
+    reset: reset1CTParams,
+  } = useOneClickTradingParams({
+    oneClickTradingInfo,
+    defaultIsOneClickEnabled: !!isOneClickTradingEnabled,
+  });
 
   const isManualSlippageTooHigh =
     (!!manualSlippage && parseInt(manualSlippage) > 1) ||
@@ -110,6 +134,15 @@ export function ReviewOrder({
       !!slippageConfig &&
       slippageConfig.slippage.toDec().gt(new Dec(0.01)));
   const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+  const isSpendingLimitExceeded = useMemo(
+    () =>
+      isOneClickTradingEnabled
+        ? getSpendingLimitRemaining()
+            .toDec()
+            .lte(inAmountFiat?.toDec() || new Dec(0))
+        : false,
+    [getSpendingLimitRemaining, inAmountFiat, isOneClickTradingEnabled]
+  );
 
   //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
@@ -167,6 +200,12 @@ export function ReviewOrder({
     [slippageConfig]
   );
 
+  const handleOnClose = useCallback(() => {
+    setShow1CTSettings(false);
+    reset1CTParams();
+    onClose();
+  }, []);
+
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
       limitSetPriceLock(true);
@@ -212,15 +251,37 @@ export function ReviewOrder({
   return (
     <ModalBase
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={handleOnClose}
       hideCloseButton
       className="w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
     >
-      <div className="flex h-auto w-full flex-col bg-osmoverse-850">
+      <div
+        className={classNames(
+          "min-h-fit py-[2.5rem]",
+          show1CTSettings ? "block" : "hidden"
+        )}
+      >
+        <OneClickTradingInReviewModal
+          ref={oneClickTradingRef}
+          transaction1CTParams={transaction1CTParams}
+          setTransaction1CTParams={setTransaction1CTParams}
+          spendLimitTokenDecimals={spendLimitTokenDecimals}
+          isLoading1CTParams={isLoading1CTParams}
+          resetTransaction1CTParams={reset1CTParams}
+          onGoBack={() => setShow1CTSettings(false)}
+        />
+      </div>
+
+      <div
+        className={classNames(
+          "h-auto w-full flex-col bg-osmoverse-850",
+          show1CTSettings ? "hidden" : "flex"
+        )}
+      >
         <div className="relative flex h-20 items-center justify-center p-4">
           <h6>{title}</h6>
           <button
-            onClick={onClose}
+            onClick={handleOnClose}
             className="absolute right-4 flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-800"
           >
             <Icon id="thin-x" className="text-wosmongton-200" />
@@ -611,6 +672,17 @@ export function ReviewOrder({
                   }
                 />
               )}
+              {isOneClickTradingEnabled ? (
+                <RecapRow
+                  left={t("oneClickTrading.reviewSwapModal.limitInfoLabel")}
+                  right={
+                    <OneClickTradingLimitRemaining
+                      onRequestEdit={() => setShow1CTSettings(true)}
+                      isSpendingLimitExceeded={isSpendingLimitExceeded}
+                    />
+                  }
+                />
+              ) : null}
               <RecapRow
                 left={t("swap.gas.additionalNetworkFee")}
                 right={
@@ -623,6 +695,26 @@ export function ReviewOrder({
                 }
               />
             </div>
+            {!isOneClickTradingEnabled && transaction1CTParams ? (
+              <OneClickTradingCallToAction
+                isOneClickEnabled={transaction1CTParams.isOneClickEnabled}
+                sessionPeriod={transaction1CTParams.sessionPeriod}
+                spendLimit={transaction1CTParams.spendLimit}
+                setIsOneClickEnabled={(v) => {
+                  setTransaction1CTParams((prev) => {
+                    if (!prev)
+                      throw new Error("transaction1CTParams is undefined");
+                    return {
+                      ...prev,
+                      isOneClickEnabled: v,
+                    };
+                  });
+                }}
+                onRequestOptions={() => {
+                  setShow1CTSettings(true);
+                }}
+              />
+            ) : null}
             {isBeyondOppositePrice && orderType === "limit" && (
               <div className="flex items-start gap-3 rounded-3x4pxlinset border-2 border-solid border-rust-500 p-5">
                 <Icon
@@ -649,9 +741,27 @@ export function ReviewOrder({
               <div className="flex w-full justify-between gap-3 pt-3">
                 <Button
                   mode="primary"
-                  onClick={confirmAction}
-                  disabled={isConfirmationDisabled}
+                  disabled={isConfirmationDisabled || isSpendingLimitExceeded}
                   className="body2 sm:caption !rounded-2xl"
+                  isLoading={oneClickTradingRef.current?.isLoading}
+                  onClick={async () => {
+                    if (
+                      !isOneClickTradingEnabled &&
+                      transaction1CTParams?.isOneClickEnabled &&
+                      oneClickTradingRef.current
+                    ) {
+                      await oneClickTradingRef.current.onStartTrading();
+                      if (
+                        !getSpendingLimitRemaining()
+                          .toDec()
+                          .lte(inAmountFiat?.toDec() || new Dec(0))
+                      ) {
+                        confirmAction();
+                      }
+                    } else {
+                      confirmAction();
+                    }
+                  }}
                 >
                   <h6>{t("limitOrders.confirm")}</h6>
                 </Button>
