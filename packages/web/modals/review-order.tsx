@@ -102,6 +102,7 @@ export function ReviewOrder({
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
+  const [shouldTriggerTx, setShouldTriggerTx] = useState(false);
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [show1CTSettings, setShow1CTSettings] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
@@ -205,6 +206,12 @@ export function ReviewOrder({
     reset1CTParams();
     onClose();
   }, []);
+
+  useEffect(() => {
+    if (!isOneClickTradingEnabled || !shouldTriggerTx) return;
+    setShouldTriggerTx(false);
+    confirmAction();
+  }, [confirmAction, isOneClickTradingEnabled]);
 
   useEffect(() => {
     if (limitSetPriceLock && orderType === "limit" && isOpen)
@@ -751,13 +758,7 @@ export function ReviewOrder({
                       oneClickTradingRef.current
                     ) {
                       await oneClickTradingRef.current.onStartTrading();
-                      if (
-                        !getSpendingLimitRemaining()
-                          .toDec()
-                          .lte(inAmountFiat?.toDec() || new Dec(0))
-                      ) {
-                        confirmAction();
-                      }
+                      setShouldTriggerTx(true);
                     } else {
                       confirmAction();
                     }

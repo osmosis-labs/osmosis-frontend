@@ -17,7 +17,7 @@ export const OneClickTradingLimitRemaining: React.FC<Props> = ({
   if (!isSpendingLimitExceeded) {
     return (
       <div
-        className="body2 flex items-center justify-end gap-1 text-wosmongton-300"
+        className="body2 flex cursor-pointer items-center justify-end gap-1 text-wosmongton-300"
         onClick={onRequestEdit}
       >
         <OneClickTradingRemainingAmount />

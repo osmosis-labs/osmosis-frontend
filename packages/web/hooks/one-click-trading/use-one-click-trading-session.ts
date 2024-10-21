@@ -51,7 +51,12 @@ export const useOneClickTradingSession = ({
     }
 
     return { info, isEnabled, isExpired };
-  }, [accountStore, isExpired, account?.address]);
+  }, [
+    accountStore,
+    isExpired,
+    account?.address,
+    accountStore.oneClickTradingInfo,
+  ]);
 
   const { data: amountSpentData, isLoading: amountSpentIsLoading } =
     api.local.oneClickTrading.getAmountSpent.useQuery(
