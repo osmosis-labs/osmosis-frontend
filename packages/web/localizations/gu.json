@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "ઓસ્મોસિસ પે",
+    "cypherOrder": "હવે તમારું કાર્ડ ઓર્ડર કરો",
     "cypherBeta": "બેટા",
+    "acceptedEverywhere": "તમારું OSMO, હવે સર્વત્ર સ્વીકાર્ય છે",
     "newPill": "નવી"
   },
   "portfolio": {

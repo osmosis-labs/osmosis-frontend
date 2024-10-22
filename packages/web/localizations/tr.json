@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "Osmoz Ödeme",
+    "cypherOrder": "Kartınızı şimdi sipariş edin",
     "cypherBeta": "Beta",
+    "acceptedEverywhere": "OSMO'nuz artık her yerde kabul görüyor",
     "newPill": "Yeni"
   },
   "portfolio": {

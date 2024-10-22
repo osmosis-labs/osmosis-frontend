@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "Plată osmoză",
+    "cypherOrder": "Comanda cardul tau acum",
     "cypherBeta": "Beta",
+    "acceptedEverywhere": "OSMO dvs., acum acceptat peste tot",
     "newPill": "Nou"
   },
   "portfolio": {

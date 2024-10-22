@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "渗透支付",
+    "cypherOrder": "立即订购您的卡",
     "cypherBeta": "测试版",
+    "acceptedEverywhere": "您的 OSMO，现已随处可用",
     "newPill": "新的"
   },
   "portfolio": {

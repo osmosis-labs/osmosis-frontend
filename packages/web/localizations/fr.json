@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "Paiement par osmose",
+    "cypherOrder": "Commandez votre carte maintenant",
     "cypherBeta": "Bêta",
+    "acceptedEverywhere": "Votre OSMO, désormais accepté partout",
     "newPill": "Nouveau"
   },
   "portfolio": {

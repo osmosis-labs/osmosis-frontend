@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
     "cypherBeta": "베타",
+    "acceptedEverywhere": "이제 어디서나 OSMO를 만나보세요",
     "newPill": "새로운"
   },
   "portfolio": {

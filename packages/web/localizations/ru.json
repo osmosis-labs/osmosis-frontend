@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "Платить за осмос",
+    "cypherOrder": "Закажите карту сейчас",
     "cypherBeta": "Бета",
+    "acceptedEverywhere": "Ваш OSMO теперь принимается везде",
     "newPill": "Новый"
   },
   "portfolio": {

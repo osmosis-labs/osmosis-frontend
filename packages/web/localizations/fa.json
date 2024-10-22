@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "اسمز پرداخت",
+    "cypherOrder": "همین الان کارت خود را سفارش دهید",
     "cypherBeta": "بتا",
+    "acceptedEverywhere": "OSMO شما، اکنون در همه جا پذیرفته شده است",
     "newPill": "جدید"
   },
   "portfolio": {

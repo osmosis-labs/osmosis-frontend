@@ -195,7 +195,10 @@
     }
   },
   "cypherCard": {
+    "cypherSpend": "オズモシスペイ",
+    "cypherOrder": "今すぐカードを注文する",
     "cypherBeta": "ベータ",
+    "acceptedEverywhere": "あなたのOSMOは今やどこでも受け入れられます",
     "newPill": "新しい"
   },
   "portfolio": {
