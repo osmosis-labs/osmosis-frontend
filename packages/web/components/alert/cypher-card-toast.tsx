@@ -45,7 +45,7 @@ export function CypherCardToast() {
           "sm:left-1/2 sm:right-auto sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
         )}
       >
-        <div className="relative flex h-full items-center gap-6 px-[1.125rem] sm:gap-3 sm:py-4 sm:pl-3">
+        <div className="relative flex h-full items-center px-[1.125rem] sm:gap-3 sm:py-4 sm:pl-3">
           <Image
             src="/images/cypher-card-intro.svg"
             alt={t("cypherCard.cypherSpend")}
