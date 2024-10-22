@@ -120,3 +120,9 @@ export function deriveCosmosAddress({
   const { data } = cosmjsEncoding.fromBech32(address);
   return cosmjsEncoding.toBech32(desiredBech32Prefix, data);
 }
+
+export function camelToKebabCase(str: string): string {
+  return str
+    .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
+    .replace(/^-/, "");
+}

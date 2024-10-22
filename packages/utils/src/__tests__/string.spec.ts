@@ -4,7 +4,12 @@ import { TextDecoder, TextEncoder } from "util";
 (global as any).TextEncoder = TextEncoder;
 (global as any).TextDecoder = TextDecoder;
 
-import { deriveCosmosAddress, isBitcoinAddressValid, shorten } from "../string";
+import {
+  camelToKebabCase,
+  deriveCosmosAddress,
+  isBitcoinAddressValid,
+  shorten,
+} from "../string";
 
 describe("shorten", () => {
   it("should return an empty string if input is empty", () => {
@@ -117,5 +122,31 @@ describe("deriveCosmosAddress", () => {
         desiredBech32Prefix: "newprefix",
       })
     ).toThrow();
+  });
+});
+
+describe("camelToKebabCase", () => {
+  it("should convert camelCase to kebab-case", () => {
+    expect(camelToKebabCase("nomicWithdrawAmount")).toBe(
+      "nomic-withdraw-amount"
+    );
+    expect(camelToKebabCase("camelCase")).toBe("camel-case");
+    expect(camelToKebabCase("thisIsALongString")).toBe("this-is-a-long-string");
+    expect(camelToKebabCase("ABC")).toBe("a-b-c");
+    expect(camelToKebabCase("alreadyKebabCase")).toBe("already-kebab-case");
+  });
+
+  it("should handle single word inputs", () => {
+    expect(camelToKebabCase("single")).toBe("single");
+    expect(camelToKebabCase("UPPER")).toBe("u-p-p-e-r");
+  });
+
+  it("should handle empty string", () => {
+    expect(camelToKebabCase("")).toBe("");
+  });
+
+  it("should handle strings with numbers", () => {
+    expect(camelToKebabCase("camel2Case3")).toBe("camel2-case3");
+    expect(camelToKebabCase("123camelCase")).toBe("123camel-case");
   });
 });

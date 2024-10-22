@@ -1,10 +1,10 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import type { Bridge } from "@osmosis-labs/bridge";
 import {
-  Bridge,
   bridgeChainSchema,
   BridgeSupportedAsset,
   bridgeSupportedAssetSchema,
-} from "@osmosis-labs/bridge";
+} from "@osmosis-labs/bridge/build/interface";
 import {
   calcAssetValue,
   captureErrorAndReturn,

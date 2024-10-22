@@ -1,3 +1,4 @@
+import { AvailableFlags } from "@osmosis-labs/types";
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
@@ -5,35 +6,6 @@ import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 import { LevanaGeoBlockedResponse } from "~/pages/_app";
-
-// NOTE: Please add a default value to any new flag you add to this list
-export type AvailableFlags =
-  | "staking"
-  | "swapsAdBanner"
-  | "tokenInfo"
-  | "sidebarOsmoChangeAndChart"
-  | "multiBridgeProviders"
-  | "earnPage"
-  | "transactionsPage"
-  | "osmosisUpdatesPopUp"
-  | "aprBreakdown"
-  | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton"
-  | "positionRoi"
-  | "swapToolSimulateFee"
-  | "portfolioPageAndNewAssetsPage"
-  | "displayDailyEarn"
-  | "newAssetsPage"
-  | "newDepositWithdrawFlow"
-  | "oneClickTrading"
-  | "limitOrders"
-  | "advancedChart"
-  | "cypherCard"
-  | "newPortfolioPage"
-  | "inGivenOut"
-  | "sqsActiveOrders"
-  | "alloyedAssets"
-  | "bridgeDepositAddress";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
@@ -62,6 +34,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   sqsActiveOrders: false,
   alloyedAssets: false,
   bridgeDepositAddress: false,
+  nomicWithdrawAmount: false,
 };
 
 const LIMIT_ORDER_COUNTRY_CODES =

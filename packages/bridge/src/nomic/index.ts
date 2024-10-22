@@ -32,6 +32,7 @@ import {
   GetDepositAddressParams,
 } from "../interface";
 import { getGasAsset } from "../utils/gas";
+import { getLaunchDarklyFlagValue } from "../utils/launchdarkly";
 
 export class NomicBridgeProvider implements BridgeProvider {
   static readonly ID = "Nomic";
@@ -387,11 +388,17 @@ export class NomicBridgeProvider implements BridgeProvider {
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.nBTCMinimalDenom.toLowerCase();
 
+      const nomicWithdrawAmountEnabled = await getLaunchDarklyFlagValue({
+        key: "nomicWithdrawAmount",
+      });
+
       if (bitcoinCounterparty || isNomicBtc) {
         return [
           {
             transferTypes:
-              direction === "withdraw" ? ["quote"] : ["deposit-address"],
+              direction === "withdraw" && nomicWithdrawAmountEnabled
+                ? ["quote"]
+                : ["deposit-address"],
             chainId: "bitcoin",
             chainName: "Bitcoin",
             chainType: "bitcoin",
