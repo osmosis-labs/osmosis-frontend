@@ -194,6 +194,10 @@
       "upcoming": "今後の予定"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "ベータ",
+    "newPill": "新しい"
+  },
   "portfolio": {
     "buy": "買う",
     "sell": "売る",
@@ -220,9 +224,6 @@
     "seeAll": "すべて見る",
     "showHidden": "非表示を表示 ( {hiddenDustCount} )",
     "hideSmallBalances": "少額残高を非表示にする",
-    "cypherSpend": "オズモーシスペイ",
-    "cypherOrder": "今すぐカードを注文する",
-    "cypherBeta": "ベータ",
     "openOrders": "オープン注文",
     "last24h": "過去24時間",
     "last7d": "過去7日間",

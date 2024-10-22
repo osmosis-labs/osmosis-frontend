@@ -194,6 +194,10 @@
       "upcoming": "آینده"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "بتا",
+    "newPill": "جدید"
+  },
   "portfolio": {
     "buy": "خرید کنید",
     "sell": "فروش",
@@ -220,9 +224,6 @@
     "seeAll": "همه را ببینید",
     "showHidden": "نمایش پنهان ( {hiddenDustCount} )",
     "hideSmallBalances": "توازن های کوچک را پنهان کنید",
-    "cypherSpend": "اسمز پرداخت",
-    "cypherOrder": "همین الان کارت خود را سفارش دهید",
-    "cypherBeta": "بتا",
     "openOrders": "باز کردن سفارشات",
     "last24h": "24 ساعت گذشته",
     "last7d": "7 روز گذشته",

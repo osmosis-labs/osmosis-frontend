@@ -194,6 +194,10 @@
       "upcoming": "आगामी"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "बीटा",
+    "newPill": "नया"
+  },
   "portfolio": {
     "buy": "खरीदना",
     "sell": "बेचना",
@@ -220,9 +224,6 @@
     "seeAll": "सभी देखें",
     "showHidden": "छुपा हुआ दिखाएँ ( {hiddenDustCount} )",
     "hideSmallBalances": "छोटे शेष राशि छिपाएँ",
-    "cypherSpend": "ऑस्मोसिस पे",
-    "cypherOrder": "अपना कार्ड अभी ऑर्डर करें",
-    "cypherBeta": "बीटा",
     "openOrders": "खुले आदेश",
     "last24h": "पिछले 24 घंटे",
     "last7d": "अंतिम 7 दिन",

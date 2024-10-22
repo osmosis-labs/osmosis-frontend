@@ -194,6 +194,10 @@
       "upcoming": "Yaklaşan"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "Beta",
+    "newPill": "Yeni"
+  },
   "portfolio": {
     "buy": "Satın almak",
     "sell": "Satmak",
@@ -220,9 +224,6 @@
     "seeAll": "Tümünü gör",
     "showHidden": "Gizliyi göster ( {hiddenDustCount} )",
     "hideSmallBalances": "Küçük bakiyeleri gizle",
-    "cypherSpend": "Osmoz Ödeme",
-    "cypherOrder": "Kartınızı şimdi sipariş edin",
-    "cypherBeta": "Beta",
     "openOrders": "Açık Siparişler",
     "last24h": "Son 24 saat",
     "last7d": "Son 7 gün",

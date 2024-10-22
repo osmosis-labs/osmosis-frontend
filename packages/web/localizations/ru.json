@@ -194,6 +194,10 @@
       "upcoming": "Предстоящие"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "Бета",
+    "newPill": "Новый"
+  },
   "portfolio": {
     "buy": "Купить",
     "sell": "Продавать",
@@ -220,9 +224,6 @@
     "seeAll": "Смотреть все",
     "showHidden": "Показать скрытое ( {hiddenDustCount} )",
     "hideSmallBalances": "Скрыть небольшие остатки",
-    "cypherSpend": "Платить за осмос",
-    "cypherOrder": "Закажите карту сейчас",
-    "cypherBeta": "Бета",
     "openOrders": "Открытые заказы",
     "last24h": "Последние 24 часа",
     "last7d": "Последние 7дн.",

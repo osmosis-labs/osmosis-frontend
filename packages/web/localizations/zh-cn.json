@@ -194,6 +194,10 @@
       "upcoming": "即将推出"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "测试版",
+    "newPill": "新的"
+  },
   "portfolio": {
     "buy": "买",
     "sell": "卖",
@@ -220,9 +224,6 @@
     "seeAll": "查看全部",
     "showHidden": "显示隐藏（ {hiddenDustCount} ）",
     "hideSmallBalances": "隐藏小额余额",
-    "cypherSpend": "渗透支付",
-    "cypherOrder": "立即订购您的卡",
-    "cypherBeta": "测试版",
     "openOrders": "未结订单",
     "last24h": "过去 24 小时",
     "last7d": "过去 7 天",

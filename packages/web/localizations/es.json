@@ -194,6 +194,10 @@
       "upcoming": "Próximo"
     }
   },
+  "cypherCard": {
+    "cypherBeta": "Beta",
+    "newPill": "Nuevo"
+  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
@@ -220,9 +224,6 @@
     "seeAll": "Ver todo",
     "showHidden": "Mostrar oculto ( {hiddenDustCount} )",
     "hideSmallBalances": "Ocultar pequeños saldos",
-    "cypherSpend": "Pago por ósmosis",
-    "cypherOrder": "Pide tu tarjeta ahora",
-    "cypherBeta": "Beta",
     "openOrders": "Órdenes abiertas",
     "last24h": "Últimas 24 horas",
     "last7d": "Últimos 7 días",
