@@ -23,8 +23,8 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  // isOpen: false,
-  isOpen: true,
+  isOpen: false,
+  // isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
