@@ -1,10 +1,12 @@
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
 
+import { DefaultSlippage } from "~/config/swap";
+
 /** Maintains a single instance of `ObservableSlippageConfig` for React view lifecycle.
  */
 export function useSlippageConfig({
-  defaultSlippage = "0.5",
+  defaultSlippage = DefaultSlippage,
   selectedIndex = 0,
 }: Partial<{
   defaultSlippage: string;
