@@ -588,6 +588,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         }
       }
 
+      console.log("fee", fee);
+
       const txRaw = await this.sign({
         wallet,
         fee,
@@ -1389,6 +1391,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         console.error("API transaction scan error", e);
       });
 
+      const gasMultiplier = signOptions.gasMultiplier || GasMultiplier;
+
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
@@ -1396,7 +1400,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           nonCriticalExtensionOptions:
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
-          gasMultiplier: GasMultiplier,
+          gasMultiplier,
         } satisfies {
           chainId: string;
           messages: { typeUrl: string; value: string }[];
