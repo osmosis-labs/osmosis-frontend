@@ -194,6 +194,13 @@
       "upcoming": "即將推出"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "滲透支付",
+    "cypherOrder": "立即訂購您的卡",
+    "cypherBeta": "貝塔",
+    "acceptedEverywhere": "你的 OSMO，現在無所不在",
+    "newPill": "新的"
+  },
   "portfolio": {
     "buy": "買",
     "sell": "賣",
@@ -220,9 +227,6 @@
     "seeAll": "看全部",
     "showHidden": "顯示隱藏 ( {hiddenDustCount} )",
     "hideSmallBalances": "隱藏小額餘額",
-    "cypherSpend": "滲透支付",
-    "cypherOrder": "立即訂購您的卡",
-    "cypherBeta": "貝塔",
     "openOrders": "未結訂單",
     "last24h": "最近 24 小時",
     "last7d": "過去 7 天",

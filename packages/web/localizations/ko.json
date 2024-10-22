@@ -194,6 +194,13 @@
       "upcoming": "예정"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
+    "cypherBeta": "베타",
+    "acceptedEverywhere": "이제 어디서나 OSMO를 만나보세요",
+    "newPill": "새로운"
+  },
   "portfolio": {
     "buy": "구입하다",
     "sell": "팔다",
@@ -220,9 +227,6 @@
     "seeAll": "모두 보기",
     "showHidden": "숨겨진 항목 표시( {hiddenDustCount} )",
     "hideSmallBalances": "소액 잔액 숨기기",
-    "cypherSpend": "오스모시스 페이",
-    "cypherOrder": "지금 카드를 주문하세요",
-    "cypherBeta": "베타",
     "openOrders": "미결 주문",
     "last24h": "지난 24시간",
     "last7d": "지난 7일",
