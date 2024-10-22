@@ -41,11 +41,11 @@ export function CypherCardToast() {
     >
       <div
         className={classNames(
-          "fixed bottom-8 right-8 z-50 h-[160px] max-w-[448px] cursor-pointer overflow-hidden rounded-5xl bg-osmoverse-800",
+          "fixed bottom-8 right-8 z-50 h-40 max-w-[28rem] cursor-pointer overflow-hidden rounded-5xl bg-osmoverse-800",
           "sm:left-1/2 sm:right-auto sm:w-[90vw] sm:-translate-x-1/2 sm:transform sm:rounded-2xl"
         )}
       >
-        <div className="relative flex h-full items-center gap-6 px-[18px] sm:gap-3 sm:py-4 sm:pl-3">
+        <div className="relative flex h-full items-center gap-6 px-[1.125rem] sm:gap-3 sm:py-4 sm:pl-3">
           <Image
             src="/images/cypher-card-intro.svg"
             alt="limit orders intro"
@@ -56,7 +56,7 @@ export function CypherCardToast() {
           <div className="mr-3 flex flex-col gap-2">
             <Pill className="!px-2">{t("cypherCard.newPill")}</Pill>
 
-            <div className="flex w-[270px] max-w-[270px] items-center justify-between">
+            <div className="flex w-[16.875rem] max-w-[16.875rem] items-center justify-between">
               <div className="flex flex-col gap-2">
                 <h1 className="flex-shrink-0 text-h6 font-h6">
                   {t("cypherCard.cypherSpend")}
@@ -87,14 +87,11 @@ export function CypherCardToast() {
             aria-label="Close"
             variant="default"
             size={null}
-            className={classNames(
-              "group absolute right-4 top-4 h-8 w-8 flex-shrink-0 !rounded-full !bg-osmoverse-600",
-              "sm:h-6 sm:w-6"
-            )}
+            className="group absolute right-4 top-4 h-8 w-8 flex-shrink-0 !rounded-full !bg-osmoverse-600 sm:h-6 sm:w-6"
             icon={
               <Icon
                 id="close-thin"
-                className="ml-[1px] text-osmoverse-800 transition-colors duration-200 group-hover:text-osmoverse-100"
+                className="ml-px text-osmoverse-800 transition-colors duration-200 group-hover:text-osmoverse-100"
                 width={isMobile ? 16 : 24}
                 height={isMobile ? 16 : 24}
               />
