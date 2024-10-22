@@ -6,7 +6,6 @@ import { SignOptions } from "@osmosis-labs/stores";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import React, { useEffect, useMemo, useState } from "react";
 import { create } from "zustand";
 
@@ -258,12 +257,14 @@ const AssetVariantsConversion = observer(
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
         <p className="body1 text-center text-osmoverse-300">
           {t("assetVariantsConversion.description")}{" "}
-          <Link
-            href="/learn/asset-variants"
+          <a
+            href="https://medium.com/osmosis/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation-168831ce8862"
             className="text-wosmongton-300 hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             {t("assetVariantsConversion.learnMore")}
-          </Link>
+          </a>
         </p>
         <div className="-mx-3 mt-6 flex h-14 items-center">
           <Button
