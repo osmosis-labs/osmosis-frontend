@@ -1253,5 +1253,17 @@
     "remindMeLater": "나중에 다시 알려주세요",
     "dismiss": "해고하다",
     "convert": "전환하다"
+  },
+  "assetVariantsConversion": {
+    "title": "자산 표준화",
+    "description": "더 큰 유연성과 호환성을 위해 다음 자산을 Osmosis의 표준화된 버전으로 변환하세요.",
+    "learnMore": "더 알아보기",
+    "errorLoading": "자산 변형을 로드하는 중에 오류가 발생했습니다. 나중에 다시 시도하세요.",
+    "selectAll": "모두 선택",
+    "convertSelected": "선택한 항목 변환",
+    "variantsDetected": "변종 감지됨",
+    "caption": "혼란스러운 자산 변형에 작별 인사를 전하세요. Osmosis에서 더욱 매끄러운 경험을 만나보세요.",
+    "tooltipTitle": "Osmosis의 {coinName}",
+    "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다."
   }
 }

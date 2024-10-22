@@ -23494,6 +23494,36 @@ export const AssetLists: AssetList[] = [
         listingDate: "2024-05-03T13:00:00.000Z",
         relative_image_url: "/tokens/generated/seda.svg",
       },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        coinMinimalDenom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        symbol: "allETH",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/allETH.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/allETH.svg",
+        },
+        coingeckoId: "allETH",
+        price: {
+          poolId: "1800",
+          denom:
+            "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        },
+        categories: ["alloyed"],
+        transferMethods: [],
+        counterparty: [],
+        name: "allETH",
+        isAlloyed: true,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-06-01T10:00:00.000Z",
+        relative_image_url: "/tokens/generated/allETH.svg",
+      },
     ],
   },
 ];
