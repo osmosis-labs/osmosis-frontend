@@ -665,15 +665,17 @@ export function useSwap(
   // queried above from the same source.
   // By inversally using the token in price, we ensure that the token in fee amount fiat value is consistent
   // relative to the token in and token out fiat value
-  const tokenInFeeAmountFiatValue: PricePretty = useMemo(
-    () =>
-      getTokenInFeeAmountFiatValue(
-        swapAssets.fromAsset,
-        quote?.tokenInFeeAmount,
-        inAmountInput.price
-      ),
-    [inAmountInput.price, quote?.tokenInFeeAmount, swapAssets.fromAsset]
-  );
+  const tokenInFeeAmountFiatValue: PricePretty = useMemo(() => {
+    console.log("swapAssets.fromAsset:", swapAssets.fromAsset);
+    console.log("quote?.tokenInFeeAmount:", quote?.tokenInFeeAmount);
+    console.log("inAmountInput.price:", inAmountInput.price);
+
+    return getTokenInFeeAmountFiatValue(
+      swapAssets.fromAsset,
+      quote?.tokenInFeeAmount,
+      inAmountInput.price
+    );
+  }, [inAmountInput.price, quote?.tokenInFeeAmount, swapAssets.fromAsset]);
 
   // Calculate token out fiat value from price impact and token in fiat value.
   //

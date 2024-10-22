@@ -141,4 +141,5 @@ export interface StdSignDoc {
 
 export interface SignOptions extends CosmoskitSignOptions {
   useOneClickTrading?: boolean;
+  gasMultiplier?: number;
 }

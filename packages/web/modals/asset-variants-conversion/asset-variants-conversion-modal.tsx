@@ -2,6 +2,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { FormattedQuote } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
+import { SignOptions } from "@osmosis-labs/stores";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -136,6 +137,8 @@ const AssetVariantsConversion = observer(
 
     const dataQuotes = quotes.map((result) => result.data);
 
+    console.log("dataQuotes", dataQuotes);
+
     const totalConversionFee: Dec = useMemo(() => {
       if (!dataQuotes || checkedVariants.length === 0) return new Dec(0);
 
@@ -169,7 +172,7 @@ const AssetVariantsConversion = observer(
         return;
       }
 
-      const allSwapMessages = [];
+      console.log("filteredDataQuotes", filteredDataQuotes);
 
       for (const { quote, checkedVariant } of filteredDataQuotes) {
         if (!quote) continue;
@@ -183,7 +186,7 @@ const AssetVariantsConversion = observer(
           tokenInCoinDecimals: checkedVariant.asset?.coinDecimals ?? 0,
           tokenInCoinMinimalDenom: checkedVariant.asset?.coinMinimalDenom ?? "",
           maxSlippage: slippage.toString(),
-          coinAmount: quote.split[0].initialAmount.toString(), // coinAmount: quote.amount.toCoin().amount,
+          coinAmount: quote.split[0].initialAmount.toString(),
           userOsmoAddress: account?.address ?? "",
           quoteType: "out-given-in" as QuoteType,
         };
@@ -191,33 +194,32 @@ const AssetVariantsConversion = observer(
         console.log("swapMessagesConfig", swapMessagesConfig);
 
         const swapMessages = await getSwapMessages(swapMessagesConfig);
-        swapMessages && allSwapMessages.push(...swapMessages);
+        if (!swapMessages) continue;
+
+        const signOptions: SignOptions = {
+          preferNoSetFee: true,
+        };
+
+        try {
+          await accountStore.signAndBroadcast(
+            accountStore.osmosisChainId,
+            "convertAssetVariants",
+            swapMessages,
+            "Convert Asset Variants -",
+            undefined,
+            signOptions,
+            (tx) => {
+              console.log("tx", tx);
+            }
+          );
+        } catch (e: Error | unknown) {
+          console.error("Error converting variant", e);
+          setIsConverting(false);
+          return;
+        }
       }
 
-      console.log("allSwapMessages", allSwapMessages);
-
-      const signOptions = {
-        preferNoSetFee: true,
-      };
-
-      accountStore
-        .signAndBroadcast(
-          accountStore.osmosisChainId,
-          "convertAssetVariants",
-          allSwapMessages,
-          "Convert Asset Variants -",
-          undefined,
-          signOptions,
-          (tx) => {
-            console.log("tx", tx);
-          }
-        )
-        .catch((e: Error | unknown) => {
-          console.error("Error converting variants", e);
-        })
-        .finally(() => {
-          setIsConverting(false);
-        });
+      setIsConverting(false);
     };
 
     const handleSelectAll = () => {
