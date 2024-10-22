@@ -3,14 +3,12 @@ import Link from "next/link";
 import { Icon } from "~/components/assets";
 import { useTranslation } from "~/hooks";
 
+export const CYPHER_CARD_URL = "https://pay.osmosis.zone?ref=osmosis";
+
 export const CypherCard = () => {
   const { t } = useTranslation();
   return (
-    <Link
-      href="https://pay.osmosis.zone?ref=osmosis"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
+    <Link href={CYPHER_CARD_URL} target="_blank" rel="noopener noreferrer">
       <div className="flex h-[4.5rem] w-full flex-1 items-center gap-4 rounded-2xl bg-osmoverse-850 px-4 py-3">
         <div className="mr-3 flex h-12 w-12 flex-col items-center justify-center rounded-xl bg-osmoverse-800">
           <Icon id="cypher-card" />

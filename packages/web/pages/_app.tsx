@@ -27,7 +27,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
-import { LimitOrdersToast } from "~/components/alert/limit-orders-toast";
+import { CypherCardToast } from "~/components/alert/cypher-card-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
@@ -344,7 +344,7 @@ const MainLayoutWrapper: FunctionComponent<{
           <OneClickTradingIntroModal />
         </>
       )}
-      {flags.limitOrders && <LimitOrdersToast />}
+      {flags.cypherCard && <CypherCardToast />}
     </MainLayout>
   );
 });
