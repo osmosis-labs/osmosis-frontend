@@ -15,14 +15,14 @@ export const CypherCard = () => {
         </div>
         <div className="flex flex-col gap-1">
           <p className="subtitle1 text-white-full">
-            {t("portfolio.cypherSpend")}
+            {t("cypherCard.cypherSpend")}
           </p>
           <p className="body2 text-osmoverse-300">
-            {t("portfolio.cypherOrder")}
+            {t("cypherCard.cypherOrder")}
           </p>
         </div>
         <div className="caption ml-auto rounded-xl bg-osmoverse-800 p-1 px-2 text-osmoverse-300">
-          {t("portfolio.cypherBeta")}
+          {t("cypherCard.cypherBeta")}
         </div>
       </div>
     </Link>

@@ -2,7 +2,6 @@ import { Transition } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { Fragment } from "react";
 import { useLocalStorage } from "react-use";
 
@@ -17,7 +16,6 @@ export const CypherCardFloatingBannerDoNotShowKey =
 
 export function CypherCardToast() {
   const { t } = useTranslation();
-  const router = useRouter();
 
   const [doNotShowAgain, setDoNotShowAgain] = useLocalStorage(
     CypherCardFloatingBannerDoNotShowKey,
@@ -56,16 +54,16 @@ export function CypherCardToast() {
           />
 
           <div className="mr-3 flex flex-col gap-2">
-            <Pill className="!px-2">
-              {t("oneClickTrading.floatingBanner.newPill")}
-            </Pill>
+            <Pill className="!px-2">{t("cypherCard.newPill")}</Pill>
 
             <div className="flex w-[270px] max-w-[270px] items-center justify-between">
               <div className="flex flex-col gap-2">
-                <h1 className="flex-shrink-0 text-h6 font-h6">Osmosis Pay</h1>
+                <h1 className="flex-shrink-0 text-h6 font-h6">
+                  {t("cypherCard.cypherSpend")}
+                </h1>
                 <Link
                   href={CYPHER_CARD_URL}
-                  className="text-subtitle1 font-subtitle1 text-wosmongton-300"
+                  className="text-subtitle1 font-subtitle1 text-wosmongton-300 hover:underline"
                   onClick={(e) => {
                     e.stopPropagation();
                     onClose();
@@ -73,7 +71,13 @@ export function CypherCardToast() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Your OSMO, now accepted everywhere
+                  {t("cypherCard.acceptedEverywhere")}{" "}
+                  <Icon
+                    id="arrow-right"
+                    className="inline-block"
+                    width={16}
+                    height={16}
+                  />
                 </Link>
               </div>
             </div>
