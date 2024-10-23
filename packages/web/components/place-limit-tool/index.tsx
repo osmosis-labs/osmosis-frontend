@@ -31,6 +31,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
+import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
   useFeatureFlags,
@@ -170,7 +171,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
 
     const slippageConfig = useSlippageConfig({
-      defaultSlippage: quoteType === "in-given-out" ? "0.5" : "0.5",
+      defaultSlippage: quoteType === "in-given-out" ? "0.1" : "0.1",
       selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
@@ -187,7 +188,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage = quoteType === "in-given-out" ? "0.5" : "0.5";
+      const defaultSlippage =
+        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
         slippageConfig.slippage.toDec() ===
         new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))

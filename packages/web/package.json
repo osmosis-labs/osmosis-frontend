@@ -142,7 +142,7 @@
   "devDependencies": {
     "@keplr-wallet/provider-mock": "0.12.12",
     "@keplr-wallet/simple-fetch": "0.12.12",
-    "@playwright/test": "^1.44.1",
+    "@playwright/test": "^1.48.0",
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",

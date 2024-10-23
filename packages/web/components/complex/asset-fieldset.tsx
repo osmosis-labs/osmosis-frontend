@@ -240,9 +240,10 @@ const AssetFieldsetTokenSelector = ({
         type="button"
         className="flex max-w-[50%] items-center gap-1 rounded-[64px] bg-osmoverse-850 py-3 pl-3 pr-4 transition-colors hover:bg-osmoverse-800 sm:px-3"
         onClick={(e) => {
+          e.stopPropagation();
+          e.currentTarget.blur();
           if (onSelectorClick) return onSelectorClick();
 
-          e.stopPropagation();
           if (
             !isModalExternal &&
             selectableAssets &&

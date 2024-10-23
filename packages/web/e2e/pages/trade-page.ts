@@ -121,8 +121,8 @@ export class TradePage extends BasePage {
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
     await this.inputAmount.fill(amount, { timeout: 2000 });
-    await this.page.waitForTimeout(2000);
-    await expect(this.inputAmount).toHaveValue(amount, { timeout: 3000 });
+    await this.page.waitForTimeout(1000);
+    await expect(this.inputAmount).toHaveValue(amount, { timeout: 1000 });
     const exchangeRate = await this.getExchangeRate();
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
@@ -224,7 +224,7 @@ export class TradePage extends BasePage {
   async getTransactionUrl() {
     const trxUrl = await this.trxLink.getAttribute("href");
     console.log(`Trx url: ${trxUrl}`);
-    await this.page.waitForTimeout(4000);
+    await this.page.reload();
     return trxUrl;
   }
 
@@ -247,6 +247,14 @@ export class TradePage extends BasePage {
     return await issufBalanceBtn.isVisible({ timeout: 2000 });
   }
 
+  async isSufficientBalanceForTrade() {
+    // Make sure to have sufficient balance for a trade
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+  }
+
   async isError() {
     const errorBtn = this.page.locator('//button[.="Error"]');
     return await errorBtn.isVisible({ timeout: 2000 });
@@ -254,8 +262,7 @@ export class TradePage extends BasePage {
 
   async showSwapInfo() {
     const swapInfo = this.page.locator("//button//span[.='Show details']");
-    await swapInfo.click();
-    console.log(`Price Impact: ${await this.getPriceInpact()}`);
+    await swapInfo.click({ timeout: 2000 });
   }
 
   async getPriceInpact() {
@@ -320,11 +327,7 @@ export class TradePage extends BasePage {
   }
 
   async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
+    // Make sure Sell button is enabled
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: 7000,
     });

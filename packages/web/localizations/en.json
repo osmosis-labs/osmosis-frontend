@@ -194,6 +194,13 @@
       "upcoming": "Upcoming"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "Osmosis Pay",
+    "cypherOrder": "Order your card now",
+    "cypherBeta": "Beta",
+    "acceptedEverywhere": "Your OSMO, now accepted everywhere",
+    "newPill": "New"
+  },
   "portfolio": {
     "buy": "Buy",
     "sell": "Sell",
@@ -220,9 +227,6 @@
     "seeAll": "See all",
     "showHidden": "Show hidden ({hiddenDustCount})",
     "hideSmallBalances": "Hide small balances",
-    "cypherSpend": "Osmosis Pay",
-    "cypherOrder": "Order your card now",
-    "cypherBeta": "Beta",
     "openOrders": "Open Orders",
     "last24h": "Last 24h",
     "last7d": "Last 7d",
