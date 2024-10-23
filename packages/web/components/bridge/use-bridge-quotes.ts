@@ -694,14 +694,14 @@ export const useBridgeQuotes = ({
   } else if (hasNoQuotes) {
     errorBoxMessage = {
       heading: isWithdraw
-        ? t("transfer.assetsWithdrawsUnavailable", {
+        ? t("transfer.assetWithdrawalsUnavailable", {
             asset: toAsset?.denom ?? "",
           })
         : t("transfer.assetsDepositsUnavailable", {
             asset: toAsset?.denom ?? "",
           }),
       description: isWithdraw
-        ? t("transfer.noAvailableWithdraws")
+        ? t("transfer.noAvailableWithdrawals")
         : t("transfer.noAvailableDeposits"),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
