@@ -944,7 +944,9 @@
     "addressExpired": "Esta dirección ha expirado. Por favor, solicite una nueva.",
     "addressAboutToExpire": "Esta dirección está a punto de caducar. Solicite una nueva dirección para evitar perder fondos.",
     "createNewDepositAddress": "Crear nueva dirección de depósito",
-    "transactionDetails": "Detalles de la transacción"
+    "transactionDetails": "Detalles de la transacción",
+    "continue": "Continuar",
+    "inputBitcoinAddress": "Introducir dirección de Bitcoin"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

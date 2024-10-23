@@ -1,4 +1,8 @@
-import type { Bridge, BridgeChain } from "@osmosis-labs/bridge";
+import type {
+  Bridge,
+  BridgeChain,
+  BridgeSupportedAsset,
+} from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import { useMemo } from "react";
@@ -29,9 +33,11 @@ export type SupportedChain = ReturnType<
 export const useBridgesSupportedAssets = ({
   assets,
   chain,
+  direction,
 }: {
   assets: MinimalAsset[] | undefined;
   chain: BridgeChain;
+  direction: "deposit" | "withdraw";
 }) => {
   const supportedAssetsResults = api.useQueries((t) =>
     supportedAssetsBridges.flatMap((bridge) =>
@@ -44,6 +50,7 @@ export const useBridgesSupportedAssets = ({
               decimals: asset.coinDecimals,
               denom: asset.coinDenom,
             },
+            direction,
             chain,
           },
           {
@@ -91,13 +98,13 @@ export const useBridgesSupportedAssets = ({
    *       "denom": "USDC",
    *       "decimals": 6,
    *       "supportedVariants": {
-   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": ["Skip", "Squid", "Axelar", "IBC"],
-   *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": ["Skip", "Squid", "Axelar"],
-   *         "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A": ["Skip", "Squid", "Axelar"],
-   *         "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C": ["Skip", "Axelar"],
-   *         "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E": ["Skip", "Squid", "Axelar"],
-   *         "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695": ["Skip", "Squid", "Axelar"],
-   *         "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45": ["Skip"]
+   *         "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"], IBC: ["quote"] },
+   *         "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C": { Skip: ["quote"], Axelar: ["quote"] },
+   *         "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695": { Skip: ["quote"], Squid: ["quote"], Axelar: ["quote", "deposit-address"] },
+   *         "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45": { Skip: ["quote"] }
    *       }
    *     }
    *   ]
@@ -112,7 +119,15 @@ export const useBridgesSupportedAssets = ({
     type ChainId = string;
     const assetAddress_chainId_supportedVariants_bridges: Record<
       Address,
-      Record<ChainId, Record<Address, Set<Bridge>>>
+      Record<
+        ChainId,
+        Record<
+          Address,
+          Partial<
+            Record<Bridge, Set<BridgeSupportedAsset["transferTypes"][number]>>
+          >
+        >
+      >
     > = {};
 
     type AssetsByChainId =
@@ -149,12 +164,24 @@ export const useBridgesSupportedAssets = ({
             ) {
               assetAddress_chainId_supportedVariants_bridges[address][chainId][
                 inputAssetAddress
-              ] = new Set<Bridge>();
+              ] = {};
             }
 
-            assetAddress_chainId_supportedVariants_bridges[address][chainId][
-              inputAssetAddress
-            ].add(data.supportedAssets.providerName);
+            if (
+              !assetAddress_chainId_supportedVariants_bridges[address][chainId][
+                inputAssetAddress
+              ][data.supportedAssets.providerName]
+            ) {
+              assetAddress_chainId_supportedVariants_bridges[address][chainId][
+                inputAssetAddress
+              ][data.supportedAssets.providerName] = new Set();
+            }
+
+            asset.transferTypes.forEach((type) => {
+              assetAddress_chainId_supportedVariants_bridges[address][chainId][
+                inputAssetAddress
+              ][data.supportedAssets.providerName]!.add(type);
+            });
           });
 
           acc[chainId] = acc[chainId] ? [...acc[chainId], ...assets] : assets;
@@ -168,6 +195,15 @@ export const useBridgesSupportedAssets = ({
       ([chainId, assets]) => [
         chainId,
         assets
+          .filter(
+            // Remove Duplicates
+            (asset, index, originalArray) =>
+              index ===
+              originalArray.findIndex(
+                // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
+                (t) => t.address.toLowerCase() === asset.address.toLowerCase()
+              )
+          )
           .map(({ providerName, ...asset }) => ({
             ...asset,
             supportedVariants: Object.fromEntries(
@@ -175,19 +211,20 @@ export const useBridgesSupportedAssets = ({
                 assetAddress_chainId_supportedVariants_bridges[
                   asset.address.toLowerCase()
                 ][chainId]
-              ).map(([variant, bridges]) => [variant, Array.from(bridges)])
-            ),
-          }))
+              ).map(([variant, bridgesByTransferType]) => {
+                const formattedBridgesByTransferType = Object.fromEntries(
+                  Object.entries(bridgesByTransferType).map(
+                    ([bridge, transferTypes]) => [
+                      bridge,
+                      Array.from(transferTypes),
+                    ]
+                  )
+                );
 
-          .filter(
-            (asset, index, originalArray) =>
-              // Remove Duplicates
-              index ===
-              // Use toLowerCase since some providers return addresses in different cases. E.g. Skip and Squid
-              originalArray.findIndex(
-                (t) => t.address.toLowerCase() === asset.address.toLowerCase()
-              )
-          ),
+                return [variant, formattedBridgesByTransferType];
+              })
+            ),
+          })),
       ]
     );
 
@@ -195,7 +232,10 @@ export const useBridgesSupportedAssets = ({
       keyof AssetsByChainId,
       Omit<
         AssetsByChainId[string][number] & {
-          supportedVariants: Record<string, Bridge[]>;
+          supportedVariants: Record<
+            string,
+            Partial<Record<Bridge, BridgeSupportedAsset["transferTypes"]>>
+          >;
         },
         "providerName"
       >[]

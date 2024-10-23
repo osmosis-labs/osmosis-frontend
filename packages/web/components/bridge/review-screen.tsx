@@ -45,8 +45,8 @@ interface ConfirmationScreenProps {
   fromAddress: string;
   toAddress: string;
 
-  fromWalletIcon: string;
-  toWalletIcon: string;
+  fromWalletIcon: string | undefined;
+  toWalletIcon: string | undefined;
 
   quote: BridgeQuote;
 
@@ -188,7 +188,7 @@ const AssetBox: FunctionComponent<{
   assetImageUrl: string;
   address: string;
   chain: BridgeChainWithDisplayInfo;
-  walletImageUrl: string;
+  walletImageUrl: string | undefined;
   value: PricePretty;
   coin: CoinPretty;
   isManualAddress?: boolean;
@@ -221,7 +221,7 @@ const AssetBox: FunctionComponent<{
           <span>{chain.prettyName}</span>
         </div>
         <div className="flex items-center gap-2">
-          {isManualAddress ? (
+          {isManualAddress || !walletImageUrl ? (
             <Icon id="wallet" className="text-wosmongton-200" />
           ) : (
             <Image
@@ -260,7 +260,16 @@ const AssetBox: FunctionComponent<{
         <span>{chain.prettyName}</span>
       </div>
       <div className="flex items-center gap-2">
-        <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
+        {walletImageUrl ? (
+          <Image
+            alt="wallet image"
+            src={walletImageUrl}
+            width={24}
+            height={24}
+          />
+        ) : (
+          <Icon id="wallet" className="text-wosmongton-200" />
+        )}
         <Tooltip
           maxWidth="500px"
           content={hasCopied ? t("copied") : address}

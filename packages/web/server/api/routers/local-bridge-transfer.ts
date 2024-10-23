@@ -1,9 +1,10 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import type { Bridge } from "@osmosis-labs/bridge";
 import {
-  Bridge,
-  bridgeAssetSchema,
   bridgeChainSchema,
-} from "@osmosis-labs/bridge";
+  BridgeSupportedAsset,
+  bridgeSupportedAssetSchema,
+} from "@osmosis-labs/bridge/build/interface";
 import {
   calcAssetValue,
   captureErrorAndReturn,
@@ -29,11 +30,20 @@ const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
     .object({
       type: z.literal(type),
       assets: z.array(
-        bridgeChainSchema.and(bridgeAssetSchema).and(
+        bridgeChainSchema.and(bridgeSupportedAssetSchema).and(
           z.object({
             supportedVariants: z.record(
               z.string(),
-              z.array(z.string().transform((v) => v as Bridge))
+              z.record(
+                z.string().transform((v) => v as Bridge),
+                z.array(
+                  z
+                    .string()
+                    .transform(
+                      (v) => v as BridgeSupportedAsset["transferTypes"][number]
+                    )
+                )
+              )
             ),
           })
         )
@@ -185,23 +195,14 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               return {
                 ...asset,
-                amount:
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    balance.amount
-                  ) ??
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    0
-                  ),
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  balance.amount
+                ),
                 usdValue: new PricePretty(DEFAULT_VS_CURRENCY, usdValue ?? 0),
               };
             })
