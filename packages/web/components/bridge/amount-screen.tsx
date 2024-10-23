@@ -102,6 +102,8 @@ interface AmountScreenProps {
   manualToAddress: string | undefined;
   setManualToAddress: (address: string | undefined) => void;
 
+  toAddress: string | undefined;
+
   cryptoAmount: string;
   fiatAmount: string;
   setCryptoAmount: (amount: string) => void;
@@ -140,6 +142,8 @@ export const AmountScreen = observer(
 
     manualToAddress,
     setManualToAddress,
+
+    toAddress,
 
     cryptoAmount,
     setCryptoAmount,
@@ -228,12 +232,6 @@ export const AmountScreen = observer(
       isEvmWalletConnected,
       manualToAddress,
     ]);
-
-    const toAddress =
-      manualToAddress ??
-      (toChain?.chainType === "evm"
-        ? evmAddress
-        : toCosmosCounterpartyAccount?.address);
 
     const { data: osmosisChain } = api.edge.chains.getChain.useQuery(
       {

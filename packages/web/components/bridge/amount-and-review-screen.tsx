@@ -289,6 +289,7 @@ export const AmountAndReviewScreen = observer(
               setToChain={setToChain}
               manualToAddress={manualToAddress}
               setManualToAddress={setManualToAddress}
+              toAddress={toAddress}
               fromAsset={fromAsset}
               setFromAsset={setFromAsset}
               toAsset={toAsset}
