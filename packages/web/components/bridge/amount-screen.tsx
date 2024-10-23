@@ -230,9 +230,10 @@ export const AmountScreen = observer(
     ]);
 
     const toAddress =
-      toChain?.chainType === "evm"
+      manualToAddress ??
+      (toChain?.chainType === "evm"
         ? evmAddress
-        : toCosmosCounterpartyAccount?.address;
+        : toCosmosCounterpartyAccount?.address);
 
     const { data: osmosisChain } = api.edge.chains.getChain.useQuery(
       {
