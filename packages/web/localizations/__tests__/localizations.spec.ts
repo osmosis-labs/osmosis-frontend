@@ -13,6 +13,7 @@ const warn = (..._args: Parameters<typeof console.warn>) => null; // console.war
 const omittedKeyPaths = [
   "assets.categories",
   "limitOrders.historyTable.columns",
+  "transfer.nomic.estimatedTime",
 ];
 
 describe("Localization JSON files", () => {

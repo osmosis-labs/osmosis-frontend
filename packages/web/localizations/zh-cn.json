@@ -194,6 +194,13 @@
       "upcoming": "即将推出"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "渗透支付",
+    "cypherOrder": "立即订购您的卡",
+    "cypherBeta": "测试版",
+    "acceptedEverywhere": "您的 OSMO，现已随处可用",
+    "newPill": "新的"
+  },
   "portfolio": {
     "buy": "买",
     "sell": "卖",
@@ -220,9 +227,6 @@
     "seeAll": "查看全部",
     "showHidden": "显示隐藏（ {hiddenDustCount} ）",
     "hideSmallBalances": "隐藏小额余额",
-    "cypherSpend": "渗透支付",
-    "cypherOrder": "立即订购您的卡",
-    "cypherBeta": "测试版",
     "openOrders": "未结订单",
     "last24h": "过去 24 小时",
     "last7d": "过去 7 天",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "有些事情不起作用……",
     "sorryForTheInconvenience": "抱歉造成不便。请刷新页面并重试，或使用其他应用程序将您的资金转入 Osmosis。",
     "assetIsCurrentlyUnstable": "{asset}转移目前不稳定",
-    "transferWillLikelyTakeLonger": "转账可能比平时耗时更长，甚至可能完全失败。请自行承担风险。"
+    "transferWillLikelyTakeLonger": "转账可能比平时耗时更长，甚至可能完全失败。请自行承担风险。",
+    "sendFromWalletOrExchange": "从您的钱包或交易所发送",
+    "scanWithMobileWallet": "使用您的手机钱包扫描",
+    "or": "或者",
+    "copied": "已复制",
+    "copyToClipboard": "复制到剪贴板",
+    "showQrCode": "显示二维码",
+    "yourDepositAddress": "您的{denom}存款地址",
+    "copyAddressToClipboard": "将地址复制到剪贴板",
+    "copyAddress": "复制地址",
+    "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
+    "minimumDeposit": "最低存款",
+    "nomic": {
+      "estimatedTime": "约1小时",
+      "awaitingBtc": "等待比特币",
+      "transferringYourBtc": "转移你的比特币",
+      "depositStatus": "存款状态",
+      "depositSuccess": "存款成功",
+      "pendingDeposit": "待存款",
+      "estimatedAboutTime": "估计约为{time}",
+      "from": "从",
+      "to": "到",
+      "asset": "资产",
+      "amountBtc": "数量 BTC",
+      "totalValue": "总价值",
+      "transactionHash": "交易哈希",
+      "viewOnExplorer": "在资源管理器中查看",
+      "totalFees": "总费用"
+    },
+    "doNotSendFundsToThisAddress": "请勿向该地址汇款。",
+    "addressExpired": "此地址已过期。请申请一个新地址。",
+    "addressAboutToExpire": "此地址即将过期。请申请新地址以避免资金损失。",
+    "createNewDepositAddress": "创建新的存款地址",
+    "transactionDetails": "交易详情",
+    "continue": "继续",
+    "inputBitcoinAddress": "输入比特币地址"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -1072,7 +1111,9 @@
     "minute": "分钟",
     "minutes": "分钟",
     "hour": "小时",
-    "hours": "小时"
+    "hours": "小时",
+    "day": "天",
+    "days": "天"
   },
   "transactions": {
     "noRecent": "最近没有转会",

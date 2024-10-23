@@ -194,6 +194,13 @@
       "upcoming": "Próximo"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "Pago por ósmosis",
+    "cypherOrder": "Pide tu tarjeta ahora",
+    "cypherBeta": "Beta",
+    "acceptedEverywhere": "Tu OSMO, ahora aceptado en todas partes",
+    "newPill": "Nuevo"
+  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",
@@ -220,9 +227,6 @@
     "seeAll": "Ver todo",
     "showHidden": "Mostrar oculto ( {hiddenDustCount} )",
     "hideSmallBalances": "Ocultar pequeños saldos",
-    "cypherSpend": "Pago por ósmosis",
-    "cypherOrder": "Pide tu tarjeta ahora",
-    "cypherBeta": "Beta",
     "openOrders": "Órdenes abiertas",
     "last24h": "Últimas 24 horas",
     "last7d": "Últimos 7 días",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "Algo no funciona…",
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Actualice la página e inténtelo nuevamente o use una aplicación alternativa para transferir sus fondos a Osmosis.",
     "assetIsCurrentlyUnstable": "Las transferencias {asset} actualmente son inestables",
-    "transferWillLikelyTakeLonger": "Es probable que las transferencias demoren más de lo habitual o que fallen por completo. Proceda bajo su propio riesgo."
+    "transferWillLikelyTakeLonger": "Es probable que las transferencias demoren más de lo habitual o que fallen por completo. Proceda bajo su propio riesgo.",
+    "sendFromWalletOrExchange": "Envía desde tu billetera o exchange",
+    "scanWithMobileWallet": "Escanee con su billetera móvil",
+    "or": "o",
+    "copied": "Copiado",
+    "copyToClipboard": "Copiar al portapapeles",
+    "showQrCode": "Mostrar código QR",
+    "yourDepositAddress": "Su dirección de depósito {denom}",
+    "copyAddressToClipboard": "Copiar dirección al portapapeles",
+    "copyAddress": "Copiar dirección",
+    "receiveOnlyAsset": "Esta dirección solo puede recibir {denom} de la red {network} . El envío de otros activos puede provocar una pérdida permanente.",
+    "minimumDeposit": "Depósito mínimo",
+    "nomic": {
+      "estimatedTime": "Aproximadamente 1 hora",
+      "awaitingBtc": "Esperando BTC",
+      "transferringYourBtc": "Transfiriendo tus BTC",
+      "depositStatus": "Estado del depósito",
+      "depositSuccess": "Depósito realizado con éxito",
+      "pendingDeposit": "Depósito pendiente",
+      "estimatedAboutTime": "Se estima que será de aproximadamente {time}",
+      "from": "De",
+      "to": "A",
+      "asset": "Activo",
+      "amountBtc": "Cantidad BTC",
+      "totalValue": "Valor total",
+      "transactionHash": "Hash de transacción",
+      "viewOnExplorer": "Ver en el explorador",
+      "totalFees": "Tarifas totales"
+    },
+    "doNotSendFundsToThisAddress": "No envíe fondos a esta dirección.",
+    "addressExpired": "Esta dirección ha expirado. Por favor, solicite una nueva.",
+    "addressAboutToExpire": "Esta dirección está a punto de caducar. Solicite una nueva dirección para evitar perder fondos.",
+    "createNewDepositAddress": "Crear nueva dirección de depósito",
+    "transactionDetails": "Detalles de la transacción",
+    "continue": "Continuar",
+    "inputBitcoinAddress": "Introducir dirección de Bitcoin"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
@@ -1072,7 +1111,9 @@
     "minute": "minuto",
     "minutes": "minutos",
     "hour": "hora",
-    "hours": "horas"
+    "hours": "horas",
+    "day": "día",
+    "days": "días"
   },
   "transactions": {
     "noRecent": "Sin transferencias recientes",

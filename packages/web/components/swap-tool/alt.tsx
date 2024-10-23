@@ -1,6 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,6 +31,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
+import { DefaultSlippage } from "~/config/swap";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -41,7 +43,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
   useSwap,
@@ -93,7 +94,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
-    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
+    const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     const toAmountInputEl = useRef<HTMLInputElement | null>(null);
@@ -113,7 +114,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
-      defaultSlippage: quoteType === "in-given-out" ? "0.5" : "0.5",
+      defaultSlippage:
+        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
       selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
@@ -189,7 +191,8 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [setBuyOpen, setSellOpen]);
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage = quoteType === "in-given-out" ? "0.5" : "0.5";
+      const defaultSlippage =
+        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
         slippageConfig.slippage.toDec() ===
         new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))

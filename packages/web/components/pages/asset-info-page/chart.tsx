@@ -31,6 +31,7 @@ import { api } from "~/utils/trpc";
 
 export const AssetPriceChart: FunctionComponent = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const apiUtils = api.useUtils();
 
   const data = useMemo(
     () =>
@@ -49,7 +50,7 @@ export const AssetPriceChart: FunctionComponent = observer(() => {
       <div className="h-[400px] w-full xl:h-[476px]">
         {assetInfoConfig.mode === "advanced" ? (
           <AdvancedChart
-            datafeed={historicalDatafeed}
+            datafeed={historicalDatafeed({ apiUtils })}
             coinDenom={assetInfoConfig.denom}
             load_last_chart
           />

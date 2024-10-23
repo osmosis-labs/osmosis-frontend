@@ -194,6 +194,13 @@
       "upcoming": "A venir"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "Paiement par osmose",
+    "cypherOrder": "Commandez votre carte maintenant",
+    "cypherBeta": "Bêta",
+    "acceptedEverywhere": "Votre OSMO, désormais accepté partout",
+    "newPill": "Nouveau"
+  },
   "portfolio": {
     "buy": "Acheter",
     "sell": "Vendre",
@@ -220,9 +227,6 @@
     "seeAll": "Tout voir",
     "showHidden": "Afficher caché ( {hiddenDustCount} )",
     "hideSmallBalances": "Masquer les petits soldes",
-    "cypherSpend": "Paiement par osmose",
-    "cypherOrder": "Commandez votre carte maintenant",
-    "cypherBeta": "Bêta",
     "openOrders": "Commandes ouvertes",
     "last24h": "Dernières 24h",
     "last7d": "Derniers 7 jours",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "Quelque chose ne fonctionne pas…",
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez actualiser la page et réessayer ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
     "assetIsCurrentlyUnstable": "Les transferts {asset} sont actuellement instables",
-    "transferWillLikelyTakeLonger": "Les transferts prendront probablement plus de temps que d’habitude ou pourraient échouer complètement. Procédez à vos propres risques."
+    "transferWillLikelyTakeLonger": "Les transferts prendront probablement plus de temps que d’habitude ou pourraient échouer complètement. Procédez à vos propres risques.",
+    "sendFromWalletOrExchange": "Envoyez depuis votre portefeuille ou échangez",
+    "scanWithMobileWallet": "Scannez avec votre portefeuille mobile",
+    "or": "ou",
+    "copied": "Copié",
+    "copyToClipboard": "Copier dans le presse-papier",
+    "showQrCode": "Afficher le code QR",
+    "yourDepositAddress": "Votre adresse de dépôt {denom}",
+    "copyAddressToClipboard": "Copier l'adresse dans le presse-papiers",
+    "copyAddress": "Copier l'adresse",
+    "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
+    "minimumDeposit": "Dépôt minimum",
+    "nomic": {
+      "estimatedTime": "Environ 1 heure",
+      "awaitingBtc": "En attente de BTC",
+      "transferringYourBtc": "Transférer votre BTC",
+      "depositStatus": "Statut du dépôt",
+      "depositSuccess": "Succès du dépôt",
+      "pendingDeposit": "Dépôt en attente",
+      "estimatedAboutTime": "Estimé à environ {time}",
+      "from": "Depuis",
+      "to": "À",
+      "asset": "Actif",
+      "amountBtc": "Montant en BTC",
+      "totalValue": "Valeur totale",
+      "transactionHash": "Hachage de transaction",
+      "viewOnExplorer": "Voir sur l'explorateur",
+      "totalFees": "Frais totaux"
+    },
+    "doNotSendFundsToThisAddress": "N'envoyez pas de fonds à cette adresse.",
+    "addressExpired": "Cette adresse a expiré. Veuillez en demander une nouvelle.",
+    "addressAboutToExpire": "Cette adresse est sur le point d'expirer. Veuillez demander une nouvelle adresse pour éviter de perdre des fonds.",
+    "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
+    "transactionDetails": "Détails de la transaction",
+    "continue": "Continuer",
+    "inputBitcoinAddress": "Entrez l'adresse Bitcoin"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
@@ -1072,7 +1111,9 @@
     "minute": "minute",
     "minutes": "minutes",
     "hour": "heure",
-    "hours": "heures"
+    "hours": "heures",
+    "day": "jour",
+    "days": "jours"
   },
   "transactions": {
     "noRecent": "Aucun transfert récent",

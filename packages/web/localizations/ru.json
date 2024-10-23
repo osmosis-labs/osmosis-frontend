@@ -194,6 +194,13 @@
       "upcoming": "Предстоящие"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "Платить за осмос",
+    "cypherOrder": "Закажите карту сейчас",
+    "cypherBeta": "Бета",
+    "acceptedEverywhere": "Ваш OSMO теперь принимается везде",
+    "newPill": "Новый"
+  },
   "portfolio": {
     "buy": "Купить",
     "sell": "Продавать",
@@ -220,9 +227,6 @@
     "seeAll": "Смотреть все",
     "showHidden": "Показать скрытое ( {hiddenDustCount} )",
     "hideSmallBalances": "Скрыть небольшие остатки",
-    "cypherSpend": "Платить за осмос",
-    "cypherOrder": "Закажите карту сейчас",
-    "cypherBeta": "Бета",
     "openOrders": "Открытые заказы",
     "last24h": "Последние 24 часа",
     "last7d": "Последние 7дн.",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "Что-то не работает…",
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, обновите страницу и повторите попытку или воспользуйтесь альтернативным приложением для перевода средств в Osmosis.",
     "assetIsCurrentlyUnstable": "Передачи {asset} в настоящее время нестабильны.",
-    "transferWillLikelyTakeLonger": "Переносы, скорее всего, займут больше времени, чем обычно, или могут полностью завершиться неудачей. Действуйте на свой страх и риск."
+    "transferWillLikelyTakeLonger": "Переносы, скорее всего, займут больше времени, чем обычно, или могут полностью завершиться неудачей. Действуйте на свой страх и риск.",
+    "sendFromWalletOrExchange": "Отправьте из своего кошелька или обменяйте",
+    "scanWithMobileWallet": "Сканируйте с помощью мобильного кошелька",
+    "or": "или",
+    "copied": "Скопировано",
+    "copyToClipboard": "Копировать в буфер обмена",
+    "showQrCode": "Показать QR-код",
+    "yourDepositAddress": "Ваш адрес депозита {denom}",
+    "copyAddressToClipboard": "Копировать адрес в буфер обмена",
+    "copyAddress": "Копировать адрес",
+    "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
+    "minimumDeposit": "Минимальный депозит",
+    "nomic": {
+      "estimatedTime": "Около 1 часа",
+      "awaitingBtc": "Ожидание BTC",
+      "transferringYourBtc": "Перевод ваших BTC",
+      "depositStatus": "Статус депозита",
+      "depositSuccess": "Успех депозита",
+      "pendingDeposit": "Ожидаемый депозит",
+      "estimatedAboutTime": "Оценивается примерно {time}",
+      "from": "От",
+      "to": "К",
+      "asset": "Объект",
+      "amountBtc": "Сумма BTC",
+      "totalValue": "Общая стоимость",
+      "transactionHash": "Хэш транзакции",
+      "viewOnExplorer": "Посмотреть в проводнике",
+      "totalFees": "Общая сумма сборов"
+    },
+    "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",
+    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
+    "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
+    "createNewDepositAddress": "Создать новый адрес депозита",
+    "transactionDetails": "Подробности транзакции",
+    "continue": "Продолжать",
+    "inputBitcoinAddress": "Введите адрес Bitcoin"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",
@@ -1072,7 +1111,9 @@
     "minute": "минута",
     "minutes": "минуты",
     "hour": "час",
-    "hours": "часы"
+    "hours": "часы",
+    "day": "день",
+    "days": "дней"
   },
   "transactions": {
     "noRecent": "Нет недавних переводов",

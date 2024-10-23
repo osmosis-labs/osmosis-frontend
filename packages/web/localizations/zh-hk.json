@@ -194,6 +194,13 @@
       "upcoming": "即將推出"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "滲透支付",
+    "cypherOrder": "立即訂購您的卡",
+    "cypherBeta": "貝塔",
+    "acceptedEverywhere": "你的 OSMO，現在無所不在",
+    "newPill": "新的"
+  },
   "portfolio": {
     "buy": "買",
     "sell": "賣",
@@ -220,9 +227,6 @@
     "seeAll": "看全部",
     "showHidden": "顯示隱藏 ( {hiddenDustCount} )",
     "hideSmallBalances": "隱藏小額餘額",
-    "cypherSpend": "滲透支付",
-    "cypherOrder": "立即訂購您的卡",
-    "cypherBeta": "貝塔",
     "openOrders": "未結訂單",
     "last24h": "最近 24 小時",
     "last7d": "過去 7 天",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "有些東西不起作用…",
     "sorryForTheInconvenience": "帶來不便敬請諒解。請刷新頁面並重試或使用替代應用程式將您的資金轉移到 Osmosis。",
     "assetIsCurrentlyUnstable": "{asset}傳輸目前不穩定",
-    "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。"
+    "transferWillLikelyTakeLonger": "轉移可能需要比平常更長的時間，或者可能完全失敗。繼續需要您自擔風險。",
+    "sendFromWalletOrExchange": "從您的錢包或交易所發送",
+    "scanWithMobileWallet": "使用手機錢包掃描",
+    "or": "或者",
+    "copied": "已複製",
+    "copyToClipboard": "複製到剪貼簿",
+    "showQrCode": "顯示二維碼",
+    "yourDepositAddress": "您的{denom}存款地址",
+    "copyAddressToClipboard": "將位址複製到剪貼簿",
+    "copyAddress": "複製地址",
+    "receiveOnlyAsset": "此位址只能從{denom} {network} \"denom\"}。發送任何其他資產可能會導致永久性損失。",
+    "minimumDeposit": "最低存款額",
+    "nomic": {
+      "estimatedTime": "約1小時",
+      "awaitingBtc": "等待比特幣",
+      "transferringYourBtc": "轉移您的比特幣",
+      "depositStatus": "存款狀態",
+      "depositSuccess": "存款成功",
+      "pendingDeposit": "待定存款",
+      "estimatedAboutTime": "估計約{time}",
+      "from": "從",
+      "to": "到",
+      "asset": "資產",
+      "amountBtc": "金額 比特幣",
+      "totalValue": "總價值",
+      "transactionHash": "交易哈希",
+      "viewOnExplorer": "在資源管理器上查看",
+      "totalFees": "總費用"
+    },
+    "doNotSendFundsToThisAddress": "請勿將資金寄至該地址。",
+    "addressExpired": "該地址已過期。請索取一份新的。",
+    "addressAboutToExpire": "該地址即將過期。請申請新地址以避免資金損失。",
+    "createNewDepositAddress": "建立新的儲值地址",
+    "transactionDetails": "交易詳情",
+    "continue": "繼續",
+    "inputBitcoinAddress": "輸入比特幣地址"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
@@ -1072,7 +1111,9 @@
     "minute": "分分鐘",
     "minutes": "分分鐘",
     "hour": "小時",
-    "hours": "小時"
+    "hours": "小時",
+    "day": "天",
+    "days": "天"
   },
   "transactions": {
     "noRecent": "最近沒有轉帳",

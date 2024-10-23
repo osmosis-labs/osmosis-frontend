@@ -194,6 +194,13 @@
       "upcoming": "آینده"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "اسمز پرداخت",
+    "cypherOrder": "همین الان کارت خود را سفارش دهید",
+    "cypherBeta": "بتا",
+    "acceptedEverywhere": "OSMO شما، اکنون در همه جا پذیرفته شده است",
+    "newPill": "جدید"
+  },
   "portfolio": {
     "buy": "خرید کنید",
     "sell": "فروش",
@@ -220,9 +227,6 @@
     "seeAll": "همه را ببینید",
     "showHidden": "نمایش پنهان ( {hiddenDustCount} )",
     "hideSmallBalances": "توازن های کوچک را پنهان کنید",
-    "cypherSpend": "اسمز پرداخت",
-    "cypherOrder": "همین الان کارت خود را سفارش دهید",
-    "cypherBeta": "بتا",
     "openOrders": "باز کردن سفارشات",
     "last24h": "24 ساعت گذشته",
     "last7d": "7 روز گذشته",
@@ -911,7 +915,42 @@
     "somethingIsntWorking": "یه چیزی کار نمیکنه…",
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً صفحه را بازخوانی کنید و دوباره امتحان کنید یا از یک برنامه جایگزین برای انتقال وجوه خود به Osmosis استفاده کنید.",
     "assetIsCurrentlyUnstable": "انتقالات {asset} در حال حاضر ناپایدار هستند",
-    "transferWillLikelyTakeLonger": "نقل و انتقالات احتمالاً بیشتر از حد معمول طول می کشد یا ممکن است به طور کامل شکست بخورد. با مسئولیت خود ادامه دهید."
+    "transferWillLikelyTakeLonger": "نقل و انتقالات احتمالاً بیشتر از حد معمول طول می کشد یا ممکن است به طور کامل شکست بخورد. با مسئولیت خود ادامه دهید.",
+    "sendFromWalletOrExchange": "از کیف پول یا صرافی خود ارسال کنید",
+    "scanWithMobileWallet": "با کیف پول موبایل خود اسکن کنید",
+    "or": "یا",
+    "copied": "کپی شده است",
+    "copyToClipboard": "در کلیپ بورد کپی کنید",
+    "showQrCode": "نمایش کد QR",
+    "yourDepositAddress": "آدرس سپرده شما {denom}",
+    "copyAddressToClipboard": "آدرس را در کلیپ بورد کپی کنید",
+    "copyAddress": "آدرس را کپی کنید",
+    "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
+    "minimumDeposit": "حداقل سپرده",
+    "nomic": {
+      "estimatedTime": "حدود 1 ساعت",
+      "awaitingBtc": "در انتظار بیت کوین",
+      "transferringYourBtc": "انتقال بیت کوین شما",
+      "depositStatus": "وضعیت سپرده",
+      "depositSuccess": "موفقیت در سپرده گذاری",
+      "pendingDeposit": "سپرده معلق",
+      "estimatedAboutTime": "تخمین زده شده درباره {time}",
+      "from": "از",
+      "to": "به",
+      "asset": "دارایی",
+      "amountBtc": "مقدار BTC",
+      "totalValue": "ارزش کل",
+      "transactionHash": "هش تراکنش",
+      "viewOnExplorer": "مشاهده در اکسپلورر",
+      "totalFees": "مجموع هزینه ها"
+    },
+    "doNotSendFundsToThisAddress": "از ارسال وجوه به این آدرس خودداری کنید.",
+    "addressExpired": "این آدرس منقضی شده است. لطفا یک مورد جدید درخواست کنید.",
+    "addressAboutToExpire": "این آدرس رو به اتمام است. لطفاً برای جلوگیری از از دست دادن وجوه، یک آدرس جدید درخواست کنید.",
+    "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
+    "transactionDetails": "جزئیات معامله",
+    "continue": "ادامه دهید",
+    "inputBitcoinAddress": "آدرس بیت کوین را وارد کنید"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",
@@ -1072,7 +1111,9 @@
     "minute": "دقیقه",
     "minutes": "دقایق",
     "hour": "ساعت",
-    "hours": "ساعت ها"
+    "hours": "ساعت ها",
+    "day": "روز",
+    "days": "روز"
   },
   "transactions": {
     "noRecent": "بدون نقل و انتقالات اخیر",
