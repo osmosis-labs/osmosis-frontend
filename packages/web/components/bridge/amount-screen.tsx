@@ -200,11 +200,6 @@ export const AmountScreen = observer(
         ? accountStore.getWallet(fromChain.chainId)
         : undefined;
 
-    const toCosmosCounterpartyAccount =
-      !isNil(toChain) && toChain.chainType === "cosmos"
-        ? accountStore.getWallet(toChain.chainId)
-        : undefined;
-
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
     const cosmosAccountRequiringConnection =
