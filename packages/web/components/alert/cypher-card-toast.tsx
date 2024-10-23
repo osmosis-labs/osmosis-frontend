@@ -49,21 +49,31 @@ export function CypherCardToast() {
           <Image
             src="/images/cypher-card-intro.svg"
             alt={t("cypherCard.cypherSpend")}
-            width={136}
-            height={136}
+            width={isMobile ? 100 : 136}
+            height={isMobile ? 100 : 136}
           />
 
           <div className="mr-3 flex flex-col gap-2">
-            <Pill className="!px-2">{t("cypherCard.newPill")}</Pill>
+            <Pill className={classNames("!px-2", "sm:py-1 sm:text-caption")}>
+              {t("cypherCard.newPill")}
+            </Pill>
 
-            <div className="flex w-[16.875rem] max-w-[16.875rem] items-center justify-between">
+            <div className="flex w-[16.875rem] max-w-[16.875rem] items-center justify-between sm:w-fit sm:max-w-fit">
               <div className="flex flex-col gap-2">
-                <h1 className="flex-shrink-0 text-h6 font-h6">
+                <h1
+                  className={classNames(
+                    "flex-shrink-0 text-h6 font-h6",
+                    "sm:text-subtitle1 sm:font-subtitle1"
+                  )}
+                >
                   {t("cypherCard.cypherSpend")}
                 </h1>
                 <Link
                   href={CYPHER_CARD_URL}
-                  className="text-subtitle1 font-subtitle1 text-wosmongton-300 hover:underline"
+                  className={classNames(
+                    "text-wrap text-subtitle1 font-subtitle1 text-wosmongton-300 hover:underline",
+                    "sm:text-left sm:text-caption sm:font-caption"
+                  )}
                   onClick={(e) => {
                     e.stopPropagation();
                     onClose();
