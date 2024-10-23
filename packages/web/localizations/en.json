@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "This address can only receive {denom} from {network} network. Sending any other assets may result in permanent loss.",
     "minimumDeposit": "Minimum deposit",
     "nomic": {
-      "confirmations": "6 confirmations"
+      "estimatedTime": "About 1 hour",
+      "awaitingBtc": "Awaiting BTC",
+      "transferringYourBtc": "Transferring your BTC",
+      "depositStatus": "Deposit status",
+      "depositSuccess": "Deposit successful",
+      "pendingDeposit": "Pending deposit",
+      "estimatedAboutTime": "Estimated about {time}",
+      "from": "From",
+      "to": "To",
+      "asset": "Asset",
+      "amountBtc": "Amount BTC",
+      "totalValue": "Total value",
+      "transactionHash": "Transaction hash",
+      "viewOnExplorer": "View on explorer",
+      "totalFees": "Total fees"
     },
-    "expiresIn": "Expires in",
-    "getNewAddress": "Get new address",
-    "addressExpired": "This address has expired. Please request a new one."
+    "doNotSendFundsToThisAddress": "Do not send funds to this address.",
+    "addressExpired": "This deposit address has expired. Please request a new deposit address now.",
+    "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
+    "createNewDepositAddress": "Create new deposit address",
+    "transactionDetails": "Transaction details",
+    "continue": "Continue",
+    "inputBitcoinAddress": "Input Bitcoin address"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",

@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "confirmations": "6 confirmări"
+      "estimatedTime": "Aproximativ 1 oră",
+      "awaitingBtc": "În așteptarea BTC",
+      "transferringYourBtc": "Transferul dvs. BTC",
+      "depositStatus": "Starea depozitului",
+      "depositSuccess": "Depozit cu succes",
+      "pendingDeposit": "Depunerea în așteptare",
+      "estimatedAboutTime": "Estimată aproximativ {time}",
+      "from": "Din",
+      "to": "La",
+      "asset": "Atu",
+      "amountBtc": "Suma BTC",
+      "totalValue": "Valoarea totală",
+      "transactionHash": "Hash de tranzacție",
+      "viewOnExplorer": "Vizualizare pe explorer",
+      "totalFees": "Taxele totale"
     },
-    "expiresIn": "Expiră în",
-    "getNewAddress": "Obțineți o nouă adresă",
-    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou."
+    "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
+    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
+    "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",
+    "createNewDepositAddress": "Creați o nouă adresă de depozit",
+    "transactionDetails": "Detalii tranzacție",
+    "continue": "Continua",
+    "inputBitcoinAddress": "Introdu adresa Bitcoin"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

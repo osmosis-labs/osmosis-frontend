@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
     "minimumDeposit": "Минимальный депозит",
     "nomic": {
-      "confirmations": "6 подтверждений"
+      "estimatedTime": "Около 1 часа",
+      "awaitingBtc": "Ожидание BTC",
+      "transferringYourBtc": "Перевод ваших BTC",
+      "depositStatus": "Статус депозита",
+      "depositSuccess": "Успех депозита",
+      "pendingDeposit": "Ожидаемый депозит",
+      "estimatedAboutTime": "Оценивается примерно {time}",
+      "from": "От",
+      "to": "К",
+      "asset": "Объект",
+      "amountBtc": "Сумма BTC",
+      "totalValue": "Общая стоимость",
+      "transactionHash": "Хэш транзакции",
+      "viewOnExplorer": "Посмотреть в проводнике",
+      "totalFees": "Общая сумма сборов"
     },
-    "expiresIn": "Истекает через",
-    "getNewAddress": "Получить новый адрес",
-    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый."
+    "doNotSendFundsToThisAddress": "Не отправляйте средства на этот адрес.",
+    "addressExpired": "Этот адрес устарел. Пожалуйста, запросите новый.",
+    "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
+    "createNewDepositAddress": "Создать новый адрес депозита",
+    "transactionDetails": "Подробности транзакции",
+    "continue": "Продолжать",
+    "inputBitcoinAddress": "Введите адрес Bitcoin"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

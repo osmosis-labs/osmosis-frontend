@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
     "minimumDeposit": "Minimum mevduat",
     "nomic": {
-      "confirmations": "6 onay"
+      "estimatedTime": "Yaklaşık 1 saat",
+      "awaitingBtc": "BTC bekleniyor",
+      "transferringYourBtc": "BTC'nizi transfer etme",
+      "depositStatus": "Mevduat durumu",
+      "depositSuccess": "Para yatırma başarısı",
+      "pendingDeposit": "Bekleyen mevduat",
+      "estimatedAboutTime": "{time} hakkında tahmin edildi",
+      "from": "İtibaren",
+      "to": "İle",
+      "asset": "Varlık",
+      "amountBtc": "Miktar BTC",
+      "totalValue": "Toplam değer",
+      "transactionHash": "İşlem karması",
+      "viewOnExplorer": "Explorer'da görüntüle",
+      "totalFees": "Toplam ücretler"
     },
-    "expiresIn": "Sona eriyor",
-    "getNewAddress": "Yeni adres al",
-    "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin."
+    "doNotSendFundsToThisAddress": "Bu adrese para göndermeyin.",
+    "addressExpired": "Bu adresin süresi doldu. Lütfen yenisini talep edin.",
+    "addressAboutToExpire": "Bu adresin süresi dolmak üzere. Lütfen para kaybetmemek için yeni bir adres talep edin.",
+    "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
+    "transactionDetails": "İşlem detayları",
+    "continue": "Devam etmek",
+    "inputBitcoinAddress": "Bitcoin adresini girin"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

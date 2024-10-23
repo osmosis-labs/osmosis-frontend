@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
-      "confirmations": "6 पुष्टियां"
+      "estimatedTime": "लगभग 1 घंटा",
+      "awaitingBtc": "बीटीसी की प्रतीक्षा में",
+      "transferringYourBtc": "अपना BTC स्थानांतरित करना",
+      "depositStatus": "जमा स्थिति",
+      "depositSuccess": "जमा सफल",
+      "pendingDeposit": "लंबित जमा",
+      "estimatedAboutTime": "अनुमानित लगभग {time}",
+      "from": "से",
+      "to": "को",
+      "asset": "संपत्ति",
+      "amountBtc": "राशि बीटीसी",
+      "totalValue": "कुल मूल्य",
+      "transactionHash": "लेनदेन हैश",
+      "viewOnExplorer": "एक्सप्लोरर पर देखें",
+      "totalFees": "कुल शुल्क"
     },
-    "expiresIn": "में समाप्त होना",
-    "getNewAddress": "नया पता प्राप्त करें",
-    "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।"
+    "doNotSendFundsToThisAddress": "इस पते पर धनराशि न भेजें।",
+    "addressExpired": "यह पता समाप्त हो गया है। कृपया नया पता मांगें।",
+    "addressAboutToExpire": "यह पता समाप्त होने वाला है। कृपया धनराशि खोने से बचने के लिए नया पता मांगें।",
+    "createNewDepositAddress": "नया जमा पता बनाएं",
+    "transactionDetails": "लेन-देन विवरण",
+    "continue": "जारी रखना",
+    "inputBitcoinAddress": "बिटकॉइन पता इनपुट करें"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

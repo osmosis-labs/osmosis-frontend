@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "이 주소는 {denom} 만 {network} 네트워크에서 수신할 수 있습니다. 다른 자산을 보내면 영구적인 손실이 발생할 수 있습니다.",
     "minimumDeposit": "최소입금",
     "nomic": {
-      "confirmations": "6개의 확인"
+      "estimatedTime": "약 1시간 정도",
+      "awaitingBtc": "BTC를 기다리는 중",
+      "transferringYourBtc": "BTC 전송",
+      "depositStatus": "입금 상태",
+      "depositSuccess": "입금 성공",
+      "pendingDeposit": "입금 보류 중",
+      "estimatedAboutTime": "{time} 정도 예상됨",
+      "from": "에서",
+      "to": "에게",
+      "asset": "유산",
+      "amountBtc": "금액 BTC",
+      "totalValue": "총 가치",
+      "transactionHash": "거래 해시",
+      "viewOnExplorer": "탐색기에서 보기",
+      "totalFees": "총 수수료"
     },
-    "expiresIn": "만료됨",
-    "getNewAddress": "새로운 주소를 얻으세요",
-    "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요."
+    "doNotSendFundsToThisAddress": "이 주소로 자금을 보내지 마십시오.",
+    "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",
+    "addressAboutToExpire": "이 주소는 곧 만료됩니다. 자금 손실을 피하려면 새 주소를 요청하세요.",
+    "createNewDepositAddress": "새로운 입금 주소 생성",
+    "transactionDetails": "거래내역",
+    "continue": "계속하다",
+    "inputBitcoinAddress": "비트코인 주소를 입력하세요"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",

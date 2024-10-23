@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "Ten adres może odbierać tylko {denom} z sieci {network} . Wysyłanie innych zasobów może skutkować trwałą utratą.",
     "minimumDeposit": "Minimalny depozyt",
     "nomic": {
-      "confirmations": "6 potwierdzeń"
+      "estimatedTime": "Około 1 godziny",
+      "awaitingBtc": "Oczekiwanie na BTC",
+      "transferringYourBtc": "Przesyłanie BTC",
+      "depositStatus": "Status depozytu",
+      "depositSuccess": "Wpłata zakończona sukcesem",
+      "pendingDeposit": "Oczekujący depozyt",
+      "estimatedAboutTime": "Szacunkowo około {time}",
+      "from": "Z",
+      "to": "Do",
+      "asset": "Zaleta",
+      "amountBtc": "Kwota BTC",
+      "totalValue": "Wartość całkowita",
+      "transactionHash": "Hash transakcji",
+      "viewOnExplorer": "Widok w Eksploratorze",
+      "totalFees": "Łączne opłaty"
     },
-    "expiresIn": "Wygasa za",
-    "getNewAddress": "Uzyskaj nowy adres",
-    "addressExpired": "Ten adres wygasł. Poproś o nowy."
+    "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",
+    "addressExpired": "Ten adres wygasł. Poproś o nowy.",
+    "addressAboutToExpire": "Ten adres wkrótce wygaśnie. Poproś o nowy adres, aby uniknąć utraty środków.",
+    "createNewDepositAddress": "Utwórz nowy adres depozytowy",
+    "transactionDetails": "Szczegóły transakcji",
+    "continue": "Kontynuować",
+    "inputBitcoinAddress": "Wprowadź adres Bitcoin"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",

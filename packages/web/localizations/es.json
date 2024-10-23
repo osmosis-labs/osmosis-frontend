@@ -924,11 +924,29 @@
     "receiveOnlyAsset": "Esta dirección solo puede recibir {denom} de la red {network} . El envío de otros activos puede provocar una pérdida permanente.",
     "minimumDeposit": "Depósito mínimo",
     "nomic": {
-      "confirmations": "6 confirmaciones"
+      "estimatedTime": "Aproximadamente 1 hora",
+      "awaitingBtc": "Esperando BTC",
+      "transferringYourBtc": "Transfiriendo tus BTC",
+      "depositStatus": "Estado del depósito",
+      "depositSuccess": "Depósito realizado con éxito",
+      "pendingDeposit": "Depósito pendiente",
+      "estimatedAboutTime": "Se estima que será de aproximadamente {time}",
+      "from": "De",
+      "to": "A",
+      "asset": "Activo",
+      "amountBtc": "Cantidad BTC",
+      "totalValue": "Valor total",
+      "transactionHash": "Hash de transacción",
+      "viewOnExplorer": "Ver en el explorador",
+      "totalFees": "Tarifas totales"
     },
-    "expiresIn": "Caduca en",
-    "getNewAddress": "Obtener nueva dirección",
-    "addressExpired": "Esta dirección ha expirado. Por favor, solicite una nueva."
+    "doNotSendFundsToThisAddress": "No envíe fondos a esta dirección.",
+    "addressExpired": "Esta dirección ha expirado. Por favor, solicite una nueva.",
+    "addressAboutToExpire": "Esta dirección está a punto de caducar. Solicite una nueva dirección para evitar perder fondos.",
+    "createNewDepositAddress": "Crear nueva dirección de depósito",
+    "transactionDetails": "Detalles de la transacción",
+    "continue": "Continuar",
+    "inputBitcoinAddress": "Introducir dirección de Bitcoin"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",
