@@ -9,7 +9,10 @@ async function getLaunchDarklyClient(): Promise<LaunchDarkly.LDClient> {
     process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID ?? "",
     {
       kind: "user",
-      key: "osmosis-frontend-server",
+      key: `osmosis-frontend-server`,
+    },
+    {
+      streaming: true,
     }
   );
   await client.waitForInitialization();
