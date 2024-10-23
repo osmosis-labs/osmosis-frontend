@@ -1,5 +1,6 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -41,7 +42,6 @@ import {
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";
@@ -124,7 +124,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     initialQuoteDenom = "USDC",
     onOrderSuccess,
   }: PlaceLimitToolProps) => {
-    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
+    const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);

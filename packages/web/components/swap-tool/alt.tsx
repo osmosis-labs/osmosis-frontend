@@ -1,6 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -42,7 +43,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
   useSwap,
@@ -94,7 +94,7 @@ export const AltSwapTool: FunctionComponent<SwapToolProps> = observer(
     const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
-    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
+    const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     const toAmountInputEl = useRef<HTMLInputElement | null>(null);
