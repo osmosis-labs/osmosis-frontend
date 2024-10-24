@@ -2990,6 +2990,21 @@
     "@cosmos-kit/cosmostation-extension" "^2.12.2"
     "@cosmos-kit/cosmostation-mobile" "^2.11.2"
 
+"@cosmos-kit/imtoken-extension@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/imtoken-extension/-/imtoken-extension-1.1.0.tgz#4d1c4ea2a0bd4548969cf4fd58503321230336c4"
+  integrity sha512-6vNrjVqLXdFcAEFaPCM0uFQjbLMaKymbahk2YW3qN8fUGopdmfDbFuBJj6IKqKEu9uOijmfvUcmKDZIax+gurg==
+  dependencies:
+    "@chain-registry/keplr" "1.68.2"
+    "@cosmos-kit/core" "^2.13.1"
+
+"@cosmos-kit/imtoken@^1.0.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/imtoken/-/imtoken-1.1.0.tgz#962e281a783a8fd1647fb9aa437d0fcf0159db46"
+  integrity sha512-PRN8OzMDbT1j5Zs5HgN34laXUUStZgxMs6cDibd9yOa3BBf0LU74CQQe+ucTLhfydrD8uqXxfsq2jg7YVxAPPg==
+  dependencies:
+    "@cosmos-kit/imtoken-extension" "^1.1.0"
+
 "@cosmos-kit/keplr-extension@^2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/keplr-extension/-/keplr-extension-2.12.2.tgz#d632a1e53eb821b70851ae2aba6c473b4b79dd67"
