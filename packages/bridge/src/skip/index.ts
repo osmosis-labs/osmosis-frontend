@@ -271,7 +271,10 @@ export class SkipBridgeProvider implements BridgeProvider {
       // See original usage in `getAsset` method.
 
       // find variants
-      const assets = await this.getAssets();
+      const [assets, skipChains] = await Promise.all([
+        this.getAssets(),
+        this.getChains(),
+      ]);
       const foundVariants = new BridgeAssetMap<
         BridgeChain & BridgeSupportedAsset
       >();
@@ -353,13 +356,21 @@ export class SkipBridgeProvider implements BridgeProvider {
       const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
         const chainAssets = assets[chainID].assets;
 
-        return chainAssets.filter(
-          (asset) =>
+        return chainAssets.filter((asset) => {
+          const skipChain = skipChains.find(
+            (c) => c.chain_id === asset.origin_chain_id
+          );
+
+          return (
+            // All shared origin assets require Packet Forward Middleware (PFM) to be enabled
+            // so assets can be forwarded to destination chain
+            skipChain?.pfm_enabled &&
             asset.origin_denom.toLowerCase() ===
               chainAsset.origin_denom.toLowerCase() &&
             asset.origin_chain_id === chainAsset.origin_chain_id &&
             asset.denom.toLowerCase() !== chainAsset.denom.toLowerCase()
-        );
+          );
+        });
       });
 
       for (const sharedOriginAsset of sharedOriginAssets) {
