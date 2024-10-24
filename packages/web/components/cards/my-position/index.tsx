@@ -117,6 +117,7 @@ export const MyPositionCard: FunctionComponent<{
               <PoolAssetsName
                 size="md"
                 assetDenoms={currentCoins.map((asset) => asset.denom)}
+                withLink={false}
               />
               <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
                 {!hasPositionDetailsError && (
