@@ -81,10 +81,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
         <>
           <main className="mr-12 flex w-[752px] min-w-[752px] flex-col 1.5xl:mr-0 1.5xl:w-full 1.5xl:min-w-full">
             <section className="flex py-3" ref={overviewRef}>
-              <AssetsOverview
-                totalValue={totalCap}
-                isTotalValueFetched={isFetchedAllocation}
-              />
+              <AssetsOverview />
             </section>
             <section className="w-full py-3">
               <TabGroup>

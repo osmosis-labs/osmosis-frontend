@@ -87,12 +87,7 @@ const timeToLocal = (originalTime: number) => {
   );
 };
 
-export const AssetsOverview: FunctionComponent<
-  {
-    totalValue?: PricePretty;
-    isTotalValueFetched?: boolean;
-  } & CustomClasses
-> = observer(({ totalValue, isTotalValueFetched }) => {
+export const AssetsOverview: FunctionComponent<CustomClasses> = observer(() => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { t } = useTranslation();
@@ -150,7 +145,7 @@ export const AssetsOverview: FunctionComponent<
   const totalDisplayValue =
     dataPoint.value !== undefined
       ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
-      : totalValue?.toString();
+      : undefined;
 
   const [_isChartMinimized, setIsChartMinimized] = useLocalStorage(
     "is-portfolio-chart-minimized",
@@ -204,9 +199,12 @@ export const AssetsOverview: FunctionComponent<
           </span>
           <SkeletonLoader
             className={classNames(
-              `mt-2 ${isTotalValueFetched ? "" : "h-14 w-48"}`
+              `mt-2 ${isPortfolioOverTimeDataIsFetched ? "" : "h-14 w-48"}`
             )}
-            isLoaded={isTotalValueFetched || totalDisplayValue === undefined}
+            isLoaded={
+              isPortfolioOverTimeDataIsFetched ||
+              totalDisplayValue === undefined
+            }
           >
             {isMobile ? (
               <h4>{totalDisplayValue?.toString()}</h4>
@@ -252,7 +250,7 @@ export const AssetsOverview: FunctionComponent<
             <Button
               className="flex h-[48px] !w-[141px] items-center gap-2 !rounded-full !bg-osmoverse-825 !p-0 text-wosmongton-200 hover:!bg-osmoverse-800"
               onClick={() => startBridge({ direction: "withdraw" })}
-              disabled={totalValue && totalValue?.toDec()?.isZero()}
+              disabled={dataPoint && dataPoint.value === 0}
             >
               <Icon
                 id="withdraw"
@@ -331,12 +329,15 @@ export const AssetsOverview: FunctionComponent<
           error={error}
           setShowDate={setShowDate}
           resetDataPoint={() => {
-            if (totalValue) {
-              setDataPoint({
-                time: dayjs().unix() as Time,
-                value: +totalValue?.toDec()?.toString(),
-              });
-              setShowDate(false);
+            if (dataPoint) {
+              if (portfolioOverTimeData && portfolioOverTimeData.length > 0) {
+                const lastDataPoint =
+                  portfolioOverTimeData[portfolioOverTimeData.length - 1];
+                setDataPoint({
+                  time: timeToLocal(lastDataPoint.time) as Time,
+                  value: lastDataPoint.value,
+                });
+              }
             }
           }}
         />

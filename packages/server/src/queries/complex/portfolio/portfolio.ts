@@ -22,7 +22,7 @@ export async function getPortfolioOverTime({
 }): Promise<ChartPortfolioOverTimeResponse[]> {
   return await cachified({
     cache: transactionsCache,
-    ttl: 1000 * 60, // 60 seconds
+    ttl: 1000 * 15, // 15 seconds
     key: `portfolio-over-time-${address}-range-${range}`,
     getFreshValue: async () => {
       const data = await queryPortfolioOverTime({
