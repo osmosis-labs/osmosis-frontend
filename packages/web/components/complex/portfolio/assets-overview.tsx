@@ -111,8 +111,10 @@ const getLocalizedPortfolioOverTimeData = (
   // If there is only one data point, add 15 more points to the array to create a more accurate line
   if (portfolioOverTimeData.length <= 1 && portfolioOverTimeData[0]) {
     const baseDataPoint = portfolioOverTimeData[0];
+    const baseTime =
+      baseDataPoint.value === 0 ? Date.now() / 1000 : baseDataPoint.time;
     const additionalPoints = Array.from({ length: 15 }, (_, index) => ({
-      time: Date.now() / 1000 - 86400 * (index + 1),
+      time: baseTime - 86400 * (index + 1),
       value: baseDataPoint.value,
     }));
     return [...additionalPoints, baseDataPoint]
