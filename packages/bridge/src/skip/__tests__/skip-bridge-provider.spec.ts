@@ -638,6 +638,55 @@ describe("SkipBridgeProvider", () => {
       ]);
     });
 
+    it("should not return shared origin assets where the origin chain Packet Forward Middleware (PFM) is disabled", async () => {
+      server.use(
+        rest.get("https://api.skip.money/v2/info/chains", (_req, res, ctx) => {
+          const modifiedSkipChains = SkipChains.chains.map((chain) => {
+            if (chain.chain_id === "noble-1") {
+              return { ...chain, pfm_enabled: false };
+            }
+            return chain;
+          });
+          return res(ctx.json({ ...SkipChains, chains: modifiedSkipChains }));
+        })
+      );
+
+      const sourceVariants = await provider.getSupportedAssets({
+        chain: {
+          chainId: "osmosis-1",
+          chainType: "cosmos",
+        },
+        asset: {
+          denom: "USDC",
+          address:
+            "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4",
+          decimals: 6,
+        },
+        direction: "deposit",
+      });
+
+      expect(sourceVariants).toEqual([
+        {
+          address: "uusdc",
+          chainId: "noble-1",
+          chainType: "cosmos",
+          coinGeckoId: "usd-coin",
+          decimals: 6,
+          denom: "USDC",
+          transferTypes: ["quote"],
+        },
+        {
+          address: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+          chainId: 1,
+          chainType: "evm",
+          coinGeckoId: "usd-coin",
+          decimals: 6,
+          denom: "USDC",
+          transferTypes: ["quote"],
+        },
+      ]);
+    });
+
     it("includes skip supported cosmos counterparty assets from asset list", async () => {
       const sourceVariants = await provider.getSupportedAssets({
         chain: {
