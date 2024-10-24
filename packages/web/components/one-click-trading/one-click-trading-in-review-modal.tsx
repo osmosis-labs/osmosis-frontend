@@ -1,26 +1,60 @@
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import {
+  Dispatch,
+  forwardRef,
+  SetStateAction,
+  useCallback,
+  useImperativeHandle,
+} from "react";
+
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
-import { useOneClickTradingParams, useOneClickTradingSession } from "~/hooks";
+import { useOneClickTradingSession } from "~/hooks";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export const ProfileOneClickTradingSettings = ({
-  onGoBack,
-  onClose,
-}: {
+interface Props {
   onGoBack: () => void;
-  onClose: () => void;
-}) => {
+  transaction1CTParams: OneClickTradingTransactionParams | undefined;
+  setTransaction1CTParams: Dispatch<
+    SetStateAction<OneClickTradingTransactionParams | undefined>
+  >;
+  spendLimitTokenDecimals: number | undefined;
+  isLoading1CTParams?: boolean;
+  resetTransaction1CTParams: () => void;
+}
+
+export interface OneClickTradingInReviewModalRef {
+  onStartTrading: () => Promise<void>;
+  isLoading: boolean;
+}
+
+export const OneClickTradingInReviewModal = forwardRef<
+  OneClickTradingInReviewModalRef,
+  Props
+>((props, ref) => {
+  const {
+    onGoBack,
+    transaction1CTParams,
+    setTransaction1CTParams,
+    spendLimitTokenDecimals,
+    isLoading1CTParams,
+    resetTransaction1CTParams,
+  } = props;
+
   const { accountStore, chainStore } = useStore();
   const { oneClickTradingInfo, isOneClickTradingEnabled } =
     useOneClickTradingSession();
+  const removeSession = useRemoveOneClickTradingSession();
+  const create1CTSession = useCreateOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
+
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
@@ -37,32 +71,48 @@ export const ProfileOneClickTradingSettings = ({
     }
   );
 
-  const create1CTSession = useCreateOneClickTradingSession({
-    queryOptions: {
-      onSuccess: () => {
-        onGoBack();
+  const onStartTrading = useCallback(async () => {
+    await create1CTSession.mutateAsync(
+      {
+        spendLimitTokenDecimals,
+        transaction1CTParams,
+        walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
+        /**
+         * If the user has an existing session, remove it and add the new one.
+         */
+        additionalAuthenticatorsToRemove: sessionAuthenticator
+          ? [BigInt(sessionAuthenticator.id)]
+          : undefined,
       },
-    },
-  });
-  const removeSession = useRemoveOneClickTradingSession();
-
-  const {
-    transaction1CTParams,
-    setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
+      {
+        onSuccess: onGoBack,
+      }
+    );
+  }, [
+    onGoBack,
+    accountStore,
+    chainStore.osmosis.chainId,
+    create1CTSession,
+    sessionAuthenticator,
     spendLimitTokenDecimals,
-    reset: reset1CTParams,
-  } = useOneClickTradingParams({
-    oneClickTradingInfo,
-    defaultIsOneClickEnabled: !!isOneClickTradingEnabled,
-    scopeKey: "profile-one-click-trading-settings",
-  });
+    transaction1CTParams,
+  ]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      isLoading: create1CTSession.isLoading,
+      onStartTrading,
+    }),
+    [onStartTrading, create1CTSession]
+  );
 
   return (
     <OneClickTradingSettings
+      showCreationButton={false}
       transaction1CTParams={transaction1CTParams}
       setTransaction1CTParams={setTransaction1CTParams}
-      resetTransaction1CTParams={reset1CTParams}
+      resetTransaction1CTParams={resetTransaction1CTParams}
       isLoading={
         isLoading1CTParams ||
         (shouldFetchSessionAuthenticator
@@ -70,31 +120,8 @@ export const ProfileOneClickTradingSettings = ({
           : false)
       }
       isSendingTx={create1CTSession.isLoading}
-      onStartTrading={() => {
-        create1CTSession.mutate(
-          {
-            spendLimitTokenDecimals,
-            transaction1CTParams,
-            walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
-            /**
-             * If the user has an existing session, remove it and add the new one.
-             */
-            additionalAuthenticatorsToRemove: sessionAuthenticator
-              ? [BigInt(sessionAuthenticator.id)]
-              : undefined,
-          },
-          {
-            onSuccess: () => {
-              onGoBack();
-            },
-          }
-        );
-      }}
-      onGoBack={() => {
-        reset1CTParams();
-        onGoBack();
-      }}
-      onClose={onClose}
+      onStartTrading={onStartTrading}
+      onGoBack={onGoBack}
       hasExistingSession={isOneClickTradingEnabled}
       onEndSession={() => {
         const rollback = () => {
@@ -132,4 +159,4 @@ export const ProfileOneClickTradingSettings = ({
       isEndingSession={removeSession.isLoading}
     />
   );
-};
+});

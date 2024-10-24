@@ -3,7 +3,8 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 import { api } from "~/utils/trpc";
 
@@ -47,74 +48,47 @@ export function getParametersFromOneClickTradingInfo({
 export const useOneClickTradingParams = ({
   oneClickTradingInfo,
   defaultIsOneClickEnabled = false,
+  scopeKey = "oneClickTradingParams",
 }: {
   oneClickTradingInfo?: OneClickTradingInfo;
   defaultIsOneClickEnabled?: boolean;
+  scopeKey?: string;
 } = {}) => {
+  const [transaction1CTParams, setTransaction1CTParams] =
+    useState<OneClickTradingTransactionParams>();
+  const apiUtils = api.useUtils();
+
   const {
     data: defaultTransaction1CTParams,
     isLoading,
     isError,
-  } = api.local.oneClickTrading.getParameters.useQuery();
+    refetch: reset,
+  } = useQuery({
+    queryKey: [scopeKey, oneClickTradingInfo?.sessionKey],
+    queryFn: async () => {
+      const data = await apiUtils.local.oneClickTrading.getParameters.fetch();
+      if (oneClickTradingInfo) {
+        return {
+          ...getParametersFromOneClickTradingInfo({
+            oneClickTradingInfo,
+            defaultIsOneClickEnabled,
+          }),
+          spendLimitTokenDecimals: data.spendLimitTokenDecimals,
+        };
+      }
 
-  const [transaction1CTParams, setTransaction1CTParams] = useState<
-    OneClickTradingTransactionParams | undefined
-  >(
-    oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : undefined
-  );
-  const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
-    useState<OneClickTradingTransactionParams | undefined>();
-
-  useEffect(() => {
-    const paramsToSet = oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : defaultTransaction1CTParams;
-
-    if (!paramsToSet || transaction1CTParams) return;
-
-    const nextTransaction1CTParams = {
-      isOneClickEnabled: defaultIsOneClickEnabled,
-      ...paramsToSet,
-    };
-    setTransaction1CTParams(nextTransaction1CTParams);
-    setInitialTransaction1CTParams(nextTransaction1CTParams);
-  }, [
-    defaultIsOneClickEnabled,
-    defaultTransaction1CTParams,
-    oneClickTradingInfo,
-    transaction1CTParams,
-  ]);
-
-  const reset = useCallback(() => {
-    const paramsToSet = oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : defaultTransaction1CTParams;
-    if (!paramsToSet && !initialTransaction1CTParams) return;
-
-    const nextTransaction1CTParams = paramsToSet
-      ? {
-          isOneClickEnabled: defaultIsOneClickEnabled,
-          ...paramsToSet,
-        }
-      : initialTransaction1CTParams;
-    setTransaction1CTParams(nextTransaction1CTParams);
-  }, [
-    defaultIsOneClickEnabled,
-    defaultTransaction1CTParams,
-    initialTransaction1CTParams,
-    oneClickTradingInfo,
-  ]);
+      return {
+        ...data,
+        spendLimitTokenDecimals: data.spendLimitTokenDecimals,
+        isOneClickEnabled: defaultIsOneClickEnabled,
+      };
+    },
+    cacheTime: 1000 * 60 * 10,
+    refetchOnWindowFocus: false, // Prevents refetching after losing the focus when accepting the transaction
+    onSuccess: ({ spendLimitTokenDecimals, ...rest }) => {
+      setTransaction1CTParams(rest);
+    },
+  });
 
   return {
     transaction1CTParams,
