@@ -70,6 +70,8 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     PORTFOLIO_HIDE_DUST_KEY,
     true
   );
+  const showZeroBalancesSplash =
+    userHasNoAssets === true || userHasNoAssets === undefined;
 
   return (
     <div
@@ -137,7 +139,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                   <div className="mx-auto my-6 w-fit">
                     <Spinner />
                   </div>
-                ) : userHasNoAssets ? (
+                ) : showZeroBalancesSplash ? (
                   <UserZeroBalanceTableSplash />
                 ) : (
                   <TabPanels>

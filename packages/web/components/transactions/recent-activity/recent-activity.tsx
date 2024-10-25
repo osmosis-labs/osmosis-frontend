@@ -33,7 +33,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
   const { t } = useTranslation();
 
-  const { data: transactionsData, isLoading: isGetTransactionsLoading } =
+  const { data: transactionsData, isFetched: isGetTransactionsFetched } =
     api.edge.transactions.getTransactions.useQuery(
       {
         address: wallet?.address || "",
@@ -48,6 +48,8 @@ export const RecentActivity: FunctionComponent = observer(() => {
   const { transactions } = transactionsData ?? {
     transactions: [],
   };
+
+  const showNoTransactionsSplash = transactions.length === 0;
 
   const topActivity = transactions.slice(0, ACTIVITY_LIMIT);
 
@@ -64,9 +66,9 @@ export const RecentActivity: FunctionComponent = observer(() => {
         />
       </div>
       <div className="flex flex-col justify-between self-stretch py-2">
-        {isGetTransactionsLoading ? (
+        {!isGetTransactionsFetched ? (
           <RecentActivitySkeleton />
-        ) : topActivity?.length === 0 ? (
+        ) : showNoTransactionsSplash ? (
           <NoTransactionsSplash variant="transactions" />
         ) : (
           topActivity.map((activity) => {
