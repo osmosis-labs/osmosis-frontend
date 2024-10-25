@@ -7,8 +7,8 @@ export const PoolAssetsName: FunctionComponent<{
   size?: "sm" | "md";
   assetDenoms?: string[];
   className?: string;
-  withLink?: boolean;
-}> = ({ size = "md", assetDenoms, className, withLink = true }) => {
+  withAssetInfoLink?: boolean;
+}> = ({ size = "md", assetDenoms, className, withAssetInfoLink = true }) => {
   const formatAssetName = useMemo(() => {
     return (asset: string) => {
       if (asset.startsWith("ibc/")) return truncate(asset);
@@ -26,7 +26,7 @@ export const PoolAssetsName: FunctionComponent<{
       <>
         {assetDenoms.map((asset, index) => (
           <Fragment key={asset}>
-            {withLink ? (
+            {withAssetInfoLink ? (
               <Link href={`/assets/${asset}`}>{formatAssetName(asset)}</Link>
             ) : (
               formatAssetName(asset)

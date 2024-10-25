@@ -50,7 +50,7 @@ export const PoolCard: FunctionComponent<
             <PoolAssetsName
               size="md"
               assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
-              withLink={false}
+              withAssetInfoLink={false}
             />
             <div className="subtitle1 flex items-center gap-1 text-white-mid">
               {t("pools.poolId", { id: poolId })}
