@@ -10,6 +10,7 @@ import {
   captureErrorAndReturn,
   DEFAULT_VS_CURRENCY,
   getAsset,
+  getCosmWasmContractBalance,
   getEvmBalance,
   queryBalances,
 } from "@osmosis-labs/server";
@@ -155,13 +156,38 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 asset.chainType !== "evm"
             )
             .map(async (asset) => {
-              const { balances } = await queryBalances({
-                ...ctx,
-                chainId: asset.chainId,
-                bech32Address: cosmosAddress,
-              });
+              let balance:
+                | {
+                    denom: string;
+                    amount: string;
+                  }
+                | undefined = undefined;
 
-              const balance = balances.find((a) => a.denom === asset.address);
+              const isCW20Asset = asset.address.startsWith("cw20:");
+
+              if (isCW20Asset) {
+                const {
+                  data: { balance: balanceString },
+                } = await getCosmWasmContractBalance({
+                  ...ctx,
+                  contractAddress: asset.address.split(":")[1],
+                  userBech32Address: cosmosAddress,
+                  chainId: asset.chainId,
+                });
+
+                balance = {
+                  denom: asset.address,
+                  amount: balanceString,
+                };
+              } else {
+                const { balances } = await queryBalances({
+                  ...ctx,
+                  chainId: asset.chainId,
+                  bech32Address: cosmosAddress,
+                });
+
+                balance = balances.find((a) => a.denom === asset.address);
+              }
 
               if (!balance) {
                 return {

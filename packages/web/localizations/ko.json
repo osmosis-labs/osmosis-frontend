@@ -906,6 +906,7 @@
     "risks": "브리징에는 위험이 따릅니다.",
     "learnMore": "더 알아보기",
     "openNoun": "{noun} 열기",
+    "accountNotFound": "계정을 찾을 수 없습니다",
     "insufficientFundsForFees": "수수료를 지불할 자금이 부족합니다",
     "youNeedFundsToPay": "{chain} 에 대한 네트워크 및 브리징 비용을 지불하려면 자금이 필요합니다.",
     "assetsDepositsUnavailable": "{asset} 예금을 사용할 수 없습니다.",

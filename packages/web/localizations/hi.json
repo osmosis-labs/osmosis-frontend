@@ -906,6 +906,7 @@
     "risks": "पुल बनाने में जोखिम भी शामिल है।",
     "learnMore": "और अधिक जानें",
     "openNoun": "{noun} खोलें",
+    "accountNotFound": "खाता नहीं मिला",
     "insufficientFundsForFees": "फीस के लिए अपर्याप्त धनराशि",
     "youNeedFundsToPay": "आपको {chain} पर नेटवर्क और ब्रिजिंग शुल्क का भुगतान करने के लिए धन की आवश्यकता है।",
     "assetsDepositsUnavailable": "{asset} जमा उपलब्ध नहीं हैं",

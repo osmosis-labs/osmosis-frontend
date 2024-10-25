@@ -906,6 +906,7 @@
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
     "openNoun": "{noun} açın",
+    "accountNotFound": "Hesap bulunamadı",
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",

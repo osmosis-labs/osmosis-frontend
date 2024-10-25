@@ -906,6 +906,7 @@
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
     "openNoun": "Otwórz {noun}",
+    "accountNotFound": "Konto nie zostało znalezione",
     "insufficientFundsForFees": "Niewystarczające środki na opłaty",
     "youNeedFundsToPay": "Potrzebujesz środków, aby uiścić opłaty sieciowe i pomostowe w sieci {chain} .",
     "assetsDepositsUnavailable": "Depozyty {asset} są niedostępne",

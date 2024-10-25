@@ -906,6 +906,7 @@
     "risks": "Le rapprochement comporte des risques.",
     "learnMore": "Apprendre encore plus",
     "openNoun": "Ouvrir {noun}",
+    "accountNotFound": "Compte non trouvé",
     "insufficientFundsForFees": "Fonds insuffisants pour les frais",
     "youNeedFundsToPay": "Vous avez besoin de fonds pour payer les frais de réseau et de transition sur {chain} .",
     "assetsDepositsUnavailable": "Les dépôts {asset} ne sont pas disponibles",

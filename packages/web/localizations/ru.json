@@ -906,6 +906,7 @@
     "risks": "Преодоление сопряжено с риском.",
     "learnMore": "Узнать больше",
     "openNoun": "Открыть {noun}",
+    "accountNotFound": "Аккаунт не найден",
     "insufficientFundsForFees": "Недостаточно средств для оплаты комиссий",
     "youNeedFundsToPay": "Вам нужны средства для оплаты сетевых и мостовых сборов на {chain} .",
     "assetsDepositsUnavailable": "Депозиты {asset} недоступны",

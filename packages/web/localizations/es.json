@@ -906,6 +906,7 @@
     "risks": "La unión conlleva riesgos.",
     "learnMore": "Aprende más",
     "openNoun": "Abrir {noun}",
+    "accountNotFound": "Cuenta no encontrada",
     "insufficientFundsForFees": "Fondos insuficientes para las tarifas",
     "youNeedFundsToPay": "Necesita fondos para pagar las tarifas de red y puente en {chain} .",
     "assetsDepositsUnavailable": "Los depósitos {asset} no están disponibles",

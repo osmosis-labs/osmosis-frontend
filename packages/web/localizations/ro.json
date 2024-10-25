@@ -906,6 +906,7 @@
     "risks": "Conducerea vine cu riscuri.",
     "learnMore": "Află mai multe",
     "openNoun": "Deschideți {noun}",
+    "accountNotFound": "Contul nu a fost găsit",
     "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
     "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
     "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",

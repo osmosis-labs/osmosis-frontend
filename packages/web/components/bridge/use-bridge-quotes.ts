@@ -673,6 +673,9 @@ export const useBridgeQuotes = ({
   const hasNoQuotes = someError?.message.includes(
     "NoQuotesError" as BridgeError
   );
+  const noAccountFound = someError?.message.includes(
+    "AccountNotFoundError" as BridgeError
+  );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
   const isCorrectEvmChainSelected =
@@ -703,6 +706,14 @@ export const useBridgeQuotes = ({
       description: isWithdraw
         ? t("transfer.noAvailableWithdrawals")
         : t("transfer.noAvailableDeposits"),
+    };
+  } else if (noAccountFound) {
+    errorBoxMessage = {
+      heading: t("transfer.accountNotFound"),
+      description: t("transfer.sendFundsToAccount", {
+        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+        asset: (isWithdraw ? toAsset?.denom : fromAsset?.denom) ?? "",
+      }),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {

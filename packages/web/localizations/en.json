@@ -906,6 +906,8 @@
     "risks": "Bridging comes with risks.",
     "learnMore": "Learn more",
     "openNoun": "Open {noun}",
+    "accountNotFound": "Account not found",
+    "sendFundsToAccount": "Please send a gas token to your {chain} account before transferring {asset}.",
     "insufficientFundsForFees": "Insufficient funds for fees",
     "youNeedFundsToPay": "You need funds to pay network and bridging fees on {chain}.",
     "assetsDepositsUnavailable": "{asset} deposits are unavailable",
