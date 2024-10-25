@@ -1,5 +1,4 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
@@ -21,8 +20,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useLocalStorage } from "react-use";
 
+import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -63,12 +62,11 @@ type SortKey = NonNullable<
 
 type Action = "deposit" | "withdraw" | "trade" | "earn";
 
-const DUST_THRESHOLD = new Dec(0.01);
-
-export const AssetBalancesTable: FunctionComponent<{
-  /** Height of elements above the table in the window. Nav bar is already included. */
+export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+  hideDust: boolean;
+  setHideDust: (value: boolean) => void;
+}> = observer(({ tableTopPadding = 0, hideDust, setHideDust }) => {
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const { accountStore, userSettings } = useStore();
@@ -77,7 +75,6 @@ export const AssetBalancesTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -152,8 +149,6 @@ export const AssetBalancesTable: FunctionComponent<{
     }
   );
 
-  const [hideDust, setHideDust] = useLocalStorage("portfolio-hide-dust", true);
-
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
     [assetPagesData]
@@ -162,7 +157,8 @@ export const AssetBalancesTable: FunctionComponent<{
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
-        const isDust = asset?.usdValue?.toDec()?.lte(DUST_THRESHOLD);
+        if (!asset.usdValue) return null;
+        const isDust = getIsDust(asset.usdValue);
         if (hideDust && isDust) return null;
         return asset;
       })
@@ -341,10 +337,7 @@ export const AssetBalancesTable: FunctionComponent<{
         className={classNames(
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-          {
-            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
-          }
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
         <thead>

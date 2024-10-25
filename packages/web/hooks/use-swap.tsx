@@ -14,10 +14,11 @@ import {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSplitRoutesSwapExactAmountOutMsg,
-  makeSwapExactAmountInMsg,
-  makeSwapExactAmountOutMsg,
+  getSwapMessages,
+  getSwapTxParameters,
+  QuoteDirection,
+  SwapTxRouteInGivenOut,
+  SwapTxRouteOutGivenIn,
 } from "@osmosis-labs/tx";
 import { Currency, MinimalAsset } from "@osmosis-labs/types";
 import {
@@ -49,7 +50,7 @@ import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
-import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
+import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
@@ -73,7 +74,7 @@ type SwapOptions = {
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
-  quoteType?: QuoteType;
+  quoteType?: QuoteDirection;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -1208,242 +1209,6 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   };
 }
 
-type QuoteOutGivenIn =
-  RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"];
-type QuoteInGivenOut =
-  RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"];
-
-type RouteOutGivenIn = QuoteOutGivenIn["split"][number];
-type RouteInGivenOut = QuoteInGivenOut["split"][number];
-
-type SwapTxPoolOutGivenIn = {
-  id: string;
-  tokenOutDenom: string;
-};
-type SwapTxRouteOutGivenIn = {
-  pools: SwapTxPoolOutGivenIn[];
-  tokenInAmount: string;
-};
-
-type SwapTxPoolInGivenOut = {
-  id: string;
-  tokenInDenom: string;
-};
-type SwapTxRouteInGivenOut = {
-  pools: SwapTxPoolInGivenOut[];
-  tokenOutAmount: string;
-};
-
-function getSwapTxParameters({
-  coinAmount,
-  maxSlippage,
-  quote,
-  tokenInCoinMinimalDenom,
-  tokenOutCoinMinimalDenom,
-  tokenInCoinDecimals,
-  tokenOutCoinDecimals,
-  quoteType,
-}: {
-  coinAmount: string;
-  maxSlippage: string;
-  quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
-  tokenInCoinMinimalDenom: string;
-  tokenOutCoinMinimalDenom: string;
-  tokenInCoinDecimals: number;
-  tokenOutCoinDecimals: number;
-  quoteType: QuoteType;
-}) {
-  if (isNil(quote)) {
-    throw new Error(
-      "User input should be disabled if no route is found or is being generated"
-    );
-  }
-  if (isNil(coinAmount)) throw new Error("No input");
-  if (isNil(tokenInCoinMinimalDenom)) throw new Error("No from asset");
-  if (isNil(tokenOutCoinDecimals)) throw new Error("No to asset");
-
-  if (quoteType === "out-given-in") {
-    const routes: SwapTxRouteOutGivenIn[] = [];
-
-    for (const route of quote.split) {
-      const pools: SwapTxPoolOutGivenIn[] = [];
-      const typedRoute = route as RouteOutGivenIn;
-      for (let i = 0; i < route.pools.length; i++) {
-        const pool = route.pools[i];
-
-        pools.push({
-          id: pool.id,
-          tokenOutDenom: typedRoute.tokenOutDenoms[i],
-        });
-      }
-
-      routes.push({
-        pools: pools,
-        tokenInAmount: route.initialAmount.toString(),
-      });
-    }
-
-    /** In amount converted to integer (remove decimals) */
-    const tokenIn = {
-      coinMinimalDenom: tokenInCoinMinimalDenom,
-      amount: coinAmount,
-    };
-
-    /** Out amount with slippage included */
-    const tokenOutMinAmount = quote.amount
-      .toDec()
-      .mul(DecUtils.getTenExponentNInPrecisionRange(tokenOutCoinDecimals))
-      .mul(new Dec(1).sub(new Dec(maxSlippage)))
-      .truncate()
-      .toString();
-
-    return {
-      routes,
-      tokenIn,
-      tokenOutMinAmount,
-    };
-  } else {
-    const routes: SwapTxRouteInGivenOut[] = [];
-
-    for (const route of quote.split) {
-      const pools: SwapTxPoolInGivenOut[] = [];
-      const typedRoute = route as RouteInGivenOut;
-
-      for (let i = 0; i < route.pools.length; i++) {
-        const pool = route.pools[i];
-        pools.push({
-          id: pool.id,
-          tokenInDenom: typedRoute.tokenInDenoms[i],
-        });
-      }
-
-      routes.push({
-        pools: pools,
-        tokenOutAmount: route.initialAmount.toString(),
-      });
-    }
-
-    /** In amount converted to integer (remove decimals) */
-    const tokenOut = {
-      coinMinimalDenom: tokenOutCoinMinimalDenom,
-      amount: coinAmount,
-    };
-
-    /** Out amount with slippage included */
-    const tokenInMaxAmount = quote.amount
-      .toDec()
-      .mul(DecUtils.getTenExponentNInPrecisionRange(tokenInCoinDecimals))
-      .mul(new Dec(1).add(new Dec(maxSlippage)))
-      .truncate()
-      .toString();
-
-    return {
-      routes,
-      tokenOut,
-      tokenInMaxAmount,
-    };
-  }
-}
-
-export async function getSwapMessages({
-  coinAmount,
-  maxSlippage,
-  quote,
-  tokenInCoinMinimalDenom,
-  tokenOutCoinMinimalDenom,
-  tokenInCoinDecimals,
-  tokenOutCoinDecimals,
-  userOsmoAddress,
-  quoteType = "out-given-in",
-}: {
-  coinAmount: string;
-  maxSlippage: string | undefined;
-  quote: QuoteOutGivenIn | QuoteInGivenOut | undefined;
-  tokenInCoinMinimalDenom: string;
-  tokenOutCoinMinimalDenom: string;
-  tokenOutCoinDecimals: number;
-  tokenInCoinDecimals: number;
-  userOsmoAddress: string | undefined;
-  quoteType?: QuoteType;
-}) {
-  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
-
-  let txParams: ReturnType<typeof getSwapTxParameters>;
-
-  try {
-    txParams = getSwapTxParameters({
-      coinAmount,
-      maxSlippage,
-      tokenInCoinMinimalDenom,
-      tokenOutCoinMinimalDenom,
-      tokenOutCoinDecimals,
-      tokenInCoinDecimals,
-      quote,
-      quoteType,
-    });
-  } catch {
-    return undefined;
-  }
-
-  if (quoteType === "out-given-in") {
-    const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-    const typedRoutes = routes as SwapTxRouteOutGivenIn[];
-    const { pools } = typedRoutes[0];
-
-    if (routes.length < 1) {
-      throw new Error("Routes are empty");
-    }
-
-    return [
-      routes.length === 1
-        ? await makeSwapExactAmountInMsg({
-            pools,
-            tokenIn: tokenIn!,
-            tokenOutMinAmount: tokenOutMinAmount!,
-            userOsmoAddress,
-          })
-        : await makeSplitRoutesSwapExactAmountInMsg({
-            routes: typedRoutes,
-            tokenIn: tokenIn!,
-            tokenOutMinAmount: tokenOutMinAmount!,
-            userOsmoAddress,
-          }),
-    ];
-  }
-
-  if (quoteType === "in-given-out") {
-    const { routes, tokenOut, tokenInMaxAmount } = txParams;
-
-    const typedRoutes = routes as SwapTxRouteInGivenOut[];
-    const { pools } = typedRoutes[0];
-
-    if (routes.length < 1) {
-      throw new Error("Routes are empty");
-    }
-
-    return [
-      routes.length === 1
-        ? await makeSwapExactAmountOutMsg({
-            pools,
-            tokenOut: tokenOut!,
-            tokenInMaxAmount: tokenInMaxAmount!,
-            userOsmoAddress,
-          })
-        : await makeSplitRoutesSwapExactAmountOutMsg({
-            routes: typedRoutes,
-            tokenOut: tokenOut!,
-            tokenInMaxAmount: tokenInMaxAmount!,
-            userOsmoAddress,
-          }),
-    ];
-  }
-
-  throw new Error(`Unsupported quote type ${quoteType}`);
-}
-
-export type QuoteType = "out-given-in" | "in-given-out";
-
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
@@ -1469,7 +1234,7 @@ function useQueryRouterBestQuote(
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
-  quoteType: QuoteType = "out-given-in"
+  quoteType: QuoteDirection = "out-given-in"
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -1685,7 +1450,7 @@ export function useAmountWithSlippage({
 }: {
   swapState: SwapState;
   slippageConfig: ObservableSlippageConfig;
-  quoteType: QuoteType;
+  quoteType: QuoteDirection;
 }) {
   const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
     if (quoteType === "out-given-in") {
@@ -1762,7 +1527,7 @@ export function useDynamicSlippageConfig({
 }: {
   slippageConfig: ObservableSlippageConfig;
   feeError?: Error | null;
-  quoteType: QuoteType;
+  quoteType: QuoteDirection;
 }) {
   useEffect(() => {
     if (feeError) {

@@ -220,14 +220,7 @@ export const OrderHistory = observer(() => {
       >
         {!isLoading && (
           <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
-            <tr
-              className={classNames(
-                {
-                  "!bg-osmoverse-1000": featureFlags.limitOrders,
-                },
-                gridClasses
-              )}
-            >
+            <tr className={classNames("bg-osmoverse-1000", gridClasses)}>
               {headers.map((header) => (
                 <th
                   key={header}

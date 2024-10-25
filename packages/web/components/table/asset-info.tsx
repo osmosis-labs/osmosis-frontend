@@ -27,7 +27,6 @@ import {
   Breakpoint,
   useAmplitudeAnalytics,
   useDimension,
-  useFeatureFlags,
   useTranslation,
   useUserWatchlist,
   useWindowSize,
@@ -66,7 +65,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-  const featureFlags = useFeatureFlags();
 
   // State
 
@@ -497,10 +495,7 @@ export const AssetsInfoTable: FunctionComponent<{
           "mt-3",
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-          {
-            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
-          }
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
         <thead className="sm:hidden">

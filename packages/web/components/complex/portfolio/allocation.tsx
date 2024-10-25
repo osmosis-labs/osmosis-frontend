@@ -1,10 +1,11 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
+import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { EventName } from "~/config";
 import {
@@ -55,25 +56,29 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
   return translationMap[key] || key;
 };
 
+const shouldShowItemInSelectedList = (
+  hideDust: boolean,
+  fiatValue: PricePretty
+) => {
+  return !hideDust || !getIsDust(fiatValue);
+};
+
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
-}> = ({ allocation }) => {
+  hideDust: boolean;
+}> = ({ allocation, hideDust }) => {
   const { logEvent } = useAmplitudeAnalytics();
-
   const { width } = useWindowSize();
-
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
-
   const [isOpen, setIsOpen] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (width > Breakpoint.xl) {
       setIsOpen(true);
     }
   }, [width]);
-
-  const { t } = useTranslation();
 
   if (!allocation) return null;
 
@@ -110,29 +115,39 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList.map(({ key, percentage }, index) => {
-              const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
+            {selectedList
+              .filter(({ fiatValue }) =>
+                shouldShowItemInSelectedList(hideDust, fiatValue)
+              )
+              .map(({ key, percentage }, index) => {
+                const colorClass =
+                  COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              const width = isNegligiblePercent
-                ? "0.1%"
-                : percentage.toString();
+                const isNegligiblePercent = percentage
+                  .toDec()
+                  .lt(new Dec(0.01));
 
-              const colorClass =
-                COLORS[selectedOption][index % COLORS[selectedOption].length];
+                const width = isNegligiblePercent
+                  ? "0.1%"
+                  : percentage.toString();
 
-              return (
-                <div
-                  key={key}
-                  className={classNames("h-full rounded-[4px]", colorClass)}
-                  style={{ width }}
-                />
-              );
-            })}
+                return (
+                  <div
+                    key={key}
+                    className={classNames("h-full rounded-[4px]", colorClass)}
+                    style={{ width }}
+                  />
+                );
+              })}
           </div>
           <div className="flex flex-col space-y-3">
             {selectedList.map(({ key, percentage, fiatValue }, index) => {
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
+
+              const isDust = getIsDust(fiatValue);
+
+              if (hideDust && isDust) return null;
 
               return (
                 <div key={key} className="body2 flex w-full justify-between">

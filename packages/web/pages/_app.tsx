@@ -27,7 +27,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
-import { LimitOrdersToast } from "~/components/alert/limit-orders-toast";
+import { CypherCardToast } from "~/components/alert/cypher-card-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
@@ -47,7 +47,6 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
 import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
@@ -339,12 +338,7 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      {flags.oneClickTrading && (
-        <>
-          <OneClickTradingIntroModal />
-        </>
-      )}
-      {flags.limitOrders && <LimitOrdersToast />}
+      {flags.cypherCard && <CypherCardToast />}
     </MainLayout>
   );
 });

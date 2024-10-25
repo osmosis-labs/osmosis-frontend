@@ -1,9 +1,7 @@
-import {
-  AxelarTransferStatusProvider,
-  IbcTransferStatusProvider,
-  SkipTransferStatusProvider,
-  SquidTransferStatusProvider,
-} from "@osmosis-labs/bridge";
+import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
+import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
+import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
+import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import {
   CosmosQueries,
   CosmwasmQueries,

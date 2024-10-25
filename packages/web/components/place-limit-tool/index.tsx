@@ -1,5 +1,6 @@
 import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -30,6 +31,7 @@ import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
+import { DefaultSlippage } from "~/config/swap";
 import {
   useDisclosure,
   useFeatureFlags,
@@ -40,7 +42,6 @@ import {
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
-  QuoteType,
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";
@@ -123,7 +124,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     initialQuoteDenom = "USDC",
     onOrderSuccess,
   }: PlaceLimitToolProps) => {
-    const [quoteType, setQuoteType] = useState<QuoteType>("out-given-in");
+    const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     const { accountStore } = useStore();
     const { t } = useTranslation();
     const [reviewOpen, setReviewOpen] = useState<boolean>(false);
@@ -170,7 +171,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
 
     const slippageConfig = useSlippageConfig({
-      defaultSlippage: quoteType === "in-given-out" ? "0.5" : "0.5",
+      defaultSlippage: quoteType === "in-given-out" ? "0.1" : "0.1",
       selectedIndex: quoteType === "in-given-out" ? 0 : 0,
     });
 
@@ -187,7 +188,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage = quoteType === "in-given-out" ? "0.5" : "0.5";
+      const defaultSlippage =
+        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
         slippageConfig.slippage.toDec() ===
         new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))

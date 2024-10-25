@@ -1,3 +1,5 @@
+import { EncodeObject } from "@cosmjs/proto-signing";
+import { RatePretty } from "@keplr-wallet/unit";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
@@ -59,7 +61,7 @@ export interface BridgeProvider {
    */
   getSupportedAssets(
     params: GetBridgeSupportedAssetsParams
-  ): Promise<(BridgeChain & BridgeAsset)[]>;
+  ): Promise<(BridgeChain & BridgeSupportedAsset)[]>;
 
   /**
    * If the provider supports deposit address transfers:
@@ -222,6 +224,17 @@ export const bridgeAssetSchema = z.object({
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
+/**
+ * Specifies the types of transfers supported by the asset.
+ * This helps the frontend determine which assets can be quoted,
+ * used for deposit addresses, or have external URLs.
+ */
+export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
+  transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
+});
+
+export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
+
 export const getBridgeSupportedAssetsParams = z.object({
   /**
    * The originating chain information.
@@ -231,6 +244,10 @@ export const getBridgeSupportedAssetsParams = z.object({
    * The asset on the originating chain.
    */
   asset: bridgeAssetSchema,
+  /**
+   * The direction of the transfer.
+   */
+  direction: z.enum(["deposit", "withdraw"]),
 });
 
 export type GetBridgeSupportedAssetsParams = z.infer<
@@ -239,30 +256,39 @@ export type GetBridgeSupportedAssetsParams = z.infer<
 
 export interface BridgeDepositAddress {
   depositAddress: string;
+  expirationTimeMs: number;
+  minimumDeposit: BridgeCoin;
+  networkFee: BridgeCoin;
+  providerFee: RatePretty;
+  estimatedTime: string;
 }
 
-export interface GetDepositAddressParams {
+export const getDepositAddressParamsSchema = z.object({
   /**
    * The originating chain information.
    */
-  fromChain: BridgeChain;
+  fromChain: bridgeChainSchema,
   /**
    * The destination chain information.
    */
-  toChain: BridgeChain;
+  toChain: bridgeChainSchema,
   /**
    * The asset on the originating chain.
    */
-  fromAsset: BridgeAsset;
+  fromAsset: bridgeAssetSchema,
   /**
    * The asset on the destination chain.
    */
-  toAsset: BridgeAsset;
+  toAsset: bridgeAssetSchema,
   /**
    * The address on the destination chain where the assets are to be received.
    */
-  toAddress: string;
-}
+  toAddress: z.string(),
+});
+
+export type GetDepositAddressParams = z.infer<
+  typeof getDepositAddressParamsSchema
+>;
 
 export const getBridgeExternalUrlSchema = z.object({
   /**
@@ -347,8 +373,7 @@ export interface EvmBridgeTransactionRequest {
 
 export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
-  msgTypeUrl: string;
-  msg: Record<string, any>;
+  msgs: EncodeObject[];
   gasFee?: {
     gas: string;
     denom: string;
@@ -356,14 +381,9 @@ export interface CosmosBridgeTransactionRequest {
   };
 }
 
-interface QRCodeBridgeTransactionRequest {
-  type: "qrcode";
-}
-
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest
-  | QRCodeBridgeTransactionRequest;
+  | CosmosBridgeTransactionRequest;
 
 /**
  * Bridge asset with raw base amount (without decimals).

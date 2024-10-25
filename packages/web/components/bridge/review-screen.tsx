@@ -20,7 +20,7 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-import { BridgeQuoteRemainingTime } from "./bridge-quote-remaining-time";
+import { QueryRemainingTime } from "./query-remaining-time";
 import {
   BridgeProviderDropdownRow,
   EstimatedTimeRow,
@@ -45,8 +45,8 @@ interface ConfirmationScreenProps {
   fromAddress: string;
   toAddress: string;
 
-  fromWalletIcon: string;
-  toWalletIcon: string;
+  fromWalletIcon: string | undefined;
+  toWalletIcon: string | undefined;
 
   quote: BridgeQuote;
 
@@ -188,7 +188,7 @@ const AssetBox: FunctionComponent<{
   assetImageUrl: string;
   address: string;
   chain: BridgeChainWithDisplayInfo;
-  walletImageUrl: string;
+  walletImageUrl: string | undefined;
   value: PricePretty;
   coin: CoinPretty;
   isManualAddress?: boolean;
@@ -221,7 +221,7 @@ const AssetBox: FunctionComponent<{
           <span>{chain.prettyName}</span>
         </div>
         <div className="flex items-center gap-2">
-          {isManualAddress ? (
+          {isManualAddress || !walletImageUrl ? (
             <Icon id="wallet" className="text-wosmongton-200" />
           ) : (
             <Image
@@ -260,7 +260,16 @@ const AssetBox: FunctionComponent<{
         <span>{chain.prettyName}</span>
       </div>
       <div className="flex items-center gap-2">
-        <Image alt="wallet image" src={walletImageUrl} width={24} height={24} />
+        {walletImageUrl ? (
+          <Image
+            alt="wallet image"
+            src={walletImageUrl}
+            width={24}
+            height={24}
+          />
+        ) : (
+          <Icon id="wallet" className="text-wosmongton-200" />
+        )}
         <Tooltip
           maxWidth="500px"
           content={hasCopied ? t("copied") : address}
@@ -361,7 +370,7 @@ const TransferDetails: FunctionComponent<
             ) : (
               <div className="flex items-center gap-3 text-osmoverse-300 md:gap-1.5">
                 {selectedQuoteUpdatedAt && (
-                  <BridgeQuoteRemainingTime
+                  <QueryRemainingTime
                     className="flex !h-12 !w-12 items-center justify-center rounded-full md:!h-8 md:!w-8"
                     dataUpdatedAt={selectedQuoteUpdatedAt}
                     refetchInterval={refetchInterval}
@@ -369,7 +378,7 @@ const TransferDetails: FunctionComponent<
                     strokeWidth={2}
                   >
                     <Icon id="down-arrow" className="md:h-4 md:w-4" />
-                  </BridgeQuoteRemainingTime>
+                  </QueryRemainingTime>
                 )}
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />

@@ -47,6 +47,22 @@ const calculatePortfolioPerformance = (
   selectedDifferencePricePretty: PricePretty;
   totalPriceChange: number;
 } => {
+  // Check if all values are 0, for instance if a user created a new wallet and has no transactions
+  const hasAllZeroValues = data?.every((point) => point.value === 0);
+  if (
+    hasAllZeroValues &&
+    (dataPoint?.value === 0 || dataPoint?.value === undefined)
+  ) {
+    return {
+      selectedPercentageRatePretty: new RatePretty(new Dec(0)),
+      selectedDifferencePricePretty: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        new Dec(0)
+      ),
+      totalPriceChange: 0,
+    };
+  }
+
   const openingPrice = data?.[0]?.value;
   const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
   const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
@@ -85,6 +101,34 @@ const timeToLocal = (originalTime: number) => {
       d.getMilliseconds()
     ) / 1000
   );
+};
+
+const getLocalizedPortfolioOverTimeData = (
+  portfolioOverTimeData: ChartPortfolioOverTimeResponse[] | undefined
+) => {
+  if (!portfolioOverTimeData) return undefined;
+
+  // If there is only one data point, add 15 more points to the array to create a more accurate line
+  if (portfolioOverTimeData.length <= 1 && portfolioOverTimeData[0]) {
+    const baseDataPoint = portfolioOverTimeData[0];
+    const baseTime =
+      baseDataPoint.value === 0 ? Date.now() / 1000 : baseDataPoint.time;
+    const additionalPoints = Array.from({ length: 15 }, (_, index) => ({
+      time: baseTime - 86400 * (index + 1),
+      value: baseDataPoint.value,
+    }));
+    return [...additionalPoints, baseDataPoint]
+      .sort((a, b) => a.time - b.time)
+      .map((data) => ({
+        time: timeToLocal(data.time),
+        value: data.value,
+      }));
+  }
+
+  return portfolioOverTimeData.map((data) => ({
+    time: timeToLocal(data.time),
+    value: data.value,
+  }));
 };
 
 export const AssetsOverview: FunctionComponent<
@@ -160,13 +204,7 @@ export const AssetsOverview: FunctionComponent<
   const isChartMinimized = width < Breakpoint.lg ? false : _isChartMinimized;
 
   const localizedPortfolioOverTimeData = useMemo(
-    () =>
-      portfolioOverTimeData?.map((data) => {
-        return {
-          time: timeToLocal(data.time),
-          value: data.value,
-        };
-      }),
+    () => getLocalizedPortfolioOverTimeData(portfolioOverTimeData),
     [portfolioOverTimeData]
   );
 

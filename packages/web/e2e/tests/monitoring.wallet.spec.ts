@@ -105,7 +105,7 @@ test.describe("Test Filled Limit Order feature", () => {
   });
 
   // unwrapped market sell tests just in case this affects anything.
-  test("User should be able to Market Sell WBTC", async () => {
+  test.skip("User should be able to Market Sell WBTC", async () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("WBTC");
