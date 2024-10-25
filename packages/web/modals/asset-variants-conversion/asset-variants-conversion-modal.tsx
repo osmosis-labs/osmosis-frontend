@@ -3,6 +3,7 @@ import { FormattedQuote } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
 import { SignOptions } from "@osmosis-labs/stores";
+import { getSwapMessages } from "@osmosis-labs/tx";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -12,7 +13,7 @@ import { create } from "zustand";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { getSwapMessages, QuoteType } from "~/hooks/use-swap";
+import { QuoteType } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import { AssetVariantRow } from "~/modals/asset-variants-conversion/asset-variant-row";
 import { useStore } from "~/stores";
@@ -173,32 +174,45 @@ const AssetVariantsConversion = observer(
 
       console.log("filteredDataQuotes", filteredDataQuotes);
 
-      for (const { quote, checkedVariant } of filteredDataQuotes) {
-        if (!quote) continue;
+      // First get all swap messages in parallel
+      const swapMessagesPromises = filteredDataQuotes.map(
+        async ({ quote, checkedVariant }) => {
+          if (!quote) return null;
 
-        const slippage = getSlippage(quote);
+          const slippage = getSlippage(quote);
 
-        const swapMessagesConfig = {
-          quote: quote,
-          tokenOutCoinMinimalDenom: quote.amount.currency.coinMinimalDenom,
-          tokenOutCoinDecimals: quote.amount.currency.coinDecimals,
-          tokenInCoinDecimals: checkedVariant.asset?.coinDecimals ?? 0,
-          tokenInCoinMinimalDenom: checkedVariant.asset?.coinMinimalDenom ?? "",
-          maxSlippage: slippage.toString(),
-          coinAmount: quote.split[0].initialAmount.toString(),
-          userOsmoAddress: account?.address ?? "",
-          quoteType: "out-given-in" as QuoteType,
-        };
+          const swapMessagesConfig = {
+            quote: quote,
+            tokenOutCoinMinimalDenom: quote.amount.currency.coinMinimalDenom,
+            tokenOutCoinDecimals: quote.amount.currency.coinDecimals,
+            tokenInCoinDecimals: checkedVariant.asset?.coinDecimals ?? 0,
+            tokenInCoinMinimalDenom:
+              checkedVariant.asset?.coinMinimalDenom ?? "",
+            maxSlippage: slippage.toString(),
+            coinAmount: quote.split[0].initialAmount.toString(),
+            userOsmoAddress: account?.address ?? "",
+            quoteType: "out-given-in" as QuoteType,
+          };
 
-        console.log("swapMessagesConfig", swapMessagesConfig);
+          return getSwapMessages(swapMessagesConfig);
+        }
+      );
 
-        const swapMessages = await getSwapMessages(swapMessagesConfig);
-        if (!swapMessages) continue;
+      const allSwapMessages = await Promise.all(swapMessagesPromises);
 
-        const signOptions: SignOptions = {
-          preferNoSetFee: true,
-        };
+      const validSwapMessages = allSwapMessages.filter(
+        (
+          messages: (typeof allSwapMessages)[number]
+        ): messages is NonNullable<(typeof allSwapMessages)[number]> =>
+          messages !== null && messages !== undefined
+      );
 
+      const signOptions: SignOptions = {
+        preferNoSetFee: true,
+      };
+
+      // Then execute all transactions sequentially
+      for (const swapMessages of validSwapMessages) {
         try {
           await accountStore.signAndBroadcast(
             accountStore.osmosisChainId,
