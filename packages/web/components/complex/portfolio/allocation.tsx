@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useState } from "react";
@@ -56,6 +56,13 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
   return translationMap[key] || key;
 };
 
+const shouldShowItemInSelectedList = (
+  hideDust: boolean,
+  fiatValue: PricePretty
+) => {
+  return !hideDust || !fiatValue.toDec().lt(DUST_THRESHOLD);
+};
+
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
   hideDust: boolean;
@@ -108,24 +115,30 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList.map(({ key, percentage }, index) => {
-              const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
+            {selectedList
+              .filter(({ fiatValue }) =>
+                shouldShowItemInSelectedList(hideDust, fiatValue)
+              )
+              .map(({ key, percentage }, index) => {
+                const colorClass =
+                  COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              const width = isNegligiblePercent
-                ? "0.1%"
-                : percentage.toString();
+                const isNegligiblePercent = percentage
+                  .toDec()
+                  .lt(new Dec(0.01));
 
-              const colorClass =
-                COLORS[selectedOption][index % COLORS[selectedOption].length];
+                const width = isNegligiblePercent
+                  ? "0.1%"
+                  : percentage.toString();
 
-              return (
-                <div
-                  key={key}
-                  className={classNames("h-full rounded-[4px]", colorClass)}
-                  style={{ width }}
-                />
-              );
-            })}
+                return (
+                  <div
+                    key={key}
+                    className={classNames("h-full rounded-[4px]", colorClass)}
+                    style={{ width }}
+                  />
+                );
+              })}
           </div>
           <div className="flex flex-col space-y-3">
             {selectedList.map(({ key, percentage, fiatValue }, index) => {
