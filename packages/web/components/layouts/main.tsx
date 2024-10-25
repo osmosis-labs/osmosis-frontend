@@ -10,7 +10,6 @@ import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
 import {
   useCurrentLanguage,
-  useFeatureFlags,
   useHasAssetVariants,
   useWindowSize,
 } from "~/hooks";
@@ -25,7 +24,6 @@ export const MainLayout = observer(
     secondaryMenuItems: MainLayoutMenu[];
   }>) => {
     const router = useRouter();
-    const featureFlags = useFeatureFlags();
     useCurrentLanguage();
 
     const { height, isMobile } = useWindowSize();
