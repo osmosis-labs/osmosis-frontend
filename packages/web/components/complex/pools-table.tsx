@@ -409,8 +409,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             "table-auto",
             isPreviousData &&
               isFetching &&
-              "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-            {}
+              "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
           )}
         >
           <thead>
