@@ -906,6 +906,8 @@
     "risks": "Köprü kurma riskleri de beraberinde getirir.",
     "learnMore": "Daha fazla bilgi edin",
     "openNoun": "{noun} açın",
+    "accountNotFound": "Hesap bulunamadı",
+    "sendFundsToAccount": "Lütfen { {chain} {asset} chain\"} hesabınıza bir gaz tokeni gönderin.",
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",

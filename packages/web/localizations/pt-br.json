@@ -906,6 +906,8 @@
     "risks": "Fazer uma ponte traz riscos.",
     "learnMore": "Saber mais",
     "openNoun": "Abra {noun}",
+    "accountNotFound": "Conta não encontrada",
+    "sendFundsToAccount": "Envie um token de gás para sua conta {chain} antes de transferir {asset} .",
     "insufficientFundsForFees": "Fundos insuficientes para taxas",
     "youNeedFundsToPay": "Você precisa de fundos para pagar taxas de rede e de ponte em {chain} .",
     "assetsDepositsUnavailable": "{asset} depósitos não estão disponíveis",

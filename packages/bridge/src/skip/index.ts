@@ -824,6 +824,16 @@ export class SkipBridgeProvider implements BridgeProvider {
             errorType: "InsufficientAmountError",
             message: e.message,
           });
+        } else if (
+          e instanceof Error &&
+          e.message.includes("account") &&
+          e.message.includes("not found")
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "AccountNotFoundError",
+            message: e.message,
+          });
         }
 
         throw e;

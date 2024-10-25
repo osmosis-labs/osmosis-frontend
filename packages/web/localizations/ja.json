@@ -906,6 +906,8 @@
     "risks": "ブリッジングにはリスクが伴います。",
     "learnMore": "もっと詳しく知る",
     "openNoun": "{noun}を開く",
+    "accountNotFound": "アカウントが見つかりません",
+    "sendFundsToAccount": "{ {chain} {asset} chain\"} アカウントにガス トークンを送信してください。",
     "insufficientFundsForFees": "手数料の資金が不足している",
     "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",

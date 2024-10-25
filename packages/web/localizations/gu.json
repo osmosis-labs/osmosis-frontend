@@ -906,6 +906,8 @@
     "risks": "બ્રિજિંગ જોખમો સાથે આવે છે.",
     "learnMore": "વધુ શીખો",
     "openNoun": "{noun} ખોલો",
+    "accountNotFound": "ખાતું મળ્યું નથી",
+    "sendFundsToAccount": "કૃપા કરીને { {chain} {asset} chain\"} એકાઉન્ટમાં ગેસ ટોકન મોકલો.",
     "insufficientFundsForFees": "ફી માટે અપૂરતું ભંડોળ",
     "youNeedFundsToPay": "તમારે {chain} પર નેટવર્ક અને બ્રિજિંગ ફી ચૂકવવા માટે ભંડોળની જરૂર છે.",
     "assetsDepositsUnavailable": "{asset} થાપણો અનુપલબ્ધ છે",

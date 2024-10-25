@@ -906,6 +906,8 @@
     "risks": "桥接伴随着风险。",
     "learnMore": "了解更多",
     "openNoun": "打开{noun}",
+    "accountNotFound": "未找到帐户",
+    "sendFundsToAccount": "在转移 {\"type {chain} {asset} chain\"} 账户发送一个 gas 代币。",
     "insufficientFundsForFees": "费用资金不足",
     "youNeedFundsToPay": "您需要资金来支付{chain}网络费和桥接费。",
     "assetsDepositsUnavailable": "{asset}存款不可用",

@@ -906,6 +906,8 @@
     "risks": "橋接伴隨著風險。",
     "learnMore": "了解更多",
     "openNoun": "打開{noun}",
+    "accountNotFound": "未找到帳戶",
+    "sendFundsToAccount": "請在轉移 {\"type {chain} {asset} chain\"} 帳戶。",
     "insufficientFundsForFees": "費用資金不足",
     "youNeedFundsToPay": "您需要資金來支付{chain}上的網路和橋接費。",
     "assetsDepositsUnavailable": "{asset}存款不可用",
