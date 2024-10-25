@@ -64,6 +64,9 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
+  const showZeroBalancesSplash =
+    userHasNoAssets === true || userHasNoAssets === undefined;
+
   return (
     <div
       className={classNames(
@@ -130,7 +133,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                   <div className="mx-auto my-6 w-fit">
                     <Spinner />
                   </div>
-                ) : userHasNoAssets ? (
+                ) : showZeroBalancesSplash ? (
                   <UserZeroBalanceTableSplash />
                 ) : (
                   <TabPanels>
