@@ -2,6 +2,7 @@ import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
@@ -10,7 +11,7 @@ import { UserPositionsSection } from "~/components/complex/portfolio/user-positi
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
-import { AssetBalancesTable } from "~/components/table/asset-balances";
+import { PortfolioAssetBalancesTable } from "~/components/table/portfolio-asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
 import {
@@ -25,6 +26,7 @@ import { api } from "~/utils/trpc";
 
 import { CypherCard } from "./cypher-card";
 import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
+import { PORTFOLIO_HIDE_DUST_KEY } from "./portfolio-dust";
 
 export const PortfolioPage: FunctionComponent = observer(() => {
   const { t } = useTranslation();
@@ -63,6 +65,11 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     wallet && wallet.isWalletConnected && wallet.address;
 
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const [hideDust, setHideDust] = useLocalStorage(
+    PORTFOLIO_HIDE_DUST_KEY,
+    true
+  );
 
   return (
     <div
@@ -135,7 +142,9 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 ) : (
                   <TabPanels>
                     <TabPanel>
-                      <AssetBalancesTable
+                      <PortfolioAssetBalancesTable
+                        hideDust={Boolean(hideDust)}
+                        setHideDust={setHideDust}
                         tableTopPadding={overviewHeight + tabsHeight}
                       />
                     </TabPanel>
@@ -164,7 +173,10 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             >
               {featureFlags.cypherCard && <CypherCard />}
               {!isLoadingAllocation && !userHasNoAssets && (
-                <Allocation allocation={allocation} />
+                <Allocation
+                  allocation={allocation}
+                  hideDust={Boolean(hideDust)}
+                />
               )}
             </div>
             <div className="flex w-full flex-col">

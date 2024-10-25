@@ -1,5 +1,4 @@
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
-import { Dec } from "@keplr-wallet/unit";
 import type { Search } from "@osmosis-labs/server";
 import type { SortDirection } from "@osmosis-labs/utils";
 import {
@@ -21,8 +20,8 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useLocalStorage } from "react-use";
 
+import { DUST_THRESHOLD } from "~/components/complex/portfolio/portfolio-dust";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -62,12 +61,11 @@ type SortKey = NonNullable<
 
 type Action = "deposit" | "withdraw" | "trade" | "earn";
 
-const DUST_THRESHOLD = new Dec(0.01);
-
-export const AssetBalancesTable: FunctionComponent<{
-  /** Height of elements above the table in the window. Nav bar is already included. */
+export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
-}> = observer(({ tableTopPadding = 0 }) => {
+  hideDust: boolean;
+  setHideDust: (value: boolean) => void;
+}> = observer(({ tableTopPadding = 0, hideDust, setHideDust }) => {
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
   const { accountStore, userSettings } = useStore();
@@ -150,8 +148,6 @@ export const AssetBalancesTable: FunctionComponent<{
       },
     }
   );
-
-  const [hideDust, setHideDust] = useLocalStorage("portfolio-hide-dust", true);
 
   const assetsData = useMemo(
     () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],

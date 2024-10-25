@@ -5,6 +5,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
+import { DUST_THRESHOLD } from "~/components/complex/portfolio/portfolio-dust";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { EventName } from "~/config";
 import {
@@ -57,23 +58,20 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
 
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
-}> = ({ allocation }) => {
+  hideDust: boolean;
+}> = ({ allocation, hideDust }) => {
   const { logEvent } = useAmplitudeAnalytics();
-
   const { width } = useWindowSize();
-
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
-
   const [isOpen, setIsOpen] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (width > Breakpoint.xl) {
       setIsOpen(true);
     }
   }, [width]);
-
-  const { t } = useTranslation();
 
   if (!allocation) return null;
 
@@ -133,6 +131,10 @@ export const Allocation: FunctionComponent<{
             {selectedList.map(({ key, percentage, fiatValue }, index) => {
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
+
+              const isDust = fiatValue.toDec().lt(DUST_THRESHOLD);
+
+              if (hideDust && isDust) return null;
 
               return (
                 <div key={key} className="body2 flex w-full justify-between">
