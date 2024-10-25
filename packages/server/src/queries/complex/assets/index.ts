@@ -194,7 +194,6 @@ function filterAssetList(
 export * from "./bridge";
 export * from "./categories";
 export * from "./config";
-export * from "./cosmwasm";
 export * from "./ethereum";
 export * from "./gas";
 export * from "./market";

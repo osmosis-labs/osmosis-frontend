@@ -1,14 +1,14 @@
 import { createNodeQuery } from "../../create-node-query";
 import { getQuerySmartContractPath } from "./contract";
 
-export type QueryBalancesResponse = {
+export type QueryCosmWasmBalancesResponse = {
   data: {
     balance: string;
   };
 };
 
 export const queryCosmWasmContractBalance = createNodeQuery<
-  QueryBalancesResponse,
+  QueryCosmWasmBalancesResponse,
   {
     contractAddress: string;
     userBech32Address: string;

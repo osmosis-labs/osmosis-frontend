@@ -10,9 +10,9 @@ import {
   captureErrorAndReturn,
   DEFAULT_VS_CURRENCY,
   getAsset,
-  getCosmWasmContractBalance,
   getEvmBalance,
   queryBalances,
+  queryCosmWasmContractBalance,
 } from "@osmosis-labs/server";
 import {
   createTRPCRouter,
@@ -168,7 +168,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
               if (isCW20Asset) {
                 const {
                   data: { balance: balanceString },
-                } = await getCosmWasmContractBalance({
+                } = await queryCosmWasmContractBalance({
                   ...ctx,
                   contractAddress: asset.address.split(":")[1],
                   userBech32Address: cosmosAddress,
