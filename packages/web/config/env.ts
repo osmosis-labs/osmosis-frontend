@@ -25,3 +25,7 @@ export const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN;
 
 export const SPEND_LIMIT_CONTRACT_ADDRESS =
   process.env.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS;
+
+// TODO(Greg): add this flag to LaunchDarkly and drop the .env config
+export const SHOW_DUST_TO_OSMO =
+  process.env.NEXT_PUBLIC_SHOW_DUST_TO_OSMO === "true";

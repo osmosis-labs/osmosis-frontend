@@ -2,6 +2,7 @@ import { AvailableFlags } from "@osmosis-labs/types";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
+import { SHOW_DUST_TO_OSMO } from "~/config";
 import { useWindowSize } from "~/hooks";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
@@ -32,6 +33,8 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   alloyedAssets: false,
   bridgeDepositAddress: false,
   nomicWithdrawAmount: false,
+  // TODO(Greg): add this flag to LaunchDarkly and drop the .env config
+  dustToOsmo: SHOW_DUST_TO_OSMO,
 };
 
 export function useFeatureFlags() {
