@@ -74,16 +74,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     userHasNoAssets === true || userHasNoAssets === undefined;
 
   return (
-    <div
-      className={classNames(
-        "flex justify-center p-8 pt-4",
-        "1.5xl:flex-col",
-        "md:p-4",
-        {
-          "bg-osmoverse-900": !featureFlags.limitOrders,
-        }
-      )}
-    >
+    <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
       {isWalletLoading ? (
         <SkeletonLoader className="h-24 w-1/2 lg:w-full" />
       ) : isWalletConnected ? (
@@ -182,7 +173,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
               )}
             </div>
             <div className="flex w-full flex-col">
-              {featureFlags.limitOrders && <OpenOrders />}
+              <OpenOrders />
               <RecentActivity />
             </div>
           </aside>

@@ -74,7 +74,6 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -337,10 +336,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         className={classNames(
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-          {
-            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
-          }
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
         <thead>
