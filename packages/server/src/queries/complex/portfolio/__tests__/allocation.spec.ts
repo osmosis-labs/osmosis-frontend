@@ -120,8 +120,8 @@ describe("Allocation Functions", () => {
   });
 
   describe("calculatePercentAndFiatValues", () => {
-    it("should calculate the correct asset percentages and fiat values - Total Assets", async () => {
-      const result = await calculatePercentAndFiatValues(
+    it("should calculate the correct asset percentages and fiat values - Total Assets", () => {
+      const result = calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
         "total-assets",
@@ -156,8 +156,8 @@ describe("Allocation Functions", () => {
       ]);
     });
 
-    it("should calculate the correct asset percentages and fiat values - User Balances", async () => {
-      const result = await calculatePercentAndFiatValues(
+    it("should calculate the correct asset percentages and fiat values - User Balances", () => {
+      const result = calculatePercentAndFiatValues(
         MOCK_DATA.categories,
         assetLists,
         "user-balances",
@@ -178,6 +178,63 @@ describe("Allocation Functions", () => {
           key: "WOSMO",
           percentage: "100%",
           fiatValue: "$10",
+        },
+        {
+          key: "Other",
+          percentage: "0%",
+          fiatValue: "$0",
+        },
+      ]);
+    });
+
+    it("should handle zero balances correctly", () => {
+      const zeroBalanceData = {
+        ...MOCK_DATA.categories,
+        "total-assets": {
+          capitalization: "0",
+          account_coins_result: [
+            {
+              coin: {
+                denom:
+                  "factory/osmo1pfyxruwvtwk00y8z06dh2lqjdj82ldvy74wzm3/WOSMO",
+                amount: "0",
+              },
+              cap_value: "0",
+            },
+            {
+              coin: {
+                denom:
+                  "factory/osmo1rckme96ptawr4zwexxj5g5gej9s2dmud8r2t9j0k0prn5mch5g4snzzwjv/sail",
+                amount: "0",
+              },
+              cap_value: "0",
+            },
+          ],
+          is_best_effort: false,
+        },
+      };
+
+      const result = calculatePercentAndFiatValues(
+        zeroBalanceData,
+        assetLists,
+        "total-assets",
+        5
+      ).map((allocation) => ({
+        ...allocation,
+        percentage: allocation.percentage.toString(),
+        fiatValue: allocation.fiatValue.toString(),
+      }));
+
+      expect(result).toEqual([
+        {
+          key: "WOSMO",
+          percentage: "0%",
+          fiatValue: "$0",
+        },
+        {
+          key: "SAIL",
+          percentage: "0%",
+          fiatValue: "$0",
         },
         {
           key: "Other",
