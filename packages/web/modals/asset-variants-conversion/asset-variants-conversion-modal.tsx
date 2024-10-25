@@ -1,9 +1,9 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
-import { FormattedQuote } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
+import { FormattedQuote } from "@osmosis-labs/server/src/queries/complex/swap/types";
 import { SignOptions } from "@osmosis-labs/stores";
-import { getSwapMessages } from "@osmosis-labs/tx";
+import { getSwapMessages, QuoteDirection } from "@osmosis-labs/tx";
 import { useQueries } from "@tanstack/react-query";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -13,7 +13,6 @@ import { create } from "zustand";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation, useWindowSize } from "~/hooks";
-import { QuoteType } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
 import { AssetVariantRow } from "~/modals/asset-variants-conversion/asset-variant-row";
 import { useStore } from "~/stores";
@@ -191,7 +190,7 @@ const AssetVariantsConversion = observer(
             maxSlippage: slippage.toString(),
             coinAmount: quote.split[0].initialAmount.toString(),
             userOsmoAddress: account?.address ?? "",
-            quoteType: "out-given-in" as QuoteType,
+            quoteType: "out-given-in" as QuoteDirection,
           };
 
           return getSwapMessages(swapMessagesConfig);
