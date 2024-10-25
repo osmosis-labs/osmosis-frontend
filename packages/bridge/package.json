@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.14.0",
-    "@axelar-network/axelarjs-sdk": "0.16.0",
+    "@axelar-network/axelarjs-sdk": "0.16.2",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
