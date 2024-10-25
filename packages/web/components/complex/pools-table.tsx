@@ -26,12 +26,7 @@ import { Spinner } from "~/components/loaders";
 import { PoolQuickActionCell } from "~/components/table/cells";
 import { SortHeader } from "~/components/table/headers/sort";
 import { AprDisclaimerTooltip } from "~/components/tooltip/apr-disclaimer";
-import {
-  Breakpoint,
-  useFeatureFlags,
-  useTranslation,
-  useWindowSize,
-} from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
@@ -97,7 +92,6 @@ export interface PoolsTableProps {
 export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const featureFlags = useFeatureFlags();
   const router = useRouter();
   const {
     topOffset,
