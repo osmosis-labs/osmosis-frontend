@@ -48,15 +48,7 @@ export const MainLayout = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div
-          className={classNames(
-            "fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden px-2 py-6 md:hidden",
-            {
-              "xl:bg-osmoverse-1000": featureFlags.limitOrders,
-              "bg-osmoverse-900": !featureFlags.limitOrders,
-            }
-          )}
-        >
+        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden px-2 py-6 xl:bg-osmoverse-1000 md:hidden">
           {showBlockLogo && (
             <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
               <OsmosisFullLogo onClick={() => router.push("/")} />

@@ -59,12 +59,8 @@ export const ModalBase = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
-        className,
-        {
-          "bg-osmoverse-800": !featureFlags.limitOrders,
-          "bg-osmoverse-850": featureFlags.limitOrders,
-        }
+        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-850 p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
+        className
       )}
       closeTimeoutMS={150}
       onAfterClose={onAfterClose}

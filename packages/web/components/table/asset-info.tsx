@@ -497,10 +497,7 @@ export const AssetsInfoTable: FunctionComponent<{
           "mt-3",
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-          {
-            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
-          }
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress [&>thead>tr]:!bg-osmoverse-1000"
         )}
       >
         <thead className="sm:hidden">

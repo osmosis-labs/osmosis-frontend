@@ -30,7 +30,6 @@ import {
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
-import { SwapTool } from "~/components/swap-tool";
 import { SwapToolProps } from "~/components/swap-tool/alt";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
@@ -147,7 +146,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       [assetInfoConfig]
     );
 
-    const SwapTool_ = featureFlags.limitOrders ? (
+    const SwapTool_ = (
       <TradeTool
         page="Token Info Page"
         swapToolProps={swapToolProps}
@@ -159,8 +158,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
           quoteDenom: previousTrade?.quoteDenom ?? "",
         }}
       />
-    ) : (
-      <SwapTool {...swapToolProps} page="Token Info Page" />
     );
 
     return (

@@ -1,4 +1,4 @@
-import { Tab } from "@headlessui/react";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import { FormattedTransaction } from "@osmosis-labs/server";
 import {
   AccountStoreWallet,
@@ -82,35 +82,33 @@ export const TransactionContent = ({
           <TransactionButtons open={open} address={address} />
         </div>
 
-        <Tab.Group
+        <TabGroup
           manual
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          {featureFlags.limitOrders && (
-            <Tab.List className="flex items-center gap-8">
-              {TX_PAGE_TABS.map((defaultTab) => (
-                <Tab key={defaultTab}>
-                  <span
-                    className={classNames(
-                      {
-                        "text-osmoverse-500": defaultTab !== tab,
-                      },
-                      "text-h5 font-h5 sm:text-h6"
-                    )}
-                  >
-                    {t(
-                      defaultTab === "history"
-                        ? "transactions.history"
-                        : "transactions.orders"
-                    )}
-                  </span>
-                </Tab>
-              ))}
-            </Tab.List>
-          )}
-          <Tab.Panels>
-            <Tab.Panel>
+          <TabList className="flex items-center gap-8">
+            {TX_PAGE_TABS.map((defaultTab) => (
+              <Tab key={defaultTab}>
+                <span
+                  className={classNames(
+                    {
+                      "text-osmoverse-500": defaultTab !== tab,
+                    },
+                    "text-h5 font-h5 sm:text-h6"
+                  )}
+                >
+                  {t(
+                    defaultTab === "history"
+                      ? "transactions.history"
+                      : "transactions.orders"
+                  )}
+                </span>
+              </Tab>
+            ))}
+          </TabList>
+          <TabPanels>
+            <TabPanel>
               <>
                 <div className="-mx-4 flex flex-col">
                   {showConnectWallet ? (
@@ -150,14 +148,12 @@ export const TransactionContent = ({
                 </div>
                 <BackToTopButton />
               </>
-            </Tab.Panel>
-            {featureFlags.limitOrders && (
-              <Tab.Panel>
-                <OrderHistory />
-              </Tab.Panel>
-            )}
-          </Tab.Panels>
-        </Tab.Group>
+            </TabPanel>
+            <TabPanel>
+              <OrderHistory />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </div>
     </ClientOnly>
   );
