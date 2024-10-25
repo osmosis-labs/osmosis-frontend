@@ -21,7 +21,7 @@ import {
   useState,
 } from "react";
 
-import { DUST_THRESHOLD } from "~/components/complex/portfolio/portfolio-dust";
+import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -157,7 +157,8 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   const filteredAssetsData = useMemo(() => {
     return assetsData
       .map((asset) => {
-        const isDust = asset?.usdValue?.toDec()?.lte(DUST_THRESHOLD);
+        if (!asset.usdValue) return null;
+        const isDust = getIsDust(asset.usdValue);
         if (hideDust && isDust) return null;
         return asset;
       })

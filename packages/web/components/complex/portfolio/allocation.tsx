@@ -5,7 +5,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
-import { DUST_THRESHOLD } from "~/components/complex/portfolio/portfolio-dust";
+import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { EventName } from "~/config";
 import {
@@ -60,7 +60,7 @@ const shouldShowItemInSelectedList = (
   hideDust: boolean,
   fiatValue: PricePretty
 ) => {
-  return !hideDust || !fiatValue.toDec().lt(DUST_THRESHOLD);
+  return !hideDust || !getIsDust(fiatValue);
 };
 
 export const Allocation: FunctionComponent<{
@@ -145,7 +145,7 @@ export const Allocation: FunctionComponent<{
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              const isDust = fiatValue.toDec().lt(DUST_THRESHOLD);
+              const isDust = getIsDust(fiatValue);
 
               if (hideDust && isDust) return null;
 
