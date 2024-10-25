@@ -907,6 +907,7 @@
     "learnMore": "Erfahren Sie mehr",
     "openNoun": "Öffnen Sie {noun}",
     "accountNotFound": "Konto nicht gefunden",
+    "sendFundsToAccount": "Bitte senden Sie einen Gas-Token an Ihr {chain} -Konto, bevor Sie {asset} übertragen.",
     "insufficientFundsForFees": "Unzureichende Mittel für Gebühren",
     "youNeedFundsToPay": "Sie benötigen Guthaben, um Netzwerk- und Überbrückungsgebühren für {chain} zu bezahlen.",
     "assetsDepositsUnavailable": "{asset} Einlagen sind nicht verfügbar",

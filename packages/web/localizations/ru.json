@@ -907,6 +907,7 @@
     "learnMore": "Узнать больше",
     "openNoun": "Открыть {noun}",
     "accountNotFound": "Аккаунт не найден",
+    "sendFundsToAccount": "Пожалуйста, отправьте газовый токен на ваш счет {chain} перед переводом {asset} .",
     "insufficientFundsForFees": "Недостаточно средств для оплаты комиссий",
     "youNeedFundsToPay": "Вам нужны средства для оплаты сетевых и мостовых сборов на {chain} .",
     "assetsDepositsUnavailable": "Депозиты {asset} недоступны",
