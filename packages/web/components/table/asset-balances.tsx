@@ -76,7 +76,6 @@ export const AssetBalancesTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();

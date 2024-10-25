@@ -27,7 +27,6 @@ import {
   Breakpoint,
   useAmplitudeAnalytics,
   useDimension,
-  useFeatureFlags,
   useTranslation,
   useUserWatchlist,
   useWindowSize,
@@ -66,7 +65,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-  const featureFlags = useFeatureFlags();
 
   // State
 

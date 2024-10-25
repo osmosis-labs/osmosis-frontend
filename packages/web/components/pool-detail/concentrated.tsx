@@ -61,7 +61,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const { isLoading: isWalletLoading } = useWalletSelect();
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
     const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
-    const featureFlags = useFeatureFlags();
 
     const chartConfig = useHistoricalAndLiquidityData(poolId);
     const [activeModal, setActiveModal] = useState<

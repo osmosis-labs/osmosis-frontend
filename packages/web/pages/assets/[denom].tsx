@@ -74,7 +74,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
   ({ tweets }) => {
     const { t } = useTranslation();
     const router = useRouter();
-    const featureFlags = useFeatureFlags();
     const [previousTrade, setPreviousTrade] =
       useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 

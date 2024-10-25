@@ -6,7 +6,6 @@ import { useUnmount } from "react-use";
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
 import { SpriteIconId } from "~/config";
-import { useFeatureFlags } from "~/hooks";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 
 if (setAppElement) {
@@ -40,7 +39,6 @@ export const ModalBase = ({
   children,
 }: PropsWithChildren<ModalBaseProps>) => {
   const { isMobile } = useWindowSize();
-  const featureFlags = useFeatureFlags();
   const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
   useUnmount(() => {
     document.body.classList.remove(bodyOpenClassNames);

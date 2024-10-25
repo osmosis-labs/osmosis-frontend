@@ -18,7 +18,7 @@ import { NoTransactionsSplash } from "~/components/transactions/no-transactions-
 import { TransactionButtons } from "~/components/transactions/transaction-buttons";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 
@@ -48,7 +48,6 @@ export const TransactionContent = ({
   wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
 }) => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   const showPagination = isWalletConnected && !isLoading;
 
