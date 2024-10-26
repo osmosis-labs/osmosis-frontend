@@ -60,3 +60,7 @@ Each monitoring test wallet must contain following tokens:
 - USDC.eth.axl > 2
 
 The USDC is used to buy OSMO and WBTC and must be kept above 5$ at all times, so it is better to have some buffer.
+
+## Compromised wallets
+
+- osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa
