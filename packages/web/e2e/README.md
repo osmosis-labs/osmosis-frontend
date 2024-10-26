@@ -7,7 +7,7 @@ This package contains the Playwright E2E tests and a Keplr wallet
 By default, configuration is pointing to the [Stage](https://stage.osmosis.zone) environment. Tests will automatically install a wallet.
 All you need to add is a private keys for wallets that are being used:
 
-- Frontend tests are using `osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa` wallet
+- Frontend tests are using `osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l` wallet
 - Monitoring tests are using `osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c` and `osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv` wallets
 - example command `export PRIVATE_KEY=0x....` for the frontend tests.
 
@@ -22,7 +22,7 @@ To run a Monitoring E2E tests, please execute `npx playwright test monitoring --
 Tests can be executed locally in a browser by changing `headless: true` to `headless: false`.
 
 In CI secrets frontend test private key is referenced as:
-TEST_PRIVATE_KEY for `osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa`
+TEST_PRIVATE_KEY for `osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l`
 
 Frontend e2e test wallet must contain following tokens:
 
