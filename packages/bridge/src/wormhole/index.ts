@@ -67,7 +67,11 @@ export class WormholeBridgeProvider implements BridgeProvider {
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     // For now we use Portal Bridge
-    const url = new URL("https://portalbridge.com/cosmos/");
+    const url = new URL("https://portalbridge.com/");
+
+    if (fromChain?.chainType === "cosmos" || toChain?.chainType === "cosmos") {
+      url.pathname = "/cosmos/";
+    }
 
     if (fromChain) {
       url.searchParams.set(
