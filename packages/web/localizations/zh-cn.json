@@ -200,6 +200,9 @@
     "acceptedEverywhere": "您的 OSMO，现已随处可用",
     "newPill": "新的"
   },
+  "dustToOsmo": {
+    "mainButton": "将灰尘转换为 OSMO"
+  },
   "portfolio": {
     "buy": "买",
     "sell": "卖",

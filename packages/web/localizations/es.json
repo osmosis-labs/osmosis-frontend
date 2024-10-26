@@ -200,6 +200,9 @@
     "acceptedEverywhere": "Tu OSMO, ahora aceptado en todas partes",
     "newPill": "Nuevo"
   },
+  "dustToOsmo": {
+    "mainButton": "Convertir polvo a OSMO"
+  },
   "portfolio": {
     "buy": "Comprar",
     "sell": "Vender",

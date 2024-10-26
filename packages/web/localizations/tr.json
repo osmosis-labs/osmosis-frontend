@@ -200,6 +200,9 @@
     "acceptedEverywhere": "OSMO'nuz artık her yerde kabul görüyor",
     "newPill": "Yeni"
   },
+  "dustToOsmo": {
+    "mainButton": "Tozu OSMO'ya dönüştürün"
+  },
   "portfolio": {
     "buy": "Satın almak",
     "sell": "Satmak",

@@ -21,6 +21,7 @@ import {
   useState,
 } from "react";
 
+import { DustToOsmo } from "~/components/complex/dust-to-osmo/dust-to-osmo";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -74,6 +75,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
+  const featureFlags = useFeatureFlags();
 
   // #region search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -438,10 +440,11 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         </tbody>
       </table>
       {assetsData.length > 0 && (
-        <div className="flex items-center justify-end gap-4 py-2 px-4">
+        <div className="flex gap-4 py-2 px-4">
+          {featureFlags.dustToOsmo && <DustToOsmo />}
           <Button
             onClick={() => setHideDust(!hideDust)}
-            className="gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
+            className="ml-auto gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
             variant="outline"
             size="lg-full"
           >

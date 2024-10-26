@@ -200,6 +200,9 @@
     "acceptedEverywhere": "आपका OSMO, अब हर जगह स्वीकार्य",
     "newPill": "नया"
   },
+  "dustToOsmo": {
+    "mainButton": "धूल को OSMO में परिवर्तित करें"
+  },
   "portfolio": {
     "buy": "खरीदना",
     "sell": "बेचना",

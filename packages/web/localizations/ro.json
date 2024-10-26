@@ -200,6 +200,9 @@
     "acceptedEverywhere": "OSMO dvs., acum acceptat peste tot",
     "newPill": "Nou"
   },
+  "dustToOsmo": {
+    "mainButton": "Transformați praful în OSMO"
+  },
   "portfolio": {
     "buy": "Cumpără",
     "sell": "Vinde",

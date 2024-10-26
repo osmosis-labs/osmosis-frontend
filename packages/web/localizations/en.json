@@ -200,6 +200,9 @@
     "acceptedEverywhere": "Your OSMO, now accepted everywhere",
     "newPill": "New"
   },
+  "dustToOsmo": {
+    "mainButton": "Convert dust to OSMO"
+  },
   "portfolio": {
     "buy": "Buy",
     "sell": "Sell",

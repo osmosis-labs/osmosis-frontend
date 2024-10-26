@@ -200,6 +200,9 @@
     "acceptedEverywhere": "あなたのOSMOは今やどこでも受け入れられます",
     "newPill": "新しい"
   },
+  "dustToOsmo": {
+    "mainButton": "ほこりをOSMOに変換する"
+  },
   "portfolio": {
     "buy": "買う",
     "sell": "売る",

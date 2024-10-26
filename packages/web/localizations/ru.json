@@ -200,6 +200,9 @@
     "acceptedEverywhere": "Ваш OSMO теперь принимается везде",
     "newPill": "Новый"
   },
+  "dustToOsmo": {
+    "mainButton": "Преобразовать пыль в ОСМО"
+  },
   "portfolio": {
     "buy": "Купить",
     "sell": "Продавать",

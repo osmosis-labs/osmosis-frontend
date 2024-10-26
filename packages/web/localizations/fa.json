@@ -200,6 +200,9 @@
     "acceptedEverywhere": "OSMO شما، اکنون در همه جا پذیرفته شده است",
     "newPill": "جدید"
   },
+  "dustToOsmo": {
+    "mainButton": "گرد و غبار را به OSMO تبدیل کنید"
+  },
   "portfolio": {
     "buy": "خرید کنید",
     "sell": "فروش",

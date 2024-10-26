@@ -200,6 +200,9 @@
     "acceptedEverywhere": "이제 어디서나 OSMO를 만나보세요",
     "newPill": "새로운"
   },
+  "dustToOsmo": {
+    "mainButton": "먼지를 OSMO로 변환"
+  },
   "portfolio": {
     "buy": "구입하다",
     "sell": "팔다",

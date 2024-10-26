@@ -200,6 +200,9 @@
     "acceptedEverywhere": "Twoje OSMO, teraz akceptowane wszędzie",
     "newPill": "Nowy"
   },
+  "dustToOsmo": {
+    "mainButton": "Przekształć kurz w OSMO"
+  },
   "portfolio": {
     "buy": "Kupić",
     "sell": "Sprzedać",
