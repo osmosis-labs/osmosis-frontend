@@ -56,7 +56,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
-          USE_TRADE: "use"
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"
