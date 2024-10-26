@@ -19,7 +19,8 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Transactions feature", () => {
   let context: BrowserContext;
   let page: Page;
-  const walletId = process.env.WALLET_ID ?? "osmo";
+  const walletId =
+    process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
   let portfolioPage: PortfolioPage;
   let transactionsPage: TransactionsPage;

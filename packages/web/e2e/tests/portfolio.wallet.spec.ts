@@ -1,5 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import {
+  type BrowserContext,
+  chromium,
+  expect,
+  type Page,
+  test,
+} from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 import process from "process";
 
@@ -13,7 +19,7 @@ test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
   let portfolioPage: PortfolioPage;
-  let dollarBalanceRegEx = /\$\d+/;
+  const dollarBalanceRegEx = /\$\d+/;
   let page: Page;
 
   test.beforeAll(async () => {
