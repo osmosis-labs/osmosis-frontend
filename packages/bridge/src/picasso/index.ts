@@ -10,14 +10,14 @@ import {
   GetBridgeSupportedAssetsParams,
 } from "../interface";
 
-export class WormholeBridgeProvider implements BridgeProvider {
-  static readonly ID = "Wormhole";
-  readonly providerName = WormholeBridgeProvider.ID;
+export class PicassoBridgeProvider implements BridgeProvider {
+  static readonly ID = "Picasso";
+  readonly providerName = PicassoBridgeProvider.ID;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
   async getQuote(): Promise<BridgeQuote> {
-    throw new Error("Wormhole quotes are currently not supported.");
+    throw new Error("Picasso quotes are currently not supported.");
   }
 
   async getSupportedAssets({
@@ -25,7 +25,7 @@ export class WormholeBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    // just supports SOL via Wormhole
+    // just supports SOL via Picasso
 
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
@@ -57,40 +57,32 @@ export class WormholeBridgeProvider implements BridgeProvider {
   }
 
   async getTransactionData(): Promise<BridgeTransactionRequest> {
-    throw new Error("Wormhole transactions are currently not supported.");
+    throw new Error("Picasso transactions are currently not supported.");
   }
 
   async getExternalUrl({
     fromChain,
     toChain,
-    fromAsset,
-    toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     // For now we use Portal Bridge
-    const url = new URL("https://portalbridge.com/cosmos/");
+    const url = new URL("https://app.picasso.network/");
 
     if (fromChain) {
       url.searchParams.set(
-        "sourceChain",
-        fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
+        "from",
+        fromChain.chainName?.toUpperCase() ?? fromChain.chainId.toString()
       );
-      if (fromChain.chainType === "solana" && fromAsset) {
-        url.searchParams.set("asset", fromAsset.address);
-      }
     }
 
     if (toChain) {
       url.searchParams.set(
-        "targetChain",
-        toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
+        "to",
+        toChain.chainName?.toUpperCase() ?? toChain.chainId.toString()
       );
-      if (fromChain?.chainType !== "solana" && toAsset) {
-        url.searchParams.set("asset", toAsset.address);
-      }
     }
 
     return {
-      urlProviderName: "Portal",
+      urlProviderName: "Picasso",
       url,
     };
   }
