@@ -3,7 +3,7 @@ name: Synthetic Limit Orders Geo Monitoring Frontend tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 * * * *"
+    - cron: "4 * * * *"
 
 jobs:
   fe-trade-eu-tests:

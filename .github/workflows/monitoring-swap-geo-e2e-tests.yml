@@ -3,7 +3,7 @@ name: Synthetic Swaps Geo Monitoring Frontend tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/25 * * * *"
+    - cron: "*/30 * * * *"
 
 jobs:
   setup-matrix:
