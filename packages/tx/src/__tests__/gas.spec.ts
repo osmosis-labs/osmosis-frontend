@@ -13,6 +13,7 @@ import { ApiClientError } from "@osmosis-labs/utils";
 import type { Any } from "cosmjs-types/google/protobuf/any";
 
 import {
+    defaultBaseFeeMultiplier,
   getDefaultGasPrice,
   getGasFeeAmount,
   getGasPriceByFeeDenom,
@@ -322,7 +323,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+    const expectedGasAmount = new Dec(baseFee * defaultBaseFeeMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -419,7 +420,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+    const expectedGasAmount = new Dec(baseFee * defaultBaseFeeMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -506,7 +507,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+    const expectedGasAmount = new Dec(baseFee * defaultBaseFeeMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -592,7 +593,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+    const expectedGasAmount = new Dec(baseFee * defaultBaseFeeMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -679,7 +680,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee * gasMultiplier)
+    const expectedGasAmount = new Dec(baseFee * defaultBaseFeeMultiplier)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -795,7 +796,7 @@ describe("getGasFeeAmount", () => {
     )[0];
 
     const expectedGasAmount = new Dec(baseFee)
-      .mul(new Dec(gasMultiplier))
+      .mul(new Dec(defaultBaseFeeMultiplier))
       .quo(new Dec(lowEnoughSpotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
@@ -1053,7 +1054,6 @@ describe("getGasPriceByFeeDenom", () => {
   const chainId = "osmosis-1";
   const chainList = MockChains;
   const feeDenom = "uion";
-  const gasMultiplier = 1.5;
 
   it("should return the correct gas price with fee market module", async () => {
     const baseFee = 0.01;
@@ -1070,13 +1070,12 @@ describe("getGasPriceByFeeDenom", () => {
       chainId,
       chainList,
       feeDenom,
-      gasMultiplier,
     });
 
     const expectedGasPrice = new Dec(baseFee)
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
-      .mul(new Dec(gasMultiplier));
+      .mul(new Dec(defaultBaseFeeMultiplier));
 
     expect(result.gasPrice.toString()).toBe(expectedGasPrice.toString());
 
@@ -1103,7 +1102,6 @@ describe("getGasPriceByFeeDenom", () => {
       chainId,
       chainList: chainListWithoutFeeMarket,
       feeDenom: "uosmo",
-      gasMultiplier,
     });
 
     expect(result.gasPrice.toString()).toBe(defaultGasPrice.toString());
@@ -1125,7 +1123,6 @@ describe("getGasPriceByFeeDenom", () => {
       chainId,
       chainList: chainListWithoutFeeMarket,
       feeDenom,
-      gasMultiplier,
     });
 
     expect(result.gasPrice.toString()).toBe(new Dec(0.004).toString());
@@ -1145,7 +1142,6 @@ describe("getGasPriceByFeeDenom", () => {
         chainId,
         chainList: chainListWithoutFeeMarket,
         feeDenom,
-        gasMultiplier,
       })
     ).rejects.toThrow("Fee token not found: uion");
 
@@ -1159,7 +1155,6 @@ describe("getGasPriceByFeeDenom", () => {
         chainId: "non-existent-chain",
         chainList,
         feeDenom,
-        gasMultiplier,
       })
     ).rejects.toThrow("Chain not found: non-existent-chain");
 
@@ -1182,7 +1177,6 @@ describe("getGasPriceByFeeDenom", () => {
         chainId,
         chainList,
         feeDenom,
-        gasMultiplier,
       })
     ).rejects.toThrow(`Failed to fetch spot price for fee token ${feeDenom}.`);
 
@@ -1207,7 +1201,6 @@ describe("getGasPriceByFeeDenom", () => {
         chainId,
         chainList,
         feeDenom,
-        gasMultiplier,
       })
     ).rejects.toThrow("Invalid base fee: invalid");
   });

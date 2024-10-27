@@ -48,7 +48,7 @@ export type QuoteStdFee = {
 // We have experienced instabilities with the base fee query. To avoid debugging its stability
 // for the sake of time, we have opted in to increase the base fee multiplier to 1.65 from the original
 // value of 1.5 which was equal to the gas multiplier. The update was applied on 2024-10-27.
-const defaultBaseFeeMultiplier = 1.65;
+export const defaultBaseFeeMultiplier = 1.65;
 
 /** Tx body portions relevant for simulation */
 export type SimBody = Partial<
