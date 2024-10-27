@@ -498,7 +498,6 @@ export async function getGasPriceByFeeDenom({
   chainId,
   chainList,
   feeDenom,
-  gasMultiplier = 1.5,
   defaultGasPrice = 0.025,
 }: {
   chainId: string;

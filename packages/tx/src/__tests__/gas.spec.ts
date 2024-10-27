@@ -1243,15 +1243,15 @@ describe("getDefaultGasPrice", () => {
       base_fee: baseFee.toString(),
     } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
 
-    const gasMultiplier = 1.5;
+    const baseFeeMultiplier = 1.65;
     const result = await getDefaultGasPrice({
       chainId,
       chainList,
-      gasMultiplier,
+      baseFeeMultiplier: baseFeeMultiplier,
     });
 
     expect(result.gasPrice.toString()).toBe(
-      new Dec(baseFee * gasMultiplier).toString()
+      new Dec(baseFee * baseFeeMultiplier).toString()
     );
     expect(result.feeDenom).toBe("uosmo");
 
