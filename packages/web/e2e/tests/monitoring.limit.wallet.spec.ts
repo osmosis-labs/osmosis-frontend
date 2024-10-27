@@ -13,7 +13,6 @@ test.describe("Test Filled Limit Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const TRX_SUCCESS_TIMEOUT = 10000;
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
@@ -87,49 +86,5 @@ test.describe("Test Filled Limit Order feature", () => {
     const p = context.pages()[0];
     const trxPage = new TransactionsPage(p);
     await trxPage.isFilledByLimitPrice(highLimitPrice);
-  });
-
-  // biome-ignore lint/complexity/noForEach: <explanation>
-  [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
-    test(`User should be able to Market Buy ${name}`, async () => {
-      await tradePage.goto();
-      await tradePage.openBuyTab();
-      await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.52");
-      const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
-      expect(msgContentAmount).toBeTruthy();
-      expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-      await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-      await tradePage.getTransactionUrl();
-    });
-  });
-
-  // unwrapped market sell tests just in case this affects anything.
-  test.skip("User should be able to Market Sell WBTC", async () => {
-    await tradePage.goto();
-    await tradePage.openSellTab();
-    await tradePage.selectAsset("WBTC");
-    await tradePage.enterAmount("0.51");
-    await tradePage.isSufficientBalanceForTrade();
-    await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to Market Sell OSMO", async () => {
-    await tradePage.goto();
-    await tradePage.openSellTab();
-    await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.51");
-    await tradePage.isSufficientBalanceForTrade();
-    await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-    await tradePage.getTransactionUrl();
   });
 });

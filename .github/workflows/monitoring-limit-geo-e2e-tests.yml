@@ -37,7 +37,7 @@ jobs:
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
-          npx playwright test monitoring --timeout 180000
+          npx playwright test monitoring.market --timeout 180000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
@@ -77,7 +77,7 @@ jobs:
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
-          npx playwright test monitoring --timeout 180000
+          npx playwright test monitoring.market --timeout 180000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
@@ -114,7 +114,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
         run: |
           cd packages/web
-          npx playwright test monitoring --timeout 180000
+          npx playwright test monitoring.market --timeout 180000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
@@ -123,9 +123,53 @@ jobs:
           name: us-trade-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
 
+  fe-limit-us-tests:
+    timeout-minutes: 10
+    needs: fe-trade-us-tests
+    name: prod-fe-limit-us-tests
+    runs-on: macos-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Limit tests in US
+        id: run-us
+        env:
+          BASE_URL: "https://app.osmosis.zone"
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          cd packages/web
+          npx playwright test monitoring.limit --timeout 180000
+      - name: upload monitoring test results
+        if: failure()
+        id: monitoring-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: us-limit-test-results-${{ github.run_id }}
+          path: packages/web/playwright-report
+
   fe-bot-alert:
     runs-on: ubuntu-latest
-    needs: [fe-trade-eu-tests, fe-trade-us-tests, fe-trade-sg-tests]
+    needs:
+      [
+        fe-trade-eu-tests,
+        fe-trade-us-tests,
+        fe-trade-sg-tests,
+        fe-trade-us-tests,
+      ]
     if: failure()
     steps:
       - name: Send Slack alert if test fails
@@ -159,7 +203,13 @@ jobs:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [fe-trade-eu-tests, fe-trade-us-tests, fe-trade-sg-tests, fe-bot-alert]
+      [
+        fe-trade-eu-tests,
+        fe-trade-us-tests,
+        fe-trade-sg-tests,
+        fe-bot-alert,
+        fe-trade-us-tests,
+      ]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7
