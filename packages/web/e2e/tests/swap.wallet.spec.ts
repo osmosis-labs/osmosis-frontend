@@ -11,7 +11,7 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Swap feature", () => {
   let context: BrowserContext;
   const walletId =
-    process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
+    process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
   const USDC =
