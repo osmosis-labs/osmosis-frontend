@@ -48,13 +48,13 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.01");
+    await tradePage.enterAmount("1.08");
     await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(
       context,
       true
     );
-    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount, "No msg from the wallet!").toBeTruthy();
     // now this is converted from USDC
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
@@ -63,14 +63,16 @@ test.describe("Test Filled Limit Order feature", () => {
   });
 
   test("User should be able to limit buy OSMO", async () => {
+    const PRICE_INCREASE_FACTOR = 1.07; // 7% increase for limit price
+    const ORDER_HISTORY_TIMEOUT = 30; // Seconds to wait for order history
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.01");
+    await tradePage.enterAmount("1.02");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = (limitPrice * 1.07).toFixed(4);
+    const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(
       context,
@@ -82,7 +84,7 @@ test.describe("Test Filled Limit Order feature", () => {
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
-    await tradePage.gotoOrdersHistory(30);
+    await tradePage.gotoOrdersHistory(ORDER_HISTORY_TIMEOUT);
     const p = context.pages()[0];
     const trxPage = new TransactionsPage(p);
     await trxPage.isFilledByLimitPrice(highLimitPrice);
