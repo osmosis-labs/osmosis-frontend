@@ -78,7 +78,7 @@ test.describe("Test Filled Limit Order feature", () => {
       context,
       true
     );
-    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount, "No msg from the wallet!").toBeTruthy();
     expect(msgContentAmount).toContain('"quantity": "1010000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
