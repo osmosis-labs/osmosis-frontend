@@ -65,7 +65,7 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: main-e2e-test-results
+          name: main-e2e-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
       - name: Send Slack alert if test fails
         id: slack

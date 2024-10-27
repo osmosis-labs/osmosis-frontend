@@ -43,7 +43,7 @@ jobs:
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: eu-trade-test-results
+          name: eu-trade-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
 
   fe-trade-sg-tests:
@@ -83,7 +83,7 @@ jobs:
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: sg-trade-test-results
+          name: sg-trade-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
 
   fe-trade-us-tests:
@@ -120,7 +120,7 @@ jobs:
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: us-trade-test-results
+          name: us-trade-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
 
   fe-bot-alert:
