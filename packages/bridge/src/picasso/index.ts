@@ -64,7 +64,6 @@ export class PicassoBridgeProvider implements BridgeProvider {
     fromChain,
     toChain,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    // For now we use Portal Bridge
     const url = new URL("https://app.picasso.network/");
 
     if (fromChain) {
