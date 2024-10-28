@@ -98,7 +98,9 @@ export async function getAminoConverters() {
                     : undefined,
               }
             : {},
-          timeout_timestamp: timeoutTimestamp?.toString(),
+          ...(timeoutTimestamp && {
+            timeout_timestamp: timeoutTimestamp.toString(),
+          }),
         }),
         fromAmino: ({
           source_port,
