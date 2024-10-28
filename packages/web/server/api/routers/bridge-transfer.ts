@@ -61,6 +61,7 @@ const BridgeLogoUrls: Record<Bridge, string> = {
   Nomic: "/bridges/nomic.svg",
   Wormhole: "/bridges/wormhole.svg",
   Nitro: "/bridges/nitro.svg",
+  Picasso: "/bridges/picasso.svg",
 };
 
 const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
@@ -72,6 +73,7 @@ const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Wormhole: "/external-bridges/portalbridge.svg",
   Generic: "/external-bridges/generic.svg",
   Nitro: "/bridges/nitro.svg",
+  Picasso: "/bridges/picasso.svg",
 };
 
 /** Include decimals with decimal-included price. */
