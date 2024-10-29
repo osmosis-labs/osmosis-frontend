@@ -79,6 +79,7 @@ export async function getAminoConverters() {
           sender,
           receiver,
           timeoutHeight,
+          timeoutTimestamp,
         }: MsgTransfer): MsgTransferAmino => ({
           source_port: sourcePort,
           source_channel: sourceChannel,
@@ -97,6 +98,9 @@ export async function getAminoConverters() {
                     : undefined,
               }
             : {},
+          ...(timeoutTimestamp && {
+            timeout_timestamp: timeoutTimestamp.toString(),
+          }),
         }),
         fromAmino: ({
           source_port,

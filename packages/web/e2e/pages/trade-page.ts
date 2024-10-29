@@ -30,9 +30,7 @@ export class TradePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.page = page;
-    this.swapBtn = page.locator(
-      '//div[@class="flex w-full pb-3"]/button[.="Swap"]'
-    );
+    this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
     this.buyBtn = page.locator('//div[@class]/button[@class]/h6[.="Buy"]/..');
     this.sellBtn = page.locator('//div[@class]/button[@class]/h6[.="Sell"]/..');

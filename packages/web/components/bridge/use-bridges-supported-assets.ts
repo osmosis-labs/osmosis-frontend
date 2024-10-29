@@ -20,6 +20,7 @@ const supportedAssetsBridges: Bridge[] = [
   "Nomic",
   "Wormhole",
   "Nitro",
+  "Picasso",
 ];
 
 export type SupportedAsset = ReturnType<

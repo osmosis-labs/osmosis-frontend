@@ -45,6 +45,11 @@ export type QuoteStdFee = {
   }[];
 };
 
+// We have experienced instabilities with the base fee query. To avoid debugging its stability
+// for the sake of time, we have opted in to increase the base fee multiplier to 1.65 from the original
+// value of 1.5 which was equal to the gas multiplier. The update was applied on 2024-10-27.
+export const defaultBaseFeeMultiplier = 1.65;
+
 /** Tx body portions relevant for simulation */
 export type SimBody = Partial<
   Pick<
@@ -114,7 +119,7 @@ export async function estimateGasFee({
     const { feeDenom, gasPrice } = await getDefaultGasPrice({
       chainId,
       chainList,
-      gasMultiplier,
+      baseFeeMultiplier: defaultBaseFeeMultiplier,
     });
     return {
       gas: gasLimit,
@@ -493,7 +498,6 @@ export async function getGasPriceByFeeDenom({
   chainId,
   chainList,
   feeDenom,
-  gasMultiplier = 1.5,
   defaultGasPrice = 0.025,
 }: {
   chainId: string;
@@ -513,7 +517,7 @@ export async function getGasPriceByFeeDenom({
   const defaultFee = await getDefaultGasPrice({
     chainId,
     chainList,
-    gasMultiplier,
+    baseFeeMultiplier: defaultBaseFeeMultiplier,
   });
 
   if (defaultFee.feeDenom === feeDenom) {
@@ -557,13 +561,13 @@ export async function getGasPriceByFeeDenom({
 export async function getDefaultGasPrice({
   chainId,
   chainList,
-  gasMultiplier = 1.5,
+  baseFeeMultiplier = defaultBaseFeeMultiplier,
   defaultGasPrice = 0.025,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  gasMultiplier?: number;
   defaultGasPrice?: number;
+  baseFeeMultiplier?: number;
 }) {
   const chain = chainList.find(({ chain_id }) => chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
@@ -586,7 +590,7 @@ export async function getDefaultGasPrice({
 
     feeDenom = baseDenom;
     // Add slippage multiplier to account for shifting gas prices in gas market
-    gasPrice = baseFeePrice.mul(new Dec(gasMultiplier));
+    gasPrice = baseFeePrice.mul(new Dec(baseFeeMultiplier));
   } else {
     // registry
 

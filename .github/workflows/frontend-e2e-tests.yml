@@ -59,6 +59,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/web
           npx playwright test -g "Test Swap feature"
@@ -95,6 +96,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/web
           npx playwright test portfolio transactions
@@ -167,6 +169,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/web
           npx playwright test trade
@@ -204,6 +207,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/web
           npx playwright test claim
