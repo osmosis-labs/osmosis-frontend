@@ -1,7 +1,11 @@
 import type { Registry } from "@cosmjs/proto-signing";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
-import { estimateGasFee, getSwapMessages } from "@osmosis-labs/tx";
+import {
+  estimateGasFee,
+  getSwapMessages,
+  makeSkipIbcHookSwapMemo,
+} from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   deriveCosmosAddress,
@@ -40,9 +44,14 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   readonly relayers: string[];
   readonly nBTCMinimalDenom: string;
+  readonly allBtcMinimalDenom: string | undefined;
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
+    this.allBtcMinimalDenom =
+      this.ctx.env === "mainnet"
+        ? "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC"
+        : undefined; // No testnet allBTC for now.
     this.nBTCMinimalDenom =
       this.ctx.env === "mainnet"
         ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
@@ -264,6 +273,7 @@ export class NomicBridgeProvider implements BridgeProvider {
   async getDepositAddress({
     fromChain,
     toAddress,
+    toAsset,
   }: GetDepositAddressParams): Promise<BridgeDepositAddress> {
     if (!isCosmosAddressValid({ address: toAddress, bech32Prefix: "osmo" })) {
       throw new BridgeQuoteError({
@@ -287,11 +297,11 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
-    const transferMethod = nomicBtc.transferMethods.find(
+    const nomicIbcTransferMethod = nomicBtc.transferMethods.find(
       (method): method is IbcTransferMethod => method.type === "ibc"
     );
 
-    if (!transferMethod) {
+    if (!nomicIbcTransferMethod) {
       throw new BridgeQuoteError({
         bridgeId: "Nomic",
         errorType: "UnsupportedQuoteError",
@@ -307,11 +317,44 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
+    const nomicChain = this.ctx.chainList.find(
+      ({ chain_name }) =>
+        chain_name === nomicIbcTransferMethod.counterparty.chainName
+    );
+
+    if (!nomicChain) {
+      throw new BridgeQuoteError({
+        bridgeId: "Nomic",
+        errorType: "UnsupportedQuoteError",
+        message: "Nomic chain not found in chain list.",
+      });
+    }
+
+    const userWantsAllBtc =
+      this.allBtcMinimalDenom && toAsset.address === this.allBtcMinimalDenom;
+
+    const swapMemo = userWantsAllBtc
+      ? makeSkipIbcHookSwapMemo({
+          denomIn: this.nBTCMinimalDenom,
+          denomOut:
+            this.ctx.env === "mainnet" ? this.allBtcMinimalDenom : "uosmo",
+          env: this.ctx.env,
+          minAmountOut: "1",
+          poolId:
+            this.ctx.env === "mainnet"
+              ? "1868" // nBTC/allBTC pool on Osmosis
+              : "654", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
+          receiverOsmoAddress: toAddress,
+          timeoutTimestamp: 0,
+        })
+      : undefined;
+
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: transferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       receiver: toAddress,
+      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
     });
 
     if (depositInfo.code === 1) {
