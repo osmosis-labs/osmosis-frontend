@@ -120,7 +120,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
       | undefined;
 
-    if (fromAsset.address !== this.nBTCMinimalDenom) {
+    if (fromAsset.address === this.allBtcMinimalDenom) {
       swapRoute = await getRouteTokenOutGivenIn({
         assetLists: this.ctx.assetLists,
         tokenInAmount: fromAmount,
@@ -333,6 +333,10 @@ export class NomicBridgeProvider implements BridgeProvider {
     const userWantsAllBtc =
       this.allBtcMinimalDenom && toAsset.address === this.allBtcMinimalDenom;
 
+    const now = Date.now();
+    const timeoutTimestampFiveDaysFromNow =
+      BigInt(now + 86400 * 5 * 1000 - (now % (60 * 60 * 1000))) *
+      BigInt(1000000);
     const swapMemo = userWantsAllBtc
       ? makeSkipIbcHookSwapMemo({
           denomIn: this.nBTCMinimalDenom,
@@ -345,7 +349,7 @@ export class NomicBridgeProvider implements BridgeProvider {
               ? "1868" // nBTC/allBTC pool on Osmosis
               : "654", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
           receiverOsmoAddress: toAddress,
-          timeoutTimestamp: 0,
+          timeoutTimestamp: timeoutTimestampFiveDaysFromNow.toString(),
         })
       : undefined;
 

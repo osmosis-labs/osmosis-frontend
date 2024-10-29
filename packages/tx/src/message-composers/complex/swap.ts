@@ -258,7 +258,7 @@ export function makeSkipIbcHookSwapMemo({
   denomOut: string;
   minAmountOut: string;
   poolId: string;
-  timeoutTimestamp: number;
+  timeoutTimestamp: string;
   receiverOsmoAddress: string;
   env: "testnet" | "mainnet";
 }) {
@@ -273,7 +273,10 @@ export function makeSkipIbcHookSwapMemo({
         swap_and_action: {
           user_swap: {
             swap_exact_asset_in: {
-              swap_venue_name: "osmosis-poolmanager",
+              swap_venue_name:
+                env === "testnet"
+                  ? "testnet-osmosis-poolmanager"
+                  : "osmosis-poolmanager",
               operations: [
                 {
                   denom_in: denomIn,
