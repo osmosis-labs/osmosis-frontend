@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {
   type BrowserContext,
   chromium,
@@ -7,7 +6,6 @@ import {
   test,
 } from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
-import process from "process";
 
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
@@ -62,6 +60,7 @@ test.describe("Test Portfolio feature", () => {
     await context.close();
   });
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [
     { name: "OSMO" },
     { name: "ATOM" },
@@ -77,14 +76,15 @@ test.describe("Test Portfolio feature", () => {
     });
   });
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [
     { name: "INJ" },
     { name: "ETH.axl" },
-    { name: "KUJI" },
     { name: "SOL" },
     { name: "milkTIA" },
     { name: "BTC" },
     { name: "WBTC" },
+    { name: "ETH" },
   ].forEach(({ name }) => {
     test(`User should be able to see bridged balances for ${name}`, async () => {
       await portfolioPage.searchForToken(name);

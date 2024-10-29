@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-import process from "process";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";
@@ -69,7 +68,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.02");
+    await tradePage.enterAmount("1.04");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
     const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);
@@ -79,7 +78,7 @@ test.describe("Test Filled Limit Order feature", () => {
       true
     );
     expect(msgContentAmount, "No msg from the wallet!").toBeTruthy();
-    expect(msgContentAmount).toContain('"quantity": "1020000"');
+    expect(msgContentAmount).toContain('"quantity": "1040000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
