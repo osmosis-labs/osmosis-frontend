@@ -28,7 +28,7 @@ jobs:
 
   preview-swap-tests:
     timeout-minutes: 10
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: wait-for-deployment
     steps:
       - name: Check out repository
@@ -74,7 +74,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -111,7 +111,7 @@ jobs:
   preview-pools-and-select-pair-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -145,7 +145,7 @@ jobs:
 
   preview-trade-tests:
     timeout-minutes: 10
-    runs-on: macos-14
+    runs-on: macos-latest
     needs: [wait-for-deployment, preview-swap-tests]
     steps:
       - name: Check out repository
