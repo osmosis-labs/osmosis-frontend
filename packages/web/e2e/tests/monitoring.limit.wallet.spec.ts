@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-import process from "process";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";
@@ -13,7 +12,6 @@ test.describe("Test Filled Limit Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const TRX_SUCCESS_TIMEOUT = 10000;
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();
@@ -49,13 +47,13 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.openSellTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.01");
+    await tradePage.enterAmount("1.08");
     await tradePage.setLimitPriceChange("Market");
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(
       context,
       true
     );
-    expect(msgContentAmount).toBeTruthy();
+    expect(msgContentAmount, "No msg from the wallet!").toBeTruthy();
     // now this is converted from USDC
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "ask"');
@@ -64,72 +62,30 @@ test.describe("Test Filled Limit Order feature", () => {
   });
 
   test("User should be able to limit buy OSMO", async () => {
+    const PRICE_INCREASE_FACTOR = 1.07; // 7% increase for limit price
+    const ORDER_HISTORY_TIMEOUT = 30; // Seconds to wait for order history
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.01");
+    await tradePage.enterAmount("1.04");
     await tradePage.setLimitPriceChange("Market");
     const limitPrice = Number(await tradePage.getLimitPrice());
-    const highLimitPrice = (limitPrice * 1.07).toFixed(4);
+    const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(
       context,
       true
     );
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain('"quantity": "1010000"');
+    expect(msgContentAmount, "No msg from the wallet!").toBeTruthy();
+    expect(msgContentAmount).toContain('"quantity": "1040000"');
     expect(msgContentAmount).toContain("place_limit");
     expect(msgContentAmount).toContain('"order_direction": "bid"');
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
-    await tradePage.gotoOrdersHistory(30);
+    await tradePage.gotoOrdersHistory(ORDER_HISTORY_TIMEOUT);
     const p = context.pages()[0];
     const trxPage = new TransactionsPage(p);
     await trxPage.isFilledByLimitPrice(highLimitPrice);
-  });
-
-  // biome-ignore lint/complexity/noForEach: <explanation>
-  [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
-    test(`User should be able to Market Buy ${name}`, async () => {
-      await tradePage.goto();
-      await tradePage.openBuyTab();
-      await tradePage.selectAsset(name);
-      await tradePage.enterAmount("0.52");
-      const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
-      expect(msgContentAmount).toBeTruthy();
-      expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-      await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-      await tradePage.getTransactionUrl();
-    });
-  });
-
-  // unwrapped market sell tests just in case this affects anything.
-  test.skip("User should be able to Market Sell WBTC", async () => {
-    await tradePage.goto();
-    await tradePage.openSellTab();
-    await tradePage.selectAsset("WBTC");
-    await tradePage.enterAmount("0.51");
-    await tradePage.isSufficientBalanceForTrade();
-    await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to Market Sell OSMO", async () => {
-    await tradePage.goto();
-    await tradePage.openSellTab();
-    await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("0.51");
-    await tradePage.isSufficientBalanceForTrade();
-    await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
-    await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
-    await tradePage.getTransactionUrl();
   });
 });

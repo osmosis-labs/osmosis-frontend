@@ -3,7 +3,7 @@ name: Synthetic Swaps Geo Monitoring Frontend tests
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/25 * * * *"
+    - cron: "*/30 * * * *"
 
 jobs:
   setup-matrix:
@@ -95,42 +95,8 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: us-swap-test-results
+          name: us-swap-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
-      - name: Send Slack alert if test fails
-        id: slack
-        if: failure()
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "🚨 Synthetic Geo Swap Monitoring Tests Failure Alert 🚨"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Production App URL:* https://app.osmosis.zone"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   fe-swap-eu-tests:
     timeout-minutes: 15
@@ -171,7 +137,7 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: eu-swap-test-results
+          name: eu-swap-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
 
   fe-swap-sg-tests:
@@ -213,14 +179,52 @@ jobs:
         id: e2e-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: sg-swap-test-results
+          name: sg-swap-test-results-${{ github.run_id }}
           path: packages/web/playwright-report
+
+  fe-bot-alert:
+    runs-on: ubuntu-latest
+    needs: [fe-swap-us-tests, fe-swap-eu-tests, fe-swap-sg-tests]
+    if: failure()
+    steps:
+      - name: Send Slack alert if test fails
+        id: slack
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚨 Synthetic Prod Swap Monitoring Tests Failure Alert 🚨"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
 
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
     needs:
-      [fe-quote-tests, fe-swap-us-tests, fe-swap-sg-tests, fe-swap-eu-tests]
+      [
+        fe-quote-tests,
+        fe-swap-us-tests,
+        fe-swap-sg-tests,
+        fe-swap-eu-tests,
+        fe-bot-alert,
+      ]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7

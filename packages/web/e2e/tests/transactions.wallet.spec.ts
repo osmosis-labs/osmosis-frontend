@@ -1,5 +1,11 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import {
+  type BrowserContext,
+  chromium,
+  expect,
+  type Page,
+  test,
+} from "@playwright/test";
 import process from "process";
 
 import { SwapPage } from "~/e2e/pages/swap-page";
@@ -14,7 +20,7 @@ test.describe("Test Transactions feature", () => {
   let context: BrowserContext;
   let page: Page;
   const walletId =
-    process.env.WALLET_ID ?? "osmo1ka7q9tykdundaanr07taz3zpt5k72c0ut5r4xa";
+    process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
   let portfolioPage: PortfolioPage;
   let transactionsPage: TransactionsPage;
@@ -71,7 +77,7 @@ test.describe("Test Transactions feature", () => {
     await swapPage.enterAmount(swapAmount);
     const { msgContentAmount } = await swapPage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("sender: " + walletId);
+    expect(msgContentAmount).toContain(`sender: ${walletId}`);
     expect(msgContentAmount).toContain(
       "denom: ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4"
     );
