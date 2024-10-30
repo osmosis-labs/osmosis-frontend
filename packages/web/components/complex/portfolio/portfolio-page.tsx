@@ -31,6 +31,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
   const { t } = useTranslation();
   const { accountStore, userSettings } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
   const featureFlags = useFeatureFlags();
 
   const { logEvent } = useAmplitudeAnalytics({
@@ -52,7 +53,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const totalCap = allocation?.totalCap;
 
-  const userHasNoAssets = allocation && totalCap?.toDec()?.isZero();
+  const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
@@ -61,14 +62,9 @@ export const PortfolioPage: FunctionComponent = observer(() => {
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
 
-  const { isLoading: isWalletLoading } = useWalletSelect();
-
   const hideDustSettingStore =
     userSettings.getUserSettingById<HideDustState>("hide-dust");
   const hideDust = Boolean(hideDustSettingStore?.state?.hideDust);
-
-  const showZeroBalancesSplash =
-    userHasNoAssets === true || userHasNoAssets === undefined;
 
   return (
     <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
@@ -127,7 +123,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                   <div className="mx-auto my-6 w-fit">
                     <Spinner />
                   </div>
-                ) : showZeroBalancesSplash ? (
+                ) : userHasNoAssets ? (
                   <UserZeroBalanceTableSplash />
                 ) : (
                   <TabPanels>
