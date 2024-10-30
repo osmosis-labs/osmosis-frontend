@@ -5,8 +5,7 @@ import { FunctionComponent, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
-import type { SwapToolProps } from "~/components/swap-tool";
-import { AltSwapTool } from "~/components/swap-tool/alt";
+import { SwapTool, SwapToolProps } from "~/components/swap-tool";
 import { OrderTypeSelector } from "~/components/swap-tool/order-type-selector";
 import {
   SwapToolTab,
@@ -57,6 +56,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
        */
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tab]);
+
     return (
       <>
         <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
@@ -110,7 +110,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
               case SwapToolTab.SWAP:
               default:
                 return (
-                  <AltSwapTool
+                  <SwapTool
                     useOtherCurrencies
                     useQueryParams
                     page={page}
