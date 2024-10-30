@@ -40,7 +40,7 @@
     "launchdarkly-node-client-sdk": "^3.3.0",
     "long": "^5.2.3",
     "lru-cache": "^10.0.1",
-    "nomic-bitcoin": "^4.2.1",
+    "nomic-bitcoin": "^5.0.0-pre.0",
     "viem": "^2.21.19",
     "zod": "^3.22.4"
   },

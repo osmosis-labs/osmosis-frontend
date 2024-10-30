@@ -357,7 +357,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       receiver: toAddress,
-      // ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
+      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
     });
 
     if (depositInfo.code === 1) {
