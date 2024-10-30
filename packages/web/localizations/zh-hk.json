@@ -329,14 +329,6 @@
   },
   "estimated": "估計的",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "介紹未經驗證的資產",
-    "simplifiedExperience": "您的體驗已被簡化！",
-    "frontierHasNowMerged": "Frontier頁面現已與以下內容合併",
-    "thisMeansManaging": "這意味著可以方便地在一個地方管理代幣！",
-    "commitmentToDecentralization": "符合去中心化和可訪問性的承諾，處理未經驗證的代幣的選項仍然可用。",
-    "settingIsNowEnabled": "設置現已啟用。",
-    "youMayDisable": "您可以隨時在設置模式中禁用此設置。",
-    "openSettings": "打開設置",
     "proceed": "繼續"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "隱藏",
       "show": "顯示"
     },
-    "maxButtonErrorNoBalance": "餘額不足，無法計算最大金額。",
-    "available": "可用",
     "button": "交易",
     "buttonError": "照樣交易",
-    "expectedOutput": "預期產出",
-    "fee": "交易費 ({fee})",
-    "networkFee": "網路費",
-    "totalFee": "總費用",
     "HALF": "一半",
-    "MAX": "全部",
-    "minimumSlippage": "({slippage}) 包括滑價({slippage})後最少能獲得",
     "pool": "流動性池 #{id}",
-    "priceImpact": "市場影響",
     "routerTooltipFee": "費",
     "routerTooltipSpreadFactor": "擴頻因子",
     "showDetails": "顯示詳細資料",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "提高支出限額"
     },
     "settings": {
-      "slippage": "允許嘅滑價",
-      "slippageInfo": "你嘅交易在價格嘅不利變動超過此百份比時會被取消",
-      "title": "兌換設定"
+      "slippage": "允許嘅滑價"
     },
     "title": "兌換",
     "dynamicSpreadFactor": "動態的",

@@ -329,14 +329,6 @@
   },
   "estimated": "Szacowany",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
-    "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
-    "frontierHasNowMerged": "Strona Frontier została teraz połączona z",
-    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
-    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
-    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
-    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień.",
-    "openSettings": "Otwórz ustawienia",
     "proceed": "Kontynuuj"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
-    "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
-    "expectedOutput": "Spodziewana wartość",
-    "fee": "Prowizja ({fee})",
-    "networkFee": "Opłata sieciowa",
-    "totalFee": "Całkowita opłata",
     "HALF": "POŁOWA",
-    "MAX": "MAKSIMUM",
-    "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
     "pool": "Pula #{id}",
-    "priceImpact": "Wpływ na rynek",
     "routerTooltipFee": "Opłata",
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
     "showDetails": "Pokaż szczegóły",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Zwiększ limit wydatków"
     },
     "settings": {
-      "slippage": "Tolerowane odchylenie",
-      "slippageInfo": "Twoja transakcja zostanie cofnięta jeśli cena zmieni się na niekorzyść o więcej niż podany procent.",
-      "title": "Ustawienia Transakcji"
+      "slippage": "Tolerowane odchylenie"
     },
     "title": "Wymień",
     "dynamicSpreadFactor": "Dynamiczny",

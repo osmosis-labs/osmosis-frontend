@@ -329,14 +329,6 @@
   },
   "estimated": "Estimado",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
-    "simplifiedExperience": "Sua experiência foi simplificada!",
-    "frontierHasNowMerged": "A página Frontier agora se fundiu com",
-    "thisMeansManaging": "Isso significa que gerenciar tokens pode ser feito convenientemente em um só lugar!",
-    "commitmentToDecentralization": "Em linha com o compromisso com a descentralização e acessibilidade, a opção de lidar com tokens não verificados ainda está disponível.",
-    "settingIsNowEnabled": "A configuração agora está habilitada.",
-    "youMayDisable": "você pode desabilitar essa configuração a qualquer momento no modal de configurações.",
-    "openSettings": "Abrir Configurações",
     "proceed": "Prosseguir"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Esconder",
       "show": "Mostrar"
     },
-    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
-    "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
-    "expectedOutput": "Resultado Esperado",
-    "fee": "Taxa de Troca ({fee})",
-    "networkFee": "Taxa de rede",
-    "totalFee": "Taxa total",
     "HALF": "METADE",
-    "MAX": "MÁXIMO",
-    "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
     "pool": "Piscina #{id}",
-    "priceImpact": "Impacto no mercado",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Fator de propagação",
     "showDetails": "Mostrar detalhes",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Aumentar o limite de gastos"
     },
     "settings": {
-      "slippage": "Tolerância de spread",
-      "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",
-      "title": "Configurações de Transação"
+      "slippage": "Tolerância de spread"
     },
     "title": "Trocar",
     "dynamicSpreadFactor": "Dinâmico",

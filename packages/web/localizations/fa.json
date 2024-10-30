@@ -329,14 +329,6 @@
   },
   "estimated": "تخمین زده",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
-    "simplifiedExperience": "تجربه شما ساده شده است!",
-    "frontierHasNowMerged": "صفحه مرز اکنون با",
-    "thisMeansManaging": "این بدان معنی است که می توان مدیریت توکن ها را به راحتی در یک مکان انجام داد!",
-    "commitmentToDecentralization": "مطابق با تعهد به توزیع و دسترسی، گزینه ای برای کنترل توکن های تایید نشده همچنان موجود است.",
-    "settingIsNowEnabled": "تنظیمات اکنون فعال شده است.",
-    "youMayDisable": "شما می توانید این تنظیم را در هر زمان در مدال تنظیمات غیر فعال کنید.",
-    "openSettings": "تنظیمات را باز کن",
     "proceed": "ادامه دهید"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "مخفی",
       "show": "نماید"
     },
-    "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
-    "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
-    "expectedOutput": "خروجی مورد انتظار",
-    "fee": "کارمزد تبدیل ({fee})",
-    "networkFee": "هزینه شبکه",
-    "totalFee": "هزینه کل",
     "HALF": "نصف",
-    "MAX": "همه",
-    "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
     "pool": "استخر #{id}",
-    "priceImpact": "تاثیر بازار",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
     "showDetails": "نمایش جزئیات",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "افزایش سقف هزینه"
     },
     "settings": {
-      "slippage": "تغیرات قابل قبول",
-      "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
-      "title": "تنظیمات تراکنش"
+      "slippage": "تغیرات قابل قبول"
     },
     "title": "تبدیل",
     "dynamicSpreadFactor": "پویا",

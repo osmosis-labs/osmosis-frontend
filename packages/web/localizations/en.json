@@ -329,14 +329,6 @@
   },
   "estimated": "Estimated",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Introducing Unverified Assets",
-    "simplifiedExperience": "Your experience has been simplified!",
-    "frontierHasNowMerged": "Frontier page has now merged with",
-    "thisMeansManaging": "This means managing tokens can be conveniently done in one place!",
-    "commitmentToDecentralization": "In line with the commitment to decentralization and accessibility, the option to handle unverified tokens is still available.",
-    "settingIsNowEnabled": "The setting is now enabled.",
-    "youMayDisable": "You may disable this setting at any time in the settings modal.",
-    "openSettings": "Open Settings",
     "proceed": "Proceed"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Hide",
       "show": "Show"
     },
-    "maxButtonErrorNoBalance": "Not enough balance to calculate the maximum amount.",
-    "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
-    "expectedOutput": "Expected Output",
-    "fee": "Swap Fee ({fee})",
-    "networkFee": "Network Fee",
-    "totalFee": "Total Fee",
     "HALF": "HALF",
-    "MAX": "MAX",
-    "minimumSlippage": "Minimum received after slippage ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Market Impact",
     "routerTooltipFee": "Fee",
     "routerTooltipSpreadFactor": "Spread Factor",
     "showDetails": "Show details",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Increase spend limit"
     },
     "settings": {
-      "slippage": "Slippage tolerance",
-      "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
-      "title": "Transaction settings"
+      "slippage": "Slippage tolerance"
     },
     "title": "Swap",
     "dynamicSpreadFactor": "Dynamic",
