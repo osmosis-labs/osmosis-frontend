@@ -28,7 +28,7 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
-  useNavBar({ title: " " });
+  useNavBar({ hideTitle: true });
 
   return (
     <main className="relative flex h-full overflow-auto pb-2 pt-8">

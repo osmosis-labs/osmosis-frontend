@@ -7,8 +7,13 @@ export type CallToAction = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export class NavBarStore {
+  // Note: these private vars are needed so we can enforce use of `runInAction` in setters
+
   @observable
   protected _title: ReactNode | undefined;
+
+  @observable
+  protected _hideTitle = false;
 
   @observable
   protected _callToActionButtons: CallToAction[] = [];
@@ -21,12 +26,20 @@ export class NavBarStore {
     return this._title;
   }
 
+  get hideTitle() {
+    return this._hideTitle;
+  }
+
   get callToActionButtons() {
     return this._callToActionButtons;
   }
 
   set title(val: ReactNode | undefined) {
     runInAction(() => (this._title = val));
+  }
+
+  set hideTitle(val: boolean) {
+    runInAction(() => (this._hideTitle = val));
   }
 
   /** Use `useEffect` hook to apply currrent page's CTAs. */
