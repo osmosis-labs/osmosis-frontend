@@ -123,6 +123,12 @@ export const assetsRouter = createTRPCRouter({
         anyDenom: findMinDenomOrSymbol,
       });
 
+      /**
+       * Manually include Nomic and BTC assets in the list.
+       * These assets are not variants of each other and cannot be automatically linked
+       * from our asset list. We do this to display them in the receive asset dropdown
+       * and enable conversion to alloy or native.
+       */
       if (
         canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
         getnBTCMinimalDenom({
