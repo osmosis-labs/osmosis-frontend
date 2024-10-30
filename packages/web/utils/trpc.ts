@@ -42,6 +42,14 @@ const trpcLocalRouter = createTRPCRouter({
   local: localRouter,
 });
 
+export const queryClientTRPC = new QueryClient({
+  defaultOptions: {
+    queries: {
+      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
+    },
+  },
+});
+
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
@@ -63,16 +71,8 @@ export const api = createTRPCNext<AppRouter>({
       deserialize: (cachedString) => superjson.parse(cachedString),
     });
 
-    const queryClient = new QueryClient({
-      defaultOptions: {
-        queries: {
-          cacheTime: 1000 * 60 * 60 * 24, // 24 hours
-        },
-      },
-    });
-
     persistQueryClient({
-      queryClient,
+      queryClient: queryClientTRPC,
       persister: localStoragePersister,
       dehydrateOptions: {
         shouldDehydrateQuery: (query) => {
@@ -97,7 +97,7 @@ export const api = createTRPCNext<AppRouter>({
     });
 
     return {
-      queryClient,
+      queryClient: queryClientTRPC,
       /**
        * Transformer used for data de-serialization from the server.
        *

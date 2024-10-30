@@ -3,6 +3,7 @@ import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
@@ -49,7 +50,7 @@ import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
 import { SEO } from "~/next-seo.config";
-import { api } from "~/utils/trpc";
+import { api, queryClientTRPC } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -74,32 +75,35 @@ function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <WagmiProvider config={wagmiConfig}>
-      <MultiLanguageProvider
-        defaultLanguage={DEFAULT_LANGUAGE}
-        defaultTranslations={{ en }}
-      >
-        <StoreProvider>
-          <WalletSelectProvider>
-            <ErrorBoundary fallback={<ErrorFallback />}>
-              <SEO />
-              <SpeedInsights />
-              <ToastContainer
-                toastStyle={{
-                  backgroundColor: "#2d2755",
-                }}
-                transition={Bounce}
-                newestOnTop
-              />
-              <MainLayoutWrapper>
-                {Component && <Component {...pageProps} />}
-              </MainLayoutWrapper>
-              <ImmersiveBridge />
-            </ErrorBoundary>
-          </WalletSelectProvider>
-        </StoreProvider>
-      </MultiLanguageProvider>
-    </WagmiProvider>
+    <>
+      <ReactQueryDevtools client={queryClientTRPC} />
+      <WagmiProvider config={wagmiConfig}>
+        <MultiLanguageProvider
+          defaultLanguage={DEFAULT_LANGUAGE}
+          defaultTranslations={{ en }}
+        >
+          <StoreProvider>
+            <WalletSelectProvider>
+              <ErrorBoundary fallback={<ErrorFallback />}>
+                <SEO />
+                <SpeedInsights />
+                <ToastContainer
+                  toastStyle={{
+                    backgroundColor: "#2d2755",
+                  }}
+                  transition={Bounce}
+                  newestOnTop
+                />
+                <MainLayoutWrapper>
+                  {Component && <Component {...pageProps} />}
+                </MainLayoutWrapper>
+                <ImmersiveBridge />
+              </ErrorBoundary>
+            </WalletSelectProvider>
+          </StoreProvider>
+        </MultiLanguageProvider>
+      </WagmiProvider>
+    </>
   );
 }
 
