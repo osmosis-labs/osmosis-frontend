@@ -14,7 +14,7 @@ import { Button } from "~/components/buttons";
 import { Checkbox } from "~/components/ui/checkbox";
 import { t } from "~/hooks";
 
-export type ToastOptions = Partial<ReactToastifyOptions> & {
+type ToastOptions = Partial<ReactToastifyOptions> & {
   updateToastId?: Id;
 };
 
@@ -221,7 +221,7 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
 export const AlloyedAssetsToastDoNotShowKey =
   "do-not-show-alloyed-assets-toast";
 
-export const AlloyedAssetsToast: FunctionComponent<
+const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
   const [, setDoNotShowAgain] = useLocalStorage(

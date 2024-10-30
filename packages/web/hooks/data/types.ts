@@ -3,20 +3,6 @@ export interface DataProcessor<TData> {
   process: (input: string) => TData;
 }
 
-const INFINITY = 1 / 0;
-export function baseToString(value: any) {
-  // Exit early for strings to avoid a performance hit in some environments.
-  if (typeof value == "string") {
-    return value;
-  }
-  let result = value + "";
-  return result == "0" && 1 / value == -INFINITY ? "-0" : result;
-}
-
-export function toString(value: any) {
-  return value == null ? "" : baseToString(value);
-}
-
 export function isString(value: any) {
   return typeof value === "string";
 }

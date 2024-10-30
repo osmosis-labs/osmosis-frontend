@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export interface UseDisclosureProps {
+interface UseDisclosureProps {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
 }

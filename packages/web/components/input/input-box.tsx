@@ -10,7 +10,7 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
 /** Accessory button for the input box. */
-export interface Button extends ButtonProps, CustomClasses, Disableable {
+interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 

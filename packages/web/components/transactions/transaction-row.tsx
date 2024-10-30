@@ -8,7 +8,7 @@ import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 import { Spinner } from "../loaders";
 
-export type TransactionStatus = "pending" | "success" | "failed";
+type TransactionStatus = "pending" | "success" | "failed";
 
 type Effect = "swap" | "deposit" | "withdraw";
 
@@ -196,7 +196,7 @@ const TokenConversion: FunctionComponent<
 };
 
 /** UI for displaying a token being deposited or withdrawn from Osmosis. */
-export const TokenTransfer: FunctionComponent<
+const TokenTransfer: FunctionComponent<
   {
     status: TransactionStatus;
   } & NonNullable<TransactionRow["transfer"]>
