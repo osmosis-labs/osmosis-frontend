@@ -329,14 +329,6 @@
   },
   "estimated": "Estimată",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Introducerea activelor neverificate",
-    "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
-    "frontierHasNowMerged": "Pagina Frontier a fuzionat acum cu",
-    "thisMeansManaging": "Acest lucru înseamnă că gestionarea token-urilor poate fi făcută convenabil într-un singur loc!",
-    "commitmentToDecentralization": "În linie cu angajamentul pentru descentralizare și accesibilitate, opțiunea de a gestiona token-uri neverificate este încă disponibilă.",
-    "settingIsNowEnabled": "Setarea este acum activată.",
-    "youMayDisable": "puteți dezactiva această setare oricând în modalul de setări.",
-    "openSettings": "Deschide setările",
     "proceed": "Continuați"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Ascunde",
       "show": "Arata"
     },
-    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
-    "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
-    "expectedOutput": "Rezultat asteptat",
-    "fee": "Taxa schimb ({fee})",
-    "networkFee": "Taxa de retea",
-    "totalFee": "Taxa totală",
     "HALF": "JUMATATE",
-    "MAX": "MAXIM",
-    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Impactul pieței",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Factorul de răspândire",
     "showDetails": "Arata detaliile",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Creșteți limita de cheltuieli"
     },
     "settings": {
-      "slippage": "Toleranta modificare pret",
-      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent.",
-      "title": "Setari tranzactie"
+      "slippage": "Toleranta modificare pret"
     },
     "title": "Schimb",
     "dynamicSpreadFactor": "Dinamic",

@@ -329,14 +329,6 @@
   },
   "estimated": "估计的",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "介绍未经验证的资产",
-    "simplifiedExperience": "您的体验已被简化！",
-    "frontierHasNowMerged": "Frontier页面现已与以下内容合并",
-    "thisMeansManaging": "这意味着可以方便地在一个地方管理令牌！",
-    "commitmentToDecentralization": "符合去中心化和可访问性的承诺，处理未经验证的代币的选项仍然可用。",
-    "settingIsNowEnabled": "设置现已启用。",
-    "youMayDisable": "您可以随时在设置模式中禁用此设置。",
-    "openSettings": "打开设置",
     "proceed": "继续"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "隐藏",
       "show": "节目"
     },
-    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
-    "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
-    "expectedOutput": "预期产出",
-    "fee": "交易费 ({fee})",
-    "networkFee": "网络费",
-    "totalFee": "总费用",
     "HALF": "对半",
-    "MAX": "最大",
-    "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
     "pool": "资金池 #{id}",
-    "priceImpact": "市场影响",
     "routerTooltipFee": "费用",
     "routerTooltipSpreadFactor": "扩频因子",
     "showDetails": "显示详细资料",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "提高支出限额"
     },
     "settings": {
-      "slippage": "滑点上限",
-      "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
-      "title": "交易设置"
+      "slippage": "滑点上限"
     },
     "title": "兑换",
     "dynamicSpreadFactor": "动态的",

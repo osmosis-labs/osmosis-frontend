@@ -329,14 +329,6 @@
   },
   "estimated": "Estimé",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
-    "simplifiedExperience": "Votre expérience a été simplifiée!",
-    "frontierHasNowMerged": "La page Frontier a maintenant fusionné avec",
-    "thisMeansManaging": "Cela signifie que la gestion des tokens peut être commodément faite en un seul endroit!",
-    "commitmentToDecentralization": "Conformément à l'engagement envers la décentralisation et l'accessibilité, l'option de gérer les tokens non vérifiés est toujours disponible.",
-    "settingIsNowEnabled": "Le paramètre est maintenant activé.",
-    "youMayDisable": "Vous pouvez désactiver ce paramètre à tout moment dans la fenêtre modale des paramètres.",
-    "openSettings": "Ouvrir les paramètres",
     "proceed": "Procéder"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Cacher",
       "show": "Montrer"
     },
-    "maxButtonErrorNoBalance": "Solde insuffisant pour calculer le montant maximum.",
-    "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
-    "expectedOutput": "Résultat attendu",
-    "fee": "Frais d'échange ({fee})",
-    "networkFee": "Frais de réseau",
-    "totalFee": "Montant total",
     "HALF": "MOITIÉ",
-    "MAX": "MAX",
-    "minimumSlippage": "Minimum reçu après glissement ({slippage})",
     "pool": "Bassin n°{id}",
-    "priceImpact": "Impact sur le marché",
     "routerTooltipFee": "Frais",
     "routerTooltipSpreadFactor": "Facteur de propagation",
     "showDetails": "Afficher les détails",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Augmenter la limite de dépenses"
     },
     "settings": {
-      "slippage": "Tolérance de glissement",
-      "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur.",
-      "title": "Paramètres de transaction"
+      "slippage": "Tolérance de glissement"
     },
     "title": "Échanger",
     "dynamicSpreadFactor": "Dynamique",
