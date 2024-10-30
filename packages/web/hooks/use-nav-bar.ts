@@ -6,7 +6,6 @@ import { CallToAction } from "~/stores/nav-bar";
 
 export function useNavBar({
   title,
-  hideTitle = false,
   ctas,
 }: {
   title?: ReactNode;
@@ -18,7 +17,6 @@ export function useNavBar({
   useEffect(() => {
     if (title) navBarStore.title = title;
     if (ctas) navBarStore.callToActionButtons = ctas;
-    if (hideTitle) navBarStore.hideTitle = hideTitle;
     return () => {
       navBarStore.title = undefined;
       navBarStore.callToActionButtons = [];

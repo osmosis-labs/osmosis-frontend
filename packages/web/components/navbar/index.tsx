@@ -52,13 +52,19 @@ import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
   {
-    title: string;
+    title?: string;
     backElementClassNames?: string;
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
 > = observer(
-  ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
+  ({
+    title: titleProp,
+    className,
+    backElementClassNames,
+    menus,
+    secondaryMenuItems,
+  }) => {
     const {
       navBarStore,
       chainStore: {
@@ -155,6 +161,8 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
+    const title = navBarStore.title || titleProp;
+
     return (
       <>
         <div
@@ -214,11 +222,7 @@ export const NavBar: FunctionComponent<
             </Popover>
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            {!navBarStore.hideTitle && (
-              <h4 className="md:text-h6 md:font-h6">
-                {navBarStore.title || title}
-              </h4>
-            )}
+            {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
             <div className="flex items-center gap-3 lg:gap-1">
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (

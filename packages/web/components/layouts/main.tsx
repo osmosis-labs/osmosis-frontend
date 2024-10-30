@@ -1,7 +1,11 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, { type FunctionComponent, type PropsWithChildren } from "react";
+import React, {
+  type FunctionComponent,
+  type PropsWithChildren,
+  useMemo,
+} from "react";
 
 import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
@@ -33,9 +37,24 @@ export const MainLayout = observer(
     const showFixedLogo = !smallVerticalScreen && !isMobile;
     const showBlockLogo = smallVerticalScreen && !isMobile;
 
-    const selectedMenuItem = menus.find(
-      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    const selectedMenuItem = useMemo(
+      () =>
+        menus.find(
+          ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+        ),
+      [menus, router.pathname]
     );
+    const navBarTitle = useMemo(() => {
+      // Note: in designs we're moving to no title in nav bar.
+      // Filtering here to avoid title bar flash from menu list item titles
+      // appearing in nav bar before child components set global state via useNavBar.
+      const selectedTitle = selectedMenuItem?.label;
+
+      if (selectedTitle === "Trade") return;
+      if (selectedTitle === "Portfolio") return;
+
+      return selectedTitle;
+    }, [selectedMenuItem?.label]);
 
     useHasAssetVariants();
 
@@ -66,7 +85,7 @@ export const MainLayout = observer(
         </div>
         <NavBar
           className="ml-sidebar md:ml-0"
-          title={selectedMenuItem?.label ?? ""}
+          title={navBarTitle}
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
