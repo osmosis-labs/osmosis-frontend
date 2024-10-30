@@ -22,13 +22,20 @@ import {
   getPoolAssetPairHistoricalPrice,
   getUpcomingAssets,
   getUserAssetsTotal,
+  IS_TESTNET,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
-import { compareCommon, isNil, sort } from "@osmosis-labs/utils";
+import {
+  compareCommon,
+  getAllBtcMinimalDenom,
+  getnBTCMinimalDenom,
+  isNil,
+  sort,
+} from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -107,15 +114,49 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
-  getCanonicalAssetWithVariants: publicProcedure
-    .input(
-      z.object({
-        findMinDenomOrSymbol: z.string(),
-      })
-    )
-    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) =>
-      getAssetWithVariants({ ...ctx, anyDenom: findMinDenomOrSymbol })
-    ),
+
+  getBridgeAssetWithVariants: publicProcedure
+    .input(z.object({ findMinDenomOrSymbol: z.string() }))
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const canonicalAssetWithVariants = getAssetWithVariants({
+        ...ctx,
+        anyDenom: findMinDenomOrSymbol,
+      });
+
+      if (
+        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
+        getnBTCMinimalDenom({
+          env: IS_TESTNET ? "testnet" : "mainnet",
+        }).toLowerCase()
+      ) {
+        const allBtcAsset = getAsset({
+          ...ctx,
+          anyDenom:
+            getAllBtcMinimalDenom({
+              env: IS_TESTNET ? "testnet" : "mainnet",
+            }) ?? "",
+        });
+        if (allBtcAsset) canonicalAssetWithVariants.push(allBtcAsset);
+      }
+
+      if (
+        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
+        (
+          getAllBtcMinimalDenom({ env: IS_TESTNET ? "testnet" : "mainnet" }) ??
+          ""
+        ).toLowerCase()
+      ) {
+        const nBTCAsset = getAsset({
+          ...ctx,
+          anyDenom: getnBTCMinimalDenom({
+            env: IS_TESTNET ? "testnet" : "mainnet",
+          }),
+        });
+        if (nBTCAsset) canonicalAssetWithVariants.push(nBTCAsset);
+      }
+
+      return canonicalAssetWithVariants;
+    }),
   getAssetPrice: publicProcedure
     .input(
       z.object({

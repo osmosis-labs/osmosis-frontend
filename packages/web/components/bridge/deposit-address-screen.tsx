@@ -44,6 +44,7 @@ interface DepositAddressScreenProps {
   direction: "deposit" | "withdraw";
   canonicalAsset: MinimalAsset;
   chainSelection: React.ReactNode;
+  assetDropdown: React.ReactNode;
   fromChain: BridgeChainWithDisplayInfo;
   toChain: BridgeChainWithDisplayInfo;
   fromAsset: BridgeAsset;
@@ -56,6 +57,7 @@ export const DepositAddressScreen = observer(
     direction,
     canonicalAsset,
     chainSelection,
+    assetDropdown,
     fromChain,
     bridge,
     toChain,
@@ -87,6 +89,8 @@ export const DepositAddressScreen = observer(
           enabled: !!osmosisAddress,
           refetchOnWindowFocus: false,
           useErrorBoundary: true,
+          cacheTime: 0,
+          staleTime: 0,
         }
       );
 
@@ -324,18 +328,13 @@ export const DepositAddressScreen = observer(
           </div>
         ) : (
           <>
-            <DepositInfoRow label={<span>{t("transfer.receiveAsset")}</span>}>
-              {/* TODO: Remove this conditional when alloyed BTC is supported */}
-              <p className="text-osmoverse-100">
-                {bridge === "Nomic" ? "nBTC" : toAsset.denom}
-              </p>
-            </DepositInfoRow>
+            <div className="w-full pb-2 pt-4">{assetDropdown}</div>
             <DepositInfoRow label={<span>{t("transfer.minimumDeposit")}</span>}>
               <SkeletonLoader
                 isLoaded={!!data?.depositData}
                 className={!data?.depositData ? "h-5 w-24" : undefined}
               >
-                <p className="text-right text-osmoverse-100">
+                <p className="text-right text-white-full">
                   {data?.depositData?.minimumDeposit.amount.toString()}{" "}
                   {data?.depositData?.minimumDeposit.fiatValue ? (
                     <>
@@ -369,7 +368,7 @@ const DepositInfoRow: FunctionComponent<{
 }> = ({ label, children }) => {
   return (
     <div className="body1 md:body2 flex w-full items-center justify-between gap-2 py-3">
-      <p>{label}</p>
+      <p className="text-osmoverse-300">{label}</p>
       {children}
     </div>
   );
@@ -414,13 +413,15 @@ const TransferDetails: FunctionComponent<{
                   </p>
                 </div>
               ) : open ? (
-                <p className="subtitle1">{t("transfer.transferDetails")}</p>
+                <p className="subtitle1 text-osmoverse-300">
+                  {t("transfer.transferDetails")}
+                </p>
               ) : null}
 
               {!isLoading && depositData?.estimatedTime && !open && (
                 <div className="flex items-center gap-1">
                   <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="body1 md:body2 text-osmoverse-200 first-letter:capitalize">
+                  <p className="body1 md:body2 text-osmoverse-300 first-letter:capitalize">
                     {t(depositData?.estimatedTime)}
                   </p>
                 </div>
@@ -436,7 +437,7 @@ const TransferDetails: FunctionComponent<{
                 <div className="flex items-center gap-2 md:gap-1">
                   <div className="flex items-center gap-2 md:gap-1">
                     {!open && totalFees && (
-                      <span className="subtitle1 md:body2 text-osmoverse-100">
+                      <span className="subtitle1 md:body2 text-white-full">
                         {!showTotalFeeIneqSymbol && "~"}{" "}
                         {totalFees
                           .inequalitySymbol(showTotalFeeIneqSymbol)

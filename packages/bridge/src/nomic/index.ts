@@ -9,6 +9,8 @@ import {
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   deriveCosmosAddress,
+  getAllBtcMinimalDenom,
+  getnBTCMinimalDenom,
   isCosmosAddressValid,
   timeout,
 } from "@osmosis-labs/utils";
@@ -48,14 +50,9 @@ export class NomicBridgeProvider implements BridgeProvider {
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
-    this.allBtcMinimalDenom =
-      this.ctx.env === "mainnet"
-        ? "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC"
-        : undefined; // No testnet allBTC for now.
-    this.nBTCMinimalDenom =
-      this.ctx.env === "mainnet"
-        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-        : "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"; // Testnet nBTC
+    this.allBtcMinimalDenom = getAllBtcMinimalDenom({ env: this.ctx.env });
+    this.nBTCMinimalDenom = getnBTCMinimalDenom({ env: this.ctx.env });
+
     this.relayers =
       this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
@@ -120,7 +117,9 @@ export class NomicBridgeProvider implements BridgeProvider {
       | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
       | undefined;
 
-    if (fromAsset.address === this.allBtcMinimalDenom) {
+    if (
+      fromAsset.address.toLowerCase() === this.allBtcMinimalDenom?.toLowerCase()
+    ) {
       swapRoute = await getRouteTokenOutGivenIn({
         assetLists: this.ctx.assetLists,
         tokenInAmount: fromAmount,
@@ -358,7 +357,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       receiver: toAddress,
-      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
+      // ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
     });
 
     if (depositInfo.code === 1) {
@@ -434,18 +433,31 @@ export class NomicBridgeProvider implements BridgeProvider {
       const isNomicBtc =
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.nBTCMinimalDenom.toLowerCase();
+      const isAllBtc =
+        this.allBtcMinimalDenom &&
+        assetListAsset.coinMinimalDenom.toLowerCase() ===
+          this.allBtcMinimalDenom.toLowerCase();
 
-      const nomicWithdrawAmountEnabled = await getLaunchDarklyFlagValue({
+      const nomicWithdrawEnabled = await getLaunchDarklyFlagValue({
         key: "nomicWithdrawAmount",
       });
 
       if (bitcoinCounterparty || isNomicBtc) {
+        let transferTypes: BridgeSupportedAsset["transferTypes"] = [];
+
+        if (direction === "withdraw" && nomicWithdrawEnabled) {
+          transferTypes = ["quote"];
+        } else if (direction === "deposit" && (isNomicBtc || isAllBtc)) {
+          transferTypes = ["deposit-address"];
+        }
+
+        if (transferTypes.length === 0) {
+          return [];
+        }
+
         return [
           {
-            transferTypes:
-              direction === "withdraw" && nomicWithdrawAmountEnabled
-                ? ["quote"]
-                : ["deposit-address"],
+            transferTypes,
             chainId: "bitcoin",
             chainName: "Bitcoin",
             chainType: "bitcoin",
@@ -507,16 +519,22 @@ export class NomicBridgeProvider implements BridgeProvider {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.minerFeeRate ?? 0) * 1e8).toString(),
           decimals: 8,
-          // TODO: Handle case when we can receive allBTC
-          denom: nomicBtc.symbol,
+          /*
+           TODO: Handle denom based on transfer expected receive when Nomic updates library 
+           to return the deposit address opts so we can determine the expected denom
+          */
+          denom: "BTC",
           coinGeckoId: nomicBtc.coingeckoId,
         },
         providerFee: {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.bridgeFeeRate ?? 0) * deposit.amount).toString(),
           decimals: 8,
-          // TODO: Handle case when we can receive allBTC
-          denom: nomicBtc.symbol,
+          /*
+           TODO: Handle denom based on transfer expected receive when Nomic updates library 
+           to return the deposit address opts so we can determine the expected denom
+          */
+          denom: "BTC",
           coinGeckoId: nomicBtc.coingeckoId,
         },
       }));
