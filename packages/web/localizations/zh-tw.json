@@ -53,7 +53,6 @@
       "5": "在有限合夥人的自由市場中，每個人都遵循不同的策略。流動性更加動態，並且為交易者提供了更好的優化。"
     }
   },
-  "assetNotCompatible": "此資產與此錢包不兼容。",
   "clPositions": {
     "inRange": "在範圍內",
     "nearBounds": "接近極限",
@@ -267,11 +266,6 @@
       "less": "查看較少",
       "more": "查看更多"
     },
-    "sort": {
-      "mobileMenu": "排序",
-      "SORT": "排序",
-      "SORTMobile": "排序"
-    },
     "table": {
       "poolId": "流動性池 #{id}",
       "stable": "穩定兌換",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "一鍵交易活躍",
-      "oneClickTradingExpired": "一鍵交易已過期",
       "oneClickTradingDisabled": "一鍵交易已停用",
       "currentlyUnavailable": "一鍵交易目前無法使用",
       "insufficientFunds": "OSMO 資金不足，無法進行一鍵交易",
       "continueWithoutOneClickTrading": "無需一鍵交易即可繼續",
       "networkFeeTooHigh": "網路費太高",
-      "startANewSession": "開始新會話",
       "approveManually": "在{walletName}中手動核准",
       "continueWithWallet": "繼續使用錢包",
       "sessionEnded": "會話在此裝置上結束",
@@ -388,9 +380,7 @@
       "changeButton": "編輯設定"
     },
     "floatingBanner": {
-      "newPill": "新的",
-      "title": "一鍵交易",
-      "tradeFasterButton": "交易更快"
+      "newPill": "新的"
     },
     "settings": {
       "header": "一鍵交易",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "路線",
-    "autoRouterToggle": {
-      "hide": "隱藏",
-      "show": "顯示"
-    },
     "button": "交易",
     "buttonError": "堅持交易",
     "HALF": "一半",

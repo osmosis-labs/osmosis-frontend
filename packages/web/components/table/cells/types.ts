@@ -40,5 +40,3 @@ export type AssetCell = BaseCell & {
 export interface ValidatorInfo extends BaseCell {
   imgSrc?: string;
 }
-
-export type SortableAssetCell = AssetCell & { fiatValueRaw: Dec | undefined };

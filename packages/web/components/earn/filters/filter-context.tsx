@@ -24,7 +24,7 @@ export interface Filters {
   rewardType: RewardsTypes;
 }
 
-export type SetFilterFn = (
+type SetFilterFn = (
   key: keyof Filters,
   value: string | boolean | ListOption<string> | ListOption<string>
 ) => void;

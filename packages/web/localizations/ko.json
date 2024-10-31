@@ -53,7 +53,6 @@
       "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
     }
   },
-  "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "clPositions": {
     "inRange": "범위 내",
     "nearBounds": "가까운 경계",
@@ -267,11 +266,6 @@
       "less": "숨기기",
       "more": "더보기"
     },
-    "sort": {
-      "mobileMenu": "정렬",
-      "SORT": "정렬",
-      "SORTMobile": "정렬"
-    },
     "table": {
       "poolId": "풀 {id}",
       "stable": "스테이블스왑",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-클릭 거래 활성화",
-      "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
       "insufficientFunds": "1-Click 거래를 위한 OSMO 자금이 부족합니다.",
       "continueWithoutOneClickTrading": "원클릭 거래 없이 계속하기",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "startANewSession": "새 세션 시작",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
       "continueWithWallet": "지갑으로 계속하기",
       "sessionEnded": "이 기기에서 세션이 종료되었습니다.",
@@ -388,9 +380,7 @@
       "changeButton": "설정 수정"
     },
     "floatingBanner": {
-      "newPill": "새로운",
-      "title": "1-클릭 거래",
-      "tradeFasterButton": "더 빠르게 거래하세요"
+      "newPill": "새로운"
     },
     "settings": {
       "header": "1-클릭 거래",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "경로",
-    "autoRouterToggle": {
-      "hide": "숨기기",
-      "show": "보여주다"
-    },
     "button": "거래",
     "buttonError": "무시하고 교환하기",
     "HALF": "절반",

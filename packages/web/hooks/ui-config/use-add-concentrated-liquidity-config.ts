@@ -266,8 +266,8 @@ export function useAddConcentratedLiquidityConfig(
   return { config, addLiquidity, increaseLiquidity };
 }
 
-export const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-export const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
+const MODERATE_STRATEGY_MULTIPLIER = 0.25;
+const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */

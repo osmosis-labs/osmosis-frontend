@@ -14,7 +14,7 @@ import React, { FunctionComponent } from "react";
 
 import { theme } from "~/tailwind.config";
 
-export type DepthData = {
+type DepthData = {
   price: number;
   depth: number;
 };

@@ -53,7 +53,6 @@
       "5": "LP'lerin serbest piyasasında herkes farklı stratejiler izler. Likidite daha dinamiktir ve tüccarlar için daha iyi optimize edilmiştir."
     }
   },
-  "assetNotCompatible": "Bu varlık bu cüzdanla uyumlu değil.",
   "clPositions": {
     "inRange": "MENZİLDE",
     "nearBounds": "YAKIN SINIRLAR",
@@ -267,11 +266,6 @@
       "less": "Daha az göster",
       "more": "Daha fazla göster"
     },
-    "sort": {
-      "mobileMenu": "Sırala",
-      "SORT": "SIRALA",
-      "SORTMobile": "SIRALA"
-    },
     "table": {
       "poolId": "Havuz #{id}",
       "stable": "Stableswap",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
-      "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "insufficientFunds": "Tek Tıklamayla Ticaret için yetersiz OSMO fonu",
       "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "startANewSession": "Yeni bir oturum başlat",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
       "sessionEnded": "Bu cihazda oturum sona erdi",
@@ -388,9 +380,7 @@
       "changeButton": "Ayarları düzenle"
     },
     "floatingBanner": {
-      "newPill": "Yeni",
-      "title": "Tek Tıklamayla Ticaret",
-      "tradeFasterButton": "Daha Hızlı Ticaret Yapın"
+      "newPill": "Yeni"
     },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Güzergah",
-    "autoRouterToggle": {
-      "hide": "Saklamak",
-      "show": "Göstermek"
-    },
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
     "HALF": "YARISI",

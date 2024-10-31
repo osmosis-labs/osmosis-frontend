@@ -9,6 +9,7 @@ export function useNavBar({
   ctas,
 }: {
   title?: ReactNode;
+  hideTitle?: boolean;
   ctas?: CallToAction[];
 }) {
   const { navBarStore } = useStore();

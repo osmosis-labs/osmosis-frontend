@@ -1,14 +1,14 @@
 import en from "~/localizations/en.json";
 
-export type LanguageTranslations = typeof en;
+type LanguageTranslations = typeof en;
 
-export type PathsToStringProps<T> = T extends string
+type PathsToStringProps<T> = T extends string
   ? []
   : {
       [K in Extract<keyof T, string>]: [K, ...PathsToStringProps<T[K]>];
     }[Extract<keyof T, string>];
 
-export type Join<T extends string[], D extends string> = T extends []
+type Join<T extends string[], D extends string> = T extends []
   ? never
   : T extends [infer F]
   ? F
@@ -18,7 +18,7 @@ export type Join<T extends string[], D extends string> = T extends []
     : never
   : string;
 
-export type StringWithAutocomplete<T> = T | (string & Record<never, never>);
+type StringWithAutocomplete<T> = T | (string & Record<never, never>);
 
 export type TranslationPath = StringWithAutocomplete<
   Join<PathsToStringProps<LanguageTranslations>, ".">

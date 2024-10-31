@@ -240,4 +240,4 @@ export type RouterOutputs = inferRouterOutputs<AppRouter>;
  *
  * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
  */
-export type RouterKeys = inferRouterKeys<AppRouter>;
+type RouterKeys = inferRouterKeys<AppRouter>;

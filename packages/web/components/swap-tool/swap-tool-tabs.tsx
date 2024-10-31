@@ -9,7 +9,7 @@ export enum SwapToolTab {
   SELL = "sell",
 }
 
-export interface SwapToolTabsProps {
+interface SwapToolTabsProps {
   setTab: (tab: SwapToolTab) => void;
   activeTab: SwapToolTab;
 }

@@ -9,7 +9,7 @@ import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
 
-export type LanguageSelectProps = {
+type LanguageSelectProps = {
   options: { value: string; display: string }[];
 };
 
