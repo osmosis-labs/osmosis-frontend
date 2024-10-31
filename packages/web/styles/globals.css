@@ -123,7 +123,7 @@
   }
 
   tbody > tr > td {
-    @apply p-4 text-right md:px-2;
+    @apply p-4 text-right md:px-0;
   }
 
   tbody > tr > td:first-child {
