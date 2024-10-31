@@ -54,7 +54,7 @@ export class NomicBridgeProvider implements BridgeProvider {
     this.nBTCMinimalDenom = getnBTCMinimalDenom({ env: this.ctx.env });
 
     this.relayers =
-      this.ctx.env === "testnet"
+      this.ctx.env === "testnet" || true
         ? ["https://testnet-relayer.nomic.io:8443"]
         : ["https://relayer.nomic.mappum.io:8443"];
   }
@@ -340,11 +340,13 @@ export class NomicBridgeProvider implements BridgeProvider {
       ? makeSkipIbcHookSwapMemo({
           denomIn: this.nBTCMinimalDenom,
           denomOut:
-            this.ctx.env === "mainnet" ? this.allBtcMinimalDenom : "uosmo",
+            this.ctx.env === "mainnet" && false
+              ? this.allBtcMinimalDenom
+              : "uosmo",
           env: this.ctx.env,
           minAmountOut: "1",
           poolId:
-            this.ctx.env === "mainnet"
+            this.ctx.env === "mainnet" && false
               ? "1868" // nBTC/allBTC pool on Osmosis
               : "654", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
           receiverOsmoAddress: toAddress,
@@ -352,11 +354,31 @@ export class NomicBridgeProvider implements BridgeProvider {
         })
       : undefined;
 
+    console.log({
+      relayers: this.relayers,
+      channel: "channel-1" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork:
+        this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
+      sender: deriveCosmosAddress({
+        address: toAddress,
+        desiredBech32Prefix: nomicChain.bech32_prefix,
+      }),
+      receiver:
+        userWantsAllBtc && swapMemo ? swapMemo.wasm.contract : toAddress,
+      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
+    });
+
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
-      bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
-      receiver: toAddress,
+      channel: "channel-1" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork:
+        this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
+      sender: deriveCosmosAddress({
+        address: toAddress,
+        desiredBech32Prefix: nomicChain.bech32_prefix,
+      }),
+      receiver:
+        userWantsAllBtc && swapMemo ? swapMemo.wasm.contract : toAddress,
       ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
     });
 
