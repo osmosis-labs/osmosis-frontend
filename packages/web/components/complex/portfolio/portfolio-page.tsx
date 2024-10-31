@@ -93,11 +93,14 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {({ selected }) => (
-                      <h6
-                        className={!selected ? "text-osmoverse-500" : undefined}
+                      <div
+                        className={classNames(
+                          !selected ? "text-osmoverse-500" : undefined,
+                          "h6 md:subtitle1"
+                        )}
                       >
                         {t("portfolio.yourBalances")}
-                      </h6>
+                      </div>
                     )}
                   </Tab>
                   <Tab
@@ -111,11 +114,14 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {({ selected }) => (
-                      <h6
-                        className={!selected ? "text-osmoverse-500" : undefined}
+                      <div
+                        className={classNames(
+                          !selected ? "text-osmoverse-500" : undefined,
+                          "h6 md:subtitle1"
+                        )}
                       >
                         {t("portfolio.yourPositions")}
-                      </h6>
+                      </div>
                     )}
                   </Tab>
                 </TabList>

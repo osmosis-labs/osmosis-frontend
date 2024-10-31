@@ -103,7 +103,7 @@
   /* Global table style */
 
   table {
-    @apply w-full table-fixed border-collapse text-left md:w-full;
+    @apply w-full table-fixed border-collapse bg-osmoverse-1000 text-left md:w-full;
   }
 
   thead > tr {
@@ -123,7 +123,7 @@
   }
 
   tbody > tr > td {
-    @apply p-4 text-right;
+    @apply p-4 text-right md:px-1;
   }
 
   tbody > tr > td:first-child {

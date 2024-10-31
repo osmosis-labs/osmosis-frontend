@@ -325,7 +325,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-3 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("portfolio.searchBalances")}
@@ -338,7 +338,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index, headers) => (

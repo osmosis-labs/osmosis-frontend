@@ -2,12 +2,12 @@ import { FormattedTransaction } from "@osmosis-labs/server";
 import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { useTranslation } from "hooks";
 
-dayjs.extend(relativeTime);
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
+
+// TODO: move this to formatter or colocate with transactions files. Can import `t` directly. Then delete this file
 
 export const groupTransactionsByDate = (
   transactions: FormattedTransaction[]
