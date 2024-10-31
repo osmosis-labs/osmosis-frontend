@@ -53,7 +53,6 @@
       "5": "एलपी के मुक्त बाजार में हर कोई अलग-अलग रणनीतियों का पालन करता है। तरलता अधिक गतिशील है, और व्यापारियों के लिए बेहतर अनुकूलित है।"
     }
   },
-  "assetNotCompatible": "यह संपत्ति इस वॉलेट के साथ संगत नहीं है.",
   "clPositions": {
     "inRange": "सीमा में",
     "nearBounds": "सीमा के निकट",
@@ -267,11 +266,6 @@
       "less": "कम देखें",
       "more": "और देखें"
     },
-    "sort": {
-      "mobileMenu": "इसके अनुसार क्रमबद्ध करें",
-      "SORT": "इसके अनुसार क्रमबद्ध करें",
-      "SORTMobile": "क्रम से लगाना"
-    },
     "table": {
       "poolId": "पूल # {id}",
       "stable": "स्थिरस्वैप",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
-      "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
       "insufficientFunds": "1-क्लिक ट्रेडिंग के लिए OSMO फंड अपर्याप्त है",
       "continueWithoutOneClickTrading": "1-क्लिक ट्रेडिंग के बिना जारी रखें",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
-      "startANewSession": "नया सत्र शुरू करें",
       "approveManually": "{walletName} में मैन्युअल रूप से स्वीकृत करें",
       "continueWithWallet": "बटुए के साथ जारी रखें",
       "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया",
@@ -388,9 +380,7 @@
       "changeButton": "विन्यास बदलें"
     },
     "floatingBanner": {
-      "newPill": "नया",
-      "title": "1-ट्रेडिंग पर क्लिक करें",
-      "tradeFasterButton": "तेजी से व्यापार करें"
+      "newPill": "नया"
     },
     "settings": {
       "header": "1-ट्रेडिंग पर क्लिक करें",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "मार्ग लिया गया",
-    "autoRouterToggle": {
-      "hide": "छिपाना",
-      "show": "दिखाओ"
-    },
     "button": "बदलना",
     "buttonError": "वैसे भी स्वैप करें",
     "HALF": "आधा",

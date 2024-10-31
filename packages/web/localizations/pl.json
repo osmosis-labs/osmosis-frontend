@@ -53,7 +53,6 @@
       "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
     }
   },
-  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "clPositions": {
     "inRange": "W ZAKRESIE",
     "nearBounds": "BLISKO GRANIC",
@@ -267,11 +266,6 @@
       "less": "Zobacz mniej",
       "more": "Zobacz więcej"
     },
-    "sort": {
-      "mobileMenu": "Sortuj według",
-      "SORT": "SORTUJ WEDŁUG",
-      "SORTMobile": "SORTUJ"
-    },
     "table": {
       "poolId": "Pula #{id}",
       "stable": "Stableswap",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Aktywny handel jednym kliknięciem",
-      "oneClickTradingExpired": "Transakcja 1-Click wygasła",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "insufficientFunds": "Niewystarczające środki OSMO do handlu jednym kliknięciem",
       "continueWithoutOneClickTrading": "Kontynuuj bez handlu jednym kliknięciem",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "startANewSession": "Rozpocznij nową sesję",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
       "sessionEnded": "Sesja zakończyła się na tym urządzeniu",
@@ -388,9 +380,7 @@
       "changeButton": "Edytuj ustawienia"
     },
     "floatingBanner": {
-      "newPill": "Nowy",
-      "title": "Handel jednym kliknięciem",
-      "tradeFasterButton": "Handluj szybciej"
+      "newPill": "Nowy"
     },
     "settings": {
       "header": "Handel jednym kliknięciem",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Trasa",
-    "autoRouterToggle": {
-      "hide": "Esconder",
-      "show": "Mostrar"
-    },
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
     "HALF": "POŁOWA",
