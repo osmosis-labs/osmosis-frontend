@@ -13,7 +13,12 @@ export const CypherCard = () => {
   if (isClosed) return null;
 
   return (
-    <Link href={CYPHER_CARD_URL} target="_blank" rel="noopener noreferrer">
+    <Link
+      href={CYPHER_CARD_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      referrerPolicy="no-referrer"
+    >
       <div className="relative flex h-[4.5rem] w-full flex-1 items-center gap-2 rounded-2xl bg-osmoverse-850 px-4 py-3">
         <div className="mr-3 flex h-12 w-12 flex-col items-center justify-center rounded-xl bg-osmoverse-800">
           <Icon id="cypher-card" />

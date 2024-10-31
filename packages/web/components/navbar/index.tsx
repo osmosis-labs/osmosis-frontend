@@ -124,7 +124,7 @@ export const NavBar: FunctionComponent<
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenSettings, router.query, userSettings]);
+    }, [router.query, userSettings]);
 
     const wallet = accountStore.getWallet(chainId);
 
