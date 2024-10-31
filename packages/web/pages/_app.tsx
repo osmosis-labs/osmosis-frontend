@@ -136,14 +136,6 @@ const MainLayoutWrapper: FunctionComponent<{
     onClose: onCloseLeavingOsmosisToLevana,
   } = useDisclosure();
 
-  useEffect(() => {
-    if (flags.limitOrders && flags._isInitialized) {
-      document.body.classList.add("!bg-osmoverse-1000");
-    } else {
-      document.body.classList.remove("!bg-osmoverse-1000");
-    }
-  }, [flags.limitOrders, flags._isInitialized]);
-
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
@@ -293,33 +285,36 @@ const MainLayoutWrapper: FunctionComponent<{
     onOpenLeavingOsmosisToMars,
   ]);
 
-  const secondaryMenuItems: MainLayoutMenu[] = [
-    {
-      label: t("menu.help"),
-      link: "https://support.osmosis.zone/",
-      icon: <Icon id="help-circle" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.vote"),
-      link:
-        osmosisWallet?.walletInfo?.governanceUrl ??
-        "https://wallet.keplr.app/chains/osmosis?tab=governance",
-      icon: <Icon id="vote" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.info"),
-      link: "https://www.datalenses.zone/chain/osmosis/overview",
-      icon: <Icon id="chart" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.featureRequests"),
-      link: "https://forum.osmosis.zone/c/site-feedback/2",
-      icon: <Icon id="gift" className="h-6 w-6" />,
-    },
-  ];
+  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
+    () => [
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.vote"),
+        link:
+          osmosisWallet?.walletInfo?.governanceUrl ??
+          "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: <Icon id="vote" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.info"),
+        link: "https://www.datalenses.zone/chain/osmosis/overview",
+        icon: <Icon id="chart" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.featureRequests"),
+        link: "https://forum.osmosis.zone/c/site-feedback/2",
+        icon: <Icon id="gift" className="h-6 w-6" />,
+      },
+    ],
+    [t, osmosisWallet?.walletInfo?.governanceUrl]
+  );
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>

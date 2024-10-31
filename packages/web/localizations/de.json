@@ -227,7 +227,7 @@
     "seeAll": "Alles sehen",
     "showHidden": "Versteckte anzeigen ( {hiddenDustCount} )",
     "hideSmallBalances": "Kleine Guthaben verbergen",
-    "openOrders": "Offene Bestellungen",
+    "openOrders": "Offene Aufträge",
     "last24h": "Letzte 24 Stunden",
     "last7d": "Letzte 7 Tage",
     "last30d": "Letzte 30 Tage",
@@ -329,14 +329,6 @@
   },
   "estimated": "Geschätzt",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
-    "simplifiedExperience": "Ihre Erfahrung wurde vereinfacht!",
-    "frontierHasNowMerged": "Die Frontier-Seite wurde jetzt mit zusammengeführt",
-    "thisMeansManaging": "Das bedeutet, dass die Token-Verwaltung bequem an einem Ort erfolgen kann!",
-    "commitmentToDecentralization": "Im Einklang mit dem Engagement für Dezentralisierung und Zugänglichkeit besteht weiterhin die Möglichkeit, mit nicht verifizierten Token umzugehen.",
-    "settingIsNowEnabled": "Die Einstellung ist jetzt aktiviert.",
-    "youMayDisable": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren.",
-    "openSettings": "Einstellungen öffnen",
     "proceed": "Fortfahren"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "Verstecken",
       "show": "Zeigen"
     },
-    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
-    "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
-    "expectedOutput": "Erwartete Ausgabe",
-    "fee": "Swap-Gebühr ( {fee} )",
-    "networkFee": "Netzwerkgebühr",
-    "totalFee": "Gesamtgebühr",
     "HALF": "HALB",
-    "MAX": "MAX",
-    "minimumSlippage": "Nach Slippage erhaltenes Minimum ( {slippage} )",
     "pool": "Pool # {id}",
-    "priceImpact": "Auswirkungen auf den Markt",
     "routerTooltipFee": "Gebühr",
     "routerTooltipSpreadFactor": "Spread-Faktor",
     "showDetails": "Zeige Details",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "Ausgabenlimit erhöhen"
     },
     "settings": {
-      "slippage": "Rutschtoleranz",
-      "slippageInfo": "Ihre Transaktion wird rückgängig gemacht, wenn sich der Preis um mehr als diesen Prozentsatz ungünstig ändert.",
-      "title": "Transaktionseinstellungen"
+      "slippage": "Rutschtoleranz"
     },
     "title": "Tauschen",
     "dynamicSpreadFactor": "Dynamisch",

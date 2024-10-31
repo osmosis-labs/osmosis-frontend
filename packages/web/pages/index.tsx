@@ -7,7 +7,7 @@ import { AdBanners } from "~/components/ad-banner";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -27,8 +27,6 @@ const Home = () => {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
-
-  useNavBar({ title: " " });
 
   return (
     <main className="relative flex h-full overflow-auto pb-2 pt-8">

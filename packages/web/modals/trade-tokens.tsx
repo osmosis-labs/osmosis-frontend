@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { AltSwapTool } from "~/components/swap-tool/alt";
+import { SwapTool } from "~/components/swap-tool";
 import { EventPage } from "~/config";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -42,7 +42,7 @@ export const TradeTokens: FunctionComponent<
         </div>
       </div>
       <div className="px-8 pt-0 pb-7">
-        <AltSwapTool
+        <SwapTool
           fixedWidth
           useQueryParams={false}
           useOtherCurrencies={useOtherCurrencies}

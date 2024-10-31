@@ -22,7 +22,7 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
 
   const onToggle = useCallback(() => {
     setIsOpen((prevIsOpen) => !prevIsOpen);
-  }, [isOpen, onOpen, onClose]);
+  }, []);
 
   return {
     isOpen,

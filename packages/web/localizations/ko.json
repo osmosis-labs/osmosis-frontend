@@ -329,14 +329,6 @@
   },
   "estimated": "추정된",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
-    "simplifiedExperience": "귀하의 경험이 단순화되었습니다!",
-    "frontierHasNowMerged": "프론티어 페이지는 이제 다음과 병합되었습니다",
-    "thisMeansManaging": "이것은 토큰을 관리할 수 있는 것이 한 곳에서 편리하게 이루어질 수 있다는 것을 의미합니다!",
-    "commitmentToDecentralization": "분산화와 접근성에 대한 약속에 따라, 검증되지 않은 토큰을 다루는 옵션은 여전히 가능합니다.",
-    "settingIsNowEnabled": "설정이 이제 활성화되었습니다.",
-    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
-    "openSettings": "설정 열기",
     "proceed": "진행"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "숨기기",
       "show": "보여주다"
     },
-    "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
-    "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
-    "expectedOutput": "예상 교환치",
-    "fee": "교환 수수료 ({fee})",
-    "networkFee": "네트워크 수수료",
-    "totalFee": "총 수수료",
     "HALF": "절반",
-    "MAX": "최대",
-    "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "pool": "풀 #{id}",
-    "priceImpact": "시장 영향",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
     "showDetails": "세부정보 표시",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "지출 한도 늘리기"
     },
     "settings": {
-      "slippage": "슬리피지 허용치",
-      "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다.",
-      "title": "트랜잭션 설정"
+      "slippage": "슬리피지 허용치"
     },
     "title": "거래",
     "dynamicSpreadFactor": "동적",

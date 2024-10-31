@@ -38,12 +38,7 @@ import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import {
-  ModalBase,
-  ModalBaseProps,
-  SettingsModal,
-  useGlobalIs1CTIntroModalScreen,
-} from "~/modals";
+import { SettingsModal, useGlobalIs1CTIntroModalScreen } from "~/modals";
 import {
   ExternalLinkModal,
   handleExternalLink,
@@ -57,13 +52,19 @@ import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
   {
-    title: string;
+    title?: string;
     backElementClassNames?: string;
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
 > = observer(
-  ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
+  ({
+    title: titleProp,
+    className,
+    backElementClassNames,
+    menus,
+    secondaryMenuItems,
+  }) => {
     const {
       navBarStore,
       chainStore: {
@@ -80,12 +81,6 @@ export const NavBar: FunctionComponent<
       isOpen: isSettingsOpen,
       onClose: onCloseSettings,
       onOpen: onOpenSettings,
-    } = useDisclosure();
-
-    const {
-      isOpen: isFrontierMigrationOpen,
-      onClose: onCloseFrontierMigration,
-      onOpen: onOpenFrontierMigration,
     } = useDisclosure();
 
     const {
@@ -124,13 +119,12 @@ export const NavBar: FunctionComponent<
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
       if (router.query[UnverifiedAssetsQueryKey] === "true") {
-        onOpenFrontierMigration();
         userSettings
           .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
+    }, [router.query, userSettings]);
 
     const wallet = accountStore.getWallet(chainId);
 
@@ -167,11 +161,13 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
+    const title = navBarStore.title || titleProp;
+
     return (
       <>
         <div
           className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
             className
           )}
         >
@@ -226,9 +222,7 @@ export const NavBar: FunctionComponent<
             </Popover>
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            <h4 className="md:text-h6 md:font-h6">
-              {navBarStore.title || title}
-            </h4>
+            {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
             <div className="flex items-center gap-3 lg:gap-1">
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (
@@ -309,11 +303,6 @@ export const NavBar: FunctionComponent<
             bannerResponse={topAnnouncementBannerData}
           />
         )}
-        <FrontierMigrationModal
-          isOpen={isFrontierMigrationOpen}
-          onRequestClose={onCloseFrontierMigration}
-          onOpenSettings={onOpenSettings}
-        />
         <ProfileModal
           isOpen={isProfileOpen}
           onRequestClose={onCloseProfile}
@@ -678,71 +667,5 @@ const AnnouncementBanner: FunctionComponent<{
         />
       )}
     </div>
-  );
-};
-
-const FrontierMigrationModal: FunctionComponent<
-  ModalBaseProps & { onOpenSettings: () => void }
-> = (props) => {
-  const { t } = useTranslation();
-
-  return (
-    <ModalBase
-      {...props}
-      className="!max-w-lg bg-[#332133]"
-      title={t("frontierMigration.introducingUnverifiedAssets")}
-    >
-      <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
-        {t("frontierMigration.simplifiedExperience")}
-      </span>
-
-      <div className="mx-auto my-4 h-[235.55px] w-[200px]">
-        <Image
-          src="/images/osmosis-cowboy-woz.png"
-          alt="Cowboy Woz"
-          width={200}
-          height={235.55}
-        />
-      </div>
-
-      <div className="flex flex-col items-center">
-        <div className="body2 flex flex-col gap-3">
-          <p className="text-white-full">
-            {t("frontierMigration.frontierHasNowMerged")}{" "}
-            <span className="font-bold">app.osmosis.zone</span>.{" "}
-            {t("frontierMigration.thisMeansManaging")}
-          </p>
-          <p className="text-white-full">
-            {t("frontierMigration.commitmentToDecentralization")}
-            <span className="font-bold">
-              {" "}
-              {t("frontierMigration.settingIsNowEnabled")}
-            </span>{" "}
-            {t("frontierMigration.youMayDisable")}
-          </p>
-        </div>
-
-        <div className="mt-6 flex w-full items-center gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
-            onClick={() => {
-              props.onOpenSettings();
-              props.onRequestClose?.();
-            }}
-          >
-            {t("frontierMigration.openSettings")}
-          </Button>
-          <Button
-            size="sm"
-            className="border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
-            onClick={props.onRequestClose}
-          >
-            {t("frontierMigration.proceed")}
-          </Button>
-        </div>
-      </div>
-    </ModalBase>
   );
 };

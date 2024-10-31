@@ -329,14 +329,6 @@
   },
   "estimated": "अनुमानित",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
-    "simplifiedExperience": "आपका अनुभव सरल हो गया है!",
-    "frontierHasNowMerged": "फ्रंटियर पेज का अब विलय हो गया है",
-    "thisMeansManaging": "इसका मतलब है कि टोकन का प्रबंधन एक ही स्थान पर आसानी से किया जा सकता है!",
-    "commitmentToDecentralization": "विकेंद्रीकरण और पहुंच की प्रतिबद्धता के अनुरूप, असत्यापित टोकन को संभालने का विकल्प अभी भी उपलब्ध है।",
-    "settingIsNowEnabled": "सेटिंग अब सक्षम है.",
-    "youMayDisable": "आप सेटिंग मोडल में किसी भी समय इस सेटिंग को अक्षम कर सकते हैं।",
-    "openSettings": "खुली सेटिंग",
     "proceed": "आगे बढ़ना"
   },
   "lockToken": {
@@ -704,19 +696,10 @@
       "hide": "छिपाना",
       "show": "दिखाओ"
     },
-    "maxButtonErrorNoBalance": "अधिकतम राशि की गणना करने के लिए पर्याप्त शेष राशि नहीं है।",
-    "available": "उपलब्ध",
     "button": "बदलना",
     "buttonError": "वैसे भी स्वैप करें",
-    "expectedOutput": "अपेक्षित उत्पादन",
-    "fee": "स्वैप शुल्क ( {fee} )",
-    "networkFee": "नेटवर्क शुल्क",
-    "totalFee": "कुल शुल्क",
     "HALF": "आधा",
-    "MAX": "अधिकतम",
-    "minimumSlippage": "स्लिपेज के बाद प्राप्त न्यूनतम राशि ( {slippage} )",
     "pool": "पूल # {id}",
-    "priceImpact": "बाजार प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
     "showDetails": "प्रदर्शन का विवरण",
@@ -727,9 +710,7 @@
       "increaseSpendLimit": "खर्च सीमा बढ़ाएँ"
     },
     "settings": {
-      "slippage": "फिसलन सहनशीलता",
-      "slippageInfo": "यदि कीमत में इस प्रतिशत से अधिक प्रतिकूल परिवर्तन होता है तो आपका लेनदेन वापस कर दिया जाएगा।",
-      "title": "लेन-देन सेटिंग"
+      "slippage": "फिसलन सहनशीलता"
     },
     "title": "बदलना",
     "dynamicSpreadFactor": "गतिशील",
