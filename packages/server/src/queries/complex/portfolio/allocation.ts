@@ -9,7 +9,7 @@ import { Categories } from "../../../queries/data-services";
 import { AccountCoinsResultDec } from "../../../queries/sidecar/allocation";
 import { getAsset } from "../assets";
 
-interface FormattedAllocation {
+interface Allocation {
   key: string;
   percentage: RatePretty;
   fiatValue: PricePretty;
@@ -23,14 +23,14 @@ export interface AssetVariant {
 }
 
 export interface GetAllocationResponse {
-  all: FormattedAllocation[];
-  assets: FormattedAllocation[];
-  available: FormattedAllocation[];
+  all: Allocation[];
+  assets: Allocation[];
+  available: Allocation[];
   totalCap: PricePretty;
   assetVariants: AssetVariant[];
 }
 
-export function getAll(categories: Categories): FormattedAllocation[] {
+export function getAll(categories: Categories): Allocation[] {
   const userBalancesCap = new Dec(categories["user-balances"].capitalization);
   const stakedCap = new Dec(categories["staked"].capitalization);
   const unstakingCap = new Dec(categories["unstaking"].capitalization);
@@ -70,7 +70,7 @@ export function getAll(categories: Categories): FormattedAllocation[] {
 
   const sortedAllocation = sort(allocations, "fiatValue", "desc");
 
-  const formattedAllocations: FormattedAllocation[] = sortedAllocation.map(
+  const formattedAllocations: Allocation[] = sortedAllocation.map(
     (allocation) => ({
       key: allocation.key,
       percentage: totalCap.isZero()
@@ -107,7 +107,7 @@ export function calculatePercentAndFiatValues(
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
-  const assets: FormattedAllocation[] = topCoinsResults.map(
+  const assets: Allocation[] = topCoinsResults.map(
     (asset: AccountCoinsResultDec) => {
       const assetFromAssetLists = getAsset({
         assetLists,
@@ -120,6 +120,7 @@ export function calculatePercentAndFiatValues(
           ? new RatePretty(0)
           : new RatePretty(asset.cap_value.quo(totalCap)),
         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
+        asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
       };
     }
   );
@@ -135,7 +136,7 @@ export function calculatePercentAndFiatValues(
     ? new RatePretty(0)
     : new RatePretty(otherAmount).quo(totalCap);
 
-  const other: FormattedAllocation = {
+  const other: Allocation = {
     key: "Other",
     percentage: otherPercentage,
     fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, otherAmount),

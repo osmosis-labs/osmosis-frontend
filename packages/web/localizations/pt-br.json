@@ -1274,6 +1274,7 @@
     "variantsDetected": "Variantes Detectadas",
     "caption": "Diga adeus a todas essas variantes de ativos confusas. Diga olá a uma experiência mais integrada no Osmosis.",
     "tooltipTitle": "{coinName} em Osmose",
-    "tooltipDescription": "O Osmosis consolida diversas variantes de {coinDenom} em um único ativo simples para maior flexibilidade e facilidade de uso."
+    "tooltipDescription": "O Osmosis consolida diversas variantes de {coinDenom} em um único ativo simples para maior flexibilidade e facilidade de uso.",
+    "convert": "Converter"
   }
 }

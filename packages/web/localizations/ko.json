@@ -1274,6 +1274,7 @@
     "variantsDetected": "변종 감지됨",
     "caption": "혼란스러운 자산 변형에 작별 인사를 전하세요. Osmosis에서 더욱 매끄러운 경험을 만나보세요.",
     "tooltipTitle": "Osmosis의 {coinName}",
-    "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다."
+    "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다.",
+    "convert": "전환하다"
   }
 }

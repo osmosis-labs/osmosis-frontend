@@ -1274,6 +1274,8 @@
     "variantsDetected": "Variants Detected",
     "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis.",
     "tooltipTitle": "{coinName} on Osmosis",
-    "tooltipDescription": "Osmosis consolidates numerous variants of {coinDenom} into one simple asset for more flexibility and ease of use."
+    "tooltipDescription": "Osmosis consolidates numerous variants of {coinDenom} into one simple asset for more flexibility and ease of use.",
+    "convert": "Convert",
+    "conversionFees": "Conversion fees: {fees}"
   }
 }

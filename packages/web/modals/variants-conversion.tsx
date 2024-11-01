@@ -1,5 +1,5 @@
-import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
-import { getSwapMessages } from "@osmosis-labs/tx";
+import { AssetVariant } from "@osmosis-labs/server";
+import { getSwapMessages, QuoteOutGivenIn } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -9,10 +9,12 @@ import { create } from "zustand";
 // Import useTranslation
 import { Icon } from "~/components/assets";
 import { FallbackImg } from "~/components/assets";
+import { SkeletonLoader } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useAssetVariantsToast, useTranslation, useWindowSize } from "~/hooks";
+import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -21,7 +23,7 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  isOpen: false,
+  isOpen: true,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
@@ -78,18 +80,15 @@ export const AssetVariantsConversionModal = () => {
         </p>
         <div className="mt-4 flex flex-col">
           {isAllocationLoading ? (
-            <div className="flex flex-col gap-3">
-              {" "}
-              <Skeleton className="h-[90px] w-full" />
-              <Skeleton className="h-[90px] w-full" />
-            </div>
+            <AllocationSkeleton />
           ) : allocationError ? (
             <p>{t("assetVariantsConversion.errorLoading")}</p>
           ) : (
-            allocationData?.assetVariants?.map((variant) => (
+            allocationData?.assetVariants?.map((variant, index, variants) => (
               <AssetVariantRow
                 key={variant?.asset?.coinMinimalDenom}
                 variant={variant ?? {}}
+                showBottomBorder={index !== variants.length - 1}
               />
             ))
           )}
@@ -101,155 +100,234 @@ export const AssetVariantsConversionModal = () => {
 
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
-}> = observer(({ variant }) => {
+  showBottomBorder?: boolean;
+}> = observer(({ variant, showBottomBorder = true }) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const transactionIdentifier = "convertVariant";
 
   const amount = variant.amount.toCoin().amount;
 
-  // TODO - handle loading and error
-  const { data: quote, isError: isQuoteError } =
-    api.local.quoteRouter.routeTokenOutGivenIn.useQuery({
+  const {
+    data: quote,
+    isError: isQuoteError,
+    isLoading: isQuoteLoading,
+  } = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+    {
       tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
       tokenInAmount: amount,
       tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-    });
+    },
+    {
+      enabled:
+        !!variant.asset?.coinMinimalDenom &&
+        !!variant.canonicalAsset?.coinMinimalDenom,
+    }
+  );
+
+  const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
+
+  const isLoading =
+    isQuoteLoading || account?.txTypeInProgress === transactionIdentifier;
+
+  const conversionDisabled =
+    isLoading ||
+    isQuoteError ||
+    !quote ||
+    variant.amount.toDec().isZero() ||
+    Boolean(account?.txTypeInProgress);
+
+  const onConvert = async () => {
+    if (!account?.address) {
+      console.error("Cannot convert variant, no account address");
+      return;
+    }
+    if (!quote) {
+      console.error("Cannot convert variant, no quote");
+      return;
+    }
+
+    const messages = await getConvertVariantMessages(
+      variant,
+      quote,
+      amount,
+      account.address
+    ).catch((e) => (e instanceof Error ? e.message : "Unknown error"));
+    if (!messages || typeof messages === "string") {
+      console.error(
+        "Cannot convert variant, problem getting messages for transaction",
+        messages
+      );
+      return;
+    }
+
+    accountStore
+      .signAndBroadcast(
+        accountStore.osmosisChainId,
+        transactionIdentifier,
+        messages
+      )
+      .catch((e) => {
+        console.error("Error broadcasting transaction", e);
+      });
+  };
 
   return (
-    <div className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4">
-      <div className="flex w-[262px] min-w-[262px] max-w-[262px] items-center gap-3 py-2 px-4">
-        <FallbackImg
-          src={variant?.asset?.coinImageUrl ?? ""}
-          alt={variant?.asset?.coinDenom ?? ""}
-          fallbacksrc="/icons/question-mark.svg"
-          height={40}
-          width={40}
-        />
-        <div className="flex flex-col gap-1 overflow-hidden">
-          <span className="subtitle1 truncate">{variant.asset?.coinName}</span>
-          <span className="body2 truncate text-osmoverse-300">
-            {variant?.asset?.coinDenom ?? ""}
-          </span>
-          {/* <span className="caption text-osmoverse-200">
-            Amount: {variant.amount.toDec().toString()}
-          </span> */}
-        </div>
-      </div>
-      <div className="flex items-center justify-center">
-        <Icon
-          id="arrow"
-          height={24}
-          width={24}
-          className="text-osmoverse-300"
-        />
-      </div>
-      <div className="flex grow items-center gap-3 py-2 px-4">
-        <FallbackImg
-          src={variant?.canonicalAsset?.coinImageUrl ?? ""}
-          alt={variant?.canonicalAsset?.coinDenom ?? ""}
-          fallbacksrc="/icons/question-mark.svg"
-          height={40}
-          width={40}
-        />
-        <div className="flex flex-col gap-1 overflow-hidden">
-          <span className="subtitle1 truncate">
-            {variant.canonicalAsset?.coinName}
-          </span>
-          <span className="body2 truncate text-osmoverse-300">
-            {variant?.canonicalAsset?.coinDenom ?? ""}
-          </span>
-        </div>
-      </div>
-      {variant.canonicalAsset?.isAlloyed && (
-        <div className="flex items-center justify-center">
-          <Tooltip
-            arrow={true}
-            content={
-              <div className="flex gap-3">
-                <div>
-                  <Icon
-                    id="alloyed"
-                    height={16}
-                    width={16}
-                    className="text-ammelia-400"
-                  />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <span className="caption">
-                    {t("assetVariantsConversion.tooltipTitle", {
-                      coinName: variant.canonicalAsset?.coinName ?? "",
-                    })}
-                  </span>
-                  <span className="caption text-osmoverse-300">
-                    {t("assetVariantsConversion.tooltipDescription", {
-                      coinDenom: variant.canonicalAsset?.coinDenom ?? "",
-                    })}
-                  </span>
-                </div>
-              </div>
-            }
-          >
-            <Icon
-              id="alloyed"
-              height={24}
-              width={24}
-              className="text-osmoverse-alpha-700"
+    <>
+      <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
+        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2 px-4">
+          <div className="flex items-center gap-3">
+            <FallbackImg
+              src={variant?.asset?.coinImageUrl ?? ""}
+              alt={variant?.asset?.coinDenom ?? ""}
+              fallbacksrc="/icons/question-mark.svg"
+              height={40}
+              width={40}
             />
-          </Tooltip>
+            <div className="flex max-w-35 flex-col gap-1 overflow-hidden">
+              <span className="subtitle1 truncate">
+                {variant.asset?.coinName}
+              </span>
+              <span className="body2 truncate text-osmoverse-300">
+                {variant?.asset?.coinDenom ?? ""}
+              </span>
+            </div>
+          </div>
+          <Icon
+            id="arrow"
+            height={24}
+            width={24}
+            className="text-osmoverse-300"
+          />
+          <div className="flex grow items-center gap-3 py-2 px-4">
+            <FallbackImg
+              src={variant?.canonicalAsset?.coinImageUrl ?? ""}
+              alt={variant?.canonicalAsset?.coinDenom ?? ""}
+              fallbacksrc="/icons/question-mark.svg"
+              height={40}
+              width={40}
+            />
+            <div className="flex flex-col gap-1 overflow-hidden">
+              <span className="subtitle1 truncate">
+                {variant.canonicalAsset?.coinName}
+              </span>
+              <span className="body2 truncate text-osmoverse-300">
+                {variant?.canonicalAsset?.coinDenom ?? ""}
+              </span>
+            </div>
+          </div>
+          {variant.canonicalAsset?.isAlloyed && (
+            <div className="flex items-center justify-center">
+              <Tooltip
+                arrow={true}
+                content={
+                  <div className="flex gap-3">
+                    <div>
+                      <Icon
+                        id="alloyed"
+                        height={16}
+                        width={16}
+                        className="text-ammelia-400"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <span className="caption">
+                        {t("assetVariantsConversion.tooltipTitle", {
+                          coinName: variant.canonicalAsset?.coinName ?? "",
+                        })}
+                      </span>
+                      <span className="caption text-osmoverse-300">
+                        {t("assetVariantsConversion.tooltipDescription", {
+                          coinDenom: variant.canonicalAsset?.coinDenom ?? "",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                }
+              >
+                <Icon
+                  id="alloyed"
+                  height={24}
+                  width={24}
+                  className="text-osmoverse-alpha-700"
+                />
+              </Tooltip>
+            </div>
+          )}
         </div>
-      )}
-      <div className="max-w-[96px]">
-        <Button
-          size="md"
-          className="w-full"
-          disabled={isQuoteError}
-          onClick={async () => {
-            const tokenInDenom = variant.asset?.coinMinimalDenom;
-            const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
-
-            if (!account) {
-              throw new Error("Account not found");
-            }
-            if (!tokenInDenom || !tokenOutDenom) {
-              throw new Error("Missing token denoms");
-            }
-            if (!quote) {
-              throw new Error("No quote found");
-            }
-
-            let maxSlippage = "0.05";
-            // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
-            // so, let's remove slippage to convert more of the asset
-            if (
-              quote.split.length === 1 &&
-              quote.split[0].pools.length === 0 &&
-              quote.split[0].pools[0].type.startsWith("cosmwasm")
-            ) {
-              maxSlippage = "0";
-            }
-
-            const messages = await getSwapMessages({
-              coinAmount: amount,
-              maxSlippage,
-              quote,
-              tokenInCoinMinimalDenom: tokenInDenom,
-              tokenOutCoinMinimalDenom: tokenOutDenom,
-              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals ?? 0,
-              tokenInCoinDecimals: variant.asset?.coinDecimals ?? 0,
-              userOsmoAddress: account.address,
-            });
-
-            if (!messages) {
-              throw new Error("No messages found");
-            }
-
-            account.signAndBroadcast(messages);
-          }}
-        >
-          Convert
-        </Button>
+        <div className="flex place-content-between items-center gap-2">
+          <span className="body2 text-osmoverse-300">
+            {feeFiatValue && quote?.swapFee ? (
+              t("assetVariantsConversion.conversionFees", {
+                fees: quote?.swapFee?.toDec().isZero()
+                  ? "0"
+                  : `~${feeFiatValue} (${quote?.swapFee?.maxDecimals(2)})`,
+              })
+            ) : (
+              <SkeletonLoader className="h-4 w-20" />
+            )}
+          </span>
+          <Button size="md" disabled={conversionDisabled} onClick={onConvert}>
+            {t("assetVariantsConversion.convert")}
+          </Button>
+        </div>
       </div>
-    </div>
+      {showBottomBorder && <div className="h-px w-full bg-osmoverse-700" />}
+    </>
   );
 });
+
+/**
+ * Converts a variant asset to its canonical form by creating a swap message.
+ *
+ * @param variant - The asset variant to convert, containing source and destination asset details
+ * @param quote - The swap quote containing route and pricing information
+ * @param amount - The amount of the source asset to convert
+ * @param address - The user's Osmosis address
+ * @returns Promise resolving to swap messages, or undefined if conversion not possible
+ * @throws Error if token denoms are missing or no quote is found
+ */
+async function getConvertVariantMessages(
+  variant: AssetVariant,
+  quote: QuoteOutGivenIn,
+  amount: string,
+  address: string
+) {
+  const tokenInDenom = variant.asset?.coinMinimalDenom;
+  const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
+
+  if (!tokenInDenom || !tokenOutDenom) {
+    throw new Error("Missing token denoms");
+  }
+  if (!quote) {
+    throw new Error("No quote found");
+  }
+
+  // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
+  // so, let's remove slippage to convert more of the asset
+  const isAlloyPoolSwap =
+    quote.split.length === 1 &&
+    quote.split[0].pools.length === 0 &&
+    quote.split[0].pools[0].type.startsWith("cosmwasm");
+
+  return await getSwapMessages({
+    coinAmount: amount,
+    maxSlippage: isAlloyPoolSwap ? "0" : "0.05",
+    quote,
+    tokenInCoinMinimalDenom: tokenInDenom,
+    tokenOutCoinMinimalDenom: tokenOutDenom,
+    tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals ?? 0,
+    tokenInCoinDecimals: variant.asset?.coinDecimals ?? 0,
+    userOsmoAddress: address,
+  });
+}
+
+const AllocationSkeleton = () => (
+  <div className="flex flex-col gap-3">
+    <Skeleton className="h-[90px] w-full" />
+    <Skeleton className="h-[90px] w-full" />
+    <Skeleton className="h-[90px] w-full" />
+    <Skeleton className="h-[90px] w-full" />
+  </div>
+);

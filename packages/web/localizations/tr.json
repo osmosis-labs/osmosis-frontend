@@ -1274,6 +1274,7 @@
     "variantsDetected": "Varyantlar Tespit Edildi",
     "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
     "tooltipTitle": "{coinName} Osmosis'te",
-    "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir."
+    "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir.",
+    "convert": "Dönüştürmek"
   }
 }

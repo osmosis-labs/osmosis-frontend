@@ -1274,6 +1274,7 @@
     "variantsDetected": "Variante detectate",
     "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
     "tooltipTitle": "{coinName} pe osmoză",
-    "tooltipDescription": "Osmoza consolidează numeroase variante de {coinDenom} într-un singur activ pentru mai multă flexibilitate și ușurință în utilizare."
+    "tooltipDescription": "Osmoza consolidează numeroase variante de {coinDenom} într-un singur activ pentru mai multă flexibilitate și ușurință în utilizare.",
+    "convert": "Convertit"
   }
 }

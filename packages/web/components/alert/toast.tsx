@@ -226,7 +226,6 @@ export const AlloyedAssetsToastDoNotShowKey =
 const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
-  // Effect to close modal on mobile
   const { isMobile } = useWindowSize();
 
   // should close toast if screen size changes to mobile while shown

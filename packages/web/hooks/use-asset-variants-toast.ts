@@ -45,7 +45,7 @@ export const useAssetVariantsToast = () => {
     {
       enabled,
       onSuccess: (data) => {
-        if (doNotShowAgain) return;
+        if (doNotShowAgain || hasSeenToastThisSession) return;
 
         const hasAssetsToConvert = data?.assetVariants?.length > 0 || false;
 

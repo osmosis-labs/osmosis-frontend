@@ -1274,6 +1274,7 @@
     "variantsDetected": "Wykryto warianty",
     "caption": "Pożegnaj się ze wszystkimi tymi mylącymi wariantami zasobów. Przywitaj się z bardziej płynnym doświadczeniem w Osmosis.",
     "tooltipTitle": "{coinName} na temat Osmosis",
-    "tooltipDescription": "Osmosis konsoliduje liczne warianty {coinDenom} w jeden prosty zasób, co zapewnia większą elastyczność i łatwość użytkowania."
+    "tooltipDescription": "Osmosis konsoliduje liczne warianty {coinDenom} w jeden prosty zasób, co zapewnia większą elastyczność i łatwość użytkowania.",
+    "convert": "Konwertować"
   }
 }

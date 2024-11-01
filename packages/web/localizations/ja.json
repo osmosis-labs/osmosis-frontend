@@ -1274,6 +1274,7 @@
     "variantsDetected": "検出された変異体",
     "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
     "tooltipTitle": "Osmosis の{coinName}",
-    "tooltipDescription": "Osmosis は{coinDenom}の多数のバリエーションを 1 つのシンプルなアセットに統合し、柔軟性と使いやすさを向上させます。"
+    "tooltipDescription": "Osmosis は{coinDenom}の多数のバリエーションを 1 つのシンプルなアセットに統合し、柔軟性と使いやすさを向上させます。",
+    "convert": "変換する"
   }
 }

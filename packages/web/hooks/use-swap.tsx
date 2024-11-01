@@ -1334,23 +1334,25 @@ function useQueryRouterBestQuote(
     const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
     const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
     const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
+    const address = account?.address;
     if (
       !quote ||
       typeof tokenOutCoinDecimals === "undefined" ||
       !tokenInCoinMinimalDenom ||
       !tokenOutCoinMinimalDenom ||
-      typeof tokenInCoinDecimals === "undefined"
+      typeof tokenInCoinDecimals === "undefined" ||
+      !address
     )
       return undefined;
     const messages = await getSwapMessages({
-      quote: quote,
+      quote,
       tokenOutCoinMinimalDenom,
       tokenInCoinDecimals: tokenInCoinDecimals!,
       tokenOutCoinDecimals: tokenOutCoinDecimals!,
       tokenInCoinMinimalDenom,
-      maxSlippage: input.maxSlippage?.toString(),
+      maxSlippage: input.maxSlippage?.toString() ?? "0.05",
       coinAmount: input.tokenInAmount,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
       quoteType,
     });
 

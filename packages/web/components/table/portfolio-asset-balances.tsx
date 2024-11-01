@@ -170,8 +170,6 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     });
   }, [dustFilteredAssetsData, watchListDenoms]);
 
-  console.log("filteredAssetsData: ", filteredAssetsData);
-
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;

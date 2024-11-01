@@ -66,8 +66,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     userSettings.getUserSettingById<HideDustState>("hide-dust");
   const hideDust = Boolean(hideDustSettingStore?.state?.hideDust);
 
-  console.log({ isWalletLoading });
-
   return (
     <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
       {isWalletLoading ? (
