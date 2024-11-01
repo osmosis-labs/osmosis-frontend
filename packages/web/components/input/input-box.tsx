@@ -117,6 +117,7 @@ export const InputBox: FunctionComponent<Props> = ({
                 inputRef.current = ref;
               }
             }}
+            onWheel={(e) => (e.target as HTMLInputElement).blur()}
             inputClassName={inputClassName_}
             minWidth={0}
             value={inputValue}
@@ -139,6 +140,7 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
+            onWheel={(e) => (e.target as HTMLInputElement).blur()}
             onBlur={(e: any) => {
               setInputFocused(false);
               onBlur && onBlur(e);
