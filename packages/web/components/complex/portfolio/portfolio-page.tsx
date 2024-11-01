@@ -42,7 +42,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     data: allocation,
     isLoading: isLoadingAllocation,
     isFetched: isFetchedAllocation,
-  } = api.local.portfolio.getAllocation.useQuery(
+  } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: wallet?.address ?? "",
     },
@@ -167,7 +167,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             >
               {featureFlags.cypherCard && <CypherCard />}
               {!isLoadingAllocation && !userHasNoAssets && (
-                <Allocation allocation={allocation} />
+                <Allocation assets={allocation} />
               )}
             </div>
             <div className="flex w-full flex-col">

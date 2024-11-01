@@ -52,8 +52,6 @@ export async function getRouteTokenOutGivenIn({
     ? quote.amount.toDec().mul(quote.swapFee).truncate()
     : undefined;
 
-  console.log({ fee: fee?.toString() });
-
   return {
     ...quote,
     split: makeDisplayableOutGivenInSplit(quote.split, assetLists),

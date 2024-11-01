@@ -38,7 +38,7 @@ export const useAssetVariantsToast = () => {
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  api.local.portfolio.getAllocation.useQuery(
+  api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: wallet?.address ?? "",
     },

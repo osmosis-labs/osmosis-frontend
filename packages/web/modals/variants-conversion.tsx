@@ -1,4 +1,4 @@
-import { AssetVariant } from "@osmosis-labs/server";
+import type { AssetVariant } from "@osmosis-labs/server";
 import { getSwapMessages, QuoteOutGivenIn } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -23,7 +23,7 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  isOpen: true,
+  isOpen: false,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
@@ -37,16 +37,15 @@ export const AssetVariantsConversionModal = () => {
   const { t } = useTranslation();
 
   const {
-    data: allocationData,
-    error: allocationError,
-    isLoading: isAllocationLoading,
-  } = api.local.portfolio.getAllocation.useQuery(
+    data: portfolioAssetsData,
+    error: portfolioAssetsError,
+    isLoading: isPortfolioAssetsLoading,
+  } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: account?.address ?? "",
     },
     {
       enabled: !!account?.address,
-      refetchOnWindowFocus: false,
     }
   );
 
@@ -79,18 +78,22 @@ export const AssetVariantsConversionModal = () => {
           </Link>
         </p>
         <div className="mt-4 flex flex-col">
-          {isAllocationLoading ? (
+          {isPortfolioAssetsLoading ? (
             <AllocationSkeleton />
-          ) : allocationError ? (
-            <p>{t("assetVariantsConversion.errorLoading")}</p>
+          ) : portfolioAssetsError ? (
+            <p className="caption mx-auto text-osmoverse-300">
+              {t("assetVariantsConversion.errorLoading")}
+            </p>
           ) : (
-            allocationData?.assetVariants?.map((variant, index, variants) => (
-              <AssetVariantRow
-                key={variant?.asset?.coinMinimalDenom}
-                variant={variant ?? {}}
-                showBottomBorder={index !== variants.length - 1}
-              />
-            ))
+            portfolioAssetsData?.assetVariants.map(
+              (variant, index, variants) => (
+                <AssetVariantRow
+                  key={variant.amount.currency.coinMinimalDenom}
+                  variant={variant}
+                  showBottomBorder={index !== variants.length - 1}
+                />
+              )
+            )
           )}
         </div>
       </div>
@@ -115,13 +118,13 @@ const AssetVariantRow: React.FC<{
     isLoading: isQuoteLoading,
   } = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
-      tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
+      tokenInDenom: variant.amount.currency.coinMinimalDenom,
       tokenInAmount: amount,
       tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
     },
     {
       enabled:
-        !!variant.asset?.coinMinimalDenom &&
+        !!variant.amount.currency.coinMinimalDenom &&
         !!variant.canonicalAsset?.coinMinimalDenom,
     }
   );
@@ -176,21 +179,19 @@ const AssetVariantRow: React.FC<{
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
-        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2 px-4">
-          <div className="flex items-center gap-3">
+        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
+          <div className="flex min-w-0 items-center gap-3">
             <FallbackImg
-              src={variant?.asset?.coinImageUrl ?? ""}
-              alt={variant?.asset?.coinDenom ?? ""}
+              src={variant.amount.currency.coinImageUrl ?? ""}
+              alt={variant.amount.currency.coinDenom ?? ""}
               fallbacksrc="/icons/question-mark.svg"
               height={40}
               width={40}
             />
-            <div className="flex max-w-35 flex-col gap-1 overflow-hidden">
-              <span className="subtitle1 truncate">
-                {variant.asset?.coinName}
-              </span>
+            <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
+              <span className="subtitle1 truncate">{variant.name}</span>
               <span className="body2 truncate text-osmoverse-300">
-                {variant?.asset?.coinDenom ?? ""}
+                {variant.amount.currency.coinDenom ?? ""}
               </span>
             </div>
           </div>
@@ -198,7 +199,7 @@ const AssetVariantRow: React.FC<{
             id="arrow"
             height={24}
             width={24}
-            className="text-osmoverse-300"
+            className="text-osmoverse-700"
           />
           <div className="flex grow items-center gap-3 py-2 px-4">
             <FallbackImg
@@ -262,13 +263,18 @@ const AssetVariantRow: React.FC<{
               t("assetVariantsConversion.conversionFees", {
                 fees: quote?.swapFee?.toDec().isZero()
                   ? "0"
-                  : `~${feeFiatValue} (${quote?.swapFee?.maxDecimals(2)})`,
+                  : `${feeFiatValue} (${quote?.swapFee?.maxDecimals(2)})`,
               })
             ) : (
               <SkeletonLoader className="h-4 w-20" />
             )}
           </span>
-          <Button size="md" disabled={conversionDisabled} onClick={onConvert}>
+          <Button
+            size="md"
+            className="!h-12"
+            disabled={conversionDisabled}
+            onClick={onConvert}
+          >
             {t("assetVariantsConversion.convert")}
           </Button>
         </div>
@@ -294,7 +300,7 @@ async function getConvertVariantMessages(
   amount: string,
   address: string
 ) {
-  const tokenInDenom = variant.asset?.coinMinimalDenom;
+  const tokenInDenom = variant.amount.currency.coinMinimalDenom;
   const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
 
   if (!tokenInDenom || !tokenOutDenom) {
@@ -318,7 +324,7 @@ async function getConvertVariantMessages(
     tokenInCoinMinimalDenom: tokenInDenom,
     tokenOutCoinMinimalDenom: tokenOutDenom,
     tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals ?? 0,
-    tokenInCoinDecimals: variant.asset?.coinDecimals ?? 0,
+    tokenInCoinDecimals: variant.amount.currency?.coinDecimals ?? 0,
     userOsmoAddress: address,
   });
 }

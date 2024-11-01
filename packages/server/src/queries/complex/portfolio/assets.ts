@@ -1,15 +1,15 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { Asset, AssetList, MinimalAsset } from "@osmosis-labs/types";
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
 import { sort } from "@osmosis-labs/utils";
 
-import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
-import { queryAllocation } from "../../../queries/data-services";
-import { Categories } from "../../../queries/data-services";
-import { AccountCoinsResultDec } from "../../../queries/sidecar/allocation";
+import { captureIfError } from "../../../utils";
+import { Categories, queryPortfolioAssets } from "../../sidecar";
+import { AccountCoinsResultDec } from "../../sidecar/portfolio-assets";
 import { getAsset } from "../assets";
+import { DEFAULT_VS_CURRENCY } from "../assets/config";
 
-interface Allocation {
+export interface Allocation {
   key: string;
   percentage: RatePretty;
   fiatValue: PricePretty;
@@ -17,20 +17,12 @@ interface Allocation {
 }
 
 export interface AssetVariant {
-  asset: MinimalAsset | null;
+  name: string;
   amount: CoinPretty;
-  canonicalAsset: MinimalAsset | null;
+  canonicalAsset: MinimalAsset;
 }
 
-export interface GetAllocationResponse {
-  all: Allocation[];
-  assets: Allocation[];
-  available: Allocation[];
-  totalCap: PricePretty;
-  assetVariants: AssetVariant[];
-}
-
-export function getAll(categories: Categories): Allocation[] {
+export function getAllocations(categories: Categories): Allocation[] {
   const userBalancesCap = new Dec(categories["user-balances"].capitalization);
   const stakedCap = new Dec(categories["staked"].capitalization);
   const unstakingCap = new Dec(categories["unstaking"].capitalization);
@@ -107,12 +99,18 @@ export function calculatePercentAndFiatValues(
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
-  const assets: Allocation[] = topCoinsResults.map(
-    (asset: AccountCoinsResultDec) => {
-      const assetFromAssetLists = getAsset({
-        assetLists,
-        anyDenom: asset.coin.denom,
-      });
+  const assets: Allocation[] = topCoinsResults
+    .map((asset: AccountCoinsResultDec) => {
+      const assetFromAssetLists = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: asset.coin.denom,
+        })
+      );
+
+      if (!assetFromAssetLists) {
+        return null;
+      }
 
       return {
         key: assetFromAssetLists.coinDenom,
@@ -122,8 +120,8 @@ export function calculatePercentAndFiatValues(
         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
         asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
       };
-    }
-  );
+    })
+    .filter((asset): asset is NonNullable<typeof asset> => asset !== null);
 
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
@@ -145,7 +143,19 @@ export function calculatePercentAndFiatValues(
   return [...assets, other];
 }
 
-export async function getAllocation({
+export type PortfolioAssets = {
+  all: Allocation[];
+  assets: Allocation[];
+  available: Allocation[];
+  totalCap: PricePretty;
+  assetVariants: AssetVariant[];
+};
+
+/**
+ * Gets portfolio assets for the given address
+ * and includes a breakdown of the assets by category.
+ */
+export async function getPortfolioAssets({
   address,
   assetLists,
   allocationLimit = 5,
@@ -153,14 +163,14 @@ export async function getAllocation({
   address: string;
   assetLists: AssetList[];
   allocationLimit?: number;
-}): Promise<GetAllocationResponse> {
-  const data = await queryAllocation({
+}): Promise<PortfolioAssets> {
+  const data = await queryPortfolioAssets({
     address,
   });
 
   const categories = data.categories;
 
-  const all = getAll(categories);
+  const allocations = getAllocations(categories);
   const assets = calculatePercentAndFiatValues(
     categories,
     assetLists,
@@ -188,14 +198,10 @@ export async function getAllocation({
     })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
-  const assetVariants = checkAssetVariants(
-    userBalanceDenoms, // Pass the updated userBalanceDenoms
-    assetLists.flatMap((list) => list.assets),
-    assetLists // Pass assetLists to checkHasAssetVariants
-  );
+  const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
 
   return {
-    all,
+    all: allocations,
     assets,
     available,
     totalCap,
@@ -205,25 +211,25 @@ export async function getAllocation({
 
 export function checkAssetVariants(
   userBalanceDenoms: { denom: string; amount: string }[],
-  assetListAssets: Asset[],
   assetLists: AssetList[]
-): {
-  asset: MinimalAsset | null;
-  amount: CoinPretty;
-  canonicalAsset: MinimalAsset | null;
-}[] {
-  const assetMap = new Map(
-    assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
-  );
+): AssetVariant[] {
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
 
   return userBalanceDenoms
     .map(({ denom, amount }) => {
-      const asset = assetMap.get(denom);
+      const asset = assetListAssets.find(
+        (asset) => asset.coinMinimalDenom === denom
+      );
 
-      if (asset && asset.coinMinimalDenom !== asset.variantGroupKey) {
+      // check if it's a variant
+      if (
+        asset &&
+        asset.variantGroupKey &&
+        asset.coinMinimalDenom !== asset.variantGroupKey
+      ) {
         const canonicalAsset = getAsset({
           assetLists,
-          anyDenom: asset.variantGroupKey ?? "",
+          anyDenom: asset.variantGroupKey,
         });
 
         const userAsset = getAsset({
@@ -232,16 +238,13 @@ export function checkAssetVariants(
         });
 
         return {
-          asset: userAsset,
+          name: userAsset.coinName,
           amount: new CoinPretty(userAsset, amount),
-          canonicalAsset: canonicalAsset || null,
+          canonicalAsset: canonicalAsset,
         };
       }
+
       return null;
     })
-    .filter((item) => item !== null) as {
-    asset: MinimalAsset | null;
-    amount: CoinPretty;
-    canonicalAsset: MinimalAsset | null;
-  }[];
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 }
