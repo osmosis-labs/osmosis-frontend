@@ -53,7 +53,6 @@
       "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
     }
   },
-  "assetNotCompatible": "This asset is not compatible with this wallet.",
   "clPositions": {
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",
@@ -267,11 +266,6 @@
       "less": "View less",
       "more": "View more"
     },
-    "sort": {
-      "mobileMenu": "Sort by",
-      "SORT": "Sort by",
-      "SORTMobile": "Sort"
-    },
     "table": {
       "poolId": "Pool #{id}",
       "stable": "Stableswap",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click Trading active",
-      "oneClickTradingExpired": "1-Click Trading expired",
       "oneClickTradingDisabled": "1-Click Trading disabled",
       "currentlyUnavailable": "1-Click Trading currently unavailable",
       "insufficientFunds": "Insufficient OSMO funds for 1-Click Trading",
       "continueWithoutOneClickTrading": "Continue without 1-Click Trading",
       "networkFeeTooHigh": "Network fee too high",
-      "startANewSession": "Start a new session",
       "approveManually": "Approve manually in {walletName}",
       "continueWithWallet": "Continue with wallet",
       "sessionEnded": "Session ended on this device",
@@ -388,9 +380,7 @@
       "changeButton": "Edit settings"
     },
     "floatingBanner": {
-      "newPill": "New",
-      "title": "1-Click Trading",
-      "tradeFasterButton": "Trade Faster"
+      "newPill": "New"
     },
     "settings": {
       "header": "1-Click Trading",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Route taken",
-    "autoRouterToggle": {
-      "hide": "Hide",
-      "show": "Show"
-    },
     "button": "Swap",
     "buttonError": "Swap anyway",
     "HALF": "HALF",

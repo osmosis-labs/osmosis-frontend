@@ -53,7 +53,6 @@
       "5": "No mercado livre de LPs cada um segue uma estratégia diferente. A liquidez é mais dinâmica e melhor otimizada para os traders."
     }
   },
-  "assetNotCompatible": "Este ativo não é compatível com esta carteira.",
   "clPositions": {
     "inRange": "NO ALCANCE",
     "nearBounds": "PERTO DOS LIMITES",
@@ -267,11 +266,6 @@
       "less": "Visualizar menos",
       "more": "Visualizar mais"
     },
-    "sort": {
-      "mobileMenu": "Orgaanizar por",
-      "SORT": "Organizar por",
-      "SORTMobile": "Organizar"
-    },
     "table": {
       "poolId": "Piscina #{id}",
       "stable": "Stableswap",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Negociação em 1 Clique ativa",
-      "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
       "insufficientFunds": "Fundos OSMO insuficientes para negociação em 1 clique",
       "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
       "networkFeeTooHigh": "Taxa de rede muito alta",
-      "startANewSession": "Iniciar uma nova sessão",
       "approveManually": "Aprovar manualmente em {walletName}",
       "continueWithWallet": "Continuar com carteira",
       "sessionEnded": "A sessão terminou neste dispositivo",
@@ -388,9 +380,7 @@
       "changeButton": "Editar Configurações"
     },
     "floatingBanner": {
-      "newPill": "Novo",
-      "title": "Negociação em 1 clique",
-      "tradeFasterButton": "Negocie mais rápido"
+      "newPill": "Novo"
     },
     "settings": {
       "header": "Negociação em 1 clique",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Rota",
-    "autoRouterToggle": {
-      "hide": "Esconder",
-      "show": "Mostrar"
-    },
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
     "HALF": "METADE",

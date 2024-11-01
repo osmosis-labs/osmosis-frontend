@@ -16,7 +16,7 @@ import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 
-export type ToastOptions = Partial<ReactToastifyOptions> & {
+type ToastOptions = Partial<ReactToastifyOptions> & {
   updateToastId?: Id;
 };
 
@@ -223,7 +223,7 @@ const OneClickTradingToast: FunctionComponent<Alert> = ({
 export const AlloyedAssetsToastDoNotShowKey =
   "do-not-show-alloyed-assets-toast";
 
-export const AlloyedAssetsToast: FunctionComponent<
+const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
   // Effect to close modal on mobile

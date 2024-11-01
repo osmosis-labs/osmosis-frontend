@@ -28,7 +28,7 @@ import { formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<EarnStrategy>();
 
-export const ColumnCellHeader = ({
+const ColumnCellHeader = ({
   className,
   tKey,
   /**

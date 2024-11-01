@@ -8,6 +8,12 @@ import prettier from "prettier";
 
 import { omittedKeyPaths } from "./omitted-keys.mjs";
 
+// Verify we're in the localizations directory
+const currentDir = path.basename(process.cwd());
+if (currentDir !== "localizations") {
+  throw new Error("This script must be run from the localizations directory");
+}
+
 // Get all localization JSON objs in the current directory
 const localizationJsonFilepaths = fs
   .readdirSync(process.cwd())

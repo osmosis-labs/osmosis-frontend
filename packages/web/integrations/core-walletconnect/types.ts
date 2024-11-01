@@ -12,7 +12,7 @@ export interface IWCClient {
   new (walletInfo: Wallet): WCClient;
 }
 
-export interface WCDirectSignDoc {
+interface WCDirectSignDoc {
   chainId: string;
   accountNumber: string;
   authInfoBytes: string;

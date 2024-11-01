@@ -53,7 +53,6 @@
       "5": "На свободном рынке пластинок каждый придерживается разных стратегий. Ликвидность более динамична и лучше оптимизирована для трейдеров."
     }
   },
-  "assetNotCompatible": "Этот актив несовместим с этим кошельком.",
   "clPositions": {
     "inRange": "В ДИАПАЗОНЕ",
     "nearBounds": "БЛИЖАЙШИЕ ГРАНИЦЫ",
@@ -267,11 +266,6 @@
       "less": "Посмотреть меньше",
       "more": "Посмотреть больше"
     },
-    "sort": {
-      "mobileMenu": "Сортировать по",
-      "SORT": "Сортировать по",
-      "SORTMobile": "Сортировать"
-    },
     "table": {
       "poolId": "Пул № {id}",
       "stable": "Обмен конюшнями",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Торговля в 1 клик активна",
-      "oneClickTradingExpired": "Срок действия 1-Click Trading истек",
       "oneClickTradingDisabled": "Торговля в 1 клик отключена",
       "currentlyUnavailable": "Торговля в 1 клик в настоящее время недоступна",
       "insufficientFunds": "Недостаточно средств OSMO для торговли в 1 клик",
       "continueWithoutOneClickTrading": "Продолжить без торговли в 1 клик",
       "networkFeeTooHigh": "Плата за сеть слишком высока",
-      "startANewSession": "Начать новый сеанс",
       "approveManually": "Утвердить вручную в {walletName}",
       "continueWithWallet": "Продолжить с кошельком",
       "sessionEnded": "Сеанс завершен на этом устройстве",
@@ -388,9 +380,7 @@
       "changeButton": "Изменить настройки"
     },
     "floatingBanner": {
-      "newPill": "Новый",
-      "title": "Торговля в 1 клик",
-      "tradeFasterButton": "Торгуйте быстрее"
+      "newPill": "Новый"
     },
     "settings": {
       "header": "Торговля в 1 клик",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Пройденный маршрут",
-    "autoRouterToggle": {
-      "hide": "Скрывать",
-      "show": "Показывать"
-    },
     "button": "Менять",
     "buttonError": "Все равно поменять",
     "HALF": "ПОЛОВИНА",

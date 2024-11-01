@@ -4,12 +4,12 @@ import { useIsomorphicLayoutEffect } from "react-use";
 
 import { isBrowser } from "~/utils/ssr";
 
-export type UseDimensionRect = Pick<
+type UseDimensionRect = Pick<
   DOMRectReadOnly,
   "x" | "y" | "top" | "left" | "right" | "bottom" | "height" | "width"
 >;
-export type UseDimensionRef<E extends Element = Element> = (element: E) => void;
-export type UseDimensionResult<E extends Element = Element> = [
+type UseDimensionRef<E extends Element = Element> = (element: E) => void;
+type UseDimensionResult<E extends Element = Element> = [
   UseDimensionRef<E>,
   UseDimensionRect
 ];

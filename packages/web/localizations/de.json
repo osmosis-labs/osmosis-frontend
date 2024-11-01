@@ -53,7 +53,6 @@
       "5": "Auf dem freien Markt der LPs verfolgt jeder unterschiedliche Strategien. Die Liquidität ist dynamischer und besser für Händler optimiert."
     }
   },
-  "assetNotCompatible": "Dieses Asset ist nicht mit dieser Wallet kompatibel.",
   "clPositions": {
     "inRange": "IM BEREICH",
     "nearBounds": "IN DER NÄHE DER GRENZEN",
@@ -267,11 +266,6 @@
       "less": "Weniger anzeigen",
       "more": "Mehr sehen"
     },
-    "sort": {
-      "mobileMenu": "Sortiere nach",
-      "SORT": "Sortiere nach",
-      "SORTMobile": "Sortieren"
-    },
     "table": {
       "poolId": "Pool # {id}",
       "stable": "Stalltausch",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click-Handel aktiv",
-      "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
       "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
       "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
       "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",
@@ -388,9 +380,7 @@
       "changeButton": "Einstellungen bearbeiten"
     },
     "floatingBanner": {
-      "newPill": "Neu",
-      "title": "1-Klick-Handel",
-      "tradeFasterButton": "Handeln Sie schneller"
+      "newPill": "Neu"
     },
     "settings": {
       "header": "1-Klick-Handel",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "Route genommen",
-    "autoRouterToggle": {
-      "hide": "Verstecken",
-      "show": "Zeigen"
-    },
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
     "HALF": "HALB",

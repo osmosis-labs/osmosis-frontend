@@ -53,7 +53,6 @@
       "5": "LP の自由市場では、誰もが異なる戦略に従います。流動性がより動的になり、トレーダー向けに最適化されています。"
     }
   },
-  "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
   "clPositions": {
     "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
@@ -267,11 +266,6 @@
       "less": "表示を減らす",
       "more": "もっと見る"
     },
-    "sort": {
-      "mobileMenu": "並べ替え",
-      "SORT": "並べ替え",
-      "SORTMobile": "選別"
-    },
     "table": {
       "poolId": "プール番号{id}",
       "stable": "ステーブルスワップ",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
-      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "insufficientFunds": "ワンクリック取引に必要なOSMO資金が不足しています",
       "continueWithoutOneClickTrading": "1クリック取引なしで続行",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "startANewSession": "新しいセッションを開始する",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
       "sessionEnded": "このデバイスでセッションが終了しました",
@@ -388,9 +380,7 @@
       "changeButton": "編集の設定"
     },
     "floatingBanner": {
-      "newPill": "新しい",
-      "title": "1クリック取引",
-      "tradeFasterButton": "より迅速な取引"
+      "newPill": "新しい"
     },
     "settings": {
       "header": "1クリック取引",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "通ったルート",
-    "autoRouterToggle": {
-      "hide": "隠れる",
-      "show": "見せる"
-    },
     "button": "スワップ",
     "buttonError": "とにかく交換する",
     "HALF": "半分",

@@ -53,7 +53,6 @@
       "5": "LP ના ફ્રી માર્કેટમાં દરેક વ્યક્તિ જુદી જુદી વ્યૂહરચનાઓને અનુસરે છે. લિક્વિડિટી વધુ ગતિશીલ છે, અને વેપારીઓ માટે વધુ સારી રીતે ઑપ્ટિમાઇઝ છે."
     }
   },
-  "assetNotCompatible": "આ સંપત્તિ આ વૉલેટ સાથે સુસંગત નથી.",
   "clPositions": {
     "inRange": "રેન્જમાં",
     "nearBounds": "સીમાઓની નજીક",
@@ -267,11 +266,6 @@
       "less": "ઓછું જુઓ",
       "more": "વધુ જોવો"
     },
-    "sort": {
-      "mobileMenu": "દ્વારા સૉર્ટ કરો",
-      "SORT": "દ્વારા સૉર્ટ કરો",
-      "SORTMobile": "સૉર્ટ કરો"
-    },
     "table": {
       "poolId": "પૂલ # {id}",
       "stable": "સ્ટેબલસ્વેપ",
@@ -365,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
-      "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
       "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
       "insufficientFunds": "1-ક્લિક ટ્રેડિંગ માટે અપર્યાપ્ત OSMO ભંડોળ",
       "continueWithoutOneClickTrading": "1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
-      "startANewSession": "નવું સત્ર શરૂ કરો",
       "approveManually": "{walletName} માં મેન્યુઅલી મંજૂર કરો",
       "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
       "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
@@ -388,9 +380,7 @@
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "floatingBanner": {
-      "newPill": "નવી",
-      "title": "1-ક્લિક કરો ટ્રેડિંગ",
-      "tradeFasterButton": "ઝડપી વેપાર"
+      "newPill": "નવી"
     },
     "settings": {
       "header": "1-ક્લિક કરો ટ્રેડિંગ",
@@ -692,10 +682,6 @@
   },
   "swap": {
     "autoRouter": "રૂટ લીધો",
-    "autoRouterToggle": {
-      "hide": "છુપાવો",
-      "show": "બતાવો"
-    },
     "button": "સ્વેપ",
     "buttonError": "કોઈપણ રીતે સ્વેપ કરો",
     "HALF": "અર્ધ",

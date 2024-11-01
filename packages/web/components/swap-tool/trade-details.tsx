@@ -347,7 +347,7 @@ export const TradeDetails = observer(
   }
 );
 
-export function Closer({
+function Closer({
   close,
   isInAmountEmpty,
 }: {
@@ -363,7 +363,7 @@ export function Closer({
   return <></>;
 }
 
-export function ExpectedRate(
+function ExpectedRate(
   swapState: ReturnType<typeof useSwap>,
   outAsBase: boolean,
   treatAsStable: string | undefined = undefined,

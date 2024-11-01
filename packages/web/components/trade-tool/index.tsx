@@ -16,7 +16,7 @@ import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
-export interface TradeToolProps {
+interface TradeToolProps {
   swapToolProps?: SwapToolProps;
   page: EventPage;
   previousTrade?: PreviousTrade;

@@ -51,7 +51,6 @@
       "5": "En el mercado libre de LPs todos siguen diferentes estrategias. La liquidez es más dinámica y está mejor optimizada para los comerciantes."
     }
   },
-  "assetNotCompatible": "Este activo no es compatible con esta cartera.",
   "clPositions": {
     "inRange": "EN EL RANGO",
     "nearBounds": "CERCA DE LOS LÍMITES",
@@ -248,11 +247,9 @@
       "unverifiedAsset": "Este activo no está verificado. Proceda con precaución.",
       "clickToActivate": "Haz clic para activar"
     },
-    "show": { "less": "Ver menos", "more": "Ver más" },
-    "sort": {
-      "mobileMenu": "Ordenar por",
-      "SORT": "ORDENAR POR",
-      "SORTMobile": "CLASIFICAR"
+    "show": {
+      "less": "Ver menos",
+      "more": "Ver más"
     },
     "table": {
       "poolId": "Grupo #{id}",
@@ -347,13 +344,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Comercio con 1 clic activo",
-      "oneClickTradingExpired": "El comercio con 1 clic expiró",
       "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
       "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
       "insufficientFunds": "Fondos OSMO insuficientes para el comercio con 1 clic",
       "continueWithoutOneClickTrading": "Continuar sin operar con 1 clic",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
-      "startANewSession": "Iniciar una nueva sesión",
       "approveManually": "Aprobar manualmente en {walletName}",
       "continueWithWallet": "Continuar con la billetera",
       "sessionEnded": "La sesión finalizó en este dispositivo",
@@ -370,9 +365,7 @@
       "changeButton": "Editar ajustes"
     },
     "floatingBanner": {
-      "newPill": "Nuevo",
-      "title": "Comercio con 1 clic",
-      "tradeFasterButton": "Opere más rápido"
+      "newPill": "Nuevo"
     },
     "settings": {
       "header": "Comercio con 1 clic",
@@ -671,10 +664,6 @@
   },
   "swap": {
     "autoRouter": "Ruta",
-    "autoRouterToggle": {
-      "hide": "Ocultar",
-      "show": "Mostrar"
-    },
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
     "HALF": "Mitad",

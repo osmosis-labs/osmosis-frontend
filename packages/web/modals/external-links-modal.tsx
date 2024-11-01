@@ -9,7 +9,7 @@ import { ModalBase, ModalBaseProps } from "~/modals";
 const DoNotShowAgainExcludedUrlsKey = "do-not-show-again-excluded-urls";
 type DoNotShowAgainExcludedUrls = Record<string, boolean>;
 
-export function getDoNotShowAgainExcludedUrls(): DoNotShowAgainExcludedUrls {
+function getDoNotShowAgainExcludedUrls(): DoNotShowAgainExcludedUrls {
   const value = localStorage.getItem(DoNotShowAgainExcludedUrlsKey);
   return value ? JSON.parse(value) : {};
 }

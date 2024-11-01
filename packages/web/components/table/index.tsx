@@ -15,7 +15,7 @@ import { CustomClasses } from "~/components/types";
 import { useWindowSize } from "~/hooks";
 import { replaceAt } from "~/utils/array";
 
-export interface Props<TCell extends BaseCell> extends CustomClasses {
+interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
   columnDefs: ColumnDef<TCell>[];
   /** Functionality common to all rows.
