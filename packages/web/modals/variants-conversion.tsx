@@ -49,6 +49,78 @@ interface AssetVariantsConversionProps {
   onRequestClose: () => void;
 }
 
+const AssetVariantsConversion = observer(
+  ({ onRequestClose }: AssetVariantsConversionProps) => {
+    const { accountStore } = useStore();
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { isMobile } = useWindowSize();
+    const { t } = useTranslation();
+
+    const {
+      data: allocationData,
+      error: allocationError,
+      isLoading: isAllocationLoading,
+    } = api.local.portfolio.getAllocation.useQuery(
+      {
+        address: account?.address ?? "",
+      },
+      {
+        enabled: !!account?.address,
+        refetchOnWindowFocus: false,
+      }
+    );
+
+    console.log("allocationData: ", allocationData);
+
+    // console.log("routeData: ", routeData);
+
+    // console.log("Route Data: ", routeData);
+    // console.log("Route Error: ", routeError);
+    // console.log("Is Route Loading: ", isRouteLoading);
+
+    // should close toast if screen size changes to mobile while shown
+    useEffect(() => {
+      if (isMobile) {
+        // Use timeout to avoid the maximum update depth exceeded error
+        setTimeout(onRequestClose, 0);
+      }
+    }, [isMobile, onRequestClose]);
+
+    return (
+      <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
+        <p className="body1 text-center text-osmoverse-300">
+          {t("assetVariantsConversion.description")}{" "}
+          <Link
+            href="/learn/asset-variants"
+            className="text-wosmongton-300 hover:underline"
+          >
+            {t("assetVariantsConversion.learnMore")}
+          </Link>
+        </p>
+        <div className="mt-4 flex flex-col">
+          {isAllocationLoading ? (
+            <div className="flex flex-col gap-3">
+              {" "}
+              <Skeleton className="h-[90px] w-full" />
+              <Skeleton className="h-[90px] w-full" />
+            </div>
+          ) : allocationError ? (
+            <p>{t("assetVariantsConversion.errorLoading")}</p>
+          ) : (
+            allocationData?.assetVariants?.map((variant) => (
+              <AssetVariantRow
+                key={variant?.asset?.coinMinimalDenom}
+                variant={variant ?? {}}
+                account={account}
+              />
+            ))
+          )}
+        </div>
+      </div>
+    );
+  }
+);
+
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   account: any;
@@ -58,7 +130,7 @@ const AssetVariantRow: React.FC<{
   const amount = variant.amount.toCoin().amount;
 
   // TODO - handle loading and error
-  const { refetch: refetchRoute, isError: isQuoteError } =
+  const { refetch: refetchRoute } =
     api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
       {
         tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
@@ -249,75 +321,3 @@ const AssetVariantRow: React.FC<{
     </div>
   );
 });
-
-const AssetVariantsConversion = observer(
-  ({ onRequestClose }: AssetVariantsConversionProps) => {
-    const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { isMobile } = useWindowSize();
-    const { t } = useTranslation();
-
-    const {
-      data: allocationData,
-      error: allocationError,
-      isLoading: isAllocationLoading,
-    } = api.local.portfolio.getAllocation.useQuery(
-      {
-        address: account?.address ?? "",
-      },
-      {
-        enabled: !!account?.address,
-        refetchOnWindowFocus: false,
-      }
-    );
-
-    console.log("allocationData: ", allocationData);
-
-    // console.log("routeData: ", routeData);
-
-    // console.log("Route Data: ", routeData);
-    // console.log("Route Error: ", routeError);
-    // console.log("Is Route Loading: ", isRouteLoading);
-
-    // should close toast if screen size changes to mobile while shown
-    useEffect(() => {
-      if (isMobile) {
-        // Use timeout to avoid the maximum update depth exceeded error
-        setTimeout(onRequestClose, 0);
-      }
-    }, [isMobile, onRequestClose]);
-
-    return (
-      <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
-        <p className="body1 text-center text-osmoverse-300">
-          {t("assetVariantsConversion.description")}{" "}
-          <Link
-            href="/learn/asset-variants"
-            className="text-wosmongton-300 hover:underline"
-          >
-            {t("assetVariantsConversion.learnMore")}
-          </Link>
-        </p>
-        <div className="mt-4 flex flex-col">
-          {isAllocationLoading ? (
-            <div className="flex flex-col gap-3">
-              {" "}
-              <Skeleton className="h-[90px] w-full" />
-              <Skeleton className="h-[90px] w-full" />
-            </div>
-          ) : allocationError ? (
-            <p>{t("assetVariantsConversion.errorLoading")}</p>
-          ) : (
-            allocationData?.assetVariants?.map((variant) => (
-              <AssetVariantRow
-                key={variant?.asset?.coinMinimalDenom}
-                variant={variant ?? {}}
-                account={account}
-              />
-            ))
-          )}
-        </div>
-      </div>
-    );
-  }
-);

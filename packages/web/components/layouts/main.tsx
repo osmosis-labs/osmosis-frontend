@@ -8,7 +8,6 @@ import React, {
 } from "react";
 
 import { IconButton } from "~/components/buttons/icon-button";
-import { AssetVariantsConversionModal } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
@@ -18,6 +17,7 @@ import {
   useHasAssetVariants,
   useWindowSize,
 } from "~/hooks";
+import { AssetVariantsConversionModal } from "~/modals/variants-conversion";
 
 export const MainLayout = observer(
   ({
