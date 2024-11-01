@@ -147,7 +147,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
 
               const pendingText =
                 activity.direction === "withdraw"
-                  ? t("transactions.historyTable.pendingDeposit")
+                  ? t("transactions.historyTable.pendingWithdraw")
                   : t("transactions.historyTable.pendingDeposit");
               const successText =
                 activity.direction === "withdraw"

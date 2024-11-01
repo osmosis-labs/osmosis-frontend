@@ -1,8 +1,10 @@
 import { TxSnapshot } from "@osmosis-labs/bridge";
+import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { FallbackImg, Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { Spinner } from "~/components/loaders";
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import { useTranslation } from "~/hooks/language/context";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
@@ -18,7 +20,14 @@ export const RecentActivityRow: FunctionComponent<{
   return (
     <div className="-mx-2 flex justify-between gap-4 rounded-2xl p-2">
       <div className="flex flex-col">
-        <p className="body2 text-white-full">{title[status]}</p>
+        <p
+          className={classNames(
+            "body2",
+            status === "failed" ? "text-rust-400" : "text-white-full"
+          )}
+        >
+          {title[status]}
+        </p>
         {leftComponent}
       </div>
       <div className="flex items-center justify-end">{rightComponent}</div>
@@ -131,28 +140,55 @@ export const RecentTransferRow: FunctionComponent<
   ) : null;
 
   const rightComponentList = [
-    <FallbackImg
+    <div
       key="fallback-img"
-      alt={transfer?.amount.denom}
-      src={transfer?.amount.currency.coinImageUrl}
-      fallbacksrc="/icons/question-mark.svg"
-      height={32}
-      width={32}
-    />,
+      className="relative w-8 h-8 flex justify-center items-center"
+    >
+      {status === "pending" && transfer?.direction === "deposit" && (
+        <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
+      )}
+      <FallbackImg
+        alt={transfer?.amount.denom}
+        src={transfer?.amount.currency.coinImageUrl}
+        fallbacksrc="/icons/question-mark.svg"
+        height={
+          status === "pending" && transfer?.direction === "deposit" ? 24 : 32
+        }
+        width={
+          status === "pending" && transfer?.direction === "deposit" ? 24 : 32
+        }
+        className={
+          status !== "success" && transfer?.direction === "deposit"
+            ? "opacity-50"
+            : undefined
+        }
+      />
+    </div>,
     <Icon
       key="icon-arrow-right"
       id="arrow-right"
       width={16}
       height={16}
-      className="my-[8px] mx-[4px] text-osmoverse-500"
+      className={classNames("my-[8px] mx-[4px]", {
+        "text-osmoverse-500": status !== "pending",
+        "text-rust-400": status === "failed",
+      })}
     />,
-    <ChainLogo
+    <div
       key="chain-logo"
-      prettyName={chainPrettyName}
-      color={chainColor}
-      logoUri={chainLogoUri}
-      size="md"
-    />,
+      className={
+        status !== "success" && transfer?.direction === "withdraw"
+          ? "opacity-60"
+          : undefined
+      }
+    >
+      <ChainLogo
+        prettyName={chainPrettyName}
+        color={chainColor}
+        logoUri={chainLogoUri}
+        size="md"
+      />
+    </div>,
   ];
 
   const rightComponent = (
