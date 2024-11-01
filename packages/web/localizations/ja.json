@@ -1277,5 +1277,17 @@
     "remindMeLater": "後で通知する",
     "dismiss": "却下する",
     "convert": "変換する"
+  },
+  "assetVariantsConversion": {
+    "title": "資産を標準化する",
+    "description": "柔軟性と互換性を高めるために、次のアセットを Osmosis の標準バージョンに変換します。",
+    "learnMore": "もっと詳しく知る",
+    "errorLoading": "アセットバリアントの読み込み中にエラーが発生しました。しばらくしてからもう一度お試しください。",
+    "selectAll": "すべて選択",
+    "convertSelected": "選択した項目を変換",
+    "variantsDetected": "検出された変異体",
+    "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
+    "tooltipTitle": "Osmosis の{coinName}",
+    "tooltipDescription": "Osmosis は{coinDenom}の多数のバリエーションを 1 つのシンプルなアセットに統合し、柔軟性と使いやすさを向上させます。"
   }
 }

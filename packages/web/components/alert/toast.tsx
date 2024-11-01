@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import {
   Id,
   toast,
@@ -11,7 +11,9 @@ import { useLocalStorage } from "react-use";
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useAssetVariantsModalStore } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { Checkbox } from "~/components/ui/checkbox";
+import { useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
 
 export type ToastOptions = Partial<ReactToastifyOptions> & {
@@ -224,6 +226,19 @@ export const AlloyedAssetsToastDoNotShowKey =
 export const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  // Effect to close modal on mobile
+  const { isMobile } = useWindowSize();
+
+  // should close toast if screen size changes to mobile while shown
+  useEffect(() => {
+    if (isMobile) {
+      // Use timeout to avoid the maximum update depth exceeded error
+      setTimeout(closeToast, 0);
+    }
+  }, [isMobile, closeToast]);
+
+  const { setIsOpen } = useAssetVariantsModalStore();
+
   const [, setDoNotShowAgain] = useLocalStorage(
     AlloyedAssetsToastDoNotShowKey,
     false
@@ -242,19 +257,7 @@ export const AlloyedAssetsToast: FunctionComponent<
   };
 
   const onConvert = () => {
-    // TODO: link to modal in other PR
-    // open modal
-    // Convert All
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    // Convert Selected
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌ (still has remaining alloyed assets)
-    //     in modal, convert all invokes setDoNotShowAgain(false)
-
+    setIsOpen(true);
     closeToast();
   };
 

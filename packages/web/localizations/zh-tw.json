@@ -1277,5 +1277,17 @@
     "remindMeLater": "稍後提醒我",
     "dismiss": "解僱",
     "convert": "轉變"
+  },
+  "assetVariantsConversion": {
+    "title": "標準化資產",
+    "description": "將以下資產轉換為 Osmosis 上的標準化版本，以獲得更大的靈活性和更高的兼容性。",
+    "learnMore": "了解更多",
+    "errorLoading": "載入資源變體時出錯，請稍後重試。",
+    "selectAll": "選擇全部",
+    "convertSelected": "轉換所選內容",
+    "variantsDetected": "偵測到變體",
+    "caption": "告別所有那些令人困惑的資產變體。迎接更無縫的 Osmosis 體驗。",
+    "tooltipTitle": "滲透上的{coinName}",
+    "tooltipDescription": "Osmosis 將{coinDenom}的眾多變體合併為一種簡單的資產，以提高靈活性和易用性。"
   }
 }

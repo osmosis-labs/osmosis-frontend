@@ -1277,5 +1277,17 @@
     "remindMeLater": "Später erinnern",
     "dismiss": "Zurückweisen",
     "convert": "Konvertieren"
+  },
+  "assetVariantsConversion": {
+    "title": "Standardisierung von Assets",
+    "description": "Konvertieren Sie die folgenden Assets in ihre standardisierte Version auf Osmosis für mehr Flexibilität und höhere Kompatibilität.",
+    "learnMore": "Mehr erfahren",
+    "errorLoading": "Beim Laden der Asset-Varianten ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "selectAll": "Alles auswählen",
+    "convertSelected": "Auswahl konvertieren",
+    "variantsDetected": "Erkannte Varianten",
+    "caption": "Verabschieden Sie sich von all den verwirrenden Asset-Varianten. Begrüßen Sie ein nahtloseres Erlebnis mit Osmosis.",
+    "tooltipTitle": "{coinName} auf Osmosis",
+    "tooltipDescription": "Osmosis konsolidiert zahlreiche Varianten von {coinDenom} in einem einfachen Asset für mehr Flexibilität und Benutzerfreundlichkeit."
   }
 }

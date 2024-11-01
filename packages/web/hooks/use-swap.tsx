@@ -1262,6 +1262,8 @@ function useQueryRouterBestQuote(
     },
   };
 
+  // console.log("input.tokenInAmount : ", input.tokenInAmount);
+
   const inGivenOutQuote =
     trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
       {

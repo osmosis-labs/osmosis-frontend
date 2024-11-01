@@ -8,6 +8,7 @@ import React, {
 } from "react";
 
 import { IconButton } from "~/components/buttons/icon-button";
+import { AssetVariantsConversionModal } from "~/components/complex/asset-variants-conversion/asset-variants-conversion-modal";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
@@ -92,6 +93,7 @@ export const MainLayout = observer(
         <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
+        <AssetVariantsConversionModal />
       </React.Fragment>
     );
   }
