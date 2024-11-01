@@ -12,11 +12,7 @@ import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
-import {
-  useCurrentLanguage,
-  useHasAssetVariants,
-  useWindowSize,
-} from "~/hooks";
+import { useCurrentLanguage, useWindowSize } from "~/hooks";
 import { AssetVariantsConversionModal } from "~/modals/variants-conversion";
 
 export const MainLayout = observer(
@@ -56,8 +52,6 @@ export const MainLayout = observer(
 
       return selectedTitle;
     }, [selectedMenuItem?.label]);
-
-    useHasAssetVariants();
 
     return (
       <React.Fragment>

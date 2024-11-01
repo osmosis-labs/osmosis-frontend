@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import { AssetVariant } from "@osmosis-labs/server/src/queries/complex/portfolio/allocation";
+import { getSwapMessages } from "@osmosis-labs/tx";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
@@ -12,7 +12,7 @@ import { FallbackImg } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { useAssetVariantsToast, useTranslation, useWindowSize } from "~/hooks";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -21,13 +21,39 @@ export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }>((set) => ({
-  isOpen: true,
-  // isOpen: false,
+  isOpen: false,
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
 export const AssetVariantsConversionModal = () => {
   const { isOpen, setIsOpen } = useAssetVariantsModalStore();
+  useAssetVariantsToast();
+
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isMobile } = useWindowSize();
+  const { t } = useTranslation();
+
+  const {
+    data: allocationData,
+    error: allocationError,
+    isLoading: isAllocationLoading,
+  } = api.local.portfolio.getAllocation.useQuery(
+    {
+      address: account?.address ?? "",
+    },
+    {
+      enabled: !!account?.address,
+      refetchOnWindowFocus: false,
+    }
+  );
+
+  // should close toast if screen size changes to mobile while shown
+  useEffect(() => {
+    if (isMobile && isOpen) {
+      setIsOpen(false);
+    }
+  }, [isOpen, isMobile, setIsOpen]);
 
   return (
     <ModalBase
@@ -40,53 +66,6 @@ export const AssetVariantsConversionModal = () => {
       }
       className="bg-osmoverse-900"
     >
-      <AssetVariantsConversion onRequestClose={() => setIsOpen(false)} />
-    </ModalBase>
-  );
-};
-
-interface AssetVariantsConversionProps {
-  onRequestClose: () => void;
-}
-
-const AssetVariantsConversion = observer(
-  ({ onRequestClose }: AssetVariantsConversionProps) => {
-    const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { isMobile } = useWindowSize();
-    const { t } = useTranslation();
-
-    const {
-      data: allocationData,
-      error: allocationError,
-      isLoading: isAllocationLoading,
-    } = api.local.portfolio.getAllocation.useQuery(
-      {
-        address: account?.address ?? "",
-      },
-      {
-        enabled: !!account?.address,
-        refetchOnWindowFocus: false,
-      }
-    );
-
-    console.log("allocationData: ", allocationData);
-
-    // console.log("routeData: ", routeData);
-
-    // console.log("Route Data: ", routeData);
-    // console.log("Route Error: ", routeError);
-    // console.log("Is Route Loading: ", isRouteLoading);
-
-    // should close toast if screen size changes to mobile while shown
-    useEffect(() => {
-      if (isMobile) {
-        // Use timeout to avoid the maximum update depth exceeded error
-        setTimeout(onRequestClose, 0);
-      }
-    }, [isMobile, onRequestClose]);
-
-    return (
       <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
         <p className="body1 text-center text-osmoverse-300">
           {t("assetVariantsConversion.description")}{" "}
@@ -111,38 +90,31 @@ const AssetVariantsConversion = observer(
               <AssetVariantRow
                 key={variant?.asset?.coinMinimalDenom}
                 variant={variant ?? {}}
-                account={account}
               />
             ))
           )}
         </div>
       </div>
-    );
-  }
-);
+    </ModalBase>
+  );
+};
 
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
-  account: any;
-}> = observer(({ variant, account }) => {
+}> = observer(({ variant }) => {
   const { t } = useTranslation();
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
 
   const amount = variant.amount.toCoin().amount;
 
   // TODO - handle loading and error
-  const { refetch: refetchRoute } =
-    api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
-      {
-        tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
-        tokenInAmount: amount,
-        tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
-      },
-      {
-        enabled: false,
-        refetchOnWindowFocus: false,
-        cacheTime: 0,
-      }
-    );
+  const { data: quote, isError: isQuoteError } =
+    api.local.quoteRouter.routeTokenOutGivenIn.useQuery({
+      tokenInDenom: variant.asset?.coinMinimalDenom ?? "",
+      tokenInAmount: amount,
+      tokenOutDenom: variant.canonicalAsset?.coinMinimalDenom ?? "",
+    });
 
   return (
     <div className="-mx-4 flex cursor-pointer items-center justify-between gap-3 rounded-2xl p-4">
@@ -231,41 +203,22 @@ const AssetVariantRow: React.FC<{
         <Button
           size="md"
           className="w-full"
+          disabled={isQuoteError}
           onClick={async () => {
-            // TODO - handle loading and error
-            const { data: quote } = await refetchRoute();
-
-            if (quote === undefined) return;
-
             const tokenInDenom = variant.asset?.coinMinimalDenom;
-            const tokenInAmount = variant.amount.toCoin().amount;
-
             const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
 
+            if (!account) {
+              throw new Error("Account not found");
+            }
             if (!tokenInDenom || !tokenOutDenom) {
               throw new Error("Missing token denoms");
             }
+            if (!quote) {
+              throw new Error("No quote found");
+            }
 
-            const tokenIn = {
-              coinMinimalDenom: tokenInDenom,
-              amount: tokenInAmount,
-            };
-
-            // const quote =
-            //   prevQuote ??
-            //   (await apiUtils.local.quoteRouter.routeTokenOutGivenIn.fetch(
-            //     {
-            //       tokenInDenom,
-            //       tokenInAmount,
-            //       tokenOutDenom,
-            //     },
-            //     {}
-            //   ));
-
-            console.log("quote: ", quote);
-
-            // add slippage to out amount from quote
-            let slippage = new Dec(0.05);
+            let maxSlippage = "0.05";
             // if it's an alloy, or CW pool, let's assume it's a 1:1 swap
             // so, let's remove slippage to convert more of the asset
             if (
@@ -273,46 +226,25 @@ const AssetVariantRow: React.FC<{
               quote.split[0].pools.length === 0 &&
               quote.split[0].pools[0].type.startsWith("cosmwasm")
             ) {
-              slippage = new Dec(0);
+              maxSlippage = "0";
             }
-            const outAmount = quote.amount
-              .mul(new Dec(1).sub(slippage))
-              .toCoin().amount;
 
-            if (quote.split.length === 1) {
-              const pools = quote.split[0].pools;
+            const messages = await getSwapMessages({
+              coinAmount: amount,
+              maxSlippage,
+              quote,
+              tokenInCoinMinimalDenom: tokenInDenom,
+              tokenOutCoinMinimalDenom: tokenOutDenom,
+              tokenOutCoinDecimals: variant.canonicalAsset?.coinDecimals ?? 0,
+              tokenInCoinDecimals: variant.asset?.coinDecimals ?? 0,
+              userOsmoAddress: account.address,
+            });
 
-              const route = pools.map((pool) => ({
-                id: pool.id,
-                tokenOutDenom: pool?.outCurrency?.coinMinimalDenom,
-              }));
-
-              // make array of swaps
-
-              // account.signAndBroadcast()
-
-              account.osmosis
-                .sendSwapExactAmountInMsg(route, tokenIn, outAmount)
-                .catch((e: any) => {
-                  console.error("Error converting variant", e);
-                });
-            } else if (quote.split.length > 1) {
-              account.osmosis
-                .sendSplitRouteSwapExactAmountInMsg(
-                  quote.split.map(({ pools, initialAmount }) => ({
-                    pools: pools.map((pool) => ({
-                      id: pool.id,
-                      tokenOutDenom: pool?.outCurrency?.coinMinimalDenom,
-                    })),
-                    tokenInAmount: initialAmount.toString(),
-                  })),
-                  tokenIn,
-                  outAmount
-                )
-                .catch((e: any) => {
-                  console.error("Error converting variant", e);
-                });
+            if (!messages) {
+              throw new Error("No messages found");
             }
+
+            account.signAndBroadcast(messages);
           }}
         >
           Convert
