@@ -6,6 +6,8 @@ import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
 import { z } from "zod";
 
+import { Bridge } from "./bridge-providers";
+
 export type BridgeEnvironment = "mainnet" | "testnet";
 
 export interface BridgeProviderContext {
@@ -445,27 +447,75 @@ export interface BridgeTransferStatus {
 export interface TransferStatusReceiver {
   /** Key with prefix (`keyPrefix`) included. */
   receiveNewTxStatus(
-    prefixedKey: string,
+    sendTxHash: string,
     status: TransferStatus,
     displayReason?: string
   ): void;
 }
 
 /** A simplified transfer status. */
-export type TransferStatus =
-  | "success"
-  | "pending"
-  | "failed"
-  | "refunded"
-  | "connection-error";
+export const transferStatusSchema = z.enum([
+  "success",
+  "pending",
+  "failed",
+  "refunded",
+  "connection-error",
+]);
 
 /** A simplified reason for transfer failure. */
-export type TransferFailureReason = "insufficientFee";
+export const transferFailureReasonSchema = z.enum(["insufficientFee"]);
+export type TransferFailureReason = z.infer<typeof transferFailureReasonSchema>;
+
+export type TransferStatus = z.infer<typeof transferStatusSchema>;
+
+const txSnapshotSchema = z.object({
+  direction: z.enum(["deposit", "withdraw"]),
+  createdAtUnix: z.number(),
+  type: z.literal("bridge-transfer"),
+  reason: transferFailureReasonSchema.optional(),
+  provider: z.string().transform((val) => val as Bridge),
+  osmoBech32Address: z.string(),
+  networkFee: bridgeAssetSchema
+    .extend({
+      amount: z.string(),
+      imageUrl: z.string().optional(),
+    })
+    .optional(),
+  providerFee: bridgeAssetSchema
+    .extend({
+      amount: z.string(),
+      imageUrl: z.string().optional(),
+    })
+    .optional(),
+  fromAsset: bridgeAssetSchema.extend({
+    amount: z.string(),
+    imageUrl: z.string().optional(),
+  }),
+  toAsset: bridgeAssetSchema.extend({
+    amount: z.string().optional(),
+    imageUrl: z.string().optional(),
+  }),
+  status: transferStatusSchema,
+  sendTxHash: z.string(),
+  fromChain: bridgeChainSchema.and(
+    z.object({
+      prettyName: z.string(),
+    })
+  ),
+  toChain: bridgeChainSchema.and(
+    z.object({
+      prettyName: z.string(),
+    })
+  ),
+  estimatedArrivalUnix: z.number(),
+});
+
+export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
 
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {
   /** Example: axelar */
-  readonly keyPrefix: string;
+  readonly providerId: string;
   readonly sourceDisplayName?: string;
   /** Destination for updates to tracked transactions.  */
   statusReceiverDelegate?: TransferStatusReceiver;
@@ -474,8 +524,8 @@ export interface TransferStatusProvider {
    * Source instance should begin tracking a transaction identified by `key`.
    * @param key Example: Tx hash without prefix i.e. `0x...`
    */
-  trackTxStatus(key: string): void;
+  trackTxStatus(snapshot: TxSnapshot): void;
 
   /** Make url to this tx explorer. */
-  makeExplorerUrl(key: string): string;
+  makeExplorerUrl(snapshot: TxSnapshot): string;
 }

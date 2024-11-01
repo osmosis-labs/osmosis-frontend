@@ -4,10 +4,10 @@ import { poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
-  GetTransferStatusParams,
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "../interface";
 import { SkipBridgeProvider } from "./index";
 import { SkipTxStatusResponse } from "./types";
@@ -29,7 +29,7 @@ export interface SkipStatusProvider {
 
 /** Tracks (polls skip endpoint) and reports status updates on Skip bridge transfers. */
 export class SkipTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = SkipBridgeProvider.ID;
+  readonly providerId = SkipBridgeProvider.ID;
   readonly sourceDisplayName = "Skip Bridge";
 
   statusReceiverDelegate?: TransferStatusReceiver | undefined;
@@ -47,12 +47,11 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
         : "https://testnet.axelarscan.io";
   }
 
-  async trackTxStatus(serializedParams: string): Promise<void> {
-    const { sendTxHash, fromChainId } = JSON.parse(
-      serializedParams
-    ) as GetTransferStatusParams;
-
-    const snapshotKey = `${this.keyPrefix}${serializedParams}`;
+  async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+    } = snapshot;
 
     await poll({
       fn: async () => {
@@ -101,14 +100,16 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
     })
       .catch((e) => console.error(`Polling Skip has failed`, e))
       .then((s) => {
-        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+        if (s) this.receiveConclusiveStatus(sendTxHash, s);
       });
   }
 
-  makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
-      serializedParams
-    ) as GetTransferStatusParams;
+  makeExplorerUrl(snapshot: TxSnapshot): string {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+      toChain: { chainId: toChainId },
+    } = snapshot;
 
     if (typeof fromChainId === "number" || typeof toChainId === "number") {
       // EVM transfer
@@ -130,12 +131,16 @@ export class SkipTransferStatusProvider implements TransferStatusProvider {
   }
 
   receiveConclusiveStatus(
-    key: string,
+    sendTxHash: string,
     txStatus: BridgeTransferStatus | undefined
   ): void {
     if (txStatus && txStatus.id) {
       const { status, reason } = txStatus;
-      this.statusReceiverDelegate?.receiveNewTxStatus(key, status, reason);
+      this.statusReceiverDelegate?.receiveNewTxStatus(
+        sendTxHash,
+        status,
+        reason
+      );
     } else {
       console.error(
         "Skip transfer finished poll but neither succeeded or failed"

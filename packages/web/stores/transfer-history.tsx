@@ -4,6 +4,7 @@ import {
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "@osmosis-labs/bridge";
 import dayjs from "dayjs";
 import {
@@ -23,23 +24,7 @@ import { RadialProgress } from "~/components/radial-progress";
 import { useTranslation } from "~/hooks";
 import { humanizeTime } from "~/utils/date";
 
-/** Persistable data enough to identify a tx. */
-type TxSnapshot = {
-  /** From Date.getTime(). Assumed local timezone. */
-  createdAtMs: number;
-  prefixedKey: string;
-  amount: string;
-  startTimeUnix: number;
-  amountLogo: string | undefined;
-  status: TransferStatus;
-  estimatedArrivalUnix: number | undefined;
-  chainPrettyName: string;
-  reason?: TransferFailureReason;
-  isWithdraw: boolean;
-  accountAddress: string;
-};
-
-const STORE_KEY = "nonibc_history_tx_snapshots";
+export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
 /**
  * Stores and tracks status for bridge transfers.
@@ -50,7 +35,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   @observable
   protected snapshots: TxSnapshot[] = [];
   @observable
-  private isRestoredFromLocalStorage = false;
+  private isRestoredFromIndexedDB = false;
 
   /**
    * Since we can't control how many times a status provider
@@ -75,8 +60,8 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     // persist snapshots on change
     autorun(() => {
-      if (this.isRestoredFromLocalStorage) {
-        this.kvStore.set(STORE_KEY, toJS(this.snapshots));
+      if (this.isRestoredFromIndexedDB) {
+        this.kvStore.set(TRANSFER_HISTORY_STORE_KEY, toJS(this.snapshots));
       }
     });
 
@@ -96,20 +81,18 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     }[] = [];
     this.snapshots.forEach((snapshot) => {
       const statusSource = this.transferStatusProviders.find((source) =>
-        snapshot.prefixedKey.startsWith(source.keyPrefix)
+        snapshot.provider.startsWith(source.providerId)
       );
-      if (statusSource && snapshot.accountAddress === accountAddress) {
-        const key = snapshot.prefixedKey.slice(statusSource?.keyPrefix.length);
-
+      if (statusSource && snapshot.osmoBech32Address === accountAddress) {
         histories.push({
-          key,
-          createdAt: new Date(snapshot.createdAtMs),
+          key: snapshot.sendTxHash,
+          createdAt: new Date(snapshot.createdAtUnix * 1000),
           sourceName: statusSource.sourceDisplayName,
           status: snapshot.status,
-          amount: snapshot.amount,
+          amount: snapshot.fromAsset.amount,
           reason: snapshot.reason,
-          explorerUrl: statusSource.makeExplorerUrl(key),
-          isWithdraw: snapshot.isWithdraw,
+          explorerUrl: statusSource.makeExplorerUrl(snapshot),
+          isWithdraw: snapshot.direction === "withdraw",
         });
       }
     });
@@ -128,74 +111,64 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * @param amountLogo The logo URL of the amount's currency.
    */
   @action
-  pushTxNow({
-    prefixedKey,
-    amount,
-    isWithdraw,
-    accountAddress,
-    chainPrettyName,
-    estimatedArrivalUnix,
-    amountLogo,
-  }: {
-    prefixedKey: string;
-    amount: string;
-    amountLogo: string | undefined;
-    estimatedArrivalUnix: number | undefined;
-    chainPrettyName: string;
-    isWithdraw: boolean;
-    accountAddress: string;
-  }) {
+  pushTxNow(snapshot: TxSnapshot) {
+    const {
+      sendTxHash,
+      estimatedArrivalUnix,
+      createdAtUnix,
+      fromChain,
+      toChain,
+      toAsset,
+      fromAsset,
+      direction,
+    } = snapshot;
     const statusSource = this.transferStatusProviders.find((source) =>
-      prefixedKey.startsWith(source.keyPrefix)
+      snapshot.provider.startsWith(source.providerId)
     );
 
     // start tracking for life of current session
-    statusSource?.trackTxStatus(
-      prefixedKey.slice(statusSource.keyPrefix.length)
-    );
+    statusSource?.trackTxStatus(snapshot);
 
-    const startTimeUnix = Date.now() / 1000;
+    const amountLogo =
+      direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
 
     setTimeout(() => {
       displayToast(
         {
-          titleTranslationKey: isWithdraw
-            ? "transfer.pendingWithdraw"
-            : "transfer.pendingDeposit",
+          titleTranslationKey:
+            snapshot.direction === "withdraw"
+              ? "transfer.pendingWithdraw"
+              : "transfer.pendingDeposit",
           iconElement:
             amountLogo && estimatedArrivalUnix ? (
               <PendingTransferLoadingIcon
                 estimatedArrivalUnix={estimatedArrivalUnix}
                 assetLogo={amountLogo}
-                startTimeUnix={startTimeUnix}
+                startTimeUnix={createdAtUnix}
               />
             ) : undefined,
           captionElement: (
             <PendingTransfer
-              amount={amount}
-              chainPrettyName={chainPrettyName}
-              isWithdraw={isWithdraw}
+              amount={`${fromAsset.amount} ${fromAsset.denom}`}
+              chainPrettyName={
+                direction === "deposit"
+                  ? fromChain?.prettyName ?? ""
+                  : toChain?.prettyName ?? ""
+              }
+              isWithdraw={direction === "withdraw"}
               estimatedArrivalUnix={estimatedArrivalUnix}
             />
           ),
         },
         ToastType.LOADING,
-        { toastId: prefixedKey, autoClose: false }
+        {
+          toastId: sendTxHash,
+          autoClose: false,
+        }
       );
     }, 1000);
 
-    this.snapshots.push({
-      createdAtMs: Date.now(),
-      prefixedKey,
-      amount,
-      status: "pending",
-      isWithdraw,
-      accountAddress,
-      chainPrettyName,
-      estimatedArrivalUnix,
-      amountLogo,
-      startTimeUnix,
-    });
+    this.snapshots.push(snapshot);
   }
 
   /**
@@ -203,106 +176,132 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    * of an initiated transfer.
    */
   @action
-  receiveNewTxStatus(
-    prefixedKey: string,
+  async receiveNewTxStatus(
+    sendTxHash: string,
     status: TransferStatus,
     reason: TransferFailureReason | undefined
   ) {
     const snapshot = this.snapshots.find(
-      (snapshot) => snapshot.prefixedKey === prefixedKey
+      (snapshot) => snapshot.sendTxHash === sendTxHash
     );
+
+    console.log(snapshot);
 
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
     }
 
+    const {
+      direction,
+      toAsset,
+      fromAsset,
+      createdAtUnix,
+      estimatedArrivalUnix,
+      fromChain,
+      toChain,
+      osmoBech32Address,
+    } = snapshot;
+
     // set updates
     snapshot.status = status;
     snapshot.reason = reason;
+
+    const amountLogo =
+      direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
+    const amount = `${fromAsset.amount} ${fromAsset.denom}`;
+
+    const chainPrettyName =
+      direction === "deposit"
+        ? fromChain?.prettyName ?? ""
+        : toChain?.prettyName ?? "";
 
     switch (status) {
       case "pending":
         displayToast(
           {
-            titleTranslationKey: snapshot.isWithdraw
-              ? "transfer.pendingWithdraw"
-              : "transfer.pendingDeposit",
+            titleTranslationKey:
+              snapshot.direction === "withdraw"
+                ? "transfer.pendingWithdraw"
+                : "transfer.pendingDeposit",
             iconElement:
-              snapshot.amountLogo && snapshot.estimatedArrivalUnix ? (
+              amountLogo && estimatedArrivalUnix ? (
                 <PendingTransferLoadingIcon
-                  estimatedArrivalUnix={snapshot.estimatedArrivalUnix}
-                  assetLogo={snapshot.amountLogo}
-                  startTimeUnix={snapshot.startTimeUnix}
+                  estimatedArrivalUnix={estimatedArrivalUnix}
+                  assetLogo={amountLogo}
+                  startTimeUnix={createdAtUnix}
                 />
               ) : undefined,
             captionElement: (
               <PendingTransfer
-                amount={snapshot.amount}
-                chainPrettyName={snapshot.chainPrettyName}
-                isWithdraw={snapshot.isWithdraw}
-                estimatedArrivalUnix={snapshot.estimatedArrivalUnix}
+                amount={`${fromAsset.amount} ${fromAsset.denom}`}
+                chainPrettyName={chainPrettyName}
+                isWithdraw={direction === "withdraw"}
+                estimatedArrivalUnix={estimatedArrivalUnix}
               />
             ),
           },
           ToastType.LOADING,
-          { updateToastId: prefixedKey, autoClose: false }
+          { updateToastId: sendTxHash, autoClose: false }
         );
         break;
       case "success":
-        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         displayToast(
           {
-            titleTranslationKey: snapshot.isWithdraw
-              ? "transfer.completedWithdraw"
-              : "transfer.completedDeposit",
-            captionTranslationKey: snapshot.isWithdraw
-              ? [
-                  "transfer.amountToChain",
-                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
-                ]
-              : [
-                  "transfer.amountFromChain",
-                  { amount: snapshot.amount, chain: snapshot.chainPrettyName },
-                ],
+            titleTranslationKey:
+              direction === "withdraw"
+                ? "transfer.completedWithdraw"
+                : "transfer.completedDeposit",
+            captionTranslationKey:
+              direction === "withdraw"
+                ? [
+                    "transfer.amountToChain",
+                    { amount: amount, chain: chainPrettyName },
+                  ]
+                : [
+                    "transfer.amountFromChain",
+                    { amount: amount, chain: chainPrettyName },
+                  ],
           },
           ToastType.SUCCESS,
-          { updateToastId: prefixedKey }
+          { updateToastId: sendTxHash }
         );
-        this.onAccountTransferSuccess(snapshot.accountAddress);
-        this._resolvedTxStatusKeys.add(prefixedKey);
+        this.onAccountTransferSuccess(osmoBech32Address);
+        this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "failed":
-        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         displayToast(
           {
-            titleTranslationKey: snapshot.isWithdraw
-              ? "transfer.failedWithdraw"
-              : "transfer.failedDeposit",
+            titleTranslationKey:
+              direction === "withdraw"
+                ? "transfer.failedWithdraw"
+                : "transfer.failedDeposit",
             captionTranslationKey: [
               "transfer.amountFailedToWithdraw",
-              { amount: snapshot.amount },
+              { amount },
             ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey }
+          { updateToastId: sendTxHash }
         );
-        this._resolvedTxStatusKeys.add(prefixedKey);
+        this._resolvedTxStatusKeys.add(sendTxHash);
         break;
       case "connection-error":
-        if (this._resolvedTxStatusKeys.has(prefixedKey)) break;
+        if (this._resolvedTxStatusKeys.has(sendTxHash)) break;
         displayToast(
           {
             titleTranslationKey: "transfer.connectionError",
             captionTranslationKey: [
               "transfer.amountFailedToWithdraw",
-              { amount: snapshot.amount },
+              { amount },
             ],
           },
           ToastType.ERROR,
-          { updateToastId: prefixedKey }
+          { updateToastId: sendTxHash }
         );
-        this._resolvedTxStatusKeys.add(prefixedKey);
+        this._resolvedTxStatusKeys.add(sendTxHash);
         break;
     }
   }
@@ -312,23 +311,21 @@ export class TransferHistoryStore implements TransferStatusReceiver {
    */
   protected async restoreSnapshots() {
     const storedSnapshots =
-      (await this.kvStore.get<TxSnapshot[]>(STORE_KEY)) ?? [];
+      (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
 
     storedSnapshots.forEach(async (snapshot) => {
       if (this.isSnapshotExpired(snapshot)) {
         return;
       }
       const statusSource = this.transferStatusProviders.find((source) =>
-        snapshot.prefixedKey.startsWith(source.keyPrefix)
+        snapshot.provider.startsWith(source.providerId)
       );
 
       // start receiving tx status updates again for snapshots that were still pending
       if (snapshot.status === "pending" && statusSource) {
-        statusSource.trackTxStatus(
-          snapshot.prefixedKey.slice(statusSource.keyPrefix.length)
-        );
+        statusSource.trackTxStatus(snapshot);
       } else {
-        this._resolvedTxStatusKeys.add(snapshot.prefixedKey);
+        this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
       }
 
       runInAction(() => {
@@ -337,13 +334,13 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     });
 
     runInAction(() => {
-      this.isRestoredFromLocalStorage = true;
+      this.isRestoredFromIndexedDB = true;
     });
   }
 
   protected isSnapshotExpired(snapshot: TxSnapshot): boolean {
     const expiryMs = this.historyExpireDays * 86_400_00;
-    return Date.now() - snapshot.createdAtMs > expiryMs;
+    return Date.now() - snapshot.createdAtUnix * 1000 > expiryMs;
   }
 }
 
