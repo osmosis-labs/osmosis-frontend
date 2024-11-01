@@ -1,4 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   TransferFailureReason,
   TransferStatus,
@@ -69,30 +70,23 @@ export class TransferHistoryStore implements TransferStatusReceiver {
   }
 
   getHistoriesByAccount = computedFn((accountAddress: string) => {
-    const histories: {
-      key: string;
+    const histories: (TxSnapshot & {
       createdAt: Date;
-      sourceName?: string;
+      providerName?: string;
       status: TransferStatus;
-      amount: string;
-      reason?: TransferFailureReason;
       explorerUrl: string;
-      isWithdraw: boolean;
-    }[] = [];
+    })[] = [];
     this.snapshots.forEach((snapshot) => {
       const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.provider.startsWith(source.providerId)
       );
       if (statusSource && snapshot.osmoBech32Address === accountAddress) {
         histories.push({
-          key: snapshot.sendTxHash,
+          ...snapshot,
+          sendTxHash: snapshot.sendTxHash,
           createdAt: new Date(snapshot.createdAtUnix * 1000),
-          sourceName: statusSource.sourceDisplayName,
-          status: snapshot.status,
-          amount: snapshot.fromAsset.amount,
-          reason: snapshot.reason,
+          providerName: statusSource.sourceDisplayName,
           explorerUrl: statusSource.makeExplorerUrl(snapshot),
-          isWithdraw: snapshot.direction === "withdraw",
         });
       }
     });
@@ -149,7 +143,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ) : undefined,
           captionElement: (
             <PendingTransfer
-              amount={`${fromAsset.amount} ${fromAsset.denom}`}
+              amount={new CoinPretty(
+                {
+                  coinDecimals: fromAsset.decimals,
+                  coinMinimalDenom: fromAsset.address,
+                  coinDenom: fromAsset.denom,
+                },
+                new Dec(fromAsset.amount)
+              ).toString()}
               chainPrettyName={
                 direction === "deposit"
                   ? fromChain?.prettyName ?? ""
@@ -209,7 +210,14 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
-    const amount = `${fromAsset.amount} ${fromAsset.denom}`;
+    const amount = new CoinPretty(
+      {
+        coinDecimals: fromAsset.decimals,
+        coinMinimalDenom: fromAsset.address,
+        coinDenom: fromAsset.denom,
+      },
+      new Dec(fromAsset.amount)
+    ).toString();
 
     const chainPrettyName =
       direction === "deposit"
@@ -234,7 +242,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               ) : undefined,
             captionElement: (
               <PendingTransfer
-                amount={`${fromAsset.amount} ${fromAsset.denom}`}
+                amount={amount}
                 chainPrettyName={chainPrettyName}
                 isWithdraw={direction === "withdraw"}
                 estimatedArrivalUnix={estimatedArrivalUnix}

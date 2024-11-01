@@ -1086,7 +1086,7 @@
   },
   "transactions": {
     "noRecent": "No recent transactions",
-    "recentShownHere": "Recent swaps will appear here.",
+    "recentShownHere": "Recent swaps, deposits and withdrawals will appear here.",
     "noTransactions": "No transactions",
     "pastShownHere": "Your past trades on Osmosis will appear here.",
     "connectToSee": "Connect to see your transaction history",
@@ -1105,7 +1105,15 @@
     "viewOnExplorer": "View on explorer",
     "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
     "history": "History",
-    "orders": "Orders"
+    "orders": "Orders",
+    "historyTable": {
+      "pendingDeposit": "Pending deposit",
+      "pendingWithdraw": "Pending withdraw",
+      "successDeposit": "Deposited",
+      "successWithdraw": "Withdrew",
+      "failDeposit": "Deposit failed",
+      "failWithdraw": "Withdraw failed"
+    }
   },
   "date": {
     "earlierToday": "Earlier today",

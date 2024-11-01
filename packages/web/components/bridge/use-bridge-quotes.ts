@@ -449,7 +449,7 @@ export const useBridgeQuotes = ({
           direction,
           fromAsset: {
             ...fromAsset,
-            amount: inputCoin.trim(true).toString(),
+            amount: inputCoin.trim(true).toCoin().amount,
           },
           fromChain,
           toChain,
