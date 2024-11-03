@@ -2,7 +2,11 @@ import "react-toastify/dist/ReactToastify.css"; // some styles overridden in glo
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
@@ -71,38 +75,49 @@ enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
 
+// TODO(Greg): Consider using TanStack Query for asynchronous operations.
+// Should we do this? Do we want to do this? If so, should we use the same instance as trpc?
+// The 24-hour cache duration, persistance and combining different queries could be problematic
+// but it could also work well 🤷‍♂
+const queryClientGeneric = new QueryClient();
+
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
     <>
-      <ReactQueryDevtools client={queryClientTRPC} />
-      <WagmiProvider config={wagmiConfig}>
-        <MultiLanguageProvider
-          defaultLanguage={DEFAULT_LANGUAGE}
-          defaultTranslations={{ en }}
-        >
-          <StoreProvider>
-            <WalletSelectProvider>
-              <ErrorBoundary fallback={<ErrorFallback />}>
-                <SEO />
-                <SpeedInsights />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-                <ImmersiveBridge />
-              </ErrorBoundary>
-            </WalletSelectProvider>
-          </StoreProvider>
-        </MultiLanguageProvider>
-      </WagmiProvider>
+      <QueryClientProvider client={queryClientGeneric}>
+        <ReactQueryDevtools
+          client={queryClientTRPC}
+          buttonPosition="top-left"
+        />
+        <WagmiProvider config={wagmiConfig}>
+          <MultiLanguageProvider
+            defaultLanguage={DEFAULT_LANGUAGE}
+            defaultTranslations={{ en }}
+          >
+            <StoreProvider>
+              <WalletSelectProvider>
+                <ErrorBoundary fallback={<ErrorFallback />}>
+                  <SEO />
+                  <SpeedInsights />
+                  <ToastContainer
+                    toastStyle={{
+                      backgroundColor: "#2d2755",
+                    }}
+                    transition={Bounce}
+                    newestOnTop
+                  />
+                  <MainLayoutWrapper>
+                    {Component && <Component {...pageProps} />}
+                  </MainLayoutWrapper>
+                  <ImmersiveBridge />
+                </ErrorBoundary>
+              </WalletSelectProvider>
+            </StoreProvider>
+          </MultiLanguageProvider>
+        </WagmiProvider>
+      </QueryClientProvider>
     </>
   );
 }
