@@ -709,18 +709,41 @@ export function useSwap(
     outAmountInput.fiatValue,
   ]);
 
+  const quoteToReturn =
+    isQuoteLoading || inAmountInput.isTyping
+      ? positivePrevQuote
+      : !quoteErrorMsg
+      ? quote
+      : undefined;
+
+  const inAmount = inAmountInput.amount?.toDec();
+  const inDebouncedAmount = inAmountInput.debouncedInAmount?.toDec();
+  const outAmount = outAmountInput.amount?.toDec();
+  const outDebouncedAmount = outAmountInput.debouncedInAmount?.toDec();
+
+  const isReadyToSwap =
+    maxSlippage?.isPositive() &&
+    account &&
+    swapAssets.fromAsset &&
+    swapAssets.toAsset &&
+    inAmount?.isPositive() &&
+    inDebouncedAmount?.isPositive() &&
+    inAmount?.equals(inDebouncedAmount) &&
+    outAmount?.isPositive() &&
+    outDebouncedAmount?.isPositive() &&
+    outAmount?.equals(outDebouncedAmount) &&
+    quoteToReturn &&
+    !precedentError &&
+    !hasOverSpendLimitError &&
+    !isSlippageOverBalance;
+
   return {
     ...swapAssets,
     inAmountInput,
     outAmountInput,
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
-    quote:
-      isQuoteLoading || inAmountInput.isTyping
-        ? positivePrevQuote
-        : !quoteErrorMsg
-        ? quote
-        : undefined,
+    quote: quoteToReturn,
     inBaseOutQuoteSpotPrice,
     totalFee: sum([
       tokenInFeeAmountFiatValue,
@@ -739,6 +762,7 @@ export function useSwap(
     hasOverSpendLimitError,
     isSlippageOverBalance,
     quoteType,
+    isReadyToSwap,
   };
 }
 
