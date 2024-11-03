@@ -75,6 +75,9 @@ type SwapOptions = {
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
   quoteType?: QuoteDirection;
+  /** Set to the number of milliseconds to debounce the input amount for both input and output.
+   *  Defaults to 200ms. */
+  inputDebounceMs?: number;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -102,6 +105,7 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     quoteType = "out-given-in",
+    inputDebounceMs,
   }: SwapOptions = { maxSlippage: undefined }
 ) {
   const { chainStore, accountStore } = useStore();
@@ -132,12 +136,14 @@ export function useSwap(
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
+    inputDebounceMs,
   });
 
   const outAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets: reverseSwapAssets,
+    inputDebounceMs,
   });
 
   // load flags
@@ -986,10 +992,12 @@ function useSwapAmountInput({
   swapAssets,
   forceSwapInPoolId,
   maxSlippage,
+  inputDebounceMs = 200,
 }: {
   swapAssets: ReturnType<typeof useSwapAssets>;
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
+  inputDebounceMs?: number;
 }) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -1002,6 +1010,7 @@ function useSwapAmountInput({
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
     gasAmount: gasAmount,
+    inputDebounceMs,
   });
 
   const balanceQuoteQueryEnabled =
