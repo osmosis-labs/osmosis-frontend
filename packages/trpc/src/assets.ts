@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   AssetFilterSchema,
   AvailableRangeValues,
@@ -408,6 +408,43 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
+  getUserDustAssets: publicProcedure
+    .input(
+      UserOsmoAddressSchema.merge(
+        z.object({
+          dustThreshold: z.custom<Dec>((val) => {
+            if (val instanceof Dec) return true;
+            try {
+              new Dec(val as string | number);
+              return true;
+            } catch {
+              return false;
+            }
+          }, "Invalid Dec value"),
+        })
+      )
+    )
+    .query(async ({ input: { userOsmoAddress, dustThreshold }, ctx }) => {
+      const assets = await mapGetAssetsWithUserBalances({
+        ...ctx,
+        userOsmoAddress,
+        // TODO(Greg): check if this filtering assumption is correct
+        onlyVerified: true,
+        includePreview: false,
+      });
+
+      const assetsWithAmountAndUsdValue = assets.filter(
+        (
+          asset
+        ): asset is Omit<typeof asset, "amount" | "usdValue"> &
+          Required<Pick<typeof asset, "amount" | "usdValue">> =>
+          asset.amount !== undefined && asset.usdValue !== undefined
+      );
+
+      return assetsWithAmountAndUsdValue.filter((asset) =>
+        asset.usdValue.toDec()?.lte(dustThreshold)
+      );
+    }),
   getUserAssetsTotal: publicProcedure
     .input(UserOsmoAddressSchema.required())
     .query(({ input, ctx }) => getUserAssetsTotal({ ...ctx, ...input })),
