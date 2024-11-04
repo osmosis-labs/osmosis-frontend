@@ -2,7 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Icon } from "~/components/assets";
+import { FallbackImg, Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
 import { DefaultSlippage } from "~/config/swap";
 import { useTranslation, useWalletSelect } from "~/hooks";
@@ -163,6 +163,8 @@ function SwapHandler({
   ) => void;
 }) {
   const {
+    fromAsset,
+    toAsset,
     inAmountInput: { setAmount: setInAmount },
     isReadyToSwap,
     sendTradeTokenInTx,
@@ -197,5 +199,34 @@ function SwapHandler({
     onSendSwapTxStatusChange(fromDenom, sendSwapTxStatus);
   }, [fromDenom, sendSwapTxStatus, onSendSwapTxStatusChange]);
 
-  return <></>;
+  return (
+    <>
+      {shouldExecuteSwap &&
+        fromAsset?.amount?.currency.coinImageUrl &&
+        toAsset?.amount?.currency.coinImageUrl && (
+          <div className="flex lg:hidden items-center justify-end transition-colors duration-200 ease-in-out">
+            <FallbackImg
+              alt={fromAsset?.amount?.denom}
+              src={fromAsset?.amount?.currency.coinImageUrl}
+              fallbacksrc="/icons/question-mark.svg"
+              height={32}
+              width={32}
+            />
+            <Icon
+              id="arrow-right"
+              width={16}
+              height={16}
+              className="my-[8px] mx-[4px] text-osmoverse-500"
+            />
+            <FallbackImg
+              alt={toAsset?.amount?.denom}
+              src={toAsset?.amount?.currency.coinImageUrl}
+              fallbacksrc="/icons/question-mark.svg"
+              height={32}
+              width={32}
+            />
+          </div>
+        )}
+    </>
+  );
 }
