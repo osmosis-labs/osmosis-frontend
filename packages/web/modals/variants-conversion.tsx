@@ -29,15 +29,23 @@ export const CONVERT_VARIANT_MODAL_SEEN = "convert-variant-modal-seen";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
+  variantCoinMinimalDenom?: string;
   setIsOpen: (value: boolean) => void;
+  setIsOpenForVariant: (variantCoinMinimalDenom: string | undefined) => void;
 }>((set) => ({
   isOpen: false,
-  setIsOpen: (value: boolean) => set({ isOpen: value }),
+  variantCoinMinimalDenom: undefined,
+  setIsOpen: (value: boolean) =>
+    // Reset variantCoinMinimalDenom when modal is closed or opened
+    set({ isOpen: value, variantCoinMinimalDenom: undefined }),
+  setIsOpenForVariant: (variantCoinMinimalDenom: string | undefined) =>
+    set({ isOpen: true, variantCoinMinimalDenom }),
 }));
 
 export const AssetVariantsConversionModal = observer(() => {
   const { logEvent } = useAmplitudeAnalytics();
-  const { isOpen, setIsOpen } = useAssetVariantsModalStore();
+  const { isOpen, variantCoinMinimalDenom, setIsOpen } =
+    useAssetVariantsModalStore();
   useAssetVariantsToast();
 
   const [, setIsShown] = useLocalStorageState(
@@ -60,6 +68,21 @@ export const AssetVariantsConversionModal = observer(() => {
     },
     {
       enabled: !!account?.address,
+      select: (data) => {
+        // If the modal is open for a specific variant, filter the assets to only include that variant
+        if (variantCoinMinimalDenom) {
+          return {
+            ...data,
+            assetVariants: data.assetVariants.filter(
+              (variant) =>
+                variant.amount.currency.coinMinimalDenom ===
+                variantCoinMinimalDenom
+            ),
+          };
+        }
+
+        return data;
+      },
     }
   );
 
