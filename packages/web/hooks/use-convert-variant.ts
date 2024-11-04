@@ -76,69 +76,77 @@ export function useConvertVariant(
     }
   );
 
-  const onConvert = useCallback(async () => {
-    if (!variant) {
-      console.error(
-        "Cannot convert variant, no variant for given minimal denom"
-      );
-      return;
-    }
+  /** Resolves when conversion is successfully committed on chain (not just broadcasted). Rejects with an error message if something goes wrong. */
+  const onConvert = useCallback(
+    () =>
+      new Promise<void>(async (resolve, reject) => {
+        if (!variant) {
+          console.error(
+            "Cannot convert variant, no variant for given minimal denom"
+          );
+          return reject("No variant for given minimal denom");
+        }
 
-    if (!account?.address) {
-      console.error("Cannot convert variant, no account address");
-      return;
-    }
-    if (!quote) {
-      console.error("Cannot convert variant, no quote");
-      return;
-    }
+        if (!account?.address) {
+          console.error("Cannot convert variant, no account address");
+          return reject("No account address");
+        }
+        if (!quote) {
+          console.error("Cannot convert variant, no quote");
+          return reject("No quote");
+        }
 
-    const messages = await getConvertVariantMessages(
+        const messages = await getConvertVariantMessages(
+          variant,
+          quote,
+          variant?.amount.toCoin().amount,
+          account.address
+        ).catch((e) => (e instanceof Error ? e.message : "Unknown error"));
+        if (!messages || typeof messages === "string") {
+          console.error(
+            "Cannot convert variant, problem getting messages for transaction",
+            messages
+          );
+          return reject(messages);
+        }
+
+        accountStore
+          .signAndBroadcast(
+            accountStore.osmosisChainId,
+            variantTransactionIdentifier,
+            messages,
+            undefined,
+            undefined,
+            undefined,
+            {
+              onFulfill: (tx) => {
+                if (tx.code) return reject(tx.code);
+                logEvent([
+                  EventName.ConvertVariants.completeFlow,
+                  {
+                    fromToken: variant.amount.currency.coinDenom,
+                    toToken: variant.canonicalAsset.coinDenom,
+                  },
+                ]);
+                resolve();
+              },
+              onBroadcastFailed: reject,
+            }
+          )
+          .catch((e) => {
+            console.error("Error broadcasting convert variant tx", e);
+            reject(e);
+          });
+      }),
+    [
       variant,
       quote,
-      variant?.amount.toCoin().amount,
-      account.address
-    ).catch((e) => (e instanceof Error ? e.message : "Unknown error"));
-    if (!messages || typeof messages === "string") {
-      console.error(
-        "Cannot convert variant, problem getting messages for transaction",
-        messages
-      );
-      return;
-    }
-
-    accountStore
-      .signAndBroadcast(
-        accountStore.osmosisChainId,
-        variantTransactionIdentifier,
-        messages,
-        undefined,
-        undefined,
-        undefined,
-        {
-          onFulfill: (tx) => {
-            if (tx.code) return;
-            logEvent([
-              EventName.ConvertVariants.completeFlow,
-              {
-                fromToken: variant.amount.currency.coinDenom,
-                toToken: variant.canonicalAsset.coinDenom,
-              },
-            ]);
-          },
-        }
-      )
-      .catch((e) => {
-        console.error("Error broadcasting transaction", e);
-      });
-  }, [
-    variant,
-    quote,
-    accountStore,
-    variantTransactionIdentifier,
-    account?.address,
-    logEvent,
-  ]);
+      accountStore,
+      variantTransactionIdentifier,
+      account?.address,
+      logEvent,
+    ]
+  );
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
 
