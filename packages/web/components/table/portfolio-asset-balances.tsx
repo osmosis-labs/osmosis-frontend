@@ -126,6 +126,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     isPreviousData,
     isFetchingNextPage,
     fetchNextPage,
+    refetch,
   } = api.edge.assets.getUserBridgeAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
@@ -441,7 +442,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       </table>
       {assetsData.length > 0 && (
         <div className="flex gap-4 py-2 px-4">
-          {featureFlags.dustToOsmo && <DustToOsmo />}
+          {featureFlags.dustToOsmo && <DustToOsmo onComplete={refetch} />}
           <Button
             onClick={() => setHideDust(!hideDust)}
             className="ml-auto gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"

@@ -13,7 +13,7 @@ import { api } from "~/utils/trpc";
 
 const maxSlippage = new Dec(DefaultSlippage);
 
-export function DustToOsmo() {
+export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
   const { t } = useTranslation();
 
   const { accountStore } = useStore();
@@ -42,6 +42,11 @@ export function DustToOsmo() {
     }
   );
 
+  const handleConvertDustComplete = useCallback(() => {
+    setConvertDust(false);
+    onComplete && onComplete();
+  }, [onComplete]);
+
   return (
     <>
       <Button
@@ -57,7 +62,7 @@ export function DustToOsmo() {
       {convertDust && isSuccessDust && (
         <SequentialSwapExecutor
           dustAssets={dustAssets}
-          onComplete={() => setConvertDust(false)}
+          onComplete={handleConvertDustComplete}
         />
       )}
     </>
