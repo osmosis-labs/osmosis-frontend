@@ -16,7 +16,6 @@ import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useAssetVariantsToast,
-  useLocalStorageState,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -24,8 +23,6 @@ import { useConvertVariant } from "~/hooks/use-convert-variant";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
-
-export const CONVERT_VARIANT_MODAL_SEEN = "convert-variant-modal-seen";
 
 export const useAssetVariantsModalStore = create<{
   isOpen: boolean;
@@ -47,11 +44,6 @@ export const AssetVariantsConversionModal = observer(() => {
   const { isOpen, variantCoinMinimalDenom, setIsOpen } =
     useAssetVariantsModalStore();
   useAssetVariantsToast();
-
-  const [, setIsShown] = useLocalStorageState(
-    CONVERT_VARIANT_MODAL_SEEN,
-    false
-  );
 
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
@@ -86,16 +78,19 @@ export const AssetVariantsConversionModal = observer(() => {
     }
   );
 
-  // should close toast if screen size changes to mobile while shown
+  // Log when opened
   useEffect(() => {
     if (isOpen) {
-      setIsShown(true);
       logEvent([EventName.ConvertVariants.startFlow]);
     }
+  }, [isOpen, logEvent]);
+
+  // should close toast if screen size changes to mobile while shown
+  useEffect(() => {
     if (isMobile && isOpen) {
       setIsOpen(false);
     }
-  }, [isOpen, isMobile, setIsOpen, setIsShown, logEvent]);
+  }, [isOpen, isMobile, setIsOpen]);
 
   return (
     <ModalBase
