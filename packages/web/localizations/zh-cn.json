@@ -53,7 +53,6 @@
       "5": "在有限合伙人的自由市场中，每个人都遵循不同的策略。流动性更加动态，并且为交易者提供了更好的优化。"
     }
   },
-  "assetNotCompatible": "此资产与此钱包不兼容。",
   "clPositions": {
     "inRange": "在范围内",
     "nearBounds": "接近极限",
@@ -267,11 +266,6 @@
       "less": "收起更多",
       "more": "查看更多"
     },
-    "sort": {
-      "mobileMenu": "排序",
-      "SORT": "排序",
-      "SORTMobile": "排序"
-    },
     "table": {
       "poolId": "资金池 #{id}",
       "stable": "稳定兑换",
@@ -329,14 +323,6 @@
   },
   "estimated": "估计的",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "介绍未经验证的资产",
-    "simplifiedExperience": "您的体验已被简化！",
-    "frontierHasNowMerged": "Frontier页面现已与以下内容合并",
-    "thisMeansManaging": "这意味着可以方便地在一个地方管理令牌！",
-    "commitmentToDecentralization": "符合去中心化和可访问性的承诺，处理未经验证的代币的选项仍然可用。",
-    "settingIsNowEnabled": "设置现已启用。",
-    "youMayDisable": "您可以随时在设置模式中禁用此设置。",
-    "openSettings": "打开设置",
     "proceed": "继续"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "一键交易活跃",
-      "oneClickTradingExpired": "一键交易已过期",
       "oneClickTradingDisabled": "一键交易已禁用",
       "currentlyUnavailable": "一键交易目前不可用",
       "insufficientFunds": "OSMO 资金不足，无法进行一键交易",
       "continueWithoutOneClickTrading": "无需一键交易即可继续",
       "networkFeeTooHigh": "网络费太高",
-      "startANewSession": "开始新会话",
       "approveManually": "在{walletName}中手动批准",
       "continueWithWallet": "继续使用钱包",
       "sessionEnded": "会话在此设备上结束",
@@ -396,9 +380,7 @@
       "changeButton": "编辑设置"
     },
     "floatingBanner": {
-      "newPill": "新的",
-      "title": "一键交易",
-      "tradeFasterButton": "交易更快"
+      "newPill": "新的"
     },
     "settings": {
       "header": "一键交易",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "路线",
-    "autoRouterToggle": {
-      "hide": "隐藏",
-      "show": "节目"
-    },
-    "maxButtonErrorNoBalance": "余额不足，无法计算最高金额。",
-    "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
-    "expectedOutput": "预期产出",
-    "fee": "交易费 ({fee})",
-    "networkFee": "网络费",
-    "totalFee": "总费用",
     "HALF": "对半",
-    "MAX": "最大",
-    "minimumSlippage": "扣除滑点后最少获得 ({slippage})",
     "pool": "资金池 #{id}",
-    "priceImpact": "市场影响",
     "routerTooltipFee": "费用",
     "routerTooltipSpreadFactor": "扩频因子",
     "showDetails": "显示详细资料",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "提高支出限额"
     },
     "settings": {
-      "slippage": "滑点上限",
-      "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
-      "title": "交易设置"
+      "slippage": "滑点上限"
     },
     "title": "兑换",
     "dynamicSpreadFactor": "动态的",

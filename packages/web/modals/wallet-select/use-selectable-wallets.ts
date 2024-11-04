@@ -7,7 +7,7 @@ import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 
 export const WagmiWalletConnectType = "walletConnect";
-export const WagmiMetamaskSdkType = "metaMask";
+const WagmiMetamaskSdkType = "metaMask";
 
 export function getDisplayableEvmConnector<T extends Connector>(wallet: T): T {
   const newWallet = { ...wallet } as Mutable<T>;

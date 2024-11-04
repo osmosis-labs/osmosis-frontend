@@ -31,7 +31,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
-export type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
+type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 export type PoolIncentiveFilter = NonNullable<
@@ -55,7 +55,7 @@ export const marketIncentivePoolsSortKeys = [
   "incentives.aprBreakdown.total.upper",
 ] as const;
 
-export type MarketIncentivePoolsSortKey =
+type MarketIncentivePoolsSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
 
 export const incentiveTypes: PoolIncentiveFilter[] = [
@@ -77,7 +77,7 @@ export interface PoolsTabelSortParams {
   allPoolsSortDir: SortDirection;
 }
 
-export interface PoolsTableProps {
+interface PoolsTableProps {
   topOffset?: number;
   quickAddLiquidity?: (poolId: string) => void;
   limit?: number;
@@ -500,11 +500,11 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   );
 };
 
-export type PoolCellComponent<TProps = {}> = FunctionComponent<
+type PoolCellComponent<TProps = {}> = FunctionComponent<
   CellContext<Pool, Pool> & TProps
 >;
 
-export const PoolCompositionCell: PoolCellComponent = ({
+const PoolCompositionCell: PoolCellComponent = ({
   row: {
     original: { id, type, spreadFactor, reserveCoins },
   },
@@ -577,7 +577,7 @@ export const PoolCompositionCell: PoolCellComponent = ({
   );
 };
 
-export function getPoolLink(pool: Pool): string {
+function getPoolLink(pool: Pool): string {
   if (pool.type === "cosmwasm-transmuter") {
     return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
   }
@@ -592,7 +592,7 @@ export function getPoolLink(pool: Pool): string {
   return `/pool/${pool.id}`;
 }
 
-export function getPoolTypeTarget(pool: Pool) {
+function getPoolTypeTarget(pool: Pool) {
   if (
     pool.type === "cosmwasm-transmuter" ||
     pool.type === "cosmwasm-astroport-pcl" ||
@@ -603,7 +603,7 @@ export function getPoolTypeTarget(pool: Pool) {
   return "";
 }
 
-export const AprBreakdownCell: PoolCellComponent = ({
+const AprBreakdownCell: PoolCellComponent = ({
   row: {
     original: { incentives },
   },

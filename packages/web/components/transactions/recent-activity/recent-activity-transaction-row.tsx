@@ -3,9 +3,9 @@ import { FunctionComponent } from "react";
 import { FallbackImg, Icon } from "~/components/assets";
 import { TransactionRow } from "~/components/transactions/transaction-row";
 import { formatFiatPrice } from "~/utils/formatter";
-export type TransactionStatus = "pending" | "success" | "failed";
+type TransactionStatus = "pending" | "success" | "failed";
 
-export const RecentActivityRow: FunctionComponent<{
+const RecentActivityRow: FunctionComponent<{
   status: TransactionStatus;
   title: { [key in TransactionStatus]: string };
   leftComponent: JSX.Element | null;

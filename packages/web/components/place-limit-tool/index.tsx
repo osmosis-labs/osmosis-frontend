@@ -51,7 +51,7 @@ import { useStore } from "~/stores";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
 
-export interface PlaceLimitToolProps {
+interface PlaceLimitToolProps {
   page: EventPage;
   initialBaseDenom?: string;
   initialQuoteDenom?: string;

@@ -53,7 +53,6 @@
       "5": "در بازار آزاد LP همه از استراتژی های مختلفی پیروی می کنند. نقدینگی پویاتر است و برای معامله گران بهتر بهینه می شود."
     }
   },
-  "assetNotCompatible": "این دارایی با این کیف پول سازگار نیست.",
   "clPositions": {
     "inRange": "در محدوده",
     "nearBounds": "نزدیک به مرزها",
@@ -267,11 +266,6 @@
       "less": "نمایش کمتر از",
       "more": "نمایش بیشتر از"
     },
-    "sort": {
-      "mobileMenu": "مرتب سازی",
-      "SORT": "مرتب سازی براساس",
-      "SORTMobile": "مرتب سازی"
-    },
     "table": {
       "poolId": "استخر #{id}",
       "stable": "مبادله پایدار",
@@ -329,14 +323,6 @@
   },
   "estimated": "تخمین زده",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
-    "simplifiedExperience": "تجربه شما ساده شده است!",
-    "frontierHasNowMerged": "صفحه مرز اکنون با",
-    "thisMeansManaging": "این بدان معنی است که می توان مدیریت توکن ها را به راحتی در یک مکان انجام داد!",
-    "commitmentToDecentralization": "مطابق با تعهد به توزیع و دسترسی، گزینه ای برای کنترل توکن های تایید نشده همچنان موجود است.",
-    "settingIsNowEnabled": "تنظیمات اکنون فعال شده است.",
-    "youMayDisable": "شما می توانید این تنظیم را در هر زمان در مدال تنظیمات غیر فعال کنید.",
-    "openSettings": "تنظیمات را باز کن",
     "proceed": "ادامه دهید"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1- روی معامله فعال کلیک کنید",
-      "oneClickTradingExpired": "1-کلیک کنید تجارت منقضی شده است",
       "oneClickTradingDisabled": "1-کلیک Trading غیرفعال است",
       "currentlyUnavailable": "1-کلیک کنید تجارت در حال حاضر در دسترس نیست",
       "insufficientFunds": "بودجه OSMO ناکافی برای تجارت 1 کلیکی",
       "continueWithoutOneClickTrading": "بدون معامله 1 کلیکی ادامه دهید",
       "networkFeeTooHigh": "هزینه شبکه خیلی بالاست",
-      "startANewSession": "یک جلسه جدید را شروع کنید",
       "approveManually": "تأیید دستی در {walletName}",
       "continueWithWallet": "با کیف پول ادامه دهید",
       "sessionEnded": "جلسه در این دستگاه به پایان رسید",
@@ -396,9 +380,7 @@
       "changeButton": "ویرایش تنظیمات"
     },
     "floatingBanner": {
-      "newPill": "جدید",
-      "title": "1- روی تجارت کلیک کنید",
-      "tradeFasterButton": "تجارت سریعتر"
+      "newPill": "جدید"
     },
     "settings": {
       "header": "1- روی تجارت کلیک کنید",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "مسیر",
-    "autoRouterToggle": {
-      "hide": "مخفی",
-      "show": "نماید"
-    },
-    "maxButtonErrorNoBalance": "موجودی کافی برای محاسبه حداکثر مقدار موجود نیست.",
-    "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
-    "expectedOutput": "خروجی مورد انتظار",
-    "fee": "کارمزد تبدیل ({fee})",
-    "networkFee": "هزینه شبکه",
-    "totalFee": "هزینه کل",
     "HALF": "نصف",
-    "MAX": "همه",
-    "minimumSlippage": "حداقل تغییرات قابل قبول ({slippage})",
     "pool": "استخر #{id}",
-    "priceImpact": "تاثیر بازار",
     "routerTooltipFee": "کارمزد",
     "routerTooltipSpreadFactor": "فاکتور گسترش",
     "showDetails": "نمایش جزئیات",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "افزایش سقف هزینه"
     },
     "settings": {
-      "slippage": "تغیرات قابل قبول",
-      "slippageInfo": "تراکنش در صورتی که تغییرات با درصد قابل قبول شما برابری کند انجام می شود.",
-      "title": "تنظیمات تراکنش"
+      "slippage": "تغیرات قابل قبول"
     },
     "title": "تبدیل",
     "dynamicSpreadFactor": "پویا",

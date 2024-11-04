@@ -13,7 +13,7 @@ import { ApiClientError } from "@osmosis-labs/utils";
 import type { Any } from "cosmjs-types/google/protobuf/any";
 
 import {
-    defaultBaseFeeMultiplier,
+  defaultBaseFeeMultiplier,
   getDefaultGasPrice,
   getGasFeeAmount,
   getGasPriceByFeeDenom,

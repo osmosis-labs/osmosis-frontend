@@ -15,10 +15,6 @@ export interface CustomClasses {
   className?: string;
 }
 
-export interface LoadingProps {
-  isLoading?: boolean;
-}
-
 export interface Disableable {
   disabled?: boolean;
 }

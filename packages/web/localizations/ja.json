@@ -53,7 +53,6 @@
       "5": "LP の自由市場では、誰もが異なる戦略に従います。流動性がより動的になり、トレーダー向けに最適化されています。"
     }
   },
-  "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
   "clPositions": {
     "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
@@ -267,11 +266,6 @@
       "less": "表示を減らす",
       "more": "もっと見る"
     },
-    "sort": {
-      "mobileMenu": "並べ替え",
-      "SORT": "並べ替え",
-      "SORTMobile": "選別"
-    },
     "table": {
       "poolId": "プール番号{id}",
       "stable": "ステーブルスワップ",
@@ -329,14 +323,6 @@
   },
   "estimated": "推定",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "未検証のアセットの紹介",
-    "simplifiedExperience": "あなたの経験は簡素化されました!",
-    "frontierHasNowMerged": "フロンティアページは次と統合されました",
-    "thisMeansManaging": "つまり、トークンの管理を 1 か所で簡単に行うことができます。",
-    "commitmentToDecentralization": "分散化とアクセシビリティへの取り組みに沿って、未検証のトークンを処理するオプションも引き続き利用できます。",
-    "settingIsNowEnabled": "これで設定が有効になりました。",
-    "youMayDisable": "この設定は、設定モーダルでいつでも無効にすることができます。",
-    "openSettings": "設定を開く",
     "proceed": "進む"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
-      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
       "insufficientFunds": "ワンクリック取引に必要なOSMO資金が不足しています",
       "continueWithoutOneClickTrading": "1クリック取引なしで続行",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "startANewSession": "新しいセッションを開始する",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
       "sessionEnded": "このデバイスでセッションが終了しました",
@@ -396,9 +380,7 @@
       "changeButton": "編集の設定"
     },
     "floatingBanner": {
-      "newPill": "新しい",
-      "title": "1クリック取引",
-      "tradeFasterButton": "より迅速な取引"
+      "newPill": "新しい"
     },
     "settings": {
       "header": "1クリック取引",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "通ったルート",
-    "autoRouterToggle": {
-      "hide": "隠れる",
-      "show": "見せる"
-    },
-    "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
-    "available": "利用可能",
     "button": "スワップ",
     "buttonError": "とにかく交換する",
-    "expectedOutput": "期待される出力",
-    "fee": "スワップ手数料 ( {fee} )",
-    "networkFee": "ネットワーク料金",
-    "totalFee": "合計料金",
     "HALF": "半分",
-    "MAX": "マックス",
-    "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",
     "pool": "プール番号{id}",
-    "priceImpact": "市場への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
     "showDetails": "詳細を表示",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "支出制限を増やす"
     },
     "settings": {
-      "slippage": "滑り許容差",
-      "slippageInfo": "価格がこのパーセンテージを超えて不利に変化した場合、トランザクションは元に戻ります。",
-      "title": "トランザクション設定"
+      "slippage": "滑り許容差"
     },
     "title": "スワップ",
     "dynamicSpreadFactor": "動的",

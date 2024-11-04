@@ -21,13 +21,13 @@ import {
   useState,
 } from "react";
 
-import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
   Breakpoint,
   MultiLanguageT,
   useFeatureFlags,
+  useHideDustUserSetting,
   useTranslation,
   useUserWatchlist,
   useWalletSelect,
@@ -75,13 +75,13 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
 
-  // search
+  // #region search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
-  // sort
+  // #region sort
   const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
@@ -99,7 +99,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     [searchQuery, sortKey, sortDirection]
   );
 
-  // unverified assets
+  // #region unverified assets
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
   const showUnverifiedAssets = Boolean(
@@ -115,7 +115,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   // external deposit withdraw transfer method
   const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
-  // Query
+  // #region query
   const {
     data: assetPagesData,
     hasNextPage,
@@ -153,29 +153,27 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  // #region dust filter
+  const dustFilteredAssetsData = useHideDustUserSetting(
+    assetsData,
+    (item) => item.usdValue
+  );
+
   const filteredAssetsData = useMemo(() => {
-    return assetsData
-      .map((asset) => {
-        if (!asset.usdValue) return null;
-        const isDust = getIsDust(asset.usdValue);
-        if (hideDust && isDust) return null;
-        return asset;
-      })
-      .filter((asset): asset is AssetRow => asset !== null)
-      .sort((a, b) => {
-        const aIsFavorite = watchListDenoms.includes(a.coinDenom);
-        const bIsFavorite = watchListDenoms.includes(b.coinDenom);
-        if (aIsFavorite && !bIsFavorite) return -1;
-        if (!aIsFavorite && bIsFavorite) return 1;
-        return 0;
-      });
-  }, [assetsData, hideDust, watchListDenoms]);
+    return dustFilteredAssetsData.sort((a, b) => {
+      const aIsFavorite = watchListDenoms.includes(a.coinDenom);
+      const bIsFavorite = watchListDenoms.includes(b.coinDenom);
+      if (aIsFavorite && !bIsFavorite) return -1;
+      if (!aIsFavorite && bIsFavorite) return 1;
+      return 0;
+    });
+  }, [dustFilteredAssetsData, watchListDenoms]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
-  // Define columns
+  // #region columns
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
     return [
@@ -243,7 +241,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     toggleWatchAssetDenom,
   ]);
 
-  /** Columns collapsed for screen size responsiveness. */
+  // #region responsive columns
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.lg) {
@@ -263,6 +261,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // #region virtualization
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
@@ -290,7 +289,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
 
-  // pagination
+  // #region pagination
   const lastRow = rows[rows.length - 1];
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
@@ -326,7 +325,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-3 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("portfolio.searchBalances")}
@@ -339,7 +338,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index, headers) => (
@@ -549,7 +548,7 @@ const handleSelectAction = (
   }
 };
 
-export const AssetActionsCell: AssetCellComponent<{
+const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;

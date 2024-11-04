@@ -4,7 +4,7 @@ import { ButtonHTMLAttributes, forwardRef } from "react";
 import { Spinner } from "~/components/loaders";
 import { CustomClasses } from "~/components/types";
 
-export const buttonCVA = cva(
+const buttonCVA = cva(
   "flex w-full group place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
   {
     variants: {

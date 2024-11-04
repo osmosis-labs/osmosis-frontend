@@ -1,10 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
-import {
-  MappedLimitOrder,
-  MaybeUserAssetCoin,
-  Orderbook,
-} from "@osmosis-labs/server";
+import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
@@ -20,7 +16,7 @@ import { api } from "~/utils/trpc";
  * Fetch is asynchronous so a loading state is returned.
  * @returns A state including an orderbooks array and a loading boolean.
  */
-export const useOrderbooks = (): {
+const useOrderbooks = (): {
   orderbooks: Orderbook[];
   isLoading: boolean;
 } => {
@@ -260,8 +256,6 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
     error,
   };
 };
-
-export type DisplayableLimitOrder = MappedLimitOrder;
 
 /**
  * Queries for all active orders for a given user.

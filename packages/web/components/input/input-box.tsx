@@ -10,7 +10,7 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
 /** Accessory button for the input box. */
-export interface Button extends ButtonProps, CustomClasses, Disableable {
+interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
@@ -117,6 +117,7 @@ export const InputBox: FunctionComponent<Props> = ({
                 inputRef.current = ref;
               }
             }}
+            onWheel={(e) => (e.target as HTMLInputElement).blur()}
             inputClassName={inputClassName_}
             minWidth={0}
             value={inputValue}
@@ -139,6 +140,7 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
+            onWheel={(e) => (e.target as HTMLInputElement).blur()}
             onBlur={(e: any) => {
               setInputFocused(false);
               onBlur && onBlur(e);

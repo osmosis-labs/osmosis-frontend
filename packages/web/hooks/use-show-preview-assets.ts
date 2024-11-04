@@ -1,6 +1,6 @@
 import { useSessionStorage } from "react-use";
 
-export const ShowPreviewAssetsKey = "show_preview_assets";
+const ShowPreviewAssetsKey = "show_preview_assets";
 
 export const useShowPreviewAssets = () => {
   const [showPreviewAssets] = useSessionStorage<boolean>(

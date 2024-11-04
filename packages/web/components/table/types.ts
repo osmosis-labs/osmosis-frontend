@@ -11,7 +11,7 @@ export interface BaseCell {
   rowHovered?: boolean;
 }
 
-export interface ColumnSortDef {
+interface ColumnSortDef {
   currentDirection?: SortDirection;
   onClickHeader: (colIndex: number) => void;
 }

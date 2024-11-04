@@ -53,7 +53,6 @@
       "5": "No mercado livre de LPs cada um segue uma estratégia diferente. A liquidez é mais dinâmica e melhor otimizada para os traders."
     }
   },
-  "assetNotCompatible": "Este ativo não é compatível com esta carteira.",
   "clPositions": {
     "inRange": "NO ALCANCE",
     "nearBounds": "PERTO DOS LIMITES",
@@ -227,7 +226,7 @@
     "seeAll": "Ver tudo",
     "showHidden": "Mostrar oculto ( {hiddenDustCount} )",
     "hideSmallBalances": "Ocultar pequenos saldos",
-    "openOrders": "Ordens abertas",
+    "openOrders": "Pedidos abertos",
     "last24h": "Últimas 24h",
     "last7d": "Últimos 7d",
     "last30d": "Últimos 30d",
@@ -266,11 +265,6 @@
     "show": {
       "less": "Visualizar menos",
       "more": "Visualizar mais"
-    },
-    "sort": {
-      "mobileMenu": "Orgaanizar por",
-      "SORT": "Organizar por",
-      "SORTMobile": "Organizar"
     },
     "table": {
       "poolId": "Piscina #{id}",
@@ -329,14 +323,6 @@
   },
   "estimated": "Estimado",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
-    "simplifiedExperience": "Sua experiência foi simplificada!",
-    "frontierHasNowMerged": "A página Frontier agora se fundiu com",
-    "thisMeansManaging": "Isso significa que gerenciar tokens pode ser feito convenientemente em um só lugar!",
-    "commitmentToDecentralization": "Em linha com o compromisso com a descentralização e acessibilidade, a opção de lidar com tokens não verificados ainda está disponível.",
-    "settingIsNowEnabled": "A configuração agora está habilitada.",
-    "youMayDisable": "você pode desabilitar essa configuração a qualquer momento no modal de configurações.",
-    "openSettings": "Abrir Configurações",
     "proceed": "Prosseguir"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Negociação em 1 Clique ativa",
-      "oneClickTradingExpired": "A negociação em 1 clique expirou",
       "oneClickTradingDisabled": "Negociação em 1 Clique desativada",
       "currentlyUnavailable": "Negociação em 1 Clique atualmente indisponível",
       "insufficientFunds": "Fundos OSMO insuficientes para negociação em 1 clique",
       "continueWithoutOneClickTrading": "Continue sem negociação em 1 clique",
       "networkFeeTooHigh": "Taxa de rede muito alta",
-      "startANewSession": "Iniciar uma nova sessão",
       "approveManually": "Aprovar manualmente em {walletName}",
       "continueWithWallet": "Continuar com carteira",
       "sessionEnded": "A sessão terminou neste dispositivo",
@@ -396,9 +380,7 @@
       "changeButton": "Editar Configurações"
     },
     "floatingBanner": {
-      "newPill": "Novo",
-      "title": "Negociação em 1 clique",
-      "tradeFasterButton": "Negocie mais rápido"
+      "newPill": "Novo"
     },
     "settings": {
       "header": "Negociação em 1 clique",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "Rota",
-    "autoRouterToggle": {
-      "hide": "Esconder",
-      "show": "Mostrar"
-    },
-    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular o valor máximo.",
-    "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
-    "expectedOutput": "Resultado Esperado",
-    "fee": "Taxa de Troca ({fee})",
-    "networkFee": "Taxa de rede",
-    "totalFee": "Taxa total",
     "HALF": "METADE",
-    "MAX": "MÁXIMO",
-    "minimumSlippage": "Mínimo recebido após o spread ({slippage})",
     "pool": "Piscina #{id}",
-    "priceImpact": "Impacto no mercado",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Fator de propagação",
     "showDetails": "Mostrar detalhes",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "Aumentar o limite de gastos"
     },
     "settings": {
-      "slippage": "Tolerância de spread",
-      "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",
-      "title": "Configurações de Transação"
+      "slippage": "Tolerância de spread"
     },
     "title": "Trocar",
     "dynamicSpreadFactor": "Dinâmico",

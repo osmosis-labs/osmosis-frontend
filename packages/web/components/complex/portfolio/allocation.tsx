@@ -1,17 +1,17 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { GetAllocationResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
-import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
 import { EventName } from "~/config";
 import {
   Breakpoint,
   MultiLanguageT,
   useAmplitudeAnalytics,
+  useHideDustUserSetting,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -56,17 +56,9 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
   return translationMap[key] || key;
 };
 
-const shouldShowItemInSelectedList = (
-  hideDust: boolean,
-  fiatValue: PricePretty
-) => {
-  return !hideDust || !getIsDust(fiatValue);
-};
-
 export const Allocation: FunctionComponent<{
   allocation?: GetAllocationResponse;
-  hideDust: boolean;
-}> = ({ allocation, hideDust }) => {
+}> = ({ allocation }) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { width } = useWindowSize();
   const [selectedOption, setSelectedOption] =
@@ -80,9 +72,17 @@ export const Allocation: FunctionComponent<{
     }
   }, [width]);
 
-  if (!allocation) return null;
+  const selectedList = useMemo(
+    () => allocation?.[selectedOption] ?? [],
+    [allocation, selectedOption]
+  );
 
-  const selectedList = allocation[selectedOption];
+  const dustFilteredList = useHideDustUserSetting(
+    selectedList,
+    (item) => item.fiatValue
+  );
+
+  if (!allocation) return null;
 
   return (
     <div className="flex w-full flex-col py-3">
@@ -115,39 +115,29 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList
-              .filter(({ fiatValue }) =>
-                shouldShowItemInSelectedList(hideDust, fiatValue)
-              )
-              .map(({ key, percentage }, index) => {
-                const colorClass =
-                  COLORS[selectedOption][index % COLORS[selectedOption].length];
-
-                const isNegligiblePercent = percentage
-                  .toDec()
-                  .lt(new Dec(0.01));
-
-                const width = isNegligiblePercent
-                  ? "0.1%"
-                  : percentage.toString();
-
-                return (
-                  <div
-                    key={key}
-                    className={classNames("h-full rounded-[4px]", colorClass)}
-                    style={{ width }}
-                  />
-                );
-              })}
-          </div>
-          <div className="flex flex-col space-y-3">
-            {selectedList.map(({ key, percentage, fiatValue }, index) => {
+            {dustFilteredList.map(({ key, percentage }, index) => {
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
 
-              const isDust = getIsDust(fiatValue);
+              const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
 
-              if (hideDust && isDust) return null;
+              const width = isNegligiblePercent
+                ? "0.1%"
+                : percentage.toString();
+
+              return (
+                <div
+                  key={key}
+                  className={classNames("h-full rounded-[4px]", colorClass)}
+                  style={{ width }}
+                />
+              );
+            })}
+          </div>
+          <div className="flex flex-col space-y-3">
+            {dustFilteredList.map(({ key, percentage, fiatValue }, index) => {
+              const colorClass =
+                COLORS[selectedOption][index % COLORS[selectedOption].length];
 
               return (
                 <div key={key} className="body2 flex w-full justify-between">

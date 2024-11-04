@@ -53,7 +53,6 @@
       "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
     }
   },
-  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "clPositions": {
     "inRange": "W ZAKRESIE",
     "nearBounds": "BLISKO GRANIC",
@@ -267,11 +266,6 @@
       "less": "Zobacz mniej",
       "more": "Zobacz więcej"
     },
-    "sort": {
-      "mobileMenu": "Sortuj według",
-      "SORT": "SORTUJ WEDŁUG",
-      "SORTMobile": "SORTUJ"
-    },
     "table": {
       "poolId": "Pula #{id}",
       "stable": "Stableswap",
@@ -329,14 +323,6 @@
   },
   "estimated": "Szacowany",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
-    "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
-    "frontierHasNowMerged": "Strona Frontier została teraz połączona z",
-    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
-    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
-    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
-    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień.",
-    "openSettings": "Otwórz ustawienia",
     "proceed": "Kontynuuj"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Aktywny handel jednym kliknięciem",
-      "oneClickTradingExpired": "Transakcja 1-Click wygasła",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "insufficientFunds": "Niewystarczające środki OSMO do handlu jednym kliknięciem",
       "continueWithoutOneClickTrading": "Kontynuuj bez handlu jednym kliknięciem",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "startANewSession": "Rozpocznij nową sesję",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
       "sessionEnded": "Sesja zakończyła się na tym urządzeniu",
@@ -396,9 +380,7 @@
       "changeButton": "Edytuj ustawienia"
     },
     "floatingBanner": {
-      "newPill": "Nowy",
-      "title": "Handel jednym kliknięciem",
-      "tradeFasterButton": "Handluj szybciej"
+      "newPill": "Nowy"
     },
     "settings": {
       "header": "Handel jednym kliknięciem",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "Trasa",
-    "autoRouterToggle": {
-      "hide": "Esconder",
-      "show": "Mostrar"
-    },
-    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
-    "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
-    "expectedOutput": "Spodziewana wartość",
-    "fee": "Prowizja ({fee})",
-    "networkFee": "Opłata sieciowa",
-    "totalFee": "Całkowita opłata",
     "HALF": "POŁOWA",
-    "MAX": "MAKSIMUM",
-    "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
     "pool": "Pula #{id}",
-    "priceImpact": "Wpływ na rynek",
     "routerTooltipFee": "Opłata",
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
     "showDetails": "Pokaż szczegóły",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "Zwiększ limit wydatków"
     },
     "settings": {
-      "slippage": "Tolerowane odchylenie",
-      "slippageInfo": "Twoja transakcja zostanie cofnięta jeśli cena zmieni się na niekorzyść o więcej niż podany procent.",
-      "title": "Ustawienia Transakcji"
+      "slippage": "Tolerowane odchylenie"
     },
     "title": "Wymień",
     "dynamicSpreadFactor": "Dynamiczny",

@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    ".next/**/*",
+    "**/tradingview/**",
+    "**/light-weight-charts/**",
+    "**/generated/**",
+    "*.spec.*"
+  ]
+}

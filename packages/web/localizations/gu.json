@@ -53,7 +53,6 @@
       "5": "LP ના ફ્રી માર્કેટમાં દરેક વ્યક્તિ જુદી જુદી વ્યૂહરચનાઓને અનુસરે છે. લિક્વિડિટી વધુ ગતિશીલ છે, અને વેપારીઓ માટે વધુ સારી રીતે ઑપ્ટિમાઇઝ છે."
     }
   },
-  "assetNotCompatible": "આ સંપત્તિ આ વૉલેટ સાથે સુસંગત નથી.",
   "clPositions": {
     "inRange": "રેન્જમાં",
     "nearBounds": "સીમાઓની નજીક",
@@ -267,11 +266,6 @@
       "less": "ઓછું જુઓ",
       "more": "વધુ જોવો"
     },
-    "sort": {
-      "mobileMenu": "દ્વારા સૉર્ટ કરો",
-      "SORT": "દ્વારા સૉર્ટ કરો",
-      "SORTMobile": "સૉર્ટ કરો"
-    },
     "table": {
       "poolId": "પૂલ # {id}",
       "stable": "સ્ટેબલસ્વેપ",
@@ -329,14 +323,6 @@
   },
   "estimated": "અંદાજિત",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "વણચકાસાયેલ અસ્કયામતોનો પરિચય",
-    "simplifiedExperience": "તમારો અનુભવ સરળ કરવામાં આવ્યો છે!",
-    "frontierHasNowMerged": "ફ્રન્ટિયર પેજ હવે સાથે મર્જ થઈ ગયું છે",
-    "thisMeansManaging": "આનો અર્થ એ છે કે ટોકન્સનું સંચાલન એક જગ્યાએ સરળતાથી કરી શકાય છે!",
-    "commitmentToDecentralization": "વિકેન્દ્રીકરણ અને સુલભતા માટેની પ્રતિબદ્ધતા અનુસાર, વણચકાસાયેલ ટોકન્સને હેન્ડલ કરવાનો વિકલ્પ હજુ પણ ઉપલબ્ધ છે.",
-    "settingIsNowEnabled": "સેટિંગ હવે સક્ષમ છે.",
-    "youMayDisable": "તમે સેટિંગ્સ મોડલમાં કોઈપણ સમયે આ સેટિંગને અક્ષમ કરી શકો છો.",
-    "openSettings": "સેટિંગ્સ ખોલો",
     "proceed": "આગળ વધો"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1- ટ્રેડિંગ સક્રિય પર ક્લિક કરો",
-      "oneClickTradingExpired": "1-ક્લિક કરો ટ્રેડિંગ સમાપ્ત",
       "oneClickTradingDisabled": "1-ક્લિક કરો ટ્રેડિંગ અક્ષમ",
       "currentlyUnavailable": "1-ક્લિક ટ્રેડિંગ હાલમાં અનુપલબ્ધ છે",
       "insufficientFunds": "1-ક્લિક ટ્રેડિંગ માટે અપર્યાપ્ત OSMO ભંડોળ",
       "continueWithoutOneClickTrading": "1-ક્લિક ટ્રેડિંગ વિના ચાલુ રાખો",
       "networkFeeTooHigh": "નેટવર્ક ફી ખૂબ વધારે છે",
-      "startANewSession": "નવું સત્ર શરૂ કરો",
       "approveManually": "{walletName} માં મેન્યુઅલી મંજૂર કરો",
       "continueWithWallet": "વૉલેટ સાથે ચાલુ રાખો",
       "sessionEnded": "આ ઉપકરણ પર સત્ર સમાપ્ત થયું",
@@ -396,9 +380,7 @@
       "changeButton": "સેટિંગ્સ સંપાદિત કરો"
     },
     "floatingBanner": {
-      "newPill": "નવી",
-      "title": "1-ક્લિક કરો ટ્રેડિંગ",
-      "tradeFasterButton": "ઝડપી વેપાર"
+      "newPill": "નવી"
     },
     "settings": {
       "header": "1-ક્લિક કરો ટ્રેડિંગ",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "રૂટ લીધો",
-    "autoRouterToggle": {
-      "hide": "છુપાવો",
-      "show": "બતાવો"
-    },
-    "maxButtonErrorNoBalance": "મહત્તમ રકમની ગણતરી કરવા માટે પર્યાપ્ત બેલેન્સ નથી.",
-    "available": "ઉપલબ્ધ છે",
     "button": "સ્વેપ",
     "buttonError": "કોઈપણ રીતે સ્વેપ કરો",
-    "expectedOutput": "અપેક્ષિત આઉટપુટ",
-    "fee": "સ્વેપ ફી ( {fee} )",
-    "networkFee": "નેટવર્ક ફી",
-    "totalFee": "કુલ ફી",
     "HALF": "અર્ધ",
-    "MAX": "MAX",
-    "minimumSlippage": "સ્લિપેજ પછી પ્રાપ્ત ન્યૂનતમ ( {slippage} )",
     "pool": "પૂલ # {id}",
-    "priceImpact": "બજારની અસર",
     "routerTooltipFee": "ફી",
     "routerTooltipSpreadFactor": "સ્પ્રેડ ફેક્ટર",
     "showDetails": "વિગતો બતાવો",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો"
     },
     "settings": {
-      "slippage": "સ્લિપેજ સહનશીલતા",
-      "slippageInfo": "જો કિંમત આ ટકાવારી કરતાં વધુ પ્રતિકૂળ રીતે બદલાશે તો તમારો વ્યવહાર પાછો આવશે.",
-      "title": "વ્યવહાર સેટિંગ્સ"
+      "slippage": "સ્લિપેજ સહનશીલતા"
     },
     "title": "સ્વેપ",
     "dynamicSpreadFactor": "ગતિશીલ",

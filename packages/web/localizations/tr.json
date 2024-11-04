@@ -53,7 +53,6 @@
       "5": "LP'lerin serbest piyasasında herkes farklı stratejiler izler. Likidite daha dinamiktir ve tüccarlar için daha iyi optimize edilmiştir."
     }
   },
-  "assetNotCompatible": "Bu varlık bu cüzdanla uyumlu değil.",
   "clPositions": {
     "inRange": "MENZİLDE",
     "nearBounds": "YAKIN SINIRLAR",
@@ -227,7 +226,7 @@
     "seeAll": "Tümünü gör",
     "showHidden": "Gizliyi göster ( {hiddenDustCount} )",
     "hideSmallBalances": "Küçük bakiyeleri gizle",
-    "openOrders": "Açık Siparişler",
+    "openOrders": "Açık siparişler",
     "last24h": "Son 24 saat",
     "last7d": "Son 7 gün",
     "last30d": "Son 30 gün",
@@ -266,11 +265,6 @@
     "show": {
       "less": "Daha az göster",
       "more": "Daha fazla göster"
-    },
-    "sort": {
-      "mobileMenu": "Sırala",
-      "SORT": "SIRALA",
-      "SORTMobile": "SIRALA"
     },
     "table": {
       "poolId": "Havuz #{id}",
@@ -329,14 +323,6 @@
   },
   "estimated": "Tahmini",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
-    "simplifiedExperience": "Deneyiminiz basitleştirildi!",
-    "frontierHasNowMerged": "Frontier sayfası şimdi ile birleşti",
-    "thisMeansManaging": "Bu, belirteçleri tek bir yerde uygun bir şekilde yönetebileceğiniz anlamına gelir!",
-    "commitmentToDecentralization": "Merkeziyetsizleşme ve erişilebilirlik taahhüdü ile, doğrulanmamış belirteçleri işleme seçeneği hala mevcut.",
-    "settingIsNowEnabled": "Ayar şimdi etkinleştirildi.",
-    "youMayDisable": "Bu ayarı istediğiniz zaman ayarlar modülünde devre dışı bırakabilirsiniz.",
-    "openSettings": "Ayarları Aç",
     "proceed": "Devam et"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Tıkla Ticaret aktif",
-      "oneClickTradingExpired": "Tek Tıklamayla Ticaretin süresi doldu",
       "oneClickTradingDisabled": "Tek Tıklamayla Ticaret devre dışı bırakıldı",
       "currentlyUnavailable": "Tek Tıkla Ticaret şu anda kullanılamıyor",
       "insufficientFunds": "Tek Tıklamayla Ticaret için yetersiz OSMO fonu",
       "continueWithoutOneClickTrading": "Tek Tıklamayla İşlem Yapmadan Devam Edin",
       "networkFeeTooHigh": "Ağ ücreti çok yüksek",
-      "startANewSession": "Yeni bir oturum başlat",
       "approveManually": "{walletName} içinde manuel olarak onaylayın",
       "continueWithWallet": "Cüzdanla devam et",
       "sessionEnded": "Bu cihazda oturum sona erdi",
@@ -396,9 +380,7 @@
       "changeButton": "Ayarları düzenle"
     },
     "floatingBanner": {
-      "newPill": "Yeni",
-      "title": "Tek Tıklamayla Ticaret",
-      "tradeFasterButton": "Daha Hızlı Ticaret Yapın"
+      "newPill": "Yeni"
     },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "Güzergah",
-    "autoRouterToggle": {
-      "hide": "Saklamak",
-      "show": "Göstermek"
-    },
-    "maxButtonErrorNoBalance": "Maksimum tutarı hesaplamak için yeterli bakiye yok.",
-    "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
-    "expectedOutput": "Elde Edilmesi Beklenen Miktar",
-    "fee": "Takas Ücreti ({fee})",
-    "networkFee": "Ağ Ücreti",
-    "totalFee": "Toplam ücret",
     "HALF": "YARISI",
-    "MAX": "MAKS.",
-    "minimumSlippage": "Slipaj dahil elde edilecek minimum ({slippage})",
     "pool": "Havuz #{id}",
-    "priceImpact": "Pazar Etkisi",
     "routerTooltipFee": "Ücret",
     "routerTooltipSpreadFactor": "Yayılma Faktörü",
     "showDetails": "Detayları göster",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "Harcama sınırını artırın"
     },
     "settings": {
-      "slippage": "Slipaj toleransı",
-      "slippageInfo": "Fiyatta belirttiğiniz yüzdenin üzerinde artış olursa işleminiz iptal olacaktır.",
-      "title": "İşlem Ayarları"
+      "slippage": "Slipaj toleransı"
     },
     "title": "Takas",
     "dynamicSpreadFactor": "Dinamik",

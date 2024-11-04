@@ -53,7 +53,6 @@
       "5": "Auf dem freien Markt der LPs verfolgt jeder unterschiedliche Strategien. Die Liquidität ist dynamischer und besser für Händler optimiert."
     }
   },
-  "assetNotCompatible": "Dieses Asset ist nicht mit dieser Wallet kompatibel.",
   "clPositions": {
     "inRange": "IM BEREICH",
     "nearBounds": "IN DER NÄHE DER GRENZEN",
@@ -227,7 +226,7 @@
     "seeAll": "Alles sehen",
     "showHidden": "Versteckte anzeigen ( {hiddenDustCount} )",
     "hideSmallBalances": "Kleine Guthaben verbergen",
-    "openOrders": "Offene Bestellungen",
+    "openOrders": "Offene Aufträge",
     "last24h": "Letzte 24 Stunden",
     "last7d": "Letzte 7 Tage",
     "last30d": "Letzte 30 Tage",
@@ -266,11 +265,6 @@
     "show": {
       "less": "Weniger anzeigen",
       "more": "Mehr sehen"
-    },
-    "sort": {
-      "mobileMenu": "Sortiere nach",
-      "SORT": "Sortiere nach",
-      "SORTMobile": "Sortieren"
     },
     "table": {
       "poolId": "Pool # {id}",
@@ -329,14 +323,6 @@
   },
   "estimated": "Geschätzt",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Einführung nicht verifizierter Vermögenswerte",
-    "simplifiedExperience": "Ihre Erfahrung wurde vereinfacht!",
-    "frontierHasNowMerged": "Die Frontier-Seite wurde jetzt mit zusammengeführt",
-    "thisMeansManaging": "Das bedeutet, dass die Token-Verwaltung bequem an einem Ort erfolgen kann!",
-    "commitmentToDecentralization": "Im Einklang mit dem Engagement für Dezentralisierung und Zugänglichkeit besteht weiterhin die Möglichkeit, mit nicht verifizierten Token umzugehen.",
-    "settingIsNowEnabled": "Die Einstellung ist jetzt aktiviert.",
-    "youMayDisable": "Sie können diese Einstellung jederzeit im Einstellungsmodal deaktivieren.",
-    "openSettings": "Einstellungen öffnen",
     "proceed": "Fortfahren"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click-Handel aktiv",
-      "oneClickTradingExpired": "1-Click-Handel abgelaufen",
       "oneClickTradingDisabled": "1-Click-Handel deaktiviert",
       "currentlyUnavailable": "1-Click Trading derzeit nicht verfügbar",
       "insufficientFunds": "Unzureichende OSMO-Mittel für 1-Click-Trading",
       "continueWithoutOneClickTrading": "Weiter ohne 1-Click Trading",
       "networkFeeTooHigh": "Netzwerkgebühr zu hoch",
-      "startANewSession": "Neue Sitzung starten",
       "approveManually": "Manuell genehmigen in {walletName}",
       "continueWithWallet": "Fahren Sie mit der Brieftasche fort",
       "sessionEnded": "Die Sitzung wurde auf diesem Gerät beendet",
@@ -396,9 +380,7 @@
       "changeButton": "Einstellungen bearbeiten"
     },
     "floatingBanner": {
-      "newPill": "Neu",
-      "title": "1-Klick-Handel",
-      "tradeFasterButton": "Handeln Sie schneller"
+      "newPill": "Neu"
     },
     "settings": {
       "header": "1-Klick-Handel",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "Route genommen",
-    "autoRouterToggle": {
-      "hide": "Verstecken",
-      "show": "Zeigen"
-    },
-    "maxButtonErrorNoBalance": "Nicht genügend Guthaben, um den Höchstbetrag zu berechnen.",
-    "available": "Verfügbar",
     "button": "Tauschen",
     "buttonError": "Trotzdem tauschen",
-    "expectedOutput": "Erwartete Ausgabe",
-    "fee": "Swap-Gebühr ( {fee} )",
-    "networkFee": "Netzwerkgebühr",
-    "totalFee": "Gesamtgebühr",
     "HALF": "HALB",
-    "MAX": "MAX",
-    "minimumSlippage": "Nach Slippage erhaltenes Minimum ( {slippage} )",
     "pool": "Pool # {id}",
-    "priceImpact": "Auswirkungen auf den Markt",
     "routerTooltipFee": "Gebühr",
     "routerTooltipSpreadFactor": "Spread-Faktor",
     "showDetails": "Zeige Details",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "Ausgabenlimit erhöhen"
     },
     "settings": {
-      "slippage": "Rutschtoleranz",
-      "slippageInfo": "Ihre Transaktion wird rückgängig gemacht, wenn sich der Preis um mehr als diesen Prozentsatz ungünstig ändert.",
-      "title": "Transaktionseinstellungen"
+      "slippage": "Rutschtoleranz"
     },
     "title": "Tauschen",
     "dynamicSpreadFactor": "Dynamisch",

@@ -617,7 +617,7 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-export const AssetActionsCell: AssetCellComponent<{
+const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;

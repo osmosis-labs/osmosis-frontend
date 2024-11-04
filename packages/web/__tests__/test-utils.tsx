@@ -2,6 +2,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { superjson } from "@osmosis-labs/server";
 import { AccountStore } from "@osmosis-labs/stores";
+import type { AvailableFlags } from "@osmosis-labs/types";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Queries, render, RenderHookOptions } from "@testing-library/react";
 import { renderHook } from "@testing-library/react";
@@ -12,17 +13,16 @@ import { ReactNode } from "react";
 
 import { TestWallet, testWalletInfo } from "~/__tests__/test-wallet";
 import { MultiLanguageProvider } from "~/hooks/language/context";
-import { AvailableFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { AppRouter } from "~/server/api/root-router";
 import { storeContext, StoreProvider } from "~/stores";
 import { RootStore } from "~/stores/root";
 
-export const trpcReact = createTRPCReact<AppRouter>();
+const trpcReact = createTRPCReact<AppRouter>();
 let testRootStore: RootStore;
 
 const queryClient = new QueryClient();
-export const withTRPC = ({ children }: { children?: ReactNode }) => {
+const withTRPC = ({ children }: { children?: ReactNode }) => {
   return (
     <MultiLanguageProvider defaultLanguage="en">
       <StoreProvider>
