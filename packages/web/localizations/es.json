@@ -1269,12 +1269,9 @@
     "description": "Convierta los siguientes activos a su versión estandarizada en Osmosis para obtener mayor flexibilidad y compatibilidad.",
     "learnMore": "Más información",
     "errorLoading": "Error al cargar variantes de activos, inténtelo de nuevo más tarde.",
-    "selectAll": "Seleccionar todo",
-    "convertSelected": "Convertir seleccionado",
-    "variantsDetected": "Variantes detectadas",
-    "caption": "Dile adiós a todas esas variantes de activos confusas. Saluda a una experiencia más fluida en Osmosis.",
     "tooltipTitle": "{coinName} en Osmosis",
     "tooltipDescription": "Osmosis consolida numerosas variantes de {coinDenom} en un activo simple para mayor flexibilidad y facilidad de uso.",
-    "convert": "Convertir"
+    "convert": "Convertir",
+    "conversionFees": "Tarifas de conversión: {fees}"
   }
 }

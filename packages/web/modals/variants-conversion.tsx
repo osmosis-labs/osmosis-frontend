@@ -80,7 +80,7 @@ export const AssetVariantsConversionModal = observer(() => {
       onRequestClose={() => setIsOpen(false)}
       title={
         <h6 className="h6 mt-1 w-full self-center text-center">
-          Standardize Assets
+          {t("assetVariantsConversion.title")}
         </h6>
       }
       className="bg-osmoverse-900"

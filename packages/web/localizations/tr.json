@@ -1269,12 +1269,9 @@
     "description": "Daha fazla esneklik ve uyumluluk için aşağıdaki varlıkları Osmosis'teki standart sürümlerine dönüştürün.",
     "learnMore": "Daha fazla bilgi edin",
     "errorLoading": "Varlık varyantları yüklenirken hata oluştu, lütfen daha sonra tekrar deneyin.",
-    "selectAll": "Tümünü Seç",
-    "convertSelected": "Seçilileri Dönüştür",
-    "variantsDetected": "Varyantlar Tespit Edildi",
-    "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",
     "tooltipTitle": "{coinName} Osmosis'te",
     "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir.",
-    "convert": "Dönüştürmek"
+    "convert": "Dönüştürmek",
+    "conversionFees": "Dönüştürme ücretleri: {fees}"
   }
 }
