@@ -274,4 +274,9 @@ export const EventName = {
     tabClicked: "Portfolio: Open allocation clicked",
     allocationClicked: "Portfolio: Allocation clicked",
   },
+  ConvertVariants: {
+    startFlow: "Convert Variants: Start flow",
+    declineFlow: "Convert Variants: Decline flow",
+    completeFlow: "Convert Variants: Complete flow",
+  },
 };

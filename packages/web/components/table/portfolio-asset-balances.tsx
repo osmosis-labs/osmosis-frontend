@@ -28,18 +28,23 @@ import {
   MultiLanguageT,
   useFeatureFlags,
   useHideDustUserSetting,
+  useLocalStorageState,
   useTranslation,
   useUserWatchlist,
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
+import { useConvertVariant } from "~/hooks/use-convert-variant";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
-import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
+import {
+  CONVERT_VARIANT_MODAL_SEEN,
+  useAssetVariantsModalStore,
+} from "~/modals/variants-conversion";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -527,13 +532,13 @@ const AssetActionsCell: AssetCellComponent<{
     coinImageUrl?: string;
   }) => void;
 }> = ({
+  coinMinimalDenom,
+  variantGroupKey,
   coinDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
-  coinMinimalDenom,
-  variantGroupKey,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -547,7 +552,12 @@ const AssetActionsCell: AssetCellComponent<{
 
   const actionOptions = getActionOptions(t, showConvertButton);
 
+  const { onConvert, isConvertingVariant, isConvertingThisVariant } =
+    useConvertVariant(coinMinimalDenom, showConvertButton);
+  const [wasShown] = useLocalStorageState(CONVERT_VARIANT_MODAL_SEEN, false);
   const { setIsOpen } = useAssetVariantsModalStore();
+
+  console.log("wasShown", wasShown);
 
   const onSelectAction = (action: Action) => {
     if (action === "trade") {
@@ -589,10 +599,16 @@ const AssetActionsCell: AssetCellComponent<{
             <Button
               variant="secondary"
               className="max-h-12 w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              disabled={isConvertingVariant}
+              isLoading={isConvertingThisVariant}
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                setIsOpen(true);
+                if (!wasShown) {
+                  setIsOpen(true);
+                } else {
+                  onConvert();
+                }
               }}
             >
               {t("portfolio.convert")}
@@ -634,7 +650,7 @@ const AssetActionsCell: AssetCellComponent<{
         </>
       )}
       <AssetActionsDropdown
-        disabled={needsActivation}
+        disabled={needsActivation || isConvertingVariant}
         actionOptions={actionOptions}
         onSelectAction={onSelectAction}
       />
