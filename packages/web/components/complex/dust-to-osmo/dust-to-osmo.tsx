@@ -155,7 +155,9 @@ function SwapHandler({
     useQueryParams: false,
     maxSlippage,
     quoteType: "out-given-in",
-    inputDebounceMs: 0,
+    // Swap needs a bit of time to stabilize
+    // otherwise account seq errors can happen
+    inputDebounceMs: 100,
   });
 
   useEffect(() => {
@@ -176,7 +178,7 @@ function SwapHandler({
 
   useEffect(() => {
     onSendSwapTxStatusChange(fromDenom, sendSwapTxStatus);
-  }, [sendSwapTxStatus, onSendSwapTxStatusChange, fromDenom]);
+  }, [fromDenom, sendSwapTxStatus, onSendSwapTxStatusChange]);
 
   return <></>;
 }
