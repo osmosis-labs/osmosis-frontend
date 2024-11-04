@@ -557,8 +557,6 @@ const AssetActionsCell: AssetCellComponent<{
   const [wasShown] = useLocalStorageState(CONVERT_VARIANT_MODAL_SEEN, false);
   const { setIsOpen } = useAssetVariantsModalStore();
 
-  console.log("wasShown", wasShown);
-
   const onSelectAction = (action: Action) => {
     if (action === "trade") {
       const to = coinDenom === "OSMO" ? "ATOM" : "OSMO";
