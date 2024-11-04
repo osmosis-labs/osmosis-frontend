@@ -47,6 +47,18 @@ export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
     onComplete && onComplete();
   }, [onComplete]);
 
+  useEffect(() => {
+    // Stop loading if there are no dust assets
+    if (convertDust && isFetchedDust && dustAssets?.length === 0) {
+      // Prevent a flash of the button if the dust assets are fetched quickly
+      const timer = setTimeout(() => {
+        setConvertDust(false);
+      }, 500);
+
+      return () => clearTimeout(timer);
+    }
+  }, [convertDust, dustAssets, isFetchedDust]);
+
   return (
     <>
       <Button
@@ -59,7 +71,7 @@ export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
         <Icon id="dust-broom" className="h-6 w-6" />
         {t("dustToOsmo.mainButton")}
       </Button>
-      {convertDust && isSuccessDust && (
+      {convertDust && isSuccessDust && dustAssets.length > 0 && (
         <SequentialSwapExecutor
           dustAssets={dustAssets}
           onComplete={handleConvertDustComplete}
