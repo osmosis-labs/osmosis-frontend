@@ -22,19 +22,25 @@ export function DustToOsmo() {
 
   const [convertDust, setConvertDust] = useState(false);
 
-  const { data: dustAssets, isSuccess: isSuccessDust } =
-    api.edge.assets.getUserDustAssets.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-        // TODO(Greg): the dust threshold has changed to 0.02.
-        // Is it ok to use this or should I use the 0.01 which was specified?
-        dustThreshold: HideDustUserSetting.DUST_THRESHOLD,
-      },
-      {
-        enabled: !isLoadingWallet && Boolean(account?.address) && convertDust,
-        cacheTime: 0,
-      }
-    );
+  const {
+    data: dustAssets,
+    isSuccess: isSuccessDust,
+    isFetched: isFetchedDust,
+  } = api.edge.assets.getUserDustAssets.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+      // TODO(Greg): the dust threshold has changed to 0.02.
+      // Is it ok to use this or should I use the 0.01 which was specified?
+      dustThreshold: HideDustUserSetting.DUST_THRESHOLD,
+    },
+    {
+      enabled: !isLoadingWallet && Boolean(account?.address) && convertDust,
+      cacheTime: 0,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+    }
+  );
 
   return (
     <>
