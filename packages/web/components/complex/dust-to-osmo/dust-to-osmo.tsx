@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
@@ -22,27 +22,6 @@ export function DustToOsmo() {
 
   const [convertDust, setConvertDust] = useState(false);
 
-  const [isSendingSwapTxs, setIsSendingSwapTxs] = useState(0);
-
-  const onSendSwapTxStatus = useCallback(
-    (status: UseMutationResult["status"]) => {
-      switch (status) {
-        case "loading":
-          setIsSendingSwapTxs((prev) => prev + 1);
-          break;
-        case "error":
-        case "success":
-          // We are being cheerfully neglectful with error handling here
-          setIsSendingSwapTxs((prev) => prev - 1);
-          break;
-        case "idle":
-        default:
-          break;
-      }
-    },
-    []
-  );
-
   const { data: dustAssets, isSuccess: isSuccessDust } =
     api.edge.assets.getUserDustAssets.useQuery(
       {
@@ -63,21 +42,85 @@ export function DustToOsmo() {
         className="gap-2 !border !border-osmoverse-700 !py-2 !px-4 !text-wosmongton-200"
         variant="outline"
         size="lg-full"
-        isLoading={convertDust && isSendingSwapTxs > 0}
+        isLoading={convertDust}
         onClick={() => setConvertDust(true)}
       >
         <Icon id="dust-broom" className="h-6 w-6" />
         {t("dustToOsmo.mainButton")}
       </Button>
-      {isSuccessDust &&
-        dustAssets.map((dustAsset) => (
-          <SwapHandler
-            key={dustAsset.coinDenom}
-            fromDenom={dustAsset.coinDenom}
-            amount={dustAsset.amount.toDec().toString()}
-            onSendSwapTxStatus={onSendSwapTxStatus}
-          />
-        ))}
+      {convertDust && isSuccessDust && (
+        <SequentialSwapExecutor
+          dustAssets={dustAssets}
+          onComplete={() => setConvertDust(false)}
+        />
+      )}
+    </>
+  );
+}
+
+function SequentialSwapExecutor({
+  dustAssets,
+  onComplete,
+}: {
+  dustAssets: {
+    coinDenom: string;
+    amount: { toDec: () => { toString: () => string } };
+  }[];
+  onComplete: () => void;
+}) {
+  const [swapTxStatuses, setSwapTxStatuses] = useState<{
+    [denom: string]: {
+      status: UseMutationResult["status"];
+      denom: string;
+    };
+  }>({});
+
+  const hasAllSwapsFinished =
+    Object.keys(swapTxStatuses).length === dustAssets.length &&
+    Object.values(swapTxStatuses).every(
+      ({ status }) => status === "success" || status === "error"
+    );
+
+  const handleSwapTxStatusChange = useCallback(
+    (denom: string, status: UseMutationResult["status"]) =>
+      setSwapTxStatuses((prev) => ({ ...prev, [denom]: { status, denom } })),
+    []
+  );
+
+  const activeSwapDenom = useMemo(() => {
+    const runningSwapDenom = Object.values(swapTxStatuses).find(
+      (s) => s.status === "loading"
+    )?.denom;
+
+    if (runningSwapDenom) {
+      return runningSwapDenom;
+    }
+
+    const nextDenom = Object.values(swapTxStatuses).find(
+      (s) => s.status === "idle"
+    )?.denom;
+
+    return nextDenom ?? "";
+  }, [swapTxStatuses]);
+
+  useEffect(() => {
+    // Notify the parent that we're done
+    if (hasAllSwapsFinished) {
+      onComplete();
+    }
+  }, [hasAllSwapsFinished, onComplete]);
+
+  return (
+    <>
+      {dustAssets.map((dustAsset) => (
+        <SwapHandler
+          key={dustAsset.coinDenom}
+          fromDenom={dustAsset.coinDenom}
+          amount={dustAsset.amount.toDec().toString()}
+          onSendSwapTxStatusChange={handleSwapTxStatusChange}
+          shouldExecuteSwap={activeSwapDenom === dustAsset.coinDenom}
+        />
+      ))}
     </>
   );
 }
@@ -85,11 +128,16 @@ export function DustToOsmo() {
 function SwapHandler({
   fromDenom,
   amount,
-  onSendSwapTxStatus,
+  shouldExecuteSwap = false,
+  onSendSwapTxStatusChange,
 }: {
   fromDenom: string;
   amount: string;
-  onSendSwapTxStatus: (status: UseMutationResult["status"]) => void;
+  shouldExecuteSwap: boolean;
+  onSendSwapTxStatusChange: (
+    denom: string,
+    status: UseMutationResult["status"]
+  ) => void;
 }) {
   const {
     inAmountInput: { setAmount: setInAmount },
@@ -115,19 +163,14 @@ function SwapHandler({
   } = useMutation(sendTradeTokenInTx);
 
   useEffect(() => {
-    if (isReadyToSwap && isSendSwapTxIdle) {
+    if (shouldExecuteSwap && isReadyToSwap && isSendSwapTxIdle) {
       sendSwapTx();
     }
-  }, [isReadyToSwap, isSendSwapTxIdle, sendSwapTx]);
+  }, [shouldExecuteSwap, isReadyToSwap, isSendSwapTxIdle, sendSwapTx]);
 
   useEffect(() => {
-    if (sendSwapTxStatus !== "idle") {
-      // useSwap needs a bit of time to be ready so we send loading first
-      onSendSwapTxStatus("loading");
-    } else {
-      onSendSwapTxStatus(sendSwapTxStatus);
-    }
-  }, [sendSwapTxStatus, onSendSwapTxStatus]);
+    onSendSwapTxStatusChange(fromDenom, sendSwapTxStatus);
+  }, [sendSwapTxStatus, onSendSwapTxStatusChange, fromDenom]);
 
   return <></>;
 }
