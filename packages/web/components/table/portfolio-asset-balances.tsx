@@ -551,7 +551,8 @@ const AssetActionsCell: AssetCellComponent<{
 
   const onSelectAction = (action: Action) => {
     if (action === "trade") {
-      router.push(`/?from=${coinDenom}&to=OSMO`);
+      const to = coinDenom === "OSMO" ? "ATOM" : "OSMO";
+      router.push(`/?from=${coinDenom}&to=${to}`);
     } else if (action === "earn") {
       router.push(`/earn?search=${coinDenom}`);
     } else if (action === "deposit") {
