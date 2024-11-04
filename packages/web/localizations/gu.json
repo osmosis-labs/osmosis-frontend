@@ -1272,6 +1272,7 @@
     "tooltipTitle": "ઓસ્મોસિસ પર {coinName}",
     "tooltipDescription": "વધુ સુગમતા અને ઉપયોગમાં સરળતા માટે ઓસ્મોસિસ {coinDenom} ના અસંખ્ય પ્રકારોને એક સરળ સંપત્તિમાં એકીકૃત કરે છે.",
     "convert": "કન્વર્ટ કરો",
-    "conversionFees": "રૂપાંતર ફી: {fees}"
+    "conversionFees": "રૂપાંતર ફી",
+    "free": "મફત"
   }
 }

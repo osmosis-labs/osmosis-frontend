@@ -1272,6 +1272,7 @@
     "tooltipTitle": "{coinName} na temat Osmosis",
     "tooltipDescription": "Osmosis konsoliduje liczne warianty {coinDenom} w jeden prosty zasób, co zapewnia większą elastyczność i łatwość użytkowania.",
     "convert": "Konwertować",
-    "conversionFees": "Opłaty za konwersję: {fees}"
+    "conversionFees": "Opłaty za konwersję",
+    "free": "Bezpłatny"
   }
 }

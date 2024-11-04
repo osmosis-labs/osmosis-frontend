@@ -1272,6 +1272,7 @@
     "tooltipTitle": "滲透上的{coinName}",
     "tooltipDescription": "Osmosis 將{coinDenom}的眾多變體合併為一種簡單的資產，以提高靈活性和易用性。",
     "convert": "轉變",
-    "conversionFees": "轉換費用： {fees}"
+    "conversionFees": "轉換費",
+    "free": "自由的"
   }
 }

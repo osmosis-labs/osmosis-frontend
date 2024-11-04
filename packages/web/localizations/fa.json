@@ -1272,6 +1272,7 @@
     "tooltipTitle": "{coinName} در اسمز",
     "tooltipDescription": "اسمز انواع مختلفی از {coinDenom} در یک دارایی ساده برای انعطاف بیشتر و سهولت استفاده، ادغام می کند.",
     "convert": "تبدیل کنید",
-    "conversionFees": "هزینه های تبدیل: {fees}"
+    "conversionFees": "هزینه های تبدیل",
+    "free": "رایگان"
   }
 }

@@ -1272,6 +1272,7 @@
     "tooltipTitle": "{coinName} Osmosis'te",
     "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir.",
     "convert": "Dönüştürmek",
-    "conversionFees": "Dönüştürme ücretleri: {fees}"
+    "conversionFees": "Dönüşüm ücretleri",
+    "free": "Özgür"
   }
 }

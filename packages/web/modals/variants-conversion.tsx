@@ -157,6 +157,41 @@ const AssetVariantRow: React.FC<{
 
   const conversionDisabled = isLoading || isError || isConvertingVariant;
 
+  // Extracted to add spans to style/differentiate fee details
+  const FeeContent = () => {
+    if (isLoading || !convertFee || !quote?.swapFee)
+      return <SkeletonLoader className="h-4 w-20" />;
+
+    // Free
+    if (quote.swapFee.toDec().isZero()) {
+      return (
+        <>
+          {`${t("assetVariantsConversion.conversionFees")}: `}
+          <span className="text-bullish-400">
+            {t("assetVariantsConversion.free")}
+          </span>
+        </>
+      );
+    }
+
+    // Fees
+    return (
+      <>
+        {`${t("assetVariantsConversion.conversionFees")}: `}
+        {convertFee.toDec().isPositive() && (
+          <>
+            <span className="text-white-100">{`${convertFee}`}</span>{" "}
+          </>
+        )}
+        <span className="text-osmoverse-500">
+          {convertFee.toDec().isPositive()
+            ? `(${quote.swapFee.maxDecimals(2)})`
+            : quote.swapFee.maxDecimals(2).toString()}
+        </span>
+      </>
+    );
+  };
+
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
@@ -239,17 +274,7 @@ const AssetVariantRow: React.FC<{
           )}
         </div>
         <div className="flex place-content-between items-center gap-2">
-          <span className="body2 text-osmoverse-300">
-            {convertFee && quote?.swapFee ? (
-              t("assetVariantsConversion.conversionFees", {
-                fees: quote?.swapFee?.toDec().isZero()
-                  ? "0"
-                  : `${convertFee} (${quote?.swapFee?.maxDecimals(2)})`,
-              })
-            ) : (
-              <SkeletonLoader className="h-4 w-20" />
-            )}
-          </span>
+          <div className="body2 text-osmoverse-300">{FeeContent()}</div>
           <Button
             size="md"
             className="!h-12"

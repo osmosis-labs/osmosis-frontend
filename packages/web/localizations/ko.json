@@ -1272,6 +1272,7 @@
     "tooltipTitle": "Osmosis의 {coinName}",
     "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다.",
     "convert": "전환하다",
-    "conversionFees": "환전 수수료: {fees}"
+    "conversionFees": "환전 수수료",
+    "free": "무료"
   }
 }

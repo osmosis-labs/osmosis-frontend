@@ -1272,6 +1272,7 @@
     "tooltipTitle": "Osmosis 上的{coinName}",
     "tooltipDescription": "Osmosis 将{coinDenom}的众多变体整合为一种简单资产，以实现更大的灵活性和易用性。",
     "convert": "转变",
-    "conversionFees": "转换费用： {fees}"
+    "conversionFees": "转换费",
+    "free": "自由的"
   }
 }

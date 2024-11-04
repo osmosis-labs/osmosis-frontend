@@ -1272,6 +1272,7 @@
     "tooltipTitle": "{coinName} ओस्मोसिस पर",
     "tooltipDescription": "ओस्मोसिस अधिक लचीलेपन और उपयोग में आसानी के लिए {coinDenom} के कई प्रकारों को एक सरल परिसंपत्ति में एकीकृत करता है।",
     "convert": "बदलना",
-    "conversionFees": "रूपांतरण शुल्क: {fees}"
+    "conversionFees": "रूपांतरण शुल्क",
+    "free": "मुक्त"
   }
 }

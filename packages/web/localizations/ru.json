@@ -1272,6 +1272,7 @@
     "tooltipTitle": "{coinName} на Osmosis",
     "tooltipDescription": "Osmosis объединяет многочисленные варианты {coinDenom} в один простой актив для большей гибкости и простоты использования.",
     "convert": "Конвертировать",
-    "conversionFees": "Комиссия за конвертацию: {fees}"
+    "conversionFees": "Комиссия за конвертацию",
+    "free": "Бесплатно"
   }
 }
