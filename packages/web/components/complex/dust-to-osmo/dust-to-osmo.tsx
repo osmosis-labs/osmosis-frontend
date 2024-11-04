@@ -26,6 +26,7 @@ export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
     data: dustAssets,
     isSuccess: isSuccessDust,
     isFetched: isFetchedDust,
+    refetch: refetchDust,
   } = api.edge.assets.getUserDustAssets.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
@@ -36,6 +37,7 @@ export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
     {
       enabled: !isLoadingWallet && Boolean(account?.address) && convertDust,
       cacheTime: 0,
+      staleTime: 0,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       refetchOnReconnect: false,
@@ -44,8 +46,10 @@ export function DustToOsmo({ onComplete }: { onComplete?: () => void }) {
 
   const handleConvertDustComplete = useCallback(() => {
     setConvertDust(false);
+    // Refetch to ensure the dust assets are up to date
+    refetchDust();
     onComplete && onComplete();
-  }, [onComplete]);
+  }, [onComplete, refetchDust]);
 
   useEffect(() => {
     // Stop loading if there are no dust assets
