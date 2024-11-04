@@ -103,7 +103,7 @@ export const AssetVariantsConversionModal = observer(() => {
       }
       className="bg-osmoverse-900"
     >
-      <div className={classNames("overflow-y-auto, mt-4 flex w-full flex-col")}>
+      <div className={classNames("overflow-y-auto mt-4 flex w-full flex-col")}>
         <p className="body1 text-center text-osmoverse-300">
           {t("assetVariantsConversion.description")}{" "}
           <Link
