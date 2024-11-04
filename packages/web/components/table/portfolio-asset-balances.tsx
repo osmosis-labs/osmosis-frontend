@@ -584,7 +584,7 @@ const AssetActionsCell: AssetCellComponent<{
         </Button>
       )}
       {!needsActivation && (
-        <div className="flex gap-3 md:hidden">
+        <>
           {showConvertButton ? (
             <Button
               variant="secondary"
@@ -602,7 +602,7 @@ const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -617,7 +617,7 @@ const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -631,29 +631,36 @@ const AssetActionsCell: AssetCellComponent<{
               </Button>
             </>
           )}
-          <AssetActionsDropdown
-            actionOptions={actionOptions}
-            onSelectAction={onSelectAction}
-          />
-        </div>
+        </>
       )}
+      <AssetActionsDropdown
+        disabled={needsActivation}
+        actionOptions={actionOptions}
+        onSelectAction={onSelectAction}
+      />
     </div>
   );
 };
 
 const AssetActionsDropdown: FunctionComponent<{
+  disabled?: boolean;
   actionOptions: {
     key: Action;
     label: string;
     icon: SpriteIconId;
   }[];
   onSelectAction: (key: Action) => void;
-}> = ({ actionOptions, onSelectAction }) => {
+}> = ({ actionOptions, onSelectAction, disabled }) => {
   return (
     <Popover className="relative shrink-0">
       {() => (
         <>
-          <PopoverButton as={Button} size="icon" variant="ghost">
+          <PopoverButton
+            as={Button}
+            size="icon"
+            variant="ghost"
+            disabled={disabled}
+          >
             <Icon id="dots-three-vertical" width={24} height={24} />
           </PopoverButton>
 
