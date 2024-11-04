@@ -27,7 +27,7 @@ export const useAssetVariantsModalStore = create<{
   setIsOpen: (value: boolean) => set({ isOpen: value }),
 }));
 
-export const AssetVariantsConversionModal = () => {
+export const AssetVariantsConversionModal = observer(() => {
   const { isOpen, setIsOpen } = useAssetVariantsModalStore();
   useAssetVariantsToast();
 
@@ -99,7 +99,7 @@ export const AssetVariantsConversionModal = () => {
       </div>
     </ModalBase>
   );
-};
+});
 
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
@@ -109,6 +109,7 @@ const AssetVariantRow: React.FC<{
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const transactionIdentifier = "convertVariant";
+  const variantTransactionIdentifier = `${transactionIdentifier}-${variant.amount.currency.coinMinimalDenom}`;
 
   const amount = variant.amount.toCoin().amount;
 
@@ -132,7 +133,8 @@ const AssetVariantRow: React.FC<{
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
 
   const isLoading =
-    isQuoteLoading || account?.txTypeInProgress === transactionIdentifier;
+    isQuoteLoading ||
+    account?.txTypeInProgress.startsWith(transactionIdentifier);
 
   const conversionDisabled =
     isLoading ||
@@ -168,7 +170,7 @@ const AssetVariantRow: React.FC<{
     accountStore
       .signAndBroadcast(
         accountStore.osmosisChainId,
-        transactionIdentifier,
+        variantTransactionIdentifier,
         messages
       )
       .catch((e) => {
@@ -273,6 +275,9 @@ const AssetVariantRow: React.FC<{
             size="md"
             className="!h-12"
             disabled={conversionDisabled}
+            isLoading={
+              account?.txTypeInProgress === variantTransactionIdentifier
+            }
             onClick={onConvert}
           >
             {t("assetVariantsConversion.convert")}

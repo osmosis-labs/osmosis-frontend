@@ -96,7 +96,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                       <div
                         className={classNames(
                           !selected ? "text-osmoverse-500" : undefined,
-                          "h6 md:subtitle1"
+                          "font-h6 text-h6 md:subtitle1"
                         )}
                       >
                         {t("portfolio.yourBalances")}
@@ -117,7 +117,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                       <div
                         className={classNames(
                           !selected ? "text-osmoverse-500" : undefined,
-                          "h6 md:subtitle1"
+                          "font-h6 text-h6 md:subtitle1"
                         )}
                       >
                         {t("portfolio.yourPositions")}
