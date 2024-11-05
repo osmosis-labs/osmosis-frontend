@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { AssetVariant } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -42,6 +42,62 @@ export const useAssetVariantsModalStore = create<{
   setIsOpenForVariant: (variantCoinMinimalDenom: string | undefined) =>
     set({ isOpen: true, variantCoinMinimalDenom }),
 }));
+
+const FeeContent: React.FC<{
+  isLoading: boolean;
+  convertFee?: PricePretty;
+  swapFee?: RatePretty;
+  isUnavailable: boolean;
+  simulation: { loading: boolean };
+}> = ({ isLoading, convertFee, swapFee, isUnavailable, simulation }) => {
+  const { t } = useTranslation();
+
+  if (isLoading || !convertFee || !swapFee || simulation.loading)
+    return <SkeletonLoader className="h-4 w-20" />;
+
+  if (isUnavailable)
+    return (
+      <span className="caption text-rust-300">
+        {t("assetVariantsConversion.unavailable")}
+      </span>
+    );
+
+  // Free
+  if (swapFee.toDec().isZero()) {
+    return (
+      <>
+        {`${t("assetVariantsConversion.conversionFees")}: `}
+        <span className="text-bullish-400">
+          {t("assetVariantsConversion.free")}
+        </span>
+      </>
+    );
+  }
+
+  /**
+   * Put an upper bound on the convert fee since
+   * low liq variants can have wildly high prices if the pool is imbalanced.
+   */
+  const showConvertFee =
+    convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
+
+  // Fees
+  return (
+    <>
+      {`${t("assetVariantsConversion.conversionFees")}: `}
+      {showConvertFee && (
+        <>
+          <span className="text-white-100">{`${convertFee}`}</span>{" "}
+        </>
+      )}
+      <span className="text-osmoverse-500">
+        {showConvertFee
+          ? `(${swapFee.maxDecimals(2)})`
+          : swapFee.maxDecimals(2).toString()}
+      </span>
+    </>
+  );
+};
 
 export const AssetVariantsConversionModal = observer(() => {
   const { logEvent } = useAmplitudeAnalytics();
@@ -201,55 +257,6 @@ const AssetVariantRow: React.FC<{
 
   const isButtonLoading = isConvertingThisVariant || simulation.loading;
 
-  // Extracted to add spans to style/differentiate fee details
-  const FeeContent = () => {
-    if (isLoading || !convertFee || !quote?.swapFee || simulation.loading)
-      return <SkeletonLoader className="h-4 w-20" />;
-
-    if (isUnavailable)
-      return (
-        <span className="caption text-rust-300">
-          {t("assetVariantsConversion.unavailable")}
-        </span>
-      );
-
-    // Free
-    if (quote.swapFee.toDec().isZero()) {
-      return (
-        <>
-          {`${t("assetVariantsConversion.conversionFees")}: `}
-          <span className="text-bullish-400">
-            {t("assetVariantsConversion.free")}
-          </span>
-        </>
-      );
-    }
-
-    /**
-     * Put an upper bound on the convert fee since
-     * low liq variants can have wildly high prices if the pool is imbalanced.
-     */
-    const showConvertFee =
-      convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
-
-    // Fees
-    return (
-      <>
-        {`${t("assetVariantsConversion.conversionFees")}: `}
-        {showConvertFee && (
-          <>
-            <span className="text-white-100">{`${convertFee}`}</span>{" "}
-          </>
-        )}
-        <span className="text-osmoverse-500">
-          {showConvertFee
-            ? `(${quote.swapFee.maxDecimals(2)})`
-            : quote.swapFee.maxDecimals(2).toString()}
-        </span>
-      </>
-    );
-  };
-
   return (
     <>
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
@@ -332,7 +339,15 @@ const AssetVariantRow: React.FC<{
           )}
         </div>
         <div className="flex place-content-between items-center gap-2">
-          <div className="body2 text-osmoverse-300">{FeeContent()}</div>
+          <div className="body2 text-osmoverse-300">
+            <FeeContent
+              isLoading={isLoading}
+              convertFee={convertFee}
+              swapFee={quote?.swapFee}
+              isUnavailable={isUnavailable}
+              simulation={simulation}
+            />
+          </div>
           <div className="flex items-center gap-2">
             <Button
               size="md"

@@ -38,6 +38,7 @@ import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DefaultSlippage } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
@@ -1262,8 +1263,6 @@ function useQueryRouterBestQuote(
     },
   };
 
-  // console.log("input.tokenInAmount : ", input.tokenInAmount);
-
   const inGivenOutQuote =
     trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
       {
@@ -1350,7 +1349,7 @@ function useQueryRouterBestQuote(
       tokenInCoinDecimals: tokenInCoinDecimals!,
       tokenOutCoinDecimals: tokenOutCoinDecimals!,
       tokenInCoinMinimalDenom,
-      maxSlippage: input.maxSlippage?.toString() ?? "0.05",
+      maxSlippage: input.maxSlippage?.toString() ?? DefaultSlippage,
       coinAmount: input.tokenInAmount,
       userOsmoAddress: address,
       quoteType,
