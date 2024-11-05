@@ -18,15 +18,12 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   tfmProTradingNavbarButton: false,
   positionRoi: true,
   swapToolSimulateFee: true,
-  portfolioPageAndNewAssetsPage: true,
-  newAssetsPage: true,
   displayDailyEarn: false,
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,
   advancedChart: false,
   cypherCard: false,
-  newPortfolioPage: false,
   inGivenOut: false,
   sqsActiveOrders: false,
   alloyedAssets: false,
@@ -52,14 +49,6 @@ export function useFeatureFlags() {
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
-    portfolioPageAndNewAssetsPage:
-      // don't want to use either on mobile
-      // as this flag bundles the 2 pages,
-      // and the portfolio page not be mobile responsive yet
-      // (even thought the assets page is)
-      isMobile || !isInitialized
-        ? false
-        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     oneClickTrading: isDevModeWithoutClientID
       ? defaultFlags.oneClickTrading
       : !isMobile &&

@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { GetAllocationResponse } from "@osmosis-labs/server";
+import type { PortfolioAssets } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
@@ -57,8 +57,8 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
 };
 
 export const Allocation: FunctionComponent<{
-  allocation?: GetAllocationResponse;
-}> = ({ allocation }) => {
+  assets?: PortfolioAssets;
+}> = ({ assets }) => {
   const { logEvent } = useAmplitudeAnalytics();
   const { width } = useWindowSize();
   const [selectedOption, setSelectedOption] =
@@ -73,8 +73,8 @@ export const Allocation: FunctionComponent<{
   }, [width]);
 
   const selectedList = useMemo(
-    () => allocation?.[selectedOption] ?? [],
-    [allocation, selectedOption]
+    () => assets?.[selectedOption] ?? [],
+    [assets, selectedOption]
   );
 
   const dustFilteredList = useHideDustUserSetting(
@@ -82,12 +82,12 @@ export const Allocation: FunctionComponent<{
     (item) => item.fiatValue
   );
 
-  if (!allocation) return null;
+  if (!assets) return null;
 
   return (
     <div className="flex w-full flex-col py-3">
       <div
-        className="flex cursor-pointer items-center justify-between py-3"
+        className="flex cursor-pointer select-none items-center justify-between py-3"
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <h6>{t("portfolio.allocation")}</h6>

@@ -1,31 +1,28 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { Asset, AssetList } from "@osmosis-labs/types";
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
 import { sort } from "@osmosis-labs/utils";
 
-import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
-import { queryAllocation } from "../../../queries/data-services";
-import { Categories } from "../../../queries/data-services";
-import { AccountCoinsResultDec } from "../../../queries/sidecar/allocation";
+import { captureIfError } from "../../../utils";
+import { Categories, queryPortfolioAssets } from "../../sidecar";
+import { AccountCoinsResultDec } from "../../sidecar/portfolio-assets";
 import { getAsset } from "../assets";
+import { DEFAULT_VS_CURRENCY } from "../assets/config";
 
-interface FormattedAllocation {
+export interface Allocation {
   key: string;
   percentage: RatePretty;
   fiatValue: PricePretty;
   asset?: CoinPretty;
 }
 
-export interface GetAllocationResponse {
-  all: FormattedAllocation[];
-  assets: FormattedAllocation[];
-  available: FormattedAllocation[];
-  totalCap: PricePretty;
-  /** Indicates there are variants that can be converted to canonical form. */
-  hasVariants: boolean;
+export interface AssetVariant {
+  name: string;
+  amount: CoinPretty;
+  canonicalAsset: MinimalAsset;
 }
 
-export function getAll(categories: Categories): FormattedAllocation[] {
+export function getAllocations(categories: Categories): Allocation[] {
   const userBalancesCap = new Dec(categories["user-balances"].capitalization);
   const stakedCap = new Dec(categories["staked"].capitalization);
   const unstakingCap = new Dec(categories["unstaking"].capitalization);
@@ -65,7 +62,7 @@ export function getAll(categories: Categories): FormattedAllocation[] {
 
   const sortedAllocation = sort(allocations, "fiatValue", "desc");
 
-  const formattedAllocations: FormattedAllocation[] = sortedAllocation.map(
+  const formattedAllocations: Allocation[] = sortedAllocation.map(
     (allocation) => ({
       key: allocation.key,
       percentage: totalCap.isZero()
@@ -102,12 +99,18 @@ export function calculatePercentAndFiatValues(
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
-  const assets: FormattedAllocation[] = topCoinsResults.map(
-    (asset: AccountCoinsResultDec) => {
-      const assetFromAssetLists = getAsset({
-        assetLists,
-        anyDenom: asset.coin.denom,
-      });
+  const assets: Allocation[] = topCoinsResults
+    .map((asset: AccountCoinsResultDec) => {
+      const assetFromAssetLists = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: asset.coin.denom,
+        })
+      );
+
+      if (!assetFromAssetLists) {
+        return null;
+      }
 
       return {
         key: assetFromAssetLists.coinDenom,
@@ -115,9 +118,10 @@ export function calculatePercentAndFiatValues(
           ? new RatePretty(0)
           : new RatePretty(asset.cap_value.quo(totalCap)),
         fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
+        asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
       };
-    }
-  );
+    })
+    .filter((asset): asset is NonNullable<typeof asset> => asset !== null);
 
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
@@ -130,7 +134,7 @@ export function calculatePercentAndFiatValues(
     ? new RatePretty(0)
     : new RatePretty(otherAmount).quo(totalCap);
 
-  const other: FormattedAllocation = {
+  const other: Allocation = {
     key: "Other",
     percentage: otherPercentage,
     fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, otherAmount),
@@ -139,7 +143,19 @@ export function calculatePercentAndFiatValues(
   return [...assets, other];
 }
 
-export async function getAllocation({
+export type PortfolioAssets = {
+  all: Allocation[];
+  assets: Allocation[];
+  available: Allocation[];
+  totalCap: PricePretty;
+  assetVariants: AssetVariant[];
+};
+
+/**
+ * Gets portfolio assets for the given address
+ * and includes a breakdown of the assets by category.
+ */
+export async function getPortfolioAssets({
   address,
   assetLists,
   allocationLimit = 5,
@@ -147,14 +163,14 @@ export async function getAllocation({
   address: string;
   assetLists: AssetList[];
   allocationLimit?: number;
-}): Promise<GetAllocationResponse> {
-  const data = await queryAllocation({
+}): Promise<PortfolioAssets> {
+  const data = await queryPortfolioAssets({
     address,
   });
 
   const categories = data.categories;
 
-  const all = getAll(categories);
+  const allocations = getAllocations(categories);
   const assets = calculatePercentAndFiatValues(
     categories,
     assetLists,
@@ -174,40 +190,61 @@ export async function getAllocation({
     new Dec(categories["total-assets"].capitalization)
   );
 
+  // Update userBalanceDenoms to be a list of objects with denom and amount
   const userBalanceDenoms =
-    categories["user-balances"]?.account_coins_result?.map(
-      (result) => result.coin.denom
-    ) ?? [];
+    categories["user-balances"]?.account_coins_result?.map((result) => ({
+      denom: result.coin.denom,
+      amount: result.coin.amount, // Assuming amount is stored in result.coin.amount
+    })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
-  const hasVariants = checkHasAssetVariants(
-    userBalanceDenoms,
-    assetLists.flatMap((list) => list.assets)
-  );
+  const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
 
   return {
-    all,
+    all: allocations,
     assets,
     available,
     totalCap,
-    hasVariants,
+    assetVariants,
   };
 }
 
-export function checkHasAssetVariants(
-  userCoinMinimalDenoms: string[],
-  assetListAssets: Asset[]
-): boolean {
-  const assetMap = new Map(
-    assetListAssets.map((asset) => [asset.coinMinimalDenom, asset])
-  );
+export function checkAssetVariants(
+  userBalanceDenoms: { denom: string; amount: string }[],
+  assetLists: AssetList[]
+): AssetVariant[] {
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
 
-  return userCoinMinimalDenoms.some((coinMinimalDenom) => {
-    const matchingAsset = assetMap.get(coinMinimalDenom);
+  return userBalanceDenoms
+    .map(({ denom, amount }) => {
+      const asset = assetListAssets.find(
+        (asset) => asset.coinMinimalDenom === denom
+      );
 
-    return (
-      matchingAsset &&
-      matchingAsset.coinMinimalDenom !== matchingAsset.variantGroupKey
-    );
-  });
+      // check if it's a variant
+      if (
+        asset &&
+        asset.variantGroupKey &&
+        asset.coinMinimalDenom !== asset.variantGroupKey
+      ) {
+        const canonicalAsset = getAsset({
+          assetLists,
+          anyDenom: asset.variantGroupKey,
+        });
+
+        const userAsset = getAsset({
+          assetLists,
+          anyDenom: denom,
+        });
+
+        return {
+          name: userAsset.coinName,
+          amount: new CoinPretty(userAsset, amount),
+          canonicalAsset: canonicalAsset,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 }
