@@ -128,7 +128,7 @@ export const AssetVariantsConversionModal = observer(() => {
                   key={variant.amount.currency.coinMinimalDenom}
                   variant={variant}
                   showBottomBorder={index !== variants.length - 1}
-                  onConverted={() => setIsOpen(false)}
+                  onDoneConverting={() => setIsOpen(false)}
                 />
               )
             )
@@ -142,8 +142,8 @@ export const AssetVariantsConversionModal = observer(() => {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
-  onConverted: () => void;
-}> = observer(({ variant, showBottomBorder = true, onConverted }) => {
+  onDoneConverting: () => void;
+}> = observer(({ variant, showBottomBorder = true, onDoneConverting }) => {
   const { t } = useTranslation();
 
   const {
@@ -281,7 +281,7 @@ const AssetVariantRow: React.FC<{
             className="!h-12"
             disabled={conversionDisabled}
             isLoading={isConvertingThisVariant}
-            onClick={() => onConvert().finally(onConverted)}
+            onClick={() => onConvert().catch(onDoneConverting)}
           >
             {t("assetVariantsConversion.convert")}
           </Button>
