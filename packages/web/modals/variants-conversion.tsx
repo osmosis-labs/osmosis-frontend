@@ -227,7 +227,7 @@ const AssetVariantRow: React.FC<{
 
     /**
      * Put an upper bound on the convert fee since
-     * low liq variance can have wildly high prices if the pool is imbalanced.
+     * low liq variants can have wildly high prices if the pool is imbalanced.
      */
     const showConvertFee =
       convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
