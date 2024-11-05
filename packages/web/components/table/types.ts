@@ -1,6 +1,7 @@
+import { SortDirection } from "@osmosis-labs/utils";
 import { ReactElement } from "react";
 
-import { CustomClasses, SortDirection } from "~/components/types";
+import { CustomClasses } from "~/components/types";
 import { Breakpoint } from "~/hooks";
 
 export interface BaseCell {

@@ -1,6 +1,6 @@
+import { SortDirection } from "@osmosis-labs/utils";
 import { useCallback, useMemo, useState } from "react";
 
-import { SortDirection } from "~/components/types";
 import { DataSorter } from "~/hooks/data/data-sorter";
 import { DataProcessor } from "~/hooks/data/types";
 import { useUserProcessedData } from "~/hooks/data/use-user-processed-data";
@@ -32,13 +32,10 @@ export function useSortedData<TData>(
     [sorter, data]
   );
   const [sortDirection, setSortDirection] = useState<SortDirection>(
-    initialSortDirection ?? "ascending"
+    initialSortDirection ?? "asc"
   );
   const toggleSortDirection = useCallback(
-    () =>
-      setSortDirection(
-        sortDirection === "ascending" ? "descending" : "ascending"
-      ),
+    () => setSortDirection(sortDirection === "asc" ? "desc" : "asc"),
     [sortDirection]
   );
   const [keypath, setKeypath, results] = useUserProcessedData(
@@ -48,7 +45,7 @@ export function useSortedData<TData>(
   );
 
   const directionalResults = useMemo(
-    () => (sortDirection === "descending" ? [...results].reverse() : results),
+    () => (sortDirection === "desc" ? [...results].reverse() : results),
     [sortDirection, results]
   );
 

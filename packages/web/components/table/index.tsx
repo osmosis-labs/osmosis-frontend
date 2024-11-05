@@ -96,12 +96,12 @@ export const Table = <TCell extends BaseCell>({
                     ) : null}
                     {colDef?.sort && (
                       <div className="inline pl-1 align-middle">
-                        {colDef?.sort?.currentDirection === "ascending" ? (
+                        {colDef?.sort?.currentDirection === "asc" ? (
                           <Icon
                             id="sort-up"
                             className="h-[16px] w-[16px] text-osmoverse-300"
                           />
-                        ) : colDef?.sort?.currentDirection === "descending" ? (
+                        ) : colDef?.sort?.currentDirection === "desc" ? (
                           <Icon
                             id="sort-down"
                             className="h-[16px] w-[16px] text-osmoverse-300"
