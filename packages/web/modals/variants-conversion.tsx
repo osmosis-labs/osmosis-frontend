@@ -1,7 +1,6 @@
 import type { AssetVariant } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Link from "next/link";
 import React, { useEffect } from "react";
 import { create } from "zustand";
 
@@ -106,12 +105,14 @@ export const AssetVariantsConversionModal = observer(() => {
       <div className={classNames("overflow-y-auto mt-4 flex w-full flex-col")}>
         <p className="body1 text-center text-osmoverse-300">
           {t("assetVariantsConversion.description")}{" "}
-          <Link
-            href="/learn/asset-variants"
-            className="text-wosmongton-300 hover:underline"
+          <a
+            href="https://forum.osmosis.zone/t/alloyed-assets-on-osmosis-unifying-ux-and-solving-liquidity-fragmentation/2624"
+            className="text-wosmongton-300 hover:underline cursor-pointer"
+            rel="noopener noreferrer"
+            target="_blank"
           >
             {t("assetVariantsConversion.learnMore")}
-          </Link>
+          </a>
         </p>
         <div className="mt-4 flex flex-col">
           {isPortfolioAssetsLoading ? (
