@@ -43,21 +43,30 @@ export async function getRouteTokenOutGivenIn({
     assetLists,
     anyDenom: tokenOutDenom,
   });
+  const tokenInAsset = getAsset({
+    assetLists,
+    anyDenom: tokenInDenom,
+  });
+
+  const fee = quote.swapFee
+    ? quote.amount.toDec().mul(quote.swapFee).truncate()
+    : undefined;
 
   return {
     ...quote,
-    split: makeDisplayableSplit(quote.split, assetLists),
+    split: makeDisplayableOutGivenInSplit(quote.split, assetLists),
     timeMs,
     amount: new CoinPretty(tokenOutAsset, quote.amount),
     priceImpactTokenOut: quote.priceImpactTokenOut
       ? new RatePretty(quote.priceImpactTokenOut.abs())
       : undefined,
     swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
+    feeAmount: fee ? new CoinPretty(tokenInAsset, fee) : undefined,
   };
 }
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
-function makeDisplayableSplit(
+function makeDisplayableOutGivenInSplit(
   split: SplitTokenInQuote["split"],
   assetLists: AssetList[]
 ) {
@@ -138,9 +147,14 @@ export async function getRouteTokenInGivenOut({
     assetLists,
     anyDenom: tokenInDenom,
   });
+
+  const fee = quote.swapFee
+    ? quote.amount.toDec().mul(quote.swapFee).truncate()
+    : undefined;
+
   return {
     ...quote,
-    split: makeDisplayableOutGivenInSplit(quote.split, assetLists),
+    split: makeDisplayableInGivenOutSplit(quote.split, assetLists),
     // supplementary data with display types
     name,
     timeMs,
@@ -149,11 +163,12 @@ export async function getRouteTokenInGivenOut({
       ? new RatePretty(quote.priceImpactTokenOut.abs())
       : undefined,
     swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
+    feeAmount: fee ? new CoinPretty(tokenInAsset, fee) : undefined,
   };
 }
 
 /** Get pool type, in, and out currency for displaying the route in detail. */
-function makeDisplayableOutGivenInSplit(
+function makeDisplayableInGivenOutSplit(
   split: SplitTokenOutQuote["split"],
   assetLists: AssetList[]
 ) {

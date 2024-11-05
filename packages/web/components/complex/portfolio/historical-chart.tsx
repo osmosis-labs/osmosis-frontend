@@ -1,4 +1,4 @@
-import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
+import type { Range } from "@osmosis-labs/server";
 import { AreaData, Time } from "lightweight-charts";
 
 import { Icon } from "~/components/assets";

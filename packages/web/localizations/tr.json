@@ -1263,5 +1263,17 @@
     "remindMeLater": "Daha sonra hatırlat bana",
     "dismiss": "Azletmek",
     "convert": "Dönüştürmek"
+  },
+  "assetVariantsConversion": {
+    "title": "Varlıkları Standartlaştırın",
+    "description": "Daha fazla esneklik ve uyumluluk için aşağıdaki varlıkları Osmosis'teki standart sürümlerine dönüştürün.",
+    "learnMore": "Daha fazla bilgi edin",
+    "errorLoading": "Varlık varyantları yüklenirken hata oluştu, lütfen daha sonra tekrar deneyin.",
+    "tooltipTitle": "{coinName} Osmosis'te",
+    "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir.",
+    "convert": "Dönüştürmek",
+    "conversionFees": "Dönüşüm ücretleri",
+    "free": "Özgür",
+    "unavailable": "Şu anda mevcut değil. Daha sonra tekrar deneyin."
   }
 }
