@@ -44,6 +44,7 @@ const Home = () => {
         <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center md:top-0">
           <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
+            {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
             <ClientOnly>
               <TradeTool
                 page="Swap Page"
