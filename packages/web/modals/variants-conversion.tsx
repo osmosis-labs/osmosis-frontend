@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import type { AssetVariant } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -224,17 +225,24 @@ const AssetVariantRow: React.FC<{
       );
     }
 
+    /**
+     * Put an upper bound on the convert fee since
+     * low liq variance can have wildly high prices if the pool is imbalanced.
+     */
+    const showConvertFee =
+      convertFee.toDec().isPositive() && convertFee.toDec().lt(new Dec(10_000));
+
     // Fees
     return (
       <>
         {`${t("assetVariantsConversion.conversionFees")}: `}
-        {convertFee.toDec().isPositive() && (
+        {showConvertFee && (
           <>
             <span className="text-white-100">{`${convertFee}`}</span>{" "}
           </>
         )}
         <span className="text-osmoverse-500">
-          {convertFee.toDec().isPositive()
+          {showConvertFee
             ? `(${quote.swapFee.maxDecimals(2)})`
             : quote.swapFee.maxDecimals(2).toString()}
         </span>
