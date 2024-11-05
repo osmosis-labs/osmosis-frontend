@@ -1273,6 +1273,7 @@
     "tooltipDescription": "Osmoza consolidează numeroase variante de {coinDenom} într-un singur activ pentru mai multă flexibilitate și ușurință în utilizare.",
     "convert": "Convertit",
     "conversionFees": "Taxe de conversie",
-    "free": "Gratuit"
+    "free": "Gratuit",
+    "unavailable": "Momentan indisponibil. Încercați din nou mai târziu."
   }
 }

@@ -2,6 +2,7 @@ import type { AssetVariant } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
+import { useAsync } from "react-use";
 import { create } from "zustand";
 
 // Import useTranslation
@@ -18,7 +19,10 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { useConvertVariant } from "~/hooks/use-convert-variant";
+import {
+  getConvertVariantMessages,
+  useConvertVariant,
+} from "~/hooks/use-convert-variant";
 import { ModalBase } from "~/modals";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -145,6 +149,9 @@ const AssetVariantRow: React.FC<{
   onDoneConverting: () => void;
 }> = observer(({ variant, showBottomBorder = true, onDoneConverting }) => {
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
+  const { accountStore } = useStore();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
 
   const {
     onConvert,
@@ -156,12 +163,54 @@ const AssetVariantRow: React.FC<{
     isConvertingThisVariant,
   } = useConvertVariant(variant);
 
-  const conversionDisabled = isLoading || isError || isConvertingVariant;
+  /**
+   * Check for error when estimating, in case this variant
+   * has very low liquidity and would fail on chain for some reason.
+   * If so, block the user from sending tx.
+   */
+  const simulation = useAsync(async () => {
+    if (!account || !quote || !account?.address) return;
+
+    const messages = await getConvertVariantMessages(
+      variant,
+      quote,
+      account.address
+    );
+
+    if (!Array.isArray(messages)) return;
+
+    await accountStore.estimateFee({ wallet: account, messages }).catch((e) => {
+      logEvent([
+        EventName.ConvertVariants.variantUnavailable,
+        { fromToken: variant.amount.currency.coinDenom },
+      ]);
+
+      throw e;
+    });
+  });
+
+  const isUnavailable = Boolean(simulation?.error) || isError;
+
+  const conversionDisabled =
+    isLoading ||
+    isError ||
+    isConvertingVariant ||
+    simulation.loading ||
+    Boolean(simulation?.error);
+
+  const isButtonLoading = isConvertingThisVariant || simulation.loading;
 
   // Extracted to add spans to style/differentiate fee details
   const FeeContent = () => {
-    if (isLoading || !convertFee || !quote?.swapFee)
+    if (isLoading || !convertFee || !quote?.swapFee || simulation.loading)
       return <SkeletonLoader className="h-4 w-20" />;
+
+    if (isUnavailable)
+      return (
+        <span className="caption text-rust-300">
+          {t("assetVariantsConversion.unavailable")}
+        </span>
+      );
 
     // Free
     if (quote.swapFee.toDec().isZero()) {
@@ -276,15 +325,19 @@ const AssetVariantRow: React.FC<{
         </div>
         <div className="flex place-content-between items-center gap-2">
           <div className="body2 text-osmoverse-300">{FeeContent()}</div>
-          <Button
-            size="md"
-            className="!h-12"
-            disabled={conversionDisabled}
-            isLoading={isConvertingThisVariant}
-            onClick={() => onConvert().catch(onDoneConverting)}
-          >
-            {t("assetVariantsConversion.convert")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              size="md"
+              className={classNames("!h-12 !w-fit", {
+                "rounded-full !bg-osmoverse-850/60": isButtonLoading,
+              })}
+              disabled={conversionDisabled}
+              isLoading={isButtonLoading}
+              onClick={() => onConvert().catch(() => onDoneConverting)}
+            >
+              {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
+            </Button>
+          </div>
         </div>
       </div>
       {showBottomBorder && <div className="h-px w-full bg-osmoverse-700" />}

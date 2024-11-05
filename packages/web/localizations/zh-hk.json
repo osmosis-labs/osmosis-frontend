@@ -1273,6 +1273,7 @@
     "tooltipDescription": "Osmosis 將{coinDenom}的眾多變體合併為一種簡單的資產，以提高靈活性和易用性。",
     "convert": "轉變",
     "conversionFees": "轉換費",
-    "free": "自由的"
+    "free": "自由的",
+    "unavailable": "目前不可用。稍後再試。"
   }
 }

@@ -278,5 +278,6 @@ export const EventName = {
     startFlow: "Convert Variants: Start flow",
     declineFlow: "Convert Variants: Decline flow",
     completeFlow: "Convert Variants: Complete flow",
+    variantUnavailable: "Convert Variants: Variant swap unavailable",
   },
 };

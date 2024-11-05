@@ -1273,6 +1273,7 @@
     "tooltipDescription": "Osmosis consolidates numerous variants of {coinDenom} into one simple asset for more flexibility and ease of use.",
     "convert": "Convert",
     "conversionFees": "Conversion fees",
-    "free": "Free"
+    "free": "Free",
+    "unavailable": "Currently unavailable. Try again later."
   }
 }

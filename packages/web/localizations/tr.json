@@ -1273,6 +1273,7 @@
     "tooltipDescription": "Osmosis, daha fazla esneklik ve kullanım kolaylığı için {coinDenom} değişkeninin çok sayıda çeşidini tek bir basit varlıkta birleştirir.",
     "convert": "Dönüştürmek",
     "conversionFees": "Dönüşüm ücretleri",
-    "free": "Özgür"
+    "free": "Özgür",
+    "unavailable": "Şu anda mevcut değil. Daha sonra tekrar deneyin."
   }
 }

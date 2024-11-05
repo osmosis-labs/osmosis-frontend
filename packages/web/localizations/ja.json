@@ -1273,6 +1273,7 @@
     "tooltipDescription": "Osmosis は{coinDenom}の多数のバリエーションを 1 つのシンプルなアセットに統合し、柔軟性と使いやすさを向上させます。",
     "convert": "変換する",
     "conversionFees": "変換手数料",
-    "free": "無料"
+    "free": "無料",
+    "unavailable": "現在ご利用いただけません。しばらくしてからもう一度お試しください。"
   }
 }

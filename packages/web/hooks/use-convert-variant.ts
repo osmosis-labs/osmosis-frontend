@@ -99,7 +99,6 @@ export function useConvertVariant(
         const messages = await getConvertVariantMessages(
           variant,
           quote,
-          variant?.amount.toCoin().amount,
           account.address
         ).catch((e) => (e instanceof Error ? e.message : "Unknown error"));
         if (!messages || typeof messages === "string") {
@@ -177,14 +176,14 @@ export function useConvertVariant(
  * @returns Promise resolving to swap messages, or undefined if conversion not possible
  * @throws Error if token denoms are missing or no quote is found
  */
-async function getConvertVariantMessages(
+export async function getConvertVariantMessages(
   variant: AssetVariant,
   quote: QuoteOutGivenIn,
-  amount: string,
   address: string
 ) {
   const tokenInDenom = variant.amount.currency.coinMinimalDenom;
   const tokenOutDenom = variant.canonicalAsset?.coinMinimalDenom;
+  const amount = variant.amount.toCoin().amount;
 
   if (!tokenInDenom || !tokenOutDenom) {
     throw new Error("Missing token denoms");
