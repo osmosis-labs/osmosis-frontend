@@ -442,7 +442,9 @@ export const useBridgeQuotes = ({
         fromAsset &&
         toAsset &&
         fromChain &&
-        toChain
+        toChain &&
+        fromAddress &&
+        toAddress
       ) {
         transferHistoryStore.pushTxNow({
           createdAtUnix: dayjs().unix(),
@@ -451,6 +453,8 @@ export const useBridgeQuotes = ({
             ...fromAsset,
             amount: inputCoin.trim(true).toCoin().amount,
           },
+          fromAddress,
+          toAddress,
           fromChain,
           toChain,
           toAsset,

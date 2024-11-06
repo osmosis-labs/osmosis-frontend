@@ -1,12 +1,51 @@
-import { FormattedTransaction } from "@osmosis-labs/server";
+import dayjs from "dayjs";
+import isToday from "dayjs/plugin/isToday";
+import isYesterday from "dayjs/plugin/isYesterday";
 
-import { TransactionRow } from "~/components/transactions/transaction-row";
-import {
-  groupTransactionsByDate,
-  useFormatDate,
-} from "~/components/transactions/transaction-utils";
+import { TransactionSwapRow } from "~/components/transactions/types/transaction-swap-row";
+import { TransactionTransferRow } from "~/components/transactions/types/transaction-transfer-row";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useTransactionHistory } from "~/hooks/use-transactions";
+
+dayjs.extend(isToday);
+dayjs.extend(isYesterday);
+
+const formatDate = (
+  t: ReturnType<typeof useTranslation>["t"],
+  dateString: string
+) => {
+  const date = dayjs(dateString);
+  if (date.isToday()) return t("date.earlierToday");
+  if (date.isYesterday()) return t("date.yesterday");
+
+  const month = date.format("MMMM");
+
+  if (date.isSame(dayjs(), "year")) return `${month} ${date.format("D")}`;
+
+  return `${month} ${date.format("D, YYYY")}`;
+};
+
+const groupTransactionsByDate = (
+  transactions: ReturnType<typeof useTransactionHistory>["transactions"]
+): Record<string, ReturnType<typeof useTransactionHistory>["transactions"]> => {
+  return transactions.reduce((acc, transaction) => {
+    // extract date from block timestamp
+    const date = dayjs(
+      transaction.__type === "recentTransfer"
+        ? transaction.compareDate
+        : transaction.blockTimestamp
+    ).format("YYYY-MM-DD");
+
+    if (!acc[date]) {
+      acc[date] = [];
+    }
+
+    acc[date].push(transaction);
+
+    return acc;
+  }, {} as Record<string, ReturnType<typeof useTransactionHistory>["transactions"]>);
+};
 
 export const TransactionRows = ({
   transactions,
@@ -15,13 +54,12 @@ export const TransactionRows = ({
   setOpen,
   open,
 }: {
-  transactions: FormattedTransaction[];
+  transactions: ReturnType<typeof useTransactionHistory>["transactions"];
   selectedTransactionHash?: string;
   setSelectedTransactionHash: (hash: string) => void;
   setOpen: (open: boolean) => void;
   open: boolean;
 }) => {
-  const formatDate = useFormatDate();
   const { logEvent } = useAmplitudeAnalytics();
   const { t } = useTranslation();
 
@@ -31,65 +69,101 @@ export const TransactionRows = ({
         ([date, transactions]) => (
           <div key={date} className="flex flex-col px-4 pt-8">
             <div className="subtitle1 md:body2 pb-3 capitalize text-osmoverse-300">
-              {formatDate(date)}
+              {formatDate(t, date)}
             </div>
             <hr className="mb-3 text-osmoverse-700" />
             {transactions
               .map((transaction) => {
-                const isSelected = selectedTransactionHash === transaction.hash;
-                return (
-                  <TransactionRow
-                    hash={transaction.hash}
-                    key={transaction.id}
-                    isSelected={isSelected}
-                    title={{
-                      pending: t("transactions.swapping"),
-                      success: t("transactions.swapped"),
-                      failed: t("transactions.swapFailed"),
-                    }}
-                    effect="swap"
-                    status={transaction.code === 0 ? "success" : "failed"}
-                    onClick={() => {
-                      // TODO - once there are more transaction types, we can add more event names
-                      logEvent([
-                        EventName.TransactionsPage.swapClicked,
-                        {
-                          tokenIn:
-                            transaction.metadata[0].value[0].txInfo.tokenIn
-                              .token.denom,
-                          tokenOut:
-                            transaction.metadata[0].value[0].txInfo.tokenOut
-                              .token.denom,
+                if (transaction.__type === "transaction") {
+                  const isSelected =
+                    selectedTransactionHash === transaction.hash;
+                  return (
+                    <TransactionSwapRow
+                      key={transaction.hash}
+                      hash={transaction.hash}
+                      isSelected={isSelected}
+                      size="lg"
+                      transaction={{
+                        code: transaction.code,
+                        tokenIn: {
+                          amount:
+                            transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                              ?.tokenIn?.token,
+                          value:
+                            transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                              ?.tokenIn?.usd,
                         },
-                      ]);
+                        tokenOut: {
+                          amount:
+                            transaction?.metadata?.[0]?.value?.[0]?.txInfo
+                              ?.tokenOut?.token,
 
-                      setSelectedTransactionHash(transaction.hash);
+                          value:
+                            transaction.metadata[0].value[0].txInfo.tokenOut
+                              .usd,
+                        },
+                      }}
+                      onClick={() => {
+                        // TODO - once there are more transaction types, we can add more event names
+                        logEvent([
+                          EventName.TransactionsPage.swapClicked,
+                          {
+                            tokenIn:
+                              transaction.metadata[0].value[0].txInfo.tokenIn
+                                .token.denom,
+                            tokenOut:
+                              transaction.metadata[0].value[0].txInfo.tokenOut
+                                .token.denom,
+                          },
+                        ]);
 
-                      // delay to ensure the slide over transitions smoothly
-                      if (!open) {
-                        setTimeout(() => setOpen(true), 1);
-                      }
-                    }}
-                    tokenConversion={{
-                      tokenIn: {
-                        amount:
-                          transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                            ?.tokenIn?.token,
-                        value:
-                          transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                            ?.tokenIn?.usd,
-                      },
-                      tokenOut: {
-                        amount:
-                          transaction?.metadata?.[0]?.value?.[0]?.txInfo
-                            ?.tokenOut?.token,
+                        setSelectedTransactionHash(transaction.hash);
 
-                        value:
-                          transaction.metadata[0].value[0].txInfo.tokenOut.usd,
-                      },
-                    }}
-                  />
-                );
+                        // delay to ensure the slide over transitions smoothly
+                        if (!open) {
+                          setTimeout(() => setOpen(true), 1);
+                        }
+                      }}
+                    />
+                  );
+                }
+
+                if (transaction.__type === "recentTransfer") {
+                  const isSelected =
+                    selectedTransactionHash === transaction.sendTxHash;
+                  return (
+                    <TransactionTransferRow
+                      key={transaction.sendTxHash}
+                      size="lg"
+                      transaction={transaction}
+                      onClick={() => {
+                        // TODO - once there are more transaction types, we can add more event names
+                        // logEvent([
+                        //   EventName.TransactionsPage.swapClicked,
+                        //   {
+                        //     tokenIn:
+                        //       transaction.metadata[0].value[0].txInfo.tokenIn
+                        //         .token.denom,
+                        //     tokenOut:
+                        //       transaction.metadata[0].value[0].txInfo.tokenOut
+                        //         .token.denom,
+                        //   },
+                        // ]);
+
+                        setSelectedTransactionHash(transaction.sendTxHash);
+
+                        // delay to ensure the slide over transitions smoothly
+                        if (!open) {
+                          setTimeout(() => setOpen(true), 1);
+                        }
+                      }}
+                      hash={transaction.sendTxHash}
+                      isSelected={isSelected}
+                    />
+                  );
+                }
+
+                return null;
               })
               // filters out any transactions with missing metadata
               .filter(Boolean)}

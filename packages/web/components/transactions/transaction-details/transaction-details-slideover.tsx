@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
-import { FormattedTransaction } from "@osmosis-labs/server";
 
 import { TransactionDetailsContent } from "~/components/transactions/transaction-details/transaction-details-content";
+import { useTransactionHistory } from "~/hooks/use-transactions";
 
 export const TransactionDetailsSlideover = ({
   onRequestClose,
@@ -10,7 +10,7 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction?: FormattedTransaction;
+  transaction?: ReturnType<typeof useTransactionHistory>["transactions"];
 }) => {
   if (!transaction) return null;
   return (

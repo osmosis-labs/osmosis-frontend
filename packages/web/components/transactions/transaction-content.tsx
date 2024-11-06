@@ -1,5 +1,4 @@
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
-import { FormattedTransaction } from "@osmosis-labs/server";
 import {
   AccountStoreWallet,
   CosmosAccount,
@@ -15,10 +14,11 @@ import { ClientOnly } from "~/components/client-only";
 import { OrderHistory } from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
-import { TransactionButtons } from "~/components/transactions/transaction-buttons";
+import { TransactionOptionsMenu } from "~/components/transactions/transaction-options-menu";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
 import { useTranslation } from "~/hooks";
+import { useTransactionHistory } from "~/hooks/use-transactions";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 
@@ -37,7 +37,7 @@ export const TransactionContent = ({
 }: {
   setSelectedTransactionHash: (hash: string) => void;
   selectedTransactionHash?: string;
-  transactions?: FormattedTransaction[];
+  transactions?: ReturnType<typeof useTransactionHistory>["transactions"];
   setOpen: (open: boolean) => void;
   open: boolean;
   address: string;
@@ -78,7 +78,7 @@ export const TransactionContent = ({
               {t("transactions.launchAlert")}
             </p>
           </div>
-          <TransactionButtons open={open} address={address} />
+          <TransactionOptionsMenu open={open} address={address} />
         </div>
 
         <TabGroup

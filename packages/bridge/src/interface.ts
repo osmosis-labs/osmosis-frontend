@@ -474,6 +474,8 @@ const txSnapshotSchema = z.object({
   type: z.literal("bridge-transfer"),
   reason: transferFailureReasonSchema.optional(),
   provider: z.string().transform((val) => val as Bridge),
+  fromAddress: z.string(),
+  toAddress: z.string(),
   osmoBech32Address: z.string(),
   networkFee: bridgeAssetSchema
     .extend({

@@ -31,7 +31,12 @@ export const ChainLogo: FunctionComponent<ChainLogoProps> = ({
         className
       )}
       style={{
-        background: color ? rgba(color, 0.3) : undefined,
+        background:
+          color === "transparent"
+            ? "transparent"
+            : color
+            ? rgba(color, 0.3)
+            : undefined,
       }}
     >
       {logoUri && (

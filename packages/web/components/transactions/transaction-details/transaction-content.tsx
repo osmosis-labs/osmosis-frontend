@@ -10,7 +10,7 @@ import { useRouter } from "next/router";
 import { BackToTopButton } from "~/components/buttons/back-to-top-button";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
-import { TransactionButtons } from "~/components/transactions/transaction-buttons";
+import { TransactionOptionsMenu } from "~/components/transactions/transaction-buttons";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
 import { useTranslation } from "~/hooks";
@@ -65,7 +65,7 @@ export const TransactionContent = ({
             {t("transactions.launchAlert")}
           </p>
         </div>
-        <TransactionButtons open={open} address={address} />
+        <TransactionOptionsMenu open={open} address={address} />
       </div>
 
       <div className="-mx-4 flex flex-col">

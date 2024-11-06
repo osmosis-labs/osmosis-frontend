@@ -17,8 +17,8 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useTransactionHistory } from "~/hooks/use-transactions";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
 
 // @ts-ignore
 const EXAMPLE = {
@@ -53,22 +53,10 @@ const Transactions: React.FC = observer(() => {
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const { data, isFetching: isGetTransactionsFetching } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        address,
-        page: pageString,
-        pageSize: pageSizeString,
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      }
-    );
-
-  const { transactions, hasNextPage } = data ?? {
-    transactions: [],
-    hasNextPage: false,
-  };
+  const { transactions, hasNextPage, isLoading } = useTransactionHistory({
+    pageNumber: pageString,
+    pageSize: pageSizeString,
+  });
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -129,7 +117,12 @@ const Transactions: React.FC = observer(() => {
   };
 
   const selectedTransaction = useMemo(
-    () => transactions.find((tx) => tx.hash === selectedTransactionHash),
+    () =>
+      transactions.find(
+        (tx) =>
+          (tx.type === "recentTransfer" ? tx.sendTxHash : tx.hash) ===
+          selectedTransactionHash
+      ),
     [transactions, selectedTransactionHash]
   );
 
@@ -142,7 +135,7 @@ const Transactions: React.FC = observer(() => {
         setOpen={setOpen}
         open={open}
         address={address}
-        isLoading={isGetTransactionsFetching || isWalletLoading}
+        isLoading={isLoading || isWalletLoading}
         isWalletConnected={isWalletConnected}
         page={pageString}
         hasNextPage={hasNextPage}
