@@ -92,7 +92,6 @@ export const TransactionDetailsContent = ({
             <IconButton
               aria-label="Close"
               mode="unstyled"
-              data-testid="close"
               size="unstyled"
               className="h-12 w-12 cursor-pointer rounded-full py-0 text-osmoverse-400 hover:rounded-full hover:bg-osmoverse-850 hover:text-white-full"
               icon={<Icon id="close-small" width={24} height={24} />}
