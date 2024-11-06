@@ -303,13 +303,15 @@ export const SuperfluidValidatorModal: FunctionComponent<
                   } = rows[virtualRow.index];
                   return (
                     <tr
-                      className={`!h-fit ${
+                      className={classNames(
+                        "!h-fit transition-colors",
                         address === selectedValidatorAddress
                           ? "border border-osmoverse-500"
                           : isDelegated === 1
                           ? "bg-osmoverse-800"
-                          : "bg-osmoverse-900"
-                      } hover:cursor-pointer hover:bg-osmoverse-850`}
+                          : "bg-osmoverse-900",
+                        "hover:cursor-pointer hover:bg-osmoverse-850"
+                      )}
                       key={id}
                       onClick={() => setSelectedValidatorAddress(address)}
                     >
