@@ -138,6 +138,18 @@ export const AssetVariantsConversionModal = observer(() => {
     }
   );
 
+  // Use effect to close modal when no variants left
+  // This method, after testing, is more immediate than using tanstack's select
+  useEffect(() => {
+    if (
+      portfolioAssetsData &&
+      portfolioAssetsData.assetVariants.length === 0 &&
+      isOpen
+    ) {
+      setIsOpen(false);
+    }
+  }, [portfolioAssetsData, isOpen, setIsOpen]);
+
   // Log when opened
   useEffect(() => {
     if (isOpen) {
@@ -189,7 +201,6 @@ export const AssetVariantsConversionModal = observer(() => {
                   key={variant.amount.currency.coinMinimalDenom}
                   variant={variant}
                   showBottomBorder={index !== variants.length - 1}
-                  onDoneConverting={() => setIsOpen(false)}
                 />
               )
             )
@@ -203,8 +214,7 @@ export const AssetVariantsConversionModal = observer(() => {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
-  onDoneConverting: () => void;
-}> = observer(({ variant, showBottomBorder = true, onDoneConverting }) => {
+}> = observer(({ variant, showBottomBorder = true }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -356,7 +366,11 @@ const AssetVariantRow: React.FC<{
               })}
               disabled={conversionDisabled}
               isLoading={isButtonLoading}
-              onClick={() => onConvert().catch(() => onDoneConverting)}
+              onClick={() =>
+                onConvert().catch((e) => {
+                  console.error("Failed to convert", e);
+                })
+              }
             >
               {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
             </Button>
