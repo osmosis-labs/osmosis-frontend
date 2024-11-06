@@ -97,6 +97,7 @@ export const ModalCloseButton = ({
 }) => (
   <IconButton
     aria-label="Close"
+    data-testid="close"
     className={classNames(
       "absolute right-8 top-[24px] z-50 !h-12 !w-12 cursor-pointer !py-0 text-wosmongton-200 hover:text-osmoverse-100 md:right-7 md:top-7 md:!h-8 md:!w-8 xs:right-4",
       className
