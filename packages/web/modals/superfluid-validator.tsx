@@ -258,7 +258,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
           ) : (
             <table
               className={classNames(
-                "w-full",
+                "w-full bg-transparent",
                 isPreviousData &&
                   isLoadingValidators &&
                   "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
