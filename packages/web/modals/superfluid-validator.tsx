@@ -1,14 +1,27 @@
 import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { BondStatus } from "@osmosis-labs/types";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { SearchBox } from "~/components/input";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
+import { SortHeader } from "~/components/table/headers/sort";
 import { InfoTooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
@@ -16,7 +29,18 @@ import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
+
+type Validator = {
+  address: string;
+  validatorName?: string;
+  validatorImgSrc?: string;
+  validatorCommission: RatePretty;
+  isDelegated: number;
+};
+
+const defaultSortKey = "isDelegated";
 
 export const SuperfluidValidatorModal: FunctionComponent<
   {
@@ -38,6 +62,8 @@ export const SuperfluidValidatorModal: FunctionComponent<
   const { accountStore } = useStore();
   const { isMobile } = useWindowSize();
 
+  const tableScrollReference = useRef<HTMLDivElement>(null);
+
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
   const { data: validators, isLoading: isLoadingAllValidators } =
@@ -45,15 +71,18 @@ export const SuperfluidValidatorModal: FunctionComponent<
       status: BondStatus.Bonded,
     });
 
-  const { data: userValidatorDelegations, isLoading: isLoadingUserValidators } =
-    api.edge.staking.getUserDelegations.useQuery(
-      {
-        userOsmoAddress: account?.address ?? "",
-      },
-      {
-        enabled: !!account?.address,
-      }
-    );
+  const {
+    data: userValidatorDelegations,
+    isLoading: isLoadingUserValidators,
+    isPreviousData,
+  } = api.edge.staking.getUserDelegations.useQuery(
+    {
+      userOsmoAddress: account?.address ?? "",
+    },
+    {
+      enabled: !!account?.address,
+    }
+  );
 
   const isLoadingValidators = isLoadingAllValidators || isLoadingUserValidators;
 
@@ -73,13 +102,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
   );
 
   // get minimum info for display, mark validators users are delegated to
-  const activeDelegatedValidators: {
-    address: string;
-    validatorName?: string;
-    validatorImgSrc?: string;
-    validatorCommission: RatePretty;
-    isDelegated: number;
-  }[] = useMemo(
+  const activeDelegatedValidators: Validator[] = useMemo(
     () =>
       validators?.map(
         (
@@ -108,14 +131,8 @@ export const SuperfluidValidatorModal: FunctionComponent<
     [validators, userValidatorDelegations, showDelegated, randomSortVals]
   );
 
-  const [
-    sortKey,
-    setSortKey,
-    sortDirection,
-    _,
-    toggleSortDirection,
-    sortedData,
-  ] = useSortedData(activeDelegatedValidators, "isDelegated", "descending");
+  const [sortKey, setKeypath, sortDirection, setSortDirection, _, sortedData] =
+    useSortedData(activeDelegatedValidators, defaultSortKey, "desc");
   const [query, setQuery, searchedValidators] = useFilteredData(sortedData, [
     "validatorName",
     "validatorCommission",
@@ -124,6 +141,94 @@ export const SuperfluidValidatorModal: FunctionComponent<
   const [selectedValidatorAddress, setSelectedValidatorAddress] = useState<
     string | null
   >(null);
+
+  const setSortKey = useCallback(
+    (key?: string) => {
+      if (key) {
+        setKeypath(key);
+      } else {
+        setKeypath(defaultSortKey);
+      }
+    },
+    [setKeypath]
+  );
+
+  const columns = useMemo(() => {
+    const columnHelper = createColumnHelper<Validator>();
+    return [
+      columnHelper.accessor((row) => row, {
+        id: "validatorInfo",
+        cell: ({ row: { original: validator } }) => (
+          <ValidatorInfoCell
+            value={validator.validatorName}
+            imgSrc={validator.validatorImgSrc}
+          />
+        ),
+        header: () => (
+          <SortHeader
+            className="w-full !justify-start ml-0 subtitle1 text-osmoverse-300"
+            label={t("superfluidValidator.columns.validator")}
+            sortKey="validatorName"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+      }),
+      columnHelper.accessor((row) => row, {
+        id: "commission",
+        header: () => (
+          <SortHeader
+            className="w-full !justify-end ml-0 subtitle1 text-osmoverse-300"
+            label={t("superfluidValidator.columns.commission")}
+            sortKey="validatorCommission"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
+        cell: (cell) => cell.getValue().validatorCommission.toString(),
+      }),
+    ];
+  }, [sortKey, sortDirection, setSortDirection, setSortKey, t]);
+
+  const table = useReactTable({
+    data: searchedValidators,
+    columns: columns,
+    manualSorting: true,
+    manualFiltering: true,
+    manualPagination: true,
+    enableFilters: false,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  // #region virtualization
+  // Virtualization is used to render only the visible rows
+  // and save on performance and memory.
+  // As the user scrolls, invisible rows are removed from the DOM.
+  const topOffset = Number(
+    isMobile
+      ? theme.extend.height["navbar-mobile"].replace("px", "")
+      : theme.extend.height.navbar.replace("px", "")
+  );
+  const rowHeightEstimate = 70.5;
+  const { rows } = table.getRowModel();
+  const rowVirtualizer = useVirtualizer({
+    count: rows.length,
+    estimateSize: () => rowHeightEstimate,
+    paddingStart: topOffset,
+    getScrollElement: () => tableScrollReference.current,
+    overscan: 5,
+  });
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
 
   return (
     <ModalBase {...props}>
@@ -142,68 +247,90 @@ export const SuperfluidValidatorModal: FunctionComponent<
             size={isMobile ? "medium" : "small"}
           />
         </div>
-        <div className="h-72 overflow-x-clip overflow-y-scroll">
+        <div
+          ref={tableScrollReference}
+          className="h-72 overflow-x-clip overflow-y-scroll"
+        >
           {isLoadingValidators ? (
             <div className="mx-auto w-fit pt-4">
               <Spinner />
             </div>
           ) : (
-            <Table
-              className="w-full"
-              headerTrClassName="!bg-osmoverse-800 top-0 !h-11"
-              columnDefs={[
-                {
-                  display: t("superfluidValidator.columns.validator"),
-                  className: classNames(
-                    "text-left",
-                    isMobile ? "caption" : undefined
-                  ),
-                  sort:
-                    sortKey === "validatorName"
-                      ? {
-                          onClickHeader: toggleSortDirection,
-                          currentDirection: sortDirection,
-                        }
-                      : { onClickHeader: () => setSortKey("validatorName") },
-                  displayCell: ValidatorInfoCell,
-                },
-                {
-                  display: t("superfluidValidator.columns.commission"),
-                  className: classNames(
-                    "text-right !pr-3",
-                    isMobile ? "caption" : undefined
-                  ),
-                  sort:
-                    sortKey === "validatorCommission"
-                      ? {
-                          onClickHeader: toggleSortDirection,
-                          currentDirection: sortDirection,
-                        }
-                      : {
-                          onClickHeader: () =>
-                            setSortKey("validatorCommission"),
-                        },
-                },
-              ]}
-              rowDefs={searchedValidators.map(({ address, isDelegated }) => ({
-                makeClass: () =>
-                  `!h-fit ${
-                    address === selectedValidatorAddress
-                      ? "border border-osmoverse-500"
-                      : isDelegated === 1
-                      ? "bg-osmoverse-800"
-                      : "bg-osmoverse-900"
-                  }`,
-                makeHoverClass: () => "bg-osmoverse-900",
-                onClick: () => setSelectedValidatorAddress(address),
-              }))}
-              data={searchedValidators.map(
-                ({ validatorName, validatorImgSrc, validatorCommission }) => [
-                  { value: validatorName, imgSrc: validatorImgSrc },
-                  { value: validatorCommission.toString() },
-                ]
+            <table
+              className={classNames(
+                "w-full",
+                isPreviousData &&
+                  isLoadingValidators &&
+                  "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
               )}
-            />
+            >
+              <thead className="sm:hidden">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr
+                    key={headerGroup.id}
+                    className="!bg-osmoverse-800 top-0 !h-11"
+                  >
+                    {headerGroup.headers.map((header) => (
+                      <th key={header.id} colSpan={header.colSpan}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+              <tbody>
+                {paddingTop > 0 && paddingTop - topOffset > 0 && (
+                  <tr>
+                    <td style={{ height: paddingTop - topOffset }} />
+                  </tr>
+                )}
+                {isLoadingValidators && (
+                  <tr>
+                    <td className="!text-center" colSpan={2}>
+                      <Spinner />
+                    </td>
+                  </tr>
+                )}
+                {virtualRows.map((virtualRow) => {
+                  const {
+                    id,
+                    original: { address, isDelegated },
+                  } = rows[virtualRow.index];
+                  return (
+                    <tr
+                      className={`!h-fit ${
+                        address === selectedValidatorAddress
+                          ? "border border-osmoverse-500"
+                          : isDelegated === 1
+                          ? "bg-osmoverse-800"
+                          : "bg-osmoverse-900"
+                      } hover:cursor-pointer hover:bg-osmoverse-850`}
+                      key={id}
+                      onClick={() => setSelectedValidatorAddress(address)}
+                    >
+                      {rows[virtualRow.index].getVisibleCells().map((cell) => (
+                        <td key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  );
+                })}
+                {paddingBottom > 0 && (
+                  <tr>
+                    <td style={{ height: paddingBottom - topOffset }} />
+                  </tr>
+                )}
+              </tbody>
+            </table>
           )}
         </div>
         {availableBondAmount && (
