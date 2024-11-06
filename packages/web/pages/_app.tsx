@@ -203,29 +203,18 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="trade" className="h-6 w-6" />,
         selectionTest: /\/$/,
       },
-      ...(flags.portfolioPageAndNewAssetsPage || flags.newAssetsPage
-        ? [
-            {
-              label: t("menu.portfolio"),
-              link: "/portfolio",
-              icon: <Icon id="portfolio" className="h-6 w-6" />,
-              selectionTest: /\/portfolio/,
-            },
-            {
-              label: t("menu.assets"),
-              link: "/assets",
-              icon: <Icon id="assets" className="h-6 w-6" />,
-              selectionTest: /\/assets/,
-            },
-          ]
-        : [
-            {
-              label: t("menu.assets"),
-              link: "/assets",
-              icon: <Icon id="assets" className="h-6 w-6" />,
-              selectionTest: /\/assets/,
-            },
-          ]),
+      {
+        label: t("menu.portfolio"),
+        link: "/portfolio",
+        icon: <Icon id="portfolio" className="h-6 w-6" />,
+        selectionTest: /\/portfolio/,
+      },
+      {
+        label: t("menu.assets"),
+        link: "/assets",
+        icon: <Icon id="assets" className="h-6 w-6" />,
+        selectionTest: /\/assets/,
+      },
       flags.earnPage
         ? {
             label: t("earnPage.title"),
@@ -278,8 +267,6 @@ const MainLayoutWrapper: FunctionComponent<{
     error,
     flags.earnPage,
     flags.staking,
-    flags.portfolioPageAndNewAssetsPage,
-    flags.newAssetsPage,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
     t,
@@ -335,7 +322,7 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      {flags.cypherCard && <CypherCardToast />}
+      {flags.cypherCard && !flags.alloyedAssets && <CypherCardToast />}
     </MainLayout>
   );
 });

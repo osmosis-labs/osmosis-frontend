@@ -279,15 +279,7 @@ export const ProfileModal: FunctionComponent<
                       <span>{t("buyTokens")}</span>
                     </button>
 
-                    <Link
-                      href={
-                        featureFlags.portfolioPageAndNewAssetsPage
-                          ? "/portfolio"
-                          : "/assets"
-                      }
-                      passHref
-                      legacyBehavior
-                    >
+                    <Link href="/portfolio" passHref legacyBehavior>
                       <ArrowButton isLink>
                         {t("profile.viewAllAssets")}
                       </ArrowButton>

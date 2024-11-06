@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import {
   Id,
   toast,
@@ -12,7 +12,10 @@ import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { Checkbox } from "~/components/ui/checkbox";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { t } from "~/hooks";
+import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 
 type ToastOptions = Partial<ReactToastifyOptions> & {
   updateToastId?: Id;
@@ -224,6 +227,18 @@ export const AlloyedAssetsToastDoNotShowKey =
 const AlloyedAssetsToast: FunctionComponent<
   Alert & { closeToast: () => void }
 > = ({ titleTranslationKey, captionTranslationKey, closeToast }) => {
+  const { isMobile } = useWindowSize();
+  const { logEvent } = useAmplitudeAnalytics();
+  // should close toast if screen size changes to mobile while shown
+  useEffect(() => {
+    if (isMobile) {
+      // Use timeout to avoid the maximum update depth exceeded error
+      setTimeout(closeToast, 0);
+    }
+  }, [isMobile, closeToast]);
+
+  const { setIsOpen } = useAssetVariantsModalStore();
+
   const [, setDoNotShowAgain] = useLocalStorage(
     AlloyedAssetsToastDoNotShowKey,
     false
@@ -238,23 +253,13 @@ const AlloyedAssetsToast: FunctionComponent<
       setDoNotShowAgain(true);
     }
 
+    logEvent([EventName.ConvertVariants.declineFlow]);
+
     closeToast();
   };
 
   const onConvert = () => {
-    // TODO: link to modal in other PR
-    // open modal
-    // Convert All
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    // Convert Selected
-    //   remind me later ✅
-    //     in modal, convert all invokes setDoNotShowAgain(true)
-    //   remind me later ❌ (still has remaining alloyed assets)
-    //     in modal, convert all invokes setDoNotShowAgain(false)
-
+    setIsOpen(true);
     closeToast();
   };
 

@@ -1,11 +1,11 @@
 import { Transition } from "@headlessui/react";
 import { PricePretty } from "@keplr-wallet/unit";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
+import type {
   ChartPortfolioOverTimeResponse,
   Range,
-} from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
+} from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
