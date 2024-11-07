@@ -7,7 +7,7 @@ import { UnzipExtension } from "~/e2e/unzip-extension";
 import { TradePage } from "../pages/trade-page";
 import { WalletPage } from "../pages/wallet-page";
 
-test.describe("Test Filled Limit Order feature", () => {
+test.describe("Test Market Buy/Sell Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
@@ -48,7 +48,9 @@ test.describe("Test Filled Limit Order feature", () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
-      await tradePage.enterAmount("1.05");
+      await tradePage.enterAmount("1.55");
+      await tradePage.isSufficientBalanceForTrade();
+      await tradePage.showSwapInfo();
       const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
       expect(msgContentAmount).toBeTruthy();
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
@@ -62,7 +64,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("WBTC");
-    await tradePage.enterAmount("1.04");
+    await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
@@ -76,7 +78,7 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.goto();
     await tradePage.openSellTab();
     await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.04");
+    await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
