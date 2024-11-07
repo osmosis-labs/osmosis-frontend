@@ -499,13 +499,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *   - `onBroadcasted`: Invoked when the transaction is successfully broadcasted.
    *   - `onFulfill`: Invoked when the transaction is successfully fulfilled.
    *
-   * @throws {Error} Throws an error if:
+   * @throws Throws an error if:
    *   - Wallet for the given chain is not provided or not connected.
    *   - There are no messages to send.
    *   - Wallet address is missing.
    *   - Broadcasting the transaction fails.
    *
-   * @returns {Promise<void>} Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
+   * @returns Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
    */
   async signAndBroadcast(
     chainNameOrId: string,

@@ -1,14 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLocalStorage } from "react-use";
-import { create } from "zustand";
-
-const useHasAssetVariantsStore = create<{
-  hasSeenToastThisSession: boolean;
-  setHasSeenToast: (value: boolean) => void;
-}>((set) => ({
-  hasSeenToastThisSession: false,
-  setHasSeenToast: (value: boolean) => set({ hasSeenToastThisSession: value }),
-}));
 
 import {
   AlloyedAssetsToastDoNotShowKey,
@@ -19,42 +10,44 @@ import { useFeatureFlags, useWalletSelect, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-export const useHasAssetVariants = () => {
+export const useAssetVariantsToast = () => {
+  // #region state
+  const [hasSeenToastThisSession, setHasSeenToastThisSession] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+  const [doNotShowAgain] = useLocalStorage<boolean>(
+    AlloyedAssetsToastDoNotShowKey
+  );
+
+  // #region hooks & store
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
-
-  // Check for component mounted
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => setIsMounted(true), []);
-
   const { isMobile } = useWindowSize();
   const { alloyedAssets } = useFeatureFlags();
 
-  const [doNotShowAgain] = useLocalStorage(AlloyedAssetsToastDoNotShowKey);
+  // #region effects
+  useEffect(() => setIsMounted(true), []);
 
-  const { hasSeenToastThisSession, setHasSeenToast } =
-    useHasAssetVariantsStore();
-
+  // #region queries
   const enabled =
     isMounted &&
     alloyedAssets &&
     !hasSeenToastThisSession &&
+    !doNotShowAgain &&
     !isWalletLoading &&
     Boolean(wallet?.isWalletConnected) &&
     Boolean(wallet?.address);
 
-  api.local.portfolio.getAllocation.useQuery(
+  api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: wallet?.address ?? "",
     },
     {
       enabled,
       onSuccess: (data) => {
-        // note - there is some local storage order issues when navigating between pages, so hasSeenToastThisSession is a failsafe
-        if (doNotShowAgain === true || hasSeenToastThisSession) return;
+        if (doNotShowAgain || hasSeenToastThisSession) return;
 
-        const hasAssetsToConvert = data?.hasVariants ?? false;
+        const hasAssetsToConvert = data?.assetVariants?.length > 0 || false;
 
         const shouldDisplayToast =
           alloyedAssets && hasAssetsToConvert && !isMobile;
@@ -71,7 +64,7 @@ export const useHasAssetVariants = () => {
             }
           );
 
-          setHasSeenToast(true);
+          setHasSeenToastThisSession(true);
         }
       },
       onError: (error) => {

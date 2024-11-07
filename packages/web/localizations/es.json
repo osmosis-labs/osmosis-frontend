@@ -53,7 +53,6 @@
       "5": "En el mercado libre de LPs todos siguen diferentes estrategias. La liquidez es más dinámica y está mejor optimizada para los comerciantes."
     }
   },
-  "assetNotCompatible": "Este activo no es compatible con esta cartera.",
   "clPositions": {
     "inRange": "EN EL RANGO",
     "nearBounds": "CERCA DE LOS LÍMITES",
@@ -267,11 +266,6 @@
       "less": "Ver menos",
       "more": "Ver más"
     },
-    "sort": {
-      "mobileMenu": "Ordenar por",
-      "SORT": "ORDENAR POR",
-      "SORTMobile": "CLASIFICAR"
-    },
     "table": {
       "poolId": "Grupo #{id}",
       "stable": "Stableswap",
@@ -329,14 +323,6 @@
   },
   "estimated": "Estimado",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
-    "simplifiedExperience": "¡Tu experiencia ha sido simplificada!",
-    "frontierHasNowMerged": "La página de Frontier ahora se ha fusionado con",
-    "thisMeansManaging": "¡Esto significa que la gestión de tokens se puede hacer cómodamente en un solo lugar!",
-    "commitmentToDecentralization": "En línea con el compromiso con la descentralización y la accesibilidad, la opción de manejar tokens no verificados aún está disponible.",
-    "settingIsNowEnabled": "La configuración ahora está habilitada.",
-    "youMayDisable": "Puedes desactivar esta configuración en cualquier momento en el modal de configuraciones.",
-    "openSettings": "Abrir configuraciones",
     "proceed": "Proceder"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Comercio con 1 clic activo",
-      "oneClickTradingExpired": "El comercio con 1 clic expiró",
       "oneClickTradingDisabled": "Comercio con 1 clic deshabilitado",
       "currentlyUnavailable": "Trading con 1 clic no disponible actualmente",
       "insufficientFunds": "Fondos OSMO insuficientes para el comercio con 1 clic",
       "continueWithoutOneClickTrading": "Continuar sin operar con 1 clic",
       "networkFeeTooHigh": "Tarifa de red demasiado alta",
-      "startANewSession": "Iniciar una nueva sesión",
       "approveManually": "Aprobar manualmente en {walletName}",
       "continueWithWallet": "Continuar con la billetera",
       "sessionEnded": "La sesión finalizó en este dispositivo",
@@ -396,9 +380,7 @@
       "changeButton": "Editar ajustes"
     },
     "floatingBanner": {
-      "newPill": "Nuevo",
-      "title": "Comercio con 1 clic",
-      "tradeFasterButton": "Opere más rápido"
+      "newPill": "Nuevo"
     },
     "settings": {
       "header": "Comercio con 1 clic",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "Ruta",
-    "autoRouterToggle": {
-      "hide": "Ocultar",
-      "show": "Mostrar"
-    },
-    "maxButtonErrorNoBalance": "Saldo insuficiente para calcular el importe máximo.",
-    "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
-    "expectedOutput": "Rendimiento esperado",
-    "fee": "Tarifa de intercambio ({fee})",
-    "networkFee": "Tarifa de red",
-    "totalFee": "Costo total",
     "HALF": "Mitad",
-    "MAX": "Máximo",
-    "minimumSlippage": "Mínimo recibido después del deslizamiento ({slippage})",
     "pool": "Piscina #{id}",
-    "priceImpact": "Impacto en el mercado",
     "routerTooltipFee": "Tarifa",
     "routerTooltipSpreadFactor": "Factor de dispersión",
     "showDetails": "Mostrar detalles",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "Aumentar el límite de gasto"
     },
     "settings": {
-      "slippage": "Tolerancia de deslizamiento",
-      "slippageInfo": "Su transacción se revertirá si el precio cambia desfavorablemente en más de este porcentaje.",
-      "title": "Configuración de transacción"
+      "slippage": "Tolerancia de deslizamiento"
     },
     "title": "Intercambio",
     "dynamicSpreadFactor": "Dinámica",
@@ -1296,5 +1263,17 @@
     "remindMeLater": "Recuérdamelo más tarde",
     "dismiss": "Despedir",
     "convert": "Convertir"
+  },
+  "assetVariantsConversion": {
+    "title": "Estandarizar activos",
+    "description": "Convierta los siguientes activos a su versión estandarizada en Osmosis para obtener mayor flexibilidad y compatibilidad.",
+    "learnMore": "Más información",
+    "errorLoading": "Error al cargar variantes de activos, inténtelo de nuevo más tarde.",
+    "tooltipTitle": "{coinName} en Osmosis",
+    "tooltipDescription": "Osmosis consolida numerosas variantes de {coinDenom} en un activo simple para mayor flexibilidad y facilidad de uso.",
+    "convert": "Convertir",
+    "conversionFees": "Tarifas de conversión",
+    "free": "Gratis",
+    "unavailable": "Actualmente no disponible. Inténtalo de nuevo más tarde."
   }
 }

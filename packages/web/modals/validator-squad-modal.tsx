@@ -66,18 +66,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-export type Validator = {
-  validatorName: string | undefined;
-  myStake: Dec;
-  votingPower: Dec;
-  commissions: Dec;
-  website: string | undefined;
-  imageUrl: string;
-  operatorAddress: string;
-  isVotingPowerTooHigh: boolean;
-};
-
-export type FormattedValidator = {
+type FormattedValidator = {
   validatorName: string;
   formattedMyStake: string;
   formattedVotingPower: string;

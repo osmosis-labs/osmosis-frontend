@@ -10,9 +10,9 @@ import { IS_TESTNET, SpriteIconId } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
-export type PoolType = ObservableQueryPool["type"];
+type PoolType = ObservableQueryPool["type"];
 
-export interface PoolTypeConfig {
+interface PoolTypeConfig {
   imageSrc: string;
   caption: string;
   iconId?: SpriteIconId;

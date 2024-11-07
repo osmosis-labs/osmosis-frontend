@@ -37,7 +37,7 @@ export type OrderDirection = "bid" | "ask";
 export const MIN_ORDER_VALUE =
   process.env.NEXT_PUBLIC_LIMIT_ORDER_MIN_AMOUNT ?? "";
 
-export interface UsePlaceLimitParams {
+interface UsePlaceLimitParams {
   osmosisChainId: string;
   orderDirection: OrderDirection;
   useQueryParams?: boolean;

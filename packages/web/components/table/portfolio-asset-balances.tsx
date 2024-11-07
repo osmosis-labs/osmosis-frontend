@@ -12,7 +12,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -21,13 +21,13 @@ import {
   useState,
 } from "react";
 
-import { getIsDust } from "~/components/complex/portfolio/portfolio-dust";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
   Breakpoint,
   MultiLanguageT,
   useFeatureFlags,
+  useHideDustUserSetting,
   useTranslation,
   useUserWatchlist,
   useWalletSelect,
@@ -39,6 +39,7 @@ import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
+import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -59,8 +60,6 @@ type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
 
-type Action = "deposit" | "withdraw" | "trade" | "earn";
-
 export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
   hideDust: boolean;
@@ -75,13 +74,13 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
 
-  // search
+  // #region search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
   const onSearchInput = useCallback((input: string) => {
     setSearchQuery(input ? { query: input } : undefined);
   }, []);
 
-  // sort
+  // #region sort
   const [sortKey, setSortKey_] = useState<SortKey>("usdValue");
   const setSortKey = useCallback((key: SortKey | undefined) => {
     if (key !== undefined) setSortKey_(key);
@@ -99,7 +98,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     [searchQuery, sortKey, sortDirection]
   );
 
-  // unverified assets
+  // #region unverified assets
   const showUnverifiedAssetsSetting =
     userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
   const showUnverifiedAssets = Boolean(
@@ -115,7 +114,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   // external deposit withdraw transfer method
   const [externalUrl, setExternalUrl] = useState<string | null>(null);
 
-  // Query
+  // #region query
   const {
     data: assetPagesData,
     hasNextPage,
@@ -153,29 +152,27 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     [assetPagesData]
   );
 
+  // #region dust filter
+  const dustFilteredAssetsData = useHideDustUserSetting(
+    assetsData,
+    (item) => item.usdValue
+  );
+
   const filteredAssetsData = useMemo(() => {
-    return assetsData
-      .map((asset) => {
-        if (!asset.usdValue) return null;
-        const isDust = getIsDust(asset.usdValue);
-        if (hideDust && isDust) return null;
-        return asset;
-      })
-      .filter((asset): asset is AssetRow => asset !== null)
-      .sort((a, b) => {
-        const aIsFavorite = watchListDenoms.includes(a.coinDenom);
-        const bIsFavorite = watchListDenoms.includes(b.coinDenom);
-        if (aIsFavorite && !bIsFavorite) return -1;
-        if (!aIsFavorite && bIsFavorite) return 1;
-        return 0;
-      });
-  }, [assetsData, hideDust, watchListDenoms]);
+    return dustFilteredAssetsData.sort((a, b) => {
+      const aIsFavorite = watchListDenoms.includes(a.coinDenom);
+      const bIsFavorite = watchListDenoms.includes(b.coinDenom);
+      if (aIsFavorite && !bIsFavorite) return -1;
+      if (!aIsFavorite && bIsFavorite) return 1;
+      return 0;
+    });
+  }, [dustFilteredAssetsData, watchListDenoms]);
 
   const hiddenDustCount = assetsData.length - filteredAssetsData.length;
 
   const noSearchResults = Boolean(searchQuery) && !filteredAssetsData.length;
 
-  // Define columns
+  // #region columns
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<AssetRow>();
     return [
@@ -243,7 +240,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     toggleWatchAssetDenom,
   ]);
 
-  /** Columns collapsed for screen size responsiveness. */
+  // #region responsive columns
   const collapsedColumns = useMemo(() => {
     const collapsedColIds: string[] = [];
     if (width < Breakpoint.lg) {
@@ -263,6 +260,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // #region virtualization
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
@@ -290,7 +288,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
 
-  // pagination
+  // #region pagination
   const lastRow = rows[rows.length - 1];
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
@@ -326,7 +324,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         }}
       />
       <SearchBox
-        className="my-3 !w-[33.25rem] xl:!w-96"
+        className="my-3 !w-[33.25rem] xl:!w-96 md:!w-full"
         currentValue={searchQuery?.query ?? ""}
         onInput={onSearchInput}
         placeholder={t("portfolio.searchBalances")}
@@ -339,7 +337,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
             "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
-        <thead>
+        <thead className="sm:hidden">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header, index, headers) => (
@@ -507,6 +505,8 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
+type Action = "deposit" | "withdraw" | "trade" | "earn";
+
 const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   return [
     ...(showConvertButton
@@ -520,49 +520,20 @@ const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
 };
 
-const handleSelectAction = (
-  action: Action,
-  coinDenom: string,
-  router: NextRouter,
-  bridgeAsset: ({
-    anyDenom,
-    direction,
-  }: {
-    anyDenom: string | undefined;
-    direction: "deposit" | "withdraw" | undefined;
-  }) => void
-) => {
-  if (action === "trade") {
-    router.push(`/assets/${coinDenom}`);
-  } else if (action === "earn") {
-    router.push(`/earn?search=${coinDenom}`);
-  } else if (action === "deposit") {
-    bridgeAsset({
-      anyDenom: coinDenom,
-      direction: "deposit",
-    });
-  } else if (action === "withdraw") {
-    bridgeAsset({
-      anyDenom: coinDenom,
-      direction: "withdraw",
-    });
-  }
-};
-
-export const AssetActionsCell: AssetCellComponent<{
+const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;
     coinImageUrl?: string;
   }) => void;
 }> = ({
+  coinMinimalDenom,
+  variantGroupKey,
   coinDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
-  coinMinimalDenom,
-  variantGroupKey,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -575,13 +546,33 @@ export const AssetActionsCell: AssetCellComponent<{
   const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
   const actionOptions = getActionOptions(t, showConvertButton);
+  const { setIsOpenForVariant } = useAssetVariantsModalStore();
+
+  const onSelectAction = (action: Action) => {
+    if (action === "trade") {
+      const to = coinDenom === "OSMO" ? "ATOM" : "OSMO";
+      router.push(`/?from=${coinDenom}&to=${to}`);
+    } else if (action === "earn") {
+      router.push(`/earn?search=${coinDenom}`);
+    } else if (action === "deposit") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "deposit",
+      });
+    } else if (action === "withdraw") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "withdraw",
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
-          variant="ghost"
-          className="flex gap-2 rounded-[48px] text-wosmongton-200 hover:text-rust-200"
+          variant="secondary"
+          className="max-h-12 mx-auto w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -592,7 +583,7 @@ export const AssetActionsCell: AssetCellComponent<{
         </Button>
       )}
       {!needsActivation && (
-        <div className="flex gap-3 md:hidden">
+        <>
           {showConvertButton ? (
             <Button
               variant="secondary"
@@ -600,8 +591,7 @@ export const AssetActionsCell: AssetCellComponent<{
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // TODO - open conversion modal once clicked
-                alert("Convert clicked");
+                setIsOpenForVariant(coinMinimalDenom);
               }}
             >
               {t("portfolio.convert")}
@@ -611,7 +601,7 @@ export const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -626,7 +616,7 @@ export const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -640,31 +630,36 @@ export const AssetActionsCell: AssetCellComponent<{
               </Button>
             </>
           )}
-          <AssetActionsDropdown
-            actionOptions={actionOptions}
-            onSelectAction={(action) =>
-              handleSelectAction(action, coinDenom, router, bridgeAsset)
-            }
-          />
-        </div>
+        </>
       )}
+      <AssetActionsDropdown
+        disabled={needsActivation}
+        actionOptions={actionOptions}
+        onSelectAction={onSelectAction}
+      />
     </div>
   );
 };
 
 const AssetActionsDropdown: FunctionComponent<{
+  disabled?: boolean;
   actionOptions: {
     key: Action;
     label: string;
     icon: SpriteIconId;
   }[];
   onSelectAction: (key: Action) => void;
-}> = ({ actionOptions, onSelectAction }) => {
+}> = ({ actionOptions, onSelectAction, disabled }) => {
   return (
     <Popover className="relative shrink-0">
       {() => (
         <>
-          <PopoverButton as={Button} size="icon" variant="ghost">
+          <PopoverButton
+            as={Button}
+            size="icon"
+            variant="ghost"
+            disabled={disabled}
+          >
             <Icon id="dots-three-vertical" width={24} height={24} />
           </PopoverButton>
 
@@ -674,7 +669,7 @@ const AssetActionsDropdown: FunctionComponent<{
                 {actionOptions.map(({ key, label, icon }) => (
                   <button
                     key={key}
-                    className="body2 flex place-content-between items-center gap-2 rounded-full !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
+                    className="body2 flex place-content-between items-center gap-2 rounded-xl !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();

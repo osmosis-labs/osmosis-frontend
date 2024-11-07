@@ -11,7 +11,7 @@ import { Pill } from "~/components/indicators/pill";
 import { IconButton } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
-export const CypherCardFloatingBannerDoNotShowKey =
+const CypherCardFloatingBannerDoNotShowKey =
   "cypher-card-floating-banner-do-not-show";
 
 export function CypherCardToast() {

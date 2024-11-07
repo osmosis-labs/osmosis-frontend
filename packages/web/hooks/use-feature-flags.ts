@@ -1,11 +1,8 @@
 import { AvailableFlags } from "@osmosis-labs/types";
-import { apiClient } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
-import { LevanaGeoBlockedResponse } from "~/pages/_app";
 
 const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
@@ -21,15 +18,12 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   tfmProTradingNavbarButton: false,
   positionRoi: true,
   swapToolSimulateFee: true,
-  portfolioPageAndNewAssetsPage: true,
-  newAssetsPage: true,
   displayDailyEarn: false,
   newDepositWithdrawFlow: true,
   oneClickTrading: true,
   limitOrders: true,
   advancedChart: false,
   cypherCard: false,
-  newPortfolioPage: false,
   inGivenOut: false,
   sqsActiveOrders: false,
   alloyedAssets: false,
@@ -37,27 +31,11 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   nomicWithdrawAmount: false,
 };
 
-const LIMIT_ORDER_COUNTRY_CODES =
-  process.env.NEXT_PUBLIC_LIMIT_ORDER_COUNTRY_CODES?.split(",").map((s) =>
-    s.trim()
-  ) ?? [];
-
 export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
   const client = useLDClient();
-
-  const { data: levanaGeoblock } = useQuery(
-    ["levana-geoblocked"],
-    () =>
-      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-      retry: false,
-    }
-  );
 
   useEffect(() => {
     if (!isInitialized && client && process.env.NODE_ENV !== "test")
@@ -71,14 +49,6 @@ export function useFeatureFlags() {
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
-    portfolioPageAndNewAssetsPage:
-      // don't want to use either on mobile
-      // as this flag bundles the 2 pages,
-      // and the portfolio page not be mobile responsive yet
-      // (even thought the assets page is)
-      isMobile || !isInitialized
-        ? false
-        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
     oneClickTrading: isDevModeWithoutClientID
       ? defaultFlags.oneClickTrading
       : !isMobile &&
@@ -86,18 +56,6 @@ export function useFeatureFlags() {
         launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-    limitOrders: isDevModeWithoutClientID
-      ? defaultFlags.limitOrders
-      : isInitialized &&
-        launchdarklyFlags.limitOrders &&
-        (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
-          LIMIT_ORDER_COUNTRY_CODES.includes(
-            levanaGeoblock?.countryCode ?? ""
-          )),
-    // To test chain upgrades easily on Edgenet, uncomment the flags below
-    // limitOrders: true,
-    // oneClickTrading: true,
-    // staking: true,
   } as Record<
     AvailableFlags | "_isInitialized" | "_isClientIDPresent",
     boolean

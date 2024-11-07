@@ -6,15 +6,10 @@ import * as fs from "fs";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { glob } from "glob";
 
+import { omittedKeyPaths } from "../scripts/omitted-keys.mjs";
+
 // use to silence warnings
 const warn = (..._args: Parameters<typeof console.warn>) => null; // console.warn(...args);
-
-/** Add key paths here to skip them in localizations tests. */
-const omittedKeyPaths = [
-  "assets.categories",
-  "limitOrders.historyTable.columns",
-  "transfer.nomic.estimatedTime",
-];
 
 describe("Localization JSON files", () => {
   const localizationObjs = getJSONsAsObjs();

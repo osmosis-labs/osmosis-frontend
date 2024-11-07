@@ -7,6 +7,8 @@ export type CallToAction = {
 } & ButtonHTMLAttributes<HTMLButtonElement>;
 
 export class NavBarStore {
+  // Note: these private vars are needed so we can enforce use of `runInAction` in setters
+
   @observable
   protected _title: ReactNode | undefined;
 

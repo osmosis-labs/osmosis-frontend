@@ -53,7 +53,6 @@
       "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
     }
   },
-  "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "clPositions": {
     "inRange": "범위 내",
     "nearBounds": "가까운 경계",
@@ -267,11 +266,6 @@
       "less": "숨기기",
       "more": "더보기"
     },
-    "sort": {
-      "mobileMenu": "정렬",
-      "SORT": "정렬",
-      "SORTMobile": "정렬"
-    },
     "table": {
       "poolId": "풀 {id}",
       "stable": "스테이블스왑",
@@ -329,14 +323,6 @@
   },
   "estimated": "추정된",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
-    "simplifiedExperience": "귀하의 경험이 단순화되었습니다!",
-    "frontierHasNowMerged": "프론티어 페이지는 이제 다음과 병합되었습니다",
-    "thisMeansManaging": "이것은 토큰을 관리할 수 있는 것이 한 곳에서 편리하게 이루어질 수 있다는 것을 의미합니다!",
-    "commitmentToDecentralization": "분산화와 접근성에 대한 약속에 따라, 검증되지 않은 토큰을 다루는 옵션은 여전히 가능합니다.",
-    "settingIsNowEnabled": "설정이 이제 활성화되었습니다.",
-    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
-    "openSettings": "설정 열기",
     "proceed": "진행"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-클릭 거래 활성화",
-      "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
       "insufficientFunds": "1-Click 거래를 위한 OSMO 자금이 부족합니다.",
       "continueWithoutOneClickTrading": "원클릭 거래 없이 계속하기",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "startANewSession": "새 세션 시작",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
       "continueWithWallet": "지갑으로 계속하기",
       "sessionEnded": "이 기기에서 세션이 종료되었습니다.",
@@ -396,9 +380,7 @@
       "changeButton": "설정 수정"
     },
     "floatingBanner": {
-      "newPill": "새로운",
-      "title": "1-클릭 거래",
-      "tradeFasterButton": "더 빠르게 거래하세요"
+      "newPill": "새로운"
     },
     "settings": {
       "header": "1-클릭 거래",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "경로",
-    "autoRouterToggle": {
-      "hide": "숨기기",
-      "show": "보여주다"
-    },
-    "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
-    "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
-    "expectedOutput": "예상 교환치",
-    "fee": "교환 수수료 ({fee})",
-    "networkFee": "네트워크 수수료",
-    "totalFee": "총 수수료",
     "HALF": "절반",
-    "MAX": "최대",
-    "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "pool": "풀 #{id}",
-    "priceImpact": "시장 영향",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
     "showDetails": "세부정보 표시",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "지출 한도 늘리기"
     },
     "settings": {
-      "slippage": "슬리피지 허용치",
-      "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다.",
-      "title": "트랜잭션 설정"
+      "slippage": "슬리피지 허용치"
     },
     "title": "거래",
     "dynamicSpreadFactor": "동적",
@@ -1296,5 +1263,17 @@
     "remindMeLater": "나중에 다시 알려주세요",
     "dismiss": "해고하다",
     "convert": "전환하다"
+  },
+  "assetVariantsConversion": {
+    "title": "자산 표준화",
+    "description": "더 큰 유연성과 호환성을 위해 다음 자산을 Osmosis의 표준화된 버전으로 변환하세요.",
+    "learnMore": "더 알아보기",
+    "errorLoading": "자산 변형을 로드하는 중에 오류가 발생했습니다. 나중에 다시 시도하세요.",
+    "tooltipTitle": "Osmosis의 {coinName}",
+    "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다.",
+    "convert": "전환하다",
+    "conversionFees": "환전 수수료",
+    "free": "무료",
+    "unavailable": "현재 사용할 수 없습니다. 나중에 다시 시도하세요."
   }
 }

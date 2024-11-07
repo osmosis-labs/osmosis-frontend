@@ -94,6 +94,14 @@ export const api = createTRPCNext<AppRouter>({
           return true;
         },
       },
+      // !! IMPORTANT !!
+      // If you change a data model,
+      // it's important to bump this buster value
+      // so that the cache is invalidated
+      // and data respecting the new model is fetched from the server.
+      // Otherwise, the old data will be served from cache
+      // and unexpected data structures will be run through the app.
+      buster: "v1",
     });
 
     return {
@@ -240,4 +248,4 @@ export type RouterOutputs = inferRouterOutputs<AppRouter>;
  *
  * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
  */
-export type RouterKeys = inferRouterKeys<AppRouter>;
+type RouterKeys = inferRouterKeys<AppRouter>;

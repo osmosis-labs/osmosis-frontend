@@ -33,7 +33,7 @@
     @apply text-white-full;
   }
   body {
-    @apply bg-osmoverse-900;
+    @apply bg-osmoverse-1000;
   }
 
   h1 {
@@ -123,7 +123,7 @@
   }
 
   tbody > tr > td {
-    @apply p-4 text-right;
+    @apply p-4 text-right md:px-1;
   }
 
   tbody > tr > td:first-child {

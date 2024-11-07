@@ -4,10 +4,11 @@ import Image from "next/image";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
+import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags, useNavBar } from "~/hooks";
+import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -28,8 +29,6 @@ const Home = () => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
-  useNavBar({ title: " " });
-
   return (
     <main className="relative flex h-full overflow-auto pb-2 pt-8">
       <div className="fixed inset-0 h-full w-full overflow-y-scroll bg-cover xl:static">
@@ -45,11 +44,14 @@ const Home = () => {
         <div className="absolute inset-0 top-[104px] flex h-auto w-full justify-center md:top-0">
           <div className="flex w-[512px] flex-col gap-4 lg:mx-auto md:mt-5 md:w-full md:px-5">
             {featureFlags.swapsAdBanner && <SwapAdsBanner />}
-            <TradeTool
-              page="Swap Page"
-              previousTrade={previousTrade}
-              setPreviousTrade={setPreviousTrade}
-            />
+            {/** Hydration issues need to be investigated before this client wrapper can be removed. */}
+            <ClientOnly>
+              <TradeTool
+                page="Swap Page"
+                previousTrade={previousTrade}
+                setPreviousTrade={setPreviousTrade}
+              />
+            </ClientOnly>
           </div>
         </div>
       </div>

@@ -53,7 +53,6 @@
       "5": "एलपी के मुक्त बाजार में हर कोई अलग-अलग रणनीतियों का पालन करता है। तरलता अधिक गतिशील है, और व्यापारियों के लिए बेहतर अनुकूलित है।"
     }
   },
-  "assetNotCompatible": "यह संपत्ति इस वॉलेट के साथ संगत नहीं है.",
   "clPositions": {
     "inRange": "सीमा में",
     "nearBounds": "सीमा के निकट",
@@ -267,11 +266,6 @@
       "less": "कम देखें",
       "more": "और देखें"
     },
-    "sort": {
-      "mobileMenu": "इसके अनुसार क्रमबद्ध करें",
-      "SORT": "इसके अनुसार क्रमबद्ध करें",
-      "SORTMobile": "क्रम से लगाना"
-    },
     "table": {
       "poolId": "पूल # {id}",
       "stable": "स्थिरस्वैप",
@@ -329,14 +323,6 @@
   },
   "estimated": "अनुमानित",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "असत्यापित संपत्तियों का परिचय",
-    "simplifiedExperience": "आपका अनुभव सरल हो गया है!",
-    "frontierHasNowMerged": "फ्रंटियर पेज का अब विलय हो गया है",
-    "thisMeansManaging": "इसका मतलब है कि टोकन का प्रबंधन एक ही स्थान पर आसानी से किया जा सकता है!",
-    "commitmentToDecentralization": "विकेंद्रीकरण और पहुंच की प्रतिबद्धता के अनुरूप, असत्यापित टोकन को संभालने का विकल्प अभी भी उपलब्ध है।",
-    "settingIsNowEnabled": "सेटिंग अब सक्षम है.",
-    "youMayDisable": "आप सेटिंग मोडल में किसी भी समय इस सेटिंग को अक्षम कर सकते हैं।",
-    "openSettings": "खुली सेटिंग",
     "proceed": "आगे बढ़ना"
   },
   "lockToken": {
@@ -373,13 +359,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-ट्रेडिंग सक्रिय पर क्लिक करें",
-      "oneClickTradingExpired": "1-क्लिक ट्रेडिंग समाप्त हो गई",
       "oneClickTradingDisabled": "1-क्लिक ट्रेडिंग अक्षम",
       "currentlyUnavailable": "1-क्लिक ट्रेडिंग फिलहाल उपलब्ध नहीं है",
       "insufficientFunds": "1-क्लिक ट्रेडिंग के लिए OSMO फंड अपर्याप्त है",
       "continueWithoutOneClickTrading": "1-क्लिक ट्रेडिंग के बिना जारी रखें",
       "networkFeeTooHigh": "नेटवर्क शुल्क बहुत अधिक है",
-      "startANewSession": "नया सत्र शुरू करें",
       "approveManually": "{walletName} में मैन्युअल रूप से स्वीकृत करें",
       "continueWithWallet": "बटुए के साथ जारी रखें",
       "sessionEnded": "इस डिवाइस पर सत्र समाप्त हो गया",
@@ -396,9 +380,7 @@
       "changeButton": "विन्यास बदलें"
     },
     "floatingBanner": {
-      "newPill": "नया",
-      "title": "1-ट्रेडिंग पर क्लिक करें",
-      "tradeFasterButton": "तेजी से व्यापार करें"
+      "newPill": "नया"
     },
     "settings": {
       "header": "1-ट्रेडिंग पर क्लिक करें",
@@ -700,23 +682,10 @@
   },
   "swap": {
     "autoRouter": "मार्ग लिया गया",
-    "autoRouterToggle": {
-      "hide": "छिपाना",
-      "show": "दिखाओ"
-    },
-    "maxButtonErrorNoBalance": "अधिकतम राशि की गणना करने के लिए पर्याप्त शेष राशि नहीं है।",
-    "available": "उपलब्ध",
     "button": "बदलना",
     "buttonError": "वैसे भी स्वैप करें",
-    "expectedOutput": "अपेक्षित उत्पादन",
-    "fee": "स्वैप शुल्क ( {fee} )",
-    "networkFee": "नेटवर्क शुल्क",
-    "totalFee": "कुल शुल्क",
     "HALF": "आधा",
-    "MAX": "अधिकतम",
-    "minimumSlippage": "स्लिपेज के बाद प्राप्त न्यूनतम राशि ( {slippage} )",
     "pool": "पूल # {id}",
-    "priceImpact": "बाजार प्रभाव",
     "routerTooltipFee": "शुल्क",
     "routerTooltipSpreadFactor": "प्रसार कारक",
     "showDetails": "प्रदर्शन का विवरण",
@@ -727,9 +696,7 @@
       "increaseSpendLimit": "खर्च सीमा बढ़ाएँ"
     },
     "settings": {
-      "slippage": "फिसलन सहनशीलता",
-      "slippageInfo": "यदि कीमत में इस प्रतिशत से अधिक प्रतिकूल परिवर्तन होता है तो आपका लेनदेन वापस कर दिया जाएगा।",
-      "title": "लेन-देन सेटिंग"
+      "slippage": "फिसलन सहनशीलता"
     },
     "title": "बदलना",
     "dynamicSpreadFactor": "गतिशील",
@@ -1296,5 +1263,17 @@
     "remindMeLater": "बाद में याद दिलाना",
     "dismiss": "नकार देना",
     "convert": "बदलना"
+  },
+  "assetVariantsConversion": {
+    "title": "परिसंपत्तियों का मानकीकरण करें",
+    "description": "अधिक लचीलेपन और बढ़ी हुई अनुकूलता के लिए निम्नलिखित परिसंपत्तियों को ओस्मोसिस पर उनके मानकीकृत संस्करण में परिवर्तित करें।",
+    "learnMore": "और अधिक जानें",
+    "errorLoading": "संपत्ति वेरिएंट लोड करने में त्रुटि, कृपया बाद में पुन: प्रयास करें.",
+    "tooltipTitle": "{coinName} ओस्मोसिस पर",
+    "tooltipDescription": "ओस्मोसिस अधिक लचीलेपन और उपयोग में आसानी के लिए {coinDenom} के कई प्रकारों को एक सरल परिसंपत्ति में एकीकृत करता है।",
+    "convert": "बदलना",
+    "conversionFees": "रूपांतरण शुल्क",
+    "free": "मुक्त",
+    "unavailable": "वर्तमान में अनुपलब्ध। बाद में पुनः प्रयास करें।"
   }
 }

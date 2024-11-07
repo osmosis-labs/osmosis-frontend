@@ -489,7 +489,7 @@ const TransferDetails: FunctionComponent<{
   );
 };
 
-export const EstimatedTimeRow: FunctionComponent<{
+const EstimatedTimeRow: FunctionComponent<{
   depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
   isRefetchingQuote: boolean;
 }> = ({ depositData, isRefetchingQuote }) => {
@@ -510,7 +510,7 @@ export const EstimatedTimeRow: FunctionComponent<{
   );
 };
 
-export const ProviderFeesRow: FunctionComponent<{
+const ProviderFeesRow: FunctionComponent<{
   depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
   isRefetchingQuote: boolean;
 }> = ({ depositData, isRefetchingQuote }) => {
@@ -525,7 +525,7 @@ export const ProviderFeesRow: FunctionComponent<{
   );
 };
 
-export const NetworkFeeRow: FunctionComponent<{
+const NetworkFeeRow: FunctionComponent<{
   depositData: RouterOutputs["bridgeTransfer"]["getDepositAddress"]["depositData"];
   isRefetchingQuote: boolean;
   fromChainName?: string;

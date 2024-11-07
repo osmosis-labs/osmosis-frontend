@@ -1,18 +1,19 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
-import React, { type FunctionComponent, type PropsWithChildren } from "react";
+import React, {
+  type FunctionComponent,
+  type PropsWithChildren,
+  useMemo,
+} from "react";
 
 import { IconButton } from "~/components/buttons/icon-button";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import { NavbarOsmoPrice } from "~/components/navbar-osmo-price";
 import { NavbarOsmosisUpdate } from "~/components/navbar-osmosis-update";
-import {
-  useCurrentLanguage,
-  useHasAssetVariants,
-  useWindowSize,
-} from "~/hooks";
+import { useCurrentLanguage, useWindowSize } from "~/hooks";
+import { AssetVariantsConversionModal } from "~/modals/variants-conversion";
 
 export const MainLayout = observer(
   ({
@@ -33,11 +34,24 @@ export const MainLayout = observer(
     const showFixedLogo = !smallVerticalScreen && !isMobile;
     const showBlockLogo = smallVerticalScreen && !isMobile;
 
-    const selectedMenuItem = menus.find(
-      ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+    const selectedMenuItem = useMemo(
+      () =>
+        menus.find(
+          ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
+        ),
+      [menus, router.pathname]
     );
+    const navBarTitle = useMemo(() => {
+      // Note: in designs we're moving to no title in nav bar.
+      // Filtering here to avoid title bar flash from menu list item titles
+      // appearing in nav bar before child components set global state via useNavBar.
+      const selectedTitle = selectedMenuItem?.label;
 
-    useHasAssetVariants();
+      if (selectedTitle === "Trade") return;
+      if (selectedTitle === "Portfolio") return;
+
+      return selectedTitle;
+    }, [selectedMenuItem?.label]);
 
     return (
       <React.Fragment>
@@ -46,7 +60,7 @@ export const MainLayout = observer(
             <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden px-2 py-6 xl:bg-osmoverse-1000 md:hidden">
+        <div className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-y-auto overflow-x-hidden bg-osmoverse-1000 px-2 py-6 md:hidden">
           {showBlockLogo && (
             <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
               <OsmosisFullLogo onClick={() => router.push("/")} />
@@ -66,13 +80,14 @@ export const MainLayout = observer(
         </div>
         <NavBar
           className="ml-sidebar md:ml-0"
-          title={selectedMenuItem?.label ?? ""}
+          title={navBarTitle}
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
         <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
           {children}
         </div>
+        <AssetVariantsConversionModal />
       </React.Fragment>
     );
   }

@@ -27,11 +27,7 @@ export interface ChartControllerParams<
   onCrosshairMove?: (param: MouseEventParams<K>) => void;
 }
 
-export type ChartControllerEvents<
-  T = TimeChartOptions,
-  K = Time,
-  N = Series
-> = {
+type ChartControllerEvents<T = TimeChartOptions, K = Time, N = Series> = {
   crosshairMove: (param: MouseEventParams<K>) => void;
   init: (params: ChartControllerParams<T, K, N>) => void;
   remove: (params: ChartControllerParams<T, K, N>) => void;

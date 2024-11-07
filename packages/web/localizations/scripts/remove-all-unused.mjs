@@ -3,12 +3,16 @@ import fs from "fs";
 import { glob } from "glob";
 // Start of Selection
 import path from "path";
+// Add prettier import at the top with other imports
+import prettier from "prettier";
 
-/** Add key paths here to skip them in localizations tests. */
-const omittedKeyPaths = [
-  "assets.categories",
-  "limitOrders.historyTable.columns",
-];
+import { omittedKeyPaths } from "./omitted-keys.mjs";
+
+// Verify we're in the localizations directory
+const currentDir = path.basename(process.cwd());
+if (currentDir !== "localizations") {
+  throw new Error("This script must be run from the localizations directory");
+}
 
 // Get all localization JSON objs in the current directory
 const localizationJsonFilepaths = fs
@@ -95,7 +99,7 @@ function removeKey(obj, keyPath) {
 
 // check if all keys are found in the file contents somewhere
 let removeCount = 0;
-localizationObjs.forEach(([jsonFileName, obj]) => {
+localizationObjs.forEach(([, obj]) => {
   const keys = [];
   objectKeys(obj, keys);
   keys.forEach((key) => {
@@ -114,5 +118,8 @@ console.log("Removed", removeCount, "keys");
 // Write the updated JS objects back to the files as stringified JSON
 localizationObjs.forEach(([fileName, obj]) => {
   const filePath = path.join(process.cwd(), fileName);
-  fs.writeFileSync(filePath, JSON.stringify(obj, null, 2) + "\n");
+  const jsonString = JSON.stringify(obj, null, 2);
+  // No need to resolve config since it's just JSON
+  const formattedJson = prettier.format(jsonString, { parser: "json" });
+  fs.writeFileSync(filePath, formattedJson);
 });

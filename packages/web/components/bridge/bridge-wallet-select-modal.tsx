@@ -95,7 +95,7 @@ enum WalletSelectScreens {
   SendToAnotherAddress = "send-to-another-address",
 }
 
-export const BridgeWalletSelectScreens: FunctionComponent<
+const BridgeWalletSelectScreens: FunctionComponent<
   BridgeWalletSelectProps & {
     onClose: () => void;
     setRemoveMinHeight?: (nextValue: boolean) => void;
