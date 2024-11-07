@@ -360,13 +360,14 @@ const TransactionDetailsModal = ({
             </div>
           </div>
           <div className="py-4">
-            {/* TODO: Display asset based on expected receive */}
-            {/* <div className="flex items-center justify-between py-2">
+            <div className="flex items-center justify-between py-2">
               <p className="body2 text-white-full">
                 {t("transfer.nomic.asset")}
               </p>
-              <p className="body2 text-osmoverse-300">nBTC</p>
-            </div> */}
+              <p className="body2 text-osmoverse-300">
+                {depositData.networkFee.amount.denom}
+              </p>
+            </div>
             <div className="flex items-center justify-between py-2">
               <p className="body2 text-white-full">
                 {t("transfer.nomic.amountBtc")}

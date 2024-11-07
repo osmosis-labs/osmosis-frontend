@@ -5,6 +5,7 @@ import {
   estimateGasFee,
   getSwapMessages,
   makeSkipIbcHookSwapMemo,
+  SkipSwapIbcHookContractAddress,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
@@ -15,9 +16,12 @@ import {
   timeout,
 } from "@osmosis-labs/utils";
 import {
+  BaseDepositOptions,
   buildDestination,
+  DepositInfo,
   generateDepositAddressIbc,
   getPendingDeposits,
+  IbcDepositOptions,
 } from "nomic-bitcoin";
 
 import { BridgeQuoteError } from "../errors";
@@ -356,7 +360,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     console.log({
       relayers: this.relayers,
-      channel: "channel-1" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      channel: "channel-2" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork:
         this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
       sender: deriveCosmosAddress({
@@ -370,7 +374,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: "channel-1" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      channel: "channel-2" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork:
         this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
       sender: deriveCosmosAddress({
@@ -518,10 +522,43 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   async getPendingDeposits({ address }: { address: string }) {
     try {
-      const pendingDeposits = await timeout(
-        () => getPendingDeposits(this.relayers, address),
-        10000
-      )();
+      const [pendingDeposits, skipSwapPendingDeposits] = await Promise.all([
+        timeout(() => getPendingDeposits(this.relayers, address), 10000)(),
+        /**
+         * We need to check all deposits to skip contract since we set the receiver to the skip contract address.
+         * So, we need to filter out any deposits that are not intended for the user.
+         */
+        timeout(
+          () =>
+            getPendingDeposits(this.relayers, SkipSwapIbcHookContractAddress),
+          10000
+        )(),
+      ]);
+
+      /**
+       * Filter out deposits that are not intended for the user
+       */
+      const filteredSkipSwapPendingDeposits = skipSwapPendingDeposits
+        .filter((deposit) => {
+          try {
+            if (!("dest" in deposit)) return false;
+            const dest = deposit.dest as {
+              data: BaseDepositOptions & IbcDepositOptions;
+            };
+            const memo = JSON.parse(dest.data.memo ?? "{}");
+            return (
+              memo.wasm.msg.swap_and_action.post_swap_action.transfer
+                .to_address === address
+            );
+          } catch (error) {
+            console.error("Error parsing memo:", error);
+            return false;
+          }
+        })
+        .map((deposit) => ({
+          ...deposit,
+          __type: "contract-deposit" as const,
+        }));
 
       const nomicBtc = this.ctx.assetLists
         .flatMap(({ assets }) => assets)
@@ -533,7 +570,12 @@ export class NomicBridgeProvider implements BridgeProvider {
         throw new Error("Nomic Bitcoin asset not found in asset list.");
       }
 
-      return pendingDeposits.map((deposit) => ({
+      const deposits = [
+        ...pendingDeposits,
+        ...filteredSkipSwapPendingDeposits,
+      ] as (DepositInfo & { __type?: "contract-deposit" })[];
+
+      return deposits.map((deposit) => ({
         transactionId: deposit.txid,
         amount: deposit.amount,
         confirmations: deposit.confirmations,
@@ -541,22 +583,16 @@ export class NomicBridgeProvider implements BridgeProvider {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.minerFeeRate ?? 0) * 1e8).toString(),
           decimals: 8,
-          /*
-           TODO: Handle denom based on transfer expected receive when Nomic updates library 
-           to return the deposit address opts so we can determine the expected denom
-          */
-          denom: "BTC",
+          denom:
+            deposit.__type === "contract-deposit" ? "BTC" : nomicBtc.symbol,
           coinGeckoId: nomicBtc.coingeckoId,
         },
         providerFee: {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.bridgeFeeRate ?? 0) * deposit.amount).toString(),
           decimals: 8,
-          /*
-           TODO: Handle denom based on transfer expected receive when Nomic updates library 
-           to return the deposit address opts so we can determine the expected denom
-          */
-          denom: "BTC",
+          denom:
+            deposit.__type === "contract-deposit" ? "BTC" : nomicBtc.symbol,
           coinGeckoId: nomicBtc.coingeckoId,
         },
       }));

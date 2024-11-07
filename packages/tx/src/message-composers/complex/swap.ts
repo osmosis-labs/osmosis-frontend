@@ -247,6 +247,9 @@ export async function getSwapMessages({
   throw new Error(`Unsupported quote type ${quoteType}`);
 }
 
+export const SkipSwapIbcHookContractAddress =
+  "osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv";
+
 export function makeSkipIbcHookSwapMemo({
   denomIn,
   denomOut,
@@ -269,8 +272,8 @@ export function makeSkipIbcHookSwapMemo({
       contract:
         env === "testnet"
           ? // osmosis-1 and osmo-test-5 share the same contract address
-            "osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv" // https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
-          : "osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv", // https://celatone.osmosis.zone/osmo-1/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
+            SkipSwapIbcHookContractAddress // https://celatone.osmosis.zone/osmo-test-5/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
+          : SkipSwapIbcHookContractAddress, // https://celatone.osmosis.zone/osmo-1/contracts/osmo1vkdakqqg5htq5c3wy2kj2geq536q665xdexrtjuwqckpads2c2nsvhhcyv
       msg: {
         swap_and_action: {
           user_swap: {
