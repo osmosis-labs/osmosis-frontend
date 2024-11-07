@@ -11,6 +11,7 @@ import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/types/transaction-containers";
+import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { formatPretty } from "~/utils/formatter";
@@ -26,12 +27,15 @@ interface TransactionTransferRowProps {
 
 export const TransactionTransferRow = ({
   transaction,
-  size,
+  size: sizeProp,
   isSelected,
   onClick,
   hash,
 }: TransactionTransferRowProps) => {
   const { t } = useTranslation();
+  const { isMobile, width } = useWindowSize();
+
+  const size = isMobile ? "sm" : sizeProp;
 
   const chain =
     transaction.direction === "withdraw"
@@ -97,6 +101,8 @@ export const TransactionTransferRow = ({
       coinImageUrl: transaction.toAsset.imageUrl,
     },
     new Dec(transaction.fromAsset.amount)
+      .sub(new Dec(transaction.networkFee?.amount ?? 0))
+      .sub(new Dec(transaction.providerFee?.amount ?? 0))
   );
 
   const leftComponent = (
@@ -181,7 +187,7 @@ export const TransactionTransferRow = ({
     >
       {transaction.direction === "withdraw" && (
         <div className="flex flex-col text-right">
-          <p className="subtitle1 text-osmoverse-100">
+          <p className="subtitle1 lg:subtitle2 text-osmoverse-100">
             {formatPretty(fromAsset)}
           </p>
           <Price amount={fromAsset} />
@@ -218,7 +224,7 @@ export const TransactionTransferRow = ({
       </div>
       {transaction.direction === "deposit" && (
         <div className="flex flex-col">
-          <p className="subtitle1 text-osmoverse-100">
+          <p className="subtitle1 lg:subtitle2 text-osmoverse-100">
             {formatPretty(toAsset)}
           </p>
           <Price amount={toAsset} />
@@ -243,13 +249,13 @@ export const TransactionTransferRow = ({
     >
       {transaction.direction === "deposit" && (
         <div className="flex flex-col text-right">
-          <p className="subtitle1 text-osmoverse-100">
+          <p className="subtitle1 lg:subtitle2 text-osmoverse-100">
             {t("transfer.from")} {chainPrettyName}
           </p>
-          <p className="body2 text-osmoverse-300">
+          <p className="body2 lg:caption text-osmoverse-300">
             {shorten(transaction.toAddress, {
-              prefixLength: 10,
-              suffixLength: 8,
+              prefixLength: width < 924 ? 4 : 10,
+              suffixLength: width < 924 ? 4 : 8,
             })}
           </p>
         </div>
@@ -281,13 +287,13 @@ export const TransactionTransferRow = ({
       </div>
       {transaction.direction === "withdraw" && (
         <div className="flex flex-col">
-          <p className="subtitle1 text-osmoverse-100">
+          <p className="subtitle1 lg:subtitle2 text-osmoverse-100">
             {t("transfer.to")} {chainPrettyName}
           </p>
-          <p className="body2 text-osmoverse-300">
+          <p className="body2 lg:caption text-osmoverse-300">
             {shorten(transaction.toAddress, {
-              prefixLength: 10,
-              suffixLength: 8,
+              prefixLength: width < 924 ? 4 : 10,
+              suffixLength: width < 924 ? 4 : 8,
             })}
           </p>
         </div>
@@ -334,6 +340,8 @@ export const TransactionTransferRow = ({
         }}
         leftComponent={leftComponent}
         rightComponent={rightComponent}
+        isSelected={isSelected}
+        onClick={onClick}
       />
     );
   }
@@ -358,8 +366,6 @@ export const TransactionTransferRow = ({
 const Price = ({ amount }: { amount: CoinPretty }) => {
   const { fiatValue, isLoading } = useCoinFiatValue(amount);
 
-  console.log(fiatValue);
-
   if (!fiatValue && !isLoading) return null;
 
   return (
@@ -367,7 +373,9 @@ const Price = ({ amount }: { amount: CoinPretty }) => {
       className={!isLoading ? undefined : "w-14 h-4"}
       isLoaded={!isLoading}
     >
-      <p className="body2 text-osmoverse-300">{fiatValue?.toString()}</p>
+      <p className="body2 lg:subtitle2 text-osmoverse-300">
+        {fiatValue?.toString()}
+      </p>
     </SkeletonLoader>
   );
 };

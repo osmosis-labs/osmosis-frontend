@@ -38,8 +38,6 @@ export const useTransactionHistory = ({
     [transactionsData]
   );
 
-  console.log(recentTransfers);
-
   const mergedActivity = useMemo(
     () => [
       ...transactions.map((tx) => ({

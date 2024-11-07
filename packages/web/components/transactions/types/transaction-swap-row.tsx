@@ -7,6 +7,7 @@ import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/types/transaction-containers";
+import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
@@ -30,12 +31,15 @@ interface TransactionSwapRowProps {
 
 export const TransactionSwapRow = ({
   transaction,
-  size,
+  size: sizeProp,
   isSelected,
   onClick,
   hash,
 }: TransactionSwapRowProps) => {
   const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
+
+  const size = isMobile ? "sm" : sizeProp;
 
   const status = transaction.code === 0 ? "success" : "failed";
 
@@ -149,6 +153,8 @@ export const TransactionSwapRow = ({
         }}
         leftComponent={leftComponent}
         rightComponent={rightComponent}
+        isSelected={isSelected}
+        onClick={onClick}
       />
     );
   }

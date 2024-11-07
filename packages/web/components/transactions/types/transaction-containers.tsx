@@ -11,13 +11,31 @@ export const SmallTransactionContainer = ({
   title,
   leftComponent,
   rightComponent,
+  isSelected,
+  onClick,
 }: {
   status: "pending" | "failed" | "success";
   title: { [key in "pending" | "failed" | "success"]: string };
   leftComponent: JSX.Element | null;
   rightComponent: JSX.Element | null;
+  isSelected?: boolean;
+  onClick?: () => void;
 }) => (
-  <div className="-mx-2 flex justify-between gap-4 rounded-2xl p-2">
+  <div
+    className={classNames(
+      "-mx-2 flex justify-between gap-4 rounded-2xl p-2",
+      // Highlight the selected transaction
+      {
+        "bg-osmoverse-825 transition-colors duration-100 ease-in-out":
+          isSelected,
+      },
+      // Highlight the hovered transaction
+      {
+        "cursor-pointer hover:bg-osmoverse-850": Boolean(onClick),
+      }
+    )}
+    onClick={() => onClick?.()}
+  >
     <div className="flex flex-col">
       <p
         className={classNames(
