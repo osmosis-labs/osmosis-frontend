@@ -173,7 +173,12 @@ export const TransactionTransferRow = ({
   ];
 
   const rightLargeComponentList = [
-    <div key="fallback-img" className="flex items-center gap-4">
+    <div
+      key="fallback-img"
+      className={classNames("flex items-center gap-4 w-60", {
+        "justify-end": transaction.direction === "withdraw",
+      })}
+    >
       {transaction.direction === "withdraw" && (
         <div className="flex flex-col text-right">
           <p className="subtitle1 text-osmoverse-100">
@@ -212,7 +217,7 @@ export const TransactionTransferRow = ({
         />
       </div>
       {transaction.direction === "deposit" && (
-        <div className="flex flex-col text-right">
+        <div className="flex flex-col">
           <p className="subtitle1 text-osmoverse-100">
             {formatPretty(toAsset)}
           </p>
@@ -230,7 +235,12 @@ export const TransactionTransferRow = ({
         "text-rust-400": simplifiedStatus === "failed",
       })}
     />,
-    <div key="chain-logo" className="flex items-center gap-4">
+    <div
+      key="chain-logo"
+      className={classNames("flex items-center gap-4 w-60", {
+        "justify-end": transaction.direction === "deposit",
+      })}
+    >
       {transaction.direction === "deposit" && (
         <div className="flex flex-col text-right">
           <p className="subtitle1 text-osmoverse-100">
