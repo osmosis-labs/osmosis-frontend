@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "Explorer'da görüntüle",
     "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
     "history": "Tarih",
-    "orders": "Emirler"
+    "orders": "Emirler",
+    "historyTable": {
+      "pendingDeposit": "Bekleyen mevduat",
+      "pendingWithdraw": "Bekleyen çekme",
+      "successDeposit": "Yatırılan",
+      "successWithdraw": "Geri çekildi",
+      "failDeposit": "Para yatırma başarısız oldu",
+      "failWithdraw": "Geri çekilme başarısız oldu"
+    },
+    "transfer": {
+      "asset": "Varlık",
+      "amountAsset": "Tutar {asset}",
+      "totalValue": "Toplam değer",
+      "transactionHash": "İşlem karması",
+      "sourceNetwork": "Kaynak ağı",
+      "providerFee": "Sağlayıcı ücreti",
+      "networkFee": "Ağ ücreti"
+    }
   },
   "date": {
     "earlierToday": "Bugün erken saatlerde",

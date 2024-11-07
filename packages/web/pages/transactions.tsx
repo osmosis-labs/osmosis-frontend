@@ -6,8 +6,8 @@ import { useEffect, useMemo, useState } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
-import { TransactionDetailsModal } from "~/components/transactions/transaction-details/transaction-details-modal";
-import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details/transaction-details-slideover";
+import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
+import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -17,7 +17,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transactions";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 import { useStore } from "~/stores";
 
 // @ts-ignore
@@ -120,7 +120,7 @@ const Transactions: React.FC = observer(() => {
     () =>
       transactions.find(
         (tx) =>
-          (tx.type === "recentTransfer" ? tx.sendTxHash : tx.hash) ===
+          (tx.__type === "recentTransfer" ? tx.sendTxHash : tx.hash) ===
           selectedTransactionHash
       ),
     [transactions, selectedTransactionHash]

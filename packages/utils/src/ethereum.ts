@@ -156,3 +156,19 @@ export const EthereumChainInfo = [
     relativeLogoUrl: "/networks/optimism.svg",
   }),
 ] as const;
+
+export function getEvmExplorerUrl({
+  hash,
+  chainId,
+}: {
+  hash: string;
+  chainId: number;
+}) {
+  const chain = EthereumChainInfo.find((chain) => chain.id === chainId);
+  if (!chain) return undefined;
+
+  const explorerUrl = chain.blockExplorers?.default.url;
+  if (!explorerUrl) return undefined;
+
+  return `${explorerUrl}/tx/${hash}`;
+}

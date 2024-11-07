@@ -3,11 +3,11 @@ import { FunctionComponent } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
-import { TransactionSwapRow } from "~/components/transactions/types/transaction-swap-row";
-import { TransactionTransferRow } from "~/components/transactions/types/transaction-transfer-row";
+import { TransactionSwapRow } from "~/components/transactions/transaction-types/transaction-swap-row";
+import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transactions";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 const ACTIVITY_LIMIT = 5;
 

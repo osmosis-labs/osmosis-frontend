@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "탐색기에서 보기",
     "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다.",
     "history": "역사",
-    "orders": "명령"
+    "orders": "명령",
+    "historyTable": {
+      "pendingDeposit": "입금 보류 중",
+      "pendingWithdraw": "인출 보류 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철회했다",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
+    },
+    "transfer": {
+      "asset": "유산",
+      "amountAsset": "금액 {asset}",
+      "totalValue": "총 가치",
+      "transactionHash": "거래 해시",
+      "sourceNetwork": "소스 네트워크",
+      "providerFee": "제공자 수수료",
+      "networkFee": "네트워크 수수료"
+    }
   },
   "date": {
     "earlierToday": "오늘 일찍",

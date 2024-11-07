@@ -18,7 +18,7 @@ import { TransactionOptionsMenu } from "~/components/transactions/transaction-op
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
 import { useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transactions";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 

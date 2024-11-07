@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "Ver en el explorador",
     "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
     "history": "Historia",
-    "orders": "Pedidos"
+    "orders": "Pedidos",
+    "historyTable": {
+      "pendingDeposit": "Depósito pendiente",
+      "pendingWithdraw": "Pendiente de retiro",
+      "successDeposit": "Depositado",
+      "successWithdraw": "Se retiró",
+      "failDeposit": "El depósito falló",
+      "failWithdraw": "Retiro fallido"
+    },
+    "transfer": {
+      "asset": "Activo",
+      "amountAsset": "Cantidad {asset}",
+      "totalValue": "Valor total",
+      "transactionHash": "Hash de transacción",
+      "sourceNetwork": "Red de origen",
+      "providerFee": "Tarifa del proveedor",
+      "networkFee": "Tarifa de red"
+    }
   },
   "date": {
     "earlierToday": "El día de hoy",

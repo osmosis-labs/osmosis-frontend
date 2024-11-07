@@ -6,7 +6,7 @@ import { FallbackImg, Icon } from "~/components/assets";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
-} from "~/components/transactions/types/transaction-containers";
+} from "~/components/transactions/transaction-types/transaction-containers";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";

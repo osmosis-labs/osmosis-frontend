@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
 
-import { TransactionDetailsContent } from "~/components/transactions/transaction-details/transaction-details-content";
-import { useTransactionHistory } from "~/hooks/use-transactions";
+import { TransactionDetailsItem } from "~/components/transactions/transaction-details/transaction-details-item";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 export const TransactionDetailsSlideover = ({
   onRequestClose,
@@ -10,7 +10,9 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction?: ReturnType<typeof useTransactionHistory>["transactions"];
+  transaction?: ReturnType<
+    typeof useTransactionHistory
+  >["transactions"][number];
 }) => {
   if (!transaction) return null;
   return (
@@ -24,10 +26,9 @@ export const TransactionDetailsSlideover = ({
       leaveTo="w-0 opacity-0"
     >
       <div>
-        <TransactionDetailsContent
-          onRequestClose={onRequestClose}
-          isModal={false}
+        <TransactionDetailsItem
           transaction={transaction}
+          onRequestClose={onRequestClose}
         />
       </div>
     </Transition>

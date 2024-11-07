@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "مشاهده در اکسپلورر",
     "launchAlert": "در حال حاضر فقط سابقه تجارت نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
     "history": "تاریخ",
-    "orders": "سفارشات"
+    "orders": "سفارشات",
+    "historyTable": {
+      "pendingDeposit": "سپرده معلق",
+      "pendingWithdraw": "در انتظار برداشت",
+      "successDeposit": "سپرده شد",
+      "successWithdraw": "عقب نشینی کرد",
+      "failDeposit": "سپرده گذاری انجام نشد",
+      "failWithdraw": "برداشت ناموفق بود"
+    },
+    "transfer": {
+      "asset": "دارایی",
+      "amountAsset": "مقدار {asset}",
+      "totalValue": "ارزش کل",
+      "transactionHash": "هش تراکنش",
+      "sourceNetwork": "شبکه منبع",
+      "providerFee": "هزینه ارائه دهنده",
+      "networkFee": "هزینه شبکه"
+    }
   },
   "date": {
     "earlierToday": "اوایل امروز",

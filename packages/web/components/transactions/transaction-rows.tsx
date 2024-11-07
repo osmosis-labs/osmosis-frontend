@@ -2,11 +2,11 @@ import dayjs from "dayjs";
 import isToday from "dayjs/plugin/isToday";
 import isYesterday from "dayjs/plugin/isYesterday";
 
-import { TransactionSwapRow } from "~/components/transactions/types/transaction-swap-row";
-import { TransactionTransferRow } from "~/components/transactions/types/transaction-transfer-row";
+import { TransactionSwapRow } from "~/components/transactions/transaction-types/transaction-swap-row";
+import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transactions";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);

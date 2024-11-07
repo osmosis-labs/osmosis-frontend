@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "在資源管理器上查看",
     "launchAlert": "目前僅顯示交易歷史記錄。即將支援更多交易類型。",
     "history": "歷史",
-    "orders": "命令"
+    "orders": "命令",
+    "historyTable": {
+      "pendingDeposit": "待定存款",
+      "pendingWithdraw": "待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "退出",
+      "failDeposit": "存款失敗",
+      "failWithdraw": "提現失敗"
+    },
+    "transfer": {
+      "asset": "資產",
+      "amountAsset": "金額{asset}",
+      "totalValue": "總價值",
+      "transactionHash": "交易哈希",
+      "sourceNetwork": "來源網絡",
+      "providerFee": "提供者費用",
+      "networkFee": "網路費"
+    }
   },
   "date": {
     "earlierToday": "今天早些時候",

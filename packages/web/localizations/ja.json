@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "エクスプローラーで見る",
     "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "history": "歴史",
-    "orders": "注文"
+    "orders": "注文",
+    "historyTable": {
+      "pendingDeposit": "保留中の入金",
+      "pendingWithdraw": "保留中の撤回",
+      "successDeposit": "寄託",
+      "successWithdraw": "撤退",
+      "failDeposit": "入金に失敗しました",
+      "failWithdraw": "引き出しに失敗しました"
+    },
+    "transfer": {
+      "asset": "資産",
+      "amountAsset": "金額{asset}",
+      "totalValue": "合計金額",
+      "transactionHash": "トランザクションハッシュ",
+      "sourceNetwork": "ソースネットワーク",
+      "providerFee": "プロバイダー料金",
+      "networkFee": "ネットワーク料金"
+    }
   },
   "date": {
     "earlierToday": "本日",

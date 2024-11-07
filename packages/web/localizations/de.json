@@ -1105,7 +1105,24 @@
     "viewOnExplorer": "Im Explorer anzeigen",
     "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
     "history": "Geschichte",
-    "orders": "Aufträge"
+    "orders": "Aufträge",
+    "historyTable": {
+      "pendingDeposit": "Ausstehende Einzahlung",
+      "pendingWithdraw": "Ausstehende Auszahlung",
+      "successDeposit": "Hinterlegt",
+      "successWithdraw": "Zurückgezogen",
+      "failDeposit": "Einzahlung fehlgeschlagen",
+      "failWithdraw": "Auszahlung fehlgeschlagen"
+    },
+    "transfer": {
+      "asset": "Vermögenswert",
+      "amountAsset": "Betrag {asset}",
+      "totalValue": "Gesamtwert",
+      "transactionHash": "Transaktions-Hash",
+      "sourceNetwork": "Quellnetzwerk",
+      "providerFee": "Anbietergebühr",
+      "networkFee": "Netzwerkgebühr"
+    }
   },
   "date": {
     "earlierToday": "Heute früh",

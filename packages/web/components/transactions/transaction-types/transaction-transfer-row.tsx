@@ -10,12 +10,12 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
-} from "~/components/transactions/types/transaction-containers";
+} from "~/components/transactions/transaction-types/transaction-containers";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useTransactionChain } from "~/hooks/use-transaction-chain";
 import { formatPretty } from "~/utils/formatter";
-import { api } from "~/utils/trpc";
 
 interface TransactionTransferRowProps {
   size: "sm" | "lg";
@@ -42,35 +42,9 @@ export const TransactionTransferRow = ({
       ? transaction.toChain
       : transaction.fromChain;
 
-  const { data: cosmosChain } = api.edge.chains.getCosmosChain.useQuery(
-    {
-      findChainNameOrId: chain!.chainId.toString(),
-    },
-    {
-      enabled: chain?.chainType === "cosmos",
-      useErrorBoundary: false,
-    }
-  );
-  const { data: evmChain } = api.edge.chains.getEvmChain.useQuery(
-    {
-      chainId: Number(chain!.chainId),
-    },
-    {
-      enabled: chain?.chainType === "evm",
-      useErrorBoundary: false,
-    }
-  );
-
-  const chainPrettyName =
-    chain?.chainType === "cosmos" ? cosmosChain?.pretty_name : evmChain?.name;
-  const chainLogoUri =
-    chain?.chainType === "cosmos"
-      ? cosmosChain?.logoURIs?.png ?? cosmosChain?.logoURIs?.svg
-      : evmChain?.relativeLogoUrl;
-  const chainColor =
-    chain?.chainType === "cosmos"
-      ? cosmosChain?.logoURIs?.theme?.background_color_hex
-      : evmChain?.color;
+  const { chainPrettyName, chainLogoUri, chainColor } = useTransactionChain({
+    chain,
+  });
 
   const text =
     transaction.direction === "withdraw"
@@ -101,8 +75,6 @@ export const TransactionTransferRow = ({
       coinImageUrl: transaction.toAsset.imageUrl,
     },
     new Dec(transaction.fromAsset.amount)
-      .sub(new Dec(transaction.networkFee?.amount ?? 0))
-      .sub(new Dec(transaction.providerFee?.amount ?? 0))
   );
 
   const leftComponent = (
