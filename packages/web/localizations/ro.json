@@ -1118,7 +1118,6 @@
       "asset": "Atu",
       "amountAsset": "Suma {asset}",
       "totalValue": "Valoarea totală",
-      "transactionHash": "Hash de tranzacție",
       "sourceNetwork": "Rețeaua sursă",
       "providerFee": "Taxa de furnizor",
       "networkFee": "Taxa de retea"

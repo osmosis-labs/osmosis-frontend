@@ -1118,7 +1118,6 @@
       "asset": "Actif",
       "amountAsset": "Montant {asset}",
       "totalValue": "Valeur totale",
-      "transactionHash": "Hachage de transaction",
       "sourceNetwork": "Réseau source",
       "providerFee": "Frais de prestataire",
       "networkFee": "Frais de réseau"

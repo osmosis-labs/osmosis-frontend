@@ -1118,7 +1118,6 @@
       "asset": "資產",
       "amountAsset": "金額{asset}",
       "totalValue": "總價值",
-      "transactionHash": "交易哈希",
       "sourceNetwork": "來源網絡",
       "providerFee": "提供者費用",
       "networkFee": "網路費"

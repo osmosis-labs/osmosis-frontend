@@ -1118,7 +1118,6 @@
       "asset": "Ativo",
       "amountAsset": "Quantidade {asset}",
       "totalValue": "Valor total",
-      "transactionHash": "Hash de transação",
       "sourceNetwork": "Rede de origem",
       "providerFee": "Taxa de provedor",
       "networkFee": "Taxa de rede"

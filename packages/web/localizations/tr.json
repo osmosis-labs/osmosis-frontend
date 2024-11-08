@@ -1118,7 +1118,6 @@
       "asset": "Varlık",
       "amountAsset": "Tutar {asset}",
       "totalValue": "Toplam değer",
-      "transactionHash": "İşlem karması",
       "sourceNetwork": "Kaynak ağı",
       "providerFee": "Sağlayıcı ücreti",
       "networkFee": "Ağ ücreti"

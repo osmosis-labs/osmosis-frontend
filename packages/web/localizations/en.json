@@ -1118,7 +1118,6 @@
       "asset": "Asset",
       "amountAsset": "Amount {asset}",
       "totalValue": "Total value",
-      "transactionHash": "Transaction hash",
       "sourceNetwork": "Source network",
       "providerFee": "Provider fee",
       "networkFee": "Network fee"

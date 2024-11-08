@@ -1118,7 +1118,6 @@
       "asset": "એસેટ",
       "amountAsset": "રકમ {asset}",
       "totalValue": "કુલ મૂલ્ય",
-      "transactionHash": "વ્યવહાર હેશ",
       "sourceNetwork": "સ્ત્રોત નેટવર્ક",
       "providerFee": "પ્રદાતા ફી",
       "networkFee": "નેટવર્ક ફી"

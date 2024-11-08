@@ -1118,7 +1118,6 @@
       "asset": "Zaleta",
       "amountAsset": "Kwota {asset}",
       "totalValue": "Wartość całkowita",
-      "transactionHash": "Hash transakcji",
       "sourceNetwork": "Sieć źródłowa",
       "providerFee": "Opłata dostawcy",
       "networkFee": "Opłata sieciowa"
