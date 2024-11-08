@@ -263,7 +263,7 @@ export function makeSkipIbcHookSwapMemo({
   denomOut: string;
   minAmountOut: string;
   poolId: string;
-  timeoutTimestamp: string;
+  timeoutTimestamp: number;
   receiverOsmoAddress: string;
   env: "testnet" | "mainnet";
 }) {

@@ -55,7 +55,9 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.allBtcMinimalDenom = getAllBtcMinimalDenom({ env: this.ctx.env });
-    this.nBTCMinimalDenom = getnBTCMinimalDenom({ env: this.ctx.env });
+    this.nBTCMinimalDenom = getnBTCMinimalDenom({
+      env: this.ctx.env,
+    });
 
     this.relayers =
       this.ctx.env === "testnet" || true
@@ -338,23 +340,24 @@ export class NomicBridgeProvider implements BridgeProvider {
 
     const now = Date.now();
     const timeoutTimestampFiveDaysFromNow =
-      BigInt(now + 86400 * 5 * 1000 - (now % (60 * 60 * 1000))) *
-      BigInt(1000000);
+      Number(now + 86_400 * 5 * 1_000 - (now % (60 * 60 * 1_000))) * 1_000_000;
     const swapMemo = userWantsAllBtc
       ? makeSkipIbcHookSwapMemo({
-          denomIn: this.nBTCMinimalDenom,
+          denomIn:
+            "ibc/35A61206653F4704187A17E76AB2E2C59856265B20D84B14BC7B3E89D785B461" ??
+            this.nBTCMinimalDenom,
           denomOut:
             this.ctx.env === "mainnet" && false
               ? this.allBtcMinimalDenom
               : "uosmo",
-          env: this.ctx.env,
+          env: "testnet" ?? this.ctx.env,
           minAmountOut: "1",
           poolId:
             this.ctx.env === "mainnet" && false
               ? "1868" // nBTC/allBTC pool on Osmosis
-              : "654", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
+              : "663", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
           receiverOsmoAddress: toAddress,
-          timeoutTimestamp: timeoutTimestampFiveDaysFromNow.toString(),
+          timeoutTimestamp: timeoutTimestampFiveDaysFromNow,
         })
       : undefined;
 
