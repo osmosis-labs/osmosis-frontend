@@ -1118,7 +1118,6 @@
       "asset": "Объект",
       "amountAsset": "Сумма {asset}",
       "totalValue": "Общая стоимость",
-      "sourceNetwork": "Исходная сеть",
       "providerFee": "Плата провайдера",
       "networkFee": "Сетевой сбор"
     }

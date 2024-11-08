@@ -1118,7 +1118,6 @@
       "asset": "دارایی",
       "amountAsset": "مقدار {asset}",
       "totalValue": "ارزش کل",
-      "sourceNetwork": "شبکه منبع",
       "providerFee": "هزینه ارائه دهنده",
       "networkFee": "هزینه شبکه"
     }

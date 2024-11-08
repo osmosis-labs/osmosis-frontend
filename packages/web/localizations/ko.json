@@ -1118,7 +1118,6 @@
       "asset": "유산",
       "amountAsset": "금액 {asset}",
       "totalValue": "총 가치",
-      "sourceNetwork": "소스 네트워크",
       "providerFee": "제공자 수수료",
       "networkFee": "네트워크 수수료"
     }

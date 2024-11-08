@@ -1118,7 +1118,6 @@
       "asset": "Activo",
       "amountAsset": "Cantidad {asset}",
       "totalValue": "Valor total",
-      "sourceNetwork": "Red de origen",
       "providerFee": "Tarifa del proveedor",
       "networkFee": "Tarifa de red"
     }

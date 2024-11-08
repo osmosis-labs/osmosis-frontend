@@ -1118,7 +1118,6 @@
       "asset": "Vermögenswert",
       "amountAsset": "Betrag {asset}",
       "totalValue": "Gesamtwert",
-      "sourceNetwork": "Quellnetzwerk",
       "providerFee": "Anbietergebühr",
       "networkFee": "Netzwerkgebühr"
     }

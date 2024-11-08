@@ -1118,7 +1118,6 @@
       "asset": "资产",
       "amountAsset": "金额{asset}",
       "totalValue": "总价值",
-      "sourceNetwork": "来源网络",
       "providerFee": "供应商费用",
       "networkFee": "网络费"
     }

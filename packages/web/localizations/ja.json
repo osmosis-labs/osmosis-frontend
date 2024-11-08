@@ -1118,7 +1118,6 @@
       "asset": "資産",
       "amountAsset": "金額{asset}",
       "totalValue": "合計金額",
-      "sourceNetwork": "ソースネットワーク",
       "providerFee": "プロバイダー料金",
       "networkFee": "ネットワーク料金"
     }

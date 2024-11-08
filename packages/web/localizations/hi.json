@@ -1118,7 +1118,6 @@
       "asset": "संपत्ति",
       "amountAsset": "राशि {asset}",
       "totalValue": "कुल मूल्य",
-      "sourceNetwork": "स्रोत नेटवर्क",
       "providerFee": "प्रदाता शुल्क",
       "networkFee": "नेटवर्क शुल्क"
     }

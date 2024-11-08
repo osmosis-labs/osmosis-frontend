@@ -1118,7 +1118,6 @@
       "asset": "Asset",
       "amountAsset": "Amount {asset}",
       "totalValue": "Total value",
-      "sourceNetwork": "Source network",
       "providerFee": "Provider fee",
       "networkFee": "Network fee"
     }
