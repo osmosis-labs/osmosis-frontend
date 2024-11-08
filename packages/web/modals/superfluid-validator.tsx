@@ -299,18 +299,15 @@ export const SuperfluidValidatorModal: FunctionComponent<
                 {virtualRows.map((virtualRow) => {
                   const {
                     id,
-                    original: { address, isDelegated },
+                    original: { address },
                   } = rows[virtualRow.index];
                   return (
                     <tr
                       className={classNames(
                         "!h-fit transition-colors",
-                        address === selectedValidatorAddress
-                          ? "border border-osmoverse-500"
-                          : isDelegated === 1
-                          ? "bg-osmoverse-800"
-                          : "bg-osmoverse-900",
-                        "hover:cursor-pointer hover:bg-osmoverse-850"
+                        address === selectedValidatorAddress &&
+                          "bg-osmoverse-700",
+                        "hover:cursor-pointer hover:bg-osmoverse-700"
                       )}
                       key={id}
                       onClick={() => setSelectedValidatorAddress(address)}
