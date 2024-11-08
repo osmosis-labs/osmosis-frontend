@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "Neu"
     },
+    "reviewOrder": {
+      "enableTitle": "Starten Sie den 1-Klick-Handel",
+      "enableDescription": "Schneller und einfacher handeln",
+      "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
+      "defaultSpendLimit": "5.000 USD",
+      "change": "Ändern",
+      "periods": {
+        "default": "1 Stunde",
+        "5min": "5 Minuten",
+        "10min": "10 Minuten",
+        "30min": "30 Minuten",
+        "1hour": "1 Stunde",
+        "3hours": "3 Stunden",
+        "12hours": "12 Stunden"
+      }
+    },
     "settings": {
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",

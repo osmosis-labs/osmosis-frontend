@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "Nou"
     },
+    "reviewOrder": {
+      "enableTitle": "Începeți tranzacționarea cu 1 clic",
+      "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
+      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "defaultSpendLimit": "5.000 USD",
+      "change": "Schimba",
+      "periods": {
+        "default": "1 oră",
+        "5min": "5 minute",
+        "10min": "10 minute",
+        "30min": "30 de minute",
+        "1hour": "1 oră",
+        "3hours": "3 ore",
+        "12hours": "12 ore"
+      }
+    },
     "settings": {
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",

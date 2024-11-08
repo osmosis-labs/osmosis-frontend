@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "नया"
     },
+    "reviewOrder": {
+      "enableTitle": "1-क्लिक ट्रेडिंग शुरू करें",
+      "enableDescription": "तीव्र एवं आसान व्यापार",
+      "paramsDescription": "{sessionLength} सत्र {lossProtectionLimit} हानि सुरक्षा सीमा के साथ",
+      "defaultSpendLimit": "$5,000 अमरीकी डॉलर",
+      "change": "परिवर्तन",
+      "periods": {
+        "default": "1 घंटा",
+        "5min": "5 मिनट",
+        "10min": "10 मिनटों",
+        "30min": "30 मिनट",
+        "1hour": "1 घंटा",
+        "3hours": "3 घंटे",
+        "12hours": "12 घंटे"
+      }
+    },
     "settings": {
       "header": "1-ट्रेडिंग पर क्लिक करें",
       "description": "1-क्लिक ट्रेडिंग आपको अपने वॉलेट में प्रत्येक लेनदेन पर हस्ताक्षर करने की परेशानी के बिना इस डिवाइस पर सुरक्षित रूप से व्यापार करने की सुविधा देता है।",

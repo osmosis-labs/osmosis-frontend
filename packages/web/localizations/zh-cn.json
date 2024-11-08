@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "新的"
     },
+    "reviewOrder": {
+      "enableTitle": "开始一键交易",
+      "enableDescription": "交易更快捷、更轻松",
+      "paramsDescription": "{sessionLength}会话，具有{spendLimit}损失保护限制",
+      "defaultSpendLimit": "5,000 美元",
+      "change": "改变",
+      "periods": {
+        "default": "1 小时",
+        "5min": "5 分钟",
+        "10min": "10 分钟",
+        "30min": "30 分钟",
+        "1hour": "1 小时",
+        "3hours": "3 小时",
+        "12hours": "12 小时"
+      }
+    },
     "settings": {
       "header": "一键交易",
       "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",

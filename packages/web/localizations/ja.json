@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "新しい"
     },
+    "reviewOrder": {
+      "enableTitle": "ワンクリック取引を開始",
+      "enableDescription": "より速く、より簡単に取引",
+      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "defaultSpendLimit": "5,000米ドル",
+      "change": "変化",
+      "periods": {
+        "default": "1時間",
+        "5min": "5分",
+        "10min": "10分",
+        "30min": "30分",
+        "1hour": "1時間",
+        "3hours": "3時間",
+        "12hours": "12時間"
+      }
+    },
     "settings": {
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",

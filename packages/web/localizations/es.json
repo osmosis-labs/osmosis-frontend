@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "Nuevo"
     },
+    "reviewOrder": {
+      "enableTitle": "Comience a operar con un solo clic",
+      "enableDescription": "Comercio más rápido y sencillo",
+      "paramsDescription": "Sesión {sessionLength} con límite de protección contra pérdidas {lossProtectionLimit}",
+      "defaultSpendLimit": "$5,000 USD",
+      "change": "Cambiar",
+      "periods": {
+        "default": "1 hora",
+        "5min": "5 minutos",
+        "10min": "10 minutos",
+        "30min": "30 minutos",
+        "1hour": "1 hora",
+        "3hours": "3 horas",
+        "12hours": "12 horas"
+      }
+    },
     "settings": {
       "header": "Comercio con 1 clic",
       "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",

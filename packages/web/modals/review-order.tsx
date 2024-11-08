@@ -8,6 +8,7 @@ import {
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -17,12 +18,16 @@ import AutosizeInput from "react-input-autosize";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
+import { Button as UIButton } from "~/components/ui/button";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
+import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
 import {
   Breakpoint,
+  MultiLanguageT,
   useAmplitudeAnalytics,
+  useOneClickTradingParams,
   useOneClickTradingSession,
   useTranslation,
   useWindowSize,
@@ -98,7 +103,33 @@ export function ReviewOrder({
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
-  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+
+  const {
+    isOneClickTradingEnabled,
+    oneClickTradingInfo,
+    isOneClickTradingExpired,
+  } = useOneClickTradingSession();
+
+  const { transaction1CTParams, setTransaction1CTParams } =
+    useOneClickTradingParams({
+      oneClickTradingInfo,
+      defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
+    });
+
+  const handleOneClickTradingStatusChange = useCallback(() => {
+    if (!transaction1CTParams) return;
+
+    const isStart = !transaction1CTParams.isOneClickEnabled;
+    if (isStart) {
+      logEvent([EventName.OneClickTrading.enableOneClickTrading]);
+    }
+
+    setTransaction1CTParams({
+      ...transaction1CTParams,
+      isOneClickEnabled: isStart,
+    });
+  }, [logEvent, setTransaction1CTParams, transaction1CTParams]);
+
   const [orderType] = useQueryState(
     "type",
     parseAsString.withDefault("market")
@@ -646,6 +677,12 @@ export function ReviewOrder({
                 </div>
               </div>
             )}
+            <OneClickTradingPanel
+              t={t}
+              expired={isOneClickTradingExpired}
+              transaction1CTParams={transaction1CTParams}
+              onStatusChange={handleOneClickTradingStatusChange}
+            />
             {!diffGteSlippage && (
               <div className="flex w-full justify-between gap-3 pt-3">
                 <Button
@@ -688,3 +725,74 @@ export function ReviewOrder({
     </ModalBase>
   );
 }
+
+const OneClickTradingPanel = ({
+  t,
+  expired,
+  transaction1CTParams,
+  onStatusChange,
+}: {
+  t: MultiLanguageT;
+  expired: boolean;
+  transaction1CTParams: OneClickTradingTransactionParams | undefined;
+  onStatusChange: () => void;
+}) => {
+  return (
+    <>
+      {expired && (
+        <div className="flex flex-col my-3">
+          <div
+            className="flex gap-4 rounded-2xl bg-osmoverse-alpha-800 px-4 py-3"
+            onClick={() => onStatusChange()}
+          >
+            <Image
+              src="/images/1ct-rounded-rectangle.svg"
+              alt="1ct rounded rectangle icon"
+              width={48}
+              height={48}
+              className="self-start rounded-none"
+            />
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-col gap-1">
+                <p className="subtitle1">
+                  {t("oneClickTrading.reviewOrder.enableTitle")}
+                </p>
+
+                <p className="text-body2 font-body2 text-osmoverse-300">
+                  {t("oneClickTrading.reviewOrder.enableDescription")}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center ml-auto">
+              <Switch
+                checked={transaction1CTParams?.isOneClickEnabled ?? false}
+              />
+            </div>
+          </div>
+          {transaction1CTParams?.isOneClickEnabled && (
+            <p className="text-body2 font-body2 text-osmoverse-300">
+              {t("oneClickTrading.reviewOrder.paramsDescription", {
+                sessionLength: t(
+                  `oneClickTrading.settings.sessionPeriodScreen.periods.${
+                    transaction1CTParams?.sessionPeriod.end ?? "default"
+                  }`
+                ),
+                spendLimit:
+                  transaction1CTParams?.spendLimit.toString() ??
+                  t("oneClickTrading.reviewOrder.defaultSpendLimit"),
+              })}
+              {" · "}
+              <UIButton
+                variant="link"
+                size="md"
+                className="text-wosmongton-300 px-0 py-0"
+              >
+                {t("oneClickTrading.reviewOrder.change")}
+              </UIButton>
+            </p>
+          )}
+        </div>
+      )}
+    </>
+  );
+};

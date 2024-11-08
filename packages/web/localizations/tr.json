@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "Yeni"
     },
+    "reviewOrder": {
+      "enableTitle": "1-Tıkla İşlem Başlat",
+      "enableDescription": "Daha hızlı, daha kolay ticaret",
+      "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
+      "defaultSpendLimit": "5.000 ABD doları",
+      "change": "Değiştirmek",
+      "periods": {
+        "default": "1 saat",
+        "5min": "5 dakika",
+        "10min": "10 dakika",
+        "30min": "30 dakika",
+        "1hour": "1 saat",
+        "3hours": "3 saat",
+        "12hours": "12 saat"
+      }
+    },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",

@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "جدید"
     },
+    "reviewOrder": {
+      "enableTitle": "شروع تجارت با 1 کلیک",
+      "enableDescription": "تجارت سریع تر و راحت تر",
+      "paramsDescription": "جلسه {sessionLength} با محدودیت محافظت از دست دادن {lossProtectionLimit}",
+      "defaultSpendLimit": "5000 دلار آمریکا",
+      "change": "تغییر دهید",
+      "periods": {
+        "default": "1 ساعت",
+        "5min": "5 دقیقه",
+        "10min": "10 دقیقه",
+        "30min": "30 دقیقه",
+        "1hour": "1 ساعت",
+        "3hours": "3 ساعت",
+        "12hours": "12 ساعت"
+      }
+    },
     "settings": {
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",

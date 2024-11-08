@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "Новый"
     },
+    "reviewOrder": {
+      "enableTitle": "Начните торговлю в 1 клик",
+      "enableDescription": "Более быстрая и простая торговля",
+      "paramsDescription": "{sessionLength} сессия с {spendLimit} лимит защиты от потерь",
+      "defaultSpendLimit": "5000 долларов США",
+      "change": "Изменять",
+      "periods": {
+        "default": "1 час",
+        "5min": "5 минут",
+        "10min": "10 минут",
+        "30min": "30 минут",
+        "1hour": "1 час",
+        "3hours": "3 часа",
+        "12hours": "12 часов"
+      }
+    },
     "settings": {
       "header": "Торговля в 1 клик",
       "description": "1-Click Trading позволяет вам безопасно торговать на этом устройстве без необходимости подписывать каждую транзакцию в своем кошельке.",

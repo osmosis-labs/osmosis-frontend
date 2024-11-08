@@ -383,6 +383,22 @@
     "floatingBanner": {
       "newPill": "新的"
     },
+    "reviewOrder": {
+      "enableTitle": "開始一鍵交易",
+      "enableDescription": "交易更快、更輕鬆",
+      "paramsDescription": "{sessionLength}會話，具有{spendLimit}丟失保護限制",
+      "defaultSpendLimit": "5,000 美元",
+      "change": "改變",
+      "periods": {
+        "default": "1小時",
+        "5min": "5分鐘",
+        "10min": "10分鐘",
+        "30min": "30分鐘",
+        "1hour": "1小時",
+        "3hours": "3小時",
+        "12hours": "12小時"
+      }
+    },
     "settings": {
       "header": "一鍵交易",
       "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
