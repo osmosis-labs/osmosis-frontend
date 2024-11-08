@@ -4,9 +4,8 @@ import React, { FunctionComponent } from "react";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Icon } from "~/components/assets";
-import { BaseCell } from "~/components/table";
 import { useTranslation } from "~/hooks";
-export interface PoolCompositionCell extends BaseCell {
+export interface PoolCompositionCell {
   poolId: string;
   poolAssets: {
     coinImageUrl: string | undefined;

@@ -8,14 +8,12 @@ import React, {
 
 import { MenuDropdown, MenuOption } from "~/components//control";
 import { Icon } from "~/components/assets";
-import { BaseCell } from "~/components/table";
 import { PoolCompositionCell } from "~/components/table/cells/pool-composition";
 import { useTranslation } from "~/hooks";
 import { useBooleanWithWindowEvent } from "~/hooks";
 
 export interface PoolQuickActionCell
-  extends BaseCell,
-    Pick<PoolCompositionCell, "poolId"> {
+  extends Pick<PoolCompositionCell, "poolId"> {
   /** Used to group quick action cells, to close dropdowns via events aren't related to this cell. */
   cellGroupEventEmitter?: EventEmitter;
   onAddLiquidity?: () => void;

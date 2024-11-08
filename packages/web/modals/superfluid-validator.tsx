@@ -160,7 +160,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
         id: "validatorInfo",
         cell: ({ row: { original: validator } }) => (
           <ValidatorInfoCell
-            value={validator.validatorName}
+            name={validator.validatorName}
             imgSrc={validator.validatorImgSrc}
           />
         ),

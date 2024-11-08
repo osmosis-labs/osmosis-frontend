@@ -1,9 +1,12 @@
 import { FunctionComponent } from "react";
 
-import { ValidatorInfo } from "~/components/table/cells/types";
+export interface ValidatorInfo {
+  name?: string;
+  imgSrc?: string;
+}
 
 export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({
-  value,
+  name,
   imgSrc,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
@@ -14,6 +17,6 @@ export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({
         src={imgSrc ?? "/icons/profile.svg"}
       />
     </div>
-    <span>{value ?? ""}</span>
+    <span>{name ?? ""}</span>
   </div>
 );
