@@ -248,7 +248,6 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
-    // eslint-disable-next-line
     return this.blockSubscriberMap.get(chainId)!;
   }
 

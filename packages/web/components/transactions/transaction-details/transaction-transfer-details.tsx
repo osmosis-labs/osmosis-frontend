@@ -91,6 +91,8 @@ export const TransactionTransferDetails = ({
   })();
 
   const explorerUrl = (() => {
+    if (transaction.explorerUrl) return transaction.explorerUrl;
+
     if (transaction.fromChain.chainType === "evm") {
       return getEvmExplorerUrl({
         hash: transaction.sendTxHash,
@@ -161,7 +163,7 @@ export const TransactionTransferDetails = ({
         )}
         <div className="flex flex-col items-center gap-4 pb-6 pt-2">
           {simplifiedStatus === "pending" ? (
-            <Spinner className="text-wosmongton-500 h-12 w-12" />
+            <Spinner className="text-wosmongton-500 !h-12 !w-12" />
           ) : (
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-osmoverse-825">
               <Icon
@@ -219,12 +221,16 @@ export const TransactionTransferDetails = ({
                 </div>
               </div>
             </div>
-            <div className="text-right body1 text-osmoverse-300">
-              {shorten(transaction.fromAddress, {
+            <CopyIconButton
+              valueToCopy={transaction.fromAddress}
+              label={shorten(transaction.fromAddress, {
                 prefixLength: 10,
                 suffixLength: 6,
               })}
-            </div>
+              classes={{
+                label: "!text-right !font-body1 !text-body1",
+              }}
+            />
           </div>
           <div className="flex h-10 w-14 items-center justify-center p-2">
             <Icon
@@ -264,12 +270,16 @@ export const TransactionTransferDetails = ({
                 </div>
               </div>
             </div>
-            <div className="text-right body1 text-osmoverse-300">
-              {shorten(transaction.toAddress, {
+            <CopyIconButton
+              valueToCopy={transaction.toAddress}
+              label={shorten(transaction.toAddress, {
                 prefixLength: 10,
                 suffixLength: 6,
               })}
-            </div>
+              classes={{
+                label: "!text-right !font-body1 !text-body1",
+              }}
+            />
           </div>
         </div>
         <div className="flex flex-col py-3">

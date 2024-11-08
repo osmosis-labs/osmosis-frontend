@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { useState } from "react";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
@@ -7,9 +8,11 @@ import { CopyIcon, Icon } from "~/components/assets";
 export const CopyIconButton = ({
   valueToCopy,
   label,
+  classes,
 }: {
   valueToCopy: string;
   label: string | JSX.Element;
+  classes?: Partial<Record<"container" | "label", string>>;
 }) => {
   const [hasCopied, setHasCopied] = useState(false);
   const [, copyToClipboard] = useCopyToClipboard();
@@ -23,10 +26,15 @@ export const CopyIconButton = ({
 
   return (
     <button
-      className="flex items-center justify-center gap-3"
+      className={classNames(
+        "flex items-center justify-center gap-3",
+        classes?.container
+      )}
       onClick={onCopyAddress}
     >
-      <span className="body2 text-wosmongton-300">{label}</span>
+      <span className={classNames("body2 text-wosmongton-300", classes?.label)}>
+        {label}
+      </span>
       {hasCopied ? (
         <Icon id="check-mark" className="text-wosmongton-300" />
       ) : (

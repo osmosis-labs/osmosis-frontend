@@ -18,6 +18,28 @@ interface Props {
   onSelect: (bridge: Bridge) => void;
 }
 
+function getTotalFee({
+  transferFeeFiat,
+  gasCostFiat,
+}: {
+  transferFeeFiat?: PricePretty;
+  gasCostFiat?: PricePretty;
+}) {
+  let totalFeePricePretty: PricePretty | undefined = undefined;
+
+  if (transferFeeFiat) {
+    totalFeePricePretty = transferFeeFiat;
+  }
+
+  if (gasCostFiat) {
+    totalFeePricePretty = totalFeePricePretty
+      ? totalFeePricePretty.add(gasCostFiat)
+      : gasCostFiat;
+  }
+
+  return totalFeePricePretty;
+}
+
 /**
  * Allows user to select alternative bridge provider quotes, with some basic info
  * about the speed or cost of a quote.
@@ -53,7 +75,13 @@ export const BridgeProviderDropdown = ({
 
   const cheapestQuote = useMemo(() => {
     const minFee = quotes
-      .map((q) => q.data.transferFeeFiat?.toDec() ?? new Dec(0))
+      .map(
+        (q) =>
+          getTotalFee({
+            transferFeeFiat: q.data.transferFeeFiat,
+            gasCostFiat: q.data.gasCostFiat,
+          })?.toDec() ?? new Dec(0)
+      )
       .reduce((acc, fee) => {
         if (acc === null || fee.lt(acc)) {
           return fee;
@@ -62,7 +90,10 @@ export const BridgeProviderDropdown = ({
       }, null as Dec | null);
 
     const uniqueCheapestQuotes = quotes.filter((q) => {
-      const feeDec = q.data.transferFeeFiat?.toDec();
+      const feeDec = getTotalFee({
+        transferFeeFiat: q.data.transferFeeFiat,
+        gasCostFiat: q.data.gasCostFiat,
+      })?.toDec();
       return !isNil(feeDec) && !isNil(minFee) && feeDec.equals(minFee);
     });
 
@@ -114,12 +145,10 @@ export const BridgeProviderDropdown = ({
                   expectedOutputFiat,
                 },
               }) => {
-                const totalFee = transferFeeFiat
-                  ?.add(
-                    gasCostFiat ??
-                      new PricePretty(transferFeeFiat.fiatCurrency, 0)
-                  )
-                  .toString();
+                const totalFee = getTotalFee({
+                  transferFeeFiat: transferFeeFiat,
+                  gasCostFiat: gasCostFiat,
+                })?.toString();
                 const isSelected = selectedQuote.provider.id === provider.id;
                 const isCheapest =
                   cheapestQuote?.data.provider.id === provider.id;

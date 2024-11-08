@@ -330,7 +330,11 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       );
 
       // start receiving tx status updates again for snapshots that were still pending
-      if (snapshot.status === "pending" && statusSource) {
+      if (
+        (snapshot.status === "pending" ||
+          snapshot.status === "connection-error") &&
+        statusSource
+      ) {
         statusSource.trackTxStatus(snapshot);
       } else {
         this._resolvedTxStatusKeys.add(snapshot.sendTxHash);
