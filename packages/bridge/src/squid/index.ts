@@ -218,8 +218,6 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        console.log(gasCosts[0]);
-
         return {
           input: {
             ...fromAsset,
