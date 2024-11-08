@@ -166,7 +166,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
         ),
         header: () => (
           <SortHeader
-            className="w-full !justify-start ml-0 subtitle1 text-osmoverse-300"
+            className="w-full pl-4 !justify-start ml-0 subtitle1 text-osmoverse-300"
             label={t("superfluidValidator.columns.validator")}
             sortKey="validatorName"
             currentSortKey={sortKey}
