@@ -27,8 +27,7 @@ import {
   Breakpoint,
   MultiLanguageT,
   useAmplitudeAnalytics,
-  useOneClickTradingParams,
-  useOneClickTradingSession,
+  useOneClickTradingStatusToggle,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -106,29 +105,14 @@ export function ReviewOrder({
 
   const {
     isOneClickTradingEnabled,
-    oneClickTradingInfo,
     isOneClickTradingExpired,
-  } = useOneClickTradingSession();
-
-  const { transaction1CTParams, setTransaction1CTParams } =
-    useOneClickTradingParams({
-      oneClickTradingInfo,
-      defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
-    });
-
-  const handleOneClickTradingStatusChange = useCallback(() => {
-    if (!transaction1CTParams) return;
-
-    const isStart = !transaction1CTParams.isOneClickEnabled;
-    if (isStart) {
-      logEvent([EventName.OneClickTrading.enableOneClickTrading]);
-    }
-
-    setTransaction1CTParams({
-      ...transaction1CTParams,
-      isOneClickEnabled: isStart,
-    });
-  }, [logEvent, setTransaction1CTParams, transaction1CTParams]);
+    isLoading: isOneClickTradingLoading,
+    transaction1CTParams,
+    handleOneClickTradingStatusToggle,
+    handleConfirm,
+  } = useOneClickTradingStatusToggle({
+    confirmAction,
+  });
 
   const [orderType] = useQueryState(
     "type",
@@ -679,16 +663,16 @@ export function ReviewOrder({
             )}
             <OneClickTradingPanel
               t={t}
-              expired={isOneClickTradingExpired}
+              shouldShow={!isOneClickTradingLoading && isOneClickTradingExpired}
               transaction1CTParams={transaction1CTParams}
-              onStatusChange={handleOneClickTradingStatusChange}
+              onStatusToggle={handleOneClickTradingStatusToggle}
             />
             {!diffGteSlippage && (
               <div className="flex w-full justify-between gap-3 pt-3">
                 <Button
                   mode="primary"
-                  onClick={confirmAction}
-                  disabled={isConfirmationDisabled}
+                  onClick={handleConfirm}
+                  disabled={isConfirmationDisabled || isOneClickTradingLoading}
                   className="body2 sm:caption !rounded-2xl"
                 >
                   <h6>{t("limitOrders.confirm")}</h6>
@@ -728,22 +712,22 @@ export function ReviewOrder({
 
 const OneClickTradingPanel = ({
   t,
-  expired,
+  shouldShow,
   transaction1CTParams,
-  onStatusChange,
+  onStatusToggle,
 }: {
   t: MultiLanguageT;
-  expired: boolean;
+  shouldShow: boolean;
   transaction1CTParams: OneClickTradingTransactionParams | undefined;
-  onStatusChange: () => void;
+  onStatusToggle: () => void;
 }) => {
   return (
     <>
-      {expired && (
+      {shouldShow && (
         <div className="flex flex-col my-3">
           <div
             className="flex gap-4 rounded-2xl bg-osmoverse-alpha-800 px-4 py-3"
-            onClick={() => onStatusChange()}
+            onClick={onStatusToggle}
           >
             <Image
               src="/images/1ct-rounded-rectangle.svg"
