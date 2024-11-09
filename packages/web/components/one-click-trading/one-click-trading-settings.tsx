@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { noop, runIfFn } from "@osmosis-labs/utils";
@@ -34,7 +34,7 @@ import {
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
+import { formatSpendLimit } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -84,12 +84,6 @@ export function compare1CTTransactionParams({
   }
 
   return Array.from(changes);
-}
-
-function formatSpendLimit(spendLimit: PricePretty | undefined) {
-  return `${spendLimit?.symbol}${trimPlaceholderZeros(
-    spendLimit?.toDec().toString(2) ?? ""
-  )}`;
 }
 
 export const OneClickTradingSettings = ({
