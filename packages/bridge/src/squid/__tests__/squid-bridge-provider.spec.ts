@@ -158,6 +158,7 @@ describe("SquidBridgeProvider", () => {
         chainId: 1,
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
+        coinGeckoId: "ethereum",
       },
       estimatedTime: 960,
       estimatedGasFee: {
@@ -165,6 +166,7 @@ describe("SquidBridgeProvider", () => {
         denom: "ETH",
         address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
         decimals: 18,
+        coinGeckoId: "ethereum",
       },
       transactionRequest: {
         type: "evm",
@@ -243,11 +245,13 @@ describe("SquidBridgeProvider", () => {
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,
+        coinGeckoId: "weth",
       },
       estimatedTime: 60,
       estimatedGasFee: {
         amount: "20000",
         denom: "axlETH",
+        coinGeckoId: "weth",
         address:
           "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
         decimals: 18,

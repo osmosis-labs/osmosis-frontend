@@ -1103,9 +1103,23 @@
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
-    "launchAlert": "目前仅显示交易历史。即将支持更多交易类型。",
     "history": "历史",
-    "orders": "命令"
+    "orders": "命令",
+    "historyTable": {
+      "pendingDeposit": "待存款",
+      "pendingWithdraw": "等待提款",
+      "successDeposit": "已存入",
+      "successWithdraw": "已退出",
+      "failDeposit": "存款失败",
+      "failWithdraw": "提现失败"
+    },
+    "transfer": {
+      "asset": "资产",
+      "amountAsset": "金额{asset}",
+      "totalValue": "总价值",
+      "providerFee": "供应商费用",
+      "networkFee": "网络费"
+    }
   },
   "date": {
     "earlierToday": "今天早些时候",

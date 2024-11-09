@@ -51,7 +51,10 @@ import {
   UserSettings,
 } from "~/stores/user-settings";
 
-import { TransferHistoryStore } from "./transfer-history";
+import {
+  TRANSFER_HISTORY_STORE_KEY,
+  TransferHistoryStore,
+} from "./transfer-history";
 
 const assets = AssetLists.flatMap((list) => list.assets);
 
@@ -266,7 +269,7 @@ export class RootStore {
         // tRPC queries, the params are not used
         txEvents?.onFulfill?.("", "");
       },
-      makeLocalStorageKVStore("nonibc_transfer_history"),
+      makeIndexedKVStore(TRANSFER_HISTORY_STORE_KEY),
       transferStatusProviders
     );
 

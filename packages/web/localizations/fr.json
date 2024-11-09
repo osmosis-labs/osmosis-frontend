@@ -1103,9 +1103,23 @@
     "totalFees": "Total des frais",
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
-    "launchAlert": "Actuellement, seul l'historique des échanges est affiché. Prise en charge d'autres types de transactions à venir.",
     "history": "Histoire",
-    "orders": "Ordres"
+    "orders": "Ordres",
+    "historyTable": {
+      "pendingDeposit": "Dépôt en attente",
+      "pendingWithdraw": "En attente de retrait",
+      "successDeposit": "Déposé",
+      "successWithdraw": "Retiré",
+      "failDeposit": "Dépôt échoué",
+      "failWithdraw": "Retrait échoué"
+    },
+    "transfer": {
+      "asset": "Actif",
+      "amountAsset": "Montant {asset}",
+      "totalValue": "Valeur totale",
+      "providerFee": "Frais de prestataire",
+      "networkFee": "Frais de réseau"
+    }
   },
   "date": {
     "earlierToday": "Plus tôt aujourd'hui",

@@ -2,7 +2,11 @@
 import { rest } from "msw";
 
 import { server } from "../../__tests__/msw";
-import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
+import {
+  BridgeEnvironment,
+  TransferStatusReceiver,
+  TxSnapshot,
+} from "../../interface";
 import { TransferStatus } from "../queries";
 import { AxelarTransferStatusProvider } from "../transfer-status";
 
@@ -35,6 +39,43 @@ describe("AxelarTransferStatusProvider", () => {
     receiveNewTxStatus: jest.fn(),
   };
 
+  const testSnapshot: TxSnapshot = {
+    direction: "deposit",
+    createdAtUnix: Date.now(),
+    type: "bridge-transfer",
+    provider: "Axelar",
+    fromAddress: "fromAddress",
+    toAddress: "toAddress",
+    osmoBech32Address: "osmoAddress",
+    fromAsset: {
+      amount: "100",
+      denom: "denom",
+      imageUrl: "imageUrl",
+      address: "address",
+      decimals: 6,
+    },
+    toAsset: {
+      amount: "100",
+      denom: "denom",
+      imageUrl: "imageUrl",
+      address: "address",
+      decimals: 6,
+    },
+    status: "pending",
+    sendTxHash: "testTxHash",
+    fromChain: {
+      prettyName: "Chain A",
+      chainId: 1,
+      chainType: "evm",
+    },
+    toChain: {
+      prettyName: "Chain B",
+      chainId: 2,
+      chainType: "evm",
+    },
+    estimatedArrivalUnix: Date.now() + 1000,
+  };
+
   beforeEach(() => {
     provider = new AxelarTransferStatusProvider("mainnet" as BridgeEnvironment);
     provider.statusReceiverDelegate = mockReceiver;
@@ -46,7 +87,7 @@ describe("AxelarTransferStatusProvider", () => {
   });
 
   it("should generate correct explorer URL", () => {
-    const url = provider.makeExplorerUrl("testTxHash");
+    const url = provider.makeExplorerUrl(testSnapshot);
     expect(url).toBe("https://axelarscan.io/transfer/testTxHash");
   });
 
@@ -62,10 +103,10 @@ describe("AxelarTransferStatusProvider", () => {
       )
     );
 
-    await provider.trackTxStatus("testTxHash");
+    await provider.trackTxStatus(testSnapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      "AxelartestTxHash",
+      "testTxHash",
       "success",
       undefined
     );
@@ -100,10 +141,10 @@ describe("AxelarTransferStatusProvider", () => {
       )
     );
 
-    await provider.trackTxStatus("testTxHash");
+    await provider.trackTxStatus(testSnapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      "AxelartestTxHash",
+      "testTxHash",
       "failed",
       "insufficientFee"
     );
@@ -162,10 +203,10 @@ describe("AxelarTransferStatusProvider", () => {
       )
     );
 
-    await provider.trackTxStatus("testTxHash");
+    await provider.trackTxStatus(testSnapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      "AxelartestTxHash",
+      "testTxHash",
       "failed",
       undefined
     );
@@ -181,14 +222,8 @@ describe("AxelarTransferStatusProvider", () => {
       )
     );
 
-    await provider.trackTxStatus("testTxHash");
+    await provider.trackTxStatus(testSnapshot);
 
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
-  });
-
-  it("should generate correct explorer URL with serialized params", () => {
-    const serializedParams = JSON.stringify({ sendTxHash: "testTxHash" });
-    const url = provider.makeExplorerUrl(serializedParams);
-    expect(url).toBe("https://axelarscan.io/transfer/testTxHash");
   });
 });

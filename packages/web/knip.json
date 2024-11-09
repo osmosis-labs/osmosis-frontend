@@ -1,9 +1,11 @@
 {
+  "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignore": [
     ".next/**/*",
     "**/tradingview/**",
     "**/light-weight-charts/**",
     "**/generated/**",
     "*.spec.*"
-  ]
+  ],
+  "ignoreDependencies": ["chokidar-cli", "concurrently", "dotenv-cli"]
 }

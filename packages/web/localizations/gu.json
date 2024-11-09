@@ -1103,9 +1103,23 @@
     "totalFees": "કુલ ફી",
     "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
     "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
-    "launchAlert": "હાલમાં માત્ર વેપાર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
     "history": "ઇતિહાસ",
-    "orders": "ઓર્ડર"
+    "orders": "ઓર્ડર",
+    "historyTable": {
+      "pendingDeposit": "બાકી થાપણ",
+      "pendingWithdraw": "બાકી ઉપાડ",
+      "successDeposit": "જમા કરાવ્યું",
+      "successWithdraw": "પાછી ખેંચી લીધી",
+      "failDeposit": "ડિપોઝિટ નિષ્ફળ",
+      "failWithdraw": "ઉપાડ નિષ્ફળ"
+    },
+    "transfer": {
+      "asset": "એસેટ",
+      "amountAsset": "રકમ {asset}",
+      "totalValue": "કુલ મૂલ્ય",
+      "providerFee": "પ્રદાતા ફી",
+      "networkFee": "નેટવર્ક ફી"
+    }
   },
   "date": {
     "earlierToday": "આજેવહેલા",

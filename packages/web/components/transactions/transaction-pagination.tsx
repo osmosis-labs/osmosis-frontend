@@ -8,7 +8,7 @@ import {
   PaginationPrevious,
 } from "~/components/ui/pagination";
 
-const TransactionsPaginaton = ({
+const TransactionsPagination = ({
   showPrevious,
   showNext,
   previousHref,
@@ -37,4 +37,4 @@ const TransactionsPaginaton = ({
   );
 };
 
-export { TransactionsPaginaton };
+export { TransactionsPagination as TransactionsPaginaton };

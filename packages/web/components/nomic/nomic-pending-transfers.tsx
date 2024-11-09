@@ -416,7 +416,7 @@ const TransactionDetailsModal = ({
                   className="body2 text-wosmongton-300 hover:text-wosmongton-400"
                   href={getBitcoinExplorerUrl({
                     txHash: depositData.transactionId,
-                    isTestnet: IS_TESTNET,
+                    env: IS_TESTNET ? "testnet" : "mainnet",
                   })}
                   rel="noopener noreferrer"
                   target="_blank"
@@ -449,7 +449,7 @@ const TransactionDetailsModal = ({
             target="_blank"
             href={getBitcoinExplorerUrl({
               txHash: depositData.transactionId,
-              isTestnet: IS_TESTNET,
+              env: IS_TESTNET ? "testnet" : "mainnet",
             })}
           >
             <span>{t("transfer.nomic.viewOnExplorer")}</span>{" "}

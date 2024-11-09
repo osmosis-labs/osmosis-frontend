@@ -6,8 +6,9 @@ interface ChainLogoProps {
   color: string | undefined;
   logoUri: string | undefined;
   prettyName?: string;
-  size?: "xs" | "sm" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
+  classes?: Partial<Record<"container" | "image", string>>;
 }
 
 export const ChainLogo: FunctionComponent<ChainLogoProps> = ({
@@ -16,6 +17,7 @@ export const ChainLogo: FunctionComponent<ChainLogoProps> = ({
   prettyName,
   size = "sm",
   className,
+  classes,
 }) => {
   return (
     <div
@@ -25,19 +27,32 @@ export const ChainLogo: FunctionComponent<ChainLogoProps> = ({
         {
           xs: "h-4 w-4 rounded-sm",
           sm: "h-6 w-6 rounded-md",
+          md: "h-8 w-8 rounded-md",
           lg: "h-12 w-12 rounded-xl",
         }[size],
-        className
+        className,
+        classes?.container
       )}
       style={{
-        background: color ? rgba(color, 0.3) : undefined,
+        background:
+          color === "transparent"
+            ? "transparent"
+            : color
+            ? rgba(color, 0.3)
+            : undefined,
       }}
     >
       {logoUri && (
         <img
           className={classNames(
             "object-contain",
-            size === "xs" ? "h-3 w-3" : size === "sm" ? "h-4 w-4" : "h-8 w-8"
+            {
+              xs: "h-3 w-3",
+              sm: "h-4 w-4",
+              md: "h-6 w-6",
+              lg: "h-8 w-8",
+            }[size],
+            classes?.image
           )}
           src={logoUri}
           alt={`${prettyName} logo`}

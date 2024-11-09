@@ -6,7 +6,7 @@ import { createTRPCRouter, publicProcedure } from "./api";
 
 export const chainsRouter = createTRPCRouter({
   /** Get Cosmos chain. */
-  getChain: publicProcedure
+  getCosmosChain: publicProcedure
     .input(
       z.object({
         findChainNameOrId: z.string(),
