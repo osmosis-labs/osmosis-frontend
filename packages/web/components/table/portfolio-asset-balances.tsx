@@ -12,7 +12,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
-import { NextRouter, useRouter } from "next/router";
+import { useRouter } from "next/router";
 import {
   FunctionComponent,
   useCallback,
@@ -39,6 +39,7 @@ import {
   ActivateUnverifiedTokenConfirmation,
   ExternalLinkModal,
 } from "~/modals";
+import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
@@ -58,8 +59,6 @@ type AssetRow =
 type SortKey = NonNullable<
   RouterInputs["edge"]["assets"]["getUserBridgeAssets"]["sort"]
 >["keyPath"];
-
-type Action = "deposit" | "withdraw" | "trade" | "earn";
 
 export const PortfolioAssetBalancesTable: FunctionComponent<{
   tableTopPadding?: number;
@@ -506,6 +505,8 @@ const PriceCell: AssetCellComponent = ({ currentPrice, priceChange24h }) => (
   </div>
 );
 
+type Action = "deposit" | "withdraw" | "trade" | "earn";
+
 const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   return [
     ...(showConvertButton
@@ -519,35 +520,6 @@ const getActionOptions = (t: MultiLanguageT, showConvertButton: boolean) => {
   ] as Array<{ key: Action; label: string; icon: SpriteIconId }>;
 };
 
-const handleSelectAction = (
-  action: Action,
-  coinDenom: string,
-  router: NextRouter,
-  bridgeAsset: ({
-    anyDenom,
-    direction,
-  }: {
-    anyDenom: string | undefined;
-    direction: "deposit" | "withdraw" | undefined;
-  }) => void
-) => {
-  if (action === "trade") {
-    router.push(`/assets/${coinDenom}`);
-  } else if (action === "earn") {
-    router.push(`/earn?search=${coinDenom}`);
-  } else if (action === "deposit") {
-    bridgeAsset({
-      anyDenom: coinDenom,
-      direction: "deposit",
-    });
-  } else if (action === "withdraw") {
-    bridgeAsset({
-      anyDenom: coinDenom,
-      direction: "withdraw",
-    });
-  }
-};
-
 const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
@@ -555,13 +527,13 @@ const AssetActionsCell: AssetCellComponent<{
     coinImageUrl?: string;
   }) => void;
 }> = ({
+  coinMinimalDenom,
+  variantGroupKey,
   coinDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
   confirmUnverifiedAsset,
-  coinMinimalDenom,
-  variantGroupKey,
 }) => {
   const { t } = useTranslation();
   const router = useRouter();
@@ -574,13 +546,33 @@ const AssetActionsCell: AssetCellComponent<{
   const showConvertButton = featureFlags.alloyedAssets && needsConversion;
 
   const actionOptions = getActionOptions(t, showConvertButton);
+  const { setIsOpenForVariant } = useAssetVariantsModalStore();
+
+  const onSelectAction = (action: Action) => {
+    if (action === "trade") {
+      const to = coinDenom === "OSMO" ? "ATOM" : "OSMO";
+      router.push(`/?from=${coinDenom}&to=${to}`);
+    } else if (action === "earn") {
+      router.push(`/earn?search=${coinDenom}`);
+    } else if (action === "deposit") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "deposit",
+      });
+    } else if (action === "withdraw") {
+      bridgeAsset({
+        anyDenom: coinDenom,
+        direction: "withdraw",
+      });
+    }
+  };
 
   return (
     <div className="flex items-center justify-end gap-2 text-wosmongton-200">
       {needsActivation && (
         <Button
-          variant="ghost"
-          className="flex gap-2 rounded-[48px] text-wosmongton-200 hover:text-rust-200"
+          variant="secondary"
+          className="max-h-12 mx-auto w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -591,7 +583,7 @@ const AssetActionsCell: AssetCellComponent<{
         </Button>
       )}
       {!needsActivation && (
-        <div className="flex gap-3 md:hidden">
+        <>
           {showConvertButton ? (
             <Button
               variant="secondary"
@@ -599,8 +591,7 @@ const AssetActionsCell: AssetCellComponent<{
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
-                // TODO - open conversion modal once clicked
-                alert("Convert clicked");
+                setIsOpenForVariant(coinMinimalDenom);
               }}
             >
               {t("portfolio.convert")}
@@ -610,7 +601,7 @@ const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -625,7 +616,7 @@ const AssetActionsCell: AssetCellComponent<{
               <Button
                 size="icon"
                 variant="secondary"
-                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+                className="bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800 shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   e.preventDefault();
@@ -639,31 +630,36 @@ const AssetActionsCell: AssetCellComponent<{
               </Button>
             </>
           )}
-          <AssetActionsDropdown
-            actionOptions={actionOptions}
-            onSelectAction={(action) =>
-              handleSelectAction(action, coinDenom, router, bridgeAsset)
-            }
-          />
-        </div>
+        </>
       )}
+      <AssetActionsDropdown
+        disabled={needsActivation}
+        actionOptions={actionOptions}
+        onSelectAction={onSelectAction}
+      />
     </div>
   );
 };
 
 const AssetActionsDropdown: FunctionComponent<{
+  disabled?: boolean;
   actionOptions: {
     key: Action;
     label: string;
     icon: SpriteIconId;
   }[];
   onSelectAction: (key: Action) => void;
-}> = ({ actionOptions, onSelectAction }) => {
+}> = ({ actionOptions, onSelectAction, disabled }) => {
   return (
     <Popover className="relative shrink-0">
       {() => (
         <>
-          <PopoverButton as={Button} size="icon" variant="ghost">
+          <PopoverButton
+            as={Button}
+            size="icon"
+            variant="ghost"
+            disabled={disabled}
+          >
             <Icon id="dots-three-vertical" width={24} height={24} />
           </PopoverButton>
 
@@ -673,7 +669,7 @@ const AssetActionsDropdown: FunctionComponent<{
                 {actionOptions.map(({ key, label, icon }) => (
                   <button
                     key={key}
-                    className="body2 flex place-content-between items-center gap-2 rounded-full !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
+                    className="body2 flex place-content-between items-center gap-2 rounded-xl !px-3 !py-1 text-osmoverse-200 hover:bg-osmoverse-700"
                     onClick={(e) => {
                       e.stopPropagation();
                       e.preventDefault();

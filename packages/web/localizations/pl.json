@@ -1278,5 +1278,17 @@
     "remindMeLater": "Przypomnij mi później",
     "dismiss": "Odrzucać",
     "convert": "Konwertować"
+  },
+  "assetVariantsConversion": {
+    "title": "Standaryzacja aktywów",
+    "description": "Przekonwertuj poniższe zasoby do ich standardowej wersji w Osmosis, aby uzyskać większą elastyczność i lepszą kompatybilność.",
+    "learnMore": "Dowiedz się więcej",
+    "errorLoading": "Błąd podczas ładowania wariantów zasobów. Spróbuj ponownie później.",
+    "tooltipTitle": "{coinName} na temat Osmosis",
+    "tooltipDescription": "Osmosis konsoliduje liczne warianty {coinDenom} w jeden prosty zasób, co zapewnia większą elastyczność i łatwość użytkowania.",
+    "convert": "Konwertować",
+    "conversionFees": "Opłaty za konwersję",
+    "free": "Bezpłatny",
+    "unavailable": "Obecnie niedostępne. Spróbuj ponownie później."
   }
 }

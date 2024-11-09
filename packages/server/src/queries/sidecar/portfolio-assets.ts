@@ -33,19 +33,19 @@ export interface Categories {
   "user-balances": Category;
 }
 
-export interface AllocationResponse {
+export interface PortfolioAssetsResponse {
   categories: Categories;
 }
 
-export async function queryAllocation({
+export async function queryPortfolioAssets({
   address,
 }: {
   address: string;
-}): Promise<AllocationResponse> {
+}): Promise<PortfolioAssetsResponse> {
   const url = new URL(
     `passthrough/portfolio-assets/${address}`,
     SIDECAR_BASE_URL
   );
 
-  return apiClient<AllocationResponse>(url.toString());
+  return apiClient<PortfolioAssetsResponse>(url.toString());
 }

@@ -38,6 +38,7 @@ import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DefaultSlippage } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
@@ -1332,23 +1333,25 @@ function useQueryRouterBestQuote(
     const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
     const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
     const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
+    const address = account?.address;
     if (
       !quote ||
       typeof tokenOutCoinDecimals === "undefined" ||
       !tokenInCoinMinimalDenom ||
       !tokenOutCoinMinimalDenom ||
-      typeof tokenInCoinDecimals === "undefined"
+      typeof tokenInCoinDecimals === "undefined" ||
+      !address
     )
       return undefined;
     const messages = await getSwapMessages({
-      quote: quote,
+      quote,
       tokenOutCoinMinimalDenom,
       tokenInCoinDecimals: tokenInCoinDecimals!,
       tokenOutCoinDecimals: tokenOutCoinDecimals!,
       tokenInCoinMinimalDenom,
-      maxSlippage: input.maxSlippage?.toString(),
+      maxSlippage: input.maxSlippage?.toString() ?? DefaultSlippage,
       coinAmount: input.tokenInAmount,
-      userOsmoAddress: account?.address,
+      userOsmoAddress: address,
       quoteType,
     });
 

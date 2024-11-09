@@ -1278,5 +1278,17 @@
     "remindMeLater": "稍后提醒我",
     "dismiss": "解雇",
     "convert": "转变"
+  },
+  "assetVariantsConversion": {
+    "title": "标准化资产",
+    "description": "将以下资产转换为 Osmosis 上的标准化版本，以获得更大的灵活性和更高的兼容性。",
+    "learnMore": "了解更多",
+    "errorLoading": "加载资产变体时出错，请稍后重试。",
+    "tooltipTitle": "Osmosis 上的{coinName}",
+    "tooltipDescription": "Osmosis 将{coinDenom}的众多变体整合为一种简单资产，以实现更大的灵活性和易用性。",
+    "convert": "转变",
+    "conversionFees": "转换费",
+    "free": "自由的",
+    "unavailable": "目前不可用。请稍后重试。"
   }
 }

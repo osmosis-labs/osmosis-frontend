@@ -1278,5 +1278,17 @@
     "remindMeLater": "Lembre-me mais tarde",
     "dismiss": "Liberar",
     "convert": "Converter"
+  },
+  "assetVariantsConversion": {
+    "title": "Padronizar Ativos",
+    "description": "Converta os seguintes ativos para sua versão padronizada no Osmosis para obter mais flexibilidade e compatibilidade aprimorada.",
+    "learnMore": "Saber mais",
+    "errorLoading": "Erro ao carregar variantes de ativos. Tente novamente mais tarde.",
+    "tooltipTitle": "{coinName} em Osmose",
+    "tooltipDescription": "O Osmosis consolida diversas variantes de {coinDenom} em um único ativo simples para maior flexibilidade e facilidade de uso.",
+    "convert": "Converter",
+    "conversionFees": "Taxas de conversão",
+    "free": "Livre",
+    "unavailable": "Atualmente indisponível. Tente novamente mais tarde."
   }
 }

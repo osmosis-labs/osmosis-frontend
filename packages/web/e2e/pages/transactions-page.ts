@@ -17,7 +17,7 @@ export class TransactionsPage extends BasePage {
     this.page = page;
     this.transactionRow = page.locator('//div/p[.="Swapped"]');
     this.viewExplorerLink = page.locator('//a/span["View on explorer"]/..');
-    this.closeTransactionBtn = page.getByLabel("Close").nth(1);
+    this.closeTransactionBtn = page.locator('//button[@data-testid="close"]');
     this.claimAndClose = page.getByRole("button", {
       name: "Claim and close",
       exact: true,
