@@ -18,7 +18,7 @@ import { TransactionOptionsMenu } from "~/components/transactions/transaction-op
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
 import { useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 
@@ -37,7 +37,7 @@ export const TransactionContent = ({
 }: {
   setSelectedTransactionHash: (hash: string) => void;
   selectedTransactionHash?: string;
-  transactions?: ReturnType<typeof useTransactionHistory>["transactions"];
+  transactions?: HistoryTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
   address: string;

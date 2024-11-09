@@ -6,7 +6,7 @@ import { TransactionSwapRow } from "~/components/transactions/transaction-types/
 import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 dayjs.extend(isToday);
 dayjs.extend(isYesterday);
@@ -27,8 +27,8 @@ const formatDate = (
 };
 
 const groupTransactionsByDate = (
-  transactions: ReturnType<typeof useTransactionHistory>["transactions"]
-): Record<string, ReturnType<typeof useTransactionHistory>["transactions"]> => {
+  transactions: HistoryTransaction[]
+): Record<string, HistoryTransaction[]> => {
   return transactions.reduce((acc, transaction) => {
     // extract date from block timestamp
     const date = dayjs(
@@ -44,7 +44,7 @@ const groupTransactionsByDate = (
     acc[date].push(transaction);
 
     return acc;
-  }, {} as Record<string, ReturnType<typeof useTransactionHistory>["transactions"]>);
+  }, {} as Record<string, HistoryTransaction[]>);
 };
 
 export const TransactionRows = ({
@@ -54,7 +54,7 @@ export const TransactionRows = ({
   setOpen,
   open,
 }: {
-  transactions: ReturnType<typeof useTransactionHistory>["transactions"];
+  transactions: HistoryTransaction[];
   selectedTransactionHash?: string;
   setSelectedTransactionHash: (hash: string) => void;
   setOpen: (open: boolean) => void;

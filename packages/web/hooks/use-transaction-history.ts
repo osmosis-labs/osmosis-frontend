@@ -3,6 +3,19 @@ import { useMemo } from "react";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
+export type HistoryTransaction = ReturnType<
+  typeof useTransactionHistory
+>["transactions"][number];
+
+export type HistorySwapTransaction = Extract<
+  HistoryTransaction,
+  { __type: "transaction" }
+>;
+export type HistoryBridgeTransaction = Extract<
+  HistoryTransaction,
+  { __type: "recentTransfer" }
+>;
+
 export const useTransactionHistory = ({
   pageSize = "100",
   pageNumber = "0",

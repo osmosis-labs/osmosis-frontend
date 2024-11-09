@@ -10,7 +10,7 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { HistorySwapTransaction } from "~/hooks/use-transaction-history";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { formatFiatPrice } from "~/utils/formatter";
@@ -22,10 +22,7 @@ export const TransactionSwapDetails = ({
 }: {
   onRequestClose: () => void;
   isModal: boolean;
-  transaction: Extract<
-    ReturnType<typeof useTransactionHistory>["transactions"][number],
-    { __type: "transaction" }
-  >;
+  transaction: HistorySwapTransaction;
 }) => {
   const { t } = useTranslation();
 

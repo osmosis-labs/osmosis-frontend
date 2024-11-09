@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { Bridge } from "@osmosis-labs/bridge";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -16,28 +16,6 @@ interface Props {
   selectedQuote: NonNullable<BridgeQuote["selectedQuote"]>;
   quotes: BridgeQuote["successfulQuotes"];
   onSelect: (bridge: Bridge) => void;
-}
-
-function getTotalFee({
-  transferFeeFiat,
-  gasCostFiat,
-}: {
-  transferFeeFiat?: PricePretty;
-  gasCostFiat?: PricePretty;
-}) {
-  let totalFeePricePretty: PricePretty | undefined = undefined;
-
-  if (transferFeeFiat) {
-    totalFeePricePretty = transferFeeFiat;
-  }
-
-  if (gasCostFiat) {
-    totalFeePricePretty = totalFeePricePretty
-      ? totalFeePricePretty.add(gasCostFiat)
-      : gasCostFiat;
-  }
-
-  return totalFeePricePretty;
 }
 
 /**
@@ -75,13 +53,7 @@ export const BridgeProviderDropdown = ({
 
   const cheapestQuote = useMemo(() => {
     const minFee = quotes
-      .map(
-        (q) =>
-          getTotalFee({
-            transferFeeFiat: q.data.transferFeeFiat,
-            gasCostFiat: q.data.gasCostFiat,
-          })?.toDec() ?? new Dec(0)
-      )
+      .map((q) => q.data.totalFeeFiatValue?.toDec() ?? new Dec(0))
       .reduce((acc, fee) => {
         if (acc === null || fee.lt(acc)) {
           return fee;
@@ -90,10 +62,7 @@ export const BridgeProviderDropdown = ({
       }, null as Dec | null);
 
     const uniqueCheapestQuotes = quotes.filter((q) => {
-      const feeDec = getTotalFee({
-        transferFeeFiat: q.data.transferFeeFiat,
-        gasCostFiat: q.data.gasCostFiat,
-      })?.toDec();
+      const feeDec = q.data.totalFeeFiatValue?.toDec();
       return !isNil(feeDec) && !isNil(minFee) && feeDec.equals(minFee);
     });
 
@@ -140,15 +109,10 @@ export const BridgeProviderDropdown = ({
                 data: {
                   provider,
                   estimatedTime,
-                  transferFeeFiat,
-                  gasCostFiat,
                   expectedOutputFiat,
+                  totalFeeFiatValue,
                 },
               }) => {
-                const totalFee = getTotalFee({
-                  transferFeeFiat: transferFeeFiat,
-                  gasCostFiat: gasCostFiat,
-                })?.toString();
                 const isSelected = selectedQuote.provider.id === provider.id;
                 const isCheapest =
                   cheapestQuote?.data.provider.id === provider.id;
@@ -205,7 +169,7 @@ export const BridgeProviderDropdown = ({
                           {expectedOutputFiat.toString()}
                         </p>
                         <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
-                          ~ {totalFee} {t("transfer.fee")}
+                          ~ {totalFeeFiatValue?.toString()} {t("transfer.fee")}
                         </p>
                       </div>
                     </button>

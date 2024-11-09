@@ -212,6 +212,7 @@ export const useBridgeQuotes = ({
               fromChain,
               toChain,
               input,
+              totalFeeFiatValue,
             } = quote;
 
             const priceImpact = new RatePretty(
@@ -250,6 +251,7 @@ export const useBridgeQuotes = ({
               provider,
               fromChain,
               toChain,
+              totalFeeFiatValue,
               isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
               isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
             };

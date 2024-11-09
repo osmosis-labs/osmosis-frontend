@@ -19,7 +19,7 @@ import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
-import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { HistoryBridgeTransaction } from "~/hooks/use-transaction-history";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -30,10 +30,7 @@ export const TransactionTransferDetails = ({
 }: {
   onRequestClose: () => void;
   isModal: boolean;
-  transaction: Extract<
-    ReturnType<typeof useTransactionHistory>["transactions"][number],
-    { __type: "recentTransfer" }
-  >;
+  transaction: HistoryBridgeTransaction;
 }) => {
   const { t } = useTranslation();
 

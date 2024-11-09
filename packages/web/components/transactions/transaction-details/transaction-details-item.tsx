@@ -1,9 +1,9 @@
 import { TransactionSwapDetails } from "~/components/transactions/transaction-details/transaction-swap-details";
 import { TransactionTransferDetails } from "~/components/transactions/transaction-details/transaction-transfer-details";
-import { useTransactionHistory } from "~/hooks/use-transaction-history";
+import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 interface TransactionDetailsItemProps {
-  transaction: ReturnType<typeof useTransactionHistory>["transactions"][number];
+  transaction: HistoryTransaction;
   onRequestClose: () => void;
   isModal?: boolean;
 }

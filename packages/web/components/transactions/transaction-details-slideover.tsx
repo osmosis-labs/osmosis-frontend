@@ -18,6 +18,7 @@ export const TransactionDetailsSlideover = ({
   return (
     <Transition
       show={open}
+      as="div"
       enter="transition-all ease-out duration-300"
       enterFrom="w-0 opacity-0"
       enterTo="w-[512px] opacity-100"
@@ -25,12 +26,10 @@ export const TransactionDetailsSlideover = ({
       leaveFrom="w-[512px] opacity-100"
       leaveTo="w-0 opacity-0"
     >
-      <div>
-        <TransactionDetailsItem
-          transaction={transaction}
-          onRequestClose={onRequestClose}
-        />
-      </div>
+      <TransactionDetailsItem
+        transaction={transaction}
+        onRequestClose={onRequestClose}
+      />
     </Transition>
   );
 };
