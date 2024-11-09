@@ -397,6 +397,16 @@
         "1hour": "1 oră",
         "3hours": "3 ore",
         "12hours": "12 ore"
+      },
+      "timeUnits": {
+        "second": "sec",
+        "seconds": "sec",
+        "minute": "min",
+        "minutes": "min",
+        "hour": "hr",
+        "hours": "hr",
+        "day": "zi",
+        "days": "zi"
       }
     },
     "settings": {

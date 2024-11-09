@@ -397,6 +397,16 @@
         "1hour": "1 час",
         "3hours": "3 часа",
         "12hours": "12 часов"
+      },
+      "timeUnits": {
+        "second": "сек",
+        "seconds": "сек",
+        "minute": "мин",
+        "minutes": "мин",
+        "hour": "час",
+        "hours": "час",
+        "day": "день",
+        "days": "день"
       }
     },
     "settings": {

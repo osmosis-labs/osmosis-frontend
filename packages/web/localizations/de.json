@@ -384,6 +384,7 @@
       "newPill": "Neu"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-Klick-Handelslimit",
       "enableTitle": "Starten Sie den 1-Klick-Handel",
       "enableDescription": "Schneller und einfacher handeln",
       "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
@@ -397,6 +398,16 @@
         "1hour": "1 Stunde",
         "3hours": "3 Stunden",
         "12hours": "12 Stunden"
+      },
+      "timeUnits": {
+        "second": "Sek",
+        "seconds": "Sek",
+        "minute": "Min",
+        "minutes": "Min",
+        "hour": "Std",
+        "hours": "Std",
+        "day": "Tag",
+        "days": "Tag"
       }
     },
     "settings": {

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
@@ -9,6 +9,7 @@ import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-clic
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
+import { formatSpendLimit } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export function useOneClickTradingStatusToggle({
@@ -56,6 +57,27 @@ export function useOneClickTradingStatusToggle({
       staleTime: 15_000, // 15 seconds
       retry: false,
     }
+  );
+
+  const { data: amountSpentData } =
+    api.local.oneClickTrading.getAmountSpent.useQuery(
+      {
+        authenticatorId: oneClickTradingInfo?.authenticatorId!,
+        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress!,
+      },
+      {
+        enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+      }
+    );
+
+  const remainingSpendLimit = useMemo(
+    () =>
+      transaction1CTParams?.spendLimit && amountSpentData?.amountSpent
+        ? formatSpendLimit(
+            transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
+          )
+        : undefined,
+    [transaction1CTParams, amountSpentData]
   );
 
   const isLoading =
@@ -201,5 +223,6 @@ export function useOneClickTradingStatusToggle({
     transaction1CTParams,
     handleOneClickTradingStatusToggle,
     handleConfirm,
+    remainingSpendLimit,
   };
 }

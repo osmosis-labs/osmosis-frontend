@@ -17,6 +17,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
 import { RecapRow } from "~/components/ui/recap-row";
@@ -110,6 +111,7 @@ export function ReviewOrder({
     transaction1CTParams,
     handleOneClickTradingStatusToggle,
     handleConfirm,
+    remainingSpendLimit,
   } = useOneClickTradingStatusToggle({
     confirmAction,
   });
@@ -458,6 +460,27 @@ export function ReviewOrder({
                   </GenericDisclaimer>
                 }
               />
+
+              {isOneClickTradingEnabled && (
+                <RecapRow
+                  left={t("oneClickTrading.reviewOrder.recapRowTitle")}
+                  right={
+                    <UIButton
+                      variant="link"
+                      size="md"
+                      className="text-wosmongton-300 px-0 py-0"
+                    >
+                      <p className="body1 text-wosmongton-200 whitespace-nowrap">
+                        {remainingSpendLimit} {" / "}
+                        <OneClickTradingRemainingTime
+                          className="inline"
+                          timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
+                        />
+                      </p>
+                    </UIButton>
+                  }
+                />
+              )}
               {slippageConfig && orderType === "market" && (
                 <div className="flex flex-col gap-3">
                   <RecapRow

@@ -384,6 +384,7 @@
       "newPill": "નવી"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-ક્લિક કરો ટ્રેડિંગ મર્યાદા",
       "enableTitle": "1-ક્લિક ટ્રેડિંગ શરૂ કરો",
       "enableDescription": "ઝડપી, સરળ વેપાર",
       "paramsDescription": "{sessionLength} સત્ર સાથે {lossProtectionLimit} નુકશાન સુરક્ષા મર્યાદા",
@@ -397,6 +398,16 @@
         "1hour": "1 કલાક",
         "3hours": "3 કલાક",
         "12hours": "12 કલાક"
+      },
+      "timeUnits": {
+        "second": "સેકન્ડ",
+        "seconds": "સેકન્ડ",
+        "minute": "મિનિટ",
+        "minutes": "મિનિટ",
+        "hour": "કલાક",
+        "hours": "કલાક",
+        "day": "દિવસ",
+        "days": "દિવસ"
       }
     },
     "settings": {

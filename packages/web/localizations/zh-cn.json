@@ -397,6 +397,16 @@
         "1hour": "1 小时",
         "3hours": "3 小时",
         "12hours": "12 小时"
+      },
+      "timeUnits": {
+        "second": "秒",
+        "seconds": "秒",
+        "minute": "分钟",
+        "minutes": "分钟",
+        "hour": "時間",
+        "hours": "時間",
+        "day": "天",
+        "days": "天"
       }
     },
     "settings": {

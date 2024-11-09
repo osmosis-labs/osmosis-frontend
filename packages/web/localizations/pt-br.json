@@ -384,6 +384,7 @@
       "newPill": "Novo"
     },
     "reviewOrder": {
+      "recapRowTitle": "Limite de negociação de 1 clique",
       "enableTitle": "Comece a negociar com 1 clique",
       "enableDescription": "Negociação mais rápida e fácil",
       "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
@@ -397,6 +398,16 @@
         "1hour": "1 hora",
         "3hours": "3 horas",
         "12hours": "12 horas"
+      },
+      "timeUnits": {
+        "second": "segundo",
+        "seconds": "segundo",
+        "minute": "mínimo",
+        "minutes": "mínimo",
+        "hour": "hora",
+        "hours": "hora",
+        "day": "dia",
+        "days": "dia"
       }
     },
     "settings": {

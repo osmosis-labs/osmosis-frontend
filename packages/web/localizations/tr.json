@@ -397,6 +397,16 @@
         "1hour": "1 saat",
         "3hours": "3 saat",
         "12hours": "12 saat"
+      },
+      "timeUnits": {
+        "second": "saniye",
+        "seconds": "saniye",
+        "minute": "dakika",
+        "minutes": "dakika",
+        "hour": "saat",
+        "hours": "saat",
+        "day": "gün",
+        "days": "gün"
       }
     },
     "settings": {

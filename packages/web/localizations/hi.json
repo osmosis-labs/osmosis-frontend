@@ -384,6 +384,7 @@
       "newPill": "नया"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-क्लिक ट्रेडिंग सीमा",
       "enableTitle": "1-क्लिक ट्रेडिंग शुरू करें",
       "enableDescription": "तीव्र एवं आसान व्यापार",
       "paramsDescription": "{sessionLength} सत्र {lossProtectionLimit} हानि सुरक्षा सीमा के साथ",
@@ -397,6 +398,16 @@
         "1hour": "1 घंटा",
         "3hours": "3 घंटे",
         "12hours": "12 घंटे"
+      },
+      "timeUnits": {
+        "second": "सेकंड",
+        "seconds": "सेकंड",
+        "minute": "मिन",
+        "minutes": "मिन",
+        "hour": "मानव संसाधन",
+        "hours": "मानव संसाधन",
+        "day": "दिन",
+        "days": "दिन"
       }
     },
     "settings": {

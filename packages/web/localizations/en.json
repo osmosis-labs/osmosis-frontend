@@ -384,6 +384,7 @@
       "newPill": "New"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-Click Trading limit",
       "enableTitle": "Start 1-Click Trading",
       "enableDescription": "Quicker, easier trading",
       "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
@@ -397,6 +398,16 @@
         "1hour": "1 hour",
         "3hours": "3 hours",
         "12hours": "12 hours"
+      },
+      "timeUnits": {
+        "second": "sec",
+        "seconds": "sec",
+        "minute": "min",
+        "minutes": "min",
+        "hour": "hr",
+        "hours": "hr",
+        "day": "day",
+        "days": "day"
       }
     },
     "settings": {

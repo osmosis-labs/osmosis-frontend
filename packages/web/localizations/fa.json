@@ -384,6 +384,7 @@
       "newPill": "جدید"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-روی محدودیت معاملاتی کلیک کنید",
       "enableTitle": "شروع تجارت با 1 کلیک",
       "enableDescription": "تجارت سریع تر و راحت تر",
       "paramsDescription": "جلسه {sessionLength} با محدودیت محافظت از دست دادن {lossProtectionLimit}",
@@ -397,6 +398,16 @@
         "1hour": "1 ساعت",
         "3hours": "3 ساعت",
         "12hours": "12 ساعت"
+      },
+      "timeUnits": {
+        "second": "ثانیه",
+        "seconds": "ثانیه",
+        "minute": "دقیقه",
+        "minutes": "دقیقه",
+        "hour": "ساعت",
+        "hours": "ساعت",
+        "day": "روز",
+        "days": "روز"
       }
     },
     "settings": {

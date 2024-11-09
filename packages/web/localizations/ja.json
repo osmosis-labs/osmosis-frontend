@@ -384,6 +384,7 @@
       "newPill": "新しい"
     },
     "reviewOrder": {
+      "recapRowTitle": "1クリック取引制限",
       "enableTitle": "ワンクリック取引を開始",
       "enableDescription": "より速く、より簡単に取引",
       "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
@@ -397,6 +398,16 @@
         "1hour": "1時間",
         "3hours": "3時間",
         "12hours": "12時間"
+      },
+      "timeUnits": {
+        "second": "秒",
+        "seconds": "秒",
+        "minute": "分",
+        "minutes": "分",
+        "hour": "時間",
+        "hours": "時間",
+        "day": "日",
+        "days": "日"
       }
     },
     "settings": {

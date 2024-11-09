@@ -384,6 +384,7 @@
       "newPill": "Nowy"
     },
     "reviewOrder": {
+      "recapRowTitle": "Limit handlu jednym kliknięciem",
       "enableTitle": "Rozpocznij handel jednym kliknięciem",
       "enableDescription": "Szybszy, łatwiejszy handel",
       "paramsDescription": "{sessionLength} sesja z {lossProtectionLimit} limitem ochrony przed stratami",
@@ -397,6 +398,16 @@
         "1hour": "1 godzina",
         "3hours": "3 godziny",
         "12hours": "12 godzin"
+      },
+      "timeUnits": {
+        "second": "sek.",
+        "seconds": "sek.",
+        "minute": "min",
+        "minutes": "min",
+        "hour": "godz.",
+        "hours": "godz.",
+        "day": "dzień",
+        "days": "dzień"
       }
     },
     "settings": {

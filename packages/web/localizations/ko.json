@@ -384,6 +384,7 @@
       "newPill": "새로운"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-클릭 거래 한도",
       "enableTitle": "1-클릭 트레이딩 시작",
       "enableDescription": "더 빠르고 쉬운 거래",
       "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
@@ -397,6 +398,16 @@
         "1hour": "1시간",
         "3hours": "3시간",
         "12hours": "12시간"
+      },
+      "timeUnits": {
+        "second": "비서",
+        "seconds": "비서",
+        "minute": "분",
+        "minutes": "분",
+        "hour": "시간",
+        "hours": "시간",
+        "day": "낮",
+        "days": "낮"
       }
     },
     "settings": {
