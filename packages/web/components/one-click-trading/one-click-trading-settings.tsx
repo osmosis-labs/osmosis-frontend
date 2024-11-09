@@ -45,14 +45,13 @@ enum SettingsScreens {
   SessionPeriod = "sessionPeriod",
 }
 
-interface OneClickTradingSettingsProps {
+type BaseOneClickTradingSettingsProps = {
   classes?: Partial<Record<Classes, string>>;
   onGoBack: () => void;
   transaction1CTParams: OneClickTradingTransactionParams | undefined;
   setTransaction1CTParams: Dispatch<
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
-  onStartTrading: () => void;
   onEndSession?: () => void;
   onClose: () => void;
   isLoading?: boolean;
@@ -60,7 +59,29 @@ interface OneClickTradingSettingsProps {
   isEndingSession?: boolean;
   hideBackButton?: boolean;
   hasExistingSession?: boolean;
-}
+};
+
+type StandaloneProps = BaseOneClickTradingSettingsProps & {
+  /**
+   * Whether component is in standalone mode.
+   * When true or undefined, the component acts as a full settings page with start/edit functionality
+   */
+  standalone?: true;
+  /** Required callback when user clicks start/edit trading button */
+  onStartTrading: () => void;
+};
+
+type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
+  /**
+   * Whether component is in standalone mode.
+   * When false, the component acts as a settings panel within another component
+   */
+  standalone: false;
+  /** Start trading callback is not allowed in non-standalone mode */
+  onStartTrading?: never;
+};
+
+type OneClickTradingSettingsProps = StandaloneProps | NonStandaloneProps;
 
 /**
  * Compares the changes between two sets of OneClickTradingTransactionParams.
@@ -99,6 +120,7 @@ export const OneClickTradingSettings = ({
   hasExistingSession,
   onEndSession,
   onClose,
+  standalone = true,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
   const [changes, setChanges] = useState<
@@ -205,7 +227,7 @@ export const OneClickTradingSettings = ({
       {onClose && (
         <ModalCloseButton
           onClick={() => {
-            if (changes.length > 0) {
+            if (standalone && changes.length > 0) {
               return openCloseConfirmDialog();
             }
 
@@ -222,7 +244,7 @@ export const OneClickTradingSettings = ({
                   <GoBackButton
                     className="absolute left-7 top-7"
                     onClick={() => {
-                      if (changes.length > 0) {
+                      if (standalone && changes.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
@@ -262,46 +284,51 @@ export const OneClickTradingSettings = ({
                 </div>
 
                 <div className="flex flex-col gap-0">
-                  <SettingRow
-                    title={t("oneClickTrading.settings.enableTitle")}
-                    onClick={() => {
-                      if (hasExistingSession) onEndSession?.();
-                      setTransaction1CTParams((params) => {
-                        if (!params) throw new Error("1CT Params is undefined");
+                  {standalone && (
+                    <SettingRow
+                      title={t("oneClickTrading.settings.enableTitle")}
+                      onClick={() => {
+                        if (hasExistingSession) onEndSession?.();
+                        setTransaction1CTParams((params) => {
+                          if (!params)
+                            throw new Error("1CT Params is undefined");
 
-                        const nextValue = !params.isOneClickEnabled;
-                        if (nextValue) {
-                          logEvent([
-                            EventName.OneClickTrading.enableOneClickTrading,
-                          ]);
-                        }
-
-                        return {
-                          ...params,
-                          isOneClickEnabled: nextValue,
-                        };
-                      });
-                    }}
-                    content={
-                      <div className="flex items-center gap-3">
-                        {hasExistingSession && isEndingSession && (
-                          <p className="text-wosmongton-200">
-                            {t("oneClickTrading.settings.endingSession")}
-                          </p>
-                        )}
-                        {(isLoading || isEndingSession) && (
-                          <Spinner className="text-wosmongton-200" />
-                        )}{" "}
-                        <Switch
-                          disabled={isSendingTx || isEndingSession || isLoading}
-                          checked={
-                            transaction1CTParams?.isOneClickEnabled ?? false
+                          const nextValue = !params.isOneClickEnabled;
+                          if (nextValue) {
+                            logEvent([
+                              EventName.OneClickTrading.enableOneClickTrading,
+                            ]);
                           }
-                        />
-                      </div>
-                    }
-                    isDisabled={isSendingTx || isEndingSession}
-                  />
+
+                          return {
+                            ...params,
+                            isOneClickEnabled: nextValue,
+                          };
+                        });
+                      }}
+                      content={
+                        <div className="flex items-center gap-3">
+                          {hasExistingSession && isEndingSession && (
+                            <p className="text-wosmongton-200">
+                              {t("oneClickTrading.settings.endingSession")}
+                            </p>
+                          )}
+                          {(isLoading || isEndingSession) && (
+                            <Spinner className="text-wosmongton-200" />
+                          )}{" "}
+                          <Switch
+                            disabled={
+                              isSendingTx || isEndingSession || isLoading
+                            }
+                            checked={
+                              transaction1CTParams?.isOneClickEnabled ?? false
+                            }
+                          />
+                        </div>
+                      }
+                      isDisabled={isSendingTx || isEndingSession}
+                    />
+                  )}
                   <SettingRow
                     title={t("oneClickTrading.settings.spendLimitTitle")}
                     onClick={() => setCurrentScreen(SettingsScreens.SpendLimit)}
@@ -386,7 +413,8 @@ export const OneClickTradingSettings = ({
                     </div>
                   )}
 
-                {!hasExistingSession &&
+                {standalone &&
+                  !hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button

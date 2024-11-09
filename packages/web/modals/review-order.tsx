@@ -18,7 +18,7 @@ import AutosizeInput from "react-input-autosize";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
-import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
+import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
 import { RecapRow } from "~/components/ui/recap-row";
@@ -112,6 +112,7 @@ export function ReviewOrder({
     isOneClickTradingExpired,
     isLoading: isOneClickTradingLoading,
     transaction1CTParams,
+    setTransaction1CTParams,
     handleOneClickTradingStatusToggle,
     handleConfirm,
     remainingSpendLimit,
@@ -235,13 +236,22 @@ export function ReviewOrder({
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+      className={
+        show1CTSettings
+          ? "relative max-h-screen overflow-hidden"
+          : "w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
+      }
     >
       {show1CTSettings && (
-        <ProfileOneClickTradingSettings
-          onGoBack={() => setShow1CTSettings(false)}
-          onClose={() => setShow1CTSettings(false)}
-        />
+        <div className="flex flex-col items-center overflow-hidden">
+          <OneClickTradingSettings
+            onGoBack={() => setShow1CTSettings(false)}
+            onClose={() => setShow1CTSettings(false)}
+            transaction1CTParams={transaction1CTParams}
+            setTransaction1CTParams={setTransaction1CTParams}
+            standalone={false}
+          />
+        </div>
       )}
       {!show1CTSettings && (
         <div className="flex h-auto w-full flex-col bg-osmoverse-850">

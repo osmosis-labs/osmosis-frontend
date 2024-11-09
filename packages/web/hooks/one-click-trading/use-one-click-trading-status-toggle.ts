@@ -22,6 +22,8 @@ export function useOneClickTradingStatusToggle({
   const { accountStore, chainStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  const [has1CTStatusChanged, setHas1CTStatusChanged] = useState(false);
+
   const {
     isOneClickTradingEnabled,
     oneClickTradingInfo,
@@ -86,8 +88,6 @@ export function useOneClickTradingStatusToggle({
     (shouldFetchExistingSessionAuthenticator
       ? isLoadingExistingSessionAuthenticator
       : false);
-
-  const [has1CTStatusChanged, setHas1CTStatusChanged] = useState(false);
 
   const create1CTSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();
@@ -221,6 +221,7 @@ export function useOneClickTradingStatusToggle({
     isOneClickTradingExpired,
     isLoading,
     transaction1CTParams,
+    setTransaction1CTParams,
     handleOneClickTradingStatusToggle,
     handleConfirm,
     remainingSpendLimit,
