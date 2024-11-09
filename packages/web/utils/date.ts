@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
 
-export function humanizeTime(date: dayjs.Dayjs): {
+export function humanizeTime(
+  date: dayjs.Dayjs,
+  timeUnitsTranslationPath = "timeUnits"
+): {
   value: number | string;
   unitTranslationKey: string;
 } {
@@ -10,7 +13,9 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: Math.max(secondsDiff, 0),
       unitTranslationKey:
-        secondsDiff === 1 ? "timeUnits.second" : "timeUnits.seconds",
+        secondsDiff === 1
+          ? `${timeUnitsTranslationPath}.second`
+          : `${timeUnitsTranslationPath}.seconds`,
     };
   }
 
@@ -19,7 +24,9 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: minutesDiff,
       unitTranslationKey:
-        minutesDiff === 1 ? "timeUnits.minute" : "timeUnits.minutes",
+        minutesDiff === 1
+          ? `${timeUnitsTranslationPath}.minute`
+          : `${timeUnitsTranslationPath}.minutes`,
     };
   }
 
@@ -28,7 +35,9 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: hoursDiff,
       unitTranslationKey:
-        hoursDiff === 1 ? "timeUnits.hour" : "timeUnits.hours",
+        hoursDiff === 1
+          ? `${timeUnitsTranslationPath}.hour`
+          : `${timeUnitsTranslationPath}.hours`,
     };
   }
 
@@ -36,7 +45,10 @@ export function humanizeTime(date: dayjs.Dayjs): {
   if (daysDiff < 30) {
     return {
       value: daysDiff,
-      unitTranslationKey: daysDiff === 1 ? "timeUnits.day" : "timeUnits.days",
+      unitTranslationKey:
+        daysDiff === 1
+          ? `${timeUnitsTranslationPath}.day`
+          : `${timeUnitsTranslationPath}.days`,
     };
   }
 
