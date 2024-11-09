@@ -1103,7 +1103,6 @@
     "totalFees": "Tarifas totales",
     "transactionHash": "Hash de transacción",
     "viewOnExplorer": "Ver en el explorador",
-    "launchAlert": "Actualmente solo se muestra el historial comercial. Próximamente soporte para más tipos de transacciones.",
     "history": "Historia",
     "orders": "Pedidos",
     "historyTable": {

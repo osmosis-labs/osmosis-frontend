@@ -1103,7 +1103,6 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
-    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
     "history": "Historia",
     "orders": "Zamówienia",
     "historyTable": {

@@ -1103,7 +1103,6 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
-    "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "history": "歴史",
     "orders": "注文",
     "historyTable": {

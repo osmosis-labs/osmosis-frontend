@@ -1103,7 +1103,6 @@
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
-    "launchAlert": "Şu anda yalnızca ticaret geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek sunulacak.",
     "history": "Tarih",
     "orders": "Emirler",
     "historyTable": {

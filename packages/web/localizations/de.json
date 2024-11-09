@@ -1103,7 +1103,6 @@
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
-    "launchAlert": "Derzeit wird nur der Handelsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
     "history": "Geschichte",
     "orders": "Aufträge",
     "historyTable": {

@@ -1103,7 +1103,7 @@
     "totalFees": "Total Fees",
     "transactionHash": "Transaction Hash",
     "viewOnExplorer": "View on explorer",
-    "launchAlert": "Currently only trade history is displayed. Support for more transaction types coming soon.",
+    "launchAlert": "Currently only trade and transfer history is displayed. Support for more transaction types coming soon.",
     "history": "History",
     "orders": "Orders",
     "historyTable": {
