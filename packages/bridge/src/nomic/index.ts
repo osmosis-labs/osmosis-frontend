@@ -60,7 +60,7 @@ export class NomicBridgeProvider implements BridgeProvider {
     });
 
     this.relayers =
-      this.ctx.env === "testnet" || true
+      this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
         : ["https://relayer.nomic.mappum.io:8443"];
   }
@@ -343,17 +343,13 @@ export class NomicBridgeProvider implements BridgeProvider {
       Number(now + 86_400 * 5 * 1_000 - (now % (60 * 60 * 1_000))) * 1_000_000;
     const swapMemo = userWantsAllBtc
       ? makeSkipIbcHookSwapMemo({
-          denomIn:
-            "ibc/35A61206653F4704187A17E76AB2E2C59856265B20D84B14BC7B3E89D785B461" ??
-            this.nBTCMinimalDenom,
+          denomIn: this.nBTCMinimalDenom,
           denomOut:
-            this.ctx.env === "mainnet" && false
-              ? this.allBtcMinimalDenom
-              : "uosmo",
-          env: "testnet" ?? this.ctx.env,
+            this.ctx.env === "mainnet" ? this.allBtcMinimalDenom : "uosmo",
+          env: this.ctx.env,
           minAmountOut: "1",
           poolId:
-            this.ctx.env === "mainnet" && false
+            this.ctx.env === "mainnet"
               ? "1868" // nBTC/allBTC pool on Osmosis
               : "663", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
           receiverOsmoAddress: toAddress,
@@ -361,25 +357,10 @@ export class NomicBridgeProvider implements BridgeProvider {
         })
       : undefined;
 
-    console.log({
-      relayers: this.relayers,
-      channel: "channel-2" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
-      bitcoinNetwork:
-        this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
-      sender: deriveCosmosAddress({
-        address: toAddress,
-        desiredBech32Prefix: nomicChain.bech32_prefix,
-      }),
-      receiver:
-        userWantsAllBtc && swapMemo ? swapMemo.wasm.contract : toAddress,
-      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
-    });
-
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: "channel-2" ?? nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
-      bitcoinNetwork:
-        this.ctx.env === "testnet" || true ? "testnet" : "bitcoin",
+      channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       sender: deriveCosmosAddress({
         address: toAddress,
         desiredBech32Prefix: nomicChain.bech32_prefix,
