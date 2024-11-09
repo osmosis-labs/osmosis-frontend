@@ -1,11 +1,16 @@
-import { Popover, Transition } from "@headlessui/react";
+import {
+  Popover,
+  PopoverButton,
+  PopoverPanel,
+  Transition,
+} from "@headlessui/react";
 import classNames from "classnames";
 import Link from "next/link";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
-export const TransactionButtons = ({
+export const TransactionOptionsMenu = ({
   address,
 }: {
   open: boolean;
@@ -29,9 +34,9 @@ export const TransactionButtons = ({
 
   return (
     <Popover>
-      <Popover.Button className="relative flex h-10 w-10 items-center justify-center rounded-full bg-osmoverse-825 text-wosmongton-200 focus:outline-none">
+      <PopoverButton className="relative flex h-10 w-10 items-center justify-center rounded-full bg-osmoverse-825 text-wosmongton-200 focus:outline-none">
         &#x22EF;
-      </Popover.Button>
+      </PopoverButton>
       <Transition
         enter="transition duration-100 ease-out"
         enterFrom="transform scale-95 opacity-0"
@@ -40,7 +45,7 @@ export const TransactionButtons = ({
         leaveFrom="transform scale-100 opacity-100"
         leaveTo="transform scale-95 opacity-0"
       >
-        <Popover.Panel className="absolute mt-2 flex w-max -translate-x-[calc(100%-40px)] flex-col rounded-xl border border-osmoverse-600 bg-osmoverse-900 focus:outline-none">
+        <PopoverPanel className="absolute mt-2 flex w-max -translate-x-[calc(100%-40px)] flex-col rounded-xl border border-osmoverse-600 bg-osmoverse-900 focus:outline-none">
           {options.map(({ id, href, description }, i, original) => (
             <Link
               key={id}
@@ -67,7 +72,7 @@ export const TransactionButtons = ({
               <span className="text-osmoverse-200">{description}</span>
             </Link>
           ))}
-        </Popover.Panel>
+        </PopoverPanel>
       </Transition>
     </Popover>
   );

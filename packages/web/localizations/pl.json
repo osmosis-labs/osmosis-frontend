@@ -1103,9 +1103,23 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
-    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
     "history": "Historia",
-    "orders": "Zamówienia"
+    "orders": "Zamówienia",
+    "historyTable": {
+      "pendingDeposit": "Oczekujący depozyt",
+      "pendingWithdraw": "Oczekujące na wypłatę",
+      "successDeposit": "Złożony",
+      "successWithdraw": "Wycofany",
+      "failDeposit": "Depozyt nie powiódł się",
+      "failWithdraw": "Wypłata nie powiodła się"
+    },
+    "transfer": {
+      "asset": "Zaleta",
+      "amountAsset": "Kwota {asset}",
+      "totalValue": "Wartość całkowita",
+      "providerFee": "Opłata dostawcy",
+      "networkFee": "Opłata sieciowa"
+    }
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",

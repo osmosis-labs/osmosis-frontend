@@ -1103,9 +1103,23 @@
     "totalFees": "कुल शुल्क",
     "transactionHash": "लेनदेन हैश",
     "viewOnExplorer": "एक्सप्लोरर पर देखें",
-    "launchAlert": "वर्तमान में केवल व्यापार इतिहास प्रदर्शित किया जाता है। जल्द ही अधिक लेनदेन प्रकारों के लिए सहायता उपलब्ध होगी।",
     "history": "इतिहास",
-    "orders": "आदेश"
+    "orders": "आदेश",
+    "historyTable": {
+      "pendingDeposit": "लंबित जमा",
+      "pendingWithdraw": "लंबित निकासी",
+      "successDeposit": "जमा किया",
+      "successWithdraw": "वापस ले लिया",
+      "failDeposit": "जमा विफल",
+      "failWithdraw": "निकासी विफल"
+    },
+    "transfer": {
+      "asset": "संपत्ति",
+      "amountAsset": "राशि {asset}",
+      "totalValue": "कुल मूल्य",
+      "providerFee": "प्रदाता शुल्क",
+      "networkFee": "नेटवर्क शुल्क"
+    }
   },
   "date": {
     "earlierToday": "आज पहले",

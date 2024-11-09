@@ -1103,9 +1103,23 @@
     "totalFees": "Общая сумма сборов",
     "transactionHash": "Хэш транзакции",
     "viewOnExplorer": "Посмотреть в проводнике",
-    "launchAlert": "В настоящее время отображается только история торговли. Скоро появится поддержка большего количества типов транзакций.",
     "history": "История",
-    "orders": "Заказы"
+    "orders": "Заказы",
+    "historyTable": {
+      "pendingDeposit": "Ожидаемый депозит",
+      "pendingWithdraw": "Ожидается отзыв",
+      "successDeposit": "Депонированный",
+      "successWithdraw": "Снято",
+      "failDeposit": "Депозит не удалось",
+      "failWithdraw": "Вывод не удался"
+    },
+    "transfer": {
+      "asset": "Объект",
+      "amountAsset": "Сумма {asset}",
+      "totalValue": "Общая стоимость",
+      "providerFee": "Плата провайдера",
+      "networkFee": "Сетевой сбор"
+    }
   },
   "date": {
     "earlierToday": "Ранее сегодня",

@@ -1103,9 +1103,23 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
-    "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
     "history": "Istorie",
-    "orders": "Comenzi"
+    "orders": "Comenzi",
+    "historyTable": {
+      "pendingDeposit": "Depunerea în așteptare",
+      "pendingWithdraw": "În așteptarea retragerii",
+      "successDeposit": "Depus",
+      "successWithdraw": "S-a retras",
+      "failDeposit": "Depunerea nu a reușit",
+      "failWithdraw": "Retragerea a eșuat"
+    },
+    "transfer": {
+      "asset": "Atu",
+      "amountAsset": "Suma {asset}",
+      "totalValue": "Valoarea totală",
+      "providerFee": "Taxa de furnizor",
+      "networkFee": "Taxa de retea"
+    }
   },
   "date": {
     "earlierToday": "Mai devreme astazi",

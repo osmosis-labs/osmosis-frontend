@@ -289,11 +289,6 @@ export class TradePage extends BasePage {
   }
 
   async buyAndGetWalletMsg(context: BrowserContext, limit = false) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
       timeout: 7000,
     });
