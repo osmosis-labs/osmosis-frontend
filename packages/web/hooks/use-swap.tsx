@@ -409,7 +409,18 @@ export function useSwap(
           }
 
           const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
-            ? isOneClickTradingEnabled &&
+            ? // Note about One-Click Trading (1CT) synchronization:
+              //
+              // When 1CT is enabled via the swap modal, there's a timing mismatch between
+              // the local state (isOneClickTradingEnabled) and the account store state.
+              //
+              // As a result:
+              // 1. The first swap after enabling 1CT will require manual signing
+              // 2. Subsequent swaps will use 1CT automatically
+              //
+              // This occurs because 1CT transactions require more gas, which makes
+              // our current quote's gas estimation incorrect and low. This results in out of gas error.
+              isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
                 messages: quote.messages,
               }))
