@@ -1,3 +1,5 @@
+import { OneClickTradingInfo } from "@osmosis-labs/stores";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { useCallback, useMemo, useState } from "react";
 
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
@@ -20,7 +22,6 @@ export function useOneClickTradingSessionManager({
   const { logEvent } = useAmplitudeAnalytics();
 
   const { accountStore, chainStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const [hasParamsEnableChanged, setHasParamsEnableChanged] = useState(false);
 
@@ -42,51 +43,18 @@ export function useOneClickTradingSessionManager({
     defaultIsOneClickEnabled: isEnabled ?? false,
   });
 
-  const shouldFetchExistingSessionAuthenticator = !!account?.address && !!info;
-
   const {
-    data: existingSessionAuthenticator,
-    isLoading: isLoadingExistingSessionAuthenticator,
-  } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
-    {
-      userOsmoAddress: account?.address ?? "",
-      publicKey: info?.publicKey ?? "",
-    },
-    {
-      enabled: shouldFetchExistingSessionAuthenticator,
-      cacheTime: 15_000, // 15 seconds
-      staleTime: 15_000, // 15 seconds
-      retry: false,
-    }
-  );
-
-  const { data: amountSpentData } =
-    api.local.oneClickTrading.getAmountSpent.useQuery(
-      {
-        authenticatorId: info?.authenticatorId!,
-        userOsmoAddress: info?.userOsmoAddress!,
-      },
-      {
-        enabled: !!info && isEnabled,
-      }
-    );
-
-  const remainingSpendLimit = useMemo(
-    () =>
-      transactionParams?.spendLimit && amountSpentData?.amountSpent
-        ? formatSpendLimit(
-            transactionParams.spendLimit.sub(amountSpentData.amountSpent)
-          )
-        : undefined,
-    [transactionParams, amountSpentData]
-  );
+    remainingSpendLimit,
+    sessionAuthenticator,
+    isLoading: isLoadingRemainingSpendLimit,
+  } = useRemainingSpendLimit({
+    enabled: isEnabled,
+    transactionParams,
+    oneClickTradingInfo: info,
+  });
 
   const isLoading =
-    isLoadingInfo ||
-    isLoadingParams ||
-    (shouldFetchExistingSessionAuthenticator
-      ? isLoadingExistingSessionAuthenticator
-      : false);
+    isLoadingInfo || isLoadingParams || isLoadingRemainingSpendLimit;
 
   const createSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();
@@ -125,8 +93,8 @@ export function useOneClickTradingSessionManager({
         /**
          * If the user has an existing session, remove it and add the new one.
          */
-        additionalAuthenticatorsToRemove: existingSessionAuthenticator
-          ? [BigInt(existingSessionAuthenticator.id)]
+        additionalAuthenticatorsToRemove: sessionAuthenticator
+          ? [BigInt(sessionAuthenticator.id)]
           : undefined,
       },
       {
@@ -149,7 +117,7 @@ export function useOneClickTradingSessionManager({
     createSession,
     cleanUpAndCommit,
     logEvent,
-    existingSessionAuthenticator,
+    sessionAuthenticator,
     setTransactionParams,
     spendLimitTokenDecimals,
     transactionParams,
@@ -219,11 +187,68 @@ export function useOneClickTradingSessionManager({
     isEnabled,
     isExpired,
     isLoading,
-    remainingSpendLimit,
     transactionParams,
+    remainingSpendLimit,
     setTransactionParams,
     toggleTransactionParamsEnable,
     commitSessionChange,
     resetParams,
+  };
+}
+
+export function useRemainingSpendLimit({
+  enabled = true,
+  transactionParams,
+  oneClickTradingInfo,
+}: {
+  enabled?: boolean;
+  transactionParams?: OneClickTradingTransactionParams;
+  oneClickTradingInfo?: OneClickTradingInfo;
+}) {
+  const { accountStore, chainStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+  const shouldFetchExistingSessionAuthenticator =
+    !!account?.address && !!oneClickTradingInfo;
+
+  const { data: sessionAuthenticator, isLoading } =
+    api.local.oneClickTrading.getSessionAuthenticator.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+        publicKey: oneClickTradingInfo?.publicKey ?? "",
+      },
+      {
+        enabled: enabled && shouldFetchExistingSessionAuthenticator,
+        cacheTime: 15_000, // 15 seconds
+        staleTime: 15_000, // 15 seconds
+        retry: false,
+      }
+    );
+
+  const { data: amountSpentData } =
+    api.local.oneClickTrading.getAmountSpent.useQuery(
+      {
+        authenticatorId: oneClickTradingInfo?.authenticatorId!,
+        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress!,
+      },
+      {
+        enabled: enabled && !!oneClickTradingInfo,
+      }
+    );
+
+  const remainingSpendLimit = useMemo(
+    () =>
+      transactionParams?.spendLimit && amountSpentData?.amountSpent
+        ? formatSpendLimit(
+            transactionParams.spendLimit.sub(amountSpentData.amountSpent)
+          )
+        : undefined,
+    [transactionParams, amountSpentData]
+  );
+
+  return {
+    remainingSpendLimit,
+    sessionAuthenticator,
+    isLoading,
   };
 }
