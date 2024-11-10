@@ -29,7 +29,7 @@ import {
   Breakpoint,
   MultiLanguageT,
   useAmplitudeAnalytics,
-  useOneClickTradingStatusToggle,
+  useOneClickTradingSessionManager,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -105,19 +105,21 @@ export function ReviewOrder({
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
-  const [show1CTSettings, setShow1CTSettings] = useState(false);
+  const [showOneClickTradingSettings, setShowOneClickTradingSettings] =
+    useState(false);
 
   const {
-    isOneClickTradingEnabled,
-    isOneClickTradingExpired,
-    isLoading: isOneClickTradingLoading,
-    transaction1CTParams,
-    setTransaction1CTParams,
-    handleOneClickTradingStatusToggle,
-    handleConfirm,
-    remainingSpendLimit,
-  } = useOneClickTradingStatusToggle({
-    confirmAction,
+    isEnabled: is1CTEnabled,
+    isExpired: is1CTExpired,
+    isLoading: is1CTLoading,
+    transactionParams: transaction1CTParams,
+    remainingSpendLimit: remaining1CTSpendLimit,
+    setTransactionParams: setTransaction1CTParams,
+    toggleTransactionParamsEnable: toggle1CTParamsEnable,
+    commitSessionChange: commit1CTSessionChange,
+    resetParams: reset1CTParams,
+  } = useOneClickTradingSessionManager({
+    onCommit: confirmAction,
   });
 
   const [orderType] = useQueryState(
@@ -197,10 +199,10 @@ export function ReviewOrder({
   const gasFeeError = useMemo(() => {
     if (!!gasAmount && !gasError) return;
 
-    return isOneClickTradingEnabled
+    return is1CTEnabled
       ? t("swap.gas.oneClickTradingError")
       : t("swap.gas.error");
-  }, [gasAmount, isOneClickTradingEnabled, gasError, t]);
+  }, [gasAmount, is1CTEnabled, gasError, t]);
 
   const GasEstimation = useMemo(() => {
     return !!gasFeeError ? (
@@ -234,26 +236,29 @@ export function ReviewOrder({
   return (
     <ModalBase
       isOpen={isOpen}
-      onRequestClose={onClose}
+      onRequestClose={() => {
+        reset1CTParams();
+        onClose();
+      }}
       hideCloseButton
       className={
-        show1CTSettings
+        showOneClickTradingSettings
           ? "relative max-h-screen overflow-hidden"
           : "w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
       }
     >
-      {show1CTSettings && (
+      {showOneClickTradingSettings && (
         <div className="flex flex-col items-center overflow-hidden">
           <OneClickTradingSettings
-            onGoBack={() => setShow1CTSettings(false)}
-            onClose={() => setShow1CTSettings(false)}
+            onGoBack={() => setShowOneClickTradingSettings(false)}
+            onClose={() => setShowOneClickTradingSettings(false)}
             transaction1CTParams={transaction1CTParams}
             setTransaction1CTParams={setTransaction1CTParams}
             standalone={false}
           />
         </div>
       )}
-      {!show1CTSettings && (
+      {!showOneClickTradingSettings && (
         <div className="flex h-auto w-full flex-col bg-osmoverse-850">
           <div className="relative flex h-20 items-center justify-center p-4">
             <h6>{title}</h6>
@@ -490,13 +495,16 @@ export function ReviewOrder({
                   }
                 />
 
-                {!isOneClickTradingExpired && (
+                {!is1CTExpired && (
                   <RecapRow
                     left={t("oneClickTrading.reviewOrder.recapRowTitle")}
                     right={
                       <OneClickTradingActiveSessionParamsEdit
-                        onEdit={() => setShow1CTSettings(true)}
-                        remainingSpendLimit={remainingSpendLimit}
+                        onClick={() => {
+                          toggle1CTParamsEnable();
+                          setShowOneClickTradingSettings(true);
+                        }}
+                        remainingSpendLimit={remaining1CTSpendLimit}
                       />
                     }
                   />
@@ -708,21 +716,17 @@ export function ReviewOrder({
               )}
               <OneClickTradingPanel
                 t={t}
-                shouldShow={
-                  !isOneClickTradingLoading && isOneClickTradingExpired
-                }
-                transaction1CTParams={transaction1CTParams}
-                onStatusToggle={handleOneClickTradingStatusToggle}
-                onConfigChange={() => setShow1CTSettings(true)}
+                shouldShow={!is1CTLoading && is1CTExpired}
+                transactionParams={transaction1CTParams}
+                onClick={toggle1CTParamsEnable}
+                onParamsChange={() => setShowOneClickTradingSettings(true)}
               />
               {!diffGteSlippage && (
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
                     mode="primary"
-                    onClick={handleConfirm}
-                    disabled={
-                      isConfirmationDisabled || isOneClickTradingLoading
-                    }
+                    onClick={commit1CTSessionChange}
+                    disabled={isConfirmationDisabled || is1CTLoading}
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>
@@ -764,15 +768,15 @@ export function ReviewOrder({
 const OneClickTradingPanel = ({
   t,
   shouldShow,
-  transaction1CTParams,
-  onStatusToggle,
-  onConfigChange,
+  transactionParams,
+  onClick,
+  onParamsChange,
 }: {
   t: MultiLanguageT;
   shouldShow: boolean;
-  transaction1CTParams: OneClickTradingTransactionParams | undefined;
-  onStatusToggle: () => void;
-  onConfigChange: () => void;
+  transactionParams: OneClickTradingTransactionParams | undefined;
+  onClick: () => void;
+  onParamsChange: () => void;
 }) => {
   return (
     <>
@@ -780,7 +784,7 @@ const OneClickTradingPanel = ({
         <div className="flex flex-col my-3">
           <div
             className="flex gap-4 rounded-2xl bg-osmoverse-alpha-800 px-4 py-3"
-            onClick={onStatusToggle}
+            onClick={onClick}
           >
             <Image
               src="/images/1ct-rounded-rectangle.svg"
@@ -801,21 +805,19 @@ const OneClickTradingPanel = ({
               </div>
             </div>
             <div className="flex items-center justify-center ml-auto">
-              <Switch
-                checked={transaction1CTParams?.isOneClickEnabled ?? false}
-              />
+              <Switch checked={transactionParams?.isOneClickEnabled ?? false} />
             </div>
           </div>
-          {transaction1CTParams?.isOneClickEnabled && (
+          {transactionParams?.isOneClickEnabled && (
             <p className="text-body2 font-body2 text-osmoverse-300">
               {t("oneClickTrading.reviewOrder.paramsDescription", {
                 sessionLength: t(
                   `oneClickTrading.settings.sessionPeriodScreen.periods.${
-                    transaction1CTParams?.sessionPeriod.end ?? "default"
+                    transactionParams?.sessionPeriod.end ?? "default"
                   }`
                 ),
                 spendLimit:
-                  transaction1CTParams?.spendLimit.toString() ??
+                  transactionParams?.spendLimit.toString() ??
                   t("oneClickTrading.reviewOrder.defaultSpendLimit"),
               })}
               {" · "}
@@ -823,7 +825,7 @@ const OneClickTradingPanel = ({
                 variant="link"
                 size="md"
                 className="text-wosmongton-300 px-0 py-0"
-                onClick={onConfigChange}
+                onClick={onParamsChange}
               >
                 {t("oneClickTrading.reviewOrder.change")}
               </UIButton>
@@ -836,18 +838,18 @@ const OneClickTradingPanel = ({
 };
 
 const OneClickTradingActiveSessionParamsEdit = ({
-  onEdit,
+  onClick,
   remainingSpendLimit,
 }: {
   remainingSpendLimit?: string;
-  onEdit: () => void;
+  onClick: () => void;
 }) => {
   return (
     <UIButton
       variant="link"
       size="md"
       className="text-wosmongton-300 px-0 py-0"
-      onClick={onEdit}
+      onClick={onClick}
     >
       <p className="body1 text-wosmongton-200 whitespace-nowrap">
         {remainingSpendLimit} {" / "}

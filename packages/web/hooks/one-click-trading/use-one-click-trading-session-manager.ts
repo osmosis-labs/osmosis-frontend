@@ -12,38 +12,37 @@ import { useStore } from "~/stores";
 import { formatSpendLimit } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
-export function useOneClickTradingStatusToggle({
-  confirmAction,
+export function useOneClickTradingSessionManager({
+  onCommit,
 }: {
-  confirmAction: () => void;
+  onCommit: () => void;
 }) {
   const { logEvent } = useAmplitudeAnalytics();
 
   const { accountStore, chainStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
-  const [has1CTStatusChanged, setHas1CTStatusChanged] = useState(false);
+  const [hasParamsEnableChanged, setHasParamsEnableChanged] = useState(false);
 
   const {
-    isOneClickTradingEnabled,
-    oneClickTradingInfo,
-    isOneClickTradingExpired,
-    isLoadingInfo: isLoadingOneClickTradingSession,
+    isOneClickTradingEnabled: isEnabled,
+    isOneClickTradingExpired: isExpired,
+    oneClickTradingInfo: info,
+    isLoadingInfo,
   } = useOneClickTradingSession();
 
   const {
-    transaction1CTParams,
-    setTransaction1CTParams,
+    transaction1CTParams: transactionParams,
+    setTransaction1CTParams: setTransactionParams,
     spendLimitTokenDecimals,
-    isLoading: isLoading1CTParams,
-    reset: reset1CTParams,
+    isLoading: isLoadingParams,
+    reset: resetParams,
   } = useOneClickTradingParams({
-    oneClickTradingInfo,
-    defaultIsOneClickEnabled: isOneClickTradingEnabled ?? false,
+    oneClickTradingInfo: info,
+    defaultIsOneClickEnabled: isEnabled ?? false,
   });
 
-  const shouldFetchExistingSessionAuthenticator =
-    !!account?.address && !!oneClickTradingInfo;
+  const shouldFetchExistingSessionAuthenticator = !!account?.address && !!info;
 
   const {
     data: existingSessionAuthenticator,
@@ -51,7 +50,7 @@ export function useOneClickTradingStatusToggle({
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
-      publicKey: oneClickTradingInfo?.publicKey ?? "",
+      publicKey: info?.publicKey ?? "",
     },
     {
       enabled: shouldFetchExistingSessionAuthenticator,
@@ -64,64 +63,64 @@ export function useOneClickTradingStatusToggle({
   const { data: amountSpentData } =
     api.local.oneClickTrading.getAmountSpent.useQuery(
       {
-        authenticatorId: oneClickTradingInfo?.authenticatorId!,
-        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress!,
+        authenticatorId: info?.authenticatorId!,
+        userOsmoAddress: info?.userOsmoAddress!,
       },
       {
-        enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+        enabled: !!info && isEnabled,
       }
     );
 
   const remainingSpendLimit = useMemo(
     () =>
-      transaction1CTParams?.spendLimit && amountSpentData?.amountSpent
+      transactionParams?.spendLimit && amountSpentData?.amountSpent
         ? formatSpendLimit(
-            transaction1CTParams.spendLimit.sub(amountSpentData.amountSpent)
+            transactionParams.spendLimit.sub(amountSpentData.amountSpent)
           )
         : undefined,
-    [transaction1CTParams, amountSpentData]
+    [transactionParams, amountSpentData]
   );
 
   const isLoading =
-    isLoadingOneClickTradingSession ||
-    isLoading1CTParams ||
+    isLoadingInfo ||
+    isLoadingParams ||
     (shouldFetchExistingSessionAuthenticator
       ? isLoadingExistingSessionAuthenticator
       : false);
 
-  const create1CTSession = useCreateOneClickTradingSession();
+  const createSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();
 
-  const handleOneClickTradingStatusToggle = useCallback(() => {
-    if (!transaction1CTParams) return;
+  const toggleTransactionParamsEnable = useCallback(() => {
+    if (!transactionParams) return;
 
-    setTransaction1CTParams({
-      ...transaction1CTParams,
-      isOneClickEnabled: !transaction1CTParams.isOneClickEnabled,
+    setTransactionParams({
+      ...transactionParams,
+      isOneClickEnabled: !transactionParams.isOneClickEnabled,
     });
-    setHas1CTStatusChanged((prev) => !prev);
-  }, [setTransaction1CTParams, transaction1CTParams]);
+    setHasParamsEnableChanged((prev) => !prev);
+  }, [setTransactionParams, transactionParams]);
 
-  const cleanUpAndConfirm = useCallback(() => {
-    setHas1CTStatusChanged(false);
-    reset1CTParams();
-    confirmAction();
-  }, [setHas1CTStatusChanged, confirmAction, reset1CTParams]);
+  const cleanUpAndCommit = useCallback(() => {
+    setHasParamsEnableChanged(false);
+    resetParams();
+    onCommit();
+  }, [setHasParamsEnableChanged, onCommit, resetParams]);
 
-  const handleEnable = useCallback(() => {
-    if (!transaction1CTParams) return;
+  const startSession = useCallback(() => {
+    if (!transactionParams) return;
 
     const rollbackCreateSession = () => {
-      setTransaction1CTParams({
-        ...transaction1CTParams,
+      setTransactionParams({
+        ...transactionParams,
         isOneClickEnabled: false,
       });
     };
 
-    create1CTSession.mutate(
+    createSession.mutate(
       {
         spendLimitTokenDecimals,
-        transaction1CTParams,
+        transaction1CTParams: transactionParams,
         walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
         /**
          * If the user has an existing session, remove it and add the new one.
@@ -141,32 +140,32 @@ export function useOneClickTradingStatusToggle({
         onSuccess: () => {
           logEvent([EventName.OneClickTrading.enableOneClickTrading]);
         },
-        onSettled: cleanUpAndConfirm,
+        onSettled: cleanUpAndCommit,
       }
     );
   }, [
     accountStore,
     chainStore.osmosis.chainId,
-    create1CTSession,
-    cleanUpAndConfirm,
+    createSession,
+    cleanUpAndCommit,
     logEvent,
     existingSessionAuthenticator,
-    setTransaction1CTParams,
+    setTransactionParams,
     spendLimitTokenDecimals,
-    transaction1CTParams,
+    transactionParams,
   ]);
 
-  const handleDisable = useCallback(() => {
-    if (!transaction1CTParams) return;
+  const stopSession = useCallback(() => {
+    if (!transactionParams) return;
 
     const rollbackRemoveSession = () => {
-      setTransaction1CTParams({
-        ...transaction1CTParams,
+      setTransactionParams({
+        ...transactionParams,
         isOneClickEnabled: true,
       });
     };
 
-    if (!oneClickTradingInfo) {
+    if (!info) {
       displayErrorRemovingSessionToast();
       rollbackRemoveSession();
       throw new Error("oneClickTradingInfo is undefined");
@@ -174,7 +173,7 @@ export function useOneClickTradingStatusToggle({
 
     removeSession.mutate(
       {
-        authenticatorId: oneClickTradingInfo?.authenticatorId,
+        authenticatorId: info?.authenticatorId,
       },
       {
         onError: (e) => {
@@ -184,46 +183,47 @@ export function useOneClickTradingStatusToggle({
             displayErrorRemovingSessionToast();
           }
         },
-        onSettled: cleanUpAndConfirm,
+        onSettled: cleanUpAndCommit,
       }
     );
   }, [
-    cleanUpAndConfirm,
-    oneClickTradingInfo,
+    cleanUpAndCommit,
+    info,
     removeSession,
-    setTransaction1CTParams,
-    transaction1CTParams,
+    setTransactionParams,
+    transactionParams,
   ]);
 
-  const handleConfirm = useCallback(() => {
-    if (!has1CTStatusChanged) {
-      cleanUpAndConfirm();
+  const commitSessionChange = useCallback(() => {
+    if (!hasParamsEnableChanged) {
+      cleanUpAndCommit();
       return;
     }
 
-    if (!transaction1CTParams) return;
+    if (!transactionParams) return;
 
-    if (transaction1CTParams.isOneClickEnabled) {
-      handleEnable();
+    if (transactionParams.isOneClickEnabled) {
+      startSession();
     } else {
-      handleDisable();
+      stopSession();
     }
   }, [
-    cleanUpAndConfirm,
-    handleDisable,
-    handleEnable,
-    has1CTStatusChanged,
-    transaction1CTParams,
+    hasParamsEnableChanged,
+    transactionParams,
+    cleanUpAndCommit,
+    startSession,
+    stopSession,
   ]);
 
   return {
-    isOneClickTradingEnabled,
-    isOneClickTradingExpired,
+    isEnabled,
+    isExpired,
     isLoading,
-    transaction1CTParams,
-    setTransaction1CTParams,
-    handleOneClickTradingStatusToggle,
-    handleConfirm,
     remainingSpendLimit,
+    transactionParams,
+    setTransactionParams,
+    toggleTransactionParamsEnable,
+    commitSessionChange,
+    resetParams,
   };
 }
