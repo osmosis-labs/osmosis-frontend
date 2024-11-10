@@ -494,20 +494,10 @@ export function ReviewOrder({
                   <RecapRow
                     left={t("oneClickTrading.reviewOrder.recapRowTitle")}
                     right={
-                      <UIButton
-                        variant="link"
-                        size="md"
-                        className="text-wosmongton-300 px-0 py-0"
-                        onClick={() => setShow1CTSettings(true)}
-                      >
-                        <p className="body1 text-wosmongton-200 whitespace-nowrap">
-                          {remainingSpendLimit} {" / "}
-                          <OneClickTradingRemainingTime
-                            className="inline"
-                            timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
-                          />
-                        </p>
-                      </UIButton>
+                      <OneClickTradingActiveSessionParamsEdit
+                        onEdit={() => setShow1CTSettings(true)}
+                        remainingSpendLimit={remainingSpendLimit}
+                      />
                     }
                   />
                 )}
@@ -842,5 +832,30 @@ const OneClickTradingPanel = ({
         </div>
       )}
     </>
+  );
+};
+
+const OneClickTradingActiveSessionParamsEdit = ({
+  onEdit,
+  remainingSpendLimit,
+}: {
+  remainingSpendLimit?: string;
+  onEdit: () => void;
+}) => {
+  return (
+    <UIButton
+      variant="link"
+      size="md"
+      className="text-wosmongton-300 px-0 py-0"
+      onClick={onEdit}
+    >
+      <p className="body1 text-wosmongton-200 whitespace-nowrap">
+        {remainingSpendLimit} {" / "}
+        <OneClickTradingRemainingTime
+          className="inline"
+          timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
+        />
+      </p>
+    </UIButton>
   );
 };
