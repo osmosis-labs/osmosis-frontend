@@ -3,7 +3,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useState } from "react";
 
 import { api } from "~/utils/trpc";
 
@@ -32,6 +32,22 @@ export function getParametersFromOneClickTradingInfo({
   };
 }
 
+type BaseReturn = {
+  transaction1CTParams: OneClickTradingTransactionParams | undefined;
+  setTransaction1CTParams: (
+    params: SetStateAction<OneClickTradingTransactionParams | undefined>
+  ) => void;
+  spendLimitTokenDecimals: number | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  reset: () => void;
+};
+
+type WithChangesReturn = BaseReturn & {
+  initialTransaction1CTParams: OneClickTradingTransactionParams | undefined;
+  changes: OneClickTradingParamsChanges;
+};
+
 /**
  * Custom React hook to manage and provide parameters for one-click trading transactions.
  *
@@ -39,18 +55,30 @@ export function getParametersFromOneClickTradingInfo({
  * allowing for easy access and modification within components. If `oneClickTradingInfo` is provided, it uses
  * this to set initial parameters. Otherwise, it fetches the default parameters from the application's API.
  *
- * The hook also provides a mechanism to reset the parameters to their initial values, which
- * can be either the custom parameters passed at initialization or the fetched default parameters.
+ * The hook provides a mechanism to reset the parameters to their initial values and tracks changes
+ * to the parameters when `trackChanges` is true, comparing them against the initial values.
  *
  * This hook is primarily intended for the one click trading settings modal.
  */
-export const useOneClickTradingParams = ({
+export function useOneClickTradingParams(params: {
+  oneClickTradingInfo?: OneClickTradingInfo;
+  defaultIsOneClickEnabled?: boolean;
+  trackChanges: true;
+}): WithChangesReturn;
+export function useOneClickTradingParams(params?: {
+  oneClickTradingInfo?: OneClickTradingInfo;
+  defaultIsOneClickEnabled?: boolean;
+  trackChanges?: false;
+}): BaseReturn;
+export function useOneClickTradingParams({
   oneClickTradingInfo,
   defaultIsOneClickEnabled = false,
+  trackChanges,
 }: {
   oneClickTradingInfo?: OneClickTradingInfo;
   defaultIsOneClickEnabled?: boolean;
-} = {}) => {
+  trackChanges?: boolean;
+} = {}): BaseReturn | WithChangesReturn {
   const {
     data: defaultTransaction1CTParams,
     isLoading,
@@ -69,6 +97,8 @@ export const useOneClickTradingParams = ({
   );
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams | undefined>();
+
+  const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
   useEffect(() => {
     const paramsToSet = oneClickTradingInfo
@@ -109,6 +139,10 @@ export const useOneClickTradingParams = ({
         }
       : initialTransaction1CTParams;
     setTransaction1CTParams(nextTransaction1CTParams);
+
+    if (trackChanges) {
+      setChanges([]);
+    }
   }, [
     defaultIsOneClickEnabled,
     defaultTransaction1CTParams,
@@ -116,7 +150,35 @@ export const useOneClickTradingParams = ({
     oneClickTradingInfo,
   ]);
 
-  return {
+  const setTransaction1CTParamsWithChanges = useCallback(
+    (
+      newParams: SetStateAction<OneClickTradingTransactionParams | undefined>
+    ) => {
+      if (!initialTransaction1CTParams) return;
+
+      const nextParams =
+        typeof newParams === "function"
+          ? newParams(transaction1CTParams)
+          : newParams;
+
+      setTransaction1CTParams(nextParams);
+
+      setChanges((prev) => {
+        const current = compare1CTTransactionParams({
+          prevParams: initialTransaction1CTParams,
+          nextParams: nextParams!,
+        });
+
+        // Only update changes if there are new changes
+        return current.some((change) => !prev.includes(change))
+          ? Array.from(new Set([...prev, ...current]))
+          : prev;
+      });
+    },
+    [initialTransaction1CTParams, transaction1CTParams]
+  );
+
+  const baseReturn = {
     transaction1CTParams,
     setTransaction1CTParams,
     spendLimitTokenDecimals:
@@ -124,5 +186,50 @@ export const useOneClickTradingParams = ({
     isLoading,
     isError,
     reset,
-  };
-};
+  } as const;
+
+  return trackChanges
+    ? {
+        ...baseReturn,
+        initialTransaction1CTParams,
+        changes,
+        setTransaction1CTParams: setTransaction1CTParamsWithChanges,
+      }
+    : baseReturn;
+}
+
+export type OneClickTradingParamsChanges = Array<
+  "spendLimit" | "sessionPeriod" | "isEnabled" | "networkFeeLimit"
+>;
+
+/**
+ * Compares the changes between two sets of OneClickTradingTransactionParams.
+ * Useful for determining which parameters have changed and need to be updated.
+ */
+export function compare1CTTransactionParams({
+  prevParams,
+  nextParams,
+}: {
+  prevParams: OneClickTradingTransactionParams;
+  nextParams: OneClickTradingTransactionParams;
+}): OneClickTradingParamsChanges {
+  let changes: OneClickTradingParamsChanges = [];
+
+  if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
+    changes.push("spendLimit");
+  }
+
+  if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
+    changes.push("sessionPeriod");
+  }
+
+  if (prevParams?.isOneClickEnabled !== nextParams?.isOneClickEnabled) {
+    changes.push("isEnabled");
+  }
+
+  if (prevParams?.networkFeeLimit !== nextParams?.networkFeeLimit) {
+    changes.push("networkFeeLimit");
+  }
+
+  return changes;
+}
