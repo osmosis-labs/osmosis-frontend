@@ -114,6 +114,7 @@ export function ReviewOrder({
     isExpired: is1CTExpired,
     isLoading: is1CTLoading,
     changes: transaction1CTParamsChanges,
+    setChanges: setTransaction1CTParamsChanges,
     transactionParams: transaction1CTParams,
     remainingSpendLimit: remaining1CTSpendLimit,
     setTransactionParams: setTransaction1CTParams,
@@ -253,7 +254,8 @@ export function ReviewOrder({
       {showOneClickTradingSettings && (
         <div className="flex flex-col items-center overflow-hidden">
           <OneClickTradingSettings
-            initialChanges={transaction1CTParamsChanges}
+            externalChanges={transaction1CTParamsChanges}
+            setExternalChanges={setTransaction1CTParamsChanges}
             onGoBack={() => setShowOneClickTradingSettings(false)}
             onClose={() => setShowOneClickTradingSettings(false)}
             transaction1CTParams={transaction1CTParams}

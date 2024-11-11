@@ -71,7 +71,9 @@ type StandaloneProps = BaseOneClickTradingSettingsProps & {
   /** Required callback when user clicks start/edit trading button */
   onStartTrading: () => void;
   /** In standalone mode the changes are tracked internally. Initial changes are not accepted */
-  initialChanges?: undefined;
+  externalChanges?: undefined;
+  /** Not needed in standalone mode */
+  setExternalChanges?: Dispatch<SetStateAction<OneClickTradingParamsChanges>>;
 };
 
 type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
@@ -83,7 +85,9 @@ type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
   /** Start trading callback is not allowed in non-standalone mode */
   onStartTrading?: never;
   /** Initial changes to be applied to the settings */
-  initialChanges: OneClickTradingParamsChanges;
+  externalChanges: OneClickTradingParamsChanges;
+  /** Callback to set initial changes */
+  setExternalChanges: (value: OneClickTradingParamsChanges) => void;
 };
 
 type OneClickTradingSettingsProps = StandaloneProps | NonStandaloneProps;
@@ -126,11 +130,15 @@ export const OneClickTradingSettings = ({
   onEndSession,
   onClose,
   standalone = true,
-  initialChanges = [],
+  externalChanges = [],
+  setExternalChanges,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
-  const [changes, setChanges] =
-    useState<OneClickTradingParamsChanges>(initialChanges);
+
+  const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
+
+  const [initialChanges, setInitialChanges] =
+    useState<OneClickTradingParamsChanges>([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
@@ -168,6 +176,7 @@ export const OneClickTradingSettings = ({
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
     setInitialTransaction1CTParams(transaction1CTParams);
+    setInitialChanges(externalChanges);
   }, [initialTransaction1CTParams, transaction1CTParams]);
 
   const {
@@ -237,8 +246,13 @@ export const OneClickTradingSettings = ({
       {onClose && (
         <ModalCloseButton
           onClick={() => {
-            if (standalone && changes.length > 0) {
-              return openCloseConfirmDialog();
+            if (changes.length > 0) {
+              if (standalone) {
+                return openCloseConfirmDialog();
+              } else {
+                setTransaction1CTParams(initialTransaction1CTParams);
+                setExternalChanges?.(initialChanges);
+              }
             }
 
             onClose();
@@ -409,7 +423,8 @@ export const OneClickTradingSettings = ({
                   />
                 </div>
 
-                {hasExistingSession &&
+                {standalone &&
+                  hasExistingSession &&
                   changes.length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">

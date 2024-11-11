@@ -46,6 +46,7 @@ type BaseReturn = {
 type WithChangesReturn = BaseReturn & {
   initialTransaction1CTParams: OneClickTradingTransactionParams | undefined;
   changes: OneClickTradingParamsChanges;
+  setChanges: (changes: OneClickTradingParamsChanges) => void;
 };
 
 /**
@@ -205,6 +206,7 @@ export function useOneClickTradingParams({
         ...baseReturn,
         initialTransaction1CTParams,
         changes,
+        setChanges,
         setTransaction1CTParams: setTransaction1CTParamsWithChanges,
       }
     : baseReturn;

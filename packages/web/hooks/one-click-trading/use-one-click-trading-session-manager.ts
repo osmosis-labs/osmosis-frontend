@@ -38,6 +38,7 @@ export function useOneClickTradingSessionManager({
     isLoading: isLoadingParams,
     reset: resetParams,
     changes,
+    setChanges,
   } = useOneClickTradingParams({
     oneClickTradingInfo: info,
     defaultIsOneClickEnabled: isEnabled ?? false,
@@ -64,7 +65,7 @@ export function useOneClickTradingSessionManager({
     }
 
     return false;
-  }, [transactionParams, initialTransactionParams]);
+  }, [transactionParams, initialTransactionParams, changes]);
 
   const {
     remainingSpendLimit,
@@ -200,6 +201,7 @@ export function useOneClickTradingSessionManager({
     isExpired,
     isLoading,
     changes,
+    setChanges,
     transactionParams,
     remainingSpendLimit,
     setTransactionParams,
