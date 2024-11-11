@@ -111,8 +111,6 @@ export function ReviewOrder({
 
   const {
     isEnabled: is1CTEnabled,
-    isExpired: is1CTExpired,
-    isLoading: is1CTLoading,
     changes: transaction1CTParamsChanges,
     setChanges: setTransaction1CTParamsChanges,
     transactionParams: transaction1CTParams,
@@ -501,7 +499,7 @@ export function ReviewOrder({
                   }
                 />
 
-                {!is1CTExpired && (
+                {is1CTEnabled && (
                   <RecapRow
                     left={t("oneClickTrading.reviewOrder.recapRowTitle")}
                     right={
@@ -721,7 +719,7 @@ export function ReviewOrder({
               )}
               <OneClickTradingPanel
                 t={t}
-                shouldShow={!is1CTLoading && is1CTExpired}
+                shouldShow={!is1CTEnabled}
                 transactionParams={transaction1CTParams}
                 onClick={() =>
                   setTransaction1CTParams((prev) => {
@@ -740,7 +738,7 @@ export function ReviewOrder({
                   <Button
                     mode="primary"
                     onClick={commit1CTSessionChange}
-                    disabled={isConfirmationDisabled || is1CTLoading}
+                    disabled={isConfirmationDisabled}
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>
