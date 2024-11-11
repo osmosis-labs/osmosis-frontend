@@ -192,10 +192,15 @@ export const OneClickTradingSettings = ({
     setTransaction1CTParamsProp((prevParams) => {
       const nextParams = runIfFn(newParamsOrFn, prevParams);
       setChanges(
-        compare1CTTransactionParams({
-          prevParams: initialTransaction1CTParams!,
-          nextParams: nextParams!,
-        })
+        Array.from(
+          new Set([
+            ...changes,
+            ...compare1CTTransactionParams({
+              prevParams: initialTransaction1CTParams!,
+              nextParams: nextParams!,
+            }),
+          ])
+        )
       );
 
       return nextParams;
