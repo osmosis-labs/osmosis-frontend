@@ -867,7 +867,7 @@ const OneClickTradingActiveSessionParamsEdit = ({
       className="text-wosmongton-300 px-0 py-0"
       onClick={onClick}
     >
-      <p className="body1 text-wosmongton-200 whitespace-nowrap">
+      <span className="body1 text-wosmongton-200 whitespace-nowrap">
         {changes.includes("spendLimit") ? (
           <span className="text-bullish-400">
             {transactionParams?.spendLimit.toString()}
@@ -886,7 +886,7 @@ const OneClickTradingActiveSessionParamsEdit = ({
             timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
           />
         )}
-      </p>
+      </span>
     </UIButton>
   );
 };
