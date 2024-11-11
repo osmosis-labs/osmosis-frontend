@@ -812,8 +812,8 @@ const OneClickTradingPanel = ({
             <p className="text-body2 font-body2 text-osmoverse-300">
               {t("oneClickTrading.reviewOrder.paramsDescription", {
                 sessionLength: t(
-                  `oneClickTrading.settings.sessionPeriodScreen.periods.${
-                    transactionParams?.sessionPeriod.end ?? "default"
+                  `oneClickTrading.sessionPeriods.${
+                    transactionParams?.sessionPeriod.end ?? "1hour"
                   }`
                 ),
                 spendLimit:

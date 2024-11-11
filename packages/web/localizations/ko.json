@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
       "defaultSpendLimit": "5,000달러",
       "change": "변화",
-      "periods": {
-        "default": "1시간",
-        "5min": "5분",
-        "10min": "10분",
-        "30min": "30분",
-        "1hour": "1시간",
-        "3hours": "3시간",
-        "12hours": "12시간"
-      },
       "timeUnits": {
         "second": "비서",
         "seconds": "비서",
@@ -409,6 +400,14 @@
         "day": "낮",
         "days": "낮"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5분",
+      "10min": "10분",
+      "30min": "30분",
+      "1hour": "1시간",
+      "3hours": "3시간",
+      "12hours": "12시간"
     },
     "settings": {
       "header": "1-클릭 거래",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "세션 기간",
-        "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요.",
-        "periods": {
-          "5min": "5 분",
-          "10min": "10 분",
-          "30min": "30 분",
-          "1hour": "1 시간",
-          "3hours": "3 시간",
-          "12hours": "12 시간"
-        }
+        "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요."
       },
       "discardChanges": {
         "title": "변경 사항을 취소?",

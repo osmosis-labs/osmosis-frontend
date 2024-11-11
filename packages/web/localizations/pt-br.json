@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
       "defaultSpendLimit": "US$ 5.000",
       "change": "Mudar",
-      "periods": {
-        "default": "1 hora",
-        "5min": "5 minutos",
-        "10min": "10 minutos",
-        "30min": "30 minutos",
-        "1hour": "1 hora",
-        "3hours": "3 horas",
-        "12hours": "12 horas"
-      },
       "timeUnits": {
         "second": "segundo",
         "seconds": "segundo",
@@ -409,6 +400,14 @@
         "day": "dia",
         "days": "dia"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutos",
+      "10min": "10 minutos",
+      "30min": "30 minutos",
+      "1hour": "1 hora",
+      "3hours": "3 horas",
+      "12hours": "12 horas"
     },
     "settings": {
       "header": "Negociação em 1 clique",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Período da sessão",
-        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
-        "periods": {
-          "5min": "5 minutos",
-          "10min": "10 minutos",
-          "30min": "30 minutos",
-          "1hour": "1 hora",
-          "3hours": "3 horas",
-          "12hours": "12 horas"
-        }
+        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo."
       },
       "discardChanges": {
         "title": "Descartar mudanças?",

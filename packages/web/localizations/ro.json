@@ -384,20 +384,12 @@
       "newPill": "Nou"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
       "enableTitle": "Începeți tranzacționarea cu 1 clic",
       "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
       "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
       "defaultSpendLimit": "5.000 USD",
       "change": "Schimba",
-      "periods": {
-        "default": "1 oră",
-        "5min": "5 minute",
-        "10min": "10 minute",
-        "30min": "30 de minute",
-        "1hour": "1 oră",
-        "3hours": "3 ore",
-        "12hours": "12 ore"
-      },
       "timeUnits": {
         "second": "sec",
         "seconds": "sec",
@@ -408,6 +400,14 @@
         "day": "zi",
         "days": "zi"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minute",
+      "10min": "10 minute",
+      "30min": "30 de minute",
+      "1hour": "1 oră",
+      "3hours": "3 ore",
+      "12hours": "12 ore"
     },
     "settings": {
       "header": "1-Click Trading",
@@ -428,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Perioada de sesiune",
-        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
-        "periods": {
-          "5min": "5 minute",
-          "10min": "10 minute",
-          "30min": "30 minute",
-          "1hour": "1 oră",
-          "3hours": "3 ore",
-          "12hours": "12 ore"
-        }
+        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv."
       },
       "discardChanges": {
         "title": "Renunțați la modificări?",

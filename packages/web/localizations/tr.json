@@ -384,20 +384,12 @@
       "newPill": "Yeni"
     },
     "reviewOrder": {
+      "recapRowTitle": "1-Tıkla İşlem limiti",
       "enableTitle": "1-Tıkla İşlem Başlat",
       "enableDescription": "Daha hızlı, daha kolay ticaret",
       "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
       "defaultSpendLimit": "5.000 ABD doları",
       "change": "Değiştirmek",
-      "periods": {
-        "default": "1 saat",
-        "5min": "5 dakika",
-        "10min": "10 dakika",
-        "30min": "30 dakika",
-        "1hour": "1 saat",
-        "3hours": "3 saat",
-        "12hours": "12 saat"
-      },
       "timeUnits": {
         "second": "saniye",
         "seconds": "saniye",
@@ -408,6 +400,14 @@
         "day": "gün",
         "days": "gün"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 dakika",
+      "10min": "10 dakika",
+      "30min": "30 dakika",
+      "1hour": "1 saat",
+      "3hours": "3 saat",
+      "12hours": "12 saat"
     },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
@@ -428,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Oturum dönemi",
-        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
-        "periods": {
-          "5min": "5 dakika",
-          "10min": "10 dakika",
-          "30min": "30 dakika",
-          "1hour": "1 saat",
-          "3hours": "3 saat",
-          "12hours": "12 saat"
-        }
+        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın."
       },
       "discardChanges": {
         "title": "Değişiklikleri gözardı et?",

@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
       "defaultSpendLimit": "5.000 USD",
       "change": "Ändern",
-      "periods": {
-        "default": "1 Stunde",
-        "5min": "5 Minuten",
-        "10min": "10 Minuten",
-        "30min": "30 Minuten",
-        "1hour": "1 Stunde",
-        "3hours": "3 Stunden",
-        "12hours": "12 Stunden"
-      },
       "timeUnits": {
         "second": "Sek",
         "seconds": "Sek",
@@ -409,6 +400,14 @@
         "day": "Tag",
         "days": "Tag"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 Minuten",
+      "10min": "10 Minuten",
+      "30min": "30 Minuten",
+      "1hour": "1 Stunde",
+      "3hours": "3 Stunden",
+      "12hours": "12 Stunden"
     },
     "settings": {
       "header": "1-Klick-Handel",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Sitzungszeitraum",
-        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
-        "periods": {
-          "5min": "5 Minuten",
-          "10min": "10 Minuten",
-          "30min": "30 Minuten",
-          "1hour": "1 Stunde",
-          "3hours": "3 Stunden",
-          "12hours": "12 Stunden"
-        }
+        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen."
       },
       "discardChanges": {
         "title": "Änderungen verwerfen?",

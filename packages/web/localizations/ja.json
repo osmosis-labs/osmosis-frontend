@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
       "defaultSpendLimit": "5,000米ドル",
       "change": "変化",
-      "periods": {
-        "default": "1時間",
-        "5min": "5分",
-        "10min": "10分",
-        "30min": "30分",
-        "1hour": "1時間",
-        "3hours": "3時間",
-        "12hours": "12時間"
-      },
       "timeUnits": {
         "second": "秒",
         "seconds": "秒",
@@ -409,6 +400,14 @@
         "day": "日",
         "days": "日"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5分",
+      "10min": "10分",
+      "30min": "30分",
+      "1hour": "1時間",
+      "3hours": "3時間",
+      "12hours": "12時間"
     },
     "settings": {
       "header": "1クリック取引",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "会期",
-        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
-        "periods": {
-          "5min": "5分",
-          "10min": "10分",
-          "30min": "30分",
-          "1hour": "1時間",
-          "3hours": "3時間",
-          "12hours": "12時間"
-        }
+        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。"
       },
       "discardChanges": {
         "title": "変更を破棄？",

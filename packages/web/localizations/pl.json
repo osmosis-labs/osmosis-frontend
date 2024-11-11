@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength} sesja z {lossProtectionLimit} limitem ochrony przed stratami",
       "defaultSpendLimit": "5000 dolarów amerykańskich",
       "change": "Zmiana",
-      "periods": {
-        "default": "1 godzina",
-        "5min": "5 minut",
-        "10min": "10 minut",
-        "30min": "30 minut",
-        "1hour": "1 godzina",
-        "3hours": "3 godziny",
-        "12hours": "12 godzin"
-      },
       "timeUnits": {
         "second": "sek.",
         "seconds": "sek.",
@@ -409,6 +400,14 @@
         "day": "dzień",
         "days": "dzień"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minut",
+      "10min": "10 minut",
+      "30min": "30 minut",
+      "1hour": "1 godzina",
+      "3hours": "3 godziny",
+      "12hours": "12 godzin"
     },
     "settings": {
       "header": "Handel jednym kliknięciem",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Okres sesji",
-        "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
-        "periods": {
-          "5min": "5 minut",
-          "10min": "10 minut",
-          "30min": "30 minut",
-          "1hour": "1 godzina",
-          "3hours": "3 godziny",
-          "12hours": "12 godzin"
-        }
+        "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu."
       },
       "discardChanges": {
         "title": "Odrzucać zmiany?",

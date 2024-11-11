@@ -390,15 +390,6 @@
       "paramsDescription": "Session {sessionLength} avec limite de protection contre les pertes {lossProtectionLimit}",
       "defaultSpendLimit": "5 000 USD",
       "change": "Changement",
-      "periods": {
-        "default": "1 heure",
-        "5min": "5 minutes",
-        "10min": "10 minutes",
-        "30min": "30 minutes",
-        "1hour": "1 heure",
-        "3hours": "3 heures",
-        "12hours": "12 heures"
-      },
       "timeUnits": {
         "second": "seconde",
         "seconds": "seconde",
@@ -409,6 +400,14 @@
         "day": "jour",
         "days": "jour"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutes",
+      "10min": "10 minutes",
+      "30min": "30 minutes",
+      "1hour": "1 heure",
+      "3hours": "3 heures",
+      "12hours": "12 heures"
     },
     "settings": {
       "header": "Trading en 1 clic",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Période de séance",
-        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
-        "periods": {
-          "5min": "5 minutes",
-          "10min": "10 minutes",
-          "30min": "30 minutes",
-          "1hour": "1 heure",
-          "3hours": "3 heures",
-          "12hours": "12 heures"
-        }
+        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil."
       },
       "discardChanges": {
         "title": "Annuler les modifications?",

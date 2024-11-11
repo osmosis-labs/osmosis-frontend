@@ -129,10 +129,15 @@
   },
   "assets": {
     "historyTable": {
-      "colums": { "deposit": "Depositar", "withdraw": "Retirar" }
+      "colums": {
+        "deposit": "Depositar",
+        "withdraw": "Retirar"
+      }
     },
     "table": {
-      "columns": { "balance": "Balance" },
+      "columns": {
+        "balance": "Balance"
+      },
       "depositButton": "Depositar",
       "search": "Buscar",
       "withdrawButton": "Retirar",
@@ -148,7 +153,9 @@
     "transfer": {
       "approving": "Aprobando...",
       "approveInWallet": "Aprobar en billetera",
-      "errors": { "seeRequest": "Ver solicitud en {walletName}" },
+      "errors": {
+        "seeRequest": "Ver solicitud en {walletName}"
+      },
       "loading": "Cargando",
       "to": "A",
       "priceImpact": "Impacto en el precio",
@@ -234,23 +241,32 @@
   },
   "buyTokens": "Comprar fichas",
   "components": {
-    "cryptoFiatInput": { "insufficientFunds": "Fondos insuficientes" },
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fondos insuficientes"
+    },
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },
-    "incentive": { "title": "Tipos de incentivos" },
+    "incentive": {
+      "title": "Tipos de incentivos"
+    },
     "MAX": "Máximo",
-    "pool": { "title": "Tipos de piscinas" },
+    "pool": {
+      "title": "Tipos de piscinas"
+    },
     "searchTokens": "Buscar",
     "selectToken": {
       "title": "Seleccione un token",
       "unverifiedAsset": "Este activo no está verificado. Proceda con precaución.",
       "clickToActivate": "Haz clic para activar"
     },
-    "show": { "less": "Ver menos", "more": "Ver más" },
+    "show": {
+      "less": "Ver menos",
+      "more": "Ver más"
+    },
     "table": {
       "poolId": "Grupo #{id}",
       "stable": "Stableswap",
@@ -307,7 +323,9 @@
     "startAgain": "Empezar de nuevo"
   },
   "estimated": "Estimado",
-  "frontierMigration": { "proceed": "Proceder" },
+  "frontierMigration": {
+    "proceed": "Proceder"
+  },
   "lockToken": {
     "amountToBond": "Monto a abonar",
     "availableToken": "Disponible",
@@ -362,7 +380,9 @@
       "defaultParameters": "La configuración predeterminada está establecida en 1 hora con un límite de protección contra pérdidas de $5,000 USD.",
       "changeButton": "Editar ajustes"
     },
-    "floatingBanner": { "newPill": "Nuevo" },
+    "floatingBanner": {
+      "newPill": "Nuevo"
+    },
     "reviewOrder": {
       "recapRowTitle": "Límite de negociación con un solo clic",
       "enableTitle": "Comience a operar con un solo clic",
@@ -370,15 +390,6 @@
       "paramsDescription": "Sesión {sessionLength} con límite de protección contra pérdidas {lossProtectionLimit}",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Cambiar",
-      "periods": {
-        "default": "1 hora",
-        "5min": "5 minutos",
-        "10min": "10 minutos",
-        "30min": "30 minutos",
-        "1hour": "1 hora",
-        "3hours": "3 horas",
-        "12hours": "12 horas"
-      },
       "timeUnits": {
         "second": "segundo",
         "seconds": "segundo",
@@ -389,6 +400,14 @@
         "day": "día",
         "days": "día"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutos",
+      "10min": "10 minutos",
+      "30min": "30 minutos",
+      "1hour": "1 hora",
+      "3hours": "3 horas",
+      "12hours": "12 horas"
     },
     "settings": {
       "header": "Comercio con 1 clic",
@@ -409,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Período de sesión",
-        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
-        "periods": {
-          "5min": "5 minutos",
-          "10min": "10 minutos",
-          "30min": "30 minutos",
-          "1hour": "1 hora",
-          "3hours": "3 horas",
-          "12hours": "12 horas"
-        }
+        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo."
       },
       "discardChanges": {
         "title": "¿Descartar los cambios?",
@@ -677,7 +688,10 @@
     "bondedAmount": "Monto abonado",
     "buttonBond": "Abonar y Generar Interés",
     "choose": "Elija su validador superfluido",
-    "columns": { "commission": "Comisión", "validator": "Validador" },
+    "columns": {
+      "commission": "Comisión",
+      "validator": "Validador"
+    },
     "estimation": "Delegación superfluida estimada",
     "estimationInfo": "El valor de esta delegación fluctúa y se estima en función de la cantidad de OSMO en la piscina.",
     "estimationMobile": "Est. Delegación",
@@ -700,7 +714,9 @@
       "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
       "increaseSpendLimit": "Aumentar el límite de gasto"
     },
-    "settings": { "slippage": "Tolerancia de deslizamiento" },
+    "settings": {
+      "slippage": "Tolerancia de deslizamiento"
+    },
     "title": "Intercambio",
     "dynamicSpreadFactor": "Dinámica",
     "gas": {
@@ -948,7 +964,9 @@
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
     },
-    "pool": { "title": "Piscina #" },
+    "pool": {
+      "title": "Piscina #"
+    },
     "pools": {
       "title": "Piscinas de Osmosis",
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -1024,8 +1042,15 @@
     "availableToClaim": "disponible para reclamar",
     "claimAllRewards": "Reclama todas las recompensas",
     "join": "Unirse",
-    "tokenFilterOptions": { "my": "Tus activos", "all": "Todos los activos" },
-    "rewardTypes": { "all": "Todo", "single": "Soltero", "multi": "Multi" },
+    "tokenFilterOptions": {
+      "my": "Tus activos",
+      "all": "Todos los activos"
+    },
+    "rewardTypes": {
+      "all": "Todo",
+      "single": "Soltero",
+      "multi": "Multi"
+    },
     "totalValueInvested": "Valor total",
     "lookBelow": "Mire a continuación y encuentre las mejores estrategias para usted",
     "startEarningDescription": "Libere todo su potencial de ingresos. Ponga sus activos a trabajar mediante las numerosas estrategias siguientes.",
@@ -1117,9 +1142,15 @@
       "networkFee": "Tarifa de red"
     }
   },
-  "date": { "earlierToday": "El día de hoy", "yesterday": "Ayer" },
+  "date": {
+    "earlierToday": "El día de hoy",
+    "yesterday": "Ayer"
+  },
   "backToTop": "Volver arriba",
-  "pagination": { "older": "Más viejo", "newer": "Más nuevo" },
+  "pagination": {
+    "older": "Más viejo",
+    "newer": "Más nuevo"
+  },
   "limitOrders": {
     "floatingBanner": {
       "title": "Elige tu precio",

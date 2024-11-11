@@ -390,15 +390,6 @@
       "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Change",
-      "periods": {
-        "default": "1 hour",
-        "5min": "5 minutes",
-        "10min": "10 minutes",
-        "30min": "30 minutes",
-        "1hour": "1 hour",
-        "3hours": "3 hours",
-        "12hours": "12 hours"
-      },
       "timeUnits": {
         "second": "sec",
         "seconds": "sec",
@@ -409,6 +400,14 @@
         "day": "day",
         "days": "day"
       }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutes",
+      "10min": "10 minutes",
+      "30min": "30 minutes",
+      "1hour": "1 hour",
+      "3hours": "3 hours",
+      "12hours": "12 hours"
     },
     "settings": {
       "header": "1-Click Trading",
@@ -429,15 +428,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Session period",
-        "description": "Set a duration to allow 1-Click Trading on this device.",
-        "periods": {
-          "5min": "5 minutes",
-          "10min": "10 minutes",
-          "30min": "30 minutes",
-          "1hour": "1 hour",
-          "3hours": "3 hours",
-          "12hours": "12 hours"
-        }
+        "description": "Set a duration to allow 1-Click Trading on this device."
       },
       "discardChanges": {
         "title": "Discard Changes?",
