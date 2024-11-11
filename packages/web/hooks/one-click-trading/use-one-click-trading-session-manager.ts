@@ -92,7 +92,7 @@ export function useOneClickTradingSessionManager({
 
     const rollbackCreateSession = () => {
       setTransactionParams({
-        ...transactionParams,
+        ...(initialTransactionParams ?? transactionParams),
         isOneClickEnabled: false,
       });
     };
@@ -140,7 +140,7 @@ export function useOneClickTradingSessionManager({
 
     const rollbackRemoveSession = () => {
       setTransactionParams({
-        ...transactionParams,
+        ...(initialTransactionParams ?? transactionParams),
         isOneClickEnabled: true,
       });
     };
