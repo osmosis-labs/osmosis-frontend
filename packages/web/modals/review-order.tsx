@@ -28,6 +28,7 @@ import { EventName, EventPage } from "~/config/analytics-events";
 import {
   Breakpoint,
   MultiLanguageT,
+  OneClickTradingParamsChanges,
   useAmplitudeAnalytics,
   useOneClickTradingSessionManager,
   useTranslation,
@@ -73,7 +74,7 @@ interface ReviewOrderProps {
 
 export function ReviewOrder({
   isOpen,
-  onClose,
+  onClose: onCloseProp,
   confirmAction,
   isConfirmationDisabled,
   slippageConfig,
@@ -112,10 +113,10 @@ export function ReviewOrder({
     isEnabled: is1CTEnabled,
     isExpired: is1CTExpired,
     isLoading: is1CTLoading,
+    changes: transaction1CTParamsChanges,
     transactionParams: transaction1CTParams,
     remainingSpendLimit: remaining1CTSpendLimit,
     setTransactionParams: setTransaction1CTParams,
-    toggleTransactionParamsEnable: toggle1CTParamsEnable,
     commitSessionChange: commit1CTSessionChange,
     resetParams: reset1CTParams,
   } = useOneClickTradingSessionManager({
@@ -233,13 +234,15 @@ export function ReviewOrder({
     );
   }, [gasAmount, isGasLoading, gasFeeError, isMobile, t]);
 
+  const onClose = useCallback(() => {
+    reset1CTParams();
+    onCloseProp();
+  }, [onCloseProp, reset1CTParams]);
+
   return (
     <ModalBase
       isOpen={isOpen}
-      onRequestClose={() => {
-        reset1CTParams();
-        onClose();
-      }}
+      onRequestClose={onClose}
       hideCloseButton
       className={
         showOneClickTradingSettings
@@ -250,6 +253,7 @@ export function ReviewOrder({
       {showOneClickTradingSettings && (
         <div className="flex flex-col items-center overflow-hidden">
           <OneClickTradingSettings
+            initialChanges={transaction1CTParamsChanges}
             onGoBack={() => setShowOneClickTradingSettings(false)}
             onClose={() => setShowOneClickTradingSettings(false)}
             transaction1CTParams={transaction1CTParams}
@@ -500,10 +504,9 @@ export function ReviewOrder({
                     left={t("oneClickTrading.reviewOrder.recapRowTitle")}
                     right={
                       <OneClickTradingActiveSessionParamsEdit
-                        onClick={() => {
-                          toggle1CTParamsEnable();
-                          setShowOneClickTradingSettings(true);
-                        }}
+                        transactionParams={transaction1CTParams}
+                        changes={transaction1CTParamsChanges}
+                        onClick={() => setShowOneClickTradingSettings(true)}
                         remainingSpendLimit={remaining1CTSpendLimit}
                       />
                     }
@@ -718,7 +721,16 @@ export function ReviewOrder({
                 t={t}
                 shouldShow={!is1CTLoading && is1CTExpired}
                 transactionParams={transaction1CTParams}
-                onClick={toggle1CTParamsEnable}
+                onClick={() =>
+                  setTransaction1CTParams((prev) => {
+                    if (!prev) return;
+
+                    return {
+                      ...prev,
+                      isOneClickEnabled: !prev.isOneClickEnabled,
+                    };
+                  })
+                }
                 onParamsChange={() => setShowOneClickTradingSettings(true)}
               />
               {!diffGteSlippage && (
@@ -839,9 +851,13 @@ const OneClickTradingPanel = ({
 
 const OneClickTradingActiveSessionParamsEdit = ({
   onClick,
+  changes = [],
+  transactionParams,
   remainingSpendLimit,
 }: {
   remainingSpendLimit?: string;
+  changes: OneClickTradingParamsChanges;
+  transactionParams: OneClickTradingTransactionParams | undefined;
   onClick: () => void;
 }) => {
   return (
@@ -852,11 +868,24 @@ const OneClickTradingActiveSessionParamsEdit = ({
       onClick={onClick}
     >
       <p className="body1 text-wosmongton-200 whitespace-nowrap">
-        {remainingSpendLimit} {" / "}
-        <OneClickTradingRemainingTime
-          className="inline"
-          timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
-        />
+        {changes.includes("spendLimit") ? (
+          <span className="text-bullish-400">
+            {transactionParams?.spendLimit.toString()}
+          </span>
+        ) : (
+          <span> {remainingSpendLimit} </span>
+        )}
+        {" / "}
+        {changes.includes("sessionPeriod") ? (
+          <span className="text-bullish-400">
+            {transactionParams?.sessionPeriod.end}
+          </span>
+        ) : (
+          <OneClickTradingRemainingTime
+            className="inline"
+            timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
+          />
+        )}
       </p>
     </UIButton>
   );

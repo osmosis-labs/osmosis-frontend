@@ -26,6 +26,7 @@ import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { EventName } from "~/config";
 import {
+  OneClickTradingParamsChanges,
   useAmplitudeAnalytics,
   useDisclosure,
   useOneClickTradingSession,
@@ -69,6 +70,8 @@ type StandaloneProps = BaseOneClickTradingSettingsProps & {
   standalone?: true;
   /** Required callback when user clicks start/edit trading button */
   onStartTrading: () => void;
+  /** In standalone mode the changes are tracked internally. Initial changes are not accepted */
+  initialChanges?: undefined;
 };
 
 type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
@@ -79,6 +82,8 @@ type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
   standalone: false;
   /** Start trading callback is not allowed in non-standalone mode */
   onStartTrading?: never;
+  /** Initial changes to be applied to the settings */
+  initialChanges: OneClickTradingParamsChanges;
 };
 
 type OneClickTradingSettingsProps = StandaloneProps | NonStandaloneProps;
@@ -93,18 +98,18 @@ export function compare1CTTransactionParams({
 }: {
   prevParams: OneClickTradingTransactionParams;
   nextParams: OneClickTradingTransactionParams;
-}): Array<"spendLimit" | "resetPeriod" | "sessionPeriod"> {
-  let changes = new Set<"spendLimit" | "resetPeriod" | "sessionPeriod">();
+}): OneClickTradingParamsChanges {
+  let changes: OneClickTradingParamsChanges = [];
 
   if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
-    changes.add("spendLimit");
+    changes.push("spendLimit");
   }
 
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
-    changes.add("sessionPeriod");
+    changes.push("sessionPeriod");
   }
 
-  return Array.from(changes);
+  return changes;
 }
 
 export const OneClickTradingSettings = ({
@@ -121,11 +126,11 @@ export const OneClickTradingSettings = ({
   onEndSession,
   onClose,
   standalone = true,
+  initialChanges = [],
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
-  const [changes, setChanges] = useState<
-    Array<"spendLimit" | "resetPeriod" | "sessionPeriod">
-  >([]);
+  const [changes, setChanges] =
+    useState<OneClickTradingParamsChanges>(initialChanges);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
@@ -427,7 +432,8 @@ export const OneClickTradingSettings = ({
                     </div>
                   )}
 
-                {isOneClickTradingEnabled &&
+                {standalone &&
+                  isOneClickTradingEnabled &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <div className="flex flex-col gap-2">
                       <SkeletonLoader

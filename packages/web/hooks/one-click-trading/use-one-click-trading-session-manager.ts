@@ -1,6 +1,6 @@
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
@@ -23,8 +23,6 @@ export function useOneClickTradingSessionManager({
 
   const { accountStore, chainStore } = useStore();
 
-  const [hasParamsEnableChanged, setHasParamsEnableChanged] = useState(false);
-
   const {
     isOneClickTradingEnabled: isEnabled,
     isOneClickTradingExpired: isExpired,
@@ -33,16 +31,40 @@ export function useOneClickTradingSessionManager({
   } = useOneClickTradingSession();
 
   const {
+    initialTransaction1CTParams: initialTransactionParams,
     transaction1CTParams: transactionParams,
     setTransaction1CTParams: setTransactionParams,
     spendLimitTokenDecimals,
     isLoading: isLoadingParams,
     reset: resetParams,
+    changes,
   } = useOneClickTradingParams({
     oneClickTradingInfo: info,
     defaultIsOneClickEnabled: isEnabled ?? false,
+    trackChanges: true,
     readyToInitialize: !isLoadingInfo,
   });
+
+  const shouldSend1CTTx = useMemo(() => {
+    // Turn on or off: The session status have changed either turned on or off explicitly
+    if (
+      transactionParams?.isOneClickEnabled !==
+      initialTransactionParams?.isOneClickEnabled
+    ) {
+      return true;
+    }
+
+    // Modify: The session was already on, wasn't turned off and the params have changed
+    if (
+      transactionParams?.isOneClickEnabled &&
+      initialTransactionParams?.isOneClickEnabled &&
+      changes.length > 0
+    ) {
+      return true;
+    }
+
+    return false;
+  }, [transactionParams, initialTransactionParams]);
 
   const {
     remainingSpendLimit,
@@ -60,21 +82,10 @@ export function useOneClickTradingSessionManager({
   const createSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();
 
-  const toggleTransactionParamsEnable = useCallback(() => {
-    if (!transactionParams) return;
-
-    setTransactionParams({
-      ...transactionParams,
-      isOneClickEnabled: !transactionParams.isOneClickEnabled,
-    });
-    setHasParamsEnableChanged((prev) => !prev);
-  }, [setTransactionParams, transactionParams]);
-
   const cleanUpAndCommit = useCallback(() => {
-    setHasParamsEnableChanged(false);
     resetParams();
     onCommit();
-  }, [setHasParamsEnableChanged, onCommit, resetParams]);
+  }, [onCommit, resetParams]);
 
   const startSession = useCallback(() => {
     if (!transactionParams) return;
@@ -164,7 +175,7 @@ export function useOneClickTradingSessionManager({
   ]);
 
   const commitSessionChange = useCallback(() => {
-    if (!hasParamsEnableChanged) {
+    if (!shouldSend1CTTx) {
       cleanUpAndCommit();
       return;
     }
@@ -177,7 +188,7 @@ export function useOneClickTradingSessionManager({
       stopSession();
     }
   }, [
-    hasParamsEnableChanged,
+    shouldSend1CTTx,
     transactionParams,
     cleanUpAndCommit,
     startSession,
@@ -188,10 +199,10 @@ export function useOneClickTradingSessionManager({
     isEnabled,
     isExpired,
     isLoading,
+    changes,
     transactionParams,
     remainingSpendLimit,
     setTransactionParams,
-    toggleTransactionParamsEnable,
     commitSessionChange,
     resetParams,
   };
