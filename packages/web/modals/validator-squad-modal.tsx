@@ -524,7 +524,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   .getHeaderGroups()
                   .slice(1)
                   .map((headerGroup) => (
-                    <tr className="top-0 bg-osmoverse-800" key={headerGroup.id}>
+                    <tr className="top-0 bg-transparent" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
                           <th key={header.id} colSpan={header.colSpan}>
