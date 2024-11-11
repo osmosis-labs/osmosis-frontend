@@ -35,7 +35,10 @@ export const useOneClickTradingSession = ({
     };
 
     if (!account?.address) {
-      return defaultReturn;
+      // Return a promise that never resolves so loading is kept true
+      // until we can decide what to share
+      // without address 1CT session should not exist
+      return new Promise<typeof defaultReturn>(() => {});
     }
 
     const info = await accountStore.getOneClickTradingInfo();

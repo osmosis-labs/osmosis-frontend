@@ -15,7 +15,7 @@ export const ProfileOneClickTradingSettings = ({
   onClose: () => void;
 }) => {
   const { accountStore, chainStore } = useStore();
-  const { oneClickTradingInfo, isOneClickTradingEnabled } =
+  const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
@@ -55,6 +55,7 @@ export const ProfileOneClickTradingSettings = ({
   } = useOneClickTradingParams({
     oneClickTradingInfo,
     defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
+    readyToInitialize: !isLoadingInfo,
   });
 
   return (

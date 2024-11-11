@@ -41,6 +41,7 @@ export function useOneClickTradingSessionManager({
   } = useOneClickTradingParams({
     oneClickTradingInfo: info,
     defaultIsOneClickEnabled: isEnabled ?? false,
+    readyToInitialize: !isLoadingInfo,
   });
 
   const {
