@@ -1103,6 +1103,7 @@
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
+    "launchAlert": "目前仅显示交易和转账历史记录。即将支持更多交易类型。",
     "history": "历史",
     "orders": "命令",
     "historyTable": {
