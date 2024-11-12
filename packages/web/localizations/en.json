@@ -2,6 +2,7 @@
   "404": {
     "title": "Not found"
   },
+  "aboutSecondsRemaining": "About {seconds} remaining",
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",

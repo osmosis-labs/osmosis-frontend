@@ -2,6 +2,7 @@
   "404": {
     "title": "Bulunamadı"
   },
+  "aboutSecondsRemaining": "{seconds} kalan süre hakkında",
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",

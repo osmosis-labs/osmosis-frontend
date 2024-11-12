@@ -24,6 +24,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
 import { useTranslation } from "~/hooks";
 import { humanizeTime } from "~/utils/date";
+import { formatPretty } from "~/utils/formatter";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
@@ -142,15 +143,20 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               />
             ) : undefined,
           captionElement: (
-            <PendingTransfer
-              amount={new CoinPretty(
+            <PendingTransferCaption
+              amount={formatPretty(
+                new CoinPretty(
+                  {
+                    coinDecimals: fromAsset.decimals,
+                    coinMinimalDenom: fromAsset.address,
+                    coinDenom: fromAsset.denom,
+                  },
+                  new Dec(fromAsset.amount)
+                ),
                 {
-                  coinDecimals: fromAsset.decimals,
-                  coinMinimalDenom: fromAsset.address,
-                  coinDenom: fromAsset.denom,
-                },
-                new Dec(fromAsset.amount)
-              ).toString()}
+                  maxDecimals: 6,
+                }
+              )}
               chainPrettyName={
                 direction === "deposit"
                   ? fromChain?.prettyName ?? ""
@@ -186,8 +192,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
 
-    console.log(snapshot);
-
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
@@ -210,14 +214,19 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
-    const amount = new CoinPretty(
+    const amount = formatPretty(
+      new CoinPretty(
+        {
+          coinDecimals: fromAsset.decimals,
+          coinMinimalDenom: fromAsset.address,
+          coinDenom: fromAsset.denom,
+        },
+        new Dec(fromAsset.amount)
+      ),
       {
-        coinDecimals: fromAsset.decimals,
-        coinMinimalDenom: fromAsset.address,
-        coinDenom: fromAsset.denom,
-      },
-      new Dec(fromAsset.amount)
-    ).toString();
+        maxDecimals: 6,
+      }
+    );
 
     const chainPrettyName =
       direction === "deposit"
@@ -241,7 +250,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
                 />
               ) : undefined,
             captionElement: (
-              <PendingTransfer
+              <PendingTransferCaption
                 amount={amount}
                 chainPrettyName={chainPrettyName}
                 isWithdraw={direction === "withdraw"}
@@ -409,7 +418,7 @@ const PendingTransferLoadingIcon: FunctionComponent<{
   );
 };
 
-const PendingTransfer: FunctionComponent<{
+export const PendingTransferCaption: FunctionComponent<{
   isWithdraw: boolean;
   amount: string;
   chainPrettyName: string;
@@ -422,12 +431,18 @@ const PendingTransfer: FunctionComponent<{
     if (!estimatedArrivalUnix || !progressRef.current) return;
 
     const updateTime = () => {
-      const humanizedTime = humanizeTime(dayjs.unix(estimatedArrivalUnix));
+      const date = dayjs.unix(estimatedArrivalUnix);
+      const humanizedTime = humanizeTime(date);
       if (progressRef.current) {
         // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
-        progressRef.current.textContent = `${t("estimated")} ${
-          humanizedTime.value
-        } ${t(humanizedTime.unitTranslationKey)} ${t("remaining")}`;
+        progressRef.current.textContent =
+          date.diff(dayjs(), "seconds") < 5
+            ? t("aboutSecondsRemaining", {
+                seconds: "5 " + t("timeUnits.seconds"),
+              })
+            : `${t("estimated")} ${humanizedTime.value} ${t(
+                humanizedTime.unitTranslationKey
+              )} ${t("remaining")}`;
       }
     };
 

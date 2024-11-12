@@ -2,6 +2,7 @@
   "404": {
     "title": "搵唔到呢一頁喎"
   },
+  "aboutSecondsRemaining": "大約剩餘{seconds}",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
