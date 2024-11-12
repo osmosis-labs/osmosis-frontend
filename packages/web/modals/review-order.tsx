@@ -717,22 +717,23 @@ export function ReviewOrder({
                   </div>
                 </div>
               )}
-              <OneClickTradingPanel
-                t={t}
-                shouldShow={!is1CTEnabled}
-                transactionParams={transaction1CTParams}
-                onClick={() =>
-                  setTransaction1CTParams((prev) => {
-                    if (!prev) return;
+              {!is1CTEnabled && (
+                <OneClickTradingPanel
+                  t={t}
+                  transactionParams={transaction1CTParams}
+                  onClick={() =>
+                    setTransaction1CTParams((prev) => {
+                      if (!prev) return;
 
-                    return {
-                      ...prev,
-                      isOneClickEnabled: !prev.isOneClickEnabled,
-                    };
-                  })
-                }
-                onParamsChange={() => setShowOneClickTradingSettings(true)}
-              />
+                      return {
+                        ...prev,
+                        isOneClickEnabled: !prev.isOneClickEnabled,
+                      };
+                    })
+                  }
+                  onParamsChange={() => setShowOneClickTradingSettings(true)}
+                />
+              )}
               {!diffGteSlippage && (
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
@@ -779,72 +780,68 @@ export function ReviewOrder({
 
 const OneClickTradingPanel = ({
   t,
-  shouldShow,
   transactionParams,
   onClick,
   onParamsChange,
 }: {
   t: MultiLanguageT;
-  shouldShow: boolean;
   transactionParams: OneClickTradingTransactionParams | undefined;
   onClick: () => void;
   onParamsChange: () => void;
 }) => {
   return (
     <>
-      {shouldShow && (
-        <div className="flex flex-col my-3">
-          <div
-            className="flex gap-4 rounded-2xl bg-osmoverse-alpha-800 px-4 py-3"
-            onClick={onClick}
-          >
-            <Image
-              src="/images/1ct-rounded-rectangle.svg"
-              alt="1ct rounded rectangle icon"
-              width={48}
-              height={48}
-              className="self-start rounded-none"
-            />
+      <div className="flex flex-col my-3">
+        <div
+          className="flex gap-4 rounded-2xl bg-osmoverse-alpha-800 px-4 py-3"
+          onClick={onClick}
+        >
+          <Image
+            src="/images/1ct-rounded-rectangle.svg"
+            alt="1ct rounded rectangle icon"
+            width={48}
+            height={48}
+            className="self-start rounded-none"
+          />
+          <div className="flex flex-col gap-1">
             <div className="flex flex-col gap-1">
-              <div className="flex flex-col gap-1">
-                <p className="subtitle1">
-                  {t("oneClickTrading.reviewOrder.enableTitle")}
-                </p>
+              <p className="subtitle1">
+                {t("oneClickTrading.reviewOrder.enableTitle")}
+              </p>
 
-                <p className="text-body2 font-body2 text-osmoverse-300">
-                  {t("oneClickTrading.reviewOrder.enableDescription")}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center ml-auto">
-              <Switch checked={transactionParams?.isOneClickEnabled ?? false} />
+              <p className="text-body2 font-body2 text-osmoverse-300">
+                {t("oneClickTrading.reviewOrder.enableDescription")}
+              </p>
             </div>
           </div>
-          {transactionParams?.isOneClickEnabled && (
-            <p className="text-body2 font-body2 text-osmoverse-300">
-              {t("oneClickTrading.reviewOrder.paramsDescription", {
-                sessionLength: t(
-                  `oneClickTrading.sessionPeriods.${
-                    transactionParams?.sessionPeriod.end ?? "1hour"
-                  }`
-                ),
-                spendLimit:
-                  transactionParams?.spendLimit.toString() ??
-                  t("oneClickTrading.reviewOrder.defaultSpendLimit"),
-              })}
-              {" · "}
-              <UIButton
-                variant="link"
-                size="md"
-                className="text-wosmongton-300 px-0 py-0"
-                onClick={onParamsChange}
-              >
-                {t("oneClickTrading.reviewOrder.change")}
-              </UIButton>
-            </p>
-          )}
+          <div className="flex items-center justify-center ml-auto">
+            <Switch checked={transactionParams?.isOneClickEnabled ?? false} />
+          </div>
         </div>
-      )}
+        {transactionParams?.isOneClickEnabled && (
+          <p className="text-body2 font-body2 text-osmoverse-300">
+            {t("oneClickTrading.reviewOrder.paramsDescription", {
+              sessionLength: t(
+                `oneClickTrading.sessionPeriods.${
+                  transactionParams?.sessionPeriod.end ?? "1hour"
+                }`
+              ),
+              spendLimit:
+                transactionParams?.spendLimit.toString() ??
+                t("oneClickTrading.reviewOrder.defaultSpendLimit"),
+            })}
+            {" · "}
+            <UIButton
+              variant="link"
+              size="md"
+              className="text-wosmongton-300 px-0 py-0"
+              onClick={onParamsChange}
+            >
+              {t("oneClickTrading.reviewOrder.change")}
+            </UIButton>
+          </p>
+        )}
+      </div>
     </>
   );
 };
