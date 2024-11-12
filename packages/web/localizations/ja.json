@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "現在の損失保護限度額を超えています",
         "body": "この取引はウォレットで手動で承認する必要があります。"
-      },
-      "timeUnits": {
-        "second": "秒",
-        "seconds": "秒",
-        "minute": "分",
-        "minutes": "分",
-        "hour": "時間",
-        "hours": "時間",
-        "day": "日",
-        "days": "日"
       }
     },
     "sessionPeriods": {
@@ -1101,6 +1091,16 @@
   "remaining": "残り",
   "timeUnits": {
     "second": "2番",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
     "seconds": "秒",
     "minute": "分",
     "minutes": "分",

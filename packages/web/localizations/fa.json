@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "از حد حفاظت از ضرر فعلی فراتر می رود",
         "body": "شما باید به صورت دستی این تراکنش را در کیف پول خود تأیید کنید."
-      },
-      "timeUnits": {
-        "second": "ثانیه",
-        "seconds": "ثانیه",
-        "minute": "دقیقه",
-        "minutes": "دقیقه",
-        "hour": "ساعت",
-        "hours": "ساعت",
-        "day": "روز",
-        "days": "روز"
       }
     },
     "sessionPeriods": {
@@ -1106,6 +1096,16 @@
     "minutes": "دقایق",
     "hour": "ساعت",
     "hours": "ساعت ها",
+    "day": "روز",
+    "days": "روز"
+  },
+  "timeUnitsShort": {
+    "second": "ثانیه",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقیقه",
+    "hour": "ساعت",
+    "hours": "ساعت",
     "day": "روز",
     "days": "روز"
   },

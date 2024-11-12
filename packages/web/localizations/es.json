@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Supera el límite actual de protección contra pérdidas",
         "body": "Tendrá que aprobar manualmente esta transacción en su billetera."
-      },
-      "timeUnits": {
-        "second": "segundo",
-        "seconds": "segundo",
-        "minute": "mín.",
-        "minutes": "mín.",
-        "hour": "hora",
-        "hours": "hora",
-        "day": "día",
-        "days": "día"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "horas",
     "day": "día",
     "days": "días"
+  },
+  "timeUnitsShort": {
+    "second": "segundo",
+    "seconds": "segundo",
+    "minute": "mín.",
+    "minutes": "mín.",
+    "hour": "hora",
+    "hours": "hora",
+    "day": "día",
+    "days": "día"
   },
   "transactions": {
     "noRecent": "Sin transferencias recientes",

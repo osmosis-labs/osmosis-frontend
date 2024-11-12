@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "超過當前損失保護限制",
         "body": "您必須在錢包中手動批准此交易。"
-      },
-      "timeUnits": {
-        "second": "秒",
-        "seconds": "秒",
-        "minute": "分分鐘",
-        "minutes": "分分鐘",
-        "hour": "小時",
-        "hours": "小時",
-        "day": "天",
-        "days": "天"
       }
     },
     "sessionPeriods": {
@@ -1101,6 +1091,16 @@
   "remaining": "其餘的",
   "timeUnits": {
     "second": "第二",
+    "seconds": "秒",
+    "minute": "分分鐘",
+    "minutes": "分分鐘",
+    "hour": "小時",
+    "hours": "小時",
+    "day": "天",
+    "days": "天"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
     "seconds": "秒",
     "minute": "分分鐘",
     "minutes": "分分鐘",

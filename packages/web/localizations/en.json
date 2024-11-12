@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Exceeds current loss-protection limit",
         "body": "You will have to manually approve this transaction in your wallet."
-      },
-      "timeUnits": {
-        "second": "sec",
-        "seconds": "sec",
-        "minute": "min",
-        "minutes": "min",
-        "hour": "hr",
-        "hours": "hr",
-        "day": "day",
-        "days": "day"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "hours",
     "day": "day",
     "days": "days"
+  },
+  "timeUnitsShort": {
+    "second": "sec",
+    "seconds": "sec",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "hr",
+    "hours": "hr",
+    "day": "day",
+    "days": "day"
   },
   "transactions": {
     "noRecent": "No recent transactions",

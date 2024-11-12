@@ -8,8 +8,8 @@ import { humanizeTime } from "~/utils/date";
 
 export const OneClickTradingRemainingTime: FunctionComponent<{
   className?: string;
-  timeUnitsTranslationPath?: string;
-}> = ({ className, timeUnitsTranslationPath }) => {
+  useShortTimeUnits?: boolean;
+}> = ({ className, useShortTimeUnits }) => {
   const { oneClickTradingInfo, isOneClickTradingExpired } =
     useOneClickTradingSession();
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
           dayjs.unix(
             unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
           ),
-          timeUnitsTranslationPath
+          useShortTimeUnits
         )
       );
     };
@@ -41,7 +41,7 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
     );
 
     return () => clearInterval(intervalId);
-  }, [oneClickTradingInfo, timeUnitsTranslationPath]);
+  }, [oneClickTradingInfo, useShortTimeUnits]);
 
   if (isOneClickTradingExpired) {
     return (

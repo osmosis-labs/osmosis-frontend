@@ -915,10 +915,7 @@ const OneClickTradingActiveSessionParamsEdit = ({
             {transactionParams?.sessionPeriod.end}
           </span>
         ) : (
-          <OneClickTradingRemainingTime
-            className="inline"
-            timeUnitsTranslationPath="oneClickTrading.reviewOrder.timeUnits"
-          />
+          <OneClickTradingRemainingTime className="inline" useShortTimeUnits />
         )}
       </span>
     </UIButton>

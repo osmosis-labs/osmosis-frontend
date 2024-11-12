@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 
 export function humanizeTime(
   date: dayjs.Dayjs,
-  timeUnitsTranslationPath = "timeUnits"
+  useShortTimeUnits = false
 ): {
   value: number | string;
   unitTranslationKey: string;
@@ -14,8 +14,12 @@ export function humanizeTime(
       value: Math.max(secondsDiff, 0),
       unitTranslationKey:
         secondsDiff === 1
-          ? `${timeUnitsTranslationPath}.second`
-          : `${timeUnitsTranslationPath}.seconds`,
+          ? useShortTimeUnits
+            ? "timeUnitsShort.second"
+            : "timeUnits.second"
+          : useShortTimeUnits
+          ? "timeUnitsShort.seconds"
+          : "timeUnits.seconds",
     };
   }
 
@@ -25,8 +29,12 @@ export function humanizeTime(
       value: minutesDiff,
       unitTranslationKey:
         minutesDiff === 1
-          ? `${timeUnitsTranslationPath}.minute`
-          : `${timeUnitsTranslationPath}.minutes`,
+          ? useShortTimeUnits
+            ? "timeUnitsShort.minute"
+            : "timeUnits.minute"
+          : useShortTimeUnits
+          ? "timeUnitsShort.minutes"
+          : "timeUnits.minutes",
     };
   }
 
@@ -36,8 +44,12 @@ export function humanizeTime(
       value: hoursDiff,
       unitTranslationKey:
         hoursDiff === 1
-          ? `${timeUnitsTranslationPath}.hour`
-          : `${timeUnitsTranslationPath}.hours`,
+          ? useShortTimeUnits
+            ? "timeUnitsShort.hour"
+            : "timeUnits.hour"
+          : useShortTimeUnits
+          ? "timeUnitsShort.hours"
+          : "timeUnits.hours",
     };
   }
 
@@ -47,8 +59,12 @@ export function humanizeTime(
       value: daysDiff,
       unitTranslationKey:
         daysDiff === 1
-          ? `${timeUnitsTranslationPath}.day`
-          : `${timeUnitsTranslationPath}.days`,
+          ? useShortTimeUnits
+            ? "timeUnitsShort.day"
+            : "timeUnits.day"
+          : useShortTimeUnits
+          ? "timeUnitsShort.days"
+          : "timeUnits.days",
     };
   }
 

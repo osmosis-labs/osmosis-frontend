@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "વર્તમાન નુકશાન-રક્ષણ મર્યાદા ઓળંગે છે",
         "body": "તમારે તમારા વૉલેટમાં આ વ્યવહારને મેન્યુઅલી મંજૂર કરવો પડશે."
-      },
-      "timeUnits": {
-        "second": "સેકન્ડ",
-        "seconds": "સેકન્ડ",
-        "minute": "મિનિટ",
-        "minutes": "મિનિટ",
-        "hour": "કલાક",
-        "hours": "કલાક",
-        "day": "દિવસ",
-        "days": "દિવસ"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "કલાક",
     "day": "દિવસ",
     "days": "દિવસો"
+  },
+  "timeUnitsShort": {
+    "second": "સેકન્ડ",
+    "seconds": "સેકન્ડ",
+    "minute": "મિનિટ",
+    "minutes": "મિનિટ",
+    "hour": "કલાક",
+    "hours": "કલાક",
+    "day": "દિવસ",
+    "days": "દિવસ"
   },
   "transactions": {
     "noRecent": "કોઈ તાજેતરના ટ્રાન્સફર નથી",

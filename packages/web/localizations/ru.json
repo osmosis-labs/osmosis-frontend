@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Превышает текущий лимит защиты от потерь",
         "body": "Вам придется вручную одобрить эту транзакцию в своем кошельке."
-      },
-      "timeUnits": {
-        "second": "сек",
-        "seconds": "сек",
-        "minute": "мин",
-        "minutes": "мин",
-        "hour": "час",
-        "hours": "час",
-        "day": "день",
-        "days": "день"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "часы",
     "day": "день",
     "days": "дней"
+  },
+  "timeUnitsShort": {
+    "second": "сек",
+    "seconds": "сек",
+    "minute": "мин",
+    "minutes": "мин",
+    "hour": "час",
+    "hours": "час",
+    "day": "день",
+    "days": "день"
   },
   "transactions": {
     "noRecent": "Нет недавних переводов",

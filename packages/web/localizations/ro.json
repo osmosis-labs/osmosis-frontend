@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Depășește limita curentă de protecție împotriva pierderilor",
         "body": "Va trebui să aprobați manual această tranzacție în portofel."
-      },
-      "timeUnits": {
-        "second": "sec",
-        "seconds": "sec",
-        "minute": "min",
-        "minutes": "min",
-        "hour": "hr",
-        "hours": "hr",
-        "day": "zi",
-        "days": "zi"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "ore",
     "day": "zi",
     "days": "zile"
+  },
+  "timeUnitsShort": {
+    "second": "sec",
+    "seconds": "sec",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "hr",
+    "hours": "hr",
+    "day": "zi",
+    "days": "zi"
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",

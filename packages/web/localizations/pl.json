@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Przekracza aktualny limit ochrony przed stratami",
         "body": "Będziesz musiał ręcznie zatwierdzić tę transakcję w swoim portfelu."
-      },
-      "timeUnits": {
-        "second": "sek.",
-        "seconds": "sek.",
-        "minute": "min",
-        "minutes": "min",
-        "hour": "godz.",
-        "hours": "godz.",
-        "day": "dzień",
-        "days": "dzień"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "godziny",
     "day": "dzień",
     "days": "dni"
+  },
+  "timeUnitsShort": {
+    "second": "sek.",
+    "seconds": "sek.",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "godz.",
+    "hours": "godz.",
+    "day": "dzień",
+    "days": "dzień"
   },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",

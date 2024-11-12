@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "超过当前损失保护限制",
         "body": "您必须在钱包中手动批准此交易。"
-      },
-      "timeUnits": {
-        "second": "秒",
-        "seconds": "秒",
-        "minute": "分钟",
-        "minutes": "分钟",
-        "hour": "時間",
-        "hours": "時間",
-        "day": "天",
-        "days": "天"
       }
     },
     "sessionPeriods": {
@@ -1106,6 +1096,16 @@
     "minutes": "分钟",
     "hour": "小时",
     "hours": "小时",
+    "day": "天",
+    "days": "天"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "hour": "時間",
+    "hours": "時間",
     "day": "天",
     "days": "天"
   },

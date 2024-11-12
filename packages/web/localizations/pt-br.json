@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Excede o limite atual de proteção contra perdas",
         "body": "Você terá que aprovar manualmente esta transação em sua carteira."
-      },
-      "timeUnits": {
-        "second": "segundo",
-        "seconds": "segundo",
-        "minute": "mínimo",
-        "minutes": "mínimo",
-        "hour": "hora",
-        "hours": "hora",
-        "day": "dia",
-        "days": "dia"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "horas",
     "day": "dia",
     "days": "dias"
+  },
+  "timeUnitsShort": {
+    "second": "segundo",
+    "seconds": "segundo",
+    "minute": "mínimo",
+    "minutes": "mínimo",
+    "hour": "hora",
+    "hours": "hora",
+    "day": "dia",
+    "days": "dia"
   },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",

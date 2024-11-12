@@ -395,16 +395,6 @@
       "exceededTooltip": {
         "title": "Überschreitet die aktuelle Verlustschutzgrenze",
         "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
-      },
-      "timeUnits": {
-        "second": "Sek",
-        "seconds": "Sek",
-        "minute": "Min",
-        "minutes": "Min",
-        "hour": "Std",
-        "hours": "Std",
-        "day": "Tag",
-        "days": "Tag"
       }
     },
     "sessionPeriods": {
@@ -1108,6 +1098,16 @@
     "hours": "Std.",
     "day": "Tag",
     "days": "Tage"
+  },
+  "timeUnitsShort": {
+    "second": "Sek.",
+    "seconds": "Sek.",
+    "minute": "Min",
+    "minutes": "Min",
+    "hour": "Std",
+    "hours": "Std",
+    "day": "Tag",
+    "days": "Tag"
   },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",
