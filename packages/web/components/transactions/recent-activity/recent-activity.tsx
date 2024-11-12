@@ -3,10 +3,13 @@ import { FunctionComponent } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
+import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
 import { TransactionSwapRow } from "~/components/transactions/transaction-types/transaction-swap-row";
 import { TransactionTransferRow } from "~/components/transactions/transaction-types/transaction-transfer-row";
+import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
 import { Skeleton } from "~/components/ui/skeleton";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 const ACTIVITY_LIMIT = 5;
@@ -27,12 +30,22 @@ const RecentActivitySkeleton = () => {
 // v1 includes top 5 transactions from transaction history
 export const RecentActivity: FunctionComponent = observer(() => {
   const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { transactions, isLoading } = useTransactionHistory();
 
   const showNoTransactionsSplash = transactions.length === 0;
 
   const topTransactions = transactions.slice(0, ACTIVITY_LIMIT);
+
+  const {
+    open,
+    setOpen,
+    selectedTransactionHash,
+    setSelectedTransactionHash,
+    onRequestClose,
+    selectedTransaction,
+  } = useTransactionModal({ transactions });
 
   return (
     <div className="flex w-full flex-col py-3">
@@ -54,6 +67,7 @@ export const RecentActivity: FunctionComponent = observer(() => {
         ) : (
           topTransactions.map((transaction) => {
             if (transaction.__type === "transaction") {
+              const isSelected = selectedTransactionHash === transaction.hash;
               return (
                 <TransactionSwapRow
                   key={transaction.hash}
@@ -77,16 +91,62 @@ export const RecentActivity: FunctionComponent = observer(() => {
                         transaction.metadata[0].value[0].txInfo.tokenOut.usd,
                     },
                   }}
+                  hash={transaction.hash}
+                  isSelected={isSelected}
+                  onClick={() => {
+                    // TODO - once there are more transaction types, we can add more event names
+                    logEvent([
+                      EventName.TransactionsPage.swapClicked,
+                      {
+                        tokenIn:
+                          transaction.metadata[0].value[0].txInfo.tokenIn.token
+                            .denom,
+                        tokenOut:
+                          transaction.metadata[0].value[0].txInfo.tokenOut.token
+                            .denom,
+                      },
+                    ]);
+
+                    setSelectedTransactionHash(transaction.hash);
+
+                    // delay to ensure the slide over transitions smoothly
+                    if (!open) {
+                      setTimeout(() => setOpen(true), 1);
+                    }
+                  }}
                 />
               );
             }
 
             if (transaction.__type === "recentTransfer") {
+              const isSelected =
+                selectedTransactionHash === transaction.sendTxHash;
               return (
                 <TransactionTransferRow
                   key={transaction.sendTxHash}
                   size="sm"
                   transaction={transaction}
+                  onClick={() => {
+                    logEvent([
+                      EventName.TransactionsPage.transferClicked,
+                      {
+                        transferDirection: transaction.direction,
+                        fromToken: transaction.fromAsset.denom,
+                        toToken: transaction.toAsset.denom,
+                        fromChainId: transaction.fromChain.chainId,
+                        toChainId: transaction.toChain.chainId,
+                      },
+                    ]);
+
+                    setSelectedTransactionHash(transaction.sendTxHash);
+
+                    // delay to ensure the slide over transitions smoothly
+                    if (!open) {
+                      setTimeout(() => setOpen(true), 1);
+                    }
+                  }}
+                  hash={transaction.sendTxHash}
+                  isSelected={isSelected}
                 />
               );
             }
@@ -95,6 +155,12 @@ export const RecentActivity: FunctionComponent = observer(() => {
           })
         )}
       </div>
+
+      <TransactionDetailsModal
+        onRequestClose={onRequestClose}
+        isOpen={open}
+        transaction={selectedTransaction}
+      />
     </div>
   );
 });

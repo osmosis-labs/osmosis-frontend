@@ -137,18 +137,16 @@ export const TransactionRows = ({
                       size="lg"
                       transaction={transaction}
                       onClick={() => {
-                        // TODO - once there are more transaction types, we can add more event names
-                        // logEvent([
-                        //   EventName.TransactionsPage.swapClicked,
-                        //   {
-                        //     tokenIn:
-                        //       transaction.metadata[0].value[0].txInfo.tokenIn
-                        //         .token.denom,
-                        //     tokenOut:
-                        //       transaction.metadata[0].value[0].txInfo.tokenOut
-                        //         .token.denom,
-                        //   },
-                        // ]);
+                        logEvent([
+                          EventName.TransactionsPage.transferClicked,
+                          {
+                            transferDirection: transaction.direction,
+                            fromToken: transaction.fromAsset.denom,
+                            toToken: transaction.toAsset.denom,
+                            fromChainId: transaction.fromChain.chainId,
+                            toChainId: transaction.toChain.chainId,
+                          },
+                        ]);
 
                         setSelectedTransactionHash(transaction.sendTxHash);
 
