@@ -409,7 +409,7 @@ const PendingTransferLoadingIcon: FunctionComponent<{
   );
 };
 
-const PendingTransferCaption: FunctionComponent<{
+export const PendingTransferCaption: FunctionComponent<{
   isWithdraw: boolean;
   amount: string;
   chainPrettyName: string;
