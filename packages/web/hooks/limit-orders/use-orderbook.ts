@@ -264,11 +264,13 @@ const useMakerFee = ({ orderbookAddress }: { orderbookAddress: string }) => {
 const useOrdersQuery = ({
   userAddress,
   pageSize = 10,
-  refetchInterval = 5000,
+  refetchInterval = 10000,
+  filter,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
+  filter?: "active" | "filled" | "historical" | "open";
 }) => {
   const { sqsActiveOrders } = useFeatureFlags();
   const { orderbooks } = useOrderbooks();
@@ -286,6 +288,7 @@ const useOrdersQuery = ({
     {
       userOsmoAddress: userAddress,
       limit: pageSize,
+      filter,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -355,14 +358,16 @@ const useOrdersQuery = ({
   };
 };
 
-export const useOrderbookAllActiveOrders = ({
+export const useOrderbookOrders = ({
   userAddress,
   pageSize = 10,
-  refetchInterval = 5000,
+  refetchInterval = 10000,
+  filter,
 }: {
   userAddress: string;
   pageSize?: number;
   refetchInterval?: number;
+  filter?: "active" | "filled" | "historical" | "open";
 }) => {
   const {
     data: orders,
@@ -373,7 +378,7 @@ export const useOrderbookAllActiveOrders = ({
     hasNextPage,
     refetch,
     isRefetching,
-  } = useOrdersQuery({ userAddress, pageSize, refetchInterval });
+  } = useOrdersQuery({ userAddress, pageSize, refetchInterval, filter });
 
   const allOrders = useMemo(() => {
     return orders?.pages.flatMap((page) => page.items) ?? [];
@@ -399,6 +404,7 @@ export const useOrderbookAllActiveOrders = ({
 /**
  * Queries for all claimable orders for a given user.
  * Swaps between using SQS passthrough and a direct node query based on feature flag.
+ * NOTE: CAN BE REMOVED WHEN SQSORDERS FEATURE FLAG IS REMOVED
  */
 const useClaimableOrdersQuery = ({
   userAddress,

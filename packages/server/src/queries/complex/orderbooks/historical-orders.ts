@@ -30,7 +30,7 @@ export function getOrderbookHistoricalOrders({
   return cachified({
     cache: orderbookHistoricalOrdersCache,
     key: `orderbookHistoricalOrders-${userOsmoAddress}`,
-    ttl: 1000 * 2, // 2 seconds
+    ttl: 1000 * 5, // 2 seconds
     getFreshValue: () =>
       queryHistoricalOrders(userOsmoAddress).then(async (data) => {
         const orders = data;

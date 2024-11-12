@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 import { FallbackImg } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
 import { useTranslation } from "~/hooks";
-import { useOrderbookAllActiveOrders } from "~/hooks/limit-orders/use-orderbook";
+import { useOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import { formatFiatPrice } from "~/utils/formatter";
 import { formatPretty } from "~/utils/formatter";
@@ -18,9 +18,10 @@ export const OpenOrders: FunctionComponent = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { orders, isLoading } = useOrderbookAllActiveOrders({
+  const { orders, isLoading } = useOrderbookOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 100,
+    filter: "open",
   });
 
   const openOrders = orders

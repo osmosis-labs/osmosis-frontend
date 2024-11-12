@@ -22,7 +22,7 @@ const GetInfiniteLimitOrdersInputSchema = CursorPaginationSchema.merge(
   UserOsmoAddressSchema.required()
 ).merge(
   z.object({
-    filter: z.enum(["open", "filled", "historical"]).optional(),
+    filter: z.enum(["open", "filled", "historical", "active"]).optional(),
   })
 );
 
@@ -125,7 +125,10 @@ export const orderbookRouter = createTRPCRouter({
           const { userOsmoAddress, filter } = input;
 
           const shouldFetchActive =
-            !filter || filter === "open" || filter === "filled";
+            !filter ||
+            filter === "open" ||
+            filter === "filled" ||
+            filter === "active";
           const shouldFetchHistorical = !filter || filter === "historical";
           const promises: Promise<MappedLimitOrder[]>[] = [];
           if (shouldFetchActive) {
@@ -147,7 +150,7 @@ export const orderbookRouter = createTRPCRouter({
           }
           const orders = await Promise.all(promises);
           const allOrders = orders.flat().sort(defaultSortOrders);
-          if (filter === "filled") {
+          if (filter === "filled" || filter === "active") {
             return allOrders.filter((o) => o.status === "filled");
           }
           return allOrders;
