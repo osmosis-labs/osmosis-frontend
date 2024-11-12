@@ -2,6 +2,7 @@
   "404": {
     "title": "મળી નથી"
   },
+  "aboutSecondsRemaining": "લગભગ {seconds} બાકી",
   "addLiquidity": {
     "allAssets": "બધી સંપત્તિ",
     "autoswapCaption": "સિંગલ એસેટ સાથે લિક્વિડિટી ઉમેરવા માટે ઑટોસ્વેપનો ઉપયોગ કરો.",
@@ -1103,6 +1104,7 @@
     "totalFees": "કુલ ફી",
     "transactionHash": "ટ્રાન્ઝેક્શન હેશ",
     "viewOnExplorer": "એક્સપ્લોરર પર જુઓ",
+    "launchAlert": "હાલમાં માત્ર વેપાર અને ટ્રાન્સફર ઇતિહાસ પ્રદર્શિત થાય છે. વધુ વ્યવહાર પ્રકારો માટે સમર્થન ટૂંક સમયમાં આવી રહ્યું છે.",
     "history": "ઇતિહાસ",
     "orders": "ઓર્ડર",
     "historyTable": {

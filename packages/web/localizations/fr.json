@@ -2,6 +2,7 @@
   "404": {
     "title": "Page non trouvée"
   },
+  "aboutSecondsRemaining": "Il reste environ {seconds}",
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Total des frais",
     "transactionHash": "Hachage des transactions",
     "viewOnExplorer": "Afficher sur l'explorateur",
+    "launchAlert": "Actuellement, seul l'historique des transactions et des transferts est affiché. D'autres types de transactions seront bientôt disponibles.",
     "history": "Histoire",
     "orders": "Ordres",
     "historyTable": {

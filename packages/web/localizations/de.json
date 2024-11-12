@@ -2,6 +2,7 @@
   "404": {
     "title": "Nicht gefunden"
   },
+  "aboutSecondsRemaining": "Etwa {seconds} verbleibend",
   "addLiquidity": {
     "allAssets": "Alle Vermögenswerte",
     "autoswapCaption": "Verwenden Sie Autoswap, um Liquidität mit einem einzelnen Vermögenswert hinzuzufügen.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Gesamtkosten",
     "transactionHash": "Transaktions-Hash",
     "viewOnExplorer": "Im Explorer anzeigen",
+    "launchAlert": "Derzeit wird nur der Handels- und Überweisungsverlauf angezeigt. Unterstützung für weitere Transaktionstypen folgt in Kürze.",
     "history": "Geschichte",
     "orders": "Aufträge",
     "historyTable": {

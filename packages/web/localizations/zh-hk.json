@@ -2,6 +2,7 @@
   "404": {
     "title": "搵唔到呢一頁喎"
   },
+  "aboutSecondsRemaining": "大約剩餘{seconds}",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -1103,6 +1104,7 @@
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
+    "launchAlert": "目前僅顯示交易和轉帳歷史記錄。即將支援更多交易類型。",
     "history": "歷史",
     "orders": "命令",
     "historyTable": {

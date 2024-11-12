@@ -2,6 +2,7 @@
   "404": {
     "title": "見つかりません"
   },
+  "aboutSecondsRemaining": "残り約{seconds}",
   "addLiquidity": {
     "allAssets": "すべての資産",
     "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
@@ -1103,6 +1104,7 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
+    "launchAlert": "現在、取引と送金の履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "history": "歴史",
     "orders": "注文",
     "historyTable": {

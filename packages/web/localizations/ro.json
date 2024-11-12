@@ -2,6 +2,7 @@
   "404": {
     "title": "Nu a fost gasit"
   },
+  "aboutSecondsRemaining": "Aproximativ {seconds} rămase",
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
+    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
     "history": "Istorie",
     "orders": "Comenzi",
     "historyTable": {

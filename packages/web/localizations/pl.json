@@ -2,6 +2,7 @@
   "404": {
     "title": "Nie znaleziono"
   },
+  "aboutSecondsRemaining": "Pozostało około {seconds}",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
+    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji i transferów. Obsługa większej liczby typów transakcji wkrótce.",
     "history": "Historia",
     "orders": "Zamówienia",
     "historyTable": {

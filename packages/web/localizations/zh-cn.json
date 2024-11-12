@@ -2,6 +2,7 @@
   "404": {
     "title": "未找到"
   },
+  "aboutSecondsRemaining": "大约剩余{seconds}",
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -1103,6 +1104,7 @@
     "totalFees": "总费用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在资源管理器中查看",
+    "launchAlert": "目前仅显示交易和转账历史记录。即将支持更多交易类型。",
     "history": "历史",
     "orders": "命令",
     "historyTable": {

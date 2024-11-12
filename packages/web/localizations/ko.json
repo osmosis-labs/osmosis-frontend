@@ -2,6 +2,7 @@
   "404": {
     "title": "페이지를 찾을 수 없습니다"
   },
+  "aboutSecondsRemaining": "{seconds} 남음",
   "addLiquidity": {
     "allAssets": "모든 자산",
     "autoswapCaption": "오토스왑을 통해 단일 자산의 유동성을 추가합니다",
@@ -1103,6 +1104,7 @@
     "totalFees": "총 수수료",
     "transactionHash": "거래 해시",
     "viewOnExplorer": "탐색기에서 보기",
+    "launchAlert": "현재는 거래 및 이체 내역만 표시됩니다. 더 많은 거래 유형에 대한 지원이 곧 제공됩니다.",
     "history": "역사",
     "orders": "명령",
     "historyTable": {

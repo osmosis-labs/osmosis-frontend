@@ -142,7 +142,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
               />
             ) : undefined,
           captionElement: (
-            <PendingTransfer
+            <PendingTransferCaption
               amount={new CoinPretty(
                 {
                   coinDecimals: fromAsset.decimals,
@@ -241,7 +241,7 @@ export class TransferHistoryStore implements TransferStatusReceiver {
                 />
               ) : undefined,
             captionElement: (
-              <PendingTransfer
+              <PendingTransferCaption
                 amount={amount}
                 chainPrettyName={chainPrettyName}
                 isWithdraw={direction === "withdraw"}
@@ -409,7 +409,7 @@ const PendingTransferLoadingIcon: FunctionComponent<{
   );
 };
 
-const PendingTransfer: FunctionComponent<{
+const PendingTransferCaption: FunctionComponent<{
   isWithdraw: boolean;
   amount: string;
   chainPrettyName: string;
@@ -422,12 +422,18 @@ const PendingTransfer: FunctionComponent<{
     if (!estimatedArrivalUnix || !progressRef.current) return;
 
     const updateTime = () => {
-      const humanizedTime = humanizeTime(dayjs.unix(estimatedArrivalUnix));
+      const date = dayjs.unix(estimatedArrivalUnix);
+      const humanizedTime = humanizeTime(date);
       if (progressRef.current) {
         // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
-        progressRef.current.textContent = `${t("estimated")} ${
-          humanizedTime.value
-        } ${t(humanizedTime.unitTranslationKey)} ${t("remaining")}`;
+        progressRef.current.textContent =
+          date.diff(dayjs(), "seconds") < 1
+            ? t("aboutSecondsRemaining", {
+                seconds: "5 " + t("timeUnits.seconds"),
+              })
+            : `${t("estimated")} ${humanizedTime.value} ${t(
+                humanizedTime.unitTranslationKey
+              )} ${t("remaining")}`;
       }
     };
 
