@@ -114,6 +114,7 @@ export function ReviewOrder({
     changes: transaction1CTParamsChanges,
     setChanges: setTransaction1CTParamsChanges,
     transactionParams: transaction1CTParams,
+    amountSpent: amountSpent1CT,
     remainingSpendLimit: remaining1CTSpendLimit,
     setTransactionParams: setTransaction1CTParams,
     commitSessionChange: commit1CTSessionChange,
@@ -121,6 +122,16 @@ export function ReviewOrder({
   } = useOneClickTradingSessionManager({
     onCommit: confirmAction,
   });
+
+  const wouldExceedSpendLimit = useMemo(
+    () =>
+      transaction1CTParams?.spendLimit
+        ?.sub(amountSpent1CT ?? new Dec(0))
+        ?.sub(fiatAmountWithSlippage ?? new Dec(0))
+        ?.toDec()
+        .isNegative(),
+    [transaction1CTParams, amountSpent1CT, fiatAmountWithSlippage]
+  );
 
   const [orderType] = useQueryState(
     "type",
@@ -508,6 +519,7 @@ export function ReviewOrder({
                         changes={transaction1CTParamsChanges}
                         onClick={() => setShowOneClickTradingSettings(true)}
                         remainingSpendLimit={remaining1CTSpendLimit}
+                        wouldExceedSpendLimit={wouldExceedSpendLimit}
                       />
                     }
                   />
@@ -851,13 +863,38 @@ const OneClickTradingActiveSessionParamsEdit = ({
   changes = [],
   transactionParams,
   remainingSpendLimit,
+  wouldExceedSpendLimit,
 }: {
   remainingSpendLimit?: string;
   changes: OneClickTradingParamsChanges;
   transactionParams: OneClickTradingTransactionParams | undefined;
   onClick: () => void;
+  wouldExceedSpendLimit?: boolean;
 }) => {
-  return (
+  const { t } = useTranslation();
+
+  return wouldExceedSpendLimit ? (
+    <>
+      <div className="flex items-center gap-2">
+        <UIButton
+          variant="secondary-outline"
+          onClick={onClick}
+          size="xsm"
+          className="text-wosmongton-500 rounded-3xl"
+        >
+          {t("oneClickTrading.reviewOrder.edit")}
+        </UIButton>
+        <GenericDisclaimer
+          title={t("oneClickTrading.reviewOrder.exceededTooltip.title")}
+          body={t("oneClickTrading.reviewOrder.exceededTooltip.body")}
+        >
+          <span className="body2 text-rust-400">
+            {t("oneClickTrading.reviewOrder.exceeded")}
+          </span>
+        </GenericDisclaimer>
+      </div>
+    </>
+  ) : (
     <UIButton
       variant="link"
       size="md"

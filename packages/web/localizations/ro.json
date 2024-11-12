@@ -390,6 +390,12 @@
       "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
       "defaultSpendLimit": "5.000 USD",
       "change": "Schimba",
+      "edit": "Edita",
+      "exceeded": "Depășit",
+      "exceededTooltip": {
+        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "body": "Va trebui să aprobați manual această tranzacție în portofel."
+      },
       "timeUnits": {
         "second": "sec",
         "seconds": "sec",

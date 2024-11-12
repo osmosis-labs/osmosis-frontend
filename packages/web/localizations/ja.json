@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
       "defaultSpendLimit": "5,000米ドル",
       "change": "変化",
+      "edit": "編集",
+      "exceeded": "超過",
+      "exceededTooltip": {
+        "title": "現在の損失保護限度額を超えています",
+        "body": "この取引はウォレットで手動で承認する必要があります。"
+      },
       "timeUnits": {
         "second": "秒",
         "seconds": "秒",

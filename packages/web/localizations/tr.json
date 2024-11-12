@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
       "defaultSpendLimit": "5.000 ABD doları",
       "change": "Değiştirmek",
+      "edit": "Düzenlemek",
+      "exceeded": "Aşıldı",
+      "exceededTooltip": {
+        "title": "Mevcut kayıp koruma sınırını aşar",
+        "body": "Bu işlemi cüzdanınızda manuel olarak onaylamanız gerekecektir."
+      },
       "timeUnits": {
         "second": "saniye",
         "seconds": "saniye",

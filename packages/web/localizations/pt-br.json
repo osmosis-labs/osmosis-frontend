@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
       "defaultSpendLimit": "US$ 5.000",
       "change": "Mudar",
+      "edit": "Editar",
+      "exceeded": "Excedido",
+      "exceededTooltip": {
+        "title": "Excede o limite atual de proteção contra perdas",
+        "body": "Você terá que aprovar manualmente esta transação em sua carteira."
+      },
       "timeUnits": {
         "second": "segundo",
         "seconds": "segundo",

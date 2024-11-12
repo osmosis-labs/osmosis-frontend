@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength}會話，具有{spendLimit}丟失保護限制",
       "defaultSpendLimit": "5,000 美元",
       "change": "改變",
+      "edit": "編輯",
+      "exceeded": "超過",
+      "exceededTooltip": {
+        "title": "超過當前損失保護限制",
+        "body": "您必須在錢包中手動批准此交易。"
+      },
       "timeUnits": {
         "second": "秒",
         "seconds": "秒",

@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} સત્ર સાથે {lossProtectionLimit} નુકશાન સુરક્ષા મર્યાદા",
       "defaultSpendLimit": "$5,000 USD",
       "change": "બદલો",
+      "edit": "સંપાદિત કરો",
+      "exceeded": "વટાવી ગયો",
+      "exceededTooltip": {
+        "title": "વર્તમાન નુકશાન-રક્ષણ મર્યાદા ઓળંગે છે",
+        "body": "તમારે તમારા વૉલેટમાં આ વ્યવહારને મેન્યુઅલી મંજૂર કરવો પડશે."
+      },
       "timeUnits": {
         "second": "સેકન્ડ",
         "seconds": "સેકન્ડ",

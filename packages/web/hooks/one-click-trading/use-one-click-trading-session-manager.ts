@@ -67,6 +67,7 @@ export function useOneClickTradingSessionManager({
   }, [transactionParams, initialTransactionParams, changes]);
 
   const {
+    amountSpent,
     remainingSpendLimit,
     sessionAuthenticator,
     isLoading: isLoadingRemainingSpendLimit,
@@ -202,6 +203,7 @@ export function useOneClickTradingSessionManager({
     changes,
     setChanges,
     transactionParams,
+    amountSpent,
     remainingSpendLimit,
     setTransactionParams,
     commitSessionChange,
@@ -260,6 +262,7 @@ export function useRemainingSpendLimit({
   );
 
   return {
+    amountSpent: amountSpentData?.amountSpent,
     remainingSpendLimit,
     sessionAuthenticator,
     isLoading,

@@ -390,6 +390,12 @@
       "paramsDescription": "Sesión {sessionLength} con límite de protección contra pérdidas {lossProtectionLimit}",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Cambiar",
+      "edit": "Editar",
+      "exceeded": "Excedido",
+      "exceededTooltip": {
+        "title": "Supera el límite actual de protección contra pérdidas",
+        "body": "Tendrá que aprobar manualmente esta transacción en su billetera."
+      },
       "timeUnits": {
         "second": "segundo",
         "seconds": "segundo",

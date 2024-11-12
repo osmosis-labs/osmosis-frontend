@@ -390,6 +390,12 @@
       "paramsDescription": "Session {sessionLength} avec limite de protection contre les pertes {lossProtectionLimit}",
       "defaultSpendLimit": "5 000 USD",
       "change": "Changement",
+      "edit": "Modifier",
+      "exceeded": "Dépassé",
+      "exceededTooltip": {
+        "title": "Dépasse la limite actuelle de protection contre les pertes",
+        "body": "Vous devrez approuver manuellement cette transaction dans votre portefeuille."
+      },
       "timeUnits": {
         "second": "seconde",
         "seconds": "seconde",

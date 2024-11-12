@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} सत्र {lossProtectionLimit} हानि सुरक्षा सीमा के साथ",
       "defaultSpendLimit": "$5,000 अमरीकी डॉलर",
       "change": "परिवर्तन",
+      "edit": "संपादन करना",
+      "exceeded": "पार हो गई",
+      "exceededTooltip": {
+        "title": "वर्तमान हानि-सुरक्षा सीमा पार हो गई",
+        "body": "आपको अपने वॉलेट में इस लेनदेन को मैन्युअल रूप से अनुमोदित करना होगा।"
+      },
       "timeUnits": {
         "second": "सेकंड",
         "seconds": "सेकंड",

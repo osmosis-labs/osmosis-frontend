@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
       "defaultSpendLimit": "5,000달러",
       "change": "변화",
+      "edit": "편집하다",
+      "exceeded": "초과했습니다",
+      "exceededTooltip": {
+        "title": "현재 손실 보호 한도를 초과합니다.",
+        "body": "지갑에서 이 거래를 수동으로 승인해야 합니다."
+      },
       "timeUnits": {
         "second": "비서",
         "seconds": "비서",

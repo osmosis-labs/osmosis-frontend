@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
       "defaultSpendLimit": "$5,000 USD",
       "change": "Change",
+      "edit": "Edit",
+      "exceeded": "Exceeded",
+      "exceededTooltip": {
+        "title": "Exceeds current loss-protection limit",
+        "body": "You will have to manually approve this transaction in your wallet."
+      },
       "timeUnits": {
         "second": "sec",
         "seconds": "sec",

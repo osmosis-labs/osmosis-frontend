@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
       "defaultSpendLimit": "5.000 USD",
       "change": "Ändern",
+      "edit": "Bearbeiten",
+      "exceeded": "Übertroffen",
+      "exceededTooltip": {
+        "title": "Überschreitet die aktuelle Verlustschutzgrenze",
+        "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
+      },
       "timeUnits": {
         "second": "Sek",
         "seconds": "Sek",

@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength}会话，具有{spendLimit}损失保护限制",
       "defaultSpendLimit": "5,000 美元",
       "change": "改变",
+      "edit": "编辑",
+      "exceeded": "超出",
+      "exceededTooltip": {
+        "title": "超过当前损失保护限制",
+        "body": "您必须在钱包中手动批准此交易。"
+      },
       "timeUnits": {
         "second": "秒",
         "seconds": "秒",

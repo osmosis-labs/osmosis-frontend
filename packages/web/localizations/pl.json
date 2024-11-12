@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} sesja z {lossProtectionLimit} limitem ochrony przed stratami",
       "defaultSpendLimit": "5000 dolarów amerykańskich",
       "change": "Zmiana",
+      "edit": "Redagować",
+      "exceeded": "Przekroczony",
+      "exceededTooltip": {
+        "title": "Przekracza aktualny limit ochrony przed stratami",
+        "body": "Będziesz musiał ręcznie zatwierdzić tę transakcję w swoim portfelu."
+      },
       "timeUnits": {
         "second": "sek.",
         "seconds": "sek.",

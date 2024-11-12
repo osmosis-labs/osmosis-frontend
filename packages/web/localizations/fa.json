@@ -390,6 +390,12 @@
       "paramsDescription": "جلسه {sessionLength} با محدودیت محافظت از دست دادن {lossProtectionLimit}",
       "defaultSpendLimit": "5000 دلار آمریکا",
       "change": "تغییر دهید",
+      "edit": "ویرایش کنید",
+      "exceeded": "فراتر رفت",
+      "exceededTooltip": {
+        "title": "از حد حفاظت از ضرر فعلی فراتر می رود",
+        "body": "شما باید به صورت دستی این تراکنش را در کیف پول خود تأیید کنید."
+      },
       "timeUnits": {
         "second": "ثانیه",
         "seconds": "ثانیه",

@@ -390,6 +390,12 @@
       "paramsDescription": "{sessionLength} сессия с {spendLimit} лимит защиты от потерь",
       "defaultSpendLimit": "5000 долларов США",
       "change": "Изменять",
+      "edit": "Редактировать",
+      "exceeded": "Превышен",
+      "exceededTooltip": {
+        "title": "Превышает текущий лимит защиты от потерь",
+        "body": "Вам придется вручную одобрить эту транзакцию в своем кошельке."
+      },
       "timeUnits": {
         "second": "сек",
         "seconds": "сек",
