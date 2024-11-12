@@ -24,6 +24,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
 import { useTranslation } from "~/hooks";
 import { humanizeTime } from "~/utils/date";
+import { formatPretty } from "~/utils/formatter";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
 
@@ -143,14 +144,19 @@ export class TransferHistoryStore implements TransferStatusReceiver {
             ) : undefined,
           captionElement: (
             <PendingTransferCaption
-              amount={new CoinPretty(
+              amount={formatPretty(
+                new CoinPretty(
+                  {
+                    coinDecimals: fromAsset.decimals,
+                    coinMinimalDenom: fromAsset.address,
+                    coinDenom: fromAsset.denom,
+                  },
+                  new Dec(fromAsset.amount)
+                ),
                 {
-                  coinDecimals: fromAsset.decimals,
-                  coinMinimalDenom: fromAsset.address,
-                  coinDenom: fromAsset.denom,
-                },
-                new Dec(fromAsset.amount)
-              ).toString()}
+                  maxDecimals: 6,
+                }
+              )}
               chainPrettyName={
                 direction === "deposit"
                   ? fromChain?.prettyName ?? ""
@@ -186,8 +192,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       (snapshot) => snapshot.sendTxHash === sendTxHash
     );
 
-    console.log(snapshot);
-
     if (!snapshot) {
       console.error("Couldn't find tx snapshot when receiving tx status");
       return;
@@ -210,14 +214,19 @@ export class TransferHistoryStore implements TransferStatusReceiver {
 
     const amountLogo =
       direction === "withdraw" ? toAsset?.imageUrl : fromAsset.imageUrl;
-    const amount = new CoinPretty(
+    const amount = formatPretty(
+      new CoinPretty(
+        {
+          coinDecimals: fromAsset.decimals,
+          coinMinimalDenom: fromAsset.address,
+          coinDenom: fromAsset.denom,
+        },
+        new Dec(fromAsset.amount)
+      ),
       {
-        coinDecimals: fromAsset.decimals,
-        coinMinimalDenom: fromAsset.address,
-        coinDenom: fromAsset.denom,
-      },
-      new Dec(fromAsset.amount)
-    ).toString();
+        maxDecimals: 6,
+      }
+    );
 
     const chainPrettyName =
       direction === "deposit"
