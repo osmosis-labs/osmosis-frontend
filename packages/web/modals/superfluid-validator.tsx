@@ -268,7 +268,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
                 {table.getHeaderGroups().map((headerGroup) => (
                   <tr
                     key={headerGroup.id}
-                    className="top-0 !h-11 bg-transparent"
+                    className="top-0 !h-11 bg-osmoverse-850"
                   >
                     {headerGroup.headers.map((header) => (
                       <th key={header.id} colSpan={header.colSpan}>
