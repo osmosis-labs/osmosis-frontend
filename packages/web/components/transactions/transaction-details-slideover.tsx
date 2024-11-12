@@ -1,7 +1,7 @@
 import { Transition } from "@headlessui/react";
-import { FormattedTransaction } from "@osmosis-labs/server";
 
-import { TransactionDetailsContent } from "~/components/transactions/transaction-details/transaction-details-content";
+import { TransactionDetailsItem } from "~/components/transactions/transaction-details/transaction-details-item";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 
 export const TransactionDetailsSlideover = ({
   onRequestClose,
@@ -10,12 +10,15 @@ export const TransactionDetailsSlideover = ({
 }: {
   onRequestClose: () => void;
   open: boolean;
-  transaction?: FormattedTransaction;
+  transaction?: ReturnType<
+    typeof useTransactionHistory
+  >["transactions"][number];
 }) => {
   if (!transaction) return null;
   return (
     <Transition
       show={open}
+      as="div"
       enter="transition-all ease-out duration-300"
       enterFrom="w-0 opacity-0"
       enterTo="w-[512px] opacity-100"
@@ -23,13 +26,10 @@ export const TransactionDetailsSlideover = ({
       leaveFrom="w-[512px] opacity-100"
       leaveTo="w-0 opacity-0"
     >
-      <div>
-        <TransactionDetailsContent
-          onRequestClose={onRequestClose}
-          isModal={false}
-          transaction={transaction}
-        />
-      </div>
+      <TransactionDetailsItem
+        transaction={transaction}
+        onRequestClose={onRequestClose}
+      />
     </Transition>
   );
 };

@@ -4,17 +4,17 @@ import { AssetList, Chain } from "@osmosis-labs/types";
 import { ChainIdHelper } from "@osmosis-labs/utils";
 
 import {
-  GetTransferStatusParams,
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "../interface";
 import { IbcBridgeProvider } from ".";
 
 export type IbcTransferStatus = "pending" | "complete" | "timeout" | "refunded";
 
 export class IbcTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = IbcBridgeProvider.ID;
+  readonly providerId = IbcBridgeProvider.ID;
   readonly sourceDisplayName = "IBC Transfer";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
@@ -35,12 +35,13 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     protected readonly connectionTimeoutMs = 60 * 1000 * 3
   ) {}
 
-  async trackTxStatus(serializedParamsOrHash: string): Promise<void> {
+  async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+      toChain: { chainId: toChainId },
+    } = snapshot;
     try {
-      const { sendTxHash, fromChainId, toChainId } = JSON.parse(
-        serializedParamsOrHash
-      ) as GetTransferStatusParams;
-
       if (typeof fromChainId === "number") {
         throw new Error(
           "Unexpected numerical chain ID for cosmos tx: " + fromChainId
@@ -62,14 +63,14 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
       if (tx_response.code) {
         console.error("IBC transfer status: initial tx failed:", sendTxHash);
-        return this.pushNewStatus(serializedParamsOrHash, "failed");
+        return this.pushNewStatus(sendTxHash, "failed");
       }
 
       const msgEvents = parseMsgTransferEvents(tx_response);
 
       if (!msgEvents) {
         console.error("IBC transfer status: no IBC events found:", sendTxHash);
-        return this.pushNewStatus(serializedParamsOrHash, "failed");
+        return this.pushNewStatus(sendTxHash, "failed");
       }
 
       await this.traceStatus({
@@ -79,11 +80,11 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
         destChannelId: msgEvents.destChannelId,
         destTimeoutHeight: msgEvents.timeoutHeight,
         sequence: msgEvents.sequence,
-        serializedParamsOrHash,
+        sendTxHash,
       });
     } catch (e) {
       console.error("Unexpected failure when tracing IBC transfer status", e);
-      this.pushNewStatus(serializedParamsOrHash, "connection-error");
+      this.pushNewStatus(sendTxHash, "connection-error");
     }
   }
 
@@ -100,7 +101,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     destChannelId,
     destTimeoutHeight,
     sequence,
-    serializedParamsOrHash,
+    sendTxHash,
   }: {
     sourceChainId: string;
     sourceChannelId: string;
@@ -108,7 +109,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     destChannelId: string;
     destTimeoutHeight: string;
     sequence: string;
-    serializedParamsOrHash: string;
+    sendTxHash: string;
   }): Promise<void> {
     const destBlockSubscriber = this.getBlockSubscriber(destChainId);
     const subscriptions: Promise<
@@ -178,9 +179,9 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     // But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
     switch (result) {
       case "received":
-        return this.pushNewStatus(serializedParamsOrHash, "success");
+        return this.pushNewStatus(sendTxHash, "success");
       case "connection-error":
-        return this.pushNewStatus(serializedParamsOrHash, "connection-error");
+        return this.pushNewStatus(sendTxHash, "connection-error");
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
@@ -192,7 +193,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       })
       .finally(() => timeoutTracer.close());
 
-    this.pushNewStatus(serializedParamsOrHash, "refunded");
+    this.pushNewStatus(sendTxHash, "refunded");
   }
 
   /**
@@ -247,7 +248,6 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
-    // eslint-disable-next-line
     return this.blockSubscriberMap.get(chainId)!;
   }
 
@@ -267,20 +267,15 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Sends a status to the receiver with prefix key prepended. */
-  protected pushNewStatus(
-    serializedParamsOrHash: string,
-    status: TransferStatus
-  ) {
-    return this.statusReceiverDelegate?.receiveNewTxStatus(
-      `${this.keyPrefix}${serializedParamsOrHash}`,
-      status
-    );
+  protected pushNewStatus(sendTxHash: string, status: TransferStatus) {
+    return this.statusReceiverDelegate?.receiveNewTxStatus(sendTxHash, status);
   }
 
-  makeExplorerUrl(serializedParamsOrKey: string): string {
-    const { fromChainId, sendTxHash } = JSON.parse(
-      serializedParamsOrKey
-    ) as GetTransferStatusParams;
+  makeExplorerUrl(snapshot: TxSnapshot): string {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+    } = snapshot;
 
     const chain = this.chainList.find(
       (chain) => chain.chain_id === fromChainId

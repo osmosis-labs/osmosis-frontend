@@ -228,7 +228,7 @@ export const AmountScreen = observer(
       manualToAddress,
     ]);
 
-    const { data: osmosisChain } = api.edge.chains.getChain.useQuery(
+    const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
       {
         findChainNameOrId: accountStore.osmosisChainId,
       },

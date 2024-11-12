@@ -12,12 +12,12 @@ export const BitcoinTestnetExplorerUrl =
 
 export const getBitcoinExplorerUrl = ({
   txHash,
-  isTestnet = false,
+  env = "mainnet",
 }: {
   txHash: string;
-  isTestnet?: boolean;
+  env?: "mainnet" | "testnet";
 }) => {
-  return isTestnet
+  return env === "testnet"
     ? BitcoinTestnetExplorerUrl.replace("{txHash}", txHash)
     : BitcoinMainnetExplorerUrl.replace("{txHash}", txHash);
 };

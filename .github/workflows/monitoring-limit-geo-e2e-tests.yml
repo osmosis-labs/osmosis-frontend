@@ -48,7 +48,7 @@ jobs:
 
   fe-limit-eu-tests:
     timeout-minutes: 12
-    name: prod-fe-trade-eu-tests
+    name: prod-fe-limit-eu-tests
     needs: fe-trade-eu-tests
     runs-on: macos-latest
     steps:
@@ -118,7 +118,7 @@ jobs:
           USE_TEST_PROXY: "use"
         run: |
           cd packages/web
-          npx playwright test monitoring.market --timeout 180000
+          npx playwright test monitoring.market --timeout 90000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
@@ -155,7 +155,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
         run: |
           cd packages/web
-          npx playwright test monitoring.market --timeout 180000
+          npx playwright test monitoring.market --timeout 90000
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results

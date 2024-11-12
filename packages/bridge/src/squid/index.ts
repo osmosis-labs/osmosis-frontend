@@ -240,6 +240,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   chainId: feeCosts[0].token.chainId,
                   decimals: feeCosts[0].token.decimals,
                   address: feeCosts[0].token.address,
+                  coinGeckoId: feeCosts[0].token.coingeckoId,
                 }
               : {
                   ...fromAsset,
@@ -254,6 +255,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   amount: gasCosts[0].amount,
                   decimals: gasCosts[0].token.decimals,
                   address: gasCosts[0].token.address,
+                  coinGeckoId: gasCosts[0].token.coingeckoId,
                 }
               : {
                   ...fromAsset,

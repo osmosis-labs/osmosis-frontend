@@ -3,16 +3,16 @@ import { poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
-  GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "../interface";
 import { AxelarBridgeProvider } from ".";
 import { getTransferStatus } from "./queries";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
 export class AxelarTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = AxelarBridgeProvider.ID;
+  readonly providerId = AxelarBridgeProvider.ID;
   readonly sourceDisplayName = "Axelar Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
@@ -31,13 +31,8 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Request to start polling a new transaction. */
-  async trackTxStatus(serializedParamsOrHash: string): Promise<void> {
-    const sendTxHash = serializedParamsOrHash.startsWith("{")
-      ? (JSON.parse(serializedParamsOrHash) as GetTransferStatusParams)
-          .sendTxHash
-      : serializedParamsOrHash;
-
-    const snapshotKey = `${this.keyPrefix}${serializedParamsOrHash}`;
+  async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    const { sendTxHash } = snapshot;
 
     await poll({
       fn: async () => {
@@ -101,18 +96,22 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
       .then((s) => {
-        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+        if (s) this.receiveConclusiveStatus(sendTxHash, s);
       })
       .catch((e) => console.error(`Polling Axelar has failed`, e));
   }
 
   receiveConclusiveStatus(
-    key: string,
+    sendTxHash: string,
     txStatus: BridgeTransferStatus | undefined
   ): void {
     if (txStatus && txStatus.id) {
       const { status, reason } = txStatus;
-      this.statusReceiverDelegate?.receiveNewTxStatus(key, status, reason);
+      this.statusReceiverDelegate?.receiveNewTxStatus(
+        sendTxHash,
+        status,
+        reason
+      );
     } else {
       console.error(
         "Axelar transfer finished poll but neither succeeded or failed"
@@ -120,11 +119,8 @@ export class AxelarTransferStatusProvider implements TransferStatusProvider {
     }
   }
 
-  makeExplorerUrl(serializedParamsOrKey: string): string {
-    const txHash = serializedParamsOrKey.startsWith("{")
-      ? (JSON.parse(serializedParamsOrKey) as GetTransferStatusParams)
-          .sendTxHash
-      : serializedParamsOrKey;
-    return `${this.axelarScanBaseUrl}/transfer/${txHash}`;
+  makeExplorerUrl(snapshot: TxSnapshot): string {
+    const { sendTxHash } = snapshot;
+    return `${this.axelarScanBaseUrl}/transfer/${sendTxHash}`;
   }
 }

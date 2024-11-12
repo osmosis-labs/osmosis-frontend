@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { Bridge } from "@osmosis-labs/bridge";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -53,7 +53,7 @@ export const BridgeProviderDropdown = ({
 
   const cheapestQuote = useMemo(() => {
     const minFee = quotes
-      .map((q) => q.data.transferFeeFiat?.toDec() ?? new Dec(0))
+      .map((q) => q.data.totalFeeFiatValue?.toDec() ?? new Dec(0))
       .reduce((acc, fee) => {
         if (acc === null || fee.lt(acc)) {
           return fee;
@@ -62,7 +62,7 @@ export const BridgeProviderDropdown = ({
       }, null as Dec | null);
 
     const uniqueCheapestQuotes = quotes.filter((q) => {
-      const feeDec = q.data.transferFeeFiat?.toDec();
+      const feeDec = q.data.totalFeeFiatValue?.toDec();
       return !isNil(feeDec) && !isNil(minFee) && feeDec.equals(minFee);
     });
 
@@ -109,17 +109,10 @@ export const BridgeProviderDropdown = ({
                 data: {
                   provider,
                   estimatedTime,
-                  transferFeeFiat,
-                  gasCostFiat,
                   expectedOutputFiat,
+                  totalFeeFiatValue,
                 },
               }) => {
-                const totalFee = transferFeeFiat
-                  ?.add(
-                    gasCostFiat ??
-                      new PricePretty(transferFeeFiat.fiatCurrency, 0)
-                  )
-                  .toString();
                 const isSelected = selectedQuote.provider.id === provider.id;
                 const isCheapest =
                   cheapestQuote?.data.provider.id === provider.id;
@@ -176,7 +169,7 @@ export const BridgeProviderDropdown = ({
                           {expectedOutputFiat.toString()}
                         </p>
                         <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
-                          ~ {totalFee} {t("transfer.fee")}
+                          ~ {totalFeeFiatValue?.toString()} {t("transfer.fee")}
                         </p>
                       </div>
                     </button>

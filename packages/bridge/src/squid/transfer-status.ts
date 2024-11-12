@@ -5,15 +5,15 @@ import { apiClient, poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
-  GetTransferStatusParams,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "../interface";
 import { SquidBridgeProvider } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = SquidBridgeProvider.ID;
+  readonly providerId = SquidBridgeProvider.ID;
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
@@ -32,11 +32,12 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Request to start polling a new transaction. */
-  async trackTxStatus(serializedParams: string): Promise<void> {
-    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
-      serializedParams
-    ) as GetTransferStatusParams;
-    const snapshotKey = `${this.keyPrefix}${serializedParams}`;
+  async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+      toChain: { chainId: toChainId },
+    } = snapshot;
     await poll({
       fn: async () => {
         const url = new URL(`${this.apiUrl}/v1/status`);
@@ -84,17 +85,21 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     })
       .catch((e) => console.error(`Polling Squid has failed`, e))
       .then((s) => {
-        if (s) this.receiveConclusiveStatus(snapshotKey, s);
+        if (s) this.receiveConclusiveStatus(sendTxHash, s);
       });
   }
 
   receiveConclusiveStatus(
-    key: string,
+    sendTxHash: string,
     txStatus: BridgeTransferStatus | undefined
   ): void {
     if (txStatus && txStatus.id) {
       const { status, reason } = txStatus;
-      this.statusReceiverDelegate?.receiveNewTxStatus(key, status, reason);
+      this.statusReceiverDelegate?.receiveNewTxStatus(
+        sendTxHash,
+        status,
+        reason
+      );
     } else {
       console.error(
         "Squid transfer finished poll but neither succeeded or failed"
@@ -102,10 +107,12 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     }
   }
 
-  makeExplorerUrl(serializedParams: string): string {
-    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
-      serializedParams
-    ) as GetTransferStatusParams;
+  makeExplorerUrl(snapshot: TxSnapshot): string {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+      toChain: { chainId: toChainId },
+    } = snapshot;
 
     if (typeof fromChainId === "number" || typeof toChainId === "number") {
       // EVM transfer
