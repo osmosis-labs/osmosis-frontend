@@ -82,7 +82,7 @@ describe("PendingTransferCaption", () => {
       />
     );
 
-    jest.advanceTimersByTime(300000); // Advance time by 5 minutes
+    jest.advanceTimersByTime(296000); // Advance time by 4 minutes and 56 seconds
 
     expect(screen.getByText(/About 5 seconds remaining/)).toBeInTheDocument();
   });

@@ -427,7 +427,7 @@ export const PendingTransferCaption: FunctionComponent<{
       if (progressRef.current) {
         // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
         progressRef.current.textContent =
-          date.diff(dayjs(), "seconds") < 1
+          date.diff(dayjs(), "seconds") < 5
             ? t("aboutSecondsRemaining", {
                 seconds: "5 " + t("timeUnits.seconds"),
               })
