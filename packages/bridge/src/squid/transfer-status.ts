@@ -1,6 +1,6 @@
 import { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
-import { apiClient, poll } from "@osmosis-labs/utils";
+import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
 import type {
   BridgeEnvironment,
@@ -33,6 +33,10 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
 
   /** Request to start polling a new transaction. */
   async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    // Will retry every 30 seconds for 3 times before giving up
+    const maxNotFoundCount = 3;
+    let notFoundCount = 0;
+
     const {
       sendTxHash,
       fromChain: { chainId: fromChainId },
@@ -40,44 +44,58 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
     } = snapshot;
     await poll({
       fn: async () => {
-        const url = new URL(`${this.apiUrl}/v1/status`);
-        url.searchParams.append("transactionId", sendTxHash);
-        if (fromChainId) {
-          url.searchParams.append("fromChainId", fromChainId.toString());
-        }
-        if (toChainId) {
-          url.searchParams.append("toChainId", toChainId.toString());
-        }
+        try {
+          const url = new URL(`${this.apiUrl}/v1/status`);
+          url.searchParams.append("transactionId", sendTxHash);
+          if (fromChainId) {
+            url.searchParams.append("fromChainId", fromChainId.toString());
+          }
+          if (toChainId) {
+            url.searchParams.append("toChainId", toChainId.toString());
+          }
 
-        const data = await apiClient<StatusResponse>(url.toString());
+          const data = await apiClient<StatusResponse>(url.toString());
 
-        if (!data || !data.id || !data.squidTransactionStatus) {
+          if (!data || !data.id || !data.squidTransactionStatus) {
+            return;
+          }
+
+          const squidTransactionStatus = data.squidTransactionStatus as
+            | "success"
+            | "needs_gas"
+            | "ongoing"
+            | "partial_success"
+            | "not_found";
+
+          if (
+            squidTransactionStatus === "not_found" ||
+            squidTransactionStatus === "ongoing" ||
+            squidTransactionStatus === "partial_success"
+          ) {
+            return;
+          }
+
+          return {
+            id: sendTxHash,
+            status: squidTransactionStatus === "success" ? "success" : "failed",
+            reason:
+              squidTransactionStatus === "needs_gas"
+                ? "insufficientFee"
+                : undefined,
+          } as BridgeTransferStatus;
+        } catch (e) {
+          const error = e as Error | ApiClientError;
+          if (error instanceof ApiClientError && error.status === 404) {
+            notFoundCount++;
+            if (notFoundCount >= maxNotFoundCount) {
+              return {
+                id: sendTxHash,
+                status: "failed",
+              } as BridgeTransferStatus;
+            }
+          }
           return;
         }
-
-        const squidTransactionStatus = data.squidTransactionStatus as
-          | "success"
-          | "needs_gas"
-          | "ongoing"
-          | "partial_success"
-          | "not_found";
-
-        if (
-          squidTransactionStatus === "not_found" ||
-          squidTransactionStatus === "ongoing" ||
-          squidTransactionStatus === "partial_success"
-        ) {
-          return;
-        }
-
-        return {
-          id: sendTxHash,
-          status: squidTransactionStatus === "success" ? "success" : "failed",
-          reason:
-            squidTransactionStatus === "needs_gas"
-              ? "insufficientFee"
-              : undefined,
-        } as BridgeTransferStatus;
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,

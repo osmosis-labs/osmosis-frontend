@@ -167,7 +167,7 @@ export const useBridgeQuotes = ({
         accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
       );
     } else if (fromChain.chainType === "evm") {
-      return isEthTxPending;
+      return isEthTxPending || isBroadcastingTx;
     }
     return false;
   })();
@@ -546,11 +546,10 @@ export const useBridgeQuotes = ({
           hash: approveTxHash,
         });
 
-        setIsApprovingToken(false);
-
         for (const quoteResult of quoteResults) {
           await quoteResult.refetch();
         }
+        setIsApprovingToken(false);
       }
 
       const sendTxHash = await sendTransactionAsync({
