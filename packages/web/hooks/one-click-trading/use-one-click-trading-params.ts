@@ -32,23 +32,6 @@ export function getParametersFromOneClickTradingInfo({
   };
 }
 
-type BaseReturn = {
-  transaction1CTParams: OneClickTradingTransactionParams | undefined;
-  setTransaction1CTParams: (
-    params: SetStateAction<OneClickTradingTransactionParams | undefined>
-  ) => void;
-  spendLimitTokenDecimals: number | undefined;
-  isLoading: boolean;
-  isError: boolean;
-  reset: () => void;
-};
-
-type WithChangesReturn = BaseReturn & {
-  initialTransaction1CTParams: OneClickTradingTransactionParams | undefined;
-  changes: OneClickTradingParamsChanges;
-  setChanges: (changes: OneClickTradingParamsChanges) => void;
-};
-
 /**
  * Custom React hook to manage and provide parameters for one-click trading transactions.
  *
@@ -64,29 +47,15 @@ type WithChangesReturn = BaseReturn & {
  *
  * This hook is primarily intended for the one click trading settings modal.
  */
-export function useOneClickTradingParams(params?: {
-  oneClickTradingInfo?: OneClickTradingInfo;
-  defaultIsOneClickEnabled?: boolean;
-  trackChanges: true;
-  readyToInitialize?: boolean;
-}): WithChangesReturn;
-export function useOneClickTradingParams(params?: {
-  oneClickTradingInfo?: OneClickTradingInfo;
-  defaultIsOneClickEnabled?: boolean;
-  trackChanges?: false;
-  readyToInitialize?: boolean;
-}): BaseReturn;
 export function useOneClickTradingParams({
   oneClickTradingInfo,
   defaultIsOneClickEnabled = false,
-  trackChanges,
-  readyToInitialize = true,
+  enabled = true,
 }: {
   oneClickTradingInfo?: OneClickTradingInfo;
   defaultIsOneClickEnabled?: boolean;
-  trackChanges?: boolean;
-  readyToInitialize?: boolean;
-} = {}): BaseReturn | WithChangesReturn {
+  enabled?: boolean;
+} = {}) {
   const {
     data: defaultTransaction1CTParams,
     isLoading,
@@ -109,7 +78,7 @@ export function useOneClickTradingParams({
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
   useEffect(() => {
-    if (!readyToInitialize || isLoading || transaction1CTParams) return;
+    if (!enabled || isLoading || transaction1CTParams) return;
 
     const paramsToSet = oneClickTradingInfo
       ? getParametersFromOneClickTradingInfo({
@@ -131,7 +100,7 @@ export function useOneClickTradingParams({
     defaultTransaction1CTParams,
     oneClickTradingInfo,
     transaction1CTParams,
-    readyToInitialize,
+    enabled,
     isLoading,
   ]);
 
@@ -152,15 +121,12 @@ export function useOneClickTradingParams({
       : initialTransaction1CTParams;
     setTransaction1CTParams(nextTransaction1CTParams);
 
-    if (trackChanges) {
-      setChanges([]);
-    }
+    setChanges([]);
   }, [
     defaultIsOneClickEnabled,
     defaultTransaction1CTParams,
     initialTransaction1CTParams,
     oneClickTradingInfo,
-    trackChanges,
   ]);
 
   const setTransaction1CTParamsWithChanges = useCallback(
@@ -191,25 +157,18 @@ export function useOneClickTradingParams({
     [initialTransaction1CTParams, transaction1CTParams]
   );
 
-  const baseReturn = {
+  return {
+    changes,
+    initialTransaction1CTParams,
     transaction1CTParams,
-    setTransaction1CTParams,
     spendLimitTokenDecimals:
       defaultTransaction1CTParams?.spendLimitTokenDecimals,
     isLoading,
     isError,
     reset,
-  } as const;
-
-  return trackChanges
-    ? {
-        ...baseReturn,
-        initialTransaction1CTParams,
-        changes,
-        setChanges,
-        setTransaction1CTParams: setTransaction1CTParamsWithChanges,
-      }
-    : baseReturn;
+    setChanges,
+    setTransaction1CTParams: setTransaction1CTParamsWithChanges,
+  };
 }
 
 export type OneClickTradingParamsChanges = Array<

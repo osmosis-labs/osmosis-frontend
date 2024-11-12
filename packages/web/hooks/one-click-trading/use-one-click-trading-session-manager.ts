@@ -42,8 +42,7 @@ export function useOneClickTradingSessionManager({
   } = useOneClickTradingParams({
     oneClickTradingInfo: info,
     defaultIsOneClickEnabled: isEnabled ?? false,
-    trackChanges: true,
-    readyToInitialize: !isLoadingInfo,
+    enabled: !isLoadingInfo,
   });
 
   const shouldSend1CTTx = useMemo(() => {

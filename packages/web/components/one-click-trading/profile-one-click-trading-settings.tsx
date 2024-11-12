@@ -55,7 +55,7 @@ export const ProfileOneClickTradingSettings = ({
   } = useOneClickTradingParams({
     oneClickTradingInfo,
     defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
-    readyToInitialize: !isLoadingInfo,
+    enabled: !isLoadingInfo,
   });
 
   return (
