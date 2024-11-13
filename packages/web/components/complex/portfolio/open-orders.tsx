@@ -18,15 +18,11 @@ export const OpenOrders: FunctionComponent = () => {
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { orders, isLoading } = useOrderbookOrders({
+  const { orders: openOrders, isLoading } = useOrderbookOrders({
     userAddress: wallet?.address ?? "",
-    pageSize: 100,
+    pageSize: OPEN_ORDERS_LIMIT,
     filter: "open",
   });
-
-  const openOrders = orders
-    ?.filter((order) => order.status === "open")
-    .slice(0, OPEN_ORDERS_LIMIT);
 
   const hasOpenOrders = openOrders?.length > 0;
 

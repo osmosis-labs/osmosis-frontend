@@ -150,7 +150,7 @@ export const orderbookRouter = createTRPCRouter({
           }
           const orders = await Promise.all(promises);
           const allOrders = orders.flat().sort(defaultSortOrders);
-          if (filter === "filled" || filter === "active") {
+          if (filter === "filled") {
             return allOrders.filter((o) => o.status === "filled");
           }
           return allOrders;
