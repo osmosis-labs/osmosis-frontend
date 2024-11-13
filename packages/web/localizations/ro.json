@@ -2,6 +2,7 @@
   "404": {
     "title": "Nu a fost gasit"
   },
+  "aboutSecondsRemaining": "Aproximativ {seconds} rămase",
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Suma {asset}",
       "totalValue": "Valoarea totală",
       "providerFee": "Taxa de furnizor",
+      "provider": "Furnizor",
       "networkFee": "Taxa de retea"
     }
   },

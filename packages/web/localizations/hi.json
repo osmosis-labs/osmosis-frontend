@@ -2,6 +2,7 @@
   "404": {
     "title": "नहीं मिला"
   },
+  "aboutSecondsRemaining": "लगभग {seconds} शेष हैं",
   "addLiquidity": {
     "allAssets": "सारी संपत्ति",
     "autoswapCaption": "एकल परिसंपत्ति में तरलता जोड़ने के लिए ऑटोस्वैप का उपयोग करें।",
@@ -1119,6 +1120,7 @@
       "amountAsset": "राशि {asset}",
       "totalValue": "कुल मूल्य",
       "providerFee": "प्रदाता शुल्क",
+      "provider": "प्रदाता",
       "networkFee": "नेटवर्क शुल्क"
     }
   },

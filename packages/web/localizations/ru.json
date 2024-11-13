@@ -2,6 +2,7 @@
   "404": {
     "title": "Не найдено"
   },
+  "aboutSecondsRemaining": "Около {seconds} осталось",
   "addLiquidity": {
     "allAssets": "Все активы",
     "autoswapCaption": "Используйте автосвоп, чтобы добавить ликвидность с помощью одного актива.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Сумма {asset}",
       "totalValue": "Общая стоимость",
       "providerFee": "Плата провайдера",
+      "provider": "Провайдер",
       "networkFee": "Сетевой сбор"
     }
   },

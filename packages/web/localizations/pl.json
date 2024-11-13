@@ -2,6 +2,7 @@
   "404": {
     "title": "Nie znaleziono"
   },
+  "aboutSecondsRemaining": "Pozostało około {seconds}",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Kwota {asset}",
       "totalValue": "Wartość całkowita",
       "providerFee": "Opłata dostawcy",
+      "provider": "Dostawca",
       "networkFee": "Opłata sieciowa"
     }
   },

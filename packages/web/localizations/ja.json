@@ -2,6 +2,7 @@
   "404": {
     "title": "見つかりません"
   },
+  "aboutSecondsRemaining": "残り約{seconds}",
   "addLiquidity": {
     "allAssets": "すべての資産",
     "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
@@ -1119,6 +1120,7 @@
       "amountAsset": "金額{asset}",
       "totalValue": "合計金額",
       "providerFee": "プロバイダー料金",
+      "provider": "プロバイダー",
       "networkFee": "ネットワーク料金"
     }
   },

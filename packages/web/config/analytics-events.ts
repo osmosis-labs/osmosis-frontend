@@ -86,6 +86,8 @@ export type EventProperties = {
   numberOfValidators: number;
   validatorNames: string[];
   squadSize: number;
+  fromChainId: string;
+  toChainId: string;
 };
 
 export type UserProperties = {
@@ -230,6 +232,7 @@ export const EventName = {
   TransactionsPage: {
     pageViewed: "Transactions: Page viewed",
     swapClicked: "Transactions: Swap clicked",
+    transferClicked: "Transactions: Transfer clicked",
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
   },

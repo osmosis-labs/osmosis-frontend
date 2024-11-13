@@ -2,6 +2,7 @@
   "404": {
     "title": "Bulunamadı"
   },
+  "aboutSecondsRemaining": "{seconds} kalan süre hakkında",
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Tutar {asset}",
       "totalValue": "Toplam değer",
       "providerFee": "Sağlayıcı ücreti",
+      "provider": "Sağlayıcı",
       "networkFee": "Ağ ücreti"
     }
   },

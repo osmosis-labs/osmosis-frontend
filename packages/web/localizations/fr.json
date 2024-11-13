@@ -2,6 +2,7 @@
   "404": {
     "title": "Page non trouvée"
   },
+  "aboutSecondsRemaining": "Il reste environ {seconds}",
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Montant {asset}",
       "totalValue": "Valeur totale",
       "providerFee": "Frais de prestataire",
+      "provider": "Fournisseur",
       "networkFee": "Frais de réseau"
     }
   },

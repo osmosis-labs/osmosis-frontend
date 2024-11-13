@@ -2,6 +2,7 @@
   "404": {
     "title": "Não encontrado"
   },
+  "aboutSecondsRemaining": "Cerca de {seconds} restantes",
   "addLiquidity": {
     "allAssets": "Todos os ativos",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
@@ -1119,6 +1120,7 @@
       "amountAsset": "Quantidade {asset}",
       "totalValue": "Valor total",
       "providerFee": "Taxa de provedor",
+      "provider": "Provedor",
       "networkFee": "Taxa de rede"
     }
   },

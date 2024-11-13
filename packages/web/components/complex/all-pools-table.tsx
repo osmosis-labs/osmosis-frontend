@@ -108,8 +108,6 @@ const TableControls = () => {
 
   const { filters, setFilters } = useAllPoolsTable();
 
-  filters.poolTypesFilter;
-
   const onSearchInput = useCallback(
     (data: string) => {
       setFilters((state) => ({

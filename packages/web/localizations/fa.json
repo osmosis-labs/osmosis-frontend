@@ -2,6 +2,7 @@
   "404": {
     "title": "پیدا نشد"
   },
+  "aboutSecondsRemaining": "درباره {seconds} باقی مانده است",
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -1119,6 +1120,7 @@
       "amountAsset": "مقدار {asset}",
       "totalValue": "ارزش کل",
       "providerFee": "هزینه ارائه دهنده",
+      "provider": "ارائه دهنده",
       "networkFee": "هزینه شبکه"
     }
   },

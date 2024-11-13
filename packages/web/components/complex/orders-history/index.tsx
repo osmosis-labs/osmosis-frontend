@@ -26,8 +26,8 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
-  useOrderbookAllActiveOrders,
   useOrderbookClaimableOrders,
+  useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import {
@@ -81,7 +81,7 @@ export const OrderHistory = observer(() => {
     hasNextPage,
     refetch,
     isRefetching,
-  } = useOrderbookAllActiveOrders({
+  } = useOrderbookOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 20,
     refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
