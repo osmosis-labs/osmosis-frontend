@@ -203,7 +203,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
-          toChain,
           fromAddress as Address,
           msgs
         );
@@ -447,7 +446,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createTransaction(
     fromChainId: string,
-    toChain: BridgeChain,
     address: Address,
     messages: SkipMsg[]
   ) {
