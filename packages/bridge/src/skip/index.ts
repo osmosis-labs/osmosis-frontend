@@ -461,16 +461,12 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
 
       if ("multi_chain_msg" in message) {
-        return await this.createCosmosTransaction(
-          toChain,
-          message.multi_chain_msg
-        );
+        return await this.createCosmosTransaction(message.multi_chain_msg);
       }
     }
   }
 
   async createCosmosTransaction(
-    toChain: BridgeChain,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
