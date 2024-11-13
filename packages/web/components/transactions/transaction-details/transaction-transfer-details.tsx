@@ -5,7 +5,6 @@ import {
   getSolanaExplorerUrl,
   shorten,
 } from "@osmosis-labs/utils";
-import { BridgeLogoUrls } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
@@ -22,6 +21,7 @@ import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
 import { HistoryBridgeTransaction } from "~/hooks/use-transaction-history";
 import { theme } from "~/tailwind.config";
+import { BridgeLogoUrls } from "~/utils/bridge";
 import { formatPretty } from "~/utils/formatter";
 
 export const TransactionTransferDetails = ({

@@ -23,9 +23,7 @@ import {
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
-  BridgeLogoUrls,
   EthereumChainInfo,
-  ExternalBridgeLogoUrls,
   isNil,
   isSameVariant,
   SolanaChainInfo,
@@ -37,6 +35,7 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 
 export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
