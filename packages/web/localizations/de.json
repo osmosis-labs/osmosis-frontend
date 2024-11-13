@@ -1120,6 +1120,7 @@
       "amountAsset": "Betrag {asset}",
       "totalValue": "Gesamtwert",
       "providerFee": "Anbietergebühr",
+      "provider": "Anbieter",
       "networkFee": "Netzwerkgebühr"
     }
   },

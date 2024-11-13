@@ -1120,6 +1120,7 @@
       "amountAsset": "金额{asset}",
       "totalValue": "总价值",
       "providerFee": "供应商费用",
+      "provider": "提供者",
       "networkFee": "网络费"
     }
   },

@@ -1120,6 +1120,7 @@
       "amountAsset": "Montant {asset}",
       "totalValue": "Valeur totale",
       "providerFee": "Frais de prestataire",
+      "provider": "Fournisseur",
       "networkFee": "Frais de réseau"
     }
   },

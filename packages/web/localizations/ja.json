@@ -1120,6 +1120,7 @@
       "amountAsset": "金額{asset}",
       "totalValue": "合計金額",
       "providerFee": "プロバイダー料金",
+      "provider": "プロバイダー",
       "networkFee": "ネットワーク料金"
     }
   },

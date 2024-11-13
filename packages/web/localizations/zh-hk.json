@@ -1120,6 +1120,7 @@
       "amountAsset": "金額{asset}",
       "totalValue": "總價值",
       "providerFee": "提供者費用",
+      "provider": "提供者",
       "networkFee": "網路費"
     }
   },

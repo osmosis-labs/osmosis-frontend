@@ -1120,6 +1120,7 @@
       "amountAsset": "Kwota {asset}",
       "totalValue": "Wartość całkowita",
       "providerFee": "Opłata dostawcy",
+      "provider": "Dostawca",
       "networkFee": "Opłata sieciowa"
     }
   },

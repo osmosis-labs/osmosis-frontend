@@ -1120,6 +1120,7 @@
       "amountAsset": "Amount {asset}",
       "totalValue": "Total value",
       "providerFee": "Provider fee",
+      "provider": "Provider",
       "networkFee": "Network fee"
     }
   },

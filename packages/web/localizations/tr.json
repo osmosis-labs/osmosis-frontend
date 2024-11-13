@@ -1120,6 +1120,7 @@
       "amountAsset": "Tutar {asset}",
       "totalValue": "Toplam değer",
       "providerFee": "Sağlayıcı ücreti",
+      "provider": "Sağlayıcı",
       "networkFee": "Ağ ücreti"
     }
   },
