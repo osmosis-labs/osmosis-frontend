@@ -18,7 +18,7 @@ test.describe("Test Swap Stables feature", () => {
     "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
   const allUSDT =
     "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
-  const swapAmount = "0.25";
+  const swapAmount = "0.55";
 
   test.beforeAll(async () => {
     const pathToExtension = new UnzipExtension().getPathToExtension();

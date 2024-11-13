@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-import process from "process";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";
@@ -47,11 +46,11 @@ test.describe("Test Trade feature", () => {
     await context.close();
   });
 
-  test("User should be able to Buy OSMO", async () => {
+  test("User should be able to Buy ATOM", async () => {
     await tradePage.goto();
     await tradePage.openBuyTab();
-    await tradePage.selectAsset("OSMO");
-    await tradePage.enterAmount("1.1");
+    await tradePage.selectAsset("ATOM");
+    await tradePage.enterAmount("1.12");
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
