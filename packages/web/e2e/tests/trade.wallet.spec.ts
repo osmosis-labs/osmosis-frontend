@@ -53,7 +53,7 @@ test.describe("Test Trade feature", () => {
     await tradePage.enterAmount("1.12");
     const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("token_out_denom: uosmo");
+    expect(msgContentAmount).toContain(`denom: ${ATOM}`);
     expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
     expect(msgContentAmount).toContain(`denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
