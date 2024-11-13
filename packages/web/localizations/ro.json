@@ -1120,6 +1120,7 @@
       "amountAsset": "Suma {asset}",
       "totalValue": "Valoarea totală",
       "providerFee": "Taxa de furnizor",
+      "provider": "Furnizor",
       "networkFee": "Taxa de retea"
     }
   },

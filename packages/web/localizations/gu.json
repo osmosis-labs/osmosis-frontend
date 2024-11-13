@@ -1120,6 +1120,7 @@
       "amountAsset": "રકમ {asset}",
       "totalValue": "કુલ મૂલ્ય",
       "providerFee": "પ્રદાતા ફી",
+      "provider": "પ્રદાતા",
       "networkFee": "નેટવર્ક ફી"
     }
   },

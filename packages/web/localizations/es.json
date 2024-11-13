@@ -1120,6 +1120,7 @@
       "amountAsset": "Cantidad {asset}",
       "totalValue": "Valor total",
       "providerFee": "Tarifa del proveedor",
+      "provider": "Proveedor",
       "networkFee": "Tarifa de red"
     }
   },

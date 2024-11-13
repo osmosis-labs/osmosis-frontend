@@ -1120,6 +1120,7 @@
       "amountAsset": "Сумма {asset}",
       "totalValue": "Общая стоимость",
       "providerFee": "Плата провайдера",
+      "provider": "Провайдер",
       "networkFee": "Сетевой сбор"
     }
   },

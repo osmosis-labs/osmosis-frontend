@@ -1120,6 +1120,7 @@
       "amountAsset": "금액 {asset}",
       "totalValue": "총 가치",
       "providerFee": "제공자 수수료",
+      "provider": "공급자",
       "networkFee": "네트워크 수수료"
     }
   },

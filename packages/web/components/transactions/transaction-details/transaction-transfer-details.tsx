@@ -5,6 +5,7 @@ import {
   getSolanaExplorerUrl,
   shorten,
 } from "@osmosis-labs/utils";
+import { BridgeLogoUrls } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import Image from "next/image";
@@ -145,7 +146,12 @@ export const TransactionTransferDetails = ({
         "bg-osmoverse-850": isModal,
       })}
     >
-      <div className="flex flex-col px-4 pb-8 md:p-0">
+      <div
+        className={classNames("flex flex-col", {
+          "px-4 pb-8 md:p-0": !isModal,
+          "px-4 md:p-0": isModal,
+        })}
+      >
         {!isModal && (
           <div className="py-4">
             <IconButton
@@ -281,6 +287,18 @@ export const TransactionTransferDetails = ({
         </div>
         <div className="flex flex-col py-3">
           <div className="body2 flex justify-between gap-3 py-3">
+            <div>{t("transactions.transfer.provider")}</div>
+            <div className="flex items-center gap-2">
+              <Image
+                src={BridgeLogoUrls[transaction.provider]}
+                alt={transaction.provider}
+                width={24}
+                height={24}
+              />
+              <p className="text-osmoverse-300">{transaction.provider}</p>
+            </div>
+          </div>
+          <div className="body2 flex justify-between gap-3 py-3">
             <div>{t("transactions.transfer.asset")}</div>
             <p className="text-osmoverse-300">{mainAsset.denom}</p>
           </div>
@@ -323,6 +341,7 @@ export const TransactionTransferDetails = ({
               </div>
             </div>
           )}
+
           {transaction.providerFee && (
             <div className="body2 flex justify-between gap-3 py-3">
               <div>{t("transactions.transfer.providerFee")}</div>
@@ -344,6 +363,7 @@ export const TransactionTransferDetails = ({
               )}
             </div>
           )}
+
           <div className="body2 flex items-center justify-between py-3">
             <div>{t("transactions.transactionHash")}</div>
             <CopyIconButton

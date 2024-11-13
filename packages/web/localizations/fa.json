@@ -1120,6 +1120,7 @@
       "amountAsset": "مقدار {asset}",
       "totalValue": "ارزش کل",
       "providerFee": "هزینه ارائه دهنده",
+      "provider": "ارائه دهنده",
       "networkFee": "هزینه شبکه"
     }
   },

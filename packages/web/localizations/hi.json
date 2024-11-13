@@ -1120,6 +1120,7 @@
       "amountAsset": "राशि {asset}",
       "totalValue": "कुल मूल्य",
       "providerFee": "प्रदाता शुल्क",
+      "provider": "प्रदाता",
       "networkFee": "नेटवर्क शुल्क"
     }
   },

@@ -4,6 +4,7 @@ export * from "./asset-utils";
 export * from "./async";
 export * from "./authenticator";
 export * from "./bitcoin";
+export * from "./bridge";
 export * from "./chain-utils";
 export * from "./coin";
 export * from "./common-utils";
