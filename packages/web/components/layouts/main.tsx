@@ -84,9 +84,7 @@ export const MainLayout = observer(
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="ml-sidebar h-content md:ml-0 md:h-content-mobile">
-          {children}
-        </div>
+        <div className="ml-sidebar md:ml-0">{children}</div>
         <AssetVariantsConversionModal />
       </React.Fragment>
     );

@@ -1,4 +1,4 @@
-import { Menu } from "@headlessui/react";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
@@ -30,8 +30,8 @@ export const CheckboxSelect: FunctionComponent<
   return (
     <Menu>
       {({ open }) => (
-        <div className="relative">
-          <Menu.Button
+        <>
+          <MenuButton
             className={classNames(
               "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors md:w-full",
               "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
@@ -46,53 +46,51 @@ export const CheckboxSelect: FunctionComponent<
               height={isMobile ? 12 : 16}
               width={isMobile ? 12 : 16}
             />
-          </Menu.Button>
+          </MenuButton>
 
-          <Menu.Items
+          <MenuItems
             className={classNames(
-              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              "[--anchor-gap:8px] z-[1000] flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
               menuItemsClassName
             )}
+            anchor="bottom end"
           >
             {options.map(({ id, display }, index) => {
               return (
-                <Menu.Item key={id}>
-                  {({ active }) => (
-                    <button
-                      className={classNames(
-                        "flex cursor-pointer items-center gap-3 px-4 py-2 text-left text-osmoverse-200 transition-colors",
-                        {
-                          "hover:bg-osmoverse-700": active,
-                          "rounded-b-xlinset": index === options.length - 1,
-                        }
-                      )}
+                <MenuItem key={id}>
+                  <button
+                    className={classNames(
+                      "flex cursor-pointer items-center gap-3 px-4 py-2 text-left text-osmoverse-200 transition-colors data-[active]:bg-osmoverse-700",
+                      {
+                        "rounded-b-xlinset": index === options.length - 1,
+                      }
+                    )}
+                    disabled={
+                      atLeastOneSelected &&
+                      selectedOptionIds?.length === 1 &&
+                      selectedOptionIds?.includes(id)
+                    }
+                    onClick={(e) => {
+                      e.preventDefault();
+                      onSelect(id);
+                    }}
+                  >
+                    <Checkbox
+                      checked={Boolean(selectedOptionIds?.includes(id))}
+                      onClick={noop}
                       disabled={
                         atLeastOneSelected &&
                         selectedOptionIds?.length === 1 &&
                         selectedOptionIds?.includes(id)
                       }
-                      onClick={(e) => {
-                        e.preventDefault();
-                        onSelect(id);
-                      }}
-                    >
-                      <Checkbox
-                        checked={Boolean(selectedOptionIds?.includes(id))}
-                        onClick={noop}
-                        disabled={
-                          atLeastOneSelected &&
-                          selectedOptionIds?.length === 1 &&
-                          selectedOptionIds?.includes(id)
-                        }
-                      />
-                      <span>{display}</span>
-                    </button>
-                  )}
-                </Menu.Item>
+                    />
+                    <span>{display}</span>
+                  </button>
+                </MenuItem>
               );
             })}
-          </Menu.Items>
-        </div>
+          </MenuItems>
+        </>
       )}
     </Menu>
   );
