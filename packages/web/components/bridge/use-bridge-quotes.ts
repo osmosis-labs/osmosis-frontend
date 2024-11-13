@@ -663,6 +663,8 @@ export const useBridgeQuotes = ({
 
             onTransferProp?.();
             setTransferInitiated(true);
+          } else {
+            setIsBroadcastingTx(false);
           }
         },
       }
