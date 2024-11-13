@@ -176,8 +176,9 @@ export const OneClickTradingSettings = ({
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
     setInitialTransaction1CTParams(transaction1CTParams);
+    setChanges(externalChanges);
     setInitialChanges(externalChanges);
-  }, [initialTransaction1CTParams, transaction1CTParams]);
+  }, [externalChanges, initialTransaction1CTParams, transaction1CTParams]);
 
   const {
     isOpen: isDiscardDialogOpen,

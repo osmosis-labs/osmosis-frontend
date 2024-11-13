@@ -125,15 +125,16 @@ export function useOneClickTradingSessionManager({
       }
     );
   }, [
+    transactionParams,
+    createSession,
+    spendLimitTokenDecimals,
     accountStore,
     chainStore.osmosis.chainId,
-    createSession,
-    cleanUpAndCommit,
-    logEvent,
     sessionAuthenticator,
+    cleanUpAndCommit,
     setTransactionParams,
-    spendLimitTokenDecimals,
-    transactionParams,
+    initialTransactionParams,
+    logEvent,
   ]);
 
   const stopSession = useCallback(() => {
@@ -170,6 +171,7 @@ export function useOneClickTradingSessionManager({
   }, [
     cleanUpAndCommit,
     info,
+    initialTransactionParams,
     removeSession,
     setTransactionParams,
     transactionParams,
