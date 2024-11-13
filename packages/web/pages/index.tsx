@@ -30,7 +30,7 @@ const Home = () => {
   });
 
   return (
-    <main className="relative flex h-full overflow-auto pb-2 pt-8">
+    <main className="relative flex overflow-auto pb-2 pt-8 h-content md:h-content-mobile">
       <div className="fixed inset-0 h-full w-full overflow-y-scroll bg-cover xl:static">
         <div className="relative h-full w-full xl:hidden">
           <Image
