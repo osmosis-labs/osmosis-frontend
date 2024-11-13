@@ -180,7 +180,7 @@ describe("SkipBridgeProvider", () => {
                 revisionNumber: "1",
                 revisionHeight: "1000",
               },
-              timeoutTimestamp: "0",
+              timeoutTimestamp: 1718978568036848600,
               memo: '{"destination_chain":"Ethereum","destination_address":"0xD397883c12b71ea39e0d9f6755030205f31A1c96","payload":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,120,99,236,5,177,35,136,92,118,9,176,92,53,223,119,127,63,24,2,88],"type":2,"fee":{"amount":"7725420487422623","recipient":"axelar1aythygn6z5thymj6tmzfwekzh05ewg3l7d6y89"}}',
             },
           },
