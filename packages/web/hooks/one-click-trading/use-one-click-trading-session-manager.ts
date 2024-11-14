@@ -35,14 +35,12 @@ export function useOneClickTradingSessionManager({
     transaction1CTParams: transactionParams,
     setTransaction1CTParams: setTransactionParams,
     spendLimitTokenDecimals,
-    isLoading: isLoadingParams,
     reset: resetParams,
     changes,
     setChanges,
   } = useOneClickTradingParams({
     oneClickTradingInfo: info,
     defaultIsOneClickEnabled: isEnabled ?? false,
-    enabled: !isLoadingInfo,
   });
 
   const shouldSend1CTTx = useMemo(() => {
@@ -77,8 +75,7 @@ export function useOneClickTradingSessionManager({
     oneClickTradingInfo: info,
   });
 
-  const isLoading =
-    isLoadingInfo || isLoadingParams || isLoadingRemainingSpendLimit;
+  const isLoading = isLoadingInfo || isLoadingRemainingSpendLimit;
 
   const createSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();

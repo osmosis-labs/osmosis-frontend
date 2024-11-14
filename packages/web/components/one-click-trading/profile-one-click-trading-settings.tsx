@@ -49,13 +49,11 @@ export const ProfileOneClickTradingSettings = ({
   const {
     transaction1CTParams,
     setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
     spendLimitTokenDecimals,
     reset: reset1CTParams,
   } = useOneClickTradingParams({
     oneClickTradingInfo,
     defaultIsOneClickEnabled: isOneClickTradingEnabled ? true : false,
-    enabled: !isLoadingInfo,
   });
 
   return (
@@ -63,7 +61,7 @@ export const ProfileOneClickTradingSettings = ({
       transaction1CTParams={transaction1CTParams}
       setTransaction1CTParams={setTransaction1CTParams}
       isLoading={
-        isLoading1CTParams ||
+        isLoadingInfo ||
         (shouldFetchSessionAuthenticator
           ? isLoadingSessionAuthenticator
           : false)

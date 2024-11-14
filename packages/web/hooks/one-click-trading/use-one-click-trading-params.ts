@@ -2,8 +2,14 @@ import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
-import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
-import { SetStateAction, useCallback, useEffect, useState } from "react";
+import { OneClickTradingMaxGasLimit, runIfFn } from "@osmosis-labs/utils";
+import {
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { api } from "~/utils/trpc";
 
@@ -50,121 +56,100 @@ export function getParametersFromOneClickTradingInfo({
 export function useOneClickTradingParams({
   oneClickTradingInfo,
   defaultIsOneClickEnabled = false,
-  enabled = true,
 }: {
   oneClickTradingInfo?: OneClickTradingInfo;
   defaultIsOneClickEnabled?: boolean;
-  enabled?: boolean;
 } = {}) {
-  const {
-    data: defaultTransaction1CTParams,
-    isLoading,
-    isError,
-  } = api.local.oneClickTrading.getParameters.useQuery();
+  const { data: defaultParams } =
+    api.local.oneClickTrading.getParameters.useQuery();
 
-  const [transaction1CTParams, setTransaction1CTParams] = useState<
+  const [draft, setDraft] = useState<
     OneClickTradingTransactionParams | undefined
-  >(
-    oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : undefined
-  );
-  const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
-    useState<OneClickTradingTransactionParams | undefined>();
+  >();
+  const [current, setCurrent] = useState<
+    OneClickTradingTransactionParams | undefined
+  >();
 
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
-  useEffect(() => {
-    if (!enabled || isLoading || transaction1CTParams) return;
+  const sessionOrDefault = useMemo(
+    () =>
+      oneClickTradingInfo
+        ? getParametersFromOneClickTradingInfo({
+            oneClickTradingInfo,
+            defaultIsOneClickEnabled,
+          })
+        : defaultParams,
+    [oneClickTradingInfo, defaultIsOneClickEnabled, defaultParams]
+  );
 
-    const paramsToSet = oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : defaultTransaction1CTParams;
-
-    if (!paramsToSet) return;
-
-    const nextTransaction1CTParams = {
-      isOneClickEnabled: defaultIsOneClickEnabled,
-      ...paramsToSet,
-    };
-    setTransaction1CTParams(nextTransaction1CTParams);
-    setInitialTransaction1CTParams(nextTransaction1CTParams);
-  }, [
-    defaultIsOneClickEnabled,
-    defaultTransaction1CTParams,
-    oneClickTradingInfo,
-    transaction1CTParams,
-    enabled,
-    isLoading,
-  ]);
+  const sessionOrDefaultWithEnabled = useMemo(
+    () =>
+      sessionOrDefault && {
+        ...sessionOrDefault,
+        isOneClickEnabled: defaultIsOneClickEnabled,
+      },
+    [sessionOrDefault, defaultIsOneClickEnabled]
+  );
 
   const reset = useCallback(() => {
-    const paramsToSet = oneClickTradingInfo
-      ? getParametersFromOneClickTradingInfo({
-          oneClickTradingInfo,
-          defaultIsOneClickEnabled,
-        })
-      : defaultTransaction1CTParams;
-    if (!paramsToSet && !initialTransaction1CTParams) return;
-
-    const nextTransaction1CTParams = paramsToSet
-      ? {
-          isOneClickEnabled: defaultIsOneClickEnabled,
-          ...paramsToSet,
-        }
-      : initialTransaction1CTParams;
-    setTransaction1CTParams(nextTransaction1CTParams);
-
+    setCurrent(sessionOrDefaultWithEnabled);
+    setDraft(sessionOrDefaultWithEnabled);
     setChanges([]);
+  }, [sessionOrDefaultWithEnabled]);
+
+  useEffect(() => {
+    if (!sessionOrDefaultWithEnabled) return;
+
+    if (!current || !draft) {
+      reset();
+      return;
+    }
+
+    const hasChanges = changes.length > 0;
+    const wouldChange =
+      compareParams({
+        prev: draft,
+        next: sessionOrDefaultWithEnabled,
+      }).length > 0;
+
+    if (!hasChanges && wouldChange) {
+      reset();
+    }
   }, [
-    defaultIsOneClickEnabled,
-    defaultTransaction1CTParams,
-    initialTransaction1CTParams,
-    oneClickTradingInfo,
+    sessionOrDefault,
+    draft,
+    sessionOrDefaultWithEnabled,
+    changes.length,
+    reset,
+    current,
   ]);
 
   const setTransaction1CTParamsWithChanges = useCallback(
     (
-      newParams: SetStateAction<OneClickTradingTransactionParams | undefined>
+      newDraftOrFn: SetStateAction<OneClickTradingTransactionParams | undefined>
     ) => {
-      if (!initialTransaction1CTParams) return;
+      if (!current) reset();
 
-      const nextParams =
-        typeof newParams === "function"
-          ? newParams(transaction1CTParams)
-          : newParams;
+      const nextDraft = runIfFn(newDraftOrFn, draft);
 
-      setTransaction1CTParams(nextParams);
+      setDraft(nextDraft);
 
-      setChanges((prev) => {
-        const current = compare1CTTransactionParams({
-          prevParams: initialTransaction1CTParams,
-          nextParams: nextParams!,
-        });
-
-        // Only update changes if there are new changes
-        return current.some((change) => !prev.includes(change))
-          ? Array.from(new Set([...prev, ...current]))
-          : prev;
-      });
+      setChanges((prev) =>
+        compareParams({
+          prev: current,
+          next: nextDraft,
+        })
+      );
     },
-    [initialTransaction1CTParams, transaction1CTParams]
+    [current, reset, draft]
   );
 
   return {
     changes,
-    initialTransaction1CTParams,
-    transaction1CTParams,
-    spendLimitTokenDecimals:
-      defaultTransaction1CTParams?.spendLimitTokenDecimals,
-    isLoading,
-    isError,
+    initialTransaction1CTParams: current,
+    transaction1CTParams: draft,
+    spendLimitTokenDecimals: defaultParams?.spendLimitTokenDecimals,
     reset,
     setChanges,
     setTransaction1CTParams: setTransaction1CTParamsWithChanges,
@@ -175,32 +160,28 @@ export type OneClickTradingParamsChanges = Array<
   "spendLimit" | "sessionPeriod" | "isEnabled" | "networkFeeLimit"
 >;
 
-/**
- * Compares the changes between two sets of OneClickTradingTransactionParams.
- * Useful for determining which parameters have changed and need to be updated.
- */
-export function compare1CTTransactionParams({
-  prevParams,
-  nextParams,
+function compareParams({
+  prev,
+  next,
 }: {
-  prevParams: OneClickTradingTransactionParams;
-  nextParams: OneClickTradingTransactionParams;
+  prev?: OneClickTradingTransactionParams;
+  next?: OneClickTradingTransactionParams;
 }): OneClickTradingParamsChanges {
   let changes: OneClickTradingParamsChanges = [];
 
-  if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
+  if (prev?.spendLimit.toString() !== next?.spendLimit.toString()) {
     changes.push("spendLimit");
   }
 
-  if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
+  if (prev?.sessionPeriod.end !== next?.sessionPeriod.end) {
     changes.push("sessionPeriod");
   }
 
-  if (prevParams?.isOneClickEnabled !== nextParams?.isOneClickEnabled) {
+  if (prev?.isOneClickEnabled !== next?.isOneClickEnabled) {
     changes.push("isEnabled");
   }
 
-  if (prevParams?.networkFeeLimit !== nextParams?.networkFeeLimit) {
+  if (prev?.networkFeeLimit !== next?.networkFeeLimit) {
     changes.push("networkFeeLimit");
   }
 
