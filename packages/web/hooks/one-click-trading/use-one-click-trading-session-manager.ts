@@ -199,6 +199,8 @@ export function useOneClickTradingSessionManager({
     isEnabled,
     isExpired,
     isLoading,
+    commitSessionChangeIsLoading:
+      createSession.isLoading || removeSession.isLoading,
     changes,
     setChanges,
     transactionParams,

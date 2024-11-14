@@ -119,6 +119,7 @@ export function ReviewOrder({
     setTransactionParams: setTransaction1CTParams,
     commitSessionChange: commit1CTSessionChange,
     resetParams: reset1CTParams,
+    commitSessionChangeIsLoading: commit1CTSessionChangeIsLoading,
   } = useOneClickTradingSessionManager({
     onCommit: confirmAction,
   });
@@ -751,7 +752,9 @@ export function ReviewOrder({
                   <Button
                     mode="primary"
                     onClick={commit1CTSessionChange}
-                    disabled={isConfirmationDisabled}
+                    disabled={
+                      isConfirmationDisabled || commit1CTSessionChangeIsLoading
+                    }
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>
