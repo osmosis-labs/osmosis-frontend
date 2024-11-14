@@ -121,7 +121,10 @@ export function ReviewOrder({
     resetParams: reset1CTParams,
     commitSessionChangeIsLoading: commit1CTSessionChangeIsLoading,
   } = useOneClickTradingSessionManager({
-    onCommit: confirmAction,
+    onCommit: () => {
+      confirmAction();
+      onClose();
+    },
   });
 
   const wouldExceedSpendLimit = useMemo(
