@@ -1274,6 +1274,9 @@
   "tradeFee": "کارمزد تجارت",
   "receiveAtLeast": "حداقل دریافت کنید",
   "payAtMost": "حداکثر پرداخت کنید",
+  "previewAssetsEnabled": "پیش‌نمایش دارایی‌ها فعال شد",
+  "previewAssetsDisabled": "پیش‌نمایش دارایی‌ها غیرفعال شد",
+  "previewAssetsEnabledForSession": "پیش‌نمایش دارایی‌های فعال برای این جلسه. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_preview_assets=false» را اضافه کنید.",
   "alloyedAssets": {
     "title": "انواع مختلف شناسایی شد",
     "caption": "با همه آن گونه های دارایی گیج کننده خداحافظی کنید. به تجربه یکپارچه تر در اسموز سلام کنید.",

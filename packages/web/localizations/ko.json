@@ -1274,6 +1274,9 @@
   "tradeFee": "거래 수수료",
   "receiveAtLeast": "최소한 받다",
   "payAtMost": "최대 지불",
+  "previewAssetsEnabled": "미리보기 자산 활성화됨",
+  "previewAssetsDisabled": "미리보기 자산 비활성화",
+  "previewAssetsEnabledForSession": "이 세션에서 미리보기 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 `show_preview_assets=false`를 추가합니다.",
   "alloyedAssets": {
     "title": "변종 감지됨",
     "caption": "혼란스러운 자산 변형에 작별 인사를 전하세요. Osmosis에서 더욱 매끄러운 경험을 만나보세요.",

@@ -1274,6 +1274,9 @@
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin",
   "payAtMost": "Plătește cel mult",
+  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
+  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
+  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Variante detectate",
     "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
