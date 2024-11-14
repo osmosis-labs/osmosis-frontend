@@ -1274,6 +1274,9 @@
   "tradeFee": "Taxa de negociação",
   "receiveAtLeast": "Receba pelo menos",
   "payAtMost": "Pague no máximo",
+  "previewAssetsEnabled": "Visualizar ativos habilitados",
+  "previewAssetsDisabled": "Visualizar ativos desabilitados",
+  "previewAssetsEnabledForSession": "Visualizar ativos habilitados para esta sessão. Para desabilitar, abra uma nova aba ou anexe `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Variantes Detectadas",
     "caption": "Diga adeus a todas essas variantes de ativos confusas. Diga olá a uma experiência mais integrada no Osmosis.",

@@ -1274,6 +1274,9 @@
   "tradeFee": "取引手数料",
   "receiveAtLeast": "少なくとも受け取る",
   "payAtMost": "最大で支払う",
+  "previewAssetsEnabled": "プレビューアセットが有効",
+  "previewAssetsDisabled": "プレビューアセットが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションではプレビュー アセットが有効になっています。無効にするには、新しいタブを開くか、`show_preview_assets=false` を追加します。",
   "alloyedAssets": {
     "title": "検出された変異体",
     "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
