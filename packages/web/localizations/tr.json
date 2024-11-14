@@ -1274,6 +1274,9 @@
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al",
   "payAtMost": "En fazla öde",
+  "previewAssetsEnabled": "Önizleme varlıkları etkinleştirildi",
+  "previewAssetsDisabled": "Önizleme varlıkları devre dışı bırakıldı",
+  "previewAssetsEnabledForSession": "Bu oturum için önizleme varlıkları etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya `show_preview_assets=false` ekleyin.",
   "alloyedAssets": {
     "title": "Varyantlar Tespit Edildi",
     "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",

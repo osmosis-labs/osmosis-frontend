@@ -1274,6 +1274,9 @@
   "tradeFee": "Frais de transaction",
   "receiveAtLeast": "Recevez au moins",
   "payAtMost": "Payer au maximum",
+  "previewAssetsEnabled": "Aperçu des ressources activé",
+  "previewAssetsDisabled": "Aperçu des ressources désactivé",
+  "previewAssetsEnabledForSession": "Les ressources d'aperçu sont activées pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Variantes détectées",
     "caption": "Dites adieu à toutes ces variantes d'actifs déroutantes. Dites bonjour à une expérience plus fluide sur Osmosis.",

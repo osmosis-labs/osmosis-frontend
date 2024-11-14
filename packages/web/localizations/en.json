@@ -1274,6 +1274,9 @@
   "tradeFee": "Trade fee",
   "receiveAtLeast": "Receive at least",
   "payAtMost": "Sell at most",
+  "previewAssetsEnabled": "Preview assets enabled",
+  "previewAssetsDisabled": "Preview assets disabled",
+  "previewAssetsEnabledForSession": "Preview assets enabled for this session. To disable open a new tab, or append `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Variants Detected",
     "caption": "Say goodbye to all those confusing asset variants. Say hello to a more seamless experience on Osmosis.",
