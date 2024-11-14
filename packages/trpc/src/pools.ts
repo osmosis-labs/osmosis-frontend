@@ -114,10 +114,10 @@ export const poolsRouter = createTRPCRouter({
               minLiquidityUsd,
               types,
               denoms,
+			  sort: sortInput,
             });
 
-            if (search) return pools;
-            else return sort(pools, sortInput.keyPath, sortInput.direction);
+			return pools;
           },
           cacheKey: JSON.stringify({
             search,

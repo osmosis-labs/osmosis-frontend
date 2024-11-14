@@ -100,10 +100,12 @@ export function queryPools({
   poolIds,
   minLiquidityCap,
   withMarketIncentives,
+  sort,
 }: {
   poolIds?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
+  sort?: SortType;
 } = {}) {
   const url = new URL("/pools", SIDECAR_BASE_URL);
   const params = new URLSearchParams();
@@ -118,6 +120,13 @@ export function queryPools({
     params.append("with_market_incentives", "true");
   }
 
+  if (sort) {
+    const keyPathWithDirection = sort.direction === "desc" ? `-${sort.keyPath}` : sort.keyPath;
+    params.append("sort", keyPathWithDirection);
+  }
+
   url.search = params.toString();
+
+  console.log("url", url.toString());
   return apiClient<SqsPool[]>(url.toString());
 }
