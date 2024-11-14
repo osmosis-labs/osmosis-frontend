@@ -60,7 +60,7 @@ export function useOneClickTradingParams({
   oneClickTradingInfo?: OneClickTradingInfo;
   defaultIsOneClickEnabled?: boolean;
 } = {}) {
-  const { data: defaultParams } =
+  const { data: defaultParams, isLoading } =
     api.local.oneClickTrading.getParameters.useQuery();
 
   const [draft, setDraft] = useState<
@@ -135,7 +135,7 @@ export function useOneClickTradingParams({
 
       setDraft(nextDraft);
 
-      setChanges((prev) =>
+      setChanges(() =>
         compareParams({
           prev: current,
           next: nextDraft,
@@ -150,6 +150,7 @@ export function useOneClickTradingParams({
     initialTransaction1CTParams: current,
     transaction1CTParams: draft,
     spendLimitTokenDecimals: defaultParams?.spendLimitTokenDecimals,
+    isLoading,
     reset,
     setChanges,
     setTransaction1CTParams: setTransaction1CTParamsWithChanges,
