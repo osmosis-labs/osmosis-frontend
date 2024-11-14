@@ -5,7 +5,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
 
-export const ShowPreviewAssetsKey = "show_preview_assets";
+const ShowPreviewAssetsKey = "show_preview_assets";
 
 interface PreviewAssetsState {
   initialized: boolean;
@@ -13,7 +13,7 @@ interface PreviewAssetsState {
   setShowPreviewAssets: (value: boolean) => void;
 }
 
-export const usePreviewAssetsStore = create<PreviewAssetsState>()(
+const usePreviewAssetsStore = create<PreviewAssetsState>()(
   persist(
     (set) => ({
       initialized: false,
