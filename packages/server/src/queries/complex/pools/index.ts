@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";
 import { search, SearchSchema } from "../../../utils/search";
+import { CursorPaginationSchema } from "../../../utils/pagination";
 import { PoolRawResponse } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar } from "./providers";
@@ -60,10 +61,20 @@ export const PoolFilterSchema = z.object({
   types: z.array(z.enum(allPooltypes)).optional(),
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
+  /** Sort results by keyPath and direction */
+  sort: z.object({
+	keyPath: z.string(),
+	direction: z.string(),
+  }).optional(),
+  /** Paginate pools */
+  pagination: CursorPaginationSchema.optional(),
 });
 
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
+
+// Inferred type just for `sort`
+export type SortType = z.infer<typeof PoolFilterSchema>["sort"];
 
 // const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
 
