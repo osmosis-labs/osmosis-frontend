@@ -108,12 +108,8 @@ export function useOneClickTradingSessionManager({
           : undefined,
       },
       {
-        onError: (e) => {
-          const error = e as Error;
+        onError: () => {
           rollbackCreateSession();
-          if (!isRejectedTxErrorMessage({ message: error?.message })) {
-            displayErrorRemovingSessionToast();
-          }
         },
         onSuccess: () => {
           logEvent([EventName.OneClickTrading.enableOneClickTrading]);
