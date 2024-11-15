@@ -7,7 +7,7 @@ import { LRUCache } from "lru-cache";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
-import { SortType } from "../../../../queries/complex/pools";
+import { PaginationType, SortType } from "../../../../queries/complex/pools";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -30,6 +30,7 @@ export function getPoolsFromSidecar({
   poolIds,
   minLiquidityUsd,
   withMarketIncentives = true,
+  pagination,
   sort,
 }: {
   assetLists: AssetList[];
@@ -37,6 +38,7 @@ export function getPoolsFromSidecar({
   poolIds?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
+  pagination?: PaginationType;
   sort?: SortType;
 }): Promise<Pool[]> {
   if (poolIds && !poolIds.length) return Promise.resolve([]);
@@ -55,6 +57,7 @@ export function getPoolsFromSidecar({
             poolIds,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
+			pagination,
             sort,
           }),
         9_000, // 9 seconds

@@ -1,5 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
+import { PaginationType, SortType } from "../../queries/complex/pools";
 import { SIDECAR_BASE_URL } from "../../env";
 import {
   ConcentratedPoolRawResponse,
@@ -100,11 +101,13 @@ export function queryPools({
   poolIds,
   minLiquidityCap,
   withMarketIncentives,
+  pagination,
   sort,
 }: {
   poolIds?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
+  pagination?: PaginationType;
   sort?: SortType;
 } = {}) {
   const url = new URL("/pools", SIDECAR_BASE_URL);
@@ -118,6 +121,15 @@ export function queryPools({
   }
   if (withMarketIncentives) {
     params.append("with_market_incentives", "true");
+  }
+
+  if (pagination) {
+	if (pagination.cursor) {
+	  params.append("page[number]", pagination.cursor.toString());
+	}
+	if (pagination.limit) {
+	  params.append("page[size]", pagination.limit.toString());
+	}
   }
 
   if (sort) {

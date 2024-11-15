@@ -114,6 +114,10 @@ export const poolsRouter = createTRPCRouter({
               minLiquidityUsd,
               types,
               denoms,
+              pagination: {
+                cursor,
+                limit,
+              },
 			  sort: sortInput,
             });
 
