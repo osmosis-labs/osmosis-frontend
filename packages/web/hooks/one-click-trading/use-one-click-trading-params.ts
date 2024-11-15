@@ -45,9 +45,6 @@ export function getParametersFromOneClickTradingInfo({
  * allowing for easy access and modification within components. If `oneClickTradingInfo` is provided, it uses
  * this to set initial parameters. Otherwise, it fetches the default parameters from the application's API.
  *
- * If `oneClickTradingInfo` needs time to stabilize before we can set reliably the initial value for
- * `transaction1CTParams`, we can set `readyToInitialize` to `true` when it's stable.
- *
  * The hook provides a mechanism to reset the parameters to their initial values and tracks changes
  * to the parameters when `trackChanges` is true, comparing them against the initial values.
  *
