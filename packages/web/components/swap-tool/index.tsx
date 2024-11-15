@@ -1,3 +1,7 @@
+/* eslint-disable import/no-extraneous-dependencies */
+// eslint-disable-next-line simple-import-sort/imports
+import { useLogChanges } from "use-debugger-hooks";
+
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
@@ -83,6 +87,31 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     forceSwapInPoolId,
     onSwapSuccess,
   }) => {
+    console.log("--------- swaptool index");
+    useLogChanges(useOtherCurrencies, (change) =>
+      console.log("useOtherCurrencies", change)
+    );
+    useLogChanges(useQueryParams, (change) =>
+      console.log("useQueryParams", change)
+    );
+    useLogChanges(onRequestModalClose, (change) =>
+      console.log("onRequestModalClose", change)
+    );
+    useLogChanges(swapButton, (change) => console.log("swapButton", change));
+    useLogChanges(initialSendTokenDenom, (change) =>
+      console.log("initialSendTokenDenom", change)
+    );
+    useLogChanges(initialOutTokenDenom, (change) =>
+      console.log("initialOutTokenDenom", change)
+    );
+    useLogChanges(page, (change) => console.log("page", change));
+    useLogChanges(forceSwapInPoolId, (change) =>
+      console.log("forceSwapInPoolId", change)
+    );
+    useLogChanges(onSwapSuccess, (change) =>
+      console.log("onSwapSuccess", change)
+    );
+
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
@@ -347,7 +376,22 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     } = useDisclosure();
 
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
-
+    useLogChanges(isSendingTx, (change) => console.log("isSendingTx", change));
+    useLogChanges(quoteType, (change) => console.log("quoteType", change));
+    useLogChanges(fromAmountInputEl, (change) =>
+      console.log("fromAmountInputEl", change)
+    );
+    useLogChanges(toAmountInputEl, (change) =>
+      console.log("toAmountInputEl", change)
+    );
+    useLogChanges(account, (change) => console.log("account", change));
+    useLogChanges(slippageConfig, (change) =>
+      console.log("slippageConfig", change)
+    );
+    useLogChanges(swapState, (change) => console.log("swapState", change));
+    useLogChanges(outputDifference, (change) =>
+      console.log("outputDifference", change)
+    );
     return (
       <>
         <div ref={containerRef} className="relative flex flex-col">

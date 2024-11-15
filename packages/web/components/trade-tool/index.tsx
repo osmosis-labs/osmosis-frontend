@@ -25,6 +25,8 @@ interface TradeToolProps {
 
 export const TradeTool: FunctionComponent<TradeToolProps> = observer(
   ({ page, swapToolProps, previousTrade, setPreviousTrade }) => {
+    console.log("------------ tradetool index render");
+
     const { logEvent } = useAmplitudeAnalytics();
     const { t } = useTranslation();
     const [tab, setTab] = useQueryState(

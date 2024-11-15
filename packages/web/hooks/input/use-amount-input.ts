@@ -1,3 +1,6 @@
+// eslint-disable-next-line simple-import-sort/imports, import/no-extraneous-dependencies
+import { useLogChanges } from "use-debugger-hooks";
+
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
@@ -33,6 +36,12 @@ export function useAmountInput({
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
 }) {
+  console.log("------ useAmountInput");
+  useLogChanges(currency, (change) => console.log("currency", change));
+  useLogChanges(inputDebounceMs, (change) =>
+    console.log("inputDebounceMs", change)
+  );
+  useLogChanges(gasAmount, (change) => console.log("gasAmount", change));
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);

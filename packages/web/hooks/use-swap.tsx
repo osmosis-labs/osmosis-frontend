@@ -28,10 +28,13 @@ import {
   sum,
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
+/* eslint-disable import/no-extraneous-dependencies */
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
+/* eslint-disable import/no-extraneous-dependencies */
+import { useLogChanges } from "use-debugger-hooks";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
@@ -105,6 +108,25 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
+  console.log("------ useSwap");
+  useLogChanges(initialFromDenom, (change) =>
+    console.log("initialFromDenom", change)
+  );
+  useLogChanges(initialToDenom, (change) =>
+    console.log("initialToDenom", change)
+  );
+  useLogChanges(useQueryParams, (change) =>
+    console.log("useQueryParams", change)
+  );
+  useLogChanges(useOtherCurrencies, (change) =>
+    console.log("useOtherCurrencies", change)
+  );
+  useLogChanges(forceSwapInPoolId, (change) =>
+    console.log("forceSwapInPoolId", change)
+  );
+  useLogChanges(maxSlippage, (change) => console.log("maxSlippage", change));
+  useLogChanges(quoteType, (change) => console.log("quoteType", change));
+
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
@@ -199,11 +221,11 @@ export function useSwap(
     inGivenOutQuoteEnabled,
     "in-given-out"
   );
-
   const quote =
     quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
 
   useEffect(() => {
+    console.log("--- useSwap quote effect");
     if (
       quoteType === "in-given-out" &&
       !isInGivenOutQuoteLoading_ &&
@@ -834,6 +856,23 @@ export function useSwapAssets({
   poolId?: string;
   reverse?: boolean;
 } = {}) {
+  console.log("------ useSwapAssets");
+
+  useLogChanges(initialFromDenom, (change) =>
+    console.log("initialFromDenom", change)
+  );
+  useLogChanges(initialToDenom, (change) =>
+    console.log("initialToDenom", change)
+  );
+  useLogChanges(useQueryParams, (change) =>
+    console.log("useQueryParams", change)
+  );
+  useLogChanges(useOtherCurrencies, (change) =>
+    console.log("useOtherCurrencies", change)
+  );
+  useLogChanges(poolId, (change) => console.log("poolId", change));
+  useLogChanges(reverse, (change) => console.log("reverse", change));
+
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
@@ -992,10 +1031,16 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
+  console.log("------ useSwapAmountInput");
+  useLogChanges(swapAssets, (change) => console.log("swapAssets", change));
+  useLogChanges(maxSlippage, (change) => console.log("maxSlippage", change));
+  useLogChanges(forceSwapInPoolId, (change) =>
+    console.log("forceSwapInPoolId", change)
+  );
+
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
-
   const featureFlags = useFeatureFlags();
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
@@ -1110,6 +1155,17 @@ function useToFromDenoms({
   initialToDenom?: string;
   reverse?: boolean;
 }) {
+  console.log("------ useToFromDenoms");
+  useLogChanges(useQueryParams, (change) =>
+    console.log("useQueryParams", change)
+  );
+  useLogChanges(initialFromDenom, (change) =>
+    console.log("initialFromDenom", change)
+  );
+  useLogChanges(initialToDenom, (change) =>
+    console.log("initialToDenom", change)
+  );
+  useLogChanges(reverse, (change) => console.log("reverse", change));
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
@@ -1180,6 +1236,13 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol?: string;
   existingAssets: TAsset[] | undefined;
 }) {
+  console.log("------ useSwapAsset");
+  useLogChanges(minDenomOrSymbol, (change) =>
+    console.log("minDenomOrSymbol", change)
+  );
+  useLogChanges(existingAssets, (change) =>
+    console.log("existingAssets", change)
+  );
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -1235,6 +1298,11 @@ function useQueryRouterBestQuote(
   enabled: boolean,
   quoteType: QuoteDirection = "out-given-in"
 ) {
+  console.log("------ useQueryRouterBestQuote");
+  useLogChanges(input, (change) => console.log("input", change));
+  useLogChanges(enabled, (change) => console.log("enabled", change));
+  useLogChanges(quoteType, (change) => console.log("quoteType", change));
+
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const trpcReact = createTRPCReact<AppRouter>();
@@ -1414,6 +1482,13 @@ export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {
+  console.log("------ useRecommendedAssets");
+  useLogChanges(fromCoinMinimalDenom, (change) =>
+    console.log("fromCoinMinimalDenom", change)
+  );
+  useLogChanges(toCoinMinimalDenom, (change) =>
+    console.log("toCoinMinimalDenom", change)
+  );
   return useMemo(
     () =>
       RecommendedSwapDenoms.map((denom) => {
@@ -1453,6 +1528,12 @@ export function useAmountWithSlippage({
   slippageConfig: ObservableSlippageConfig;
   quoteType: QuoteDirection;
 }) {
+  console.log("------ useAmountWithSlippage");
+  useLogChanges(swapState, (change) => console.log("swapState", change));
+  useLogChanges(slippageConfig, (change) =>
+    console.log("slippageConfig", change)
+  );
+  useLogChanges(quoteType, (change) => console.log("quoteType", change));
   const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
     if (quoteType === "out-given-in") {
       const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
@@ -1530,6 +1611,12 @@ export function useDynamicSlippageConfig({
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
+  console.log("------ useDynamicSlippageConfig");
+  useLogChanges(feeError ?? false, (change) => console.log("feeError", change));
+  useLogChanges(slippageConfig, (change) =>
+    console.log("slippageConfig", change)
+  );
+  useLogChanges(quoteType, (change) => console.log("quoteType", change));
   useEffect(() => {
     if (feeError) {
       if (
