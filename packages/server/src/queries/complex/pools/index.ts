@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";
 import { search, SearchSchema } from "../../../utils/search";
+import { SortSchema } from "../../../utils/sort";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { PoolRawResponse } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
@@ -62,10 +63,7 @@ export const PoolFilterSchema = z.object({
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
   /** Sort results by keyPath and direction */
-  sort: z.object({
-	keyPath: z.string(),
-	direction: z.string(),
-  }).optional(),
+  sort: SortSchema.optional(),
   /** Paginate pools */
   pagination: CursorPaginationSchema.optional(),
 });
@@ -73,7 +71,10 @@ export const PoolFilterSchema = z.object({
 /** Params for filtering pools. */
 export type PoolFilter = z.infer<typeof PoolFilterSchema>;
 
-// Inferred type just for `sort`
+// Inferred type just for pagination
+export type PaginationType = z.infer<typeof PoolFilterSchema>["pagination"];
+
+// Inferred type just for sort
 export type SortType = z.infer<typeof PoolFilterSchema>["sort"];
 
 // const searchablePoolKeys = ["id", "coinDenoms", "poolNameByDenom"];
@@ -105,6 +106,7 @@ export async function getPools(
 ): Promise<Pool[]> {
   let pools = await poolProvider(params);
 
+  // TODO: migrate
   pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
 
   if (params?.types) {
