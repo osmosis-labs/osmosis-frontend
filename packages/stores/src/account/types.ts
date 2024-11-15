@@ -87,9 +87,10 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
     };
 
 export interface TxEvents {
-  onBroadcastFailed?: (string: string, e?: Error) => void;
-  onBroadcasted?: (string: string, txHash: Uint8Array) => void;
-  onFulfill?: (string: string, tx: any) => void;
+  onSign?: () => Promise<void> | void;
+  onBroadcastFailed?: (chainNameOrId: string, e?: Error) => void;
+  onBroadcasted?: (chainNameOrId: string, txHash: Uint8Array) => void;
+  onFulfill?: (chainNameOrId: string, tx: any) => void;
   onExceeds1CTNetworkFeeLimit?: (params: {
     // Continue with a wallet like Keplr.
     continueTx: () => void;

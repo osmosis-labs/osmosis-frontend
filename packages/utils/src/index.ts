@@ -14,6 +14,7 @@ export * from "./function";
 export * from "./gas-utils";
 export * from "./ibc-utils";
 export * from "./math";
+export * from "./nomic";
 export * from "./object";
 export * from "./poll";
 export * from "./solana";

@@ -520,6 +520,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
+          onSign?: () => Promise<void> | void;
         }
   ) {
     runInAction(() => {
@@ -547,6 +548,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
+      let onSign: (() => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -554,6 +556,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         } else {
           onBroadcasted = onTxEvents?.onBroadcasted;
           onFulfill = onTxEvents?.onFulfill;
+          onSign = onTxEvents?.onSign;
         }
       }
 
@@ -597,6 +600,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
+
+      if (this.options.preTxEvents?.onSign) {
+        await this.options.preTxEvents.onSign();
+      }
+
+      if (onSign) {
+        await onSign();
+      }
 
       const restEndpoint = getEndpointString(
         await wallet.getRestEndpoint(true)
