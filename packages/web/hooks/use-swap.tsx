@@ -1198,7 +1198,7 @@ function useToFromDenoms({
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
-  const switchAssets = () => {
+  const switchAssets = useCallback(() => {
     if (useQueryParams) {
       const temp = fromDenomQueryParam;
       setFromDenomQueryParam(toAssetQueryParam);
@@ -1209,7 +1209,17 @@ function useToFromDenoms({
     const temp = fromAssetState;
     setFromAssetState(toAssetState);
     setToAssetState(temp);
-  };
+  }, [
+    useQueryParams,
+    fromDenomQueryParam,
+    toAssetQueryParam,
+    setFromDenomQueryParam,
+    setToAssetQueryParam,
+    fromAssetState,
+    toAssetState,
+    setFromAssetState,
+    setToAssetState,
+  ]);
 
   const fromAssetDenom = useQueryParams
     ? fromDenomQueryParamStr
