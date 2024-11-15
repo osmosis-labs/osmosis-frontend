@@ -201,6 +201,12 @@ export const OneClickTradingSettings = ({
   ) => {
     setTransaction1CTParamsProp((prevParams) => {
       const nextParams = runIfFn(newParamsOrFn, prevParams);
+
+      if (!initialTransaction1CTParams || !nextParams) {
+        console.error("Transaction params are undefined");
+        return prevParams;
+      }
+
       setChanges(
         Array.from(
           new Set([
