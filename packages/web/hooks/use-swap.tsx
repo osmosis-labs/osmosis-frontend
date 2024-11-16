@@ -49,6 +49,7 @@ import {
 import { useTranslation } from "~/hooks/language";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -1374,18 +1375,16 @@ function useQueryRouterBestQuote(
       }
     );
 
-  const quoteResult =
-    quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
   const {
     data: quote,
     isSuccess,
     isError,
     error,
-  } = useMemo(() => {
-    return quoteResult;
-  }, [quoteResult]);
+  } = useDeepMemo(() => {
+    return quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
+  }, [quoteType, outGivenInQuote, inGivenOutQuote]);
 
-  const acceptedQuote = useMemo(() => {
+  const acceptedQuote = useDeepMemo(() => {
     if (
       !quote ||
       !input.tokenIn ||
@@ -1446,8 +1445,13 @@ function useQueryRouterBestQuote(
     quoteType,
   ]);
 
+  const quoteData = useDeepMemo(
+    () => (acceptedQuote ? { ...acceptedQuote, messages } : undefined),
+    [acceptedQuote, messages]
+  );
+
   return {
-    data: acceptedQuote ? { ...acceptedQuote, messages } : undefined,
+    data: quoteData,
     isLoading: !isSuccess,
     errorMsg: error?.message,
     numSucceeded: isSuccess ? 1 : 0,
