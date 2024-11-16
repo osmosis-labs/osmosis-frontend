@@ -12,6 +12,9 @@ export function useDeepMemo<T>(
   factory: () => T,
   dependencies: DependencyList
 ): T {
+  if (!Array.isArray(dependencies)) {
+    throw new Error("useDeepMemo expects a dependency array");
+  }
   const dependenciesRef = useRef<DependencyList>();
   const memoizedValueRef = useRef<T>();
 
