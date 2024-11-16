@@ -726,6 +726,14 @@ export function useSwap(
     quoteType,
     outAmountInput.fiatValue,
   ]);
+  const totalFee = useDeepMemo(
+    () =>
+      sum([
+        tokenInFeeAmountFiatValue,
+        networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+      ]),
+    [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
+  );
 
   return {
     ...swapAssets,
@@ -740,10 +748,7 @@ export function useSwap(
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
-    totalFee: sum([
-      tokenInFeeAmountFiatValue,
-      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
-    ]),
+    totalFee,
     networkFee,
     isLoadingNetworkFee:
       inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
