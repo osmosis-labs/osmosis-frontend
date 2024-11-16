@@ -1133,12 +1133,21 @@ function useSwapAmountInput({
     );
   }, [currentBalanceNetworkFee?.gasAmount]);
 
-  return {
-    ...inAmountInput,
+  const returnValue = useDeepMemo(() => {
+    return {
+      ...inAmountInput,
+      isLoadingCurrentBalanceNetworkFee,
+      hasErrorWithCurrentBalanceQuote,
+      notEnoughBalanceForMax,
+    };
+  }, [
+    inAmountInput,
     isLoadingCurrentBalanceNetworkFee,
     hasErrorWithCurrentBalanceQuote,
     notEnoughBalanceForMax,
-  };
+  ]);
+
+  return returnValue;
 }
 
 /**
