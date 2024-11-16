@@ -76,19 +76,21 @@ export function isEvmAddressValid({ address }: { address: string }): boolean {
 
 export function isBitcoinAddressValid({
   address,
-  isTestnet = false,
 }: {
   address: string;
-  isTestnet?: boolean;
 }): boolean {
   try {
-    bitcoin.address.toOutputScript(
-      address,
-      isTestnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
-    );
-    return true;
+    // Attempt to decode the address
+    bitcoin.address.fromBase58Check(address);
+    return true; // Address is valid
   } catch (e) {
-    return false;
+    try {
+      // If Base58 decoding fails, try Bech32 decoding
+      bitcoin.address.fromBech32(address);
+      return true; // Address is valid
+    } catch (e) {
+      return false; // Address is invalid
+    }
   }
 }
 

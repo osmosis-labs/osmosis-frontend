@@ -709,7 +709,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       });
 
       const btcMinimalDenom = IS_TESTNET
-        ? "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"
+        ? "ibc/35A61206653F4704187A17E76AB2E2C59856265B20D84B14BC7B3E89D785B461"
         : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
 
       const btcPrice = await getAssetPrice({
