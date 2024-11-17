@@ -35,6 +35,7 @@ import {
   getImageRelativeFilePath,
   getOsmosisChainId,
   saveAssetImageToTokensDir,
+  writeCurrentAssetListHash,
 } from "./utils";
 
 interface ResponseAssetList {
@@ -303,15 +304,18 @@ async function generateAssetListFile({
 
 async function generateAssetImages({
   assetList,
+  commitHash,
 }: {
   assetList: ResponseAssetList;
+  commitHash: string;
 }) {
   console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
-    await saveAssetImageToTokensDir(
-      asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
-      asset
-    );
+    await saveAssetImageToTokensDir({
+      imageUrl: asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
+      asset,
+      currentAssetListHash: commitHash,
+    });
   }
   console.timeEnd("Successfully downloaded images");
 }
@@ -336,6 +340,10 @@ async function main() {
 
   const mainLatestCommitHash =
     ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
+
+  if (!mainLatestCommitHash) {
+    throw new Error("Failed to get latest commit hash");
+  }
 
   console.info(`Using hash '${mainLatestCommitHash}' to generate assets`);
 
@@ -381,7 +389,10 @@ async function main() {
 
   await generateAssetImages({
     assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
+    commitHash: mainLatestCommitHash,
   });
+
+  writeCurrentAssetListHash(mainLatestCommitHash);
 
   let mainnetAssetLists: AssetList[] | undefined;
   let testnetAssetLists: AssetList[] | undefined;
