@@ -71,7 +71,7 @@ export function writeCurrentAssetListHash(hash: string): void {
 
 /**
  * Download an image from the provided URL and save it to the local file system.
- * Only saves images if the current asset list hash differs from the stored hash.
+ * Only saves images if the current asset list hash differs from the stored hash or the file doesn't exist.
  * @param params An object containing the image URL, asset information, and current asset list hash.
  * @returns The filename of the saved image or null if skipped.
  */
