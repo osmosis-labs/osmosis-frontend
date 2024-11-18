@@ -37,11 +37,10 @@ function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
+export const codegenDir = "config/generated";
+
 // Path to the lock file
-const lockFilePath = path.join(
-  path.resolve(),
-  "/config/generated/asset-lock.json"
-);
+const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
 
 /**
  * Read the stored asset list hash from the lock file.

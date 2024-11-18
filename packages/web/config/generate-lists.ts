@@ -19,6 +19,7 @@ import type {
   IbcTransferMethod,
 } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
+import * as fs from "fs";
 
 import { generateTsFile } from "~/utils/codegen";
 
@@ -31,6 +32,7 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "./env";
 import {
+  codegenDir,
   getChainList,
   getImageRelativeFilePath,
   getOsmosisChainId,
@@ -44,7 +46,6 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
-const codegenDir = "config/generated";
 
 function getFilePath({
   chainId,
@@ -335,6 +336,10 @@ async function getLatestCommitHash() {
 }
 
 async function main() {
+  if (!fs.existsSync(codegenDir)) {
+    fs.mkdirSync(codegenDir);
+  }
+
   const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
   const testnetOsmosisChainId = getOsmosisChainId("testnet");
 
