@@ -394,8 +394,8 @@ export function calcFontSize(numChars: number, isMobile: boolean): string {
   return "16px";
 }
 
-export function formatSpendLimit(spendLimit: PricePretty | undefined) {
-  return `${spendLimit?.symbol}${trimPlaceholderZeros(
-    spendLimit?.toDec().toString(2) ?? ""
+export function trimmedPriceWithSymbol(price: PricePretty | undefined) {
+  return `${price?.symbol}${trimPlaceholderZeros(
+    price?.toDec().toString(2) ?? ""
   )}`;
 }

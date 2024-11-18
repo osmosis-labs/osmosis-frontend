@@ -35,7 +35,7 @@ import {
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { formatSpendLimit } from "~/utils/formatter";
+import { trimmedPriceWithSymbol } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -228,11 +228,11 @@ export const OneClickTradingSettings = ({
 
   const remainingSpendLimit =
     initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
-      ? `${formatSpendLimit(
+      ? `${trimmedPriceWithSymbol(
           initialTransaction1CTParams.spendLimit.sub(
             amountSpentData.amountSpent
           )
-        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
+        )} / ${trimmedPriceWithSymbol(initialTransaction1CTParams.spendLimit)}`
       : undefined;
 
   return (
@@ -378,7 +378,7 @@ export const OneClickTradingSettings = ({
                           isOneClickTradingEnabled &&
                           !changes.includes("spendLimit")
                             ? remainingSpendLimit
-                            : formatSpendLimit(
+                            : trimmedPriceWithSymbol(
                                 transaction1CTParams?.spendLimit
                               )}{" "}
                           {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}

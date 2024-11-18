@@ -11,7 +11,7 @@ import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-clic
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
-import { formatSpendLimit } from "~/utils/formatter";
+import { trimmedPriceWithSymbol } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export function useOneClickTradingSessionManager({
@@ -251,7 +251,7 @@ export function useRemainingSpendLimit({
   const remainingSpendLimit = useMemo(
     () =>
       transactionParams?.spendLimit && amountSpentData?.amountSpent
-        ? formatSpendLimit(
+        ? trimmedPriceWithSymbol(
             transactionParams.spendLimit.sub(amountSpentData.amountSpent)
           )
         : undefined,
