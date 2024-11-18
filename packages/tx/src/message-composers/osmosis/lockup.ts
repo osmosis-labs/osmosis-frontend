@@ -20,13 +20,13 @@ export async function makeLockTokensMsg({
 
 export async function makeBeginUnlockingMsg({
   owner,
-  ID,
+  iD,
   coins,
 }: MsgBeginUnlocking) {
   const osmosis = await getOsmosisCodec();
   return osmosis.lockup.MessageComposer.withTypeUrl.beginUnlocking({
     owner,
-    ID,
+    iD,
     coins,
   });
 }

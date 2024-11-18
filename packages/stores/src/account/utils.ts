@@ -141,9 +141,9 @@ export const UseOneClickTradingLocalStorageKey = "use-one-click-enabled";
 export const HasUsedOneClickTradingLocalStorageKey = "has-used-one-click";
 
 // The number of heights from current before transaction times out.
-// 30 heights * 5 second block time = 150 seconds before transaction
+// 75 heights * 2 second block time = 150 seconds before transaction
 // timeout and mempool eviction.
-const defaultTimeoutHeightOffset = 30;
+const defaultTimeoutHeightOffset = 75;
 
 export const NEXT_TX_TIMEOUT_HEIGHT_OFFSET: bigint = BigInt(
   process.env.TIMEOUT_HEIGHT_OFFSET

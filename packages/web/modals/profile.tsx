@@ -47,7 +47,7 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -67,7 +67,7 @@ export const ProfileModal: FunctionComponent<
   const { accountStore, profileStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
-  const { fiatRampSelection } = useBridge();
+  const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
   const featureFlags = useFeatureFlags();
 
   const {
@@ -279,15 +279,7 @@ export const ProfileModal: FunctionComponent<
                       <span>{t("buyTokens")}</span>
                     </button>
 
-                    <Link
-                      href={
-                        featureFlags.portfolioPageAndNewAssetsPage
-                          ? "/portfolio"
-                          : "/assets"
-                      }
-                      passHref
-                      legacyBehavior
-                    >
+                    <Link href="/portfolio" passHref legacyBehavior>
                       <ArrowButton isLink>
                         {t("profile.viewAllAssets")}
                       </ArrowButton>

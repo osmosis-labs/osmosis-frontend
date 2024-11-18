@@ -70,7 +70,7 @@ export function getOneClickTradingSessionAuthenticator({
   allowedAmount: string;
   sessionPeriod: OneClickTradingTimeLimit;
 }): {
-  type: AuthenticatorType;
+  authenticatorType: AuthenticatorType;
   data: Uint8Array;
 } {
   const signatureVerification = {
@@ -112,8 +112,10 @@ export function getOneClickTradingSessionAuthenticator({
     messageFilterAnyOf,
   ];
 
+  // We return the message structure we want to broadcase here,
+  // not the structure of the authenticator returned from the chain.
   return {
-    type: "AllOf",
+    authenticatorType: "AllOf",
     data: new Uint8Array(
       Buffer.from(JSON.stringify(compositeAuthData)).toJSON().data
     ),
@@ -245,6 +247,10 @@ export const useCreateOneClickTradingSession = ({
       const allowedMessages: AvailableOneClickTradingMessages[] = [
         "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+        "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+        "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
+        "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
       ];
 
       let sessionPeriod: OneClickTradingTimeLimit;

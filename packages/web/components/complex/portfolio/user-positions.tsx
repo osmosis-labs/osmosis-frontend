@@ -36,7 +36,7 @@ export const UserPositionsSection: FunctionComponent<{ address?: string }> = ({
             <span className="body2 text-osmoverse-200">
               {t("portfolio.yourSuperchargedPositions")}
             </span>
-            <MyPositionsSection />
+            <MyPositionsSection showRoi={false} showSelectedRange={false} />
           </section>
         )}
         {hasPools && (

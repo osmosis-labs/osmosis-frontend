@@ -26,8 +26,8 @@ import {
   useWindowSize,
 } from "~/hooks";
 import {
-  useOrderbookAllActiveOrders,
   useOrderbookClaimableOrders,
+  useOrderbookOrders,
 } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
 import {
@@ -81,11 +81,11 @@ export const OrderHistory = observer(() => {
     hasNextPage,
     refetch,
     isRefetching,
-  } = useOrderbookAllActiveOrders({
+  } = useOrderbookOrders({
     userAddress: wallet?.address ?? "",
     pageSize: 20,
+    refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
   });
-
   const groupedOrders = useMemo(() => groupOrdersByStatus(orders), [orders]);
   const groups = useMemo(
     () =>
@@ -115,11 +115,15 @@ export const OrderHistory = observer(() => {
     scrollMargin: listRef.current?.offsetTop ?? 0,
     paddingStart: 45,
   });
+  const filledOrdersInDisplay = useMemo(() => {
+    return orders.filter((o) => o.status === "filled");
+  }, [orders]);
 
   const { claimAllOrders, count: filledOrdersCount } =
     useOrderbookClaimableOrders({
       userAddress: wallet?.address ?? "",
-      disabled: isLoading || orders.length === 0 || isRefetching,
+      disabled: isLoading || filledOrdersInDisplay.length === 0 || isRefetching,
+      refetchInterval: featureFlags.sqsActiveOrders ? 10000 : 30000,
     });
 
   const claimOrders = useCallback(async () => {
@@ -216,14 +220,7 @@ export const OrderHistory = observer(() => {
       >
         {!isLoading && (
           <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
-            <tr
-              className={classNames(
-                {
-                  "!bg-osmoverse-1000": featureFlags.limitOrders,
-                },
-                gridClasses
-              )}
-            >
+            <tr className={classNames("bg-osmoverse-1000", gridClasses)}>
               {headers.map((header) => (
                 <th
                   key={header}
@@ -337,16 +334,21 @@ const TableGroupHeader = ({
 
   if (group === "filled") {
     return (
-      <tr style={style} className="flex items-center">
+      <tr
+        style={style}
+        className={classNames(
+          "grid grid-cols-[auto_180px] items-center md:grid-cols-[auto_100px]"
+        )}
+      >
         <td colSpan={5} className="!p-0">
-          <div className="flex w-full items-end justify-between pr-4">
-            <div className="relative flex items-end gap-3 pt-5">
-              <div className="flex items-center gap-2 pb-3">
-                <span className="sm:subtitle1 text-h6 font-h6">
+          <div className="flex w-full items-center justify-between pr-4">
+            <div className="relative flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <span className="sm:subtitle1 text-h5 font-h5">
                   {t("limitOrders.orderHistoryHeaders.filled")}
                 </span>
                 <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                  <span className="md:body2 pb-4 pt-8 text-h6 font-h6">
+                  <span className="md:body2 text-subtitle font-subtitle">
                     {filledOrdersCount}
                   </span>
                 </div>
@@ -355,7 +357,7 @@ const TableGroupHeader = ({
                 title={t("limitOrders.whatIsOrderClaim.title")}
                 body={t("limitOrders.whatIsOrderClaim.description")}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800 md:hidden">
                   <Icon
                     id="question"
                     className="h-6 w-6 text-wosmongton-200"
@@ -365,15 +367,19 @@ const TableGroupHeader = ({
                 </div>
               </GenericDisclaimer>
             </div>
-            <button
-              className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
-              onClick={claim}
-              disabled={claiming}
-            >
-              {claiming && <Spinner className="mr-2 !h-2 !w-2" />}
-              <span className="subtitle1">{t("limitOrders.claimAll")}</span>
-            </button>
           </div>
+        </td>
+        <td className="flex items-center justify-end md:!p-0">
+          <button
+            className="md:scale-1/2 flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-3 px-4 disabled:opacity-50"
+            onClick={claim}
+            disabled={claiming}
+          >
+            {claiming && <Spinner className="mr-2 !h-2 !w-2 md:hidden" />}
+            <span className="subtitle1 md:text-caption">
+              {t("limitOrders.claimAll")}
+            </span>
+          </button>
         </td>
       </tr>
     );
@@ -420,7 +426,7 @@ const TableOrderRow = memo(
       baseAsset?.rawAsset.logoURIs.png ??
       "";
 
-    const placedAt = dayjs(placed_at);
+    const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
     const formattedDate = placedAt.format("MMM D");
 
@@ -443,8 +449,8 @@ const TableOrderRow = memo(
         case "partiallyFilled":
           return <OrderProgressBar order={order} />;
         case "cancelled":
-          const dayDiff = dayjs(new Date()).diff(dayjs(placed_at), "d");
-          const hourDiff = dayjs(new Date()).diff(dayjs(placed_at), "h");
+          const dayDiff = dayjs(new Date()).diff(placedAt, "d");
+          const hourDiff = dayjs(new Date()).diff(placedAt, "h");
 
           return (
             <span className="body2 md:caption text-osmoverse-300">
@@ -465,6 +471,7 @@ const TableOrderRow = memo(
     })();
     return (
       <tr
+        data-transaction-hash={order.placed_tx}
         style={style}
         className={classNames(
           gridClasses,
@@ -572,14 +579,18 @@ const TableOrderRow = memo(
             </p>
           </div>
         </td>
-        <td className="!px-0 !text-left xl:!py-0  md:hidden">
+        <td className="!px-0 !text-left xl:!py-0 md:hidden">
           <div className="flex flex-col gap-1">
             <p className="body2 text-osmoverse-300">{formattedTime}</p>
             <p>{formattedDate}</p>
           </div>
         </td>
-        <td className="!px-0 !text-left  xl:!py-0">
-          <div className="xl: flex flex-col gap-1 xl:items-end xl:justify-end">
+        <td
+          className={classNames("!px-0 !text-left xl:!py-0", {
+            "flex items-center xl:justify-end": status === "filled",
+          })}
+        >
+          <div className="flex flex-col gap-1 xl:items-end xl:justify-end">
             {statusComponent}
             <span
               className={classNames(

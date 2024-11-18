@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { useCallbackRef } from "~/hooks/use-callback-ref";
 
-export interface UseControllableStateProps<T> {
+interface UseControllableStateProps<T> {
   value?: T;
   defaultValue?: T | (() => T);
   onChange?: (value: T) => void;

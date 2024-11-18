@@ -1,10 +1,10 @@
 import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
-import type { OfflineAminoSigner } from "@cosmjs/amino";
+import { type OfflineAminoSigner } from "@cosmjs/amino";
 import type { StdFee } from "@cosmjs/launchpad";
-import type {
-  EncodeObject,
-  OfflineDirectSigner,
-  Registry,
+import {
+  type EncodeObject,
+  type OfflineDirectSigner,
+  type Registry,
 } from "@cosmjs/proto-signing";
 import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {
@@ -26,10 +26,10 @@ import {
   Functionify,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
-  getOsmosisCodec,
   QuoteStdFee,
   SimulateNotAvailableError,
   TxTracer,
@@ -499,13 +499,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *   - `onBroadcasted`: Invoked when the transaction is successfully broadcasted.
    *   - `onFulfill`: Invoked when the transaction is successfully fulfilled.
    *
-   * @throws {Error} Throws an error if:
+   * @throws Throws an error if:
    *   - Wallet for the given chain is not provided or not connected.
    *   - There are no messages to send.
    *   - Wallet address is missing.
    *   - Broadcasting the transaction fails.
    *
-   * @returns {Promise<void>} Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
+   * @returns Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
    */
   async signAndBroadcast(
     chainNameOrId: string,
@@ -822,21 +822,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     }
 
-    const osmosis = await getOsmosisCodec();
-
     /**
      * If the message is an authenticator message, force the direct signing.
      * This is because the authenticator message should be signed with proto for now.
      */
-    const isAuthenticatorMsg = messages.some(
+
+    type TypeUrl = keyof typeof osmosisAminoConverters;
+    const getTypeUrl = (typeUrl: TypeUrl) => {
+      return typeUrl;
+    };
+
+    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+    // TODO: Copy what's been done there for this message below
+    const doesTxNeedDirectSigning = messages.some(
       (message) =>
         message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
-        message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
+        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
     );
 
-    const forceSignDirect = isAuthenticatorMsg;
+    const forceSignDirect = doesTxNeedDirectSigning;
 
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
@@ -1067,7 +1071,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const aminoTypes = await this.getAminoTypes();
-    const msgs = messages.map((msg) => {
+    const registry = await this.getRegistry();
+
+    /**
+     * Encode the messages to the proto format to normalize data types like Decimals.
+     * Then, convert the messages to their amino representations.
+     *
+     * This is necessary due to changes in Decimals in Osmosis v26.
+     * It will fix the following transactions:
+     * - Unbonding Weighted pool shares
+     * - Withdrawing concentrated liquidity positions
+     * - Creating all types of pools
+     */
+    const normalizedMessages = messages.map((msg) => {
+      const encodedMessage = registry.encode(msg);
+      const decodedMessage = registry.decode({
+        typeUrl: msg.typeUrl,
+        value: encodedMessage,
+      });
+      return {
+        value: decodedMessage,
+        typeUrl: msg.typeUrl,
+      } satisfies EncodeObject;
+    });
+
+    const msgs = normalizedMessages.map((msg) => {
       const res = aminoTypes.toAmino(msg);
       // Include the 'memo' field again because the 'registry' omits it
       if (msg.value.memo) {
@@ -1100,16 +1128,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const registry = await this.getRegistry();
     const signedTxBodyBytes = registry.encodeTxBody({
-      messages: signed.msgs.map((msg) => {
-        const res = aminoTypes.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
+      messages,
       memo: signed.memo,
       timeoutHeight: BigInt(signDoc.timeout_height ?? "0"),
     });
@@ -1227,7 +1247,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
 
     const registry = await this.getRegistry();
-    const txBodyBytes = registry.encode(txBodyEncodeObject) as Uint8Array;
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],

@@ -66,18 +66,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-export type Validator = {
-  validatorName: string | undefined;
-  myStake: Dec;
-  votingPower: Dec;
-  commissions: Dec;
-  website: string | undefined;
-  imageUrl: string;
-  operatorAddress: string;
-  isVotingPowerTooHigh: boolean;
-};
-
-export type FormattedValidator = {
+type FormattedValidator = {
   validatorName: string;
   formattedMyStake: string;
   formattedVotingPower: string;
@@ -535,7 +524,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   .getHeaderGroups()
                   .slice(1)
                   .map((headerGroup) => (
-                    <tr className="top-0 bg-osmoverse-800" key={headerGroup.id}>
+                    <tr className="top-0 bg-osmoverse-850" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
                           <th key={header.id} colSpan={header.colSpan}>

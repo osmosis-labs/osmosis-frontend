@@ -9,12 +9,16 @@ export function GenericDisclaimer({
   title,
   disabled,
   containerClassName,
+  childWrapperClassName,
+  tooltipClassName,
 }: PropsWithChildren<
   Partial<{
     title: ReactNode;
     body: ReactNode;
     disabled: boolean;
     containerClassName: string;
+    childWrapperClassName?: string;
+    tooltipClassName?: string;
   }>
 >) {
   return (
@@ -32,9 +36,12 @@ export function GenericDisclaimer({
           </div>
         </div>
       }
+      className={tooltipClassName}
       enablePropagation
     >
-      <div className="w-full">{children}</div>
+      <div className={classNames("w-full", childWrapperClassName)}>
+        {children}
+      </div>
     </Tooltip>
   );
 }

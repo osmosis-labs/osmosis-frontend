@@ -6,7 +6,7 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 
-export type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
+type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
   void,
   unknown,
   { authenticatorId: string },

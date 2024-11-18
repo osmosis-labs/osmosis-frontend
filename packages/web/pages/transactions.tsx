@@ -2,12 +2,13 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useQueryState } from "nuqs";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect } from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { TransactionContent } from "~/components/transactions/transaction-content";
-import { TransactionDetailsModal } from "~/components/transactions/transaction-details/transaction-details-modal";
-import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details/transaction-details-slideover";
+import { TransactionDetailsModal } from "~/components/transactions/transaction-details-modal";
+import { TransactionDetailsSlideover } from "~/components/transactions/transaction-details-slideover";
+import { useTransactionModal } from "~/components/transactions/use-transaction-details-state";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -15,10 +16,9 @@ import {
   useNavBar,
   useTranslation,
   useWalletSelect,
-  useWindowSize,
 } from "~/hooks";
+import { useTransactionHistory } from "~/hooks/use-transaction-history";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
 
 // @ts-ignore
 const EXAMPLE = {
@@ -53,22 +53,10 @@ const Transactions: React.FC = observer(() => {
 
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const { data, isFetching: isGetTransactionsFetching } =
-    api.edge.transactions.getTransactions.useQuery(
-      {
-        address,
-        page: pageString,
-        pageSize: pageSizeString,
-      },
-      {
-        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      }
-    );
-
-  const { transactions, hasNextPage } = data ?? {
-    transactions: [],
-    hasNextPage: false,
-  };
+  const { transactions, hasNextPage, isLoading } = useTransactionHistory({
+    pageNumber: pageString,
+    pageSize: pageSizeString,
+  });
 
   useEffect(() => {
     if (!transactionsPage && _isInitialized) {
@@ -109,29 +97,15 @@ const Transactions: React.FC = observer(() => {
     ctas: [],
   });
 
-  const [selectedTransactionHash, setSelectedTransactionHash] = useState<
-    string | undefined
-  >(undefined);
-
-  const [open, setOpen] = useState(false);
-
-  const { isLargeDesktop } = useWindowSize();
-
-  useEffect(() => {
-    // edge case - Close the slide over when the screen size changes to large desktop, reduces bugginess with transition
-    setOpen(false);
-  }, [isLargeDesktop]);
-
-  const onRequestClose = () => {
-    setOpen(false);
-    // add delay for smoother transition
-    setTimeout(() => setSelectedTransactionHash(undefined), 300);
-  };
-
-  const selectedTransaction = useMemo(
-    () => transactions.find((tx) => tx.hash === selectedTransactionHash),
-    [transactions, selectedTransactionHash]
-  );
+  const {
+    open,
+    setOpen,
+    selectedTransactionHash,
+    setSelectedTransactionHash,
+    onRequestClose,
+    selectedTransaction,
+    isLargeDesktop,
+  } = useTransactionModal({ transactions });
 
   return (
     <main className="mx-auto flex max-w-7xl px-16 lg:px-8 md:px-4">
@@ -142,7 +116,7 @@ const Transactions: React.FC = observer(() => {
         setOpen={setOpen}
         open={open}
         address={address}
-        isLoading={isGetTransactionsFetching || isWalletLoading}
+        isLoading={isLoading || isWalletLoading}
         isWalletConnected={isWalletConnected}
         page={pageString}
         hasNextPage={hasNextPage}

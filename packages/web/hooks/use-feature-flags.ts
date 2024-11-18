@@ -1,45 +1,10 @@
-import { apiClient } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
+import { AvailableFlags } from "@osmosis-labs/types";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
-import { LevanaGeoBlockedResponse } from "~/pages/_app";
 
-// NOTE: Please add a default value to any new flag you add to this list
-export type AvailableFlags =
-  | "staking"
-  | "swapsAdBanner"
-  | "tokenInfo"
-  | "sidebarOsmoChangeAndChart"
-  | "multiBridgeProviders"
-  | "earnPage"
-  | "transactionsPage"
-  | "sidecarRouter"
-  | "legacyRouter"
-  | "tfmRouter"
-  | "osmosisUpdatesPopUp"
-  | "aprBreakdown"
-  | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton"
-  | "positionRoi"
-  | "swapToolSimulateFee"
-  | "portfolioPageAndNewAssetsPage"
-  | "displayDailyEarn"
-  | "newAssetsPage"
-  | "newDepositWithdrawFlow"
-  | "oneClickTrading"
-  | "limitOrders"
-  | "advancedChart"
-  | "cypherCard"
-  | "newPortfolioPage";
-
-type ModifiedFlags =
-  | Exclude<AvailableFlags, "mobileNotifications">
-  | "_isInitialized"
-  | "_isClientIDPresent";
-
-const defaultFlags: Record<ModifiedFlags, boolean> = {
+const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
   tokenInfo: true,
@@ -47,50 +12,30 @@ const defaultFlags: Record<ModifiedFlags, boolean> = {
   multiBridgeProviders: true,
   earnPage: false,
   transactionsPage: true,
-  sidecarRouter: true,
-  legacyRouter: true,
-  tfmRouter: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
-  tfmProTradingNavbarButton: true,
+  tfmProTradingNavbarButton: false,
   positionRoi: true,
-  swapToolSimulateFee: false,
-  portfolioPageAndNewAssetsPage: false,
-  newAssetsPage: true,
+  swapToolSimulateFee: true,
   displayDailyEarn: false,
-  newDepositWithdrawFlow: false,
-  oneClickTrading: false,
+  newDepositWithdrawFlow: true,
+  oneClickTrading: true,
   limitOrders: true,
   advancedChart: false,
-  _isInitialized: false,
-  _isClientIDPresent: false,
   cypherCard: false,
-  newPortfolioPage: false,
+  inGivenOut: false,
+  sqsActiveOrders: false,
+  alloyedAssets: false,
+  bridgeDepositAddress: false,
+  nomicWithdrawAmount: false,
 };
 
-const LIMIT_ORDER_COUNTRY_CODES =
-  process.env.NEXT_PUBLIC_LIMIT_ORDER_COUNTRY_CODES?.split(",").map((s) =>
-    s.trim()
-  ) ?? [];
-
-export const useFeatureFlags = () => {
+export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
-
   const client = useLDClient();
-
-  const { data: levanaGeoblock } = useQuery(
-    ["levana-geoblocked"],
-    () =>
-      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-      retry: false,
-    }
-  );
 
   useEffect(() => {
     if (!isInitialized && client && process.env.NODE_ENV !== "test")
@@ -100,27 +45,19 @@ export const useFeatureFlags = () => {
   const isDevModeWithoutClientID =
     process.env.NODE_ENV === "development" &&
     !process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
-    portfolioPageAndNewAssetsPage:
-      // don't want to use either on mobile
-      // as this flag bundles the 2 pages,
-      // and the portfolio page not be mobile responsive yet
-      // (even thought the assets page is)
-      isMobile || !isInitialized
-        ? false
-        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
-    oneClickTrading:
-      !isMobile &&
-      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
-      launchdarklyFlags.oneClickTrading,
+    oneClickTrading: isDevModeWithoutClientID
+      ? defaultFlags.oneClickTrading
+      : !isMobile &&
+        launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+        launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-    limitOrders:
-      isInitialized &&
-      launchdarklyFlags.limitOrders &&
-      (LIMIT_ORDER_COUNTRY_CODES.length === 0 ||
-        LIMIT_ORDER_COUNTRY_CODES.includes(levanaGeoblock?.countryCode ?? "")),
-  } as Record<ModifiedFlags, boolean>;
-};
+  } as Record<
+    AvailableFlags | "_isInitialized" | "_isClientIDPresent",
+    boolean
+  >;
+}

@@ -63,11 +63,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           .sendSwapExactAmountOutMsg(
             [{ id: queryPool!.id, tokenInDenom: "uion" }],
             {
-              currency: {
-                coinDenom: "CAN",
-                coinMinimalDenom: "ucan",
-                coinDecimals: 6,
-              },
+              coinMinimalDenom: "ucan",
               amount: "1",
             },
             "10",
@@ -92,11 +88,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           .sendSwapExactAmountOutMsg(
             [{ id: queryPool!.id, tokenInDenom: "ukwon" }],
             {
-              currency: {
-                coinDenom: "Do",
-                coinMinimalDenom: "udo",
-                coinDecimals: 6,
-              },
+              coinMinimalDenom: "udo",
               amount: "1",
             },
             "10",
@@ -121,11 +113,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       coinDecimals: 6,
     };
     const tokenOut = {
-      currency: {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
+      coinMinimalDenom: "uion",
       amount: "1",
     };
 
@@ -216,11 +204,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       coinDecimals: 6,
     };
     const tokenOut = {
-      currency: {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
+      coinMinimalDenom: "uion",
       amount: "1",
     };
 
@@ -313,11 +297,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       coinDecimals: 6,
     };
     const tokenOut = {
-      currency: {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
+      coinMinimalDenom: "uion",
       amount: "1",
     };
 
@@ -401,11 +381,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       coinDecimals: 6,
     };
     const tokenOut = {
-      currency: {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
+      coinMinimalDenom: "uion",
       amount: "1",
     };
 
@@ -452,13 +428,11 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
 async function estimateSwapExactOut(
   queryPool: ObservableQueryPool,
   tokenInCurrency: Currency,
-  tokenOut: { currency: Currency; amount: string }
+  tokenOut: { coinMinimalDenom: string; amount: string }
 ) {
   await queryPool.waitFreshResponse();
   const inPoolAsset = queryPool.getPoolAsset(tokenInCurrency.coinMinimalDenom);
-  const outPoolAsset = queryPool.getPoolAsset(
-    tokenOut.currency.coinMinimalDenom
-  );
+  const outPoolAsset = queryPool.getPoolAsset(tokenOut.coinMinimalDenom);
   const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets
     .find(({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom)
     ?.weight.locale(false);
@@ -491,15 +465,8 @@ async function estimateSwapExactOut(
       swapFee: queryPool.swapFee.toDec(),
     },
     new Coin(
-      tokenOut.currency.coinMinimalDenom,
-      new Dec(tokenOut.amount)
-        .mul(
-          DecUtils.getTenExponentNInPrecisionRange(
-            tokenOut.currency.coinDecimals
-          )
-        )
-        .truncate()
-        .toString()
+      tokenOut.coinMinimalDenom,
+      new Dec(tokenOut.amount).truncate().toString()
     ),
     tokenInCurrency
   );

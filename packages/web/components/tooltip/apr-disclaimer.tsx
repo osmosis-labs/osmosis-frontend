@@ -8,7 +8,7 @@ export const AprDisclaimerTooltip: FunctionComponent = () => {
   return <InfoTooltip content={<AprDisclaimer />} />;
 };
 
-export const AprDisclaimer: FunctionComponent = () => {
+const AprDisclaimer: FunctionComponent = () => {
   const { t } = useTranslation();
 
   return (

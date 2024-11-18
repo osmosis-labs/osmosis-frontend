@@ -12,7 +12,7 @@ import type {
   SearchSymbolsCallback,
   Timezone,
 } from "~/public/tradingview";
-import { trpcHelpers } from "~/utils/helpers";
+import { api } from "~/utils/trpc";
 
 const configurationData: DatafeedConfiguration = {
   supported_resolutions: ["5", "15", "60", "240", "480"] as ResolutionString[],
@@ -31,7 +31,11 @@ const configurationData: DatafeedConfiguration = {
   ],
 };
 
-export const historicalDatafeed: IBasicDataFeed = {
+export const historicalDatafeed: ({
+  apiUtils,
+}: {
+  apiUtils: ReturnType<typeof api.useUtils>;
+}) => IBasicDataFeed = ({ apiUtils }) => ({
   onReady(callback: OnReadyCallback) {
     setTimeout(() => callback(configurationData), 0);
   },
@@ -49,7 +53,7 @@ export const historicalDatafeed: IBasicDataFeed = {
     onError: ErrorCallback
   ) => {
     try {
-      const asset = await trpcHelpers.edge.assets.getUserAsset.fetch({
+      const asset = await apiUtils.edge.assets.getUserAsset.fetch({
         findMinDenomOrSymbol: denom,
       });
 
@@ -122,7 +126,7 @@ export const historicalDatafeed: IBasicDataFeed = {
 
       let bars: TokenHistoricalPrice[] = [];
 
-      bars = await trpcHelpers.edge.assets.getAssetHistoricalPrice.fetch({
+      bars = await apiUtils.edge.assets.getAssetHistoricalPrice.fetch({
         coinMinimalDenom: symbolInfo.base_name
           ? symbolInfo.base_name[0]
           : symbolInfo.name,
@@ -158,4 +162,4 @@ export const historicalDatafeed: IBasicDataFeed = {
   subscribeBars() {},
 
   unsubscribeBars: () => {},
-};
+});

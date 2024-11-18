@@ -3,10 +3,12 @@ import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
 import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
 import isBetween from "dayjs/plugin/isBetween";
+import localizedFormat from "dayjs/plugin/localizedFormat";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
@@ -26,12 +28,12 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Bounce, ToastContainer } from "react-toastify";
 import { WagmiProvider } from "wagmi";
 
+import { CypherCardToast } from "~/components/alert/cypher-card-toast";
 import { Icon } from "~/components/assets";
 import { ErrorFallback } from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/main-menu";
-import { OneClickToast } from "~/components/one-click-trading/one-click-trading-toast";
 import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {
@@ -40,13 +42,12 @@ import {
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
-import { BridgeProvider } from "~/hooks/bridge";
+import { ImmersiveBridge } from "~/hooks/bridge";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
 import { ExternalLinkModal, handleExternalLink } from "~/modals";
-import { OneClickTradingIntroModal } from "~/modals/one-click-trading-intro-modal";
 import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
@@ -55,7 +56,6 @@ import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
 import { StoreProvider, useStore } from "../stores";
-import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(advancedFormat);
@@ -63,6 +63,7 @@ dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
 dayjs.extend(isBetween);
+dayjs.extend(localizedFormat);
 dayjs.updateLocale("es", dayjsLocaleEs);
 dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
@@ -81,20 +82,19 @@ function MyApp({ Component, pageProps }: AppProps) {
         <StoreProvider>
           <WalletSelectProvider>
             <ErrorBoundary fallback={<ErrorFallback />}>
-              <BridgeProvider>
-                <SEO />
-                <IbcNotifier />
-                <ToastContainer
-                  toastStyle={{
-                    backgroundColor: "#2d2755",
-                  }}
-                  transition={Bounce}
-                  newestOnTop
-                />
-                <MainLayoutWrapper>
-                  {Component && <Component {...pageProps} />}
-                </MainLayoutWrapper>
-              </BridgeProvider>
+              <SEO />
+              <SpeedInsights />
+              <ToastContainer
+                toastStyle={{
+                  backgroundColor: "#2d2755",
+                }}
+                transition={Bounce}
+                newestOnTop
+              />
+              <MainLayoutWrapper>
+                {Component && <Component {...pageProps} />}
+              </MainLayoutWrapper>
+              <ImmersiveBridge />
             </ErrorBoundary>
           </WalletSelectProvider>
         </StoreProvider>
@@ -137,14 +137,6 @@ const MainLayoutWrapper: FunctionComponent<{
     onOpen: onOpenLeavingOsmosisToLevana,
     onClose: onCloseLeavingOsmosisToLevana,
   } = useDisclosure();
-
-  useEffect(() => {
-    if (flags.limitOrders && flags._isInitialized) {
-      document.body.classList.add("!bg-osmoverse-1000");
-    } else {
-      document.body.classList.remove("!bg-osmoverse-1000");
-    }
-  }, [flags.limitOrders, flags._isInitialized]);
 
   const menus = useMemo(() => {
     let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
@@ -211,29 +203,18 @@ const MainLayoutWrapper: FunctionComponent<{
         icon: <Icon id="trade" className="h-6 w-6" />,
         selectionTest: /\/$/,
       },
-      ...(flags.portfolioPageAndNewAssetsPage || flags.newAssetsPage
-        ? [
-            {
-              label: t("menu.portfolio"),
-              link: "/portfolio",
-              icon: <Icon id="portfolio" className="h-6 w-6" />,
-              selectionTest: /\/portfolio/,
-            },
-            {
-              label: t("menu.assets"),
-              link: "/assets",
-              icon: <Icon id="assets" className="h-6 w-6" />,
-              selectionTest: /\/assets/,
-            },
-          ]
-        : [
-            {
-              label: t("menu.assets"),
-              link: "/assets",
-              icon: <Icon id="assets" className="h-6 w-6" />,
-              selectionTest: /\/assets/,
-            },
-          ]),
+      {
+        label: t("menu.portfolio"),
+        link: "/portfolio",
+        icon: <Icon id="portfolio" className="h-6 w-6" />,
+        selectionTest: /\/portfolio/,
+      },
+      {
+        label: t("menu.assets"),
+        link: "/assets",
+        icon: <Icon id="assets" className="h-6 w-6" />,
+        selectionTest: /\/assets/,
+      },
       flags.earnPage
         ? {
             label: t("earnPage.title"),
@@ -286,8 +267,6 @@ const MainLayoutWrapper: FunctionComponent<{
     error,
     flags.earnPage,
     flags.staking,
-    flags.portfolioPageAndNewAssetsPage,
-    flags.newAssetsPage,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
     t,
@@ -295,33 +274,36 @@ const MainLayoutWrapper: FunctionComponent<{
     onOpenLeavingOsmosisToMars,
   ]);
 
-  const secondaryMenuItems: MainLayoutMenu[] = [
-    {
-      label: t("menu.help"),
-      link: "https://support.osmosis.zone/",
-      icon: <Icon id="help-circle" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.vote"),
-      link:
-        osmosisWallet?.walletInfo?.governanceUrl ??
-        "https://wallet.keplr.app/chains/osmosis?tab=governance",
-      icon: <Icon id="vote" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.info"),
-      link: "https://www.datalenses.zone/chain/osmosis/overview",
-      icon: <Icon id="chart" className="h-6 w-6" />,
-      amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-    },
-    {
-      label: t("menu.featureRequests"),
-      link: "https://forum.osmosis.zone/c/site-feedback/2",
-      icon: <Icon id="gift" className="h-6 w-6" />,
-    },
-  ];
+  const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
+    () => [
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.vote"),
+        link:
+          osmosisWallet?.walletInfo?.governanceUrl ??
+          "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: <Icon id="vote" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.info"),
+        link: "https://www.datalenses.zone/chain/osmosis/overview",
+        icon: <Icon id="chart" className="h-6 w-6" />,
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.featureRequests"),
+        link: "https://forum.osmosis.zone/c/site-feedback/2",
+        icon: <Icon id="gift" className="h-6 w-6" />,
+      },
+    ],
+    [t, osmosisWallet?.walletInfo?.governanceUrl]
+  );
 
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
@@ -340,12 +322,7 @@ const MainLayoutWrapper: FunctionComponent<{
           onCloseLeavingOsmosisToLevana();
         }}
       />
-      {flags.oneClickTrading && (
-        <>
-          <OneClickTradingIntroModal />
-          <OneClickToast />
-        </>
-      )}
+      {flags.cypherCard && !flags.alloyedAssets && <CypherCardToast />}
     </MainLayout>
   );
 });

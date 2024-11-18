@@ -11,6 +11,8 @@ export class ObservableSlippageConfig {
     new Dec("0.01"),
     // 3%
     new Dec("0.03"),
+    // 5%
+    new Dec("0.05"),
   ];
 
   @observable
@@ -152,5 +154,23 @@ export class ObservableSlippageConfig {
     }
 
     return;
+  }
+
+  @action
+  setDefaultSlippage(value: string) {
+    this._defaultManualSlippage = value;
+  }
+
+  @action
+  getSmallestSlippage(value: Dec): [number, Dec] {
+    let index = this._selectableSlippages.findIndex((slippage) =>
+      slippage.gte(value)
+    );
+
+    if (index === -1) {
+      index = this._selectableSlippages.length - 1;
+    }
+
+    return [index, this._selectableSlippages[index]];
   }
 }

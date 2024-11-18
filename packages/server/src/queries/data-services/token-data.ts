@@ -7,9 +7,9 @@ export interface TokenData {
   denom: string;
   symbol: string;
   main: boolean;
-  liquidity: number;
+  liquidity: number | null;
   liquidity_24h_change: number | null;
-  volume_24h: number;
+  volume_24h: number | null;
   volume_24h_change: number | null;
   name: string;
   price_1h_change: number | null;
@@ -17,6 +17,8 @@ export interface TokenData {
   price_7d_change: number | null;
   exponent: number;
   display: string;
+  coingecko_id: string | null;
+  coingecko_mcap: number | null;
 }
 
 export async function queryTokenData({

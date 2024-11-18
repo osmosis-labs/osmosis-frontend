@@ -27,7 +27,6 @@ import {
   Breakpoint,
   useAmplitudeAnalytics,
   useDimension,
-  useFeatureFlags,
   useTranslation,
   useUserWatchlist,
   useWindowSize,
@@ -66,7 +65,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-  const featureFlags = useFeatureFlags();
 
   // State
 
@@ -497,10 +495,7 @@ export const AssetsInfoTable: FunctionComponent<{
           "mt-3",
           isPreviousData &&
             isFetching &&
-            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress",
-          {
-            "[&>thead>tr]:!bg-osmoverse-1000": featureFlags.limitOrders,
-          }
+            "animate-[deepPulse_2s_ease-in-out_infinite] cursor-progress"
         )}
       >
         <thead className="sm:hidden">
@@ -510,7 +505,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 <th
                   className={classNames(
                     // apply to all columns
-                    "sm:w-fit ",
+                    "sm:w-fit",
                     {
                       // defines column widths after first column
                       "w-28": index !== 0,
@@ -622,7 +617,7 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-export const AssetActionsCell: AssetCellComponent<{
+const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;

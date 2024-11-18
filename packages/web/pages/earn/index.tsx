@@ -38,6 +38,8 @@ function Earn() {
   const { earnPage, _isInitialized } = useFeatureFlags();
   const { accountStore } = useStore();
   const router = useRouter();
+  const { search } = router.query;
+
   /**
    * Control the selected table idx for external control
    * such as the {num} positions onClick on EarnPosition
@@ -86,11 +88,11 @@ function Earn() {
           }))
         : [],
       lockDurationType: "all",
-      search: "",
+      search: typeof search === "string" ? search : "",
       specialTokens: [],
       rewardType: "all",
     }),
-    [holdenDenoms?.length, cmsData, isWalletConnected]
+    [holdenDenoms?.length, cmsData, isWalletConnected, search]
   );
 
   useEffect(() => {

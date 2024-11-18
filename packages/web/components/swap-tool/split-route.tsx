@@ -1,89 +1,28 @@
 import { AppCurrency, Currency } from "@keplr-wallet/types";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@keplr-wallet/unit";
 import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { UseDisclosureReturn, useTranslation, useWindowSize } from "~/hooks";
-import { usePreviousWhen } from "~/hooks/use-previous-when";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
 
-type Split =
+type SplitOutGivenIn =
   RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]["split"];
-type Route = Split[number];
-type RouteWithPercentage = Route & { percentage?: RatePretty };
-
-export const SplitRoute: FunctionComponent<
-  { split: Split } & Pick<UseDisclosureReturn, "isOpen" | "onToggle"> & {
-      isLoading?: boolean;
-    }
-> = ({ split, isOpen, onToggle, isLoading = false }) => {
-  const { t } = useTranslation();
-
-  // hold on to a ref of the last split to use while we're loading the next one
-  // this prevents whiplash in the UI
-  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
-
-  split = isLoading ? latestSplitRef ?? split : split;
-
-  const tokenInTotal = useMemo(
-    () =>
-      split.reduce(
-        (sum, { initialAmount }) => sum.add(new Dec(initialAmount)),
-        new Dec(0)
-      ),
-    [split]
-  );
-
-  const splitWithPercentages: RouteWithPercentage[] = useMemo(() => {
-    if (split.length === 1) return split;
-
-    return split.map((route) => {
-      const percentage = new RatePretty(
-        new Dec(route.initialAmount).quo(tokenInTotal).mul(new Dec(100))
-      ).moveDecimalPointLeft(2);
-
-      return {
-        ...route,
-        percentage,
-      };
-    });
-  }, [split, tokenInTotal]);
-
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <span className="caption">{t("swap.autoRouter")}</span>
-        <button
-          onClick={onToggle}
-          disabled={isLoading}
-          className="caption text-wosmongton-300"
-        >
-          {isOpen
-            ? t("swap.autoRouterToggle.hide")
-            : t("swap.autoRouterToggle.show")}
-        </button>
-      </div>
-
-      {isOpen && !isLoading && (
-        <div className="flex flex-col gap-2">
-          {splitWithPercentages.map((route) => (
-            <RouteLane
-              key={route.pools.map(({ id }) => id).join()} // pool IDs are unique
-              route={route}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+type SplitInGivenOut =
+  RouterOutputs["local"]["quoteRouter"]["routeTokenInGivenOut"]["split"];
+type Route = SplitOutGivenIn[number] | SplitInGivenOut[number];
+type RouteInGivenOut = SplitInGivenOut[number];
+type RouteOutGivenIn = SplitOutGivenIn[number];
+type RouteWithPercentage = (RouteInGivenOut | SplitOutGivenIn[number]) & {
+  percentage?: RatePretty;
 };
 
 export const RouteLane: FunctionComponent<{
@@ -92,10 +31,16 @@ export const RouteLane: FunctionComponent<{
   const { chainStore } = useStore();
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
-  const sendCurrency = osmosisChain.findCurrency(route.tokenInDenom);
-  const lastOutCurrency = osmosisChain.findCurrency(
-    route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
-  );
+  const sendCurrency = (route as RouteOutGivenIn).tokenInDenom
+    ? osmosisChain.findCurrency((route as RouteOutGivenIn).tokenInDenom)
+    : osmosisChain.findCurrency((route as RouteInGivenOut).tokenInDenoms[0]);
+  const lastOutCurrency = (route as RouteInGivenOut).tokenOutDenom
+    ? osmosisChain.findCurrency((route as RouteInGivenOut).tokenOutDenom)
+    : osmosisChain.findCurrency(
+        (route as RouteOutGivenIn).tokenOutDenoms[
+          (route as RouteOutGivenIn).tokenOutDenoms.length - 1
+        ]
+      );
 
   if (!sendCurrency || !lastOutCurrency) return null;
 

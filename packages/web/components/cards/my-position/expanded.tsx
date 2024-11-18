@@ -161,7 +161,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex w-full gap-1 xl:hidden">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+          <div className="flex h-[20.1875rem] w-full flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : !chartConfig.historicalChartUnavailable ? (

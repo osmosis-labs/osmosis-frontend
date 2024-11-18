@@ -101,9 +101,6 @@ export const OneClickTradingWelcomeBack = ({
         <p className="text-center text-caption font-caption text-osmoverse-300">
           {t("oneClickTrading.welcomeBack.description")}
         </p>
-        <p className="px-8 text-center text-caption text-osmoverse-300">
-          {t("oneClickTrading.introduction.ledgerComingSoon")}
-        </p>
       </div>
     </div>
   );

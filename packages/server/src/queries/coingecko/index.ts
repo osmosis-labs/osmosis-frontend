@@ -4,8 +4,14 @@ export * from "./market-chart";
 export * from "./price";
 export * from "./search";
 
-export const PRICES_API_URL = "https://prices.osmosis.zone";
-export const DETAILS_API_URL = "https://coingecko.osmosis.zone";
+const COINGECKO_API_URL = "https://api.coingecko.com/api/v3";
+
+export const PRICES_API_URL = process.env.COINGECKO_API_KEY
+  ? "https://prices.osmosis.zone"
+  : COINGECKO_API_URL;
+export const DETAILS_API_URL = process.env.COINGECKO_API_KEY
+  ? "https://coingecko.osmosis.zone"
+  : COINGECKO_API_URL;
 
 /**
  * Auth headers for local development, it's required from "DETAILS_API_URL",

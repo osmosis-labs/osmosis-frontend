@@ -1,4 +1,11 @@
-import { createContext, PropsWithChildren, useCallback, useState } from "react";
+import { useRouter } from "next/router";
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   ListOption,
@@ -17,7 +24,7 @@ export interface Filters {
   rewardType: RewardsTypes;
 }
 
-export type SetFilterFn = (
+type SetFilterFn = (
   key: keyof Filters,
   value: string | boolean | ListOption<string> | ListOption<string>
 ) => void;
@@ -47,6 +54,14 @@ export const FilterProvider = ({
   defaultFilters,
 }: PropsWithChildren<{ defaultFilters: Filters }>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
+  const router = useRouter();
+  const { search } = router.query;
+
+  useEffect(() => {
+    if (typeof search === "string" && search !== "") {
+      setFilters((prev) => ({ ...prev, search }));
+    }
+  }, [search]);
 
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {

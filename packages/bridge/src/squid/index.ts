@@ -34,20 +34,19 @@ import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeChain,
-  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
-  GetDepositAddressParams,
 } from "../interface";
-import { BridgeAssetMap } from "../utils";
+import { BridgeAssetMap } from "../utils/asset";
 import { getSquidErrors } from "./error";
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
@@ -72,9 +71,6 @@ export class SquidBridgeProvider implements BridgeProvider {
         ? "https://axelarscan.io"
         : "https://testnet.axelarscan.io";
   }
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote({
     fromAmount,
@@ -244,6 +240,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   chainId: feeCosts[0].token.chainId,
                   decimals: feeCosts[0].token.decimals,
                   address: feeCosts[0].token.address,
+                  coinGeckoId: feeCosts[0].token.coingeckoId,
                 }
               : {
                   ...fromAsset,
@@ -258,6 +255,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                   amount: gasCosts[0].amount,
                   decimals: gasCosts[0].token.decimals,
                   address: gasCosts[0].token.address,
+                  coinGeckoId: gasCosts[0].token.coingeckoId,
                 }
               : {
                   ...fromAsset,
@@ -294,7 +292,9 @@ export class SquidBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const [tokens, chains] = await Promise.all([
         this.getTokens(),
@@ -310,12 +310,17 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       if (!token) throw new Error("Token not found: " + asset.address);
 
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
         .flatMap(({ assets }) => assets)
-        .find((a) => a.coinMinimalDenom === asset.address);
+        .find(
+          (a) =>
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
 
       for (const counterparty of assetListAsset?.counterparty ?? []) {
         // check if supported by squid
@@ -336,6 +341,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -348,6 +354,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -390,6 +397,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         foundVariants.setAsset(variant.chainId.toString(), variant.address, {
           // squid chain list IDs are canonical
           ...chainInfo,
+          transferTypes: ["quote"],
           chainName: variant.chainName,
           denom: variant.symbol,
           address: variant.address,
@@ -441,7 +449,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     let approvalTx: { to: Address; data: string } | undefined;
     try {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => String(chainId) === String(squidFromChain.chainId)
       );
 
@@ -563,8 +571,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           type: "cosmos",
-          msgTypeUrl: typeUrl,
-          msg,
+          msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
       } else if (parsedData.msgTypeUrl === WasmTransferType) {
@@ -587,8 +594,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
         return {
           type: "cosmos",
-          msgTypeUrl: typeUrl,
-          msg,
+          msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
       }

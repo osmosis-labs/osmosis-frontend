@@ -1,5 +1,4 @@
-import { Tab } from "@headlessui/react";
-import { FormattedTransaction } from "@osmosis-labs/server";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
   AccountStoreWallet,
   CosmosAccount,
@@ -15,10 +14,11 @@ import { ClientOnly } from "~/components/client-only";
 import { OrderHistory } from "~/components/complex/orders-history";
 import { Spinner } from "~/components/loaders";
 import { NoTransactionsSplash } from "~/components/transactions/no-transactions-splash";
-import { TransactionButtons } from "~/components/transactions/transaction-buttons";
+import { TransactionOptionsMenu } from "~/components/transactions/transaction-options-menu";
 import { TransactionsPaginaton } from "~/components/transactions/transaction-pagination";
 import { TransactionRows } from "~/components/transactions/transaction-rows";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks";
+import { HistoryTransaction } from "~/hooks/use-transaction-history";
 
 const TX_PAGE_TABS = ["history", "orders"] as const;
 
@@ -37,7 +37,7 @@ export const TransactionContent = ({
 }: {
   setSelectedTransactionHash: (hash: string) => void;
   selectedTransactionHash?: string;
-  transactions?: FormattedTransaction[];
+  transactions?: HistoryTransaction[];
   setOpen: (open: boolean) => void;
   open: boolean;
   address: string;
@@ -48,7 +48,6 @@ export const TransactionContent = ({
   wallet?: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
 }) => {
   const { t } = useTranslation();
-  const featureFlags = useFeatureFlags();
 
   const showPagination = isWalletConnected && !isLoading;
 
@@ -79,38 +78,36 @@ export const TransactionContent = ({
               {t("transactions.launchAlert")}
             </p>
           </div>
-          <TransactionButtons open={open} address={address} />
+          <TransactionOptionsMenu open={open} address={address} />
         </div>
 
-        <Tab.Group
+        <TabGroup
           manual
           selectedIndex={TX_PAGE_TABS.indexOf(tab)}
           onChange={(idx) => setTab(TX_PAGE_TABS[idx])}
         >
-          {featureFlags.limitOrders && (
-            <Tab.List className="flex items-center gap-8">
-              {TX_PAGE_TABS.map((defaultTab) => (
-                <Tab key={defaultTab}>
-                  <span
-                    className={classNames(
-                      {
-                        "text-osmoverse-500": defaultTab !== tab,
-                      },
-                      "text-h5 font-h5 sm:text-h6"
-                    )}
-                  >
-                    {t(
-                      defaultTab === "history"
-                        ? "transactions.history"
-                        : "transactions.orders"
-                    )}
-                  </span>
-                </Tab>
-              ))}
-            </Tab.List>
-          )}
-          <Tab.Panels>
-            <Tab.Panel>
+          <TabList className="flex items-center gap-8">
+            {TX_PAGE_TABS.map((defaultTab) => (
+              <Tab key={defaultTab}>
+                <span
+                  className={classNames(
+                    {
+                      "text-osmoverse-500": defaultTab !== tab,
+                    },
+                    "text-h5 font-h5 sm:text-h6"
+                  )}
+                >
+                  {t(
+                    defaultTab === "history"
+                      ? "transactions.history"
+                      : "transactions.orders"
+                  )}
+                </span>
+              </Tab>
+            ))}
+          </TabList>
+          <TabPanels>
+            <TabPanel>
               <>
                 <div className="-mx-4 flex flex-col">
                   {showConnectWallet ? (
@@ -150,14 +147,12 @@ export const TransactionContent = ({
                 </div>
                 <BackToTopButton />
               </>
-            </Tab.Panel>
-            {featureFlags.limitOrders && (
-              <Tab.Panel>
-                <OrderHistory />
-              </Tab.Panel>
-            )}
-          </Tab.Panels>
-        </Tab.Group>
+            </TabPanel>
+            <TabPanel>
+              <OrderHistory />
+            </TabPanel>
+          </TabPanels>
+        </TabGroup>
       </div>
     </ClientOnly>
   );

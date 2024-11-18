@@ -7,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { Step, Stepper } from "~/components/stepper/index";
 import { useTranslation } from "~/hooks";
 
-export type Ad = SwapAdBannerResponse["banners"][number] & {
+type Ad = SwapAdBannerResponse["banners"][number] & {
   onClick?: () => void;
 };
 interface AdBannersProps {

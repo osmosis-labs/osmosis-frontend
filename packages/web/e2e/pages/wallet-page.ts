@@ -49,7 +49,10 @@ export class WalletPage {
     await this.importBtn.click();
   }
 
-  async setWalletNameAndPassword(name: string, password: string) {
+  async setWalletNameAndPassword(
+    name: string,
+    password: string = "TestPassword2024."
+  ) {
     await this.walletNameInput.fill(name);
     await this.walletPassInput.fill(password);
     await this.walletRePassInput.fill(password);

@@ -129,7 +129,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
   };
 }
 
-export const AssetHighlights: FunctionComponent<
+const AssetHighlights: FunctionComponent<
   {
     title: string;
     subtitle?: string;

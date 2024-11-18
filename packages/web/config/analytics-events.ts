@@ -1,9 +1,11 @@
 /** # User Events Constants
  *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
  */
+import { AllocationOptions } from "~/components/complex/portfolio/types";
 
-// Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
-// For maintainability - all event logs should be in high level component
+/** Max value of USD event to check against to prevent
+ *  outliers from corrupting dashboards. */
+export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
 
 export type AmountDefault = "half" | "max" | "input";
 
@@ -70,6 +72,22 @@ export type EventProperties = {
   isRecommendedVariant: boolean;
   walletName: string;
   transferDirection: "deposit" | "withdraw";
+  swapSource: "market" | "swap";
+  coinDenom: string;
+  appName: string;
+  isFeatured: boolean;
+  isBanner: boolean;
+  position: number;
+  allocationType: AllocationOptions;
+  section: string;
+  tokenIn: string;
+  tokenOut: string;
+  option: string;
+  numberOfValidators: number;
+  validatorNames: string[];
+  squadSize: number;
+  fromChainId: string;
+  toChainId: string;
 };
 
 export type UserProperties = {
@@ -214,6 +232,7 @@ export const EventName = {
   TransactionsPage: {
     pageViewed: "Transactions: Page viewed",
     swapClicked: "Transactions: Swap clicked",
+    transferClicked: "Transactions: Transfer clicked",
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
   },
@@ -239,6 +258,8 @@ export const EventName = {
     claimOrdersCompleted: "Limit Order: Claim all orders completed",
     claimOrdersFailed: "Limit Order: Claim all orders failed",
     pageViewed: "Limit Order: Order page viewed",
+    addFunds: "Limit Order: Add funds button clicked",
+    swapFromAnotherAsset: "Limit Order: Swap from another asset clicked",
   },
   DepositWithdraw: {
     assetSelected: "DepositWithdraw: Asset selected",
@@ -247,11 +268,19 @@ export const EventName = {
     variantSelected: "DepositWithdraw: Variant selected",
     started: "DepositWithdraw: Started",
     walletSelected: "DepositWithdraw: Wallet selected",
+    addressCopied: "DepositWithdraw: Address copied",
+    qrOpened: "DepositWithdraw: QR opened",
   },
   Portfolio: {
     pageViewed: "Portfolio: Page viewed",
     chartInteraction: "Portfolio: Chart interaction",
     tabClicked: "Portfolio: Open allocation clicked",
     allocationClicked: "Portfolio: Allocation clicked",
+  },
+  ConvertVariants: {
+    startFlow: "Convert Variants: Start flow",
+    declineFlow: "Convert Variants: Decline flow",
+    completeFlow: "Convert Variants: Complete flow",
+    variantUnavailable: "Convert Variants: Variant swap unavailable",
   },
 };

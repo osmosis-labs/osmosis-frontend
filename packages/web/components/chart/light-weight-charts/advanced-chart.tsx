@@ -23,12 +23,9 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
   const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
     theme: "dark",
     overrides: {
-      "paneProperties.background":
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
-      "paneProperties.horzGridProperties.color":
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
-      "paneProperties.vertGridProperties.color":
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
+      "paneProperties.background": theme.colors.osmoverse[1000],
+      "paneProperties.horzGridProperties.color": theme.colors.osmoverse[1000],
+      "paneProperties.vertGridProperties.color": theme.colors.osmoverse[1000],
       "linetoolarc.backgroundColor": theme.colors.osmoverse[850],
       "linetoolnote.backgroundColor": theme.colors.osmoverse[850],
       "linetooltext.backgroundColor": theme.colors.osmoverse[850],
@@ -45,10 +42,8 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       "mainSeriesProperties.statusViewStyle.symbolTextSource": "ticker",
 
       "scalesProperties.textColor": theme.colors.white.full,
-      "scalesProperties.backgroundColor":
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
-      "scalesProperties.lineColor":
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
+      "scalesProperties.backgroundColor": theme.colors.osmoverse[1000],
+      "scalesProperties.lineColor": theme.colors.osmoverse[1000],
     },
     studies_overrides: {
       "volume.volume.color.1": theme.colors.bullish[400],
@@ -56,10 +51,8 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     },
 
     loading_screen: {
-      backgroundColor:
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
-      foregroundColor:
-        theme.colors.osmoverse[featureFlags.limitOrders ? 1000 : 900],
+      backgroundColor: theme.colors.osmoverse[1000],
+      foregroundColor: theme.colors.osmoverse[1000],
     },
   };
 
@@ -70,9 +63,7 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       interval: "1d" as ResolutionString,
       container,
       library_path: "/tradingview/",
-      custom_css_url: featureFlags.limitOrders
-        ? "/tradingview/custom-limit.css"
-        : "/tradingview/custom.css",
+      custom_css_url: "/tradingview/custom-limit.css",
       custom_font_family: '"Inter", sans-serif',
       locale: "en",
       disabled_features: [

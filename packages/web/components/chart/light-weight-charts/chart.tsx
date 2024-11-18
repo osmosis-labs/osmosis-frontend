@@ -38,7 +38,7 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
-export const defaultOptions: DeepPartial<TimeChartOptions> = {
+const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
     fontFamily: theme.fontFamily.caption.join(","),
     background: {
@@ -189,7 +189,7 @@ const defaultOptionsWithSeries = (
   },
 });
 
-export interface ChartProps<T extends TimeChartOptions, K extends Time> {
+interface ChartProps<T extends TimeChartOptions, K extends Time> {
   options?: DeepPartial<T>;
   series?: Series[];
   Controller: new (

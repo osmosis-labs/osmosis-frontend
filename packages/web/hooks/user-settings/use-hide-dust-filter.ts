@@ -1,8 +1,8 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
 import { useStore } from "~/stores";
-import { HideDustState } from "~/stores/user-settings";
+import { HideDustState, HideDustUserSetting } from "~/stores/user-settings";
 
 /** Filter a list of items less than one fiat min-amount (penny) if the user setting is on.
  *  @param items Items to be filtered
@@ -22,9 +22,12 @@ export function useHideDustUserSetting<DustableItem>(
     () =>
       items.filter((item) =>
         hideDust
-          ? getValueOfItem(item)?.toDec().gte(new Dec(0.01)) ?? true
+          ? getValueOfItem(item)
+              ?.toDec()
+              .gte(HideDustUserSetting.DUST_THRESHOLD) ?? true
           : true
       ),
-    [items, hideDust, getValueOfItem]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items, hideDust]
   );
 }

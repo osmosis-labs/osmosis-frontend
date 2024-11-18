@@ -197,7 +197,7 @@ const PresetPercentageButton: FunctionComponent<{
   );
 };
 
-export const AssetAmount: FunctionComponent<{
+const AssetAmount: FunctionComponent<{
   amount: CoinPretty;
   className?: string;
 }> = ({ amount, className }) => (

@@ -11,7 +11,6 @@ import {
   RoutablePool,
   Route,
   RouteWithInAmount,
-  TokenOutGivenInRouter,
 } from "..";
 
 // Mock RoutablePool for testing purposes
@@ -82,10 +81,7 @@ export const makeMockRoutablePool = (
  */
 
 // Mock OptimizedRoutes for testing purposes to get access to protected methods
-export class TestOptimizedRoutes
-  extends OptimizedRoutes
-  implements TokenOutGivenInRouter
-{
+export class TestOptimizedRoutes extends OptimizedRoutes {
   constructor(...args: ConstructorParameters<typeof OptimizedRoutes>) {
     super(...args);
   }
@@ -125,10 +121,7 @@ export function makeDefaultTestRouterParams(
   return new TestOptimizedRoutes(params);
 }
 
-export class RoutesTestOptimizedRoutes
-  extends OptimizedRoutes
-  implements TokenOutGivenInRouter
-{
+export class RoutesTestOptimizedRoutes extends OptimizedRoutes {
   private testRoutes: Route[];
 
   constructor(

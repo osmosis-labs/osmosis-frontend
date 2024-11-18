@@ -116,11 +116,14 @@ Tests can be executed locally in a browser by changing `headless: true` to `head
 
 ## GitHub E2E Tests workflow
 
-[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on `deployment_status` event from the Vercel bot.
-It contains 2 jobs:
+[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on `push: branches-ignore: - master` event and awaits a deployment to a Vercel environment. The `await_deployment` script is querying for a building deployment and fails if deployment failed or not started in 30 seconds.
 
-- Mainnet tests on condition `github.event.deployment_status.environment == 'Production – osmosis-frontend'`
-- Preview tests on condition `github.event.deployment_status.environment == 'Preview – osmosis-frontend'`
-- Test report is uploaded as Artifact
+It contains following jobs:
 
-![Screenshot 2024-05-03 at 20 06 53](https://github.com/osmosis-labs/osmosis-frontend/assets/62520712/ce00bfac-24a6-429d-ac4e-7dacbbcb8efd)
+- initial `wait-for-deployment` script
+- Preview tests `preview-swap-tests`
+- Preview tests `preview-portfolio-trx-tests`
+- Preview tests `preview-pools-and-select-pair-tests`
+- Preview tests `preview-trade-tests`
+- Preview tests `preview-claim-tests`
+- Test report is uploaded as Artifact on fail.

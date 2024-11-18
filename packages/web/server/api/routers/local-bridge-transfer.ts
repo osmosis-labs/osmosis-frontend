@@ -1,9 +1,10 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import type { Bridge } from "@osmosis-labs/bridge";
 import {
-  Bridge,
-  bridgeAssetSchema,
   bridgeChainSchema,
-} from "@osmosis-labs/bridge";
+  BridgeSupportedAsset,
+  bridgeSupportedAssetSchema,
+} from "@osmosis-labs/bridge/build/interface";
 import {
   calcAssetValue,
   captureErrorAndReturn,
@@ -11,6 +12,7 @@ import {
   getAsset,
   getEvmBalance,
   queryBalances,
+  queryCosmWasmContractBalance,
 } from "@osmosis-labs/server";
 import {
   createTRPCRouter,
@@ -21,80 +23,46 @@ import {
 import { getAddress } from "viem";
 import { z } from "zod";
 
+const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
+  type: T,
+  schema: U
+) => {
+  return z
+    .object({
+      type: z.literal(type),
+      assets: z.array(
+        bridgeChainSchema.and(bridgeSupportedAssetSchema).and(
+          z.object({
+            supportedVariants: z.record(
+              z.string(),
+              z.record(
+                z.string().transform((v) => v as Bridge),
+                z.array(
+                  z
+                    .string()
+                    .transform(
+                      (v) => v as BridgeSupportedAsset["transferTypes"][number]
+                    )
+                )
+              )
+            ),
+          })
+        )
+      ),
+    })
+    .merge(schema);
+};
+
 export const localBridgeTransferRouter = createTRPCRouter({
   getSupportedAssetsBalances: publicProcedure
     .input(
       z.object({
         source: z.discriminatedUnion("type", [
-          z
-            .object({
-              type: z.literal("evm"),
-              assets: z.array(
-                bridgeChainSchema.and(bridgeAssetSchema).and(
-                  z.object({
-                    supportedVariants: z.record(
-                      z.string(),
-                      z.array(z.string().transform((v) => v as Bridge))
-                    ),
-                  })
-                )
-              ),
-            })
-            .merge(UserEvmAddressSchema),
-          z
-            .object({
-              type: z.literal("cosmos"),
-              assets: z.array(
-                bridgeChainSchema.and(bridgeAssetSchema).and(
-                  z.object({
-                    supportedVariants: z.record(
-                      z.string(),
-                      z.array(z.string().transform((v) => v as Bridge))
-                    ),
-                  })
-                )
-              ),
-            })
-            .merge(UserCosmosAddressSchema),
-          z.object({
-            type: z.literal("bitcoin"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
-          z.object({
-            type: z.literal("solana"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
-          z.object({
-            type: z.literal("tron"),
-            assets: z.array(
-              bridgeChainSchema.and(bridgeAssetSchema).and(
-                z.object({
-                  supportedVariants: z.record(
-                    z.string(),
-                    z.array(z.string().transform((v) => v as Bridge))
-                  ),
-                })
-              )
-            ),
-          }),
+          createAssetObject("evm", UserEvmAddressSchema),
+          createAssetObject("cosmos", UserCosmosAddressSchema),
+          createAssetObject("bitcoin", z.object({})),
+          createAssetObject("solana", z.object({})),
+          createAssetObject("tron", z.object({})),
         ]),
       })
     )
@@ -188,13 +156,38 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 asset.chainType !== "evm"
             )
             .map(async (asset) => {
-              const { balances } = await queryBalances({
-                ...ctx,
-                chainId: asset.chainId,
-                bech32Address: cosmosAddress,
-              });
+              let balance:
+                | {
+                    denom: string;
+                    amount: string;
+                  }
+                | undefined = undefined;
 
-              const balance = balances.find((a) => a.denom === asset.address);
+              const isCW20Asset = asset.address.startsWith("cw20:");
+
+              if (isCW20Asset) {
+                const {
+                  data: { balance: balanceString },
+                } = await queryCosmWasmContractBalance({
+                  ...ctx,
+                  contractAddress: asset.address.split(":")[1],
+                  userBech32Address: cosmosAddress,
+                  chainId: asset.chainId,
+                });
+
+                balance = {
+                  denom: asset.address,
+                  amount: balanceString,
+                };
+              } else {
+                const { balances } = await queryBalances({
+                  ...ctx,
+                  chainId: asset.chainId,
+                  bech32Address: cosmosAddress,
+                });
+
+                balance = balances.find((a) => a.denom === asset.address);
+              }
 
               if (!balance) {
                 return {
@@ -228,23 +221,14 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
               return {
                 ...asset,
-                amount:
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    balance.amount
-                  ) ??
-                  new CoinPretty(
-                    {
-                      coinDecimals: asset.decimals,
-                      coinDenom: asset.denom,
-                      coinMinimalDenom: asset.address,
-                    },
-                    0
-                  ),
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: asset.decimals,
+                    coinDenom: asset.denom,
+                    coinMinimalDenom: asset.address,
+                  },
+                  balance.amount
+                ),
                 usdValue: new PricePretty(DEFAULT_VS_CURRENCY, usdValue ?? 0),
               };
             })

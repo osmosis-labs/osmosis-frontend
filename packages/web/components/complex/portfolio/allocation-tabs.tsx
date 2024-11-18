@@ -4,7 +4,8 @@ import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "~/hooks";
 
 import { AllocationOptions } from "./types";
-export interface AllocationTabProps {
+
+interface AllocationTabProps {
   setTab: (tab: AllocationOptions) => void;
   activeTab: AllocationOptions;
 }

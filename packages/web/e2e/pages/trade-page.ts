@@ -1,5 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, expect, Locator, Page } from "@playwright/test";
+import {
+  type BrowserContext,
+  expect,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
 
@@ -25,9 +30,7 @@ export class TradePage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.page = page;
-    this.swapBtn = page.locator(
-      '//div[@class="flex w-full pb-3"]/button[.="Swap"]'
-    );
+    this.swapBtn = page.locator('//button[@data-testid="trade-button-swap"]');
     this.buyTabBtn = page.locator('//div[@class]/button[.="Buy"]/p[@class]/..');
     this.buyBtn = page.locator('//div[@class]/button[@class]/h6[.="Buy"]/..');
     this.sellBtn = page.locator('//div[@class]/button[@class]/h6[.="Sell"]/..');
@@ -35,7 +38,7 @@ export class TradePage extends BasePage {
       '//div[@class]/button[.="Sell"]/p[@class]/..'
     );
     this.confirmSwapBtn = page.locator('//div[@class]/button[.="Confirm"]');
-    this.swapMaxBtn = page.getByRole("button", { name: "MAX", exact: true });
+    this.swapMaxBtn = page.locator('//span[.="Max"]');
     this.flipAssetsBtn = page.locator(
       '//div/button[contains(@class, "ease-bounce")]'
     );
@@ -59,7 +62,7 @@ export class TradePage extends BasePage {
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
     const currentUrl = this.page.url();
-    console.log("FE opened at: " + currentUrl);
+    console.log(`FE opened at: ${currentUrl}`);
   }
 
   async gotoOrdersHistory(timeout: number = 1) {
@@ -68,7 +71,7 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
     await new Promise((f) => setTimeout(f, timeout * 1000));
     const currentUrl = this.page.url();
-    console.log("FE opened at: " + currentUrl);
+    console.log(`FE opened at: ${currentUrl}`);
   }
 
   async openBuyTab() {
@@ -86,7 +89,7 @@ export class TradePage extends BasePage {
 
   async getLimitPrice() {
     const lp = await this.limitPrice.inputValue();
-    console.log("Current limit price is: " + lp);
+    console.log(`Current limit price is: ${lp}`);
     return lp;
   }
 
@@ -107,19 +110,25 @@ export class TradePage extends BasePage {
     console.log("Fliped token pair.");
   }
 
+  async clickMaxAmountButton() {
+    await this.swapMaxBtn.click({ timeout: 2000 });
+    await this.page.waitForTimeout(1000);
+    console.log("Clicked Max token amount button.");
+  }
+
   async enterAmount(amount: string) {
     // Just enter an amount for the swap and wait for a quote
     await this.inputAmount.fill(amount, { timeout: 2000 });
-    await this.page.waitForTimeout(2000);
-    await expect(this.inputAmount).toHaveValue(amount, { timeout: 3000 });
+    await this.page.waitForTimeout(1000);
+    await expect(this.inputAmount).toHaveValue(amount, { timeout: 1000 });
     const exchangeRate = await this.getExchangeRate();
-    console.log("Swap " + amount + " with rate: " + exchangeRate);
+    console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
     // Make sure to have sufficient balance and swap button is enabled
     expect(
-      await this.isInsufficientBalance(),
+      await this.isInsufficientBalanceForSwap(),
       "Insufficient balance for the swap!"
     ).toBeFalsy();
     await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
@@ -130,7 +139,7 @@ export class TradePage extends BasePage {
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
     const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
+    console.log(`Approve page is opened at: ${approvePageTitle}`);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
@@ -138,7 +147,7 @@ export class TradePage extends BasePage {
     const msgContentAmount = await approvePage
       .getByText("type: osmosis/poolmanager/")
       .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     // Approve trx
     await approveBtn.click();
     // wait for trx confirmation
@@ -156,14 +165,14 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(token);
     const fromLocator = this.page.locator(
-      "//div/button[@data-testid='token-select-asset']//span[.='" + token + "']"
+      `//div/button[@data-testid='token-select-asset']//span[.='${token}']`
     );
     await fromLocator.click();
   }
 
   async selectPair(from: string, to: string) {
     // Filter does not show already selected tokens
-    console.log("Select pair " + from + " to " + to);
+    console.log(`Select pair ${from} to ${to}`);
     const fromToken = this.page.locator(
       "//div//button[@data-testid='token-in']//img[@alt]"
     );
@@ -202,8 +211,8 @@ export class TradePage extends BasePage {
     return await this.exchangeRate.innerText();
   }
 
-  async isTransactionSuccesful(delay: number = 7) {
-    console.log("Wait for a transaction success for 7 seconds.");
+  async isTransactionSuccesful(delay = 7) {
+    console.log(`Wait for a transaction success for ${delay} seconds.`);
     await expect(this.trxSuccessful).toBeVisible({
       timeout: delay * 1000,
       visible: true,
@@ -212,20 +221,36 @@ export class TradePage extends BasePage {
 
   async getTransactionUrl() {
     const trxUrl = await this.trxLink.getAttribute("href");
-    console.log("Trx url: " + trxUrl);
+    console.log(`Trx url: ${trxUrl}`);
+    await this.page.reload();
     return trxUrl;
   }
 
-  async isTransactionBroadcasted(delay: number = 5) {
-    console.log("Wait for a transaction broadcasting for 5 seconds.");
+  async isTransactionBroadcasted(delay = 5) {
+    console.log(`Wait for a transaction broadcasting for ${delay} seconds.`);
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
   }
 
   async isInsufficientBalance() {
     const issufBalanceBtn = this.page.locator(
+      '//span[.="Insufficient balance"]'
+    );
+    return await issufBalanceBtn.isVisible({ timeout: 2000 });
+  }
+
+  async isInsufficientBalanceForSwap() {
+    const issufBalanceBtn = this.page.locator(
       '//button[.="Insufficient balance"]'
     );
     return await issufBalanceBtn.isVisible({ timeout: 2000 });
+  }
+
+  async isSufficientBalanceForTrade() {
+    // Make sure to have sufficient balance for a trade
+    expect(
+      await this.isInsufficientBalance(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
   }
 
   async isError() {
@@ -235,8 +260,7 @@ export class TradePage extends BasePage {
 
   async showSwapInfo() {
     const swapInfo = this.page.locator("//button//span[.='Show details']");
-    await swapInfo.click();
-    console.log("Price Impact: " + (await this.getPriceInpact()));
+    await swapInfo.click({ timeout: 2000 });
   }
 
   async getPriceInpact() {
@@ -258,19 +282,16 @@ export class TradePage extends BasePage {
     const fromToken = this.page.locator(tokenLocator).nth(0);
     const toToken = this.page.locator(tokenLocator).nth(1);
     await expect(fromToken).toBeVisible({ timeout: 2000 });
-    let fromTokenText = await fromToken.innerText();
-    let toTokenText = await toToken.innerText();
-    console.log("Current pair: " + `${fromTokenText}/${toTokenText}`);
+    const fromTokenText = await fromToken.innerText();
+    const toTokenText = await toToken.innerText();
+    console.log(`Current pair: ${fromTokenText}/${toTokenText}`);
     return `${fromTokenText}/${toTokenText}`;
   }
 
-  async buyAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    await expect(this.buyBtn).toBeEnabled({ timeout: 7000 });
+  async buyAndGetWalletMsg(context: BrowserContext, limit = false) {
+    await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
+      timeout: 7000,
+    });
     // Handle Pop-up page ->
     await this.buyBtn.click();
     const pageApprove = context.waitForEvent("page");
@@ -278,16 +299,18 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(200);
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
     await expect(approveBtn).toBeEnabled();
+    let msgTextLocator = "type: osmosis/poolmanager/";
+    if (limit) {
+      msgTextLocator = "Execute contract";
+    }
     const msgContentAmount = await approvePage
-      .getByText("type: osmosis/poolmanager/")
+      .getByText(msgTextLocator)
       .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     // Approve trx
     await approveBtn.click();
     // wait for trx confirmation
@@ -296,13 +319,11 @@ export class TradePage extends BasePage {
     return { msgContentAmount };
   }
 
-  async sellAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    await expect(this.sellBtn).toBeEnabled({ timeout: 7000 });
+  async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
+    // Make sure Sell button is enabled
+    await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
+      timeout: 7000,
+    });
     // Handle Pop-up page ->
     await this.sellBtn.click();
     const pageApprove = context.waitForEvent("page");
@@ -310,80 +331,18 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(200);
     const approvePage = await pageApprove;
     await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
     const approveBtn = approvePage.getByRole("button", {
       name: "Approve",
     });
     await expect(approveBtn).toBeEnabled();
+    let msgTextLocator = "type: osmosis/poolmanager/";
+    if (limit) {
+      msgTextLocator = "Execute contract";
+    }
     const msgContentAmount = await approvePage
-      .getByText("type: osmosis/poolmanager/")
+      .getByText(msgTextLocator)
       .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
-    // Approve trx
-    await approveBtn.click();
-    // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
-    // Handle Pop-up page <-
-    return { msgContentAmount };
-  }
-
-  async limitBuyAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    await expect(this.buyBtn).toBeEnabled({ timeout: 7000 });
-    // Handle Pop-up page ->
-    await this.buyBtn.click();
-    const pageApprove = context.waitForEvent("page");
-    await this.confirmSwapBtn.click();
-    await this.page.waitForTimeout(200);
-    const approvePage = await pageApprove;
-    await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
-    const approveBtn = approvePage.getByRole("button", {
-      name: "Approve",
-    });
-    await expect(approveBtn).toBeEnabled();
-    const msgContentAmount = await approvePage
-      .getByText("Execute contract")
-      .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
-    // Approve trx
-    await approveBtn.click();
-    // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
-    // Handle Pop-up page <-
-    return { msgContentAmount };
-  }
-
-  async limitSellAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalance(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    await expect(this.sellBtn).toBeEnabled({ timeout: 7000 });
-    // Handle Pop-up page ->
-    await this.sellBtn.click();
-    const pageApprove = context.waitForEvent("page");
-    await this.confirmSwapBtn.click();
-    await this.page.waitForTimeout(200);
-    const approvePage = await pageApprove;
-    await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log("Approve page is opened at: " + approvePageTitle);
-    const approveBtn = approvePage.getByRole("button", {
-      name: "Approve",
-    });
-    await expect(approveBtn).toBeEnabled();
-    const msgContentAmount = await approvePage
-      .getByText("Execute contract")
-      .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     // Approve trx
     await approveBtn.click();
     // wait for trx confirmation

@@ -344,5 +344,5 @@ const Stepper = (props: PropsWithChildren<StepsProps>) => {
   );
 };
 
-export { Step, Stepper, useStepContext, useStepperContext };
+export { Step, Stepper };
 export * from "./progress-bar";

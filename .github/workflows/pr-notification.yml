@@ -1,0 +1,20 @@
+name: PR Notification
+on:
+  pull_request:
+    types: [opened, reopened]
+    branches:
+      - master
+jobs:
+  slack-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: New PR opened to master branch
+          author_name: GitHub Action
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ANNOUNCEMENT_WEBHOOK_URL }}

@@ -190,22 +190,21 @@ export const AvailablePriceRanges = {
 export type PriceRange =
   (typeof AvailablePriceRanges)[keyof typeof AvailablePriceRanges];
 
-export const AssetChartAvailableDataTypes = ["price", "volume"] as const;
+const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 
-export type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
+type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 
-export const AssetChartModes = {
+const AssetChartModes = {
   advanced: "advanced",
   simple: "simple",
 } as const;
 
-export type AssetChartMode =
-  (typeof AssetChartModes)[keyof typeof AssetChartModes];
+type AssetChartMode = (typeof AssetChartModes)[keyof typeof AssetChartModes];
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
 
-export interface ChartTick {
+interface ChartTick {
   time: number;
   close: number;
 }

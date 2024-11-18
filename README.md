@@ -51,7 +51,13 @@ npx turbo link
 ...press y (yes) and choose "OsmoLabs" as the Vercel build scope...
 ```
 
-2.  Run local server at [`localhost:3000`](localhost:3000)
+2. Run an initial build to create packages build artifacts:
+
+```bash
+yarn build
+```
+
+3.  Run local server at [`localhost:3000`](localhost:3000)
 
 ```bash
 yarn dev
@@ -114,6 +120,8 @@ yarn build:libs && npx lerna publish
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
 
 To add translations, you can manually edit the JSON translation files in `packages/web/translations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to add missing translations using AI from Inlang.
+
+Note: we have tests in web package that ensure all localization files contain the same keys and that they're (best effort) all found within the TSX source files. These help keep our localizations up to date. To clean up localizations, check out the scripts in the web/localizations folder. They must be run using `node` within the localization folder.
 
 ## Asset Listings
 

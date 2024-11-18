@@ -36,6 +36,8 @@ export function getPoolsFromSidecar({
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
 }): Promise<Pool[]> {
+  if (poolIds && !poolIds.length) return Promise.resolve([]);
+
   return cachified({
     cache: poolsCache,
     key:

@@ -54,11 +54,12 @@ export function useAmountInput({
   const setAmount = useCallback(
     (amount: string) => {
       let updatedAmount = amount.trim();
-      // check validity of raw input
-      if (!isValidNumericalRawInput(updatedAmount)) return;
       if (updatedAmount.startsWith(".")) {
         updatedAmount = "0" + updatedAmount;
       }
+
+      // check validity of raw input
+      if (!isValidNumericalRawInput(updatedAmount)) return;
 
       if (fraction != null) {
         setFraction(null);

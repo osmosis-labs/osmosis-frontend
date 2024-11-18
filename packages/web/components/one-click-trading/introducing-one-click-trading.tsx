@@ -58,23 +58,18 @@ export const IntroducingOneClick = ({
       >
         {t("oneClickTrading.introduction.startTradingButton")}
       </Button>
-      <div className="flex flex-col gap-2">
-        <p className="px-8 text-caption text-osmoverse-300">
-          {t("oneClickTrading.introduction.defaultParameters")} –{" "}
-          <Button
-            variant="link"
-            className="!inline !px-0 !text-caption text-wosmongton-300"
-            size="sm"
-            onClick={onClickEditParams}
-            disabled={isLoading || isDisabled}
-          >
-            {t("oneClickTrading.introduction.changeButton")}
-          </Button>
-        </p>
-        <p className="px-8 text-caption text-osmoverse-300">
-          {t("oneClickTrading.introduction.ledgerComingSoon")}
-        </p>
-      </div>
+      <p className="px-8 text-caption text-osmoverse-300">
+        {t("oneClickTrading.introduction.defaultParameters")} –{" "}
+        <Button
+          variant="link"
+          className="!inline !px-0 !text-caption text-wosmongton-300"
+          size="sm"
+          onClick={onClickEditParams}
+          disabled={isLoading || isDisabled}
+        >
+          {t("oneClickTrading.introduction.changeButton")}
+        </Button>
+      </p>
     </div>
   );
 };

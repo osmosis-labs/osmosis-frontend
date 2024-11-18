@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export interface WindowSize {
+interface WindowSize {
   width: number;
   height: number;
   isMobile: boolean;

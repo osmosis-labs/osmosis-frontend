@@ -303,7 +303,7 @@ export class TxTracer {
 
       const params = {
         query:
-          `tm.event='Tx' and ` +
+          `tm.event='Tx' AND ` +
           Object.keys(query)
             .map((key) => {
               return {
@@ -316,10 +316,10 @@ export class TxTracer {
                 typeof obj.value === "string" ? `'${obj.value}'` : obj.value
               }`;
             })
-            .join(" and "),
+            .join(" AND "),
         page: "1",
         per_page: "1",
-        order_by: "desc",
+        order_by: "asc",
       };
 
       return new Promise<unknown>((resolve, reject) => {
@@ -372,10 +372,10 @@ export class TxTracer {
               typeof obj.value === "string" ? `'${obj.value}'` : obj.value
             }`;
           })
-          .join(" and "),
+          .join(" AND "),
         page: "1",
         per_page: "1",
-        order_by: "desc",
+        order_by: "asc",
       };
 
       return this.query("tx_search", params);

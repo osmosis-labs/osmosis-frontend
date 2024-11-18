@@ -42,6 +42,9 @@ const esmModules = [
   "uint8arrays",
   "multiformats",
   "@walletconnect/universal-provider",
+  "bitcoinjs-lib",
+  "uint8array-tools",
+  "varuint-bitcoin",
 ];
 
 module.exports = async () => ({

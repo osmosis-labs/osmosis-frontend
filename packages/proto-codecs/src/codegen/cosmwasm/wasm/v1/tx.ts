@@ -166,7 +166,7 @@ export interface MsgInstantiateContractResponseSDKType {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2 {
   /** Sender is the that actor that signed the messages */
@@ -195,7 +195,7 @@ export interface MsgInstantiateContract2ProtoMsg {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2Amino {
   /** Sender is the that actor that signed the messages */
@@ -224,7 +224,7 @@ export interface MsgInstantiateContract2AminoMsg {
 }
 /**
  * MsgInstantiateContract2 create a new smart contract instance for the given
- * code id with a predicable address.
+ * code id with a predictable address.
  */
 export interface MsgInstantiateContract2SDKType {
   sender: string;
@@ -1412,7 +1412,7 @@ export const MsgStoreCodeResponse = {
   toAmino(message: MsgStoreCodeResponse): MsgStoreCodeResponseAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.checksum = message.checksum
       ? base64FromBytes(message.checksum)
       : undefined;
@@ -1550,7 +1550,7 @@ export const MsgInstantiateContract = {
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.admin = message.admin === "" ? undefined : message.admin;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.label = message.label === "" ? undefined : message.label;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     if (message.funds) {
@@ -1820,7 +1820,7 @@ export const MsgInstantiateContract2 = {
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.admin = message.admin === "" ? undefined : message.admin;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.label = message.label === "" ? undefined : message.label;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     if (message.funds) {
@@ -2258,7 +2258,7 @@ export const MsgMigrateContract = {
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.contract = message.contract === "" ? undefined : message.contract;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     return obj;
   },
@@ -2783,7 +2783,7 @@ export const MsgUpdateInstantiateConfig = {
     const obj: any = {};
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.new_instantiate_permission = message.newInstantiatePermission
       ? AccessConfig.toAmino(message.newInstantiatePermission)
       : undefined;
@@ -4497,7 +4497,7 @@ export const MsgStoreAndMigrateContractResponse = {
   ): MsgStoreAndMigrateContractResponseAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.checksum = message.checksum
       ? base64FromBytes(message.checksum)
       : undefined;

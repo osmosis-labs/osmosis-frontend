@@ -15,8 +15,8 @@ import {
   Quote,
   RoutablePool,
   SplitTokenInQuote,
+  SplitTokenOutQuote,
   Token,
-  TokenOutGivenInRouter,
 } from "./types";
 import {
   cacheKeyForTokenOutGivenIn,
@@ -60,7 +60,7 @@ export type OptimizedRoutesParams = {
  *  @throws NotEnoughLiquidityError if there is not enough liquidity in a route.
  *  @throws NoRouteError if there is no route between the tokens.
  */
-export class OptimizedRoutes implements TokenOutGivenInRouter {
+export class OptimizedRoutes {
   protected readonly _sortedPools: RoutablePool[];
   protected readonly _preferredPoolIds?: string[];
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
@@ -154,6 +154,14 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     );
     const quote = await this.calculateTokenOutByTokenIn(split);
     return quote;
+  }
+
+  async routeByTokenOut(
+    _tokenOut: Token,
+    _tokenInDenom: string,
+    _forcePoolId?: string | undefined
+  ): Promise<SplitTokenOutQuote> {
+    throw new Error("TFM Router does not implement in given out");
   }
 
   async getOptimizedRoutesByTokenIn(

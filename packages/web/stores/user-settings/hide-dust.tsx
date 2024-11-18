@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 
@@ -9,6 +10,8 @@ import { UserSetting } from "~/stores/user-settings";
 export type HideDustState = { hideDust: boolean };
 export class HideDustUserSetting implements UserSetting<HideDustState> {
   readonly id = "hide-dust";
+  /** Global config for dust threshold in USD fiat value.*/
+  static DUST_THRESHOLD = new Dec(0.02);
   readonly controlComponent: FunctionComponent<HideDustState> = ({
     hideDust,
   }) => {

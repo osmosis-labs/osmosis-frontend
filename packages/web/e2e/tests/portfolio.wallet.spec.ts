@@ -1,7 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import {
+  type BrowserContext,
+  chromium,
+  expect,
+  type Page,
+  test,
+} from "@playwright/test";
 import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
-import process from "process";
 
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
@@ -12,9 +16,8 @@ import { WalletPage } from "../pages/wallet-page";
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "pk";
-  const password = process.env.PASSWORD ?? "TestPassword2024.";
   let portfolioPage: PortfolioPage;
-  let dollarBalanceRegEx = /\$\d+/;
+  const dollarBalanceRegEx = /\$\d+/;
   let page: Page;
 
   test.beforeAll(async () => {
@@ -32,7 +35,7 @@ test.describe("Test Portfolio feature", () => {
     const walletPage = new WalletPage(page);
     // Import existing Wallet (could be aggregated in one function).
     await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Portfolio", password);
+    await walletPage.setWalletNameAndPassword("Test Portfolio");
     await walletPage.selectChainsAndSave();
     await walletPage.finish();
     // Switch to Application
@@ -57,6 +60,7 @@ test.describe("Test Portfolio feature", () => {
     await context.close();
   });
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [
     { name: "OSMO" },
     { name: "ATOM" },
@@ -72,14 +76,15 @@ test.describe("Test Portfolio feature", () => {
     });
   });
 
+  // biome-ignore lint/complexity/noForEach: <explanation>
   [
     { name: "INJ" },
     { name: "ETH.axl" },
-    { name: "KUJI" },
     { name: "SOL" },
     { name: "milkTIA" },
     { name: "BTC" },
     { name: "WBTC" },
+    { name: "ETH" },
   ].forEach(({ name }) => {
     test(`User should be able to see bridged balances for ${name}`, async () => {
       await portfolioPage.searchForToken(name);

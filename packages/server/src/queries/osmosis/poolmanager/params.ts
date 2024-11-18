@@ -11,6 +11,11 @@ export type PoolmanagerParamsResponse = {
       admin_addresses: string[];
       community_pool_denom_to_swap_non_whitelisted_assets_to: string;
     };
+    authorized_quote_denoms: string[];
+    pool_creation_fee: {
+      denom: string;
+      amount: string;
+    }[];
   };
 };
 

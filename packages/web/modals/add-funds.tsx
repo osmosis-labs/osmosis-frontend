@@ -8,7 +8,7 @@ import { useCallback } from "react";
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
 import { ModalBase } from "~/modals/base";
 
 interface AddFundsModalProps {
@@ -37,7 +37,7 @@ export function AddFundsModal({
   standalone,
 }: AddFundsModalProps) {
   const { t } = useTranslation();
-  const { bridgeAsset } = useBridge();
+  const bridgeAsset = useBridgeStore((state) => state.bridgeAsset);
 
   const [, set] = useQueryStates({
     tab: parseAsString,

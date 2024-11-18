@@ -2,9 +2,8 @@ import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { SwapTool } from "~/components/swap-tool";
-import { AltSwapTool } from "~/components/swap-tool/alt";
 import { EventPage } from "~/config";
-import { useConnectWalletModalRedirect, useFeatureFlags } from "~/hooks";
+import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TradeTokens: FunctionComponent<
@@ -25,30 +24,6 @@ export const TradeTokens: FunctionComponent<
 }) => {
   const { showModalBase, accountActionButton, walletConnected } =
     useConnectWalletModalRedirect({}, modalProps.onRequestClose);
-  const featureFlags = useFeatureFlags();
-
-  if (!featureFlags.limitOrders) {
-    return (
-      <ModalBase
-        {...modalProps}
-        isOpen={showModalBase && modalProps.isOpen}
-        hideCloseButton
-        className="!w-fit max-w-[512px] overflow-x-hidden !bg-osmoverse-850 !py-0 !px-0"
-      >
-        <SwapTool
-          fixedWidth
-          useQueryParams={false}
-          useOtherCurrencies={useOtherCurrencies}
-          onRequestModalClose={modalProps.onRequestClose}
-          swapButton={!walletConnected ? accountActionButton : undefined}
-          initialSendTokenDenom={sendTokenDenom}
-          initialOutTokenDenom={outTokenDenom}
-          forceSwapInPoolId={forceSwapInPoolId}
-          page={page}
-        />
-      </ModalBase>
-    );
-  }
 
   return (
     <ModalBase
@@ -67,7 +42,7 @@ export const TradeTokens: FunctionComponent<
         </div>
       </div>
       <div className="px-8 pt-0 pb-7">
-        <AltSwapTool
+        <SwapTool
           fixedWidth
           useQueryParams={false}
           useOtherCurrencies={useOtherCurrencies}

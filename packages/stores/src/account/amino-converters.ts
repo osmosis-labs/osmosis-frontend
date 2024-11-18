@@ -1,4 +1,8 @@
-import type { AminoMsgTransfer } from "@cosmjs/stargate";
+import { MsgTransferAmino } from "@osmosis-labs/proto-codecs/build/codegen/ibc/applications/transfer/v1/tx";
+import {
+  MsgBeginUnlocking,
+  MsgBeginUnlockingAmino,
+} from "@osmosis-labs/proto-codecs/build/codegen/osmosis/lockup/tx";
 import type { MsgTransfer } from "cosmjs-types/ibc/applications/transfer/v1/tx";
 import Long from "long";
 
@@ -23,13 +27,6 @@ export async function getAminoConverters() {
       }
     > = {
       ...originalOsmosisAminoConverters,
-      "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool":
-        {
-          ...originalOsmosisAminoConverters[
-            "/osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.MsgCreateConcentratedPool"
-          ],
-          aminoType: "osmosis/cl-create-pool",
-        },
       "/osmosis.superfluid.MsgUnbondConvertAndStake": {
         ...originalOsmosisAminoConverters[
           "/osmosis.superfluid.MsgUnbondConvertAndStake"
@@ -45,6 +42,19 @@ export async function getAminoConverters() {
             ? cosmos.base.v1beta1.Coin.fromAmino(msg.shares_to_convert)
             : undefined,
         }),
+      },
+      "/osmosis.lockup.MsgBeginUnlocking": {
+        ...originalOsmosisAminoConverters["/osmosis.lockup.MsgBeginUnlocking"],
+        toAmino(message: MsgBeginUnlocking): MsgBeginUnlockingAmino {
+          const obj =
+            originalOsmosisAminoConverters[
+              "/osmosis.lockup.MsgBeginUnlocking"
+            ].toAmino(message);
+          if (obj.coins?.length === 0) {
+            delete obj.coins;
+          }
+          return obj;
+        },
       },
     };
 
@@ -69,7 +79,8 @@ export async function getAminoConverters() {
           sender,
           receiver,
           timeoutHeight,
-        }: MsgTransfer) => ({
+          timeoutTimestamp,
+        }: MsgTransfer): MsgTransferAmino => ({
           source_port: sourcePort,
           source_channel: sourceChannel,
           token: {
@@ -81,9 +92,15 @@ export async function getAminoConverters() {
           timeout_height: timeoutHeight
             ? {
                 revision_height: timeoutHeight.revisionHeight?.toString(),
-                revision_number: timeoutHeight.revisionNumber?.toString(),
+                revision_number:
+                  timeoutHeight.revisionNumber?.toString() !== "0"
+                    ? timeoutHeight.revisionNumber?.toString()
+                    : undefined,
               }
             : {},
+          ...(timeoutTimestamp && {
+            timeout_timestamp: timeoutTimestamp.toString(),
+          }),
         }),
         fromAmino: ({
           source_port,
@@ -93,16 +110,16 @@ export async function getAminoConverters() {
           receiver,
           timeout_height,
           timeout_timestamp,
-        }: AminoMsgTransfer["value"]): MsgTransfer => {
+        }: MsgTransferAmino): MsgTransfer => {
           return {
-            sourcePort: source_port,
-            sourceChannel: source_channel,
+            sourcePort: source_port ?? "",
+            sourceChannel: source_channel ?? "",
             token: {
               denom: token?.denom ?? "",
               amount: token?.amount ?? "",
             },
-            sender,
-            receiver,
+            sender: sender ?? "",
+            receiver: receiver ?? "",
             timeoutHeight: timeout_height
               ? {
                   revisionHeight: Long.fromString(

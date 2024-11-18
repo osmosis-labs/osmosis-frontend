@@ -5,11 +5,12 @@ import { FunctionComponent } from "react";
 
 import { Allocation } from "~/components/complex/portfolio/allocation";
 import { AssetsOverview } from "~/components/complex/portfolio/assets-overview";
+import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { UserPositionsSection } from "~/components/complex/portfolio/user-positions";
 import { UserZeroBalanceTableSplash } from "~/components/complex/portfolio/user-zero-balance-table-splash";
 import { WalletDisconnectedSplash } from "~/components/complex/portfolio/wallet-disconnected-splash";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
-import { AssetBalancesTable } from "~/components/table/asset-balances";
+import { PortfolioAssetBalancesTable } from "~/components/table/portfolio-asset-balances";
 import { RecentActivity } from "~/components/transactions/recent-activity/recent-activity";
 import { EventName } from "~/config";
 import {
@@ -20,6 +21,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useStore } from "~/stores";
+import { HideDustState } from "~/stores/user-settings/hide-dust";
 import { api } from "~/utils/trpc";
 
 import { CypherCard } from "./cypher-card";
@@ -27,11 +29,12 @@ import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
 export const PortfolioPage: FunctionComponent = observer(() => {
   const { t } = useTranslation();
-  const { accountStore } = useStore();
+  const { accountStore, userSettings } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
   const featureFlags = useFeatureFlags();
 
-  useAmplitudeAnalytics({
+  const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Portfolio.pageViewed],
   });
 
@@ -39,7 +42,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     data: allocation,
     isLoading: isLoadingAllocation,
     isFetched: isFetchedAllocation,
-  } = api.local.portfolio.getAllocation.useQuery(
+  } = api.local.portfolio.getPortfolioAssets.useQuery(
     {
       address: wallet?.address ?? "",
     },
@@ -50,30 +53,21 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const totalCap = allocation?.totalCap;
 
-  const userHasNoAssets = allocation && totalCap?.toDec()?.isZero();
+  const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
 
   const [overviewRef, { height: overviewHeight }] =
     useDimension<HTMLDivElement>();
   const [tabsRef, { height: tabsHeight }] = useDimension<HTMLDivElement>();
 
-  const { logEvent } = useAmplitudeAnalytics();
-
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
 
-  const { isLoading: isWalletLoading } = useWalletSelect();
+  const hideDustSettingStore =
+    userSettings.getUserSettingById<HideDustState>("hide-dust");
+  const hideDust = Boolean(hideDustSettingStore?.state?.hideDust);
 
   return (
-    <div
-      className={classNames(
-        "flex justify-center p-8 pt-4",
-        "1.5xl:flex-col",
-        "md:p-4",
-        {
-          "bg-osmoverse-900": !featureFlags.limitOrders,
-        }
-      )}
-    >
+    <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
       {isWalletLoading ? (
         <SkeletonLoader className="h-24 w-1/2 lg:w-full" />
       ) : isWalletConnected ? (
@@ -99,11 +93,14 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {({ selected }) => (
-                      <h6
-                        className={!selected ? "text-osmoverse-500" : undefined}
+                      <div
+                        className={classNames(
+                          !selected ? "text-osmoverse-500" : undefined,
+                          "font-h6 text-h6 md:subtitle1"
+                        )}
                       >
                         {t("portfolio.yourBalances")}
-                      </h6>
+                      </div>
                     )}
                   </Tab>
                   <Tab
@@ -117,11 +114,14 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     }}
                   >
                     {({ selected }) => (
-                      <h6
-                        className={!selected ? "text-osmoverse-500" : undefined}
+                      <div
+                        className={classNames(
+                          !selected ? "text-osmoverse-500" : undefined,
+                          "font-h6 text-h6 md:subtitle1"
+                        )}
                       >
                         {t("portfolio.yourPositions")}
-                      </h6>
+                      </div>
                     )}
                   </Tab>
                 </TabList>
@@ -134,7 +134,11 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                 ) : (
                   <TabPanels>
                     <TabPanel>
-                      <AssetBalancesTable
+                      <PortfolioAssetBalancesTable
+                        hideDust={Boolean(hideDust)}
+                        setHideDust={(hideDust) =>
+                          hideDustSettingStore?.setState({ hideDust })
+                        }
                         tableTopPadding={overviewHeight + tabsHeight}
                       />
                     </TabPanel>
@@ -163,10 +167,13 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             >
               {featureFlags.cypherCard && <CypherCard />}
               {!isLoadingAllocation && !userHasNoAssets && (
-                <Allocation allocation={allocation} />
+                <Allocation assets={allocation} />
               )}
             </div>
-            <RecentActivity />
+            <div className="flex w-full flex-col">
+              <OpenOrders />
+              <RecentActivity />
+            </div>
           </aside>
         </>
       ) : (

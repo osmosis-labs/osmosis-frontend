@@ -2,6 +2,7 @@
   "404": {
     "title": "페이지를 찾을 수 없습니다"
   },
+  "aboutSecondsRemaining": "{seconds} 남음",
   "addLiquidity": {
     "allAssets": "모든 자산",
     "autoswapCaption": "오토스왑을 통해 단일 자산의 유동성을 추가합니다",
@@ -53,7 +54,6 @@
       "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
     }
   },
-  "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "clPositions": {
     "inRange": "범위 내",
     "nearBounds": "가까운 경계",
@@ -128,79 +128,18 @@
     "secondaryCta": "30초 안에 배우기"
   },
   "assets": {
-    "bondedAssets": "예치된 자산",
     "historyTable": {
       "colums": {
-        "amount": "수량",
         "deposit": "입금",
-        "status": "상태",
-        "transactionHash": "트랜잭션 해시",
-        "type": "타입",
         "withdraw": "출금"
-      },
-      "errors": {
-        "insufficientFee": "수수료가 부족합니다"
-      },
-      "failed": "실패했습니다",
-      "failedWithReason": "실패: {reason}",
-      "pending": "보류중",
-      "refunded": "환불됨",
-      "success": "성공",
-      "title": "전송 내역",
-      "connectionError": "연결 오류"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "추가하다",
-      "buttonEdit": "수정",
-      "buttonEnter": "입력",
-      "channelCongestedDeposit": "입금 (채널 혼잡)",
-      "channelCongestedWithdraw": "출금 (채널 혼잡)",
-      "checkboxVerify": "중앙화 거래소 주소로 전송하지 않겠습니다.",
-      "estimatedTime": "Estimated Time",
-      "selectAmount": "수량 선택",
-      "titleDeposit": "{coinDenom} 입금",
-      "titleWithdraw": "{coinDenom} 출금",
-      "waitTime": "20초",
-      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다.",
-      "provider": "공급자"
-    },
-    "myPools": "내 풀",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "예치된 자산",
-      "FeeAPY": "수수료 APY",
-      "liquidity": "내 유동성"
-    },
-    "selectAssetSource": {
-      "installWallet": "{walletName} 설치",
-      "next": "다음",
-      "titleDeposit": "입금할 지갑",
-      "titleWithdraw": "출금할 지갑"
-    },
-    "stakedAssets": "스테이킹된 OSMO",
     "table": {
       "columns": {
-        "assetChain": "자산 / 체인",
-        "balance": "수량",
-        "deposit": "입금",
-        "transfer": "전송",
-        "withdraw": "출금"
+        "balance": "수량"
       },
       "depositButton": "입금",
-      "hideZero": "소액 자산 숨기기",
-      "hideBalances": "자산 숨기기",
-      "preTransfer": {
-        "currentBal": "현재 수량",
-        "deposit": "입금",
-        "withdraw": "출금"
-      },
       "search": "검색",
-      "sort": {
-        "balance": "수량",
-        "network": "네트워크",
-        "symbol": "심볼"
-      },
-      "title": "모든 자산",
       "withdrawButton": "출금",
       "activate": "활성화",
       "marketCap": "시가총액",
@@ -210,64 +149,18 @@
       "lastWeek": "지난 7일",
       "asset": "유산"
     },
-    "totalAssets": "총 자산",
     "totalBalance": "전체 균형",
     "transfer": {
-      "availableMobile": "잔고",
-      "availableOn": "{network} 잔고",
       "approving": "승인 중...",
       "approveInWallet": "지갑에서 승인",
-      "enterAddress": "{network} 주소",
       "errors": {
-        "seeRequest": "{walletName}에서 요청 사항 확인하기",
-        "invalidAddress": "잘못된 주소"
+        "seeRequest": "{walletName}에서 요청 사항 확인하기"
       },
-      "from": "발신 체인",
       "loading": "로딩",
-      "titleDeposit": "{coinDenom} 입금",
-      "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
-      "transferFee": "전송 수수료",
-      "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
-      "expectedOutput": "예상 출력",
-      "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
       "priceImpact": "가격 영향",
       "sending": "배상...",
       "transferAnyway": "무시하고 전송"
-    },
-    "transferAssetSelect": {
-      "buttonNext": "다음",
-      "deposit": "입금",
-      "network": "네트워크",
-      "withdraw": "출금"
-    },
-    "unbondedAssets": "예치해제된 자산",
-    "nomic": {
-      "addresses": "구애.",
-      "bitcoin": "비트코인(BTC)",
-      "bitcoinMinerFee": "비트코인 채굴자 수수료",
-      "bridgeAtCapacity": "교량은 현재 수용능력이 찼습니다. 나중에 다시 시도 해주십시오.",
-      "bridgeFee": "노믹 브릿지 수수료",
-      "confirmations": "6개의 확인",
-      "enterBitcoinAddress": "비트코인 주소를 입력하세요",
-      "estimatedArrival": "예상 도착 시간",
-      "estimatedTimeTag": "예상 시간",
-      "estimatedTime": "5 분",
-      "expirationTime": "4 일",
-      "learnMore": "자세히 알아보기",
-      "lossOfFunds": "이 시간 이후에 주소를 사용하면 자금이 손실됩니다.",
-      "minDeposit": "최소 입금액",
-      "minWithdrawal": "최소 출금",
-      "nomicCapacityLimit": "Nomic의 용량 제한은 다음과 같습니다.",
-      "onlyUse": "만 사용",
-      "pendingDeposits": "대기 중인 예금",
-      "poweredBy": "제공:",
-      "proceed": "진행하다",
-      "depositExpiration": "이 입금 주소는 다음 날짜에 만료됩니다.",
-      "undergoAudit": "감사 진행중",
-      "warning": "경고:",
-      "loading": "로딩 중..."
     },
     "activateUnverifiedAssetsModal": {
       "activate": "확인되지 않은 자산 활성화",
@@ -301,8 +194,16 @@
       "upcoming": "예정"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "오스모시스 페이",
+    "cypherOrder": "지금 카드를 주문하세요",
+    "cypherBeta": "베타",
+    "acceptedEverywhere": "이제 어디서나 OSMO를 만나보세요",
+    "newPill": "새로운"
+  },
   "portfolio": {
     "buy": "구입하다",
+    "sell": "팔다",
     "yourBalances": "잔액",
     "yourPositions": "귀하의 직위",
     "searchBalances": "잔액 검색",
@@ -324,12 +225,19 @@
     "assets": "자산",
     "recentActivity": "최근 활동",
     "seeAll": "모두 보기",
-    "show": "보여주다",
-    "hide": "숨다",
-    "hidden": "숨겨진",
-    "cypherSpend": "오스모시스 페이",
-    "cypherOrder": "지금 카드를 주문하세요",
-    "cypherBeta": "베타"
+    "showHidden": "숨겨진 항목 표시( {hiddenDustCount} )",
+    "hideSmallBalances": "소액 잔액 숨기기",
+    "openOrders": "미결 주문",
+    "last24h": "지난 24시간",
+    "last7d": "지난 7일",
+    "last30d": "지난 30일",
+    "last1y": "지난 1년",
+    "allTime": "모든 시간",
+    "trade": "거래",
+    "earn": "벌다",
+    "deposit": "보증금",
+    "withdraw": "철회하다",
+    "convert": "전환하다"
   },
   "buyTokens": "토큰 구매",
   "components": {
@@ -358,11 +266,6 @@
     "show": {
       "less": "숨기기",
       "more": "더보기"
-    },
-    "sort": {
-      "mobileMenu": "정렬",
-      "SORT": "정렬",
-      "SORTMobile": "정렬"
     },
     "table": {
       "poolId": "풀 {id}",
@@ -421,14 +324,6 @@
   },
   "estimated": "추정된",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
-    "simplifiedExperience": "귀하의 경험이 단순화되었습니다!",
-    "frontierHasNowMerged": "프론티어 페이지는 이제 다음과 병합되었습니다",
-    "thisMeansManaging": "이것은 토큰을 관리할 수 있는 것이 한 곳에서 편리하게 이루어질 수 있다는 것을 의미합니다!",
-    "commitmentToDecentralization": "분산화와 접근성에 대한 약속에 따라, 검증되지 않은 토큰을 다루는 옵션은 여전히 가능합니다.",
-    "settingIsNowEnabled": "설정이 이제 활성화되었습니다.",
-    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
-    "openSettings": "설정 열기",
     "proceed": "진행"
   },
   "lockToken": {
@@ -465,13 +360,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-클릭 거래 활성화",
-      "oneClickTradingExpired": "1-클릭 거래가 만료되었습니다",
       "oneClickTradingDisabled": "1-클릭 거래 비활성화됨",
       "currentlyUnavailable": "현재 1-클릭 거래를 이용할 수 없습니다",
       "insufficientFunds": "1-Click 거래를 위한 OSMO 자금이 부족합니다.",
       "continueWithoutOneClickTrading": "원클릭 거래 없이 계속하기",
       "networkFeeTooHigh": "네트워크 수수료가 너무 높음",
-      "startANewSession": "새 세션 시작",
       "approveManually": "{walletName} 에서 수동으로 승인하세요.",
       "continueWithWallet": "지갑으로 계속하기",
       "sessionEnded": "이 기기에서 세션이 종료되었습니다.",
@@ -485,13 +378,10 @@
       "learnMore": "더 알아보기",
       "startTradingButton": "1-클릭 거래 시작",
       "defaultParameters": "기본 설정은 1시간으로 설정되어 있으며 손실 보호 한도는 USD 5,000입니다.",
-      "changeButton": "설정 수정",
-      "ledgerComingSoon": "Ledger 하드웨어 지갑이 곧 지원될 예정입니다."
+      "changeButton": "설정 수정"
     },
     "floatingBanner": {
-      "newPill": "새로운",
-      "title": "1-클릭 거래",
-      "tradeFasterButton": "더 빠르게 거래하세요"
+      "newPill": "새로운"
     },
     "settings": {
       "header": "1-클릭 거래",
@@ -633,8 +523,16 @@
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해했습니다.",
       "weightedPool": "가중비율 풀"
     },
-    "externalIncentivized": {
-      "TVL": "TVL"
+    "createSupercharged": {
+      "createNew": "새로운 슈퍼차지 풀 생성",
+      "addInitialLiquidity": "풀 # {poolNumber} 에 초기 유동성을 추가합니다.",
+      "buttonAddToken": "새로운 토큰 추가",
+      "base": "베이스",
+      "quote": "인용하다",
+      "swapFee": "스왑 수수료 설정",
+      "undersandCost": "새 풀을 만드는 데 {poolCreationFee} 의 비용이 발생한다는 것을 알고 있습니다.",
+      "buttonCreate": "풀 생성",
+      "buttonCreating": "생성"
     },
     "TVL": "TVL",
     "myLiquidity": "내 유동성",
@@ -785,23 +683,10 @@
   },
   "swap": {
     "autoRouter": "경로",
-    "autoRouterToggle": {
-      "hide": "숨기기",
-      "show": "보여주다"
-    },
-    "maxButtonErrorNoBalance": "최대 금액을 계산하기에는 잔액이 부족합니다.",
-    "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
-    "expectedOutput": "예상 교환치",
-    "fee": "교환 수수료 ({fee})",
-    "networkFee": "네트워크 수수료",
-    "totalFee": "총 수수료",
     "HALF": "절반",
-    "MAX": "최대",
-    "minimumSlippage": "슬리피지 이후 받을 최소수량 ({slippage})",
     "pool": "풀 #{id}",
-    "priceImpact": "시장 영향",
     "routerTooltipFee": "회비",
     "routerTooltipSpreadFactor": "스프레드 팩터",
     "showDetails": "세부정보 표시",
@@ -812,9 +697,7 @@
       "increaseSpendLimit": "지출 한도 늘리기"
     },
     "settings": {
-      "slippage": "슬리피지 허용치",
-      "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다.",
-      "title": "트랜잭션 설정"
+      "slippage": "슬리피지 허용치"
     },
     "title": "거래",
     "dynamicSpreadFactor": "동적",
@@ -827,7 +710,8 @@
     },
     "noRoutes": "경로를 찾을 수 없습니다.",
     "route": "노선",
-    "routes": "노선"
+    "routes": "노선",
+    "slippageOverBalance": "미끄러짐을 커버할 자금이 부족합니다"
   },
   "walletSelect": {
     "gettingStarted": "시작하기",
@@ -990,16 +874,53 @@
     "risks": "브리징에는 위험이 따릅니다.",
     "learnMore": "더 알아보기",
     "openNoun": "{noun} 열기",
+    "accountNotFound": "계정을 찾을 수 없습니다",
+    "sendFundsToAccount": "{chain} {asset} chain\"} 계정으로 가스 토큰을 보내주세요.",
     "insufficientFundsForFees": "수수료를 지불할 자금이 부족합니다",
     "youNeedFundsToPay": "{chain} 에 대한 네트워크 및 브리징 비용을 지불하려면 자금이 필요합니다.",
     "assetsDepositsUnavailable": "{asset} 예금을 사용할 수 없습니다.",
-    "assetsWithdrawsUnavailable": "{asset} 출금은 불가능합니다.",
+    "assetWithdrawalsUnavailable": "{asset} 출금이 불가능합니다.",
     "noAvailableDeposits": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 다른 애플리케이션을 사용하여 자금을 Osmosis로 이체하세요.",
-    "noAvailableWithdraws": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 Osmosis에서 자금을 이체하려면 대체 애플리케이션을 설정하세요.",
+    "noAvailableWithdrawals": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 Osmosis에서 자금을 이체하려면 대체 애플리케이션을 설정하세요.",
     "somethingIsntWorking": "뭔가 작동하지 않습니다…",
     "sorryForTheInconvenience": "불편을 드려 죄송합니다. 페이지를 새로 고치고 다시 시도하거나 다른 애플리케이션을 사용하여 자금을 Osmosis로 이체하세요.",
     "assetIsCurrentlyUnstable": "{asset} 전송이 현재 불안정합니다.",
-    "transferWillLikelyTakeLonger": "전송이 평소보다 오래 걸리거나 완전히 실패할 수 있습니다. 자신의 책임하에 진행하십시오."
+    "transferWillLikelyTakeLonger": "전송이 평소보다 오래 걸리거나 완전히 실패할 수 있습니다. 자신의 책임하에 진행하십시오.",
+    "sendFromWalletOrExchange": "지갑이나 거래소에서 보내세요",
+    "scanWithMobileWallet": "모바일 지갑으로 스캔하세요",
+    "or": "또는",
+    "copied": "복사됨",
+    "copyToClipboard": "클립보드에 복사",
+    "showQrCode": "QR코드 표시",
+    "yourDepositAddress": "귀하의 {denom} 입금 주소",
+    "copyAddressToClipboard": "주소를 클립보드에 복사",
+    "copyAddress": "주소 복사",
+    "receiveOnlyAsset": "이 주소는 {denom} 만 {network} 네트워크에서 수신할 수 있습니다. 다른 자산을 보내면 영구적인 손실이 발생할 수 있습니다.",
+    "minimumDeposit": "최소입금",
+    "nomic": {
+      "estimatedTime": "약 1시간 정도",
+      "awaitingBtc": "BTC를 기다리는 중",
+      "transferringYourBtc": "BTC 전송",
+      "depositStatus": "입금 상태",
+      "depositSuccess": "입금 성공",
+      "pendingDeposit": "입금 보류 중",
+      "estimatedAboutTime": "{time} 정도 예상됨",
+      "from": "에서",
+      "to": "에게",
+      "asset": "유산",
+      "amountBtc": "금액 BTC",
+      "totalValue": "총 가치",
+      "transactionHash": "거래 해시",
+      "viewOnExplorer": "탐색기에서 보기",
+      "totalFees": "총 수수료"
+    },
+    "doNotSendFundsToThisAddress": "이 주소로 자금을 보내지 마십시오.",
+    "addressExpired": "이 주소는 만료되었습니다. 새 주소를 요청하세요.",
+    "addressAboutToExpire": "이 주소는 곧 만료됩니다. 자금 손실을 피하려면 새 주소를 요청하세요.",
+    "createNewDepositAddress": "새로운 입금 주소 생성",
+    "transactionDetails": "거래내역",
+    "continue": "계속하다",
+    "inputBitcoinAddress": "비트코인 주소를 입력하세요"
   },
   "unknownError": "알 수 없는 에러",
   "viewExplorer": "블록 익스플로러 보기",
@@ -1020,14 +941,6 @@
     "apps": {
       "title": "오스모시스 앱 스토어",
       "description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오."
-    },
-    "assets": {
-      "title": "오스모시스 자산",
-      "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
-    },
-    "portfolio": {
-      "title": "삼투 포트폴리오",
-      "description": "최고의 분산 코스모스 거래소인 Osmosis에서 귀하의 자산을 확인하세요"
     },
     "disclaimer": {
       "title": "오스모시스 면책 조항",
@@ -1085,9 +998,6 @@
     "osmosisUpdates": "오스모시스 업데이트!",
     "seeWhatsNew": "새로운 소식 보기"
   },
-  "previewAssetsEnabled": "자산 미리보기가 활성화되었습니다.",
-  "previewAssetsDisabled": "자산 미리보기가 비활성화되었습니다.",
-  "previewAssetsEnabledForSession": "이 세션에 활성화된 자산 미리보기입니다. 비활성화하려면 새 탭을 열거나 'show_preview_assets=false'를 추가하세요.",
   "earnPage": {
     "title": "벌다",
     "positions": "직위",
@@ -1164,7 +1074,6 @@
       "veryHigh": "매우 높음"
     }
   },
-  "disclaimer": "부인 성명",
   "remaining": "남은",
   "timeUnits": {
     "second": "두번째",
@@ -1172,14 +1081,9 @@
     "minute": "분",
     "minutes": "분",
     "hour": "시간",
-    "hours": "시간"
-  },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} 예금이 불안정함",
-    "titleWithdraw": "{coinDenom} 출금이 불안정함",
-    "description": "불확실한 기술적 문제로 인해 Osmosis와 {prettyChainName} 전송에 상당한 지연이나 거래 실패가 발생할 수 있습니다. 자신의 책임하에 진행하십시오.",
-    "buttonContinue": "계속 진행",
-    "buttonCancel": "취소"
+    "hours": "시간",
+    "day": "낮",
+    "days": "날"
   },
   "transactions": {
     "noRecent": "최근 이적 없음",
@@ -1200,11 +1104,25 @@
     "totalFees": "총 수수료",
     "transactionHash": "거래 해시",
     "viewOnExplorer": "탐색기에서 보기",
-    "launchAlert": "현재는 거래 내역만 표시됩니다. 더 많은 거래 유형이 곧 지원될 예정입니다.",
-    "noPriceData": "가격 데이터를 사용할 수 없습니다.",
-    "viewAll": "모두보기",
+    "launchAlert": "현재는 거래 및 이체 내역만 표시됩니다. 더 많은 거래 유형에 대한 지원이 곧 제공됩니다.",
     "history": "역사",
-    "orders": "명령"
+    "orders": "명령",
+    "historyTable": {
+      "pendingDeposit": "입금 보류 중",
+      "pendingWithdraw": "인출 보류 중",
+      "successDeposit": "입금됨",
+      "successWithdraw": "철회했다",
+      "failDeposit": "입금 실패",
+      "failWithdraw": "출금 실패"
+    },
+    "transfer": {
+      "asset": "유산",
+      "amountAsset": "금액 {asset}",
+      "totalValue": "총 가치",
+      "providerFee": "제공자 수수료",
+      "provider": "공급자",
+      "networkFee": "네트워크 수수료"
+    }
   },
   "date": {
     "earlierToday": "오늘 일찍",
@@ -1216,6 +1134,10 @@
     "newer": "최신"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "가격을 선택하세요",
+      "tryLimitOrders": "제한 주문을 시도해 보세요"
+    },
     "historyTable": {
       "columns": {
         "order": "주문하다",
@@ -1304,7 +1226,6 @@
     "connectYourWallet": "지갑을 연결하세요",
     "toSeeYourBalances": "잔액을 보려면",
     "searchAssets": "자산 검색",
-    "marketPrice": "시장 가격",
     "below": "아래에",
     "above": "~ 위에",
     "currentPrice": "현재 가격",
@@ -1327,6 +1248,52 @@
     "priceReaches": "{denom} 가격 {price} 도달하면",
     "belowMinimumAmount": "{amount} 최소"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "가격 영향이란 무엇인가?",
+      "content": "이는 시장 유동성이 귀하의 실행 가격에 미치는 영향입니다. 거래 규모가 클수록 시장에 미치는 영향이 더 큰 경향이 있습니다."
+    },
+    "expectedRate": {
+      "header": "예상 가격이란 무엇인가요?",
+      "content": "이것은 당신이 받을 것으로 예상되는 가격입니다. 가격은 자주 바뀌므로 특정 가격으로 거래하고 싶다면 대신 제한 주문을 시도하세요."
+    },
+    "swapFees": {
+      "header": "스왑 수수료는 무엇인가요?",
+      "content": "이는 유동성 공급자에게 보상하고 네트워크를 유지하기 위해 Osmosis 프로토콜이 부과하는 수수료입니다."
+    },
+    "tradeRoute": {
+      "header": "무역로란 무엇인가?",
+      "contentTop": " 거래하는 자산 간에 직접적인 시장이 없는 경우 Osmosis는 다른 자산과 일련의 거래를 통해 언제나 가장 좋은 가격을 얻어 거래를 성사시키려고 시도합니다.",
+      "contentBottom": "이용 가능한 유동성에 따른 최적의 효율성을 위해, 때로는 거래가 다양한 자산을 대상으로 여러 경로로 분할될 것입니다."
+    },
+    "outputDifference": {
+      "header": "출력 차이란 무엇인가요?",
+      "content": "이것은 당신이 지불하고 받는 것의 가치 차이입니다. 양수는 당신이 사는 금액이 더 가치가 있다는 것을 의미하고, 음수는 당신이 판매하는 금액이 더 가치가 있다는 것을 의미합니다."
+    }
+  },
   "tradeFee": "거래 수수료",
-  "receiveAtLeast": "최소한 받다"
+  "receiveAtLeast": "최소한 받다",
+  "payAtMost": "최대 지불",
+  "previewAssetsEnabled": "미리보기 자산 활성화됨",
+  "previewAssetsDisabled": "미리보기 자산 비활성화",
+  "previewAssetsEnabledForSession": "이 세션에서 미리보기 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 `show_preview_assets=false`를 추가합니다.",
+  "alloyedAssets": {
+    "title": "변종 감지됨",
+    "caption": "혼란스러운 자산 변형에 작별 인사를 전하세요. Osmosis에서 더욱 매끄러운 경험을 만나보세요.",
+    "remindMeLater": "나중에 다시 알려주세요",
+    "dismiss": "해고하다",
+    "convert": "전환하다"
+  },
+  "assetVariantsConversion": {
+    "title": "자산 표준화",
+    "description": "더 큰 유연성과 호환성을 위해 다음 자산을 Osmosis의 표준화된 버전으로 변환하세요.",
+    "learnMore": "더 알아보기",
+    "errorLoading": "자산 변형을 로드하는 중에 오류가 발생했습니다. 나중에 다시 시도하세요.",
+    "tooltipTitle": "Osmosis의 {coinName}",
+    "tooltipDescription": "Osmosis는 더 큰 유연성과 사용 편의성을 위해 {coinDenom} 의 여러 변형을 하나의 간단한 자산으로 통합했습니다.",
+    "convert": "전환하다",
+    "conversionFees": "환전 수수료",
+    "free": "무료",
+    "unavailable": "현재 사용할 수 없습니다. 나중에 다시 시도하세요."
+  }
 }

@@ -30,7 +30,7 @@ export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
   return path.join(tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
-export function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
+function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
   const fileNameSplit = urlParts[urlParts.length - 1].split(".");
   const fileType = fileNameSplit[fileNameSplit.length - 1];
@@ -90,7 +90,7 @@ export async function saveAssetImageToTokensDir(
 }
 
 /** Generate a chain config compatible with Keplr wallet. */
-export function getKeplrCompatibleChain({
+function getKeplrCompatibleChain({
   chain,
   assetLists,
   environment,

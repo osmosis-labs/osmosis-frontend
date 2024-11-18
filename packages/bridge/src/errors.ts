@@ -23,4 +23,5 @@ export type BridgeError =
   | "CreateEVMTxError"
   | "NoQuotesError"
   | "UnsupportedQuoteError"
-  | "InsufficientAmountError";
+  | "InsufficientAmountError"
+  | "AccountNotFoundError";

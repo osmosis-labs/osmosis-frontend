@@ -1,4 +1,4 @@
-import { Range } from "@osmosis-labs/server/src/queries/complex/portfolio/portfolio";
+import type { Range } from "@osmosis-labs/server";
 import { AreaData, Time } from "lightweight-charts";
 
 import { Icon } from "~/components/assets";
@@ -22,7 +22,7 @@ interface PortfolioHistoricalChartProps {
   setRange: (range: Range) => void;
   error: unknown;
   setShowDate: (show: boolean) => void;
-  setIsChartMinimized: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsChartMinimized: (isChartMinimized: boolean) => void;
 }
 
 export const PortfolioHistoricalChart = ({
@@ -37,7 +37,7 @@ export const PortfolioHistoricalChart = ({
   setIsChartMinimized,
 }: PortfolioHistoricalChartProps) => {
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent, getLastEvent } = useAmplitudeAnalytics();
 
   return (
     <section className="relative flex h-[468px] max-h-[468px] flex-col justify-between">
@@ -54,7 +54,14 @@ export const PortfolioHistoricalChart = ({
             onPointerHover={(value, time) => {
               setShowDate(true);
               setDataPoint({ value, time });
-              logEvent([EventName.Portfolio.chartInteraction]);
+
+              const lastEvent = getLastEvent();
+              // Avoid logging subsequent chartInteraction events to prevent Amplitude overload
+              if (
+                lastEvent?.eventName !== EventName.Portfolio.chartInteraction
+              ) {
+                logEvent([EventName.Portfolio.chartInteraction]);
+              }
             }}
             onPointerOut={resetDataPoint}
           />
@@ -94,7 +101,7 @@ export const PortfolioHistoricalChartMinimized = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="h-full w-full scale-110">
+    <div className="h-full w-full">
       {error ? (
         <div className="error-message flex h-full items-center justify-center">
           {t("errors.generic")}

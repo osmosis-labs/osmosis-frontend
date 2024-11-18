@@ -3,11 +3,9 @@ export * from "./base";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./numia";
-export * from "./pool-fees";
 export * from "./pool-rewards";
 export * from "./pools";
 export * from "./store";
-export * from "./token-data";
 export * from "./token-historical-chart";
 
 export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =

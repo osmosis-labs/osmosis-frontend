@@ -12,8 +12,9 @@ export interface Alert {
 }
 
 export const enum ToastType {
-  SUCCESS,
-  ERROR,
-  LOADING,
-  ONE_CLICK_TRADING,
+  SUCCESS = "SUCCESS",
+  ERROR = "ERROR",
+  LOADING = "LOADING",
+  ONE_CLICK_TRADING = "ONE_CLICK_TRADING",
+  ALLOYED_ASSETS = "ALLOYED_ASSETS",
 }

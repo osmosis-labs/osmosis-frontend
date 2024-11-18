@@ -6,7 +6,6 @@ import { useUnmount } from "react-use";
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
 import { SpriteIconId } from "~/config";
-import { useFeatureFlags } from "~/hooks";
 import { useWindowSize } from "~/hooks/window/use-window-size";
 
 if (setAppElement) {
@@ -40,7 +39,6 @@ export const ModalBase = ({
   children,
 }: PropsWithChildren<ModalBaseProps>) => {
   const { isMobile } = useWindowSize();
-  const featureFlags = useFeatureFlags();
   const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
   useUnmount(() => {
     document.body.classList.remove(bodyOpenClassNames);
@@ -59,12 +57,8 @@ export const ModalBase = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
-        className,
-        {
-          "bg-osmoverse-800": !featureFlags.limitOrders,
-          "bg-osmoverse-850": featureFlags.limitOrders,
-        }
+        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-850 p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
+        className
       )}
       closeTimeoutMS={150}
       onAfterClose={onAfterClose}
@@ -103,6 +97,7 @@ export const ModalCloseButton = ({
 }) => (
   <IconButton
     aria-label="Close"
+    data-testid="close"
     className={classNames(
       "absolute right-8 top-[24px] z-50 !h-12 !w-12 cursor-pointer !py-0 text-wosmongton-200 hover:text-osmoverse-100 md:right-7 md:top-7 md:!h-8 md:!w-8 xs:right-4",
       className

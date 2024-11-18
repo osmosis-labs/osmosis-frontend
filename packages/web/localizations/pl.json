@@ -2,6 +2,7 @@
   "404": {
     "title": "Nie znaleziono"
   },
+  "aboutSecondsRemaining": "Pozostało około {seconds}",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -53,7 +54,6 @@
       "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
     }
   },
-  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "clPositions": {
     "inRange": "W ZAKRESIE",
     "nearBounds": "BLISKO GRANIC",
@@ -128,79 +128,18 @@
     "secondaryCta": "Naucz się w 30 sekund"
   },
   "assets": {
-    "bondedAssets": "Związane",
     "historyTable": {
       "colums": {
-        "amount": "Ilość",
         "deposit": "Wpłata",
-        "status": "Status",
-        "transactionHash": "Hasz Transakcji",
-        "type": "Typ",
         "withdraw": "Wypłata"
-      },
-      "errors": {
-        "insufficientFee": "Niewystarczająca opłata"
-      },
-      "failed": "Przegrany",
-      "failedWithReason": "Przegrany: {reason}",
-      "pending": "Oczekujące",
-      "refunded": "Zwrócone",
-      "success": "Udane",
-      "title": "Historia Transferów",
-      "connectionError": "Błąd połączenia"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Dodać",
-      "buttonEdit": "Edytuj",
-      "buttonEnter": "Ok",
-      "channelCongestedDeposit": "Wpłać (Kanał zmyślony)",
-      "channelCongestedWithdraw": "Wypłać (Kanał zmyślony)",
-      "checkboxVerify": "Potwierdzam, że nie wysyłam na adres giełdy.",
-      "estimatedTime": "Szacowany Czas",
-      "selectAmount": "Wybierz Ilość",
-      "titleDeposit": "Wpłać {coinDenom}",
-      "titleWithdraw": "Wypłać {coinDenom}",
-      "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
-      "provider": "Dostawca"
-    },
-    "myPools": "Moje Pule",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Związane",
-      "FeeAPY": "APY z Prowizji",
-      "liquidity": "Moja płynność"
-    },
-    "selectAssetSource": {
-      "installWallet": "Zainstaluj {walletName}",
-      "next": "Dalej",
-      "titleDeposit": "Wpłać z",
-      "titleWithdraw": "Wypłać do"
-    },
-    "stakedAssets": "Stakowane OSMO",
     "table": {
       "columns": {
-        "assetChain": "Token / Sieć",
-        "balance": "Saldo",
-        "deposit": "Wpłać",
-        "transfer": "Transfer",
-        "withdraw": "Wypłać"
+        "balance": "Saldo"
       },
       "depositButton": "Wpłać",
-      "hideZero": "Ukryj puste salda",
-      "hideBalances": "Zamaskowane salda",
-      "preTransfer": {
-        "currentBal": "Aktualne Saldo",
-        "deposit": "Wpłać",
-        "withdraw": "Wypłać"
-      },
       "search": "Szukaj",
-      "sort": {
-        "balance": "Saldo",
-        "network": "Sieć",
-        "symbol": "Symbol"
-      },
-      "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać",
       "activate": "Aktywuj",
       "marketCap": "Kapitalizacja rynkowa",
@@ -210,64 +149,18 @@
       "lastWeek": "Ostatnie 7 dni",
       "asset": "Zaleta"
     },
-    "totalAssets": "Aktywa ogółem",
     "totalBalance": "Całkowita równowaga",
     "transfer": {
-      "availableMobile": "Dostępne",
-      "availableOn": "Dostępne na {network}",
       "approving": "Pochlebny...",
       "approveInWallet": "Zatwierdź w portfelu",
-      "enterAddress": "Adres {network}",
       "errors": {
-        "seeRequest": "Zobacz żądanie w {walletName}",
-        "invalidAddress": "Błędny adres"
+        "seeRequest": "Zobacz żądanie w {walletName}"
       },
-      "from": "Od",
       "loading": "Ładowanie",
-      "titleDeposit": "Wpłać {coinDenom}",
-      "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
-      "transferFee": "Prowizja za Transfer",
-      "waitTime": "{minutes} minut",
-      "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś.",
-      "expectedOutput": "Oczekiwany wynik",
-      "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
       "priceImpact": "Wpływ na cenę",
       "sending": "Wysyłanie...",
       "transferAnyway": "Transfer mimo wszystko"
-    },
-    "transferAssetSelect": {
-      "buttonNext": "Dalej",
-      "deposit": "Wpłać",
-      "network": "Sieć",
-      "withdraw": "Wypłać"
-    },
-    "unbondedAssets": "Rozwiązane",
-    "nomic": {
-      "addresses": "adresy.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Opłata za kopanie bitcoinów",
-      "bridgeAtCapacity": "Most jest obecnie obciążony pełną przepustowością. Spróbuj ponownie później.",
-      "bridgeFee": "Opłata pomostowa Nomic",
-      "confirmations": "6 potwierdzeń",
-      "enterBitcoinAddress": "Wprowadź adres Bitcoin",
-      "estimatedArrival": "Szacowany przyjazd",
-      "estimatedTimeTag": "Szacowany czas",
-      "estimatedTime": "5 minut",
-      "expirationTime": "4 dni",
-      "learnMore": "Dowiedz się więcej na",
-      "lossOfFunds": "Użycie adresu po tym czasie będzie skutkowało utratą środków.",
-      "minDeposit": "Minimalny depozyt",
-      "minWithdrawal": "Minimalna wypłata",
-      "nomicCapacityLimit": "Nomic ma limit pojemności wynoszący",
-      "onlyUse": "Jedynym zastosowaniem",
-      "pendingDeposits": "Oczekujące depozyty",
-      "poweredBy": "Obsługiwane przez",
-      "proceed": "Przystępować",
-      "depositExpiration": "Ten adres depozytowy wygasa w",
-      "undergoAudit": "w trakcie audytu (szacunkowe zakończenie: styczeń 2024 r.).",
-      "warning": "OSTRZEŻENIE:",
-      "loading": "Wczytywanie..."
     },
     "activateUnverifiedAssetsModal": {
       "activate": "Aktywuj niezweryfikowane zasoby",
@@ -301,8 +194,16 @@
       "upcoming": "Nadchodzące"
     }
   },
+  "cypherCard": {
+    "cypherSpend": "Osmoza Płaca",
+    "cypherOrder": "Zamów swoją kartę już teraz",
+    "cypherBeta": "Beta",
+    "acceptedEverywhere": "Twoje OSMO, teraz akceptowane wszędzie",
+    "newPill": "Nowy"
+  },
   "portfolio": {
     "buy": "Kupić",
+    "sell": "Sprzedać",
     "yourBalances": "Twoje saldo",
     "yourPositions": "Twoje pozycje",
     "searchBalances": "Wyszukaj salda",
@@ -324,12 +225,19 @@
     "assets": "Aktywa",
     "recentActivity": "Ostatnia aktywność",
     "seeAll": "Zobacz wszystko",
-    "show": "Pokazywać",
-    "hide": "Ukrywać",
-    "hidden": "Ukryty",
-    "cypherSpend": "Osmoza Płaca",
-    "cypherOrder": "Zamów swoją kartę już teraz",
-    "cypherBeta": "Beta"
+    "showHidden": "Pokaż ukryte ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ukryj małe salda",
+    "openOrders": "Otwarte zamówienia",
+    "last24h": "Ostatnie 24h",
+    "last7d": "Ostatnie 7 dni",
+    "last30d": "Ostatnie 30 dni",
+    "last1y": "Ostatni 1 rok",
+    "allTime": "Cały czas",
+    "trade": "Handel",
+    "earn": "Zarabiać",
+    "deposit": "Depozyt",
+    "withdraw": "Wycofać",
+    "convert": "Konwertować"
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -358,11 +266,6 @@
     "show": {
       "less": "Zobacz mniej",
       "more": "Zobacz więcej"
-    },
-    "sort": {
-      "mobileMenu": "Sortuj według",
-      "SORT": "SORTUJ WEDŁUG",
-      "SORTMobile": "SORTUJ"
     },
     "table": {
       "poolId": "Pula #{id}",
@@ -421,14 +324,6 @@
   },
   "estimated": "Szacowany",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
-    "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
-    "frontierHasNowMerged": "Strona Frontier została teraz połączona z",
-    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
-    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
-    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
-    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień.",
-    "openSettings": "Otwórz ustawienia",
     "proceed": "Kontynuuj"
   },
   "lockToken": {
@@ -465,13 +360,11 @@
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "Aktywny handel jednym kliknięciem",
-      "oneClickTradingExpired": "Transakcja 1-Click wygasła",
       "oneClickTradingDisabled": "Handel jednym kliknięciem wyłączony",
       "currentlyUnavailable": "Handel jednym kliknięciem jest obecnie niedostępny",
       "insufficientFunds": "Niewystarczające środki OSMO do handlu jednym kliknięciem",
       "continueWithoutOneClickTrading": "Kontynuuj bez handlu jednym kliknięciem",
       "networkFeeTooHigh": "Opłata sieciowa jest zbyt wysoka",
-      "startANewSession": "Rozpocznij nową sesję",
       "approveManually": "Zatwierdź ręcznie w {walletName}",
       "continueWithWallet": "Kontynuuj z portfelem",
       "sessionEnded": "Sesja zakończyła się na tym urządzeniu",
@@ -485,13 +378,10 @@
       "learnMore": "Ucz się więcej",
       "startTradingButton": "Rozpocznij handel jednym kliknięciem",
       "defaultParameters": "Ustawienia domyślne są ustawione na 1 godzinę z limitem ochrony przed stratą w wysokości 5000 USD.",
-      "changeButton": "Edytuj ustawienia",
-      "ledgerComingSoon": "Obsługa portfela sprzętowego Ledger już wkrótce."
+      "changeButton": "Edytuj ustawienia"
     },
     "floatingBanner": {
-      "newPill": "Nowy",
-      "title": "Handel jednym kliknięciem",
-      "tradeFasterButton": "Handluj szybciej"
+      "newPill": "Nowy"
     },
     "settings": {
       "header": "Handel jednym kliknięciem",
@@ -633,8 +523,16 @@
       "undersandCost": "Rozumiem, że stworzenie nowej puli będzie kosztować {POOL_CREATION_FEE}.",
       "weightedPool": "Basen ważony"
     },
-    "externalIncentivized": {
-      "TVL": "TVL"
+    "createSupercharged": {
+      "createNew": "Utwórz nowy pulę doładowaną",
+      "addInitialLiquidity": "Dodaj początkową płynność do puli nr {poolNumber}",
+      "buttonAddToken": "Dodaj nowy token",
+      "base": "Opierać",
+      "quote": "Cytat",
+      "swapFee": "Ustaw opłatę za wymianę",
+      "undersandCost": "Rozumiem, że utworzenie nowego puli będzie kosztować {poolCreationFee} .",
+      "buttonCreate": "Utwórz pulę",
+      "buttonCreating": "Tworzenie"
     },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",
@@ -785,23 +683,10 @@
   },
   "swap": {
     "autoRouter": "Trasa",
-    "autoRouterToggle": {
-      "hide": "Esconder",
-      "show": "Mostrar"
-    },
-    "maxButtonErrorNoBalance": "Saldo jest niewystarczające, aby obliczyć maksymalną kwotę.",
-    "available": "Dostępne",
     "button": "Wymień",
     "buttonError": "Wymień mimo to",
-    "expectedOutput": "Spodziewana wartość",
-    "fee": "Prowizja ({fee})",
-    "networkFee": "Opłata sieciowa",
-    "totalFee": "Całkowita opłata",
     "HALF": "POŁOWA",
-    "MAX": "MAKSIMUM",
-    "minimumSlippage": "Minimalna wartość uwzględniając odchylenie ({slippage})",
     "pool": "Pula #{id}",
-    "priceImpact": "Wpływ na rynek",
     "routerTooltipFee": "Opłata",
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
     "showDetails": "Pokaż szczegóły",
@@ -812,9 +697,7 @@
       "increaseSpendLimit": "Zwiększ limit wydatków"
     },
     "settings": {
-      "slippage": "Tolerowane odchylenie",
-      "slippageInfo": "Twoja transakcja zostanie cofnięta jeśli cena zmieni się na niekorzyść o więcej niż podany procent.",
-      "title": "Ustawienia Transakcji"
+      "slippage": "Tolerowane odchylenie"
     },
     "title": "Wymień",
     "dynamicSpreadFactor": "Dynamiczny",
@@ -827,7 +710,8 @@
     },
     "noRoutes": "Nie znaleziono żadnych tras",
     "route": "trasa",
-    "routes": "trasy"
+    "routes": "trasy",
+    "slippageOverBalance": "Niewystarczające środki na pokrycie poślizgu"
   },
   "walletSelect": {
     "gettingStarted": "Pierwsze kroki",
@@ -990,16 +874,53 @@
     "risks": "Mostkowanie wiąże się z ryzykiem.",
     "learnMore": "Ucz się więcej",
     "openNoun": "Otwórz {noun}",
+    "accountNotFound": "Konto nie zostało znalezione",
+    "sendFundsToAccount": "Przed przeniesieniem {asset} {chain} }.",
     "insufficientFundsForFees": "Niewystarczające środki na opłaty",
     "youNeedFundsToPay": "Potrzebujesz środków, aby uiścić opłaty sieciowe i pomostowe w sieci {chain} .",
     "assetsDepositsUnavailable": "Depozyty {asset} są niedostępne",
-    "assetsWithdrawsUnavailable": "Wypłaty {asset} są niedostępne",
+    "assetWithdrawalsUnavailable": "Wypłaty {asset} są niedostępne",
     "noAvailableDeposits": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
-    "noAvailableWithdraws": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub ustaw alternatywną aplikację do przesyłania środków z Osmozy.",
+    "noAvailableWithdrawals": "Obecnie nie można znaleźć żadnych dostępnych tras ani dostawców. Spróbuj ponownie później lub ustaw alternatywną aplikację do przesyłania środków z Osmozy.",
     "somethingIsntWorking": "Coś nie działa…",
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Odśwież stronę i spróbuj ponownie lub skorzystaj z alternatywnej aplikacji, aby przelać środki na rzecz Osmosis.",
     "assetIsCurrentlyUnstable": "Transfery {asset} są obecnie niestabilne",
-    "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko."
+    "transferWillLikelyTakeLonger": "Transfery będą prawdopodobnie trwać dłużej niż zwykle lub mogą zakończyć się niepowodzeniem. Postępuj na własne ryzyko.",
+    "sendFromWalletOrExchange": "Wyślij z portfela lub giełdy",
+    "scanWithMobileWallet": "Skanuj za pomocą portfela mobilnego",
+    "or": "Lub",
+    "copied": "Skopiowano",
+    "copyToClipboard": "Kopiuj do schowka",
+    "showQrCode": "Pokaż kod QR",
+    "yourDepositAddress": "Twój adres depozytowy {denom}",
+    "copyAddressToClipboard": "Kopiuj adres do schowka",
+    "copyAddress": "Kopiuj adres",
+    "receiveOnlyAsset": "Ten adres może odbierać tylko {denom} z sieci {network} . Wysyłanie innych zasobów może skutkować trwałą utratą.",
+    "minimumDeposit": "Minimalny depozyt",
+    "nomic": {
+      "estimatedTime": "Około 1 godziny",
+      "awaitingBtc": "Oczekiwanie na BTC",
+      "transferringYourBtc": "Przesyłanie BTC",
+      "depositStatus": "Status depozytu",
+      "depositSuccess": "Wpłata zakończona sukcesem",
+      "pendingDeposit": "Oczekujący depozyt",
+      "estimatedAboutTime": "Szacunkowo około {time}",
+      "from": "Z",
+      "to": "Do",
+      "asset": "Zaleta",
+      "amountBtc": "Kwota BTC",
+      "totalValue": "Wartość całkowita",
+      "transactionHash": "Hash transakcji",
+      "viewOnExplorer": "Widok w Eksploratorze",
+      "totalFees": "Łączne opłaty"
+    },
+    "doNotSendFundsToThisAddress": "Nie wysyłaj pieniędzy na ten adres.",
+    "addressExpired": "Ten adres wygasł. Poproś o nowy.",
+    "addressAboutToExpire": "Ten adres wkrótce wygaśnie. Poproś o nowy adres, aby uniknąć utraty środków.",
+    "createNewDepositAddress": "Utwórz nowy adres depozytowy",
+    "transactionDetails": "Szczegóły transakcji",
+    "continue": "Kontynuować",
+    "inputBitcoinAddress": "Wprowadź adres Bitcoin"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
@@ -1020,14 +941,6 @@
     "apps": {
       "title": "Sklep z aplikacjami Osmosis",
       "description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko"
-    },
-    "assets": {
-      "title": "Aktywa Osmozy",
-      "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
-    "portfolio": {
-      "title": "Portfolio osmozy",
-      "description": "Przeglądaj swoje aktywa na Osmosis – wiodącej zdecentralizowanej giełdzie Cosmos"
     },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
@@ -1085,9 +998,6 @@
     "osmosisUpdates": "Aktualizacje osmozy!",
     "seeWhatsNew": "Zobacz co nowego"
   },
-  "previewAssetsEnabled": "Włączono podgląd zasobów",
-  "previewAssetsDisabled": "Podgląd zasobów wyłączony",
-  "previewAssetsEnabledForSession": "Podgląd zasobów włączonych w tej sesji. Aby wyłączyć, otwórz nową kartę lub dodaj `show_preview_assets=false`.",
   "earnPage": {
     "title": "Zarabiać",
     "positions": "Pozycje",
@@ -1164,7 +1074,6 @@
       "veryHigh": "Bardzo wysoko"
     }
   },
-  "disclaimer": "Zastrzeżenie",
   "remaining": "pozostały",
   "timeUnits": {
     "second": "drugi",
@@ -1172,14 +1081,9 @@
     "minute": "minuta",
     "minutes": "minuty",
     "hour": "godzina",
-    "hours": "godziny"
-  },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depozyty są niestabilne",
-    "titleWithdraw": "{coinDenom} wypłaty są niestabilne",
-    "description": "Z powodu niepewnych problemów technicznych transfery pomiędzy Osmosis a {prettyChainName} mogą wystąpić znaczne opóźnienia lub niepowodzenie transakcji. Postępuj na własne ryzyko.",
-    "buttonContinue": "Kontynuować mimo to",
-    "buttonCancel": "Anulować"
+    "hours": "godziny",
+    "day": "dzień",
+    "days": "dni"
   },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",
@@ -1200,11 +1104,25 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
-    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji. Wkrótce obsługa większej liczby typów transakcji.",
-    "noPriceData": "Dane cenowe niedostępne",
-    "viewAll": "Pokaż wszystkie",
+    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji i transferów. Obsługa większej liczby typów transakcji wkrótce.",
     "history": "Historia",
-    "orders": "Zamówienia"
+    "orders": "Zamówienia",
+    "historyTable": {
+      "pendingDeposit": "Oczekujący depozyt",
+      "pendingWithdraw": "Oczekujące na wypłatę",
+      "successDeposit": "Złożony",
+      "successWithdraw": "Wycofany",
+      "failDeposit": "Depozyt nie powiódł się",
+      "failWithdraw": "Wypłata nie powiodła się"
+    },
+    "transfer": {
+      "asset": "Zaleta",
+      "amountAsset": "Kwota {asset}",
+      "totalValue": "Wartość całkowita",
+      "providerFee": "Opłata dostawcy",
+      "provider": "Dostawca",
+      "networkFee": "Opłata sieciowa"
+    }
   },
   "date": {
     "earlierToday": "Dzisiaj wcześniej",
@@ -1216,6 +1134,10 @@
     "newer": "Nowsza"
   },
   "limitOrders": {
+    "floatingBanner": {
+      "title": "Wybierz swoją cenę",
+      "tryLimitOrders": "Wypróbuj zlecenia limitowane"
+    },
     "historyTable": {
       "columns": {
         "order": "Zamówienie",
@@ -1304,7 +1226,6 @@
     "connectYourWallet": "Podłącz swój portfel",
     "toSeeYourBalances": "aby zobaczyć saldo",
     "searchAssets": "Wyszukaj zasoby",
-    "marketPrice": "Cena rynkowa",
     "below": "poniżej",
     "above": "powyżej",
     "currentPrice": "aktualna cena",
@@ -1327,6 +1248,52 @@
     "priceReaches": "Jeśli cena {denom} osiągnie {price}",
     "belowMinimumAmount": "{amount} minimalna"
   },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Czym jest wpływ na cenę?",
+      "content": "To jest wpływ płynności rynku na cenę wykonania. Większe transakcje mają tendencję do większego wpływu na rynek."
+    },
+    "expectedRate": {
+      "header": "Jaka jest oczekiwana stawka?",
+      "content": "To jest cena, którą powinieneś otrzymać. Ceny często się zmieniają, więc jeśli chcesz handlować po określonej cenie, spróbuj zamiast tego zlecenia limit."
+    },
+    "swapFees": {
+      "header": "Czym są opłaty swapowe?",
+      "content": "Jest to opłata pobierana przez protokół Osmosis w celu nagradzania dostawców płynności i utrzymania sieci."
+    },
+    "tradeRoute": {
+      "header": "Czym jest szlak handlowy?",
+      "contentTop": " Jeśli nie ma bezpośredniego rynku pomiędzy aktywami, którymi handlujesz, Osmosis spróbuje doprowadzić do transakcji poprzez przeprowadzenie serii transakcji z udziałem innych aktywów, aby uzyskać najlepszą cenę w danym momencie.",
+      "contentBottom": "Aby osiągnąć optymalną wydajność w oparciu o dostępną płynność, transakcje będą czasami dzielone na wiele tras obejmujących różne aktywa."
+    },
+    "outputDifference": {
+      "header": "Czym jest różnica wyjściowa?",
+      "content": "Jest to różnica wartości między tym, co płacisz, a tym, co otrzymujesz. Liczby dodatnie oznaczają, że kwota, którą kupujesz, jest warta więcej, podczas gdy liczby ujemne oznaczają, że kwota, którą sprzedajesz, jest warta więcej."
+    }
+  },
   "tradeFee": "Opłata za handel",
-  "receiveAtLeast": "Otrzymaj co najmniej"
+  "receiveAtLeast": "Otrzymaj co najmniej",
+  "payAtMost": "Zapłać maksymalnie",
+  "previewAssetsEnabled": "Podgląd zasobów włączony",
+  "previewAssetsDisabled": "Podgląd zasobów wyłączony",
+  "previewAssetsEnabledForSession": "Podgląd zasobów włączonych dla tej sesji. Aby wyłączyć, otwórz nową kartę lub dołącz `show_preview_assets=false`.",
+  "alloyedAssets": {
+    "title": "Wykryto warianty",
+    "caption": "Pożegnaj się ze wszystkimi tymi mylącymi wariantami aktywów. Przywitaj się z bardziej płynnym doświadczeniem w Osmosis.",
+    "remindMeLater": "Przypomnij mi później",
+    "dismiss": "Odrzucać",
+    "convert": "Konwertować"
+  },
+  "assetVariantsConversion": {
+    "title": "Standaryzacja aktywów",
+    "description": "Przekonwertuj poniższe zasoby do ich standardowej wersji w Osmosis, aby uzyskać większą elastyczność i lepszą kompatybilność.",
+    "learnMore": "Dowiedz się więcej",
+    "errorLoading": "Błąd podczas ładowania wariantów zasobów. Spróbuj ponownie później.",
+    "tooltipTitle": "{coinName} na temat Osmosis",
+    "tooltipDescription": "Osmosis konsoliduje liczne warianty {coinDenom} w jeden prosty zasób, co zapewnia większą elastyczność i łatwość użytkowania.",
+    "convert": "Konwertować",
+    "conversionFees": "Opłaty za konwersję",
+    "free": "Bezpłatny",
+    "unavailable": "Obecnie niedostępne. Spróbuj ponownie później."
+  }
 }

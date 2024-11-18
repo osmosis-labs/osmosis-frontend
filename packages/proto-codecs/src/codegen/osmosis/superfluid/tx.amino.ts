@@ -28,7 +28,7 @@ export const AminoConverter = {
     fromAmino: MsgSuperfluidUnbondLock.fromAmino,
   },
   "/osmosis.superfluid.MsgSuperfluidUndelegateAndUnbondLock": {
-    aminoType: "osmosis/superfluid-undelegate-and-unbond-lock",
+    aminoType: "osmosis/superfluid-undelegate-unbond-lock",
     toAmino: MsgSuperfluidUndelegateAndUnbondLock.toAmino,
     fromAmino: MsgSuperfluidUndelegateAndUnbondLock.fromAmino,
   },

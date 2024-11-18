@@ -32,6 +32,14 @@ export function humanizeTime(date: dayjs.Dayjs): {
     };
   }
 
-  // For days, since it's formatted differently, you might need to handle it separately in your translation logic
+  const daysDiff = date.diff(dayjs(), "days");
+  if (daysDiff < 30) {
+    return {
+      value: daysDiff,
+      unitTranslationKey: daysDiff === 1 ? "timeUnits.day" : "timeUnits.days",
+    };
+  }
+
+  // For months and years, since it's formatted differently, you might need to handle it separately in your translation logic
   return { value: date.format("MMM D, YYYY"), unitTranslationKey: "" };
 }

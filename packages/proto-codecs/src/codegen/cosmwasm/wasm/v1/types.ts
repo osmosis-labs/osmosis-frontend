@@ -893,7 +893,7 @@ export const ContractInfo = {
   toAmino(message: ContractInfo): ContractInfoAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.creator = message.creator === "" ? undefined : message.creator;
     obj.admin = message.admin === "" ? undefined : message.admin;
     obj.label = message.label === "" ? undefined : message.label;
@@ -1025,7 +1025,7 @@ export const ContractCodeHistoryEntry = {
     const obj: any = {};
     obj.operation = message.operation === 0 ? undefined : message.operation;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.updated = message.updated
       ? AbsoluteTxPosition.toAmino(message.updated)
       : undefined;
@@ -1132,10 +1132,10 @@ export const AbsoluteTxPosition = {
     const obj: any = {};
     obj.block_height =
       message.blockHeight !== BigInt(0)
-        ? message.blockHeight.toString()
+        ? (message.blockHeight?.toString)()
         : undefined;
     obj.tx_index =
-      message.txIndex !== BigInt(0) ? message.txIndex.toString() : undefined;
+      message.txIndex !== BigInt(0) ? (message.txIndex?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(object: AbsoluteTxPositionAminoMsg): AbsoluteTxPosition {

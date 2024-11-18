@@ -127,7 +127,7 @@ export const GenesisState = {
     const obj: any = {};
     obj.last_lock_id =
       message.lastLockId !== BigInt(0)
-        ? message.lastLockId.toString()
+        ? (message.lastLockId?.toString)()
         : undefined;
     if (message.locks) {
       obj.locks = message.locks.map((e) =>

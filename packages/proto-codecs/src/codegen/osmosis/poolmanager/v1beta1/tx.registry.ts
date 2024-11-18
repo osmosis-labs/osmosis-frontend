@@ -3,6 +3,8 @@ import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 
 import {
   MsgSetDenomPairTakerFee,
+  MsgSetRegisteredAlloyedPool,
+  MsgSetTakerFeeShareAgreementForDenom,
   MsgSplitRouteSwapExactAmountIn,
   MsgSplitRouteSwapExactAmountOut,
   MsgSwapExactAmountIn,
@@ -22,6 +24,14 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
     MsgSetDenomPairTakerFee,
+  ],
+  [
+    "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+    MsgSetTakerFeeShareAgreementForDenom,
+  ],
+  [
+    "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+    MsgSetRegisteredAlloyedPool,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -61,6 +71,21 @@ export const MessageComposer = {
         value: MsgSetDenomPairTakerFee.encode(value).finish(),
       };
     },
+    setTakerFeeShareAgreementForDenom(
+      value: MsgSetTakerFeeShareAgreementForDenom
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value: MsgSetTakerFeeShareAgreementForDenom.encode(value).finish(),
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+        value: MsgSetRegisteredAlloyedPool.encode(value).finish(),
+      };
+    },
   },
   withTypeUrl: {
     swapExactAmountIn(value: MsgSwapExactAmountIn) {
@@ -90,6 +115,21 @@ export const MessageComposer = {
     setDenomPairTakerFee(value: MsgSetDenomPairTakerFee) {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
+        value,
+      };
+    },
+    setTakerFeeShareAgreementForDenom(
+      value: MsgSetTakerFeeShareAgreementForDenom
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value,
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
         value,
       };
     },
@@ -123,6 +163,21 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
         value: MsgSetDenomPairTakerFee.fromPartial(value),
+      };
+    },
+    setTakerFeeShareAgreementForDenom(
+      value: MsgSetTakerFeeShareAgreementForDenom
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.poolmanager.v1beta1.MsgSetTakerFeeShareAgreementForDenom",
+        value: MsgSetTakerFeeShareAgreementForDenom.fromPartial(value),
+      };
+    },
+    setRegisteredAlloyedPool(value: MsgSetRegisteredAlloyedPool) {
+      return {
+        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetRegisteredAlloyedPool",
+        value: MsgSetRegisteredAlloyedPool.fromPartial(value),
       };
     },
   },

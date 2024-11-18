@@ -1,6 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 
+// Verify we're in the localizations directory
+const currentDir = path.basename(process.cwd());
+if (currentDir !== "localizations") {
+  throw new Error("This script must be run from the localizations directory");
+}
+
 // Get all JSON files in the current directory
 const jsonFiles = fs
   .readdirSync(process.cwd())

@@ -7,7 +7,20 @@ const path = require("path");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "app.osmosis.zone",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+    ],
   },
   async headers() {
     return [
@@ -81,6 +94,14 @@ const config = {
   },
   experimental: {
     instrumentationHook: true,
+  },
+};
+
+module.exports = {
+  ...module.exports,
+  mode: "production", // Ensure the mode is 'production' for tree shaking to work
+  optimization: {
+    usedExports: true, // This setting enables tree shaking
   },
 };
 

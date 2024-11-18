@@ -31,6 +31,22 @@ export interface RouteWithInAmount extends Route {
   initialAmount: Int;
 }
 
+/** Single route through pools. */
+export interface OutRoute {
+  pools: ResultPool[];
+  // tokenOutDenoms means the token to come out from each pool.
+  // This should the same length with the pools.
+  // Route consists of token in -> pool -> token out -> pool -> token out...
+  // But, currently, only 1 intermediate can be supported.
+  tokenInDenoms: string[];
+  tokenOutDenom: string;
+}
+
+/** Represents a route through pools, with the initial amount in. */
+export interface RouteWithOutAmount extends OutRoute {
+  initialAmount: Int;
+}
+
 export function validateRoute(
   route: Route,
   throwOnError: boolean = true

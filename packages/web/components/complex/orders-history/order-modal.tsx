@@ -69,11 +69,14 @@ const OrderDetails = observer(
         : order.baseAsset;
     }, [order]);
 
-    const formattedMonth = dayjs(order?.placed_at).format("MMMM").slice(0, 3);
+    const formattedMonth = dayjs
+      .unix(order?.placed_at ?? 0)
+      .format("MMMM")
+      .slice(0, 3);
 
-    const formattedDateDayYearHourMinute = dayjs(order?.placed_at).format(
-      "DD, YYYY, HH:mm"
-    );
+    const formattedDateDayYearHourMinute = dayjs
+      .unix(order?.placed_at ?? 0)
+      .format("DD, YYYY, HH:mm");
 
     const formattedDate = `${formattedMonth} ${formattedDateDayYearHourMinute}`;
 

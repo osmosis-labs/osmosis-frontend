@@ -3,9 +3,7 @@ import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { GITHUB_RAW_DEFAULT_BASEURL } from "@osmosis-labs/server";
 import { ObservableQueryExternalBase } from "@osmosis-labs/stores";
 
-export class ObservableQueryFileInner<
-  T
-> extends ObservableQueryExternalBase<T> {
+class ObservableQueryFileInner<T> extends ObservableQueryExternalBase<T> {
   constructor(
     kvStore: KVStore,
     protected readonly repo: string,

@@ -8,10 +8,7 @@ import { computed, makeObservable } from "mobx";
 import { AccountStore } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
-import {
-  ObservableQueryActiveGauges,
-  ObservableQueryPoolFeesMetrics,
-} from "../../queries-external";
+import { ObservableQueryActiveGauges } from "../../queries-external";
 import { ExternalSharesGauge } from "./types";
 
 /** Convenience store for getting common details of a share pool (balancer or stable) via many other lower-level query stores. */
@@ -23,7 +20,6 @@ export class ObservableSharePoolDetail {
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -85,17 +81,6 @@ export class ObservableSharePoolDetail {
 
   get longestDuration(): Duration | undefined {
     return this.lockableDurations[this.lockableDurations.length - 1];
-  }
-
-  @computed
-  get swapFeeApr(): RatePretty {
-    const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
-    if (!queryPool) return new RatePretty(0);
-
-    return this.externalQueries.queryPoolFeeMetrics.get7dPoolFeeApr(
-      queryPool,
-      this.priceStore
-    );
   }
 
   @computed
@@ -390,7 +375,6 @@ export class ObservableSharePoolDetails extends HasMapStore<ObservableSharePoolD
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

@@ -30,6 +30,7 @@
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate -f --project ./project.inlang && yarn lint:fix",
     "lint:workspace": "npx sherif@latest --ignore-package ./packages/keplr-hooks --ignore-package ./packages/keplr-stores",
+    "lint:workspace:fix": "yarn lint:workspace -f",
     "postinstall": "yarn lint:workspace"
   },
   "pre-commit": [

@@ -6,7 +6,6 @@ import {
   BridgeError,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
-  GetTransferStatusParams,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
@@ -28,9 +27,6 @@ import { api, RouterInputs } from "~/utils/trpc";
 const refetchInterval = 30 * 1000; // 30 seconds
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
-
-/** Note: Nomic and wormhole are excluded due to lack of support for quotes currently. */
-export type QuotableBridge = Exclude<Bridge, "Nomic" | "Wormhole" | "Nitro">;
 
 /**
  * Sends and collects bridge qoutes from multiple bridge providers given
@@ -78,7 +74,7 @@ export const useBridgeQuotes = ({
   toChain: (BridgeChain & { prettyName: string }) | undefined;
   toAddress: string | undefined;
 
-  bridges: QuotableBridge[];
+  bridges: Bridge[];
 
   onRequestClose: () => void;
   onTransfer?: () => void;
@@ -171,7 +167,7 @@ export const useBridgeQuotes = ({
         accountStore.getWallet(fromChain.chainId)?.txTypeInProgress
       );
     } else if (fromChain.chainType === "evm") {
-      return isEthTxPending;
+      return isEthTxPending || isBroadcastingTx;
     }
     return false;
   })();
@@ -216,6 +212,7 @@ export const useBridgeQuotes = ({
               fromChain,
               toChain,
               input,
+              totalFeeFiatValue,
             } = quote;
 
             const priceImpact = new RatePretty(
@@ -254,6 +251,7 @@ export const useBridgeQuotes = ({
               provider,
               fromChain,
               toChain,
+              totalFeeFiatValue,
               isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
               isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
             };
@@ -433,26 +431,57 @@ export const useBridgeQuotes = ({
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
     ({
-      estimatedArrivalUnix,
-      providerId,
-      params,
+      sendTxHash,
+      quote,
     }: {
-      estimatedArrivalUnix: number;
-      providerId: Bridge;
-      params: GetTransferStatusParams;
+      sendTxHash: string;
+      quote: NonNullable<typeof selectedQuote>["quote"];
     }) => {
-      if (inputAmountRaw !== "" && availableBalance && inputCoin) {
+      if (
+        inputAmountRaw !== "" &&
+        availableBalance &&
+        inputCoin &&
+        fromAsset &&
+        toAsset &&
+        fromChain &&
+        toChain &&
+        fromAddress &&
+        toAddress
+      ) {
         transferHistoryStore.pushTxNow({
-          prefixedKey: `${providerId}${JSON.stringify(params)}`,
-          amount: inputCoin.trim(true).toString(),
-          amountLogo: isWithdraw ? toAsset?.imageUrl : fromAsset.imageUrl,
-          isWithdraw,
-          chainPrettyName:
-            direction === "deposit"
-              ? fromChain?.prettyName ?? ""
-              : toChain?.prettyName ?? "",
-          estimatedArrivalUnix,
-          accountAddress: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account)
+          createdAtUnix: dayjs().unix(),
+          direction,
+          fromAsset: {
+            ...fromAsset,
+            amount: inputCoin.trim(true).toCoin().amount,
+          },
+          fromAddress,
+          toAddress,
+          fromChain,
+          toChain,
+          toAsset,
+          provider: quote.provider.id,
+          osmoBech32Address: (isWithdraw ? fromAddress : toAddress) ?? "", // use osmosis account for account keys (vs any EVM account),
+          sendTxHash,
+          status: "pending",
+          type: "bridge-transfer",
+          estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
+          networkFee: quote.estimatedGasFee
+            ? {
+                address: quote.estimatedGasFee.amount.currency.coinMinimalDenom,
+                denom: quote.estimatedGasFee.amount.currency.coinDenom,
+                decimals: quote.estimatedGasFee.amount.currency.coinDecimals,
+                amount: quote.estimatedGasFee.amount.toCoin().amount,
+              }
+            : undefined,
+          providerFee: quote.transferFee
+            ? {
+                denom: quote.transferFee.amount.currency.coinDenom,
+                address: quote.transferFee.amount.currency.coinMinimalDenom,
+                decimals: quote.transferFee.amount.currency.coinDecimals,
+                amount: quote.transferFee.amount.toCoin().amount,
+              }
+            : undefined,
         });
       }
     },
@@ -460,14 +489,14 @@ export const useBridgeQuotes = ({
       availableBalance,
       direction,
       fromAddress,
-      fromAsset?.imageUrl,
-      fromChain?.prettyName,
+      fromAsset,
+      fromChain,
       inputAmountRaw,
       inputCoin,
       isWithdraw,
       toAddress,
-      toAsset?.imageUrl,
-      toChain?.prettyName,
+      toAsset,
+      toChain,
       transferHistoryStore,
     ]
   );
@@ -517,11 +546,10 @@ export const useBridgeQuotes = ({
           hash: approveTxHash,
         });
 
-        setIsApprovingToken(false);
-
         for (const quoteResult of quoteResults) {
           await quoteResult.refetch();
         }
+        setIsApprovingToken(false);
       }
 
       const sendTxHash = await sendTransactionAsync({
@@ -552,13 +580,8 @@ export const useBridgeQuotes = ({
       });
 
       trackTransferStatus({
-        estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
-        providerId: quote.provider.id,
-        params: {
-          sendTxHash: sendTxHash as string,
-          fromChainId: quote.fromChain.chainId,
-          toChainId: quote.toChain.chainId,
-        },
+        quote,
+        sendTxHash,
       });
 
       // TODO: Investigate if this is still needed
@@ -591,13 +614,8 @@ export const useBridgeQuotes = ({
     const gasFee = transactionRequest.gasFee;
     return accountStore.signAndBroadcast(
       fromChain.chainId,
-      transactionRequest.msgTypeUrl,
-      [
-        {
-          typeUrl: transactionRequest.msgTypeUrl,
-          value: transactionRequest.msg,
-        },
-      ],
+      `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
+      transactionRequest.msgs,
       "",
       // Setting the fee from the transaction request
       // ensures the user is using the same fee token & amount as seen in the quote.
@@ -639,17 +657,14 @@ export const useBridgeQuotes = ({
             }
 
             trackTransferStatus({
-              estimatedArrivalUnix: dayjs().unix() + quote.estimatedTime,
-              providerId: quote.provider.id,
-              params: {
-                sendTxHash: tx.transactionHash,
-                fromChainId: quote.fromChain.chainId,
-                toChainId: quote.toChain.chainId,
-              },
+              sendTxHash: tx.transactionHash,
+              quote,
             });
 
             onTransferProp?.();
             setTransferInitiated(true);
+          } else {
+            setIsBroadcastingTx(false);
           }
         },
       }
@@ -681,6 +696,9 @@ export const useBridgeQuotes = ({
   const hasNoQuotes = someError?.message.includes(
     "NoQuotesError" as BridgeError
   );
+  const noAccountFound = someError?.message.includes(
+    "AccountNotFoundError" as BridgeError
+  );
   const warnUserOfSlippage = selectedQuote?.isSlippageTooHigh;
   const warnUserOfPriceImpact = selectedQuote?.isPriceImpactTooHigh;
   const isCorrectEvmChainSelected =
@@ -702,15 +720,23 @@ export const useBridgeQuotes = ({
   } else if (hasNoQuotes) {
     errorBoxMessage = {
       heading: isWithdraw
-        ? t("transfer.assetsWithdrawsUnavailable", {
+        ? t("transfer.assetWithdrawalsUnavailable", {
             asset: toAsset?.denom ?? "",
           })
         : t("transfer.assetsDepositsUnavailable", {
             asset: toAsset?.denom ?? "",
           }),
       description: isWithdraw
-        ? t("transfer.noAvailableWithdraws")
+        ? t("transfer.noAvailableWithdrawals")
         : t("transfer.noAvailableDeposits"),
+    };
+  } else if (noAccountFound) {
+    errorBoxMessage = {
+      heading: t("transfer.accountNotFound"),
+      description: t("transfer.sendFundsToAccount", {
+        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+        asset: (isWithdraw ? toAsset?.denom : fromAsset?.denom) ?? "",
+      }),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {

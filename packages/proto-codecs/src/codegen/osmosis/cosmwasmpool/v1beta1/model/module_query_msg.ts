@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../../decimals";
 /** ===================== CalcOutAmtGivenIn */
 export interface CalcOutAmtGivenIn {
   /** token_in is the token to be sent to the pool. */

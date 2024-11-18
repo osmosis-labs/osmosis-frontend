@@ -1,5 +1,4 @@
 import { DefaultSeo, DefaultSeoProps } from "next-seo";
-import { useEffect, useState } from "react";
 
 import { useTranslation } from "~/hooks";
 import spriteSVGURL from "~/public/icons/sprite.svg";
@@ -15,12 +14,6 @@ const SEO_VALUES = {
 export const SEO: React.FC = () => {
   const { t } = useTranslation();
 
-  const [shortcutIcon, setShortcutIcon] = useState<string>("");
-
-  useEffect(() => {
-    setShortcutIcon(`${window?.origin || ""}/osmosis-logo-wc.png`);
-  }, []);
-
   const config: DefaultSeoProps = {
     title: t("seo.default.title"),
     description: t("seo.default.description"),
@@ -32,7 +25,10 @@ export const SEO: React.FC = () => {
       },
       {
         rel: "shortcut icon",
-        href: shortcutIcon,
+        href:
+          typeof window !== "undefined"
+            ? `${window?.origin || ""}/osmosis-logo-wc.png`
+            : "",
       },
       {
         rel: "preload",

@@ -13,6 +13,7 @@ export interface TransactionScanRequest {
    * Tx hex bytes
    */
   transaction: string;
+  account_address: string;
   metadata: { [key: string]: string };
 }
 

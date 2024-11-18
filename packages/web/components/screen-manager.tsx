@@ -6,7 +6,7 @@ import { useControllableState } from "~/hooks/use-controllable-state";
 import { useStack } from "~/hooks/use-stack";
 import { createContext } from "~/utils/react-context";
 
-export interface ScreenManagerState {
+interface ScreenManagerState {
   currentScreen: string;
   setCurrentScreen: (screen: string) => void;
   goBack: () => void;

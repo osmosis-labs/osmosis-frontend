@@ -1,20 +1,21 @@
 import { Dec } from "@keplr-wallet/unit";
-import { GetAllocationResponse } from "@osmosis-labs/server";
+import type { PortfolioAssets } from "@osmosis-labs/server";
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
-import { displayFiatPrice } from "~/components/transactions/transaction-utils";
 import { EventName } from "~/config";
 import {
   Breakpoint,
   MultiLanguageT,
   useAmplitudeAnalytics,
+  useHideDustUserSetting,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import { formatFiatPrice } from "~/utils/formatter";
 
 const COLORS: Record<AllocationOptions, string[]> = {
   all: [
@@ -56,16 +57,14 @@ const getTranslation = (key: string, t: MultiLanguageT): string => {
 };
 
 export const Allocation: FunctionComponent<{
-  allocation?: GetAllocationResponse;
-}> = ({ allocation }) => {
+  assets?: PortfolioAssets;
+}> = ({ assets }) => {
   const { logEvent } = useAmplitudeAnalytics();
-
   const { width } = useWindowSize();
-
   const [selectedOption, setSelectedOption] =
     useState<AllocationOptions>("all");
-
   const [isOpen, setIsOpen] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (width > Breakpoint.xl) {
@@ -73,16 +72,22 @@ export const Allocation: FunctionComponent<{
     }
   }, [width]);
 
-  const { t } = useTranslation();
+  const selectedList = useMemo(
+    () => assets?.[selectedOption] ?? [],
+    [assets, selectedOption]
+  );
 
-  if (!allocation) return null;
+  const dustFilteredList = useHideDustUserSetting(
+    selectedList,
+    (item) => item.fiatValue
+  );
 
-  const selectedList = allocation[selectedOption];
+  if (!assets) return null;
 
   return (
     <div className="flex w-full flex-col py-3">
       <div
-        className="flex cursor-pointer items-center justify-between py-3"
+        className="flex cursor-pointer select-none items-center justify-between py-3"
         onClick={() => setIsOpen((prev) => !prev)}
       >
         <h6>{t("portfolio.allocation")}</h6>
@@ -110,15 +115,15 @@ export const Allocation: FunctionComponent<{
             />
           </div>
           <div className="my-[8px] flex h-4 w-full gap-1">
-            {selectedList.map(({ key, percentage }, index) => {
+            {dustFilteredList.map(({ key, percentage }, index) => {
+              const colorClass =
+                COLORS[selectedOption][index % COLORS[selectedOption].length];
+
               const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
 
               const width = isNegligiblePercent
                 ? "0.1%"
                 : percentage.toString();
-
-              const colorClass =
-                COLORS[selectedOption][index % COLORS[selectedOption].length];
 
               return (
                 <div
@@ -130,9 +135,10 @@ export const Allocation: FunctionComponent<{
             })}
           </div>
           <div className="flex flex-col space-y-3">
-            {selectedList.map(({ key, percentage, fiatValue }, index) => {
+            {dustFilteredList.map(({ key, percentage, fiatValue }, index) => {
               const colorClass =
                 COLORS[selectedOption][index % COLORS[selectedOption].length];
+
               return (
                 <div key={key} className="body2 flex w-full justify-between">
                   <div className="flex items-center space-x-1">
@@ -147,7 +153,7 @@ export const Allocation: FunctionComponent<{
                       {percentage.maxDecimals(0).toString()}
                     </span>
                   </div>
-                  <div>{displayFiatPrice(fiatValue, "", t)}</div>
+                  <div>{formatFiatPrice(fiatValue)}</div>
                 </div>
               );
             })}

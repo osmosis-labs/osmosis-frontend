@@ -11,6 +11,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeSupportedAssetsParams,
@@ -31,7 +32,9 @@ export class NitroBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       // just supports TRX, TRX.rt from Tron
 
@@ -71,6 +74,7 @@ export class NitroBridgeProvider implements BridgeProvider {
 
           return [
             {
+              transferTypes: ["external-url"],
               chainType: "tron",
               chainId: TronChainInfo.chainId,
               chainName: TronChainInfo.chainName,
@@ -119,7 +123,10 @@ export class NitroBridgeProvider implements BridgeProvider {
     const setTokenParam = (asset: BridgeAsset, param: string) => {
       if (asset.address.includes("alloyed")) {
         const assets = this.ctx.assetLists.flatMap(({ assets }) => assets);
-        const alloy = assets.find((a) => a.coinMinimalDenom === asset.address);
+        const alloy = assets.find(
+          (a) =>
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
+        );
         const variant = assets.find(
           (a) =>
             a.variantGroupKey === alloy?.variantGroupKey &&

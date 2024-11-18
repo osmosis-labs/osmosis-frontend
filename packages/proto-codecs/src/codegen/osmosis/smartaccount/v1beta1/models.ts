@@ -139,7 +139,7 @@ export const AccountAuthenticator = {
   },
   toAmino(message: AccountAuthenticator): AccountAuthenticatorAmino {
     const obj: any = {};
-    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? (message.id?.toString)() : undefined;
     obj.type = message.type === "" ? undefined : message.type;
     obj.config = message.config ? base64FromBytes(message.config) : undefined;
     return obj;

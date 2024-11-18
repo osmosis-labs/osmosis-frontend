@@ -28,21 +28,20 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeCoin,
-  BridgeDepositAddress,
   BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
-  GetDepositAddressParams,
 } from "../interface";
-import { BridgeAssetMap } from "../utils";
-import { SkipApiClient } from "./queries";
+import { BridgeAssetMap } from "../utils/asset";
+import { SkipApiClient } from "./client";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 export class SkipBridgeProvider implements BridgeProvider {
@@ -55,9 +54,6 @@ export class SkipBridgeProvider implements BridgeProvider {
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
   }
-  getDepositAddress?:
-    | ((params: GetDepositAddressParams) => Promise<BridgeDepositAddress>)
-    | undefined;
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     const {
@@ -207,7 +203,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
-          toChain,
           fromAddress as Address,
           msgs
         );
@@ -263,7 +258,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: GetBridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -273,8 +270,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       // See original usage in `getAsset` method.
 
       // find variants
-      const assets = await this.getAssets();
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const [assets, skipChains] = await Promise.all([
+        this.getAssets(),
+        this.getChains(),
+      ]);
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
@@ -324,6 +326,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as CosmosCounterparty;
 
           foundVariants.setAsset(c.chainId, address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "cosmos",
             address: address,
@@ -337,6 +340,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           const c = counterparty as EVMCounterparty;
 
           foundVariants.setAsset(c.chainId.toString(), address, {
+            transferTypes: ["quote"],
             chainId: c.chainId,
             chainType: "evm",
             address: address,
@@ -351,13 +355,21 @@ export class SkipBridgeProvider implements BridgeProvider {
       const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
         const chainAssets = assets[chainID].assets;
 
-        return chainAssets.filter(
-          (asset) =>
+        return chainAssets.filter((asset) => {
+          const skipChain = skipChains.find(
+            (c) => c.chain_id === asset.origin_chain_id
+          );
+
+          return (
+            // All shared origin assets require Packet Forward Middleware (PFM) to be enabled
+            // so assets can be forwarded to destination chain
+            skipChain?.pfm_enabled &&
             asset.origin_denom.toLowerCase() ===
               chainAsset.origin_denom.toLowerCase() &&
             asset.origin_chain_id === chainAsset.origin_chain_id &&
             asset.denom.toLowerCase() !== chainAsset.denom.toLowerCase()
-        );
+          );
+        });
       });
 
       for (const sharedOriginAsset of sharedOriginAssets) {
@@ -380,6 +392,7 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
+            transferTypes: ["quote"],
             address: sharedOriginAsset.denom,
             denom:
               sharedOriginAsset.recommended_symbol ??
@@ -433,7 +446,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createTransaction(
     fromChainId: string,
-    toChain: BridgeChain,
     address: Address,
     messages: SkipMsg[]
   ) {
@@ -447,16 +459,12 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
 
       if ("multi_chain_msg" in message) {
-        return await this.createCosmosTransaction(
-          toChain,
-          message.multi_chain_msg
-        );
+        return await this.createCosmosTransaction(message.multi_chain_msg);
       }
     }
   }
 
   async createCosmosTransaction(
-    toChain: BridgeChain,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
@@ -483,21 +491,20 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg,
+        msgs: [{ typeUrl, value: msg }],
         fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
       };
     } else {
       // is an ibc transfer
 
-      // If toChain is not cosmos, this IBC transfer is an
-      // intermediary IBC transfer where we need to get the
-      // timeout from the bech32 prefix of the receiving address
-      const timeoutHeight = await this.ctx.getTimeoutHeight(
-        toChain.chainType === "cosmos"
-          ? toChain
-          : { destinationAddress: messageData.receiver }
-      );
+      /**
+       * Always use the receiver address to get the timeout height.
+       * For chains with PFM enabled, the destination chain is not the same as
+       * the toChain. Therefore, we need to derive the immediate next hop height.
+       */
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
+        destinationAddress: messageData.receiver,
+      });
 
       const { typeUrl, value } = await makeIBCTransferMsg({
         sourcePort: messageData.source_port,
@@ -510,14 +517,13 @@ export class SkipBridgeProvider implements BridgeProvider {
         receiver: messageData.receiver,
         // @ts-ignore
         timeoutHeight,
-        timeoutTimestamp: "0" as any,
+        timeoutTimestamp: messageData?.timeout_timestamp ?? BigInt(0),
         memo: messageData.memo,
       });
 
       return {
         type: "cosmos",
-        msgTypeUrl: typeUrl,
-        msg: value,
+        msgs: [{ typeUrl, value }],
         fallbackGasLimit: makeIBCTransferMsg.gas,
       };
     }
@@ -549,7 +555,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   private getViemProvider(chainID: string) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       (chain) => chain.id.toString() === chainID
     );
 
@@ -748,7 +754,7 @@ export class SkipBridgeProvider implements BridgeProvider {
     txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
     if (txData.type === "evm") {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 
@@ -792,14 +798,11 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainId: params.fromChain.chainId.toString(),
         chainList: this.ctx.chainList,
         body: {
-          messages: [
-            (
-              await this.getProtoRegistry()
-            ).encodeAsAny({
-              typeUrl: txData.msgTypeUrl,
-              value: txData.msg,
-            }),
-          ],
+          messages: await Promise.all(
+            txData.msgs.map(async (msg) =>
+              (await this.getProtoRegistry()).encodeAsAny(msg)
+            )
+          ),
         },
         bech32Address: params.fromAddress,
         fallbackGasLimit: txData.fallbackGasLimit,
@@ -813,6 +816,16 @@ export class SkipBridgeProvider implements BridgeProvider {
           throw new BridgeQuoteError({
             bridgeId: SkipBridgeProvider.ID,
             errorType: "InsufficientAmountError",
+            message: e.message,
+          });
+        } else if (
+          e instanceof Error &&
+          e.message.includes("account") &&
+          e.message.includes("not found")
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "AccountNotFoundError",
             message: e.message,
           });
         }
@@ -941,4 +954,5 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 }
 
+export * from "./client";
 export * from "./transfer-status";

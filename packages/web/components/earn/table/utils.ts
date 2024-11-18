@@ -132,7 +132,7 @@ export const sortDurationValues: SortingFn<EarnStrategy> = (
   return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
-export const _getKey = (k: keyof Filters) => {
+const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
       return "type";

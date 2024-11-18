@@ -2401,7 +2401,7 @@ export const MockAssetList: AssetList[] = [
         sourceDenom: "wmatic-wei",
         coinMinimalDenom:
           "ibc/AB589511ED0DD5FA56171A39978AFBF1371DB986EC1C3526CE138A16377E39BB",
-        symbol: "MATIC",
+        symbol: "POL",
         decimals: 18,
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -2462,7 +2462,7 @@ export const MockAssetList: AssetList[] = [
             chainType: "evm",
             chainId: 137,
             address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-            symbol: "MATIC",
+            symbol: "POL",
             decimals: 18,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -2470,14 +2470,14 @@ export const MockAssetList: AssetList[] = [
             },
           },
         ],
-        variantGroupKey: "MATIC",
+        variantGroupKey: "POL",
         name: "Polygon",
         isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relative_image_url: "/tokens/generated/matic.png",
+        relative_image_url: "/tokens/generated/pol.png",
       },
       {
         chainName: "axelar",

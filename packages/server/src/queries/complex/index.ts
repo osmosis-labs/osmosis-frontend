@@ -9,5 +9,5 @@ export * from "./osmosis";
 export * from "./pools";
 export * from "./portfolio";
 export * from "./staking";
-export * from "./swap-routers";
+export * from "./swap";
 export * from "./transactions";
