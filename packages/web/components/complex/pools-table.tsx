@@ -173,7 +173,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const poolsData = useMemo(() => {
     const allItems =
       poolsPagesData?.pages.flatMap((page) => {
-        return page?.items;
+        return page?.items.items;
       }) ?? [];
 
     return allItems;

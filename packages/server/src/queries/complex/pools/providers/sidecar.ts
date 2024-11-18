@@ -7,7 +7,7 @@ import { LRUCache } from "lru-cache";
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
-import { PaginationType, SortType } from "../../../../queries/complex/pools";
+import { PoolProviderResponse, PaginationType, SortType } from "../../../../queries/complex/pools";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
@@ -42,8 +42,10 @@ export function getPoolsFromSidecar({
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
   sort?: SortType;
-}): Promise<Pool[]> {
-  if (poolIds && !poolIds.length) return Promise.resolve([]);
+}): Promise<PoolProviderResponse> {
+  if (poolIds && !poolIds.length) {
+    return Promise.resolve({ pools: [], total: 0 });
+  }
 
   return cachified({
     cache: poolsCache,
@@ -76,14 +78,18 @@ export function getPoolsFromSidecar({
         }
       });
 
-      return sidecarPools.data
+	  return {
+
+      pools: sidecarPools.data
         .map((sidecarPool, index) =>
           makePoolFromSidecarPool({
             sidecarPool,
             reserveCoins: reserveCoins[index] ?? null,
           })
         )
-        .filter(Boolean) as Pool[];
+        .filter(Boolean) as Pool[],
+	  total: sidecarPools.meta.TotalItems,
+	  }
     },
   });
 }

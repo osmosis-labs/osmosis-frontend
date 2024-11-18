@@ -44,6 +44,12 @@ export type Pool = {
   market?: PoolMarketMetrics;
 };
 
+/** Represents a list of pools with a total count. */
+export type PoolProviderResponse = {
+  pools: Pool[];
+  total: number; // Total number of pools
+};
+
 /** Async function that provides simplified pools from any data source.
  *  Should handle caching in the provider. */
 export type PoolProvider = (params: {
@@ -51,7 +57,7 @@ export type PoolProvider = (params: {
   chainList: Chain[];
   poolIds?: string[];
   minLiquidityUsd?: number;
-}) => Promise<Pool[]>;
+}) => Promise<PoolProviderResponse>;
 
 export const PoolFilterSchema = z.object({
   poolIds: z.array(z.string()).optional(),
@@ -92,8 +98,8 @@ export async function getPool({
   chainList: Chain[];
   poolId: string;
 }): Promise<Pool> {
-  const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
-  const pool = pools.find(({ id }) => id === poolId);
+  const data = await getPools({ assetLists, chainList, poolIds: [poolId] });
+  const pool = data.pools.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
   return pool;
 }
@@ -105,13 +111,13 @@ export async function getPool({
 export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
-): Promise<Pool[]> {
+): Promise<PoolProviderResponse> {
   params.notPoolIds = FILTERABLE_IDS;
-  let pools = await poolProvider(params);
+  let data = await poolProvider(params);
 
-	console.log("getPools pools", pools.length);
+	console.log("getPools pools", data.pools.length);
 
-	return pools;
+	return data
 
   // TODO: migrate
   //pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS

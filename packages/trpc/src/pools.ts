@@ -108,7 +108,7 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
-            const pools = await getPools({
+            const data = await getPools({
               ...ctx,
               search,
               minLiquidityUsd,
@@ -121,7 +121,7 @@ export const poolsRouter = createTRPCRouter({
 			  sort: sortInput,
             });
 
-			return pools;
+			return { items: data.pools, total: data.total };
           },
           cacheKey: JSON.stringify({
             search,
