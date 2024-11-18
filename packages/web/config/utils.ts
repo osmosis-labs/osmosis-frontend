@@ -37,15 +37,52 @@ function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
+export const codegenDir = "config/generated";
+
+// Path to the lock file
+const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
+
+/**
+ * Read the stored asset list hash from the lock file.
+ * @returns The stored hash or null if the lock file doesn't exist.
+ */
+function readStoredAssetListHash(): string | null {
+  if (!fs.existsSync(lockFilePath)) {
+    return null;
+  }
+  const data = fs.readFileSync(lockFilePath, "utf-8");
+  try {
+    const parsed = JSON.parse(data);
+    return parsed.assetListHash || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Write the current asset list hash to the lock file.
+ * @param hash The hash to store.
+ */
+export function writeCurrentAssetListHash(hash: string): void {
+  const data = { assetListHash: hash };
+  fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
 /**
  * Download an image from the provided URL and save it to the local file system.
- * @param imageUrl The URL of the image to download.
- * @returns The filename of the saved image.
+ * Only saves images if the current asset list hash differs from the stored hash or the file doesn't exist.
+ * @param params An object containing the image URL, asset information, and current asset list hash.
+ * @returns The filename of the saved image or null if skipped.
  */
-export async function saveAssetImageToTokensDir(
-  imageUrl: string,
-  asset: Pick<Asset, "symbol">
-) {
+export async function saveAssetImageToTokensDir({
+  imageUrl,
+  asset,
+  currentAssetListHash,
+}: {
+  imageUrl: string;
+  asset: Pick<Asset, "symbol">;
+  currentAssetListHash: string;
+}) {
   // Ensure the tokens directory exists.
   if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
     fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
@@ -56,6 +93,16 @@ export async function saveAssetImageToTokensDir(
 
   if (process.env.NODE_ENV === "test") {
     console.info("Skipping image download for test environment");
+    return null;
+  }
+
+  const storedHash = readStoredAssetListHash();
+
+  /**
+   * Skip saving the image if the current asset list hash matches the stored hash.
+   */
+  if (storedHash === currentAssetListHash && fs.existsSync(filePath)) {
+    return null;
   }
 
   // Fetch the image from the URL.
@@ -80,7 +127,7 @@ export async function saveAssetImageToTokensDir(
     ).pipe(fileStream)
   );
 
-  // verify the image has been added
+  // Verify the image has been added
   if (!fs.existsSync(filePath)) {
     throw new Error(`Failed to save image to ${filePath}`);
   }
