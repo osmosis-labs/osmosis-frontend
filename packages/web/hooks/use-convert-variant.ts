@@ -151,14 +151,10 @@ export function useConvertVariant(
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
 
   // Check for large difference in amount of in v out
-  // Include decimals, but we know the amounts should be priced 1:1
   const isLargeAmountDiff = useMemo(() => {
-    // toDec should include decimals
     const inAmount = variant?.amount.toDec();
     const outAmount = quote?.amount.toDec();
-    if (!inAmount || !outAmount || inAmount.isZero()) return false;
-    // Out amount should be 95% or more of the input amount
-    return outAmount.quo(inAmount).lt(new Dec("0.95"));
+    return checkLargeAmountDiff(inAmount, outAmount);
   }, [variant, quote?.amount]);
 
   return {
@@ -221,4 +217,14 @@ export async function getConvertVariantMessages(
     tokenInCoinDecimals: variant.amount.currency?.coinDecimals ?? 0,
     userOsmoAddress: address,
   });
+}
+
+/**
+ * Checks if there is a large difference between input and output amounts
+ * Returns true if output amount is less than 95% of input amount
+ */
+export function checkLargeAmountDiff(inAmount?: Dec, outAmount?: Dec): boolean {
+  if (!inAmount || !outAmount || inAmount.isZero()) return false;
+  // Out amount should be 95% or more of the input amount
+  return outAmount.quo(inAmount).lt(new Dec("0.95"));
 }
