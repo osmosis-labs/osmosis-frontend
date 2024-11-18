@@ -315,8 +315,8 @@ const AssetBox: FunctionComponent<{
           </div>
           <div className="body1 md:caption text-osmoverse-300">
             {type === "to" && "~"}{" "}
-            {formatPretty(coin.inequalitySymbol(false), {
-              maxDecimals: 10,
+            {formatPretty(coin, {
+              maxDecimals: 6,
             })}
           </div>
         </div>

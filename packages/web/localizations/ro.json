@@ -2,6 +2,7 @@
   "404": {
     "title": "Nu a fost gasit"
   },
+  "aboutSecondsRemaining": "Aproximativ {seconds} rămase",
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
+    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
     "history": "Istorie",
     "orders": "Comenzi",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "Suma {asset}",
       "totalValue": "Valoarea totală",
       "providerFee": "Taxa de furnizor",
+      "provider": "Furnizor",
       "networkFee": "Taxa de retea"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "Comision comercială",
   "receiveAtLeast": "Primește cel puțin",
   "payAtMost": "Plătește cel mult",
+  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
+  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
+  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Variante detectate",
     "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",

@@ -203,7 +203,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         const transactionRequest = await this.createTransaction(
           fromChain.chainId.toString(),
-          toChain,
           fromAddress as Address,
           msgs
         );
@@ -447,7 +446,6 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createTransaction(
     fromChainId: string,
-    toChain: BridgeChain,
     address: Address,
     messages: SkipMsg[]
   ) {
@@ -461,16 +459,12 @@ export class SkipBridgeProvider implements BridgeProvider {
       }
 
       if ("multi_chain_msg" in message) {
-        return await this.createCosmosTransaction(
-          toChain,
-          message.multi_chain_msg
-        );
+        return await this.createCosmosTransaction(message.multi_chain_msg);
       }
     }
   }
 
   async createCosmosTransaction(
-    toChain: BridgeChain,
     message: SkipMultiChainMsg
   ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
@@ -503,14 +497,14 @@ export class SkipBridgeProvider implements BridgeProvider {
     } else {
       // is an ibc transfer
 
-      // If toChain is not cosmos, this IBC transfer is an
-      // intermediary IBC transfer where we need to get the
-      // timeout from the bech32 prefix of the receiving address
-      const timeoutHeight = await this.ctx.getTimeoutHeight(
-        toChain.chainType === "cosmos"
-          ? toChain
-          : { destinationAddress: messageData.receiver }
-      );
+      /**
+       * Always use the receiver address to get the timeout height.
+       * For chains with PFM enabled, the destination chain is not the same as
+       * the toChain. Therefore, we need to derive the immediate next hop height.
+       */
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
+        destinationAddress: messageData.receiver,
+      });
 
       const { typeUrl, value } = await makeIBCTransferMsg({
         sourcePort: messageData.source_port,
@@ -523,7 +517,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         receiver: messageData.receiver,
         // @ts-ignore
         timeoutHeight,
-        timeoutTimestamp: "0" as any,
+        timeoutTimestamp: messageData?.timeout_timestamp ?? BigInt(0),
         memo: messageData.memo,
       });
 

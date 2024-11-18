@@ -2,6 +2,7 @@
   "404": {
     "title": "找不到這頁面"
   },
+  "aboutSecondsRemaining": "大約剩餘{seconds}",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -1103,6 +1104,7 @@
     "totalFees": "總費用",
     "transactionHash": "交易哈希",
     "viewOnExplorer": "在資源管理器上查看",
+    "launchAlert": "目前僅顯示交易和轉帳歷史記錄。即將支援更多交易類型。",
     "history": "歷史",
     "orders": "命令",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "金額{asset}",
       "totalValue": "總價值",
       "providerFee": "提供者費用",
+      "provider": "提供者",
       "networkFee": "網路費"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "交易費",
   "receiveAtLeast": "至少收到",
   "payAtMost": "最多付錢",
+  "previewAssetsEnabled": "啟用預覽資產",
+  "previewAssetsDisabled": "預覽資源已停用",
+  "previewAssetsEnabledForSession": "預覽為此會話啟用的資產。若要停用開啟新選項卡，或附加「show_preview_assets=false」。",
   "alloyedAssets": {
     "title": "偵測到變體",
     "caption": "告別所有那些令人困惑的資產變體。迎接更無縫的 Osmosis 體驗。",

@@ -35,6 +35,7 @@ import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
+import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
 
 export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
@@ -51,30 +52,6 @@ export type BridgeChainWithDisplayInfo = (
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
-
-// TODO: this should be in view layer
-const BridgeLogoUrls: Record<Bridge, string> = {
-  Skip: "/bridges/skip.png",
-  Squid: "/bridges/squid.svg",
-  Axelar: "/bridges/axelar.svg",
-  IBC: "/bridges/ibc.svg",
-  Nomic: "/bridges/nomic.svg",
-  Wormhole: "/bridges/wormhole.svg",
-  Nitro: "/bridges/nitro.svg",
-  Picasso: "/bridges/picasso.svg",
-};
-
-const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
-  Skip: "/bridges/skip.png",
-  Squid: "/bridges/squid.svg",
-  Axelar: "/external-bridges/satellite.svg",
-  IBC: "/external-bridges/tfm.svg",
-  Nomic: "/bridges/nomic.svg",
-  Wormhole: "/external-bridges/portalbridge.svg",
-  Generic: "/external-bridges/generic.svg",
-  Nitro: "/bridges/nitro.svg",
-  Picasso: "/bridges/picasso.svg",
-};
 
 /** Include decimals with decimal-included price. */
 const priceFromBridgeCoin = (coin: BridgeCoin, price: Dec) => {

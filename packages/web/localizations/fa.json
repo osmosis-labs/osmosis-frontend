@@ -2,6 +2,7 @@
   "404": {
     "title": "پیدا نشد"
   },
+  "aboutSecondsRemaining": "درباره {seconds} باقی مانده است",
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -1103,6 +1104,7 @@
     "totalFees": "مجموع هزینه ها",
     "transactionHash": "هش تراکنش",
     "viewOnExplorer": "مشاهده در اکسپلورر",
+    "launchAlert": "در حال حاضر فقط تاریخچه معاملات و نقل و انتقالات نمایش داده می شود. پشتیبانی از انواع تراکنش های بیشتر به زودی.",
     "history": "تاریخ",
     "orders": "سفارشات",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "مقدار {asset}",
       "totalValue": "ارزش کل",
       "providerFee": "هزینه ارائه دهنده",
+      "provider": "ارائه دهنده",
       "networkFee": "هزینه شبکه"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "کارمزد تجارت",
   "receiveAtLeast": "حداقل دریافت کنید",
   "payAtMost": "حداکثر پرداخت کنید",
+  "previewAssetsEnabled": "پیش‌نمایش دارایی‌ها فعال شد",
+  "previewAssetsDisabled": "پیش‌نمایش دارایی‌ها غیرفعال شد",
+  "previewAssetsEnabledForSession": "پیش‌نمایش دارایی‌های فعال برای این جلسه. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_preview_assets=false» را اضافه کنید.",
   "alloyedAssets": {
     "title": "انواع مختلف شناسایی شد",
     "caption": "با همه آن گونه های دارایی گیج کننده خداحافظی کنید. به تجربه یکپارچه تر در اسموز سلام کنید.",

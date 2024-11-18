@@ -2,6 +2,7 @@
   "404": {
     "title": "Bulunamadı"
   },
+  "aboutSecondsRemaining": "{seconds} kalan süre hakkında",
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Toplam ücretler",
     "transactionHash": "İşlem Karması",
     "viewOnExplorer": "Explorer'da görüntüle",
+    "launchAlert": "Şu anda yalnızca işlem ve transfer geçmişi görüntüleniyor. Yakında daha fazla işlem türü için destek geliyor.",
     "history": "Tarih",
     "orders": "Emirler",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "Tutar {asset}",
       "totalValue": "Toplam değer",
       "providerFee": "Sağlayıcı ücreti",
+      "provider": "Sağlayıcı",
       "networkFee": "Ağ ücreti"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "Ticaret ücreti",
   "receiveAtLeast": "En azından al",
   "payAtMost": "En fazla öde",
+  "previewAssetsEnabled": "Önizleme varlıkları etkinleştirildi",
+  "previewAssetsDisabled": "Önizleme varlıkları devre dışı bırakıldı",
+  "previewAssetsEnabledForSession": "Bu oturum için önizleme varlıkları etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya `show_preview_assets=false` ekleyin.",
   "alloyedAssets": {
     "title": "Varyantlar Tespit Edildi",
     "caption": "Tüm bu kafa karıştırıcı varlık varyantlarına elveda deyin. Osmosis'te daha sorunsuz bir deneyime merhaba deyin.",

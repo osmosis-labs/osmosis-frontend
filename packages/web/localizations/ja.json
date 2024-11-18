@@ -2,6 +2,7 @@
   "404": {
     "title": "見つかりません"
   },
+  "aboutSecondsRemaining": "残り約{seconds}",
   "addLiquidity": {
     "allAssets": "すべての資産",
     "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
@@ -1103,6 +1104,7 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
+    "launchAlert": "現在、取引と送金の履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
     "history": "歴史",
     "orders": "注文",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "金額{asset}",
       "totalValue": "合計金額",
       "providerFee": "プロバイダー料金",
+      "provider": "プロバイダー",
       "networkFee": "ネットワーク料金"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "取引手数料",
   "receiveAtLeast": "少なくとも受け取る",
   "payAtMost": "最大で支払う",
+  "previewAssetsEnabled": "プレビューアセットが有効",
+  "previewAssetsDisabled": "プレビューアセットが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションではプレビュー アセットが有効になっています。無効にするには、新しいタブを開くか、`show_preview_assets=false` を追加します。",
   "alloyedAssets": {
     "title": "検出された変異体",
     "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",

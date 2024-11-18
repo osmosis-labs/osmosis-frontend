@@ -2,6 +2,7 @@
   "404": {
     "title": "Nie znaleziono"
   },
+  "aboutSecondsRemaining": "Pozostało około {seconds}",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -1103,6 +1104,7 @@
     "totalFees": "Wszystkie koszty",
     "transactionHash": "Hash transakcji",
     "viewOnExplorer": "Zobacz w eksploratorze",
+    "launchAlert": "Obecnie wyświetlana jest tylko historia transakcji i transferów. Obsługa większej liczby typów transakcji wkrótce.",
     "history": "Historia",
     "orders": "Zamówienia",
     "historyTable": {
@@ -1118,6 +1120,7 @@
       "amountAsset": "Kwota {asset}",
       "totalValue": "Wartość całkowita",
       "providerFee": "Opłata dostawcy",
+      "provider": "Dostawca",
       "networkFee": "Opłata sieciowa"
     }
   },
@@ -1271,6 +1274,9 @@
   "tradeFee": "Opłata za handel",
   "receiveAtLeast": "Otrzymaj co najmniej",
   "payAtMost": "Zapłać maksymalnie",
+  "previewAssetsEnabled": "Podgląd zasobów włączony",
+  "previewAssetsDisabled": "Podgląd zasobów wyłączony",
+  "previewAssetsEnabledForSession": "Podgląd zasobów włączonych dla tej sesji. Aby wyłączyć, otwórz nową kartę lub dołącz `show_preview_assets=false`.",
   "alloyedAssets": {
     "title": "Wykryto warianty",
     "caption": "Pożegnaj się ze wszystkimi tymi mylącymi wariantami aktywów. Przywitaj się z bardziej płynnym doświadczeniem w Osmosis.",

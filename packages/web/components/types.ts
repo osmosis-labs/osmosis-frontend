@@ -19,8 +19,6 @@ export interface Disableable {
   disabled?: boolean;
 }
 
-export type SortDirection = "ascending" | "descending";
-
 export interface Metric {
   label: string;
   value: string | ReactElement;
