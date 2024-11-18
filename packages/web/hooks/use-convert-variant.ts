@@ -1,3 +1,4 @@
+import { Dec } from "@keplr-wallet/unit";
 import type { AssetVariant } from "@osmosis-labs/server";
 import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
 import { useCallback, useMemo } from "react";
@@ -149,13 +150,24 @@ export function useConvertVariant(
 
   const { fiatValue: feeFiatValue } = useCoinFiatValue(quote?.feeAmount);
 
+  // Check for large difference in amount of in v out
+  // Include decimals, but we know the amounts should be priced 1:1
+  const isLargeAmountDiff = useMemo(() => {
+    // toDec should include decimals
+    const inAmount = variant?.amount.toDec();
+    const outAmount = quote?.amount.toDec();
+    if (!inAmount || !outAmount || inAmount.isZero()) return false;
+    // Out amount should be 95% or more of the input amount
+    return outAmount.quo(inAmount).lt(new Dec("0.95"));
+  }, [variant, quote?.amount]);
+
   return {
     onConvert,
     quote,
     convertFee: feeFiatValue,
     variant,
     isLoading: isQuoteLoading || isPortfolioAssetsLoading,
-    isError: isQuoteError || isPortfolioAssetsError,
+    isError: isLargeAmountDiff || isQuoteError || isPortfolioAssetsError,
     /** Is any conversion in progress. */
     isConvertingVariant: Boolean(
       account?.txTypeInProgress.startsWith(transactionIdentifier)
