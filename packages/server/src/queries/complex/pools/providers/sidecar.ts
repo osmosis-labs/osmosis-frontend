@@ -14,7 +14,7 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolIncentiveType, PoolType } from "../index";
 
-type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
+type SidecarPool = Awaited<ReturnType<typeof queryPools>>['data'][number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -28,6 +28,7 @@ const ExcludedExternalBoostPools: string[] =
 export function getPoolsFromSidecar({
   assetLists,
   poolIds,
+  notPoolIds,
   minLiquidityUsd,
   withMarketIncentives = true,
   pagination,
@@ -35,6 +36,7 @@ export function getPoolsFromSidecar({
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
+  notPoolIds?: string[];
   poolIds?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
@@ -55,6 +57,7 @@ export function getPoolsFromSidecar({
         () =>
           queryPools({
             poolIds,
+            notPoolIds,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
 			pagination,
@@ -63,7 +66,9 @@ export function getPoolsFromSidecar({
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
-      const reserveCoins = sidecarPools.map((sidecarPool) => {
+
+			//console.log("sidecarPools", sidecarPools);
+      const reserveCoins = sidecarPools.data.map((sidecarPool) => {
         try {
           return getListedReservesFromSidecarPool(assetLists, sidecarPool);
         } catch {
@@ -71,7 +76,7 @@ export function getPoolsFromSidecar({
         }
       });
 
-      return sidecarPools
+      return sidecarPools.data
         .map((sidecarPool, index) =>
           makePoolFromSidecarPool({
             sidecarPool,

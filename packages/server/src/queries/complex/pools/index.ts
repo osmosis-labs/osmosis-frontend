@@ -19,6 +19,7 @@ const allPooltypes = [
   "cosmwasm-whitewhale",
   "cosmwasm",
 ] as const;
+
 export type PoolType = (typeof allPooltypes)[number];
 
 const FILTERABLE_IDS = IS_TESTNET ? [] : ["2159"];
@@ -54,6 +55,7 @@ export type PoolProvider = (params: {
 
 export const PoolFilterSchema = z.object({
   poolIds: z.array(z.string()).optional(),
+  notPoolIds: z.array(z.string()).optional(),
   /** Search pool ID, or denoms. */
   search: SearchSchema.optional(),
   /** Filter pool by minimum required USD liquidity. */
@@ -104,10 +106,15 @@ export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
 ): Promise<Pool[]> {
+  params.notPoolIds = FILTERABLE_IDS;
   let pools = await poolProvider(params);
 
+	console.log("getPools pools", pools.length);
+
+	return pools;
+
   // TODO: migrate
-  pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
+  //pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
 
   if (params?.types) {
     pools = pools.filter(({ type }) =>
@@ -118,6 +125,7 @@ export async function getPools(
   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
   // information.
   if (params?.minLiquidityUsd && !IS_TESTNET) {
+	console.log("minLiquidityUsd", params.minLiquidityUsd);
     pools = pools.filter(({ totalFiatValueLocked }) =>
       params?.minLiquidityUsd
         ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
@@ -169,6 +177,7 @@ export async function getPools(
     }
   }
 
+console.log("getPools pools after", pools.length);
   return denomPools;
 }
 

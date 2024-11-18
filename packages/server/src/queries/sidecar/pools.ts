@@ -81,6 +81,15 @@ export type SQSPoolFeesData = {
   fees_percentage?: string;
 };
 
+export type SQSMetaResponse = {
+	TotalItems: number;
+}
+
+export type SQSGetPoolsResponse = {
+	data: SqsPool[];
+	meta: SQSMetaResponse;
+}
+
 export type SqsPool = {
   /** Sidecar returns the same pool models as the node. */
   chain_model: ChainPool;
@@ -99,12 +108,14 @@ export type SqsPool = {
 
 export function queryPools({
   poolIds,
+  notPoolIds,
   minLiquidityCap,
   withMarketIncentives,
   pagination,
   sort,
 }: {
   poolIds?: string[];
+  notPoolIds?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
@@ -116,9 +127,15 @@ export function queryPools({
   if (poolIds) {
     params.append("IDs", poolIds.join(","));
   }
+
+  if (notPoolIds) {
+    params.append("notIDs", notPoolIds.join(","));
+  }
+
   if (minLiquidityCap) {
     params.append("min_liquidity_cap", minLiquidityCap);
   }
+
   if (withMarketIncentives) {
     params.append("with_market_incentives", "true");
   }
@@ -140,5 +157,5 @@ export function queryPools({
   url.search = params.toString();
 
   console.log("url", url.toString());
-  return apiClient<SqsPool[]>(url.toString());
+  return apiClient<SQSGetPoolsResponse>(url.toString());
 }

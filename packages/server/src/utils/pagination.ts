@@ -26,6 +26,7 @@ export const CursorPaginationSchema = z.object({
  *  See: https://trpc.io/docs/client/react/useInfiniteQuery
  *  Guide: https://tanstack.com/query/v4/docs/react/guides/infinite-queries
  */
+// TODO: add total count instead of item.length
 export function maybeCursorPaginatedItems<TItem>(
   items: TItem[],
   cursor: number | null | undefined,
