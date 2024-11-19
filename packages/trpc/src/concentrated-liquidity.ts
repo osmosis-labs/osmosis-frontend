@@ -106,34 +106,42 @@ export const concentratedLiquidityRouter = createTRPCRouter({
   getLiquidityPerTickRange: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ ctx, input }) => getLiquidityPerTickRange({ ...ctx, ...input })),
-  getBaseTokens: publicProcedure.query(({ ctx }) =>
-    getAssets({
-      assetLists: ctx.assetLists,
-      onlyVerified: true,
-    })
-      .map((asset) => {
-        const assetListAsset = getAssetFromAssetList({
-          assetLists: ctx.assetLists,
-          coinMinimalDenom: asset.coinMinimalDenom,
-        });
-
-        if (!assetListAsset) return;
-
-        return {
-          chainName: assetListAsset.rawAsset.chainName,
-          token: new CoinPretty(
-            {
-              coinDenom: asset.coinDenom,
-              coinDecimals: asset.coinDecimals,
-              coinMinimalDenom: asset.coinMinimalDenom,
-              coinImageUrl: asset.coinImageUrl,
-            },
-            0
-          ).currency,
-        };
+  getBaseTokens: publicProcedure
+    .input(
+      z.object({
+        onlyVerified: z.boolean().default(false),
+        includePreview: z.boolean().default(false),
       })
-      .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
-  ),
+    )
+    .query(({ ctx, input }) =>
+      getAssets({
+        assetLists: ctx.assetLists,
+        onlyVerified: input.onlyVerified,
+        includePreview: input.includePreview,
+      })
+        .map((asset) => {
+          const assetListAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            coinMinimalDenom: asset.coinMinimalDenom,
+          });
+
+          if (!assetListAsset) return;
+
+          return {
+            chainName: assetListAsset.rawAsset.chainName,
+            token: new CoinPretty(
+              {
+                coinDenom: asset.coinDenom,
+                coinDecimals: asset.coinDecimals,
+                coinMinimalDenom: asset.coinMinimalDenom,
+                coinImageUrl: asset.coinImageUrl,
+              },
+              0
+            ).currency,
+          };
+        })
+        .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
+    ),
   getQuoteTokens: publicProcedure.query(async ({ ctx }) => {
     const {
       params: { authorized_quote_denoms: authorizedQuoteDenoms },
