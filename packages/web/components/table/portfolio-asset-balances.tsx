@@ -572,7 +572,7 @@ const AssetActionsCell: AssetCellComponent<{
       {needsActivation && (
         <Button
           variant="secondary"
-          className="max-h-12 mx-auto w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+          className="max-h-12 rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
           onClick={(e) => {
             e.stopPropagation();
             e.preventDefault();
@@ -587,7 +587,7 @@ const AssetActionsCell: AssetCellComponent<{
           {showConvertButton ? (
             <Button
               variant="secondary"
-              className="max-h-12 w-[108px] rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
+              className="max-h-12 rounded-[48px] bg-osmoverse-alpha-850 hover:bg-osmoverse-alpha-800"
               onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();

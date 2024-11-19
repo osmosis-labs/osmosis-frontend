@@ -632,7 +632,7 @@ export const assetsRouter = createTRPCRouter({
                   if (
                     !isNil(asset.variantGroupKey) &&
                     !variantsNotToBeExcluded.includes(
-                      asset.variantGroupKey as (typeof variantsNotToBeExcluded)[number]
+                      asset.coinDenom as (typeof variantsNotToBeExcluded)[number]
                     )
                   ) {
                     return asset.variantGroupKey === asset.coinMinimalDenom;
