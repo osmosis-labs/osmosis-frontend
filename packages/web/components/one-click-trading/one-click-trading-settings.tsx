@@ -218,6 +218,14 @@ export const OneClickTradingSettings = ({
       setChanges(
         Array.from(
           new Set([
+            /**
+             * Spreading the changes and then merging with the new changes
+             * ensures that the changes from the previous modal open are not overwritten
+             *
+             * If I have already made a change, and returned to the review order modal,
+             * then I start editing again I expect my previous changes to be in the state
+             * and the previously changed parameters displayed the same way as current change
+             */
             ...changes,
             ...compare1CTTransactionParams({
               prevParams: initialTransaction1CTParams!,
