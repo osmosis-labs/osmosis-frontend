@@ -108,6 +108,7 @@ export const poolsRouter = createTRPCRouter({
       }) =>
         maybeCachePaginatedItems({
           getFreshItems: async () => {
+			console.log("getPools limit ", limit, cursor);
             const data = await getPools({
               ...ctx,
               search,

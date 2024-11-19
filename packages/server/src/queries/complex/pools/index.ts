@@ -116,6 +116,7 @@ export async function getPools(
   let data = await poolProvider(params);
 
 	console.log("getPools pools", data.pools.length);
+	console.log("getPools pagination", params.pagination);
 
 	return data
 

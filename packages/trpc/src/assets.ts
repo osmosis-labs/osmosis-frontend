@@ -250,13 +250,13 @@ export const assetsRouter = createTRPCRouter({
             if (sortInput) {
               // user sorting
 
-              return sort(assets, sortInput.keyPath, sortInput.direction);
+              return { items: sort(assets, sortInput.keyPath, sortInput.direction) };
             } else {
               // default sorting, maybe with watchlist
 
               if (watchListDenoms) {
                 // default sort watchlist to top
-                return assets.sort((a, b) => {
+                return { items: assets.sort((a, b) => {
                   // 1. watchlist denoms sorted by volume 24h desc
                   if (
                     watchListDenoms.includes(a.coinDenom) &&
@@ -268,10 +268,10 @@ export const assetsRouter = createTRPCRouter({
 
                   // 2. rest of the assets by volume 24h desc
                   return compareCommon(a.volume24h, b.volume24h);
-                });
+                })};
               } else {
                 // default sort by volume24h desc
-                return sort(assets, "volume24h");
+                return { items: sort(assets, "volume24h") };
               }
             }
           },
@@ -357,12 +357,12 @@ export const assetsRouter = createTRPCRouter({
             });
 
             if (!search)
-              assets = assets.filter((asset) =>
+              assets = assets.items.filter((asset) =>
                 asset.amount?.toDec().isPositive()
               );
 
             let priceAssets = await Promise.all(
-              assets.map(async (asset) => {
+              assets.items.map(async (asset) => {
                 const [currentPrice, priceChange24h] = await Promise.all([
                   getAssetPrice({ ...ctx, asset })
                     .then(
@@ -394,7 +394,7 @@ export const assetsRouter = createTRPCRouter({
               getBridgeAsset(ctx.assetLists, asset)
             );
 
-            return bridgeAssets;
+            return { items: bridgeAssets };
           },
           cacheKey: JSON.stringify({
             search,
@@ -654,13 +654,13 @@ export const assetsRouter = createTRPCRouter({
             );
 
             // avoid sorting while searching
-            if (search) return assets;
+            if (search) return { items: assets };
 
             // Sort by volume 24h desc
             marketAssets = sort(marketAssets, "volume24h");
 
             // Sort by prioritized denoms
-            return marketAssets
+            return { items: marketAssets
               .sort((a, b) => {
                 const aIndex = prioritizedDenoms.indexOf(
                   a.coinDenom as (typeof prioritizedDenoms)[number]
@@ -690,8 +690,8 @@ export const assetsRouter = createTRPCRouter({
                 if (bDeprioritizedIndex === -1) return 1; // b is not deprioritized, a is
 
                 return aDeprioritizedIndex - bDeprioritizedIndex; // Both are deprioritized, sort by their index
-              }) as typeof assets;
-          },
+              }) as typeof assets
+		  }},
           cacheKey: JSON.stringify({
             search,
             userOsmoAddress,
