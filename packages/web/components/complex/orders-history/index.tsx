@@ -426,7 +426,7 @@ const TableOrderRow = memo(
       baseAsset?.rawAsset.logoURIs.png ??
       "";
 
-    const placedAt = dayjs.unix(placed_at);
+    const placedAt = dayjs.unix(placed_at).local();
     const formattedTime = placedAt.format("h:mm A");
     const formattedDate = placedAt.format("MMM D");
 
