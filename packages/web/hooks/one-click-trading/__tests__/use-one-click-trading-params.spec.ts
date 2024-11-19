@@ -59,7 +59,7 @@ const defaultApiResponse: Pick<
   },
 };
 
-// tsw-trpc did not deserialize the spendLimit prop, so we mock it here
+// msw-trpc did not deserialize the spendLimit prop, so we mock it here
 jest.mock("~/utils/trpc", () => ({
   api: {
     local: {

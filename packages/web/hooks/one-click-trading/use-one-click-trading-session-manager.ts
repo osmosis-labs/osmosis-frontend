@@ -1,3 +1,4 @@
+import { PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { useCallback, useMemo } from "react";
@@ -11,7 +12,7 @@ import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-clic
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
-import { trimmedPriceWithSymbol } from "~/utils/formatter";
+import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 export function useOneClickTradingSessionManager({
@@ -69,7 +70,7 @@ export function useOneClickTradingSessionManager({
     remainingSpendLimit,
     sessionAuthenticator,
     isLoading: isLoadingRemainingSpendLimit,
-  } = useRemainingSpendLimit({
+  } = useOneClickRemainingSpendLimit({
     enabled: isEnabled,
     transactionParams,
     oneClickTradingInfo: info,
@@ -208,7 +209,7 @@ export function useOneClickTradingSessionManager({
   };
 }
 
-export function useRemainingSpendLimit({
+export function useOneClickRemainingSpendLimit({
   enabled = true,
   transactionParams,
   oneClickTradingInfo,
@@ -240,8 +241,8 @@ export function useRemainingSpendLimit({
   const { data: amountSpentData } =
     api.local.oneClickTrading.getAmountSpent.useQuery(
       {
-        authenticatorId: oneClickTradingInfo?.authenticatorId!,
-        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress!,
+        authenticatorId: oneClickTradingInfo?.authenticatorId ?? "",
+        userOsmoAddress: oneClickTradingInfo?.userOsmoAddress ?? "",
       },
       {
         enabled: enabled && !!oneClickTradingInfo,
@@ -251,7 +252,7 @@ export function useRemainingSpendLimit({
   const remainingSpendLimit = useMemo(
     () =>
       transactionParams?.spendLimit && amountSpentData?.amountSpent
-        ? trimmedPriceWithSymbol(
+        ? formatSpendLimit(
             transactionParams.spendLimit.sub(amountSpentData.amountSpent)
           )
         : undefined,
@@ -264,4 +265,10 @@ export function useRemainingSpendLimit({
     sessionAuthenticator,
     isLoading,
   };
+}
+
+export function formatSpendLimit(price: PricePretty | undefined) {
+  return `${price?.symbol}${trimPlaceholderZeros(
+    price?.toDec().toString(2) ?? ""
+  )}`;
 }

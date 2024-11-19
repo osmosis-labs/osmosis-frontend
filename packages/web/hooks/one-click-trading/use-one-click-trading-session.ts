@@ -35,10 +35,7 @@ export const useOneClickTradingSession = ({
     };
 
     if (!account?.address) {
-      // Return a promise that never resolves so loading is kept true
-      // until we can decide what to share
-      // without address 1CT session should not exist
-      return new Promise<typeof defaultReturn>(() => {});
+      return defaultReturn;
     }
 
     const info = await accountStore.getOneClickTradingInfo();
@@ -100,7 +97,7 @@ export const useOneClickTradingSession = ({
   return {
     oneClickTradingInfo: featureFlags.oneClickTrading ? value?.info : undefined,
     isOneClickTradingEnabled: featureFlags.oneClickTrading
-      ? value?.isEnabled ?? false
+      ? value?.isEnabled
       : false,
     isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
     getTimeRemaining,

@@ -32,10 +32,10 @@ import {
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
+import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-session-manager";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { trimmedPriceWithSymbol } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -100,8 +100,8 @@ export function compare1CTTransactionParams({
   prevParams,
   nextParams,
 }: {
-  prevParams: OneClickTradingTransactionParams;
-  nextParams: OneClickTradingTransactionParams;
+  prevParams?: OneClickTradingTransactionParams;
+  nextParams?: OneClickTradingTransactionParams;
 }): OneClickTradingParamsChanges {
   let changes: OneClickTradingParamsChanges = [];
 
@@ -111,6 +111,14 @@ export function compare1CTTransactionParams({
 
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
     changes.push("sessionPeriod");
+  }
+
+  if (prevParams?.isOneClickEnabled !== nextParams?.isOneClickEnabled) {
+    changes.push("isEnabled");
+  }
+
+  if (prevParams?.networkFeeLimit !== nextParams?.networkFeeLimit) {
+    changes.push("networkFeeLimit");
   }
 
   return changes;
@@ -228,11 +236,11 @@ export const OneClickTradingSettings = ({
 
   const remainingSpendLimit =
     initialTransaction1CTParams?.spendLimit && amountSpentData?.amountSpent
-      ? `${trimmedPriceWithSymbol(
+      ? `${formatSpendLimit(
           initialTransaction1CTParams.spendLimit.sub(
             amountSpentData.amountSpent
           )
-        )} / ${trimmedPriceWithSymbol(initialTransaction1CTParams.spendLimit)}`
+        )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
       : undefined;
 
   return (
@@ -378,7 +386,7 @@ export const OneClickTradingSettings = ({
                           isOneClickTradingEnabled &&
                           !changes.includes("spendLimit")
                             ? remainingSpendLimit
-                            : trimmedPriceWithSymbol(
+                            : formatSpendLimit(
                                 transaction1CTParams?.spendLimit
                               )}{" "}
                           {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}

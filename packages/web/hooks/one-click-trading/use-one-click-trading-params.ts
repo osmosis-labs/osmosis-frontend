@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 
+import { compare1CTTransactionParams } from "~/components/one-click-trading/one-click-trading-settings";
 import { api } from "~/utils/trpc";
 
 export function getParametersFromOneClickTradingInfo({
@@ -60,16 +61,16 @@ export function useOneClickTradingParams({
   const { data: defaultParams, isLoading } =
     api.local.oneClickTrading.getParameters.useQuery();
 
-  const [draft, setDraft] = useState<
+  const [draftParams, setDraftParams] = useState<
     OneClickTradingTransactionParams | undefined
   >();
-  const [current, setCurrent] = useState<
+  const [currentParams, setCurrentParams] = useState<
     OneClickTradingTransactionParams | undefined
   >();
 
   const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
 
-  const sessionOrDefault = useMemo(
+  const sessionOrDefaultParams = useMemo(
     () =>
       oneClickTradingInfo
         ? getParametersFromOneClickTradingInfo({
@@ -82,70 +83,70 @@ export function useOneClickTradingParams({
 
   const sessionOrDefaultWithEnabled = useMemo(
     () =>
-      sessionOrDefault && {
-        ...sessionOrDefault,
+      sessionOrDefaultParams && {
+        ...sessionOrDefaultParams,
         isOneClickEnabled: defaultIsOneClickEnabled,
       },
-    [sessionOrDefault, defaultIsOneClickEnabled]
+    [sessionOrDefaultParams, defaultIsOneClickEnabled]
   );
 
   const reset = useCallback(() => {
-    setCurrent(sessionOrDefaultWithEnabled);
-    setDraft(sessionOrDefaultWithEnabled);
+    setCurrentParams(sessionOrDefaultWithEnabled);
+    setDraftParams(sessionOrDefaultWithEnabled);
     setChanges([]);
   }, [sessionOrDefaultWithEnabled]);
 
   useEffect(() => {
     if (!sessionOrDefaultWithEnabled) return;
 
-    if (!current || !draft) {
+    if (!currentParams || !draftParams) {
       reset();
       return;
     }
 
     const hasChanges = changes.length > 0;
     const wouldChange =
-      compareParams({
-        prev: draft,
-        next: sessionOrDefaultWithEnabled,
+      compare1CTTransactionParams({
+        prevParams: draftParams,
+        nextParams: sessionOrDefaultWithEnabled,
       }).length > 0;
 
     if (!hasChanges && wouldChange) {
       reset();
     }
   }, [
-    sessionOrDefault,
-    draft,
+    sessionOrDefaultParams,
+    draftParams,
     sessionOrDefaultWithEnabled,
     changes.length,
     reset,
-    current,
+    currentParams,
   ]);
 
   const setTransaction1CTParamsWithChanges = useCallback(
     (
       newDraftOrFn: SetStateAction<OneClickTradingTransactionParams | undefined>
     ) => {
-      if (!current) reset();
+      if (!currentParams) reset();
 
-      const nextDraft = runIfFn(newDraftOrFn, draft);
+      const nextDraftParams = runIfFn(newDraftOrFn, draftParams);
 
-      setDraft(nextDraft);
+      setDraftParams(nextDraftParams);
 
       setChanges(() =>
-        compareParams({
-          prev: current,
-          next: nextDraft,
+        compare1CTTransactionParams({
+          prevParams: currentParams,
+          nextParams: nextDraftParams,
         })
       );
     },
-    [current, reset, draft]
+    [currentParams, reset, draftParams]
   );
 
   return {
     changes,
-    initialTransaction1CTParams: current,
-    transaction1CTParams: draft,
+    initialTransaction1CTParams: currentParams,
+    transaction1CTParams: draftParams,
     spendLimitTokenDecimals: defaultParams?.spendLimitTokenDecimals,
     isLoading,
     reset,
@@ -157,31 +158,3 @@ export function useOneClickTradingParams({
 export type OneClickTradingParamsChanges = Array<
   "spendLimit" | "sessionPeriod" | "isEnabled" | "networkFeeLimit"
 >;
-
-function compareParams({
-  prev,
-  next,
-}: {
-  prev?: OneClickTradingTransactionParams;
-  next?: OneClickTradingTransactionParams;
-}): OneClickTradingParamsChanges {
-  let changes: OneClickTradingParamsChanges = [];
-
-  if (prev?.spendLimit.toString() !== next?.spendLimit.toString()) {
-    changes.push("spendLimit");
-  }
-
-  if (prev?.sessionPeriod.end !== next?.sessionPeriod.end) {
-    changes.push("sessionPeriod");
-  }
-
-  if (prev?.isOneClickEnabled !== next?.isOneClickEnabled) {
-    changes.push("isEnabled");
-  }
-
-  if (prev?.networkFeeLimit !== next?.networkFeeLimit) {
-    changes.push("networkFeeLimit");
-  }
-
-  return changes;
-}
