@@ -88,7 +88,7 @@ export function getPoolsFromSidecar({
           })
         )
         .filter(Boolean) as Pool[],
-	  total: sidecarPools.meta.TotalItems,
+	    total: sidecarPools.meta.total_items,
 	  }
     },
   });

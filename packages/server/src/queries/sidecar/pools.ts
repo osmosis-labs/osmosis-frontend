@@ -82,7 +82,7 @@ export type SQSPoolFeesData = {
 };
 
 export type SQSMetaResponse = {
-	TotalItems: number;
+	total_items: number;
 }
 
 export type SQSGetPoolsResponse = {
@@ -142,7 +142,7 @@ export function queryPools({
 
   if (pagination) {
 	if (pagination.cursor) {
-	  params.append("page[number]", pagination.cursor.toString());
+	  params.append("page[cursor]", pagination.cursor.toString());
 	}
 	if (pagination.limit) {
 	  params.append("page[size]", pagination.limit.toString());

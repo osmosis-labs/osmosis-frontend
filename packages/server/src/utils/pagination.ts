@@ -42,12 +42,13 @@ export function maybeCursorPaginatedItems<TItem>(
 } {
   if (!cursor && !limit) return { items: data, nextCursor: undefined };
 
+  const total = data.total || data.items.length;
   cursor = cursor || 0;
   limit = limit || 50;
   const startIndex = cursor;
 
   // no more items if given an invalid cursor
-  if (startIndex > data.items.length - 1)
+  if (startIndex > total - 1)
     return { items: { items: [], total: 0 }, nextCursor: undefined };
 
   // get the page
@@ -55,7 +56,7 @@ export function maybeCursorPaginatedItems<TItem>(
 
   return {
     items: { items: page, total: data.total },
-    nextCursor: cursor + limit > data.items.length - 1 ? undefined : cursor + limit,
+    nextCursor: cursor + limit > total - 1 ? undefined : cursor + limit,
   };
 }
 
