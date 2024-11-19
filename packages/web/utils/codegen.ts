@@ -24,10 +24,6 @@ export async function generateTsFile(
 
     const filePath = path.join(dirPath, fileName);
 
-    if (!fs.existsSync(dirPath)) {
-      fs.mkdirSync(dirPath);
-    }
-
     if (overwriteFile) {
       fs.writeFileSync(filePath, formatted, {
         encoding: "utf8",

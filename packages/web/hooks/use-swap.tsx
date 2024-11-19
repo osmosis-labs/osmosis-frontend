@@ -46,6 +46,7 @@ import {
 import { useTranslation } from "~/hooks/language";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
@@ -714,6 +715,14 @@ export function useSwap(
     quoteType,
     outAmountInput.fiatValue,
   ]);
+  const totalFee = useDeepMemo(
+    () =>
+      sum([
+        tokenInFeeAmountFiatValue,
+        networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+      ]),
+    [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
+  );
 
   return {
     ...swapAssets,
@@ -728,10 +737,7 @@ export function useSwap(
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
-    totalFee: sum([
-      tokenInFeeAmountFiatValue,
-      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
-    ]),
+    totalFee,
     networkFee,
     isLoadingNetworkFee:
       inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
@@ -1098,12 +1104,21 @@ function useSwapAmountInput({
     );
   }, [currentBalanceNetworkFee?.gasAmount]);
 
-  return {
-    ...inAmountInput,
+  const returnValue = useDeepMemo(() => {
+    return {
+      ...inAmountInput,
+      isLoadingCurrentBalanceNetworkFee,
+      hasErrorWithCurrentBalanceQuote,
+      notEnoughBalanceForMax,
+    };
+  }, [
+    inAmountInput,
     isLoadingCurrentBalanceNetworkFee,
     hasErrorWithCurrentBalanceQuote,
     notEnoughBalanceForMax,
-  };
+  ]);
+
+  return returnValue;
 }
 
 /**
@@ -1153,7 +1168,7 @@ function useToFromDenoms({
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
-  const switchAssets = () => {
+  const switchAssets = useCallback(() => {
     if (useQueryParams) {
       const temp = fromDenomQueryParam;
       setFromDenomQueryParam(toAssetQueryParam);
@@ -1164,7 +1179,17 @@ function useToFromDenoms({
     const temp = fromAssetState;
     setFromAssetState(toAssetState);
     setToAssetState(temp);
-  };
+  }, [
+    useQueryParams,
+    fromDenomQueryParam,
+    toAssetQueryParam,
+    setFromDenomQueryParam,
+    setToAssetQueryParam,
+    fromAssetState,
+    toAssetState,
+    setFromAssetState,
+    setToAssetState,
+  ]);
 
   const fromAssetDenom = useQueryParams
     ? fromDenomQueryParamStr
@@ -1307,18 +1332,16 @@ function useQueryRouterBestQuote(
       }
     );
 
-  const quoteResult =
-    quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
   const {
     data: quote,
     isSuccess,
     isError,
     error,
-  } = useMemo(() => {
-    return quoteResult;
-  }, [quoteResult]);
+  } = useDeepMemo(() => {
+    return quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
+  }, [quoteType, outGivenInQuote, inGivenOutQuote]);
 
-  const acceptedQuote = useMemo(() => {
+  const acceptedQuote = useDeepMemo(() => {
     if (
       !quote ||
       !input.tokenIn ||
@@ -1379,8 +1402,13 @@ function useQueryRouterBestQuote(
     quoteType,
   ]);
 
+  const quoteData = useDeepMemo(
+    () => (acceptedQuote ? { ...acceptedQuote, messages } : undefined),
+    [acceptedQuote, messages]
+  );
+
   return {
-    data: acceptedQuote ? { ...acceptedQuote, messages } : undefined,
+    data: quoteData,
     isLoading: !isSuccess,
     errorMsg: error?.message,
     numSucceeded: isSuccess ? 1 : 0,
