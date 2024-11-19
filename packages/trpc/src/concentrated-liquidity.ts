@@ -1,4 +1,3 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import {
   getAssets,
   getLiquidityPerTickRange,
@@ -9,6 +8,7 @@ import {
   queryPoolmanagerParams,
   queryPositionById,
 } from "@osmosis-labs/server";
+import { AppCurrency } from "@osmosis-labs/types";
 import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -129,15 +129,12 @@ export const concentratedLiquidityRouter = createTRPCRouter({
 
           return {
             chainName: assetListAsset.rawAsset.chainName,
-            token: new CoinPretty(
-              {
-                coinDenom: asset.coinDenom,
-                coinDecimals: asset.coinDecimals,
-                coinMinimalDenom: asset.coinMinimalDenom,
-                coinImageUrl: asset.coinImageUrl,
-              },
-              0
-            ).currency,
+            token: {
+              coinDenom: asset.coinDenom,
+              coinDecimals: asset.coinDecimals,
+              coinMinimalDenom: asset.coinMinimalDenom,
+              coinImageUrl: asset.coinImageUrl,
+            } satisfies AppCurrency,
           };
         })
         .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
@@ -166,15 +163,12 @@ export const concentratedLiquidityRouter = createTRPCRouter({
           rawAsset: { logoURIs },
         } = asset;
         return {
-          token: new CoinPretty(
-            {
-              coinDenom: symbol,
-              coinDecimals: decimals,
-              coinMinimalDenom,
-              coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
-            },
-            0
-          ).currency,
+          token: {
+            coinDenom: symbol,
+            coinDecimals: decimals,
+            coinMinimalDenom,
+            coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
+          } satisfies AppCurrency,
           chainName: asset.rawAsset.chainName,
         };
       })
