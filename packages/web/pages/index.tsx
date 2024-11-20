@@ -75,7 +75,7 @@ const TopGainers = () => {
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
     api.edge.assets.getTopGainerAssets.useQuery({
-      topN: 5,
+      topN: 4,
     });
 
   return (
