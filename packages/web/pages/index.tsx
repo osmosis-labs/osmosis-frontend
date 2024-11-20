@@ -1,14 +1,25 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
+import {
+  AssetHighlights,
+  highlightPrice24hChangeAsset,
+} from "~/components/assets/highlights-categories";
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  Breakpoint,
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+  useWindowSize,
+} from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -52,10 +63,38 @@ const Home = () => {
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
+            <TopGainers />
           </div>
         </div>
       </div>
     </main>
+  );
+};
+
+const TopGainers = () => {
+  const { t } = useTranslation();
+  const { width } = useWindowSize();
+  const router = useRouter();
+
+  const isLargeTablet = width < Breakpoint.xl && width > Breakpoint.lg;
+
+  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
+    api.edge.assets.getTopGainerAssets.useQuery({
+      topN: isLargeTablet ? 8 : undefined,
+    });
+
+  return (
+    <AssetHighlights
+      className="bg-osmoverse-1000/40 px-2"
+      title={t("assets.highlights.topGainers")}
+      subtitle="24h"
+      isLoading={isTopGainerAssetsLoading}
+      assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
+      onClickSeeAll={() => {
+        router.push(`/assets?category=topGainers`);
+      }}
+      highlight="topGainers"
+    />
   );
 };
 
