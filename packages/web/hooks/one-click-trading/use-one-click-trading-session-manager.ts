@@ -1,11 +1,11 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
-import { EventName } from "~/config";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
@@ -81,10 +81,12 @@ export function useOneClickTradingSessionManager({
   const createSession = useCreateOneClickTradingSession();
   const removeSession = useRemoveOneClickTradingSession();
 
-  const cleanUpAndCommit = useCallback(() => {
-    resetParams();
-    onCommit();
-  }, [onCommit, resetParams]);
+  const onCommitRef = useRef(onCommit);
+  const isEnabledRef = useRef(isEnabled);
+  useEffect(() => {
+    onCommitRef.current = onCommit;
+    isEnabledRef.current = isEnabled;
+  }, [onCommit, isEnabled]);
 
   const startSession = useCallback(() => {
     if (!transactionParams) return;
@@ -109,13 +111,33 @@ export function useOneClickTradingSessionManager({
           : undefined,
       },
       {
+        onSuccess: async () => {
+          // Wait for isEnabled to be updated before committing
+          await new Promise<void>((resolve, reject) => {
+            let retries = 0;
+            const maxRetries = 10; // 1 second
+            const checkIsEnabled = () => {
+              if (isEnabledRef.current) {
+                resolve();
+              } else if (retries >= maxRetries) {
+                reject(
+                  new Error(
+                    "Timed out waiting for one-click trading to be enabled"
+                  )
+                );
+              } else {
+                retries++;
+                setTimeout(checkIsEnabled, 100);
+              }
+            };
+            checkIsEnabled();
+          });
+          onCommitRef.current();
+        },
         onError: () => {
           rollbackCreateSession();
+          onCommitRef.current();
         },
-        onSuccess: () => {
-          logEvent([EventName.OneClickTrading.enableOneClickTrading]);
-        },
-        onSettled: cleanUpAndCommit,
       }
     );
   }, [
@@ -125,10 +147,8 @@ export function useOneClickTradingSessionManager({
     accountStore,
     chainStore.osmosis.chainId,
     sessionAuthenticator,
-    cleanUpAndCommit,
     setTransactionParams,
     initialTransactionParams,
-    logEvent,
   ]);
 
   const stopSession = useCallback(() => {
@@ -158,12 +178,14 @@ export function useOneClickTradingSessionManager({
           if (!isRejectedTxErrorMessage({ message: error?.message })) {
             displayErrorRemovingSessionToast();
           }
+          onCommitRef.current();
         },
-        onSettled: cleanUpAndCommit,
+        onSettled: () => {
+          onCommitRef.current();
+        },
       }
     );
   }, [
-    cleanUpAndCommit,
     info,
     initialTransactionParams,
     removeSession,
@@ -173,7 +195,7 @@ export function useOneClickTradingSessionManager({
 
   const commitSessionChange = useCallback(() => {
     if (!shouldSend1CTTx) {
-      cleanUpAndCommit();
+      onCommitRef.current();
       return;
     }
 
@@ -184,13 +206,7 @@ export function useOneClickTradingSessionManager({
     } else {
       stopSession();
     }
-  }, [
-    shouldSend1CTTx,
-    transactionParams,
-    cleanUpAndCommit,
-    startSession,
-    stopSession,
-  ]);
+  }, [shouldSend1CTTx, transactionParams, startSession, stopSession]);
 
   return {
     isEnabled,
