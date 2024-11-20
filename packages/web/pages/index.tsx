@@ -14,11 +14,9 @@ import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
 import {
-  Breakpoint,
   useAmplitudeAnalytics,
   useFeatureFlags,
   useTranslation,
-  useWindowSize,
 } from "~/hooks";
 import { api } from "~/utils/trpc";
 
@@ -73,14 +71,11 @@ const Home = () => {
 
 const TopGainers = () => {
   const { t } = useTranslation();
-  const { width } = useWindowSize();
   const router = useRouter();
-
-  const isLargeTablet = width < Breakpoint.xl && width > Breakpoint.lg;
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
     api.edge.assets.getTopGainerAssets.useQuery({
-      topN: isLargeTablet ? 8 : undefined,
+      topN: 5,
     });
 
   return (
