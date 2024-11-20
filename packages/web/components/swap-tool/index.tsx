@@ -219,7 +219,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
-    const sendSwapTx = () => {
+    const sendSwapTx = useCallback(() => {
       if (!swapState.inAmountInput.amount) return;
 
       let valueUsd = Number(
@@ -283,7 +283,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           onRequestModalClose?.();
           setShowSwapReviewModal(false);
         });
-    };
+    }, [
+      swapState,
+      page,
+      logEvent,
+      resetSlippage,
+      onSwapSuccess,
+      onRequestModalClose,
+    ]);
 
     const isSwapToolLoading =
       isWalletLoading ||
