@@ -94,7 +94,7 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   );
 };
 
-function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
+export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
   return {
     asset: {
       ...asset,
@@ -129,7 +129,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
   };
 }
 
-const AssetHighlights: FunctionComponent<
+export const AssetHighlights: FunctionComponent<
   {
     title: string;
     subtitle?: string;
