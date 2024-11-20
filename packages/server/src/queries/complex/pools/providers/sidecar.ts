@@ -80,7 +80,7 @@ export function getPoolsFromSidecar({
 
 	  return {
 
-      pools: sidecarPools.data
+      data: sidecarPools.data
         .map((sidecarPool, index) =>
           makePoolFromSidecarPool({
             sidecarPool,

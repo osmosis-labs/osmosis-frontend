@@ -73,7 +73,7 @@ export const orderbookRouter = createTRPCRouter({
           const contractAddresses = activePools.map((p) => p.contractAddress);
 
           if (contractAddresses.length === 0 || userOsmoAddress.length === 0)
-            return { items : [] };
+            return [];
           const promises = contractAddresses.map(
             async (contractOsmoAddress: string) => {
               const { baseDenom, quoteDenom } = pools.find(
@@ -109,7 +109,7 @@ export const orderbookRouter = createTRPCRouter({
           const ordersByContracts = await Promise.all(promises);
           const allOrders = ordersByContracts.flat();
 
-          return { items: allOrders.sort(defaultSortOrders) };
+          return allOrders.sort(defaultSortOrders);
         },
         cacheKey: `all-active-orders-${input.userOsmoAddress}`,
         ttl: 15000,
@@ -151,9 +151,9 @@ export const orderbookRouter = createTRPCRouter({
           const orders = await Promise.all(promises);
           const allOrders = orders.flat().sort(defaultSortOrders);
           if (filter === "filled") {
-            return { items: allOrders.filter((o) => o.status === "filled") };
+            return allOrders.filter((o) => o.status === "filled");
           }
-          return { items: allOrders };
+          return allOrders;
         },
         cacheKey: `all-active-orders-sqs-${input.userOsmoAddress}`,
         ttl: 10000,

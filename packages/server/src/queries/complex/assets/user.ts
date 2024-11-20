@@ -6,7 +6,6 @@ import {
   SortDirection,
 } from "@osmosis-labs/utils";
 
-import { PaginatedItems } from "../../../utils/pagination";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import { queryBalances } from "../../cosmos";
 import { queryAccountLockedCoins } from "../../osmosis/lockup/account-locked-coins";
@@ -69,7 +68,7 @@ export async function mapGetAssetsWithUserBalances<
    * If poolId is provided, only include assets that are part of the pool.
    */
   poolId?: string;
-} & AssetFilter): Promise<PaginatedItems<TAsset & MaybeUserAssetCoin>> {
+} & AssetFilter): Promise<(TAsset & MaybeUserAssetCoin)[]> {
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
@@ -88,7 +87,7 @@ export async function mapGetAssetsWithUserBalances<
     ) as TAsset[];
   }
 
-  if (!userOsmoAddress) return { items: assets };
+  if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances({
     chainList: params.chainList,
@@ -146,7 +145,7 @@ export async function mapGetAssetsWithUserBalances<
     });
   }
 
-  return { items: userAssets };
+  return userAssets;
 }
 
 /** Returns total fiat value of all assets held by a user.

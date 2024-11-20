@@ -31,7 +31,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Tooltip } from "../tooltip";
 
-type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"]["items"][number];
+type Pool = RouterOutputs["edge"]["pools"]["getPools"]["items"][number];
 /** UI doesn't support cosmwasm pools as first class so exclude it from list of filter options. */
 export type PoolTypeFilter = Exclude<Pool["type"], "cosmwasm">;
 export type PoolIncentiveFilter = NonNullable<
@@ -173,7 +173,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   const poolsData = useMemo(() => {
     const allItems =
       poolsPagesData?.pages.flatMap((page) => {
-        return page?.items.items;
+        return page?.items;
       }) ?? [];
 
     return allItems;

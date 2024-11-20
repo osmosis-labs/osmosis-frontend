@@ -46,7 +46,7 @@ export type Pool = {
 
 /** Represents a list of pools with a total count. */
 export type PoolProviderResponse = {
-  pools: Pool[];
+  data: Pool[];
   total: number; // Total number of pools
 };
 
@@ -98,8 +98,8 @@ export async function getPool({
   chainList: Chain[];
   poolId: string;
 }): Promise<Pool> {
-  const data = await getPools({ assetLists, chainList, poolIds: [poolId] });
-  const pool = data.pools.find(({ id }) => id === poolId);
+  const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
+  const pool = pools.data.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
   return pool;
 }
@@ -115,7 +115,7 @@ export async function getPools(
   params.notPoolIds = FILTERABLE_IDS;
   let data = await poolProvider(params);
 
-	console.log("getPools pools", data.pools.length);
+	console.log("getPools pools", data.data.length);
 	console.log("getPools pagination", params.pagination);
 
 	return data

@@ -14,11 +14,6 @@ export const CursorPaginationSchema = z.object({
   cursor: z.number().nullish(), // <-- "cursor" needs to exist, but can be any type
 });
 
-export type PaginatedItems<TItem> = {
-  items: TItem[];
-  total?: number;
-};
-
 /** Uses numerical cursor-based pagination that is compatible with and similar to offest pagination.
  *  This means if you have a cursor of 50 and a limit of 20, you will get items 50-69.
  *  Also, you should rerequest all data if it changes, as the cursor is not a pointer to a page, but to an item index.
@@ -31,39 +26,37 @@ export type PaginatedItems<TItem> = {
  *  See: https://trpc.io/docs/client/react/useInfiniteQuery
  *  Guide: https://tanstack.com/query/v4/docs/react/guides/infinite-queries
  */
-// TODO: add total count instead of item.length
 export function maybeCursorPaginatedItems<TItem>(
-  data: PaginatedItems<TItem>,
+  items: TItem[],
   cursor: number | null | undefined,
   limit: number | null | undefined
 ): {
-  items: PaginatedItems<TItem>;
+  items: TItem[];
   nextCursor: number | undefined;
 } {
-  if (!cursor && !limit) return { items: data, nextCursor: undefined };
+  if (!cursor && !limit) return { items, nextCursor: undefined };
 
-  const total = data.total || data.items.length;
   cursor = cursor || 0;
   limit = limit || 50;
   const startIndex = cursor;
 
   // no more items if given an invalid cursor
-  if (startIndex > total - 1)
-    return { items: { items: [], total: 0 }, nextCursor: undefined };
+  if (startIndex > items.length - 1)
+    return { items: [], nextCursor: undefined };
 
   // get the page
-  const page = data.items.slice(startIndex, startIndex + limit);
+  const page = items.slice(startIndex, startIndex + limit);
 
   return {
-    items: { items: page, total: data.total },
-    nextCursor: cursor + limit > total - 1 ? undefined : cursor + limit,
+    items: page,
+    nextCursor: cursor + limit > items.length - 1 ? undefined : cursor + limit,
   };
 }
 
 const paginationCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 export type CachedPaginationParams<TItem> = {
-  getFreshItems: () => Promise<PaginatedItems<TItem>>;
+  getFreshItems: () => Promise<TItem[]>;
   cacheKey: string;
   cursor?: number | null | undefined;
   limit?: number | null | undefined;
@@ -80,7 +73,7 @@ export async function maybeCachePaginatedItems<TItem>({
   limit,
   ttl = 30 * 1000, // 30 seconds
 }: CachedPaginationParams<TItem>): Promise<{
-  items: PaginatedItems<TItem>;
+  items: TItem[];
   nextCursor: number | undefined;
 }> {
   // if pagination is not used, return items

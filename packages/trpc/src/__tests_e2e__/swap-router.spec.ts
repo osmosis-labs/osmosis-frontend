@@ -349,11 +349,11 @@ async function getSortedPoolsWithVolume() {
 
   let totalVolume = new Dec(0);
 
-  pools.pools.forEach((pool: any) => {
+  pools.data.forEach((pool: any) => {
     totalVolume = totalVolume.add(pool.volume24hUsdDec);
   });
 
-  const sortedPoolsWithVolume = sort(pools.pools, "volume24hUsdDec");
+  const sortedPoolsWithVolume = sort(pools.data, "volume24hUsdDec");
 
   const averageVolume = totalVolume.quo(new Dec(sortedPoolsWithVolume.length));
 
