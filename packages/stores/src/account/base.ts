@@ -106,6 +106,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   hasUsedOneClickTrading = false;
 
+  @observable
+  hasOneClickTradingExpired = false;
+
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
@@ -216,13 +219,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
+      const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
+      const isExpired = await this.isOneClickTradingExpired();
       runInAction(() => {
         this.useOneClickTrading = isOneClickTradingEnabled;
         this.oneClickTradingInfo = oneClickTradingInfo ?? null;
         this.hasUsedOneClickTrading = hasUsedOneClickTrading;
+        this.hasOneClickTradingExpired = isExpired;
       });
     });
   }

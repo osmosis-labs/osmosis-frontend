@@ -1,10 +1,9 @@
 import type { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
+import { reaction, runInAction } from "mobx";
 import { useCallback, useEffect, useState } from "react";
-import { useAsync } from "react-use";
 
-import { useTranslation } from "~/hooks/language";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 
@@ -22,42 +21,62 @@ export const useOneClickTradingSession = ({
   onExpire?: (params: { oneClickTradingInfo: OneClickTradingInfo }) => void;
 } = {}) => {
   const { accountStore, chainStore } = useStore();
-  const [isExpired, setIsExpired] = useState(false);
-  const { t } = useTranslation();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
 
-  const { value, loading } = useAsync(async () => {
-    const defaultReturn = {
-      info: undefined,
-      isEnabled: false,
-      isExpired: false,
-    };
+  const [value, setValue] = useState<{
+    info: OneClickTradingInfo | undefined;
+    isEnabled: boolean;
+    isExpired: boolean;
+  }>({
+    info: undefined,
+    isEnabled: false,
+    isExpired: false,
+  });
+  const [loading, setLoading] = useState(true);
 
-    if (!account?.address) {
-      return defaultReturn;
-    }
-
-    const info = await accountStore.getOneClickTradingInfo();
-    const isEnabled = await accountStore.isOneCLickTradingEnabled();
-    setIsExpired(await accountStore.isOneClickTradingExpired());
-
-    if (info?.userOsmoAddress !== account?.address) {
-      setIsExpired(false);
-      return defaultReturn;
-    }
-
-    return { info, isEnabled, isExpired };
-  }, [
-    accountStore,
-    isExpired,
-    accountStore.oneClickTradingInfo,
-    account?.address,
-  ]);
-
-  // Set a timeout to update the isExpired state
   useEffect(() => {
-    if (isExpired || !value?.info) return;
+    const disposer = reaction(
+      () => ({
+        address: account?.address,
+        oneClickTradingInfo: accountStore.oneClickTradingInfo,
+        useOneClickTrading: accountStore.useOneClickTrading,
+        isExpired: accountStore.hasOneClickTradingExpired,
+      }),
+      (data) => {
+        const defaultReturn = {
+          info: undefined,
+          isEnabled: false,
+          isExpired: false,
+        };
+
+        if (!data.address) {
+          setValue(defaultReturn);
+          setLoading(false);
+          return;
+        }
+
+        if (data.oneClickTradingInfo?.userOsmoAddress !== data.address) {
+          setValue(defaultReturn);
+        } else {
+          setValue({
+            info: data.oneClickTradingInfo,
+            isEnabled: data.useOneClickTrading,
+            isExpired: data.isExpired,
+          });
+        }
+        setLoading(false);
+      },
+      {
+        fireImmediately: true,
+      }
+    );
+
+    return () => disposer();
+  }, [account?.address, accountStore]);
+
+  useEffect(() => {
+    if (value.isExpired || !value?.info) return;
 
     const sessionEndDate = dayjs.unix(
       unixNanoSecondsToSeconds(value.info.sessionPeriod.end)
@@ -67,12 +86,15 @@ export const useOneClickTradingSession = ({
     const timeoutId = setTimeout(() => {
       if (!value?.info) return;
 
-      setIsExpired(true);
+      // trigger mobx store to update when session expires
+      // (isExpired is a computed value in the store)
+      runInAction(() => {});
+
       onExpire?.({ oneClickTradingInfo: value.info });
     }, timeRemaining * 1000);
 
     return () => clearTimeout(timeoutId);
-  }, [isExpired, t, value?.info, onExpire]);
+  }, [value.isExpired, value?.info, onExpire]);
 
   const getTimeRemaining = useCallback(() => {
     const oneClickTradingInfo = value?.info;
@@ -99,7 +121,9 @@ export const useOneClickTradingSession = ({
     isOneClickTradingEnabled: featureFlags.oneClickTrading
       ? value?.isEnabled
       : false,
-    isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
+    isOneClickTradingExpired: featureFlags.oneClickTrading
+      ? value.isExpired
+      : false,
     getTimeRemaining,
     getTotalSessionTime,
     isLoadingInfo: loading,
