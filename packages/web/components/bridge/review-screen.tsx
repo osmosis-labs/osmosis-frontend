@@ -82,7 +82,7 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
   const { t } = useTranslation();
 
   const { data: assetsInOsmosis } =
-    api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+    api.edge.assets.getBridgeAssetWithVariants.useQuery(
       {
         findMinDenomOrSymbol: selectedDenom!,
       },
