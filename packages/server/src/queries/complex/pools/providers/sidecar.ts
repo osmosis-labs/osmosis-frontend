@@ -44,7 +44,7 @@ export function getPoolsFromSidecar({
   sort?: SortType;
 }): Promise<PoolProviderResponse> {
   if (poolIds && !poolIds.length) {
-    return Promise.resolve({ pools: [], total: 0 });
+    return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
   }
 
   return cachified({
@@ -89,6 +89,7 @@ export function getPoolsFromSidecar({
         )
         .filter(Boolean) as Pool[],
 	    total: sidecarPools.meta.total_items,
+	    nextCursor: sidecarPools.meta.next_cursor,
 	  }
     },
   });

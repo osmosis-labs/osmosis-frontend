@@ -1,9 +1,9 @@
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, /*Dec,*/ PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";
-import { search, SearchSchema } from "../../../utils/search";
+import { /*search,*/ SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { PoolRawResponse } from "../../osmosis";
@@ -48,6 +48,7 @@ export type Pool = {
 export type PoolProviderResponse = {
   data: Pool[];
   total: number; // Total number of pools
+  nextCursor: number | undefined; // Next cursor for pagination
 };
 
 /** Async function that provides simplified pools from any data source.
@@ -99,7 +100,7 @@ export async function getPool({
   poolId: string;
 }): Promise<Pool> {
   const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
-  const pool = pools.data.find(({ id }) => id === poolId);
+  const pool = pools.items.find(({ id }) => id === poolId);
   if (!pool) throw new Error(poolId + " not found");
   return pool;
 }
@@ -111,81 +112,83 @@ export async function getPool({
 export async function getPools(
   params: Partial<PoolFilter> & { assetLists: AssetList[]; chainList: Chain[] },
   poolProvider: PoolProvider = getPoolsFromSidecar
-): Promise<PoolProviderResponse> {
+): Promise<{
+  items: Pool[];
+  total: number;
+  nextCursor: number | undefined;
+}> {
   params.notPoolIds = FILTERABLE_IDS;
-  let data = await poolProvider(params);
+    let pools = await poolProvider(params);
 
-	console.log("getPools pools", data.data.length);
+	console.log("getPools pools", pools.data.length);
 	console.log("getPools pagination", params.pagination);
 
-	return data
+	return { items: pools.data, total: pools.total, nextCursor: pools.nextCursor };
 
   // TODO: migrate
   //pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
+  // if (params?.types) {
+  //   pools = pools.filter(({ type }) =>
+  //     params?.types ? params.types.includes(type) : true
+  //   );
+  // }
 
-  if (params?.types) {
-    pools = pools.filter(({ type }) =>
-      params?.types ? params.types.includes(type) : true
-    );
-  }
+  // // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // // information.
+  // if (params?.minLiquidityUsd && !IS_TESTNET) {
+  //   console.log("minLiquidityUsd", params.minLiquidityUsd);
+  //   pools = pools.filter(({ totalFiatValueLocked }) =>
+  //     params?.minLiquidityUsd
+  //       ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
+  //       : true
+  //   );
+  // }
 
-  // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
-  // information.
-  if (params?.minLiquidityUsd && !IS_TESTNET) {
-	console.log("minLiquidityUsd", params.minLiquidityUsd);
-    pools = pools.filter(({ totalFiatValueLocked }) =>
-      params?.minLiquidityUsd
-        ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-        : true
-    );
-  }
+  // // add denoms so user can search them
+  // let denomPools = pools.map((pool) => ({
+  //   ...pool,
+  //   coinDenoms: pool.reserveCoins.flatMap((coin) => [
+  //     coin.denom,
+  //     coin.currency.coinMinimalDenom,
+  //   ]),
+  //   poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
+  //   coinNames: pool.reserveCoins.map((coin) => [
+  //     // @ts-ignore
+  //     coin.currency.coinName,
+  //   ]),
+  // }));
 
-  // add denoms so user can search them
-  let denomPools = pools.map((pool) => ({
-    ...pool,
-    coinDenoms: pool.reserveCoins.flatMap((coin) => [
-      coin.denom,
-      coin.currency.coinMinimalDenom,
-    ]),
-    poolNameByDenom: pool.reserveCoins.map(({ denom }) => denom).join("/"),
-    coinNames: pool.reserveCoins.map((coin) => [
-      // @ts-ignore
-      coin.currency.coinName,
-    ]),
-  }));
+  // const denoms = params.denoms;
+  // if (denoms) {
+  //   denomPools = denomPools.filter((denomPool) =>
+  //     denomPool.coinDenoms.some((denom) => denoms.includes(denom))
+  //   );
+  // }
 
-  const denoms = params.denoms;
-  if (denoms) {
-    denomPools = denomPools.filter((denomPool) =>
-      denomPool.coinDenoms.some((denom) => denoms.includes(denom))
-    );
-  }
+  // if (params?.search) {
+  //   // search for an exact match of coinMinimalDenom or pool ID
+  //   const coinDenomsOrIdMatches = search(
+  //     denomPools,
+  //     ["coinDenoms", "id"],
+  //     params.search,
+  //     0.0 // Exact match
+  //   );
 
-  if (params?.search) {
-    // search for an exact match of coinMinimalDenom or pool ID
-    const coinDenomsOrIdMatches = search(
-      denomPools,
-      ["coinDenoms", "id"],
-      params.search,
-      0.0 // Exact match
-    );
+  //   // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
+  //   if (coinDenomsOrIdMatches.length > 0) {
+  //     denomPools = coinDenomsOrIdMatches;
+  //   } else {
+  //     const poolNameByDenomMatches = search(
+  //       denomPools,
+  //       ["poolNameByDenom", "coinNames"],
+  //       params.search
+  //     );
 
-    // if not exact match for coinMinimalDenom or pool ID, search by poolNameByDenom (ex: OSMO/USDC) or coinName (ex: Bitcoin)
-    if (coinDenomsOrIdMatches.length > 0) {
-      denomPools = coinDenomsOrIdMatches;
-    } else {
-      const poolNameByDenomMatches = search(
-        denomPools,
-        ["poolNameByDenom", "coinNames"],
-        params.search
-      );
+  //     denomPools = poolNameByDenomMatches;
+  //   }
+  // }
 
-      denomPools = poolNameByDenomMatches;
-    }
-  }
-
-console.log("getPools pools after", pools.length);
-  return denomPools;
+  // return denomPools;
 }
 
 export * from "./bonding";

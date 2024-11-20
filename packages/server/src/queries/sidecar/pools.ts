@@ -83,6 +83,7 @@ export type SQSPoolFeesData = {
 
 export type SQSMetaResponse = {
 	total_items: number;
+	next_cursor: number | undefined; 
 }
 
 export type SQSGetPoolsResponse = {
@@ -141,10 +142,10 @@ export function queryPools({
   }
 
   if (pagination) {
-	if (pagination.cursor) {
+	if (pagination.cursor != null) {
 	  params.append("page[cursor]", pagination.cursor.toString());
 	}
-	if (pagination.limit) {
+	if (pagination.limit != null) {
 	  params.append("page[size]", pagination.limit.toString());
 	}
   }
@@ -157,5 +158,11 @@ export function queryPools({
   url.search = params.toString();
 
   console.log("url", url.toString());
-  return apiClient<SQSGetPoolsResponse>(url.toString());
+  return apiClient<SQSGetPoolsResponse>(url.toString()).then((response) => {
+    // When next_cursor is -1 that means we have reached the end of the list
+    if (response.meta.next_cursor === -1) {
+        response.meta.next_cursor = undefined;
+    }
+		  return response;
+	});
 }

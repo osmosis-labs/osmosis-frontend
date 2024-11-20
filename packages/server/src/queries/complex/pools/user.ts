@@ -72,7 +72,7 @@ export async function getUserPools(params: {
   });
 
   return await Promise.all(
-    pools.data.map(async (pool) => {
+    pools.items.map(async (pool) => {
       const { id, reserveCoins, totalFiatValueLocked, type } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,
@@ -166,7 +166,7 @@ export async function getUserSharePools(params: {
   const userSharePools =
     specifiedPools ?? (await getPools({ ...params, poolIds: ownedPoolIds }));
 
-  const eventualUserSharePools = userSharePools.data.map(async (sharePool) => {
+  const eventualUserSharePools = userSharePools.items.map(async (sharePool) => {
     // get aggregate of raw shares of each variation
     const available = availableRaw.length
       ? aggregateRawCoinsByDenom(

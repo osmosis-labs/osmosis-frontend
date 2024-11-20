@@ -335,7 +335,7 @@ export async function mapGetUserPositionDetails({
         "getConcentratedRangePoolApr"
       )().catch(() => new RatePretty(0));
 
-      const pool = pools.find((pool) => pool.id === position.pool_id);
+      const pool = pools.items.find((pool) => pool.id === position.pool_id);
       if (!pool) {
         throw new Error(`Pool (${position.pool_id}) not found`);
       }

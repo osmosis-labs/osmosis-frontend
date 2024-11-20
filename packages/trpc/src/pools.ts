@@ -11,7 +11,6 @@ import {
   getUserPools,
   getUserSharePools,
   IncentivePoolFilterSchema,
-  maybeCachePaginatedItems,
   PoolFilterSchema,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
@@ -106,10 +105,7 @@ export const poolsRouter = createTRPCRouter({
         },
         ctx,
       }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-			console.log("getPools limit ", limit, cursor);
-            const pools = await getPools({
+        getPools({
               ...ctx,
               search,
               minLiquidityUsd,
@@ -120,20 +116,6 @@ export const poolsRouter = createTRPCRouter({
                 limit,
               },
 			  sort: sortInput,
-            });
-
-			return pools.data;
-          },
-          cacheKey: JSON.stringify({
-            search,
-            sortInput,
-            minLiquidityUsd,
-            types,
-            denoms,
-            incentiveTypes,
-          }),
-          cursor,
-          limit,
         })
     ),
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
