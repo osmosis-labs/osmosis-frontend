@@ -49,10 +49,14 @@ export function getPoolsFromSidecar({
 
   return cachified({
     cache: poolsCache,
-    key:
+    key: 
+      assetLists.toString() +
+      (notPoolIds?.toString() ?? "") +
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
       minLiquidityUsd +
-      withMarketIncentives.toString(),
+      withMarketIncentives.toString() + 
+      (pagination?.toString() ?? "") +
+      (sort?.toString() ?? ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
