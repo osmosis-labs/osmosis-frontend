@@ -47,7 +47,7 @@ export class NomicBridgeProvider implements BridgeProvider {
     this.nBTCMinimalDenom =
       this.ctx.env === "mainnet"
         ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-        : "ibc/35A61206653F4704187A17E76AB2E2C59856265B20D84B14BC7B3E89D785B461"; // Testnet nBTC
+        : "ibc/8D294CE85345F171AAF6B1FF6E64B5A9EE197C99CDAD64D79EA4ACAB270AC95C"; // Testnet nBTC
     this.relayers = getNomicRelayerUrl({ env: this.ctx.env });
   }
 
@@ -304,6 +304,13 @@ export class NomicBridgeProvider implements BridgeProvider {
         message: "Only Bitcoin is supported as a source chain.",
       });
     }
+
+    console.log({
+      relayers: this.relayers,
+      channel: transferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
+      receiver: toAddress,
+    });
 
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
