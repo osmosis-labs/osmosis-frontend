@@ -145,6 +145,7 @@ export const AssetHighlights: FunctionComponent<
     isLoading?: boolean;
     disableLinking?: boolean;
     highlight: Highlight;
+    onClickAsset?: (asset: HighlightAsset) => void;
   } & CustomClasses
 > = ({
   title,
@@ -154,6 +155,7 @@ export const AssetHighlights: FunctionComponent<
   isLoading = false,
   className,
   highlight,
+  onClickAsset,
 }) => {
   const { t } = useTranslation();
 
@@ -192,6 +194,7 @@ export const AssetHighlights: FunctionComponent<
                 asset={asset}
                 extraInfo={extraInfo}
                 highlight={highlight}
+                onClick={onClickAsset}
               />
             ))}
           </>
@@ -201,21 +204,21 @@ export const AssetHighlights: FunctionComponent<
   );
 };
 
+type HighlightAsset = {
+  coinDenom: string;
+  coinName: string;
+  coinImageUrl?: string;
+  href?: string;
+  externalLink?: boolean;
+};
+
 const AssetHighlightRow: FunctionComponent<{
-  asset: {
-    coinDenom: string;
-    coinName: string;
-    coinImageUrl?: string;
-    href?: string;
-    externalLink?: boolean;
-  };
+  asset: HighlightAsset;
   extraInfo: ReactNode;
   highlight: Highlight;
-}> = ({
-  asset: { coinDenom, coinName, coinImageUrl, href, externalLink },
-  extraInfo,
-  highlight,
-}) => {
+  onClick?: (asset: HighlightAsset) => void;
+}> = ({ asset, extraInfo, highlight, onClick }) => {
+  const { coinDenom, coinName, coinImageUrl, href, externalLink } = asset;
   const { logEvent } = useAmplitudeAnalytics();
 
   const AssetContent = (
@@ -234,7 +237,10 @@ const AssetHighlightRow: FunctionComponent<{
   );
 
   return !href ? (
-    <div className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2">
+    <div
+      className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2"
+      onClick={() => onClick?.(asset)}
+    >
       {AssetContent}
     </div>
   ) : (
@@ -245,6 +251,7 @@ const AssetHighlightRow: FunctionComponent<{
       className="-mx-2 flex items-center justify-between gap-4 rounded-lg p-2 transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
       onClick={() => {
         logEvent([EventName.Assets.assetClicked, { coinDenom, highlight }]);
+        onClick?.(asset);
       }}
     >
       {AssetContent}
