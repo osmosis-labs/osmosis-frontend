@@ -30,13 +30,16 @@ import {
   MultiLanguageT,
   OneClickTradingParamsChanges,
   useAmplitudeAnalytics,
+  useFeatureFlags,
   useOneClickTradingSessionManager,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
 import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
+import { useStore } from "~/stores";
 import {
   formatFiatPrice,
   formatPretty,
@@ -108,6 +111,12 @@ export function ReviewOrder({
 
   const [showOneClickTradingSettings, setShowOneClickTradingSettings] =
     useState(false);
+
+  const featureFlags = useFeatureFlags();
+  const { accountStore } = useStore();
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const {
     isEnabled: is1CTEnabled,
@@ -259,12 +268,12 @@ export function ReviewOrder({
       onRequestClose={onClose}
       hideCloseButton
       className={
-        showOneClickTradingSettings
+        show1CT && showOneClickTradingSettings
           ? "relative max-h-screen overflow-hidden"
           : "w-[512px] rounded-2xl !p-0 sm:h-full sm:max-h-[100vh] sm:!rounded-none"
       }
     >
-      {showOneClickTradingSettings && (
+      {show1CT && showOneClickTradingSettings && (
         <div className="flex flex-col items-center overflow-hidden">
           <OneClickTradingSettings
             externalChanges={transaction1CTParamsChanges}
@@ -514,7 +523,7 @@ export function ReviewOrder({
                   }
                 />
 
-                {is1CTEnabled && (
+                {show1CT && is1CTEnabled && (
                   <RecapRow
                     left={t("oneClickTrading.reviewOrder.recapRowTitle")}
                     right={
@@ -733,7 +742,7 @@ export function ReviewOrder({
                   </div>
                 </div>
               )}
-              {!is1CTEnabled && (
+              {show1CT && !is1CTEnabled && (
                 <OneClickTradingPanel
                   t={t}
                   transactionParams={transaction1CTParams}
