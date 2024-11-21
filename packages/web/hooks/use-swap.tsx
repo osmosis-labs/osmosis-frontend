@@ -29,7 +29,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -371,11 +371,44 @@ export function useSwap(
     return balance.toDec().lt(amountWithSlippage);
   }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
 
+  /**
+   * Create refs so we can wait for them to finish in the sendTradeTokenInTx function
+   * This is a safety measure to prevent signed swaps from failing due to stale gas amount
+   * e.g. after enabling 1CT session the gas estimation needs to be updated before sending the swap
+   */
+  const isLoadingNetworkFeeRef = useRef(isLoadingNetworkFee);
+  const networkFeeErrorRef = useRef(networkFeeError);
+  useEffect(() => {
+    networkFeeErrorRef.current = networkFeeError;
+    isLoadingNetworkFeeRef.current = isLoadingNetworkFee;
+  }, [isLoadingNetworkFee, networkFeeError]);
+
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
+          // Wait for network fee to load, retry up to 10 times
+          let retries = 0;
+          while (isLoadingNetworkFeeRef.current && retries < 10) {
+            if (networkFeeErrorRef.current) {
+              return reject(new Error(networkFeeErrorRef.current.message));
+            }
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            retries++;
+          }
+
+          // After retries, check if still loading
+          if (isLoadingNetworkFeeRef.current) {
+            return reject(
+              new Error("Network fee is still loading after 1 second")
+            );
+          }
+
+          if (networkFeeErrorRef.current) {
+            return reject(new Error(networkFeeErrorRef.current.message));
+          }
+
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
           if (!inAmountInput.amount || !outAmountInput.amount)
