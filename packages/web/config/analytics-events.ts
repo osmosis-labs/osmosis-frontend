@@ -82,6 +82,7 @@ export type EventProperties = {
   section: string;
   tokenIn: string;
   tokenOut: string;
+  token: string;
   option: string;
   numberOfValidators: number;
   validatorNames: string[];
@@ -114,6 +115,7 @@ export const EventName = {
     swapCompleted: "Swap: Swap completed",
     swapFailed: "Swap: Swap failed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",
+    checkTopGainers: "Swap: Check Top Gainers",
   },
   // Events in Sidebar UI
   Sidebar: {
