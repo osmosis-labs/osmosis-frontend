@@ -73,6 +73,7 @@ interface ReviewOrderProps {
   page?: EventPage;
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
+  overspendErrorParams: ReturnType<typeof useSwap>["overspendErrorParams"];
 }
 
 export function ReviewOrder({
@@ -102,6 +103,7 @@ export function ReviewOrder({
   page,
   isBeyondOppositePrice = false,
   quoteType,
+  overspendErrorParams,
 }: ReviewOrderProps) {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();

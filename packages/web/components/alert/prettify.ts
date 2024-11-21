@@ -1,5 +1,5 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import {
   isInsufficientFeeError,
   isSlippageErrorMessage,
@@ -26,6 +26,24 @@ const regexRejectedTx = /Request rejected/;
 
 const regexOverspendError =
   /Spend limit error: Overspend: (\d+) has been spent but limit is (\d+)/;
+
+export function getParametersFromOverspendErrorMessage(
+  message: string | undefined
+): { wouldSpendTotal: Dec; limit: Dec } | undefined {
+  if (!message) return;
+
+  const match = message.match(regexOverspendError);
+  if (!match) return;
+
+  const [, wouldSpendTotal, limit] = match;
+
+  if (!wouldSpendTotal || !limit) return;
+
+  return {
+    wouldSpendTotal: new Dec(wouldSpendTotal),
+    limit: new Dec(limit),
+  };
+}
 
 export function isOverspendErrorMessage({
   message,

@@ -34,7 +34,10 @@ import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { isOverspendErrorMessage } from "~/components/alert/prettify";
+import {
+  getParametersFromOverspendErrorMessage,
+  isOverspendErrorMessage,
+} from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -354,6 +357,11 @@ export function useSwap(
     inAmountInput.isEmpty,
     isOneClickTradingEnabled,
   ]);
+
+  const overspendErrorParams = useMemo(() => {
+    if (!hasOverSpendLimitError) return;
+    return getParametersFromOverspendErrorMessage(networkFeeError?.message);
+  }, [networkFeeError?.message, hasOverSpendLimitError]);
 
   const isSlippageOverBalance = useMemo(() => {
     if (
@@ -773,6 +781,7 @@ export function useSwap(
     hasOverSpendLimitError,
     isSlippageOverBalance,
     quoteType,
+    overspendErrorParams,
   };
 }
 
