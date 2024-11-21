@@ -102,7 +102,7 @@ export const AmountAndReviewScreen = observer(
         : toChainCosmosAccount?.walletInfo.name;
 
     const { data: assetsInOsmosis, isLoading: isLoadingAssetsInOsmosis } =
-      api.edge.assets.getCanonicalAssetWithVariants.useQuery(
+      api.edge.assets.getBridgeAssetWithVariants.useQuery(
         {
           findMinDenomOrSymbol: selectedAssetDenom ?? "",
         },

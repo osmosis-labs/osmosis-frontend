@@ -1,17 +1,27 @@
 import type { Registry } from "@cosmjs/proto-signing";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
-import { estimateGasFee, getSwapMessages } from "@osmosis-labs/tx";
+import {
+  estimateGasFee,
+  getSwapMessages,
+  makeSkipIbcHookSwapMemo,
+  SkipSwapIbcHookContractAddress,
+} from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   deriveCosmosAddress,
+  getAllBtcMinimalDenom,
+  getnBTCMinimalDenom,
   isCosmosAddressValid,
   timeout,
 } from "@osmosis-labs/utils";
 import {
+  BaseDepositOptions,
   buildDestination,
+  DepositInfo,
   generateDepositAddressIbc,
   getPendingDeposits,
+  IbcDepositOptions,
 } from "nomic-bitcoin";
 
 import { BridgeQuoteError } from "../errors";
@@ -40,13 +50,15 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   readonly relayers: string[];
   readonly nBTCMinimalDenom: string;
+  readonly allBtcMinimalDenom: string | undefined;
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
-    this.nBTCMinimalDenom =
-      this.ctx.env === "mainnet"
-        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-        : "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"; // Testnet nBTC
+    this.allBtcMinimalDenom = getAllBtcMinimalDenom({ env: this.ctx.env });
+    this.nBTCMinimalDenom = getnBTCMinimalDenom({
+      env: this.ctx.env,
+    });
+
     this.relayers =
       this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
@@ -111,7 +123,9 @@ export class NomicBridgeProvider implements BridgeProvider {
       | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
       | undefined;
 
-    if (fromAsset.address !== this.nBTCMinimalDenom) {
+    if (
+      fromAsset.address.toLowerCase() === this.allBtcMinimalDenom?.toLowerCase()
+    ) {
       swapRoute = await getRouteTokenOutGivenIn({
         assetLists: this.ctx.assetLists,
         tokenInAmount: fromAmount,
@@ -264,6 +278,7 @@ export class NomicBridgeProvider implements BridgeProvider {
   async getDepositAddress({
     fromChain,
     toAddress,
+    toAsset,
   }: GetDepositAddressParams): Promise<BridgeDepositAddress> {
     if (!isCosmosAddressValid({ address: toAddress, bech32Prefix: "osmo" })) {
       throw new BridgeQuoteError({
@@ -287,11 +302,11 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
-    const transferMethod = nomicBtc.transferMethods.find(
+    const nomicIbcTransferMethod = nomicBtc.transferMethods.find(
       (method): method is IbcTransferMethod => method.type === "ibc"
     );
 
-    if (!transferMethod) {
+    if (!nomicIbcTransferMethod) {
       throw new BridgeQuoteError({
         bridgeId: "Nomic",
         errorType: "UnsupportedQuoteError",
@@ -307,11 +322,52 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
+    const nomicChain = this.ctx.chainList.find(
+      ({ chain_name }) =>
+        chain_name === nomicIbcTransferMethod.counterparty.chainName
+    );
+
+    if (!nomicChain) {
+      throw new BridgeQuoteError({
+        bridgeId: "Nomic",
+        errorType: "UnsupportedQuoteError",
+        message: "Nomic chain not found in chain list.",
+      });
+    }
+
+    const userWantsAllBtc =
+      this.allBtcMinimalDenom && toAsset.address === this.allBtcMinimalDenom;
+
+    const now = Date.now();
+    const timeoutTimestampFiveDaysFromNow =
+      Number(now + 86_400 * 5 * 1_000 - (now % (60 * 60 * 1_000))) * 1_000_000;
+    const swapMemo = userWantsAllBtc
+      ? makeSkipIbcHookSwapMemo({
+          denomIn: this.nBTCMinimalDenom,
+          denomOut:
+            this.ctx.env === "mainnet" ? this.allBtcMinimalDenom : "uosmo",
+          env: this.ctx.env,
+          minAmountOut: "1",
+          poolId:
+            this.ctx.env === "mainnet"
+              ? "1868" // nBTC/allBTC pool on Osmosis
+              : "663", // nBTC/osmo pool on Osmosis. Since there's no alloyed btc in testnet, we'll use these pool instead
+          receiverOsmoAddress: toAddress,
+          timeoutTimestamp: timeoutTimestampFiveDaysFromNow,
+        })
+      : undefined;
+
     const depositInfo = await generateDepositAddressIbc({
       relayers: this.relayers,
-      channel: transferMethod.counterparty.channelId, // IBC channel ID on Nomic
+      channel: nomicIbcTransferMethod.counterparty.channelId, // IBC channel ID on Nomic
       bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
-      receiver: toAddress,
+      sender: deriveCosmosAddress({
+        address: toAddress,
+        desiredBech32Prefix: nomicChain.bech32_prefix,
+      }),
+      receiver:
+        userWantsAllBtc && swapMemo ? swapMemo.wasm.contract : toAddress,
+      ...(swapMemo ? { memo: JSON.stringify(swapMemo) } : {}),
     });
 
     if (depositInfo.code === 1) {
@@ -387,18 +443,31 @@ export class NomicBridgeProvider implements BridgeProvider {
       const isNomicBtc =
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.nBTCMinimalDenom.toLowerCase();
+      const isAllBtc =
+        this.allBtcMinimalDenom &&
+        assetListAsset.coinMinimalDenom.toLowerCase() ===
+          this.allBtcMinimalDenom.toLowerCase();
 
-      const nomicWithdrawAmountEnabled = await getLaunchDarklyFlagValue({
+      const nomicWithdrawEnabled = await getLaunchDarklyFlagValue({
         key: "nomicWithdrawAmount",
       });
 
       if (bitcoinCounterparty || isNomicBtc) {
+        let transferTypes: BridgeSupportedAsset["transferTypes"] = [];
+
+        if (direction === "withdraw" && nomicWithdrawEnabled) {
+          transferTypes = ["quote"];
+        } else if (direction === "deposit" && (isNomicBtc || isAllBtc)) {
+          transferTypes = ["deposit-address"];
+        }
+
+        if (transferTypes.length === 0) {
+          return [];
+        }
+
         return [
           {
-            transferTypes:
-              direction === "withdraw" && nomicWithdrawAmountEnabled
-                ? ["quote"]
-                : ["deposit-address"],
+            transferTypes,
             chainId: "bitcoin",
             chainName: "Bitcoin",
             chainType: "bitcoin",
@@ -437,10 +506,43 @@ export class NomicBridgeProvider implements BridgeProvider {
 
   async getPendingDeposits({ address }: { address: string }) {
     try {
-      const pendingDeposits = await timeout(
-        () => getPendingDeposits(this.relayers, address),
-        10000
-      )();
+      const [pendingDeposits, skipSwapPendingDeposits] = await Promise.all([
+        timeout(() => getPendingDeposits(this.relayers, address), 10000)(),
+        /**
+         * We need to check all deposits to skip contract since we set the receiver to the skip contract address.
+         * So, we need to filter out any deposits that are not intended for the user.
+         */
+        timeout(
+          () =>
+            getPendingDeposits(this.relayers, SkipSwapIbcHookContractAddress),
+          10000
+        )(),
+      ]);
+
+      /**
+       * Filter out deposits that are not intended for the user
+       */
+      const filteredSkipSwapPendingDeposits = skipSwapPendingDeposits
+        .filter((deposit) => {
+          try {
+            if (!("dest" in deposit)) return false;
+            const dest = deposit.dest as {
+              data: BaseDepositOptions & IbcDepositOptions;
+            };
+            const memo = JSON.parse(dest.data.memo ?? "{}");
+            return (
+              memo.wasm.msg.swap_and_action.post_swap_action.transfer
+                .to_address === address
+            );
+          } catch (error) {
+            console.error("Error parsing memo:", error);
+            return false;
+          }
+        })
+        .map((deposit) => ({
+          ...deposit,
+          __type: "contract-deposit" as const,
+        }));
 
       const nomicBtc = this.ctx.assetLists
         .flatMap(({ assets }) => assets)
@@ -452,7 +554,12 @@ export class NomicBridgeProvider implements BridgeProvider {
         throw new Error("Nomic Bitcoin asset not found in asset list.");
       }
 
-      return pendingDeposits.map((deposit) => ({
+      const deposits = [
+        ...pendingDeposits,
+        ...filteredSkipSwapPendingDeposits,
+      ] as (DepositInfo & { __type?: "contract-deposit" })[];
+
+      return deposits.map((deposit) => ({
         transactionId: deposit.txid,
         amount: deposit.amount,
         confirmations: deposit.confirmations,
@@ -460,16 +567,16 @@ export class NomicBridgeProvider implements BridgeProvider {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.minerFeeRate ?? 0) * 1e8).toString(),
           decimals: 8,
-          // TODO: Handle case when we can receive allBTC
-          denom: nomicBtc.symbol,
+          denom:
+            deposit.__type === "contract-deposit" ? "BTC" : nomicBtc.symbol,
           coinGeckoId: nomicBtc.coingeckoId,
         },
         providerFee: {
           address: nomicBtc.coinMinimalDenom,
           amount: ((deposit.bridgeFeeRate ?? 0) * deposit.amount).toString(),
           decimals: 8,
-          // TODO: Handle case when we can receive allBTC
-          denom: nomicBtc.symbol,
+          denom:
+            deposit.__type === "contract-deposit" ? "BTC" : nomicBtc.symbol,
           coinGeckoId: nomicBtc.coingeckoId,
         },
       }));
