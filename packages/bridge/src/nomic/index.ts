@@ -189,7 +189,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       }),
     };
 
-    const [ibcTxMessages, estimatedTime] = await Promise.all([
+    const [ibcTxMessages, ibcEstimatedTimeSeconds] = await Promise.all([
       ibcProvider.getTxMessages({
         ...transactionDataParams,
         memo: destMemo,
@@ -199,6 +199,9 @@ export class NomicBridgeProvider implements BridgeProvider {
         transactionDataParams.toChain.chainId.toString()
       ),
     ]);
+
+    // 2 hours
+    const nomicEstimatedTimeSeconds = 2 * 60 * 60;
 
     const msgs = [...swapMessages, ...ibcTxMessages];
 
@@ -260,7 +263,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         chainId: params.fromChain.chainId,
         amount: "0",
       },
-      estimatedTime,
+      estimatedTime: ibcEstimatedTimeSeconds + nomicEstimatedTimeSeconds,
       estimatedGasFee: gasFee
         ? {
             address: gasAsset?.address ?? gasFee.denom,
