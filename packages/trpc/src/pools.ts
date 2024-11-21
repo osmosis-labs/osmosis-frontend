@@ -99,7 +99,7 @@ export const poolsRouter = createTRPCRouter({
           sort: sortInput,
           denoms,
           types,
-          incentiveTypes,
+          incentiveTypes: _incentiveTypes, // TODO:
           cursor,
           limit,
         },
