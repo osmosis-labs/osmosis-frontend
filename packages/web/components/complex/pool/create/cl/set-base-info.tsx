@@ -18,8 +18,10 @@ import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -43,12 +45,24 @@ export const SetBaseInfos = observer(
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
-    const { accountStore } = useStore();
+    const { accountStore, userSettings } = useStore();
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { showPreviewAssets } = useShowPreviewAssets();
+
+    const showUnverifiedAssetsSetting =
+      userSettings.getUserSettingById<UnverifiedAssetsState>(
+        "unverified-assets"
+      );
+    const showUnverifiedAssets = Boolean(
+      showUnverifiedAssetsSetting?.state.showUnverifiedAssets
+    );
 
     const { data: baseTokens, isLoading: isLoadingBaseTokens } =
-      api.local.concentratedLiquidity.getBaseTokens.useQuery();
+      api.local.concentratedLiquidity.getBaseTokens.useQuery({
+        includePreview: showPreviewAssets,
+        onlyVerified: showUnverifiedAssets === false,
+      });
     const { data: quoteTokens, isLoading: isLoadingQuoteTokens } =
       api.local.concentratedLiquidity.getQuoteTokens.useQuery();
     const { data: clParams } =

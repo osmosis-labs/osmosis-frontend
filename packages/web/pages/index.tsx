@@ -1,14 +1,23 @@
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useRouter } from "next/router";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
+import {
+  AssetHighlights,
+  highlightPrice24hChangeAsset,
+} from "~/components/assets/highlights-categories";
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { api } from "~/utils/trpc";
 
 export const SwapPreviousTradeKey = "swap-previous-trade";
@@ -52,10 +61,35 @@ const Home = () => {
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
+            <TopGainers />
           </div>
         </div>
       </div>
     </main>
+  );
+};
+
+const TopGainers = () => {
+  const { t } = useTranslation();
+  const router = useRouter();
+
+  const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
+    api.edge.assets.getTopGainerAssets.useQuery({
+      topN: 4,
+    });
+
+  return (
+    <AssetHighlights
+      className="bg-osmoverse-1000/40 px-2"
+      title={t("assets.highlights.topGainers")}
+      subtitle="24h"
+      isLoading={isTopGainerAssetsLoading}
+      assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
+      onClickSeeAll={() => {
+        router.push(`/assets?category=topGainers`);
+      }}
+      highlight="topGainers"
+    />
   );
 };
 
