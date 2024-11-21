@@ -3,6 +3,7 @@ export const BitcoinChainInfo = {
   chainId: "bitcoin",
   chainName: "Bitcoin",
   color: "#F7931A",
+  logoUri: "/networks/bitcoin.svg",
 };
 
 export const BitcoinMainnetExplorerUrl =

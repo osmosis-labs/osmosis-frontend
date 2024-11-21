@@ -1,5 +1,6 @@
 import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
+import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import {
@@ -257,6 +258,10 @@ export class RootStore {
         }
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
+      new NomicTransferStatusProvider(
+        ChainList,
+        IS_TESTNET ? "testnet" : "mainnet"
+      ),
     ];
 
     this.transferHistoryStore = new TransferHistoryStore(

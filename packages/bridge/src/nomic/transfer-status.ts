@@ -9,10 +9,10 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { NomicBridgeProvider } from ".";
+import { NomicProviderId } from "./utils";
 
 export class NomicTransferStatusProvider implements TransferStatusProvider {
-  readonly providerId = NomicBridgeProvider.ID;
+  readonly providerId = NomicProviderId;
   readonly sourceDisplayName = "Nomic Bridge";
   public statusReceiverDelegate?: TransferStatusReceiver;
 

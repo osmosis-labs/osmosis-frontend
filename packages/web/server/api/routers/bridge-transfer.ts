@@ -24,6 +24,7 @@ import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import {
   BitcoinChainInfo,
   EthereumChainInfo,
+  getnBTCMinimalDenom,
   isNil,
   isSameVariant,
   SolanaChainInfo,
@@ -709,7 +710,7 @@ export const bridgeTransferRouter = createTRPCRouter({
       });
 
       const btcMinimalDenom = IS_TESTNET
-        ? "ibc/8D294CE85345F171AAF6B1FF6E64B5A9EE197C99CDAD64D79EA4ACAB270AC95C"
+        ? getnBTCMinimalDenom({ env: "testnet" })
         : "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC";
 
       const btcPrice = await getAssetPrice({

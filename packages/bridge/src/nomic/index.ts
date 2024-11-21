@@ -44,9 +44,10 @@ import {
 } from "../interface";
 import { getGasAsset } from "../utils/gas";
 import { getLaunchDarklyFlagValue } from "../utils/launchdarkly";
+import { NomicProviderId } from "./utils";
 
 export class NomicBridgeProvider implements BridgeProvider {
-  static readonly ID = "Nomic";
+  static readonly ID = NomicProviderId;
   readonly providerName = NomicBridgeProvider.ID;
 
   readonly relayers: string[];
