@@ -42,7 +42,7 @@ export default async function pools(req: Request) {
       assetLists: AssetLists,
       minLiquidityUsd: minimumLiquidity,
     }).then((r) =>
-      r
+      r.items
         .map((pool) => {
           if (
             minimumLiquidity &&
