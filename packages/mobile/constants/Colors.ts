@@ -1,26 +1,98 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const tintColorLight = "#0a7ea4";
+const tintColorDark = "#fff";
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
+    text: "#11181C",
+    background: "#fff",
     tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
+    icon: "#687076",
+    tabIconDefault: "#687076",
     tabIconSelected: tintColorLight,
-  },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    white: {
+      full: "#FFFFFF",
+      high: "rgba(255, 255, 255, 0.95)",
+      emphasis: "rgba(255, 255, 255, 0.87)",
+      mid: "rgba(255, 255, 255, 0.6)",
+      disabled: "rgba(255, 255, 255, 0.38)",
+      faint: "rgba(255, 255, 255, 0.12)",
+    },
+    wosmongton: {
+      100: "#D3D1FF",
+      200: "#B3B1FD",
+      300: "#8C8AF9",
+      400: "#6A67EA",
+      500: "#5B57FA",
+      700: "#462ADF",
+      800: "#361FB2",
+      900: "#2D1B8F",
+    },
+    ion: {
+      100: "#DCF9FF",
+      300: "#87DDF8",
+      400: "#64C5EE",
+      500: "#2994D0",
+      700: "#1469AF",
+    },
+    bullish: {
+      100: "#EBFFFB",
+      300: "#95EEDE",
+      400: "#6BDEC9",
+      500: "#29D0B2",
+      600: "#00A399",
+    },
+    osmoverse: {
+      100: "#E4E1FB",
+      200: "#CEC8F3",
+      300: "#B0AADC",
+      400: "#958FC0",
+      500: "#736CA3",
+      600: "#565081",
+      700: "#3C356D",
+      800: "#282750",
+      810: "#241E4B",
+      825: "#232047",
+      850: "#201B43",
+      860: "#19183A",
+      900: "#140F34",
+      1000: "#090524",
+    },
+    "osmoverse-alpha": {
+      700: "rgba(107, 98, 173, 0.47)",
+      800: "#3E386A",
+      850: "rgba(60, 53, 109, 0.29)",
+    },
+    ammelia: {
+      300: "#E196DB",
+      400: "#D779CF",
+      500: "#CC54C2",
+      600: "#CA2EBD",
+      900: "#87087C",
+    },
+    rust: {
+      200: "#F8C2B0",
+      300: "#F5A68C",
+      400: "#F99575",
+      500: "#FA825D",
+      600: "#E06640",
+      700: "#C6451C",
+      800: "#B03A20",
+    },
+    wireframes: {
+      darkGrey: "#282828",
+      grey: "#818181",
+      lightGrey: "#B7B7B7",
+    },
+    error: "#EF3456",
+    missionError: "#EF3456",
+    superfluid: "#8A86FF",
+    supercharged: "#64C5EE",
+    transparent: "transparent",
+    black: "black",
+    inherit: "inherit",
+    barFill: "#4f4aa2",
+    chartGradientPrimary: "#C41BFF",
+    chartGradientSecondary: "#1867FF",
+    yourBalanceActionButton: "#2A2553",
   },
 };
