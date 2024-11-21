@@ -1,14 +1,8 @@
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
-
 export const Colors = {
   light: {
     text: "#11181C",
-    background: "#fff",
-    tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
-    tabIconSelected: tintColorLight,
+    background: "#140F34",
+    tint: "#E4E1FB",
     white: {
       full: "#FFFFFF",
       high: "rgba(255, 255, 255, 0.95)",
