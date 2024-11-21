@@ -19,6 +19,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useMount } from "react-use";
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
@@ -39,6 +40,7 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
+import { removeQueryParam } from "~/utils/url";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
@@ -65,8 +67,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-
-  // State
 
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
@@ -96,6 +96,15 @@ export const AssetsInfoTable: FunctionComponent<{
         : undefined,
     [selectedCategory]
   );
+
+  useMount(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get("category");
+    if (category) {
+      setCategory(category);
+      removeQueryParam("category");
+    }
+  });
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
