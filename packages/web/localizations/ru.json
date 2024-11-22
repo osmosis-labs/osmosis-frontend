@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "Фактор распространения",
     "showDetails": "Показать детали",
     "hideDetails": "Скрывать",
-    "continueAnyway": "Продолжай в любом случае",
-    "warning": {
-      "exceedsSpendLimit": "Этот обмен превышает оставшийся лимит расходов для торговли в один клик.",
-      "increaseSpendLimit": "Увеличить лимит расходов"
-    },
     "settings": {
       "slippage": "Допуск проскальзывания"
     },

@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "સ્પ્રેડ ફેક્ટર",
     "showDetails": "વિગતો બતાવો",
     "hideDetails": "છુપાવો",
-    "continueAnyway": "કોઈપણ રીતે ચાલુ રાખો",
-    "warning": {
-      "exceedsSpendLimit": "આ સ્વેપ 1-ક્લિક ટ્રેડિંગ માટે તમારી બાકીની ખર્ચ મર્યાદાને ઓળંગે છે.",
-      "increaseSpendLimit": "ખર્ચ મર્યાદા વધારો"
-    },
     "settings": {
       "slippage": "સ્લિપેજ સહનશીલતા"
     },

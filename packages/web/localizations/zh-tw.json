@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "擴頻因子",
     "showDetails": "顯示詳細資料",
     "hideDetails": "隱藏",
-    "continueAnyway": "無論如何繼續",
-    "warning": {
-      "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
-      "increaseSpendLimit": "提高支出限額"
-    },
     "settings": {
       "slippage": "允許的滑價"
     },

@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
     "showDetails": "Pokaż szczegóły",
     "hideDetails": "Ukrywać",
-    "continueAnyway": "Kontynuować mimo to",
-    "warning": {
-      "exceedsSpendLimit": "Ta zamiana przekracza pozostały limit wydatków w ramach handlu jednym kliknięciem.",
-      "increaseSpendLimit": "Zwiększ limit wydatków"
-    },
     "settings": {
       "slippage": "Tolerowane odchylenie"
     },

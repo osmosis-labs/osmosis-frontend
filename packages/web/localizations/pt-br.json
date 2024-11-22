@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "Fator de propagação",
     "showDetails": "Mostrar detalhes",
     "hideDetails": "Esconder",
-    "continueAnyway": "Continue de qualquer maneira",
-    "warning": {
-      "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
-      "increaseSpendLimit": "Aumentar o limite de gastos"
-    },
     "settings": {
       "slippage": "Tolerância de spread"
     },

@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "Factorul de răspândire",
     "showDetails": "Arata detaliile",
     "hideDetails": "Ascunde",
-    "continueAnyway": "Continua oricum",
-    "warning": {
-      "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
-      "increaseSpendLimit": "Creșteți limita de cheltuieli"
-    },
     "settings": {
       "slippage": "Toleranta modificare pret"
     },

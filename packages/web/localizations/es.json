@@ -705,11 +705,6 @@
     "routerTooltipSpreadFactor": "Factor de dispersión",
     "showDetails": "Mostrar detalles",
     "hideDetails": "Esconder",
-    "continueAnyway": "De todas maneras, continúe",
-    "warning": {
-      "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
-      "increaseSpendLimit": "Aumentar el límite de gasto"
-    },
     "settings": {
       "slippage": "Tolerancia de deslizamiento"
     },
