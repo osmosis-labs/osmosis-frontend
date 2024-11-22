@@ -793,7 +793,7 @@ export function ReviewOrder({
                 </span>
                 <Button
                   mode="primary"
-                  onClick={() => restart}
+                  onClick={restart}
                   className="body2 w-fit !rounded-2xl"
                 >
                   <h6>{t("limitOrders.accept")}</h6>
