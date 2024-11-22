@@ -250,19 +250,20 @@ export const useBridgesSupportedAssets = ({
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
-            // focus on evm chains to be picked first
-            if (a.chainType === "evm" && b.chainType !== "evm") return -1;
+            // prioritize bitcoin chains first, then evm
+            if (a.chainType === "bitcoin" && b.chainType !== "bitcoin")
+              return -1;
             if (
-              a.chainType === "solana" &&
-              b.chainType !== "solana" &&
-              b.chainType !== "evm"
+              a.chainType === "evm" &&
+              b.chainType !== "evm" &&
+              b.chainType !== "bitcoin"
             )
               return -1;
             if (
-              a.chainType === "bitcoin" &&
-              b.chainType !== "bitcoin" &&
+              a.chainType === "solana" &&
               b.chainType !== "solana" &&
-              b.chainType !== "evm"
+              b.chainType !== "evm" &&
+              b.chainType !== "bitcoin"
             )
               return -1;
             return 0;

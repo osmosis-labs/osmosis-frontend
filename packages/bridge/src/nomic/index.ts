@@ -19,8 +19,10 @@ import {
 import {
   BaseDepositOptions,
   buildDestination,
+  Checkpoint,
   DepositInfo,
   generateDepositAddressIbc,
+  getCheckpoint,
   getPendingDeposits,
   IbcDepositOptions,
 } from "nomic-bitcoin";
@@ -56,20 +58,11 @@ export class NomicBridgeProvider implements BridgeProvider {
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
-    this.nBTCMinimalDenom =
-      this.ctx.env === "mainnet"
-        ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-        : "ibc/8D294CE85345F171AAF6B1FF6E64B5A9EE197C99CDAD64D79EA4ACAB270AC95C"; // Testnet nBTC
     this.relayers = getNomicRelayerUrl({ env: this.ctx.env });
     this.allBtcMinimalDenom = getAllBtcMinimalDenom({ env: this.ctx.env });
     this.nBTCMinimalDenom = getnBTCMinimalDenom({
       env: this.ctx.env,
     });
-
-    this.relayers =
-      this.ctx.env === "testnet"
-        ? ["https://testnet-relayer.nomic.io:8443"]
-        : ["https://relayer.nomic.mappum.io:8443"];
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
@@ -189,19 +182,29 @@ export class NomicBridgeProvider implements BridgeProvider {
       }),
     };
 
-    const [ibcTxMessages, ibcEstimatedTimeSeconds] = await Promise.all([
-      ibcProvider.getTxMessages({
-        ...transactionDataParams,
-        memo: destMemo,
-      }),
-      ibcProvider.estimateTransferTime(
-        transactionDataParams.fromChain.chainId.toString(),
-        transactionDataParams.toChain.chainId.toString()
-      ),
-    ]);
+    const [ibcTxMessages, ibcEstimatedTimeSeconds, nomicCheckpoint] =
+      await Promise.all([
+        ibcProvider.getTxMessages({
+          ...transactionDataParams,
+          memo: destMemo,
+        }),
+        ibcProvider.estimateTransferTime(
+          transactionDataParams.fromChain.chainId.toString(),
+          transactionDataParams.toChain.chainId.toString()
+        ),
+        getCheckpoint({
+          relayers: this.relayers,
+          bitcoinNetwork: this.ctx.env === "mainnet" ? "bitcoin" : "testnet",
+        }),
+      ]);
 
-    // 2 hours
-    const nomicEstimatedTimeSeconds = 2 * 60 * 60;
+    // 4 hours
+    const nomicEstimatedTimeSeconds = 4 * 60 * 60;
+
+    const transferFeeInSats = Math.ceil(
+      (nomicCheckpoint as Checkpoint & { minerFee: number }).minerFee * 64 + 546
+    );
+    const transferFeeInMicroSats = transferFeeInSats * 1e6;
 
     const msgs = [...swapMessages, ...ibcTxMessages];
 
@@ -248,20 +251,27 @@ export class NomicBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: !!swapRoute
-          ? swapRoute.amount.toCoin().amount
-          : params.fromAmount,
+        amount: (!!swapRoute
+          ? new Dec(swapRoute.amount.toCoin().amount)
+          : new Dec(params.fromAmount)
+        )
+          // Use micro sats because the amount will always be nomic btc which has 14 decimals (micro sats)
+          .sub(new Dec(transferFeeInMicroSats))
+          .toString(),
         ...nomicBridgeAsset,
         denom: "BTC",
         priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
-      // currently subsidized by relayers, but could be paid by user in future by charging the user the gas cost of
       transferFee: {
         ...params.fromAsset,
+        denom: "BTC",
         chainId: params.fromChain.chainId,
-        amount: "0",
+        amount: (params.fromAsset.decimals === 14
+          ? transferFeeInMicroSats
+          : transferFeeInSats
+        ).toString(),
       },
       estimatedTime: ibcEstimatedTimeSeconds + nomicEstimatedTimeSeconds,
       estimatedGasFee: gasFee

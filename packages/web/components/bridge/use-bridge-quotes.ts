@@ -647,6 +647,10 @@ export const useBridgeQuotes = ({
         preferNoSetFee: Boolean(gasFee),
       },
       {
+        /**
+         * This is a special case for Nomic withdrawals
+         * We need to get the checkpoint index in order to track the transaction
+         */
         onSign: async () => {
           if (quote.provider.id !== "Nomic") return;
 
@@ -656,7 +660,8 @@ export const useBridgeQuotes = ({
               env: IS_TESTNET ? "testnet" : "mainnet",
             }),
           });
-          nomicCheckpointIndex = index;
+          /** Add one since the current transfer is not included in the current index */
+          nomicCheckpointIndex = index + 1;
         },
         onBroadcastFailed: () => setIsBroadcastingTx(false),
         onBroadcasted: () => setIsBroadcastingTx(true),

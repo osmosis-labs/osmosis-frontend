@@ -25,7 +25,7 @@ import {
 import { Button, GoBackButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { SwitchingNetworkState } from "~/components/wallet-states/switching-network-state";
-import { EventName } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import { useAmplitudeAnalytics, useTranslation, useWindowSize } from "~/hooks";
 import {
@@ -532,6 +532,7 @@ const SendToAnotherAddressForm: FunctionComponent<
             } else if (toChain.chainType === "bitcoin") {
               isValid = isBitcoinAddressValid({
                 address: nextValue,
+                env: IS_TESTNET ? "testnet" : "mainnet",
               });
             }
 
