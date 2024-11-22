@@ -219,7 +219,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+      const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       const isExpired = await this.isOneClickTradingExpired();
@@ -1477,7 +1477,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     messages: readonly EncodeObject[];
   }): Promise<boolean> {
-    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
@@ -1540,7 +1540,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  async isOneCLickTradingEnabled(): Promise<boolean> {
+  async isOneClickTradingEnabled(): Promise<boolean> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (isNil(oneClickTradingInfo)) return false;
