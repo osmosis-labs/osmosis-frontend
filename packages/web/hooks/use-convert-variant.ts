@@ -126,6 +126,7 @@ export function useConvertVariant(
                   {
                     fromToken: variant.amount.currency.coinDenom,
                     toToken: variant.canonicalAsset.coinDenom,
+                    valueUsd: Number(variant.fiatValue.toDec().toString()),
                   },
                 ]);
                 resolve();
@@ -140,10 +141,10 @@ export function useConvertVariant(
       }),
     [
       variant,
+      account?.address,
       quote,
       accountStore,
       variantTransactionIdentifier,
-      account?.address,
       logEvent,
     ]
   );

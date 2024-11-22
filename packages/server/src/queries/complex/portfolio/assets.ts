@@ -5,7 +5,6 @@ import { sort } from "@osmosis-labs/utils";
 
 import { captureIfError } from "../../../utils";
 import { Categories, queryPortfolioAssets } from "../../sidecar";
-import { AccountCoinsResultDec } from "../../sidecar/portfolio-assets";
 import { getAsset } from "../assets";
 import { DEFAULT_VS_CURRENCY } from "../assets/config";
 
@@ -19,6 +18,7 @@ export interface Allocation {
 export interface AssetVariant {
   name: string;
   amount: CoinPretty;
+  fiatValue: PricePretty;
   canonicalAsset: MinimalAsset;
 }
 
@@ -86,21 +86,21 @@ export function calculatePercentAndFiatValues(
 
   const account_coins_result = (totalAssets?.account_coins_result || []).map(
     (asset) => ({
-      ...asset,
-      cap_value: new Dec(asset.cap_value),
+      coin: asset.coin,
+      fiatValue: new Dec(asset.cap_value),
     })
   );
 
   const sortedAccountCoinsResults = sort(
     account_coins_result || [],
-    "cap_value",
+    "fiatValue",
     "desc"
   );
 
   const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
 
   const assets: Allocation[] = topCoinsResults
-    .map((asset: AccountCoinsResultDec) => {
+    .map((asset) => {
       const assetFromAssetLists = captureIfError(() =>
         getAsset({
           assetLists,
@@ -116,8 +116,8 @@ export function calculatePercentAndFiatValues(
         key: assetFromAssetLists.coinDenom,
         percentage: totalCap.isZero()
           ? new RatePretty(0)
-          : new RatePretty(asset.cap_value.quo(totalCap)),
-        fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.cap_value),
+          : new RatePretty(asset.fiatValue.quo(totalCap)),
+        fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.fiatValue),
         asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
       };
     })
@@ -126,7 +126,7 @@ export function calculatePercentAndFiatValues(
   const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
 
   const otherAmount = otherAssets.reduce(
-    (sum: Dec, asset: AccountCoinsResultDec) => sum.add(asset.cap_value),
+    (sum: Dec, asset) => sum.add(asset.fiatValue),
     new Dec(0)
   );
 
@@ -195,6 +195,7 @@ export async function getPortfolioAssets({
     categories["user-balances"]?.account_coins_result?.map((result) => ({
       denom: result.coin.denom,
       amount: result.coin.amount, // Assuming amount is stored in result.coin.amount
+      fiatValue: result.cap_value,
     })) ?? [];
 
   // check for asset variants, alloys and canonical assets such as USDC
@@ -210,13 +211,13 @@ export async function getPortfolioAssets({
 }
 
 export function checkAssetVariants(
-  userBalanceDenoms: { denom: string; amount: string }[],
+  userBalanceDenoms: { denom: string; amount: string; fiatValue: string }[],
   assetLists: AssetList[]
 ): AssetVariant[] {
   const assetListAssets = assetLists.flatMap((list) => list.assets);
 
   return userBalanceDenoms
-    .map(({ denom, amount }) => {
+    .map(({ denom, amount, fiatValue }) => {
       const asset = assetListAssets.find(
         (asset) => asset.coinMinimalDenom === denom
       );
@@ -240,6 +241,7 @@ export function checkAssetVariants(
         return {
           name: userAsset.coinName,
           amount: new CoinPretty(userAsset, amount),
+          fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(fiatValue)),
           canonicalAsset: canonicalAsset,
         };
       }

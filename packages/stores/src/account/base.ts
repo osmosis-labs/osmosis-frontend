@@ -1037,12 +1037,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (memo === "") {
-      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
       // QA purposes.
-      memo = "FE";
+      memo = "OsmosisFE";
     } else {
-      // Otherwise, tack on "FE" to the end of the memo.
-      memo += " \nFE";
+      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      memo += " \nOsmosisFE";
     }
 
     const [
@@ -1235,12 +1235,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     pubkey.typeUrl = pubKeyTypeUrl;
 
     if (memo === "") {
-      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
       // QA purposes.
-      memo = "FE";
+      memo = "OsmosisFE";
     } else {
-      // Otherwise, tack on "FE" to the end of the memo.
-      memo += " \nFE";
+      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      memo += " \nOsmosisFE";
     }
 
     const txBodyEncodeObject = {
