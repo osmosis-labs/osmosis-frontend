@@ -468,7 +468,7 @@ export type TransferFailureReason = z.infer<typeof transferFailureReasonSchema>;
 
 export type TransferStatus = z.infer<typeof transferStatusSchema>;
 
-const baseTxSnapshotSchema = z.object({
+const txSnapshotSchema = z.object({
   direction: z.enum(["deposit", "withdraw"]),
   createdAtUnix: z.number(),
   type: z.literal("bridge-transfer"),
@@ -513,7 +513,7 @@ const baseTxSnapshotSchema = z.object({
   nomicCheckpointIndex: z.number().optional(),
 });
 
-export type TxSnapshot = z.infer<typeof baseTxSnapshotSchema>;
+export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
 
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {
