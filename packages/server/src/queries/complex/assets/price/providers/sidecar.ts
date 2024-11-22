@@ -17,14 +17,7 @@ const sidecarCache = new LRUCache<string, CacheEntry>(LARGE_LRU_OPTIONS);
  *  @throws if there's an issue getting the price. */
 export function getPriceFromSidecar(asset: Asset) {
   return getBatchLoader().then((loader) =>
-    loader
-      .load(
-        asset.coinMinimalDenom ===
-          "ibc/8D294CE85345F171AAF6B1FF6E64B5A9EE197C99CDAD64D79EA4ACAB270AC95C"
-          ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F"
-          : asset.coinMinimalDenom
-      )
-      .then((price) => new Dec(price))
+    loader.load(asset.coinMinimalDenom).then((price) => new Dec(price))
   );
 }
 
