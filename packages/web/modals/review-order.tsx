@@ -125,8 +125,8 @@ export function ReviewOrder({
     changes: transaction1CTParamsChanges,
     setChanges: setTransaction1CTParamsChanges,
     transactionParams: transaction1CTParams,
-    amountSpent: amountSpent1CT,
     remainingSpendLimit: remaining1CTSpendLimit,
+    wouldExceedSpendLimit: wouldExceedSpendLimit1CT,
     setTransactionParams: setTransaction1CTParams,
     commitSessionChange: commit1CTSessionChange,
     resetParams: reset1CTParams,
@@ -138,15 +138,13 @@ export function ReviewOrder({
     },
   });
 
-  const wouldExceedSpendLimit = useMemo(
-    () =>
-      transaction1CTParams?.spendLimit
-        ?.sub(amountSpent1CT ?? new Dec(0))
-        ?.sub(fiatAmountWithSlippage ?? new Dec(0))
-        ?.toDec()
-        .isNegative(),
-    [transaction1CTParams, amountSpent1CT, fiatAmountWithSlippage]
-  );
+  const wouldExceedSpendLimit = useMemo(() => {
+    return wouldExceedSpendLimit1CT({
+      wantToSpend: fiatAmountWithSlippage?.toDec() ?? new Dec(0),
+      maybeSpendLimit: overspendErrorParams?.limit,
+      maybeWouldSpendTotal: overspendErrorParams?.wouldSpendTotal,
+    });
+  }, [overspendErrorParams, fiatAmountWithSlippage, wouldExceedSpendLimit1CT]);
 
   const [orderType] = useQueryState(
     "type",
@@ -767,7 +765,9 @@ export function ReviewOrder({
                     mode="primary"
                     onClick={commit1CTSessionChange}
                     disabled={
-                      isConfirmationDisabled || commit1CTSessionChangeIsLoading
+                      isConfirmationDisabled ||
+                      commit1CTSessionChangeIsLoading ||
+                      wouldExceedSpendLimit
                     }
                     className="body2 sm:caption !rounded-2xl"
                   >

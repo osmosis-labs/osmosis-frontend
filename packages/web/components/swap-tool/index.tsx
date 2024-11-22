@@ -16,6 +16,7 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
+import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
   AssetFieldset,
@@ -325,7 +326,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           !Boolean(swapState.quote) ||
           isSwapToolLoading ||
           Boolean(swapState.error) ||
-          Boolean(swapState.networkFeeError)));
+          Boolean(
+            swapState.networkFeeError &&
+              /**
+               * We can increase spend limit from the review order modal
+               * so the decision to disable the button should be made there
+               */
+              !isOverspendErrorMessage({
+                message: swapState.networkFeeError.message,
+              })
+          )));
 
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 

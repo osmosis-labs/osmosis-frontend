@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { useCallback, useEffect, useMemo, useRef } from "react";
@@ -63,7 +63,7 @@ export function useOneClickTradingSessionManager({
   }, [transactionParams, initialTransactionParams, changes]);
 
   const {
-    amountSpent,
+    wouldExceedSpendLimit,
     remainingSpendLimit,
     sessionAuthenticator,
     isLoading: isLoadingRemainingSpendLimit,
@@ -197,7 +197,7 @@ export function useOneClickTradingSessionManager({
     changes,
     setChanges,
     transactionParams,
-    amountSpent,
+    wouldExceedSpendLimit,
     remainingSpendLimit,
     setTransactionParams,
     commitSessionChange,
@@ -255,9 +255,35 @@ export function useOneClickRemainingSpendLimit({
     [transactionParams, amountSpentData]
   );
 
+  const wouldExceedSpendLimit = useCallback(
+    ({
+      wantToSpend,
+      maybeSpendLimit,
+      maybeWouldSpendTotal,
+    }: {
+      wantToSpend: Dec;
+      maybeSpendLimit?: Dec;
+      maybeWouldSpendTotal?: Dec;
+    }) => {
+      const spendLimit =
+        maybeSpendLimit ?? transactionParams?.spendLimit?.toDec() ?? new Dec(0);
+      const amountSpent = amountSpentData?.amountSpent?.toDec() ?? new Dec(0);
+      /**
+       * If we have simulation results then we use the exact amount that would be spent
+       * if not we provide a fallback by adding already spent amount and the next spending
+       * (the fallback ignores the fact that for some tokens, the value is not included in the spend limit)
+       */
+      const wouldSpend = maybeWouldSpendTotal ?? amountSpent.add(wantToSpend);
+
+      return wouldSpend.gt(spendLimit);
+    },
+    [amountSpentData, transactionParams]
+  );
+
   return {
     amountSpent: amountSpentData?.amountSpent,
     remainingSpendLimit,
+    wouldExceedSpendLimit,
     sessionAuthenticator,
     isLoading,
   };
