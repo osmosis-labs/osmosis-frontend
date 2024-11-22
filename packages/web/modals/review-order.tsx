@@ -73,7 +73,7 @@ interface ReviewOrderProps {
   page?: EventPage;
   quoteType?: QuoteDirection;
   isBeyondOppositePrice?: boolean;
-  overspendErrorParams: ReturnType<typeof useSwap>["overspendErrorParams"];
+  overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
 }
 
 export function ReviewOrder({
