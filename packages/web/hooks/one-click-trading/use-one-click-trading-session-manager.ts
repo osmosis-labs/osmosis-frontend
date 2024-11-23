@@ -10,6 +10,7 @@ import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-tra
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
@@ -19,6 +20,8 @@ export function useOneClickTradingSessionManager({
 }: {
   onCommit: () => void;
 }) {
+  const { logEvent } = useAmplitudeAnalytics();
+
   const { accountStore, chainStore } = useStore();
 
   const {
@@ -108,11 +111,28 @@ export function useOneClickTradingSessionManager({
           : undefined,
       },
       {
-        onSuccess: () => {
-          // Wait for the next macrotask to ensure the state is updated
-          setTimeout(() => {
-            onCommitRef.current();
-          }, 0);
+        onSuccess: async () => {
+          // Wait for isEnabled to be updated before committing
+          await new Promise<void>((resolve, reject) => {
+            let retries = 0;
+            const maxRetries = 10; // 1 second
+            const checkIsEnabled = () => {
+              if (isEnabledRef.current) {
+                resolve();
+              } else if (retries >= maxRetries) {
+                reject(
+                  new Error(
+                    "Timed out waiting for one-click trading to be enabled"
+                  )
+                );
+              } else {
+                retries++;
+                setTimeout(checkIsEnabled, 100);
+              }
+            };
+            checkIsEnabled();
+          });
+          onCommitRef.current();
         },
         onError: () => {
           rollbackCreateSession();

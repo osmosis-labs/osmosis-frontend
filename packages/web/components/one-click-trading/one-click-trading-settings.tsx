@@ -182,31 +182,11 @@ export const OneClickTradingSettings = ({
     });
 
   useEffect(() => {
-    const shouldInitialize =
-      !initialTransaction1CTParams && transaction1CTParams;
-
-    const hasUnsavedChanges = changes.some((c) => !initialChanges.includes(c));
-    const isParamsDifferentFromInitial =
-      compare1CTTransactionParams({
-        prevParams: initialTransaction1CTParams,
-        nextParams: transaction1CTParams,
-      }).length > 0;
-
-    if (
-      shouldInitialize ||
-      (!hasUnsavedChanges && isParamsDifferentFromInitial)
-    ) {
-      setInitialTransaction1CTParams(transaction1CTParams);
-      setChanges(externalChanges);
-      setInitialChanges(externalChanges);
-    }
-  }, [
-    changes,
-    externalChanges,
-    initialChanges,
-    initialTransaction1CTParams,
-    transaction1CTParams,
-  ]);
+    if (!transaction1CTParams || initialTransaction1CTParams) return;
+    setInitialTransaction1CTParams(transaction1CTParams);
+    setChanges(externalChanges);
+    setInitialChanges(externalChanges);
+  }, [externalChanges, initialTransaction1CTParams, transaction1CTParams]);
 
   const {
     isOpen: isDiscardDialogOpen,
