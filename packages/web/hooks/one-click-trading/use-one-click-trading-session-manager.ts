@@ -3,7 +3,6 @@ import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { useCallback, useEffect, useMemo, useRef } from "react";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
