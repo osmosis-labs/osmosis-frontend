@@ -42,6 +42,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
   | Extract<BridgeChain, { chainType: "bitcoin" }>
   | Extract<BridgeChain, { chainType: "solana" }>
+  | Extract<BridgeChain, { chainType: "penumbra" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
   | Extract<BridgeChain, { chainType: "tron" }>
 ) & {
