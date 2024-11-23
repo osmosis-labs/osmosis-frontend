@@ -39,7 +39,7 @@ export const useOneClickTradingSession = ({
     }
 
     const info = await accountStore.getOneClickTradingInfo();
-    const isEnabled = await accountStore.isOneCLickTradingEnabled();
+    const isEnabled = await accountStore.isOneClickTradingEnabled();
     setIsExpired(await accountStore.isOneClickTradingExpired());
 
     if (info?.userOsmoAddress !== account?.address) {
