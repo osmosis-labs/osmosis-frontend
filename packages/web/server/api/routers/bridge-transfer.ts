@@ -26,6 +26,7 @@ import {
   EthereumChainInfo,
   isNil,
   isSameVariant,
+  PenumbraChainInfo,
   SolanaChainInfo,
   timeout,
   TronChainInfo,
@@ -418,6 +419,12 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...TronChainInfo,
               chainType,
               logoUri: "/networks/tron.svg",
+            };
+          } else if (chainType === "penumbra") {
+            return {
+              ...PenumbraChainInfo,
+              chainType,
+              logoUri: "/networks/penumbra.svg",
             };
           }
 
