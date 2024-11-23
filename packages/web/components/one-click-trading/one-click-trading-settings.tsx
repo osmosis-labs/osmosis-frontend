@@ -251,6 +251,8 @@ export const OneClickTradingSettings = ({
         )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
       : undefined;
 
+  const changesWithoutIsEnabled = changes.filter((c) => c !== "isEnabled");
+
   return (
     <>
       <DiscardChangesConfirmationModal
@@ -269,13 +271,13 @@ export const OneClickTradingSettings = ({
       {onClose && (
         <ModalCloseButton
           onClick={() => {
-            if (changes.length > 0) {
-              if (standalone) {
+            if (standalone) {
+              if (changesWithoutIsEnabled.length > 0) {
                 return openCloseConfirmDialog();
-              } else {
-                setTransaction1CTParams(initialTransaction1CTParams);
-                setExternalChanges?.(initialChanges);
               }
+            } else {
+              setTransaction1CTParams(initialTransaction1CTParams);
+              setExternalChanges?.(initialChanges);
             }
 
             onClose();
@@ -291,7 +293,7 @@ export const OneClickTradingSettings = ({
                   <GoBackButton
                     className="absolute left-7 top-7"
                     onClick={() => {
-                      if (standalone && changes.length > 0) {
+                      if (standalone && changesWithoutIsEnabled.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
@@ -448,7 +450,7 @@ export const OneClickTradingSettings = ({
 
                 {standalone &&
                   hasExistingSession &&
-                  changes.length > 0 &&
+                  changes.filter((c) => c !== "isEnabled").length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
