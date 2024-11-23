@@ -39,10 +39,20 @@ export function getParametersFromOverspendErrorMessage(
 
   if (!wouldSpendTotal || !limit) return;
 
-  return {
-    wouldSpendTotal: new Dec(wouldSpendTotal, 6),
-    limit: new Dec(limit, 6),
-  };
+  try {
+    // Validate that extracted values are valid numbers
+    if (isNaN(Number(wouldSpendTotal)) || isNaN(Number(limit))) {
+      return;
+    }
+
+    return {
+      wouldSpendTotal: new Dec(wouldSpendTotal, 6),
+      limit: new Dec(limit, 6),
+    };
+  } catch (error) {
+    console.error("Failed to parse overspend error parameters:", error);
+    return;
+  }
 }
 
 export function isOverspendErrorMessage({
