@@ -115,7 +115,6 @@ export function useOneClickTradingSessionManager({
           await new Promise<void>((resolve, reject) => {
             let retries = 0;
             const maxRetries = 10; // 1 second
-            let timeoutId: NodeJS.Timeout;
             const checkIsEnabled = () => {
               if (isEnabledRef.current) {
                 resolve();
@@ -127,13 +126,10 @@ export function useOneClickTradingSessionManager({
                 );
               } else {
                 retries++;
-                timeoutId = setTimeout(checkIsEnabled, 100);
+                setTimeout(checkIsEnabled, 100);
               }
             };
             checkIsEnabled();
-            return () => {
-              if (timeoutId) clearTimeout(timeoutId);
-            };
           });
           onCommitRef.current();
         },
