@@ -59,10 +59,10 @@ cases(
     {
       name: "should extract parameters from valid overspend error message",
       message:
-        "Fetch error. Spend limit error: Overspend: 2000 has been spent but limit is 1000.",
+        "Fetch error. Spend limit error: Overspend: 2000000 has been spent but limit is 1000000.",
       result: {
-        wouldSpendTotal: new Dec("2000"),
-        limit: new Dec("1000"),
+        wouldSpendTotal: new Dec("2000000", 6),
+        limit: new Dec("1000000", 6),
       },
     },
     {
@@ -70,8 +70,8 @@ cases(
       message:
         "Fetch error. execution blocked by authenticator (account = osmo1sh8lreekwcytxpqr6lxmw5cl7kdrfsdfat2ujlvz, authenticator id = 208, msg index = 0, msg type url = /osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn): Spend limit error: Overspend: 50065777 has been spent but limit is 1000000: execute wasm contract failed",
       result: {
-        wouldSpendTotal: new Dec("50065777"),
-        limit: new Dec("1000000"),
+        wouldSpendTotal: new Dec("50065777", 6),
+        limit: new Dec("1000000", 6),
       },
     },
     {

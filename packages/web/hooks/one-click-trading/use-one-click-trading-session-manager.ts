@@ -277,15 +277,14 @@ export function useOneClickRemainingSpendLimit({
   const wouldExceedSpendLimit = useCallback(
     ({
       wantToSpend,
-      maybeSpendLimit,
       maybeWouldSpendTotal,
     }: {
       wantToSpend: Dec;
-      maybeSpendLimit?: Dec;
       maybeWouldSpendTotal?: Dec;
     }) => {
-      const spendLimit =
-        maybeSpendLimit ?? transactionParams?.spendLimit?.toDec() ?? new Dec(0);
+      if (wantToSpend.isZero()) return false;
+
+      const spendLimit = transactionParams?.spendLimit?.toDec() ?? new Dec(0);
       const amountSpent = amountSpentData?.amountSpent?.toDec() ?? new Dec(0);
       /**
        * If we have simulation results then we use the exact amount that would be spent

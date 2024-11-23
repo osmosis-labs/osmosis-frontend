@@ -40,8 +40,8 @@ export function getParametersFromOverspendErrorMessage(
   if (!wouldSpendTotal || !limit) return;
 
   return {
-    wouldSpendTotal: new Dec(wouldSpendTotal),
-    limit: new Dec(limit),
+    wouldSpendTotal: new Dec(wouldSpendTotal, 6),
+    limit: new Dec(limit, 6),
   };
 }
 

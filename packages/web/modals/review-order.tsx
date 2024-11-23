@@ -141,7 +141,6 @@ export function ReviewOrder({
   const wouldExceedSpendLimit = useMemo(() => {
     return wouldExceedSpendLimit1CT({
       wantToSpend: fiatAmountWithSlippage?.toDec() ?? new Dec(0),
-      maybeSpendLimit: overspendErrorParams?.limit,
       maybeWouldSpendTotal: overspendErrorParams?.wouldSpendTotal,
     });
   }, [overspendErrorParams, fiatAmountWithSlippage, wouldExceedSpendLimit1CT]);
