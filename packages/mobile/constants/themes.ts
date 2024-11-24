@@ -5,10 +5,15 @@ import {
 
 import { Colors } from "~/constants/colors";
 
-export const DefaultTheme: Theme = {
+const createTheme = <T extends Theme>(theme: T) => theme;
+
+export const DefaultTheme = createTheme({
   ...DefaultNavigationTheme,
   colors: {
     ...DefaultNavigationTheme.colors,
     background: Colors.background,
+    tabBarBackground: "hsla(248, 77%, 8%, 0.2)",
   },
-};
+});
+
+export type AppTheme = typeof DefaultTheme;
