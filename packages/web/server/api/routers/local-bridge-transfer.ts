@@ -63,6 +63,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
           createAssetObject("bitcoin", z.object({})),
           createAssetObject("solana", z.object({})),
           createAssetObject("tron", z.object({})),
+          createAssetObject("penumbra", z.object({})),
         ]),
       })
     )
@@ -236,7 +237,7 @@ export const localBridgeTransferRouter = createTRPCRouter({
 
         return assetsWithBalance;
       } else {
-        // For Bitcoin, Tron or Solana, return 0 assets as it's not supported for now
+        // For Bitcoin, Tron, Penumbra or Solana, return 0 assets as it's not supported for now
         // TODO: add 2 more else statements and send balance queries to Bitcoin, Tron or Solana as needed
 
         return input.source.assets.map((asset) => ({
