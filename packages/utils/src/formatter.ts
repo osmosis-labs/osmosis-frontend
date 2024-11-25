@@ -6,13 +6,13 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
 import {
   getDecimalCount,
   getNumberMagnitude,
   toScientificNotation,
-} from "~/utils/number";
+  trimZerosFromEnd,
+} from "./number";
 
 type CustomFormatOpts = {
   maxDecimals: number;
@@ -32,9 +32,7 @@ const DEFAULT: CustomFormatOpts = {
   scientificMagnitudeThreshold: 14,
 };
 
-/**
- * @deprecated Use the formatPretty function from our utils packages instead.
- */
+/** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
 export function formatPretty(
   prettyValue: PricePretty | CoinPretty | RatePretty | Dec | { toDec(): Dec },
   opts: FormatOptions = {}
@@ -222,7 +220,15 @@ function hasIntlFormatOptions(opts: FormatOptions) {
 }
 
 /**
- * @deprecated Use the getPriceExtendedFormatOptions function from our utils packages instead.
+ * If a number is less then $100, we only show 4 significant digits, examples:
+ *  OSMO: $1.612
+ *  AXL: $0.9032
+ *  STARS: $0.03673
+ *  HUAHUA: $0.00001231
+ *
+ * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
+ * BTC: $47,334.21
+ * ETH: $3,441.15
  */
 export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
   /**
@@ -265,12 +271,12 @@ const countLeadingZeros = (decimalDigits: string) => {
   return zeroCount;
 };
 
-/**
- * @deprecated Use the compressZeros function from our utils packages instead.
- */
+/** Calculates and returns a price or amount value with the 0s extracted.
+ * Useful for displaying 0s as suscript */
 export const compressZeros = (
   formattedValue: string,
   hasCurrencySymbol: boolean,
+  // The threshold of the leading zeros' count after which the compression should trigger
   zerosThreshold: number = 4
 ) => {
   // Find the punctuation symbol marking the start of the decimal part
@@ -337,7 +343,8 @@ export const compressZeros = (
 };
 
 /**
- * @deprecated Use the formatFiatPrice function from our utils packages instead.
+ * Formats a fiat price using `getPriceExtendedFormatOptions` and displays `<0.01` if the price is less than $0.01.
+ * Rounds to the provided `maxDecimals` parameter.
  */
 export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   if (price.toDec().isZero()) return "$0";
@@ -364,9 +371,6 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
 }
 
-/**
- * @deprecated Use the calcFontSize function from our utils packages instead.
- */
 export function calcFontSize(numChars: number, isMobile: boolean): string {
   const sizeMapping: { [key: number]: string } = isMobile
     ? {

@@ -14,6 +14,9 @@ const config = withTurborepoManagedCache(
 // https://github.com/expo/expo/issues/26926
 config.resolver.unstable_enablePackageExports = true;
 
+// Exclude ws library imported from viem that is not compatible with react-native and is not needed for the app
+config.resolver.blacklistRE = /node_modules\/isows\/node_modules\/ws\/.*/;
+
 module.exports = config;
 
 /**

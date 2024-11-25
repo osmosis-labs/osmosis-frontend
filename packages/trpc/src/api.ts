@@ -139,13 +139,11 @@ export const createCallerFactory = t.createCallerFactory;
  */
 export function localLink<TRouter extends AnyRouter>({
   router,
-  assetLists,
-  chainList,
+  getLists,
   opentelemetryServiceName,
 }: {
   router: TRouter;
-  assetLists: AssetList[];
-  chainList: Chain[];
+  getLists: () => Promise<{ assetLists: AssetList[]; chainList: Chain[] }>;
   opentelemetryServiceName: string | undefined;
 }): TRPCLink<TRouter> {
   return () =>
@@ -153,13 +151,17 @@ export function localLink<TRouter extends AnyRouter>({
       observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
         (observer) => {
           async function execute() {
-            const createCaller = t.createCallerFactory(router);
-            const caller = createCaller({
-              assetLists,
-              chainList,
-              opentelemetryServiceName,
-            });
             try {
+              // Fetch assetLists and chainList using the provided async method getLists
+              const { assetLists, chainList } = await getLists();
+
+              const createCaller = t.createCallerFactory(router);
+              const caller = createCaller({
+                assetLists,
+                chainList,
+                opentelemetryServiceName,
+              });
+
               // Attempt to execute the operation using the router's caller.
               const data = await (
                 caller[op.path] as (input: unknown) => unknown
