@@ -91,7 +91,11 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
-    queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
+    queryKey: [
+      "estimate-tx-fees",
+      superjson.stringify(messages),
+      superjson.stringify(signOptions),
+    ],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({

@@ -54,6 +54,7 @@ export const useRemoveOneClickTradingSession = ({
 
       if (oneClickTradingInfo?.authenticatorId === authenticatorId) {
         accountStore.setOneClickTradingInfo(undefined);
+        accountStore.setShouldUseOneClickTrading({ nextValue: false });
         displayToast(
           {
             titleTranslationKey:

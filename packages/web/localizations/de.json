@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Neu"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-Klick-Handelslimit",
+      "enableTitle": "Starten Sie den 1-Klick-Handel",
+      "enableDescription": "Schneller und einfacher handeln",
+      "paramsDescription": "{sessionLength} Sitzung mit {lossProtectionLimit} Verlustschutzlimit",
+      "defaultSpendLimit": "5.000 USD",
+      "change": "Ändern",
+      "edit": "Bearbeiten",
+      "exceeded": "Übertroffen",
+      "exceededTooltip": {
+        "title": "Überschreitet die aktuelle Verlustschutzgrenze",
+        "body": "Sie müssen diese Transaktion in Ihrem Wallet manuell genehmigen."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 Minuten",
+      "10min": "10 Minuten",
+      "30min": "30 Minuten",
+      "1hour": "1 Stunde",
+      "3hours": "3 Stunden",
+      "12hours": "12 Stunden"
+    },
     "settings": {
       "header": "1-Klick-Handel",
       "description": "Mit 1-Click Trading können Sie sicher auf diesem Gerät handeln, ohne jede Transaktion in Ihrem Wallet signieren zu müssen.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Sitzungszeitraum",
-        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen.",
-        "periods": {
-          "5min": "5 Minuten",
-          "10min": "10 Minuten",
-          "30min": "30 Minuten",
-          "1hour": "1 Stunde",
-          "3hours": "3 Stunden",
-          "12hours": "12 Stunden"
-        }
+        "description": "Legen Sie eine Dauer fest, um den 1-Klick-Handel auf diesem Gerät zu ermöglichen."
       },
       "discardChanges": {
         "title": "Änderungen verwerfen?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Spread-Faktor",
     "showDetails": "Zeige Details",
     "hideDetails": "Verstecken",
-    "continueAnyway": "Mache trotzdem weiter",
-    "warning": {
-      "exceedsSpendLimit": "Dieser Tausch überschreitet Ihr verbleibendes Ausgabenlimit für 1-Click-Handel.",
-      "increaseSpendLimit": "Ausgabenlimit erhöhen"
-    },
     "settings": {
       "slippage": "Rutschtoleranz"
     },
@@ -1084,6 +1093,16 @@
     "hours": "Std.",
     "day": "Tag",
     "days": "Tage"
+  },
+  "timeUnitsShort": {
+    "second": "Sek.",
+    "seconds": "Sek.",
+    "minute": "Min",
+    "minutes": "Min",
+    "hour": "Std",
+    "hours": "Std",
+    "day": "Tag",
+    "days": "Tag"
   },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",
