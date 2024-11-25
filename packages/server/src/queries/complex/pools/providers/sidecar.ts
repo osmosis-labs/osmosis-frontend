@@ -48,18 +48,17 @@ export function getPoolsFromSidecar({
   if (poolIds && !poolIds.length) {
     return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
   }
-
+  
   return cachified({
     cache: poolsCache,
-    key: 
-      assetLists.toString() +
-      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      (notPoolIds?.toString() ?? "") +
-      (types?.toString() ?? "") +
-      minLiquidityUsd +
-      withMarketIncentives.toString() + 
-      (pagination?.toString() ?? "") +
-      (sort?.toString() ?? ""),
+    key: JSON.stringify(assetLists) +
+    (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+    (notPoolIds?.join(",") ?? "") +
+    (types?.join(",") ?? "") + 
+    (minLiquidityUsd ?? "") + 
+    withMarketIncentives.toString() + 
+    (pagination ? JSON.stringify(pagination) : "") +
+    (sort ? JSON.stringify(sort) : ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
