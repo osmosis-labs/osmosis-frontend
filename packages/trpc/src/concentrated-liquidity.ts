@@ -1,4 +1,3 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import {
   getAssets,
   getLiquidityPerTickRange,
@@ -9,6 +8,7 @@ import {
   queryPoolmanagerParams,
   queryPositionById,
 } from "@osmosis-labs/server";
+import { AppCurrency } from "@osmosis-labs/types";
 import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -106,34 +106,39 @@ export const concentratedLiquidityRouter = createTRPCRouter({
   getLiquidityPerTickRange: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ ctx, input }) => getLiquidityPerTickRange({ ...ctx, ...input })),
-  getBaseTokens: publicProcedure.query(({ ctx }) =>
-    getAssets({
-      assetLists: ctx.assetLists,
-      onlyVerified: true,
-    })
-      .map((asset) => {
-        const assetListAsset = getAssetFromAssetList({
-          assetLists: ctx.assetLists,
-          coinMinimalDenom: asset.coinMinimalDenom,
-        });
+  getBaseTokens: publicProcedure
+    .input(
+      z.object({
+        onlyVerified: z.boolean().default(false),
+        includePreview: z.boolean().default(false),
+      })
+    )
+    .query(({ ctx, input }) =>
+      getAssets({
+        assetLists: ctx.assetLists,
+        onlyVerified: input.onlyVerified,
+        includePreview: input.includePreview,
+      })
+        .map((asset) => {
+          const assetListAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            coinMinimalDenom: asset.coinMinimalDenom,
+          });
 
-        if (!assetListAsset) return;
+          if (!assetListAsset) return;
 
-        return {
-          chainName: assetListAsset.rawAsset.chainName,
-          token: new CoinPretty(
-            {
+          return {
+            chainName: assetListAsset.rawAsset.chainName,
+            token: {
               coinDenom: asset.coinDenom,
               coinDecimals: asset.coinDecimals,
               coinMinimalDenom: asset.coinMinimalDenom,
               coinImageUrl: asset.coinImageUrl,
-            },
-            0
-          ).currency,
-        };
-      })
-      .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
-  ),
+            } satisfies AppCurrency,
+          };
+        })
+        .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
+    ),
   getQuoteTokens: publicProcedure.query(async ({ ctx }) => {
     const {
       params: { authorized_quote_denoms: authorizedQuoteDenoms },
@@ -158,15 +163,12 @@ export const concentratedLiquidityRouter = createTRPCRouter({
           rawAsset: { logoURIs },
         } = asset;
         return {
-          token: new CoinPretty(
-            {
-              coinDenom: symbol,
-              coinDecimals: decimals,
-              coinMinimalDenom,
-              coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
-            },
-            0
-          ).currency,
+          token: {
+            coinDenom: symbol,
+            coinDecimals: decimals,
+            coinMinimalDenom,
+            coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
+          } satisfies AppCurrency,
           chainName: asset.rawAsset.chainName,
         };
       })

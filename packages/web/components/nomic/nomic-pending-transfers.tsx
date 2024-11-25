@@ -364,7 +364,9 @@ const TransactionDetailsModal = ({
               <p className="body2 text-white-full">
                 {t("transfer.nomic.asset")}
               </p>
-              <p className="body2 text-osmoverse-300">nBTC</p>
+              <p className="body2 text-osmoverse-300">
+                {depositData.networkFee.amount.denom}
+              </p>
             </div>
             <div className="flex items-center justify-between py-2">
               <p className="body2 text-white-full">

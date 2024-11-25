@@ -29,6 +29,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   alloyedAssets: false,
   bridgeDepositAddress: false,
   nomicWithdrawAmount: false,
+  swapToolTopGainers: false,
 };
 
 export function useFeatureFlags() {

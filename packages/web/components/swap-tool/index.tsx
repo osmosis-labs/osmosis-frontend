@@ -11,6 +11,7 @@ import {
   ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -143,11 +144,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       }
     }
 
-    const outputDifference = new RatePretty(
-      swapState.inAmountInput?.fiatValue
-        ?.toDec()
-        .sub(swapState.tokenOutFiatValue?.toDec())
-        .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+    const outputDifference = useMemo(
+      () =>
+        new RatePretty(
+          swapState.inAmountInput?.fiatValue
+            ?.toDec()
+            .sub(swapState.tokenOutFiatValue?.toDec())
+            .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
+        ),
+      [swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue]
     );
 
     const showOutputDifferenceWarning = outputDifference

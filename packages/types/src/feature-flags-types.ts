@@ -22,4 +22,5 @@ export type AvailableFlags =
   | "sqsActiveOrders"
   | "alloyedAssets"
   | "bridgeDepositAddress"
-  | "nomicWithdrawAmount";
+  | "nomicWithdrawAmount"
+  | "swapToolTopGainers";
