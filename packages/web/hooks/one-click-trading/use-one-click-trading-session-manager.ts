@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { displayErrorRemovingSessionToast } from "~/components/alert/one-click-trading-toasts";
 import { isRejectedTxErrorMessage } from "~/components/alert/prettify";
+import { EventName } from "~/config/analytics-events";
 import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
 import { useRemoveOneClickTradingSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { useOneClickTradingParams } from "~/hooks/one-click-trading/use-one-click-trading-params";
@@ -132,6 +133,7 @@ export function useOneClickTradingSessionManager({
             checkIsEnabled();
           });
           onCommitRef.current();
+          logEvent([EventName.OneClickTrading.enableOneClickTrading]);
         },
         onError: () => {
           rollbackCreateSession();
@@ -148,6 +150,7 @@ export function useOneClickTradingSessionManager({
     sessionAuthenticator,
     setTransactionParams,
     initialTransactionParams,
+    logEvent,
   ]);
 
   const stopSession = useCallback(() => {
