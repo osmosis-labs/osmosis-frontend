@@ -117,7 +117,7 @@ export async function getPools(
   total: number;
   nextCursor: number | undefined;
 }> {
-  params.notPoolIds = FILTERABLE_IDS;
+    params.notPoolIds = FILTERABLE_IDS;
     let pools = await poolProvider(params);
 
 	console.log("getPools pools", pools.data.length);

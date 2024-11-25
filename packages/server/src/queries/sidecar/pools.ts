@@ -1,7 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 
 import { PaginationType, SortType } from "../../queries/complex/pools";
-import { SIDECAR_BASE_URL } from "../../env";
+import { IS_TESTNET, SIDECAR_BASE_URL } from "../../env";
 import {
   ConcentratedPoolRawResponse,
   CosmwasmPoolRawResponse,
@@ -107,9 +107,29 @@ export type SqsPool = {
   fees_data?: SQSPoolFeesData;
 };
 
-export function queryPools({
+type PoolType = {
+  [key: string]: number;
+};
+
+// Define the mapping of PoolType enums to integers
+const PoolTypeEnum: PoolType = {
+  weighted: 0,        // Maps to Balancer
+  stable: 1,          // Maps to Stableswap
+  concentrated: 2,    // Maps to Concentrated
+  cosmwasm: 3,        // Maps to CosmWasm
+};
+
+// Function to retrieve integer values from the filter types
+export const getPoolTypeIntegers = (filters: string[]): number[] => {
+  return filters
+    .map((filter) => PoolTypeEnum[filter] ?? -1) // Use -1 for undefined mappings
+    .filter((value) => value !== -1); // Exclude invalid mappings
+};
+
+export async function queryPools({
   poolIds,
   notPoolIds,
+  types,
   minLiquidityCap,
   withMarketIncentives,
   pagination,
@@ -117,6 +137,7 @@ export function queryPools({
 }: {
   poolIds?: string[];
   notPoolIds?: string[];
+  types?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
@@ -126,19 +147,25 @@ export function queryPools({
   const params = new URLSearchParams();
 
   if (poolIds) {
-    params.append("IDs", poolIds.join(","));
+    params.append("filter[id]", poolIds.join(","));
   }
 
   if (notPoolIds) {
-    params.append("notIDs", notPoolIds.join(","));
+    params.append("filter[id][not_in]", notPoolIds.join(","));
   }
 
-  if (minLiquidityCap) {
-    params.append("min_liquidity_cap", minLiquidityCap);
+  if (types) {
+	params.append("filter[type]", getPoolTypeIntegers(types).join(","));
+  }
+
+   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // // information.
+  if (minLiquidityCap && !IS_TESTNET) {
+    params.append("filter[min_liquidity_cap]", minLiquidityCap);
   }
 
   if (withMarketIncentives) {
-    params.append("with_market_incentives", "true");
+    params.append("filter[with_market_incentives]", "true");
   }
 
   if (pagination) {
@@ -157,7 +184,7 @@ export function queryPools({
 
   url.search = params.toString();
 
-  console.log("url", url.toString());
+  console.log("sidecar url", url.toString());
   return apiClient<SQSGetPoolsResponse>(url.toString()).then((response) => {
     // When next_cursor is -1 that means we have reached the end of the list
     if (response.meta.next_cursor === -1) {

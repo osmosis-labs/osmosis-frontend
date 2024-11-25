@@ -29,6 +29,7 @@ export function getPoolsFromSidecar({
   assetLists,
   poolIds,
   notPoolIds,
+  types,
   minLiquidityUsd,
   withMarketIncentives = true,
   pagination,
@@ -36,8 +37,9 @@ export function getPoolsFromSidecar({
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
-  notPoolIds?: string[];
   poolIds?: string[];
+  notPoolIds?: string[];
+  types?: PoolType[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
@@ -51,8 +53,9 @@ export function getPoolsFromSidecar({
     cache: poolsCache,
     key: 
       assetLists.toString() +
-      (notPoolIds?.toString() ?? "") +
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+      (notPoolIds?.toString() ?? "") +
+      (types?.toString() ?? "") +
       minLiquidityUsd +
       withMarketIncentives.toString() + 
       (pagination?.toString() ?? "") +
@@ -64,6 +67,7 @@ export function getPoolsFromSidecar({
           queryPools({
             poolIds,
             notPoolIds,
+			types,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
 			pagination,
