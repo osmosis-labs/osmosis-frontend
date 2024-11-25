@@ -62,7 +62,11 @@ export class NomicBridgeProvider implements BridgeProvider {
     this.relayers =
       this.ctx.env === "testnet"
         ? ["https://testnet-relayer.nomic.io:8443"]
-        : ["https://relayer.nomic.mappum.io:8443"];
+        : [
+            "https://btc-relayer.nomic.io",
+            "https://btc-relay.nomic-main.ccvalidators.com",
+            "https://nomic-relayer.forbole.com",
+          ];
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
