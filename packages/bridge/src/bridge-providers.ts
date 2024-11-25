@@ -3,6 +3,7 @@ import { IbcBridgeProvider } from "./ibc";
 import { BridgeProviderContext } from "./interface";
 import { NitroBridgeProvider } from "./nitro";
 import { NomicBridgeProvider } from "./nomic";
+import { PenumbraBridgeProvider } from "./penumbra";
 import { PicassoBridgeProvider } from "./picasso";
 import { SkipBridgeProvider } from "./skip";
 import { SquidBridgeProvider } from "./squid";
@@ -21,6 +22,7 @@ export class BridgeProviders {
     [WormholeBridgeProvider.ID]: WormholeBridgeProvider;
     [NitroBridgeProvider.ID]: NitroBridgeProvider;
     [PicassoBridgeProvider.ID]: PicassoBridgeProvider;
+    [PenumbraBridgeProvider.ID]: PenumbraBridgeProvider;
   };
 
   constructor(integratorId: string, commonContext: BridgeProviderContext) {
@@ -40,6 +42,7 @@ export class BridgeProviders {
       [WormholeBridgeProvider.ID]: new WormholeBridgeProvider(commonContext),
       [NitroBridgeProvider.ID]: new NitroBridgeProvider(commonContext),
       [PicassoBridgeProvider.ID]: new PicassoBridgeProvider(commonContext),
+      [PenumbraBridgeProvider.ID]: new PenumbraBridgeProvider(commonContext),
     };
   }
 }
