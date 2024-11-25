@@ -1,7 +1,13 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 
-export const TrendIcon = ({ width = 24, height = 24, fill = "#E4E1FB" }) => (
+import { Colors } from "~/constants/colors";
+
+export const TrendIcon = ({
+  width = 24,
+  height = 24,
+  fill = Colors.osmoverse[100],
+}) => (
   <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
     <Path
       fillRule="evenodd"

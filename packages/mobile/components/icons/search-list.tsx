@@ -1,10 +1,11 @@
 import React from "react";
+import { Colors } from "react-native/Libraries/NewAppScreen";
 import Svg, { Path } from "react-native-svg";
 
 export const SearchListIcon = ({
   width = 24,
   height = 24,
-  fill = "#E4E1FB",
+  fill = Colors.osmoverse[100],
 }) => (
   <Svg width={width} height={height} viewBox="0 0 24 24" fill="none">
     <Path

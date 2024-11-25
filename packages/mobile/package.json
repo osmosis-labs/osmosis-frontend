@@ -16,9 +16,8 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
-    "@osmosis-labs/server": "^1.0.0",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "debounce": "^1.2.1",
+    "@osmosis-labs/server": "^1.0.0",
     "@osmosis-labs/trpc": "^1.0.0",
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/utils": "^1.0.0",
@@ -31,6 +30,7 @@
     "@tanstack/react-query-persist-client": "^4.36.1",
     "@trpc/client": "^10.45.1",
     "@trpc/react-query": "^10.45.1",
+    "debounce": "^1.2.1",
     "expo": "~52.0.8",
     "expo-blur": "~14.0.1",
     "expo-constants": "~17.0.3",
