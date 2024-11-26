@@ -288,30 +288,28 @@ export const usePlaceLimit = ({
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
 
-  const isLedger = account?.walletInfo?.mode === "ledger";
-
   /**
-   * Compute the negative first so we can default to the ledger case,
-   * just in case the wallet does not return the correct value
+   * Default isLedger to True, just in case the wallet does
+   * not return the correct value
    */
-  const { value: isNotLedger } = useAsync(async () => {
+  const { value: isLedger } = useAsync(async () => {
     const result = await account?.client?.getAccount?.(
       accountStore.osmosisChainId
     );
-    return !(result?.isNanoLedger ?? false);
+    return result?.isNanoLedger ?? true;
     // Disable deps to include account address in order to recompute the value as the other are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, account?.address, accountStore.osmosisChainId]);
 
   const limitMessages = useMemo(() => {
-    if (isNotLedger) {
-      return encodedMsg && !isMarket
-        ? [encodedMsg, ...(oneClickMessages?.msgs ?? [])]
-        : [];
+    if (isLedger) {
+      return encodedMsg && !isMarket ? [encodedMsg] : [];
     }
 
-    return encodedMsg && !isMarket ? [encodedMsg] : [];
-  }, [encodedMsg, isNotLedger, isMarket, oneClickMessages?.msgs]);
+    return encodedMsg && !isMarket
+      ? [encodedMsg, ...(oneClickMessages?.msgs ?? [])]
+      : [];
+  }, [encodedMsg, isLedger, isMarket, oneClickMessages?.msgs]);
 
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue?.toCoin().amount ?? "0";
@@ -399,7 +397,7 @@ export const usePlaceLimit = ({
        * before broadcasting the transaction as there is a payload limit on ledger
        */
       if (
-        !isNotLedger &&
+        isLedger &&
         oneClickMessages &&
         oneClickMessages.msgs &&
         shouldSend1CTTx
@@ -529,7 +527,7 @@ export const usePlaceLimit = ({
     feeUsdValue,
     marketState,
     logEvent,
-    isNotLedger,
+    isLedger,
     oneClickMessages,
     shouldSend1CTTx,
     accountStore,
