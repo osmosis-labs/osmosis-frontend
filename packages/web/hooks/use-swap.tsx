@@ -521,9 +521,13 @@ export function useSwap(
           accountStore
             .signAndBroadcast(
               chainStore.osmosis.chainId,
-              routes.length === 1
-                ? "swapExactAmountIn"
-                : "splitRouteSwapExactAmountIn",
+              quoteType === "out-given-in"
+                ? routes.length === 1
+                  ? "swapExactAmountIn"
+                  : "splitRouteSwapExactAmountIn"
+                : routes.length === 1
+                ? "swapExactAmountOut"
+                : "splitRouteSwapExactAmountOut",
               messages,
               undefined,
               signOptions?.fee,
