@@ -183,6 +183,7 @@ export async function onAdd1CTSession({
   transaction1CTParams,
   allowedAmount,
   t,
+  logEvent,
 }: {
   privateKey: PrivKeySecp256k1;
   tx: DeliverTxResponse;
@@ -197,6 +198,7 @@ export async function onAdd1CTSession({
   transaction1CTParams: OneClickTradingTransactionParams;
   allowedAmount: string;
   t: ReturnType<typeof useTranslation>["t"];
+  logEvent: ReturnType<typeof useAmplitudeAnalytics>["logEvent"];
 }) {
   const publicKey = toBase64(privateKey.getPubKey().toBytes());
 
@@ -243,6 +245,13 @@ export async function onAdd1CTSession({
     },
     ToastType.ONE_CLICK_TRADING
   );
+  logEvent([
+    EventName.OneClickTrading.startSession,
+    {
+      spendLimit: Number(transaction1CTParams.spendLimit.toDec().toString()),
+      sessionPeriod: transaction1CTParams.sessionPeriod.end,
+    },
+  ]);
 }
 
 export async function makeCreate1CTSessionMessage({
@@ -471,23 +480,9 @@ export const useCreateOneClickTradingSession = ({
         transaction1CTParams,
         allowedAmount,
         t,
+        logEvent,
       });
     },
-    {
-      ...queryOptions,
-      onSuccess: (...params) => {
-        const [, { transaction1CTParams }] = params;
-        queryOptions?.onSuccess?.(...params);
-        logEvent([
-          EventName.OneClickTrading.startSession,
-          {
-            spendLimit: Number(
-              transaction1CTParams?.spendLimit.toDec().toString()
-            ),
-            sessionPeriod: transaction1CTParams?.sessionPeriod.end,
-          },
-        ]);
-      },
-    }
+    queryOptions
   );
 };

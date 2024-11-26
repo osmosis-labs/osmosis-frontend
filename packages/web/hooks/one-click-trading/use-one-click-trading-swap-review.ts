@@ -227,6 +227,7 @@ export function use1CTSwapReviewMessages() {
 
       return {
         type: "remove-1ct-session" as const,
+        authenticatorId: oneClickTradingInfo!.authenticatorId,
         msgs: [
           await makeRemoveAuthenticatorMsg({
             id: BigInt(oneClickTradingInfo!.authenticatorId),

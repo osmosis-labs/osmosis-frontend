@@ -17,6 +17,7 @@ import {
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -402,6 +403,17 @@ export const usePlaceLimit = ({
                 transaction1CTParams: oneClickMessages.transaction1CTParams,
                 allowedAmount: oneClickMessages.allowedAmount,
                 t,
+                logEvent,
+              });
+            } else if (
+              shouldSend1CTTx &&
+              oneClickMessages &&
+              oneClickMessages.type === "remove-1ct-session"
+            ) {
+              onEnd1CTSession({
+                accountStore,
+                authenticatorId: oneClickMessages.authenticatorId,
+                logEvent,
               });
             }
           }

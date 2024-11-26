@@ -47,11 +47,13 @@ import {
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
 import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import {
   use1CTSwapReviewMessages,
   useOneClickTradingSession,
 } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
@@ -112,6 +114,7 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
+  const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -559,6 +562,17 @@ export function useSwap(
                         oneClickMessages.transaction1CTParams,
                       allowedAmount: oneClickMessages.allowedAmount,
                       t,
+                      logEvent,
+                    });
+                  } else if (
+                    shouldSend1CTTx &&
+                    oneClickMessages &&
+                    oneClickMessages.type === "remove-1ct-session"
+                  ) {
+                    onEnd1CTSession({
+                      accountStore,
+                      authenticatorId: oneClickMessages.authenticatorId,
+                      logEvent,
                     });
                   }
 
