@@ -454,8 +454,7 @@ export function useSwap(
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            (networkFeeError ||
-              networkFee?.amount.some(({ denom }) => denom !== "uosmo"))
+            networkFeeError
           ) {
             try {
               const TOAST_ID = networkFeeError
