@@ -1,4 +1,5 @@
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -19,32 +20,42 @@ export const useRemoveOneClickTradingSession = ({
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
   const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { logEvent } = useAmplitudeAnalytics();
 
   return useMutation(
     async ({ authenticatorId }) => {
-      if (!account?.osmosis) {
-        throw new Error("Osmosis account not found");
+      const userOsmoAddress = accountStore.getWallet(
+        accountStore.osmosisChainId
+      )?.address;
+
+      if (!userOsmoAddress) {
+        throw new Error("User Osmo address not found");
       }
 
+      const msg = await makeRemoveAuthenticatorMsg({
+        id: BigInt(authenticatorId),
+        sender: userOsmoAddress,
+      });
+
       await new Promise<DeliverTxResponse>((resolve, reject) => {
-        account.osmosis
-          .sendAddOrRemoveAuthenticatorsMsg({
-            addAuthenticators: [],
-            removeAuthenticators: [BigInt(authenticatorId)],
-            memo: "",
-            onFulfill: (tx) => {
-              if (tx.code === 0) {
-                resolve(tx);
-              } else {
-                reject(new Error("Transaction failed"));
-              }
-            },
-            signOptions: {
-              preferNoSetFee: true,
-            },
-          })
+        accountStore
+          .signAndBroadcast(
+            accountStore.osmosisChainId,
+            "addOrRemoveAuthenticators",
+            [msg],
+            "",
+            undefined,
+            { preferNoSetFee: true },
+            {
+              onFulfill: (tx) => {
+                if (tx.code === 0) {
+                  resolve(tx);
+                } else {
+                  reject(new Error("Transaction failed"));
+                }
+              },
+            }
+          )
           .catch((error) => {
             reject(error);
           });

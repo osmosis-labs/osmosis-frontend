@@ -293,7 +293,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isSwapToolLoading =
       isWalletLoading ||
       swapState.isQuoteLoading ||
-      swapState.isLoadingNetworkFee;
+      swapState.isLoadingNetworkFee ||
+      swapState.isLoadingOneClickMessages;
 
     let buttonText: string;
     if (swapState.error) {

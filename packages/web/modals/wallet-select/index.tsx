@@ -1,4 +1,4 @@
-import { State, WalletRepo, WalletStatus } from "@cosmos-kit/core";
+import { State, WalletStatus } from "@cosmos-kit/core";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -93,8 +93,7 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
       onConnect: onConnectProp,
 
       isOneClickEnabled: transaction1CTParams?.isOneClickEnabled,
-      onCreate1CTSession: ({ walletRepo }) =>
-        onCreate1CTSession({ walletRepo, transaction1CTParams }),
+      onCreate1CTSession: () => onCreate1CTSession({ transaction1CTParams }),
     });
 
     const currentCosmosWallet = rootWalletRepo?.current;
@@ -152,16 +151,13 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
     };
 
     const onCreate1CTSession = async ({
-      walletRepo,
       transaction1CTParams,
     }: {
-      walletRepo: WalletRepo;
       transaction1CTParams: OneClickTradingTransactionParams | undefined;
     }) => {
       create1CTSession.reset();
       setIsInitializingOneClickTrading(true);
       return create1CTSession.mutate({
-        walletRepo,
         transaction1CTParams,
         spendLimitTokenDecimals: spendLimitTokenDecimals,
       });
@@ -290,7 +286,6 @@ export const WalletSelectModal: FunctionComponent<WalletSelectModalProps> =
                   walletRepo={rootWalletRepo}
                   onCreate1CTSession={() =>
                     onCreate1CTSession({
-                      walletRepo: rootWalletRepo!,
                       transaction1CTParams,
                     })
                   }

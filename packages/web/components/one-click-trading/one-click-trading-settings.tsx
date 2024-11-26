@@ -32,7 +32,7 @@ import {
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
-import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-session-manager";
+import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";

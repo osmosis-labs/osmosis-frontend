@@ -17,7 +17,6 @@ import {
   getSwapMessages,
   getSwapTxParameters,
   QuoteDirection,
-  SwapTxRouteInGivenOut,
   SwapTxRouteOutGivenIn,
 } from "@osmosis-labs/tx";
 import { Currency, MinimalAsset } from "@osmosis-labs/types";
@@ -29,7 +28,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -47,7 +46,11 @@ import {
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
-import { useOneClickTradingSession } from "~/hooks/one-click-trading";
+import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import {
+  use1CTSwapReviewMessages,
+  useOneClickTradingSession,
+} from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
@@ -109,6 +112,7 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
+  const apiUtils = api.useUtils();
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
@@ -324,13 +328,20 @@ export function useSwap(
     outAmountInput.debouncedInAmount !== null &&
     Boolean(outAmountInput.amount);
 
+  const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
+    use1CTSwapReviewMessages();
+
+  const messages = useMemo(() => {
+    return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
+  }, [quote?.messages, oneClickMessages?.msgs]);
+
   const {
     data: networkFee,
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quote?.messages,
+    messages,
     enabled: true,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
@@ -379,44 +390,11 @@ export function useSwap(
     return balance.toDec().lt(amountWithSlippage);
   }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
 
-  /**
-   * Create refs so we can wait for them to finish in the sendTradeTokenInTx function
-   * This is a safety measure to prevent signed swaps from failing due to stale gas amount
-   * e.g. after enabling 1CT session the gas estimation needs to be updated before sending the swap
-   */
-  const isLoadingNetworkFeeRef = useRef(isLoadingNetworkFee);
-  const networkFeeErrorRef = useRef(networkFeeError);
-  useEffect(() => {
-    networkFeeErrorRef.current = networkFeeError;
-    isLoadingNetworkFeeRef.current = isLoadingNetworkFee;
-  }, [isLoadingNetworkFee, networkFeeError]);
-
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
-          // Wait for network fee to load, retry up to 10 times
-          let retries = 0;
-          while (isLoadingNetworkFeeRef.current && retries < 10) {
-            if (networkFeeErrorRef.current) {
-              return reject(new Error(networkFeeErrorRef.current.message));
-            }
-            await new Promise((resolve) => setTimeout(resolve, 100));
-            retries++;
-          }
-
-          // After retries, check if still loading
-          if (isLoadingNetworkFeeRef.current) {
-            return reject(
-              new Error("Network fee is still loading after 1 second")
-            );
-          }
-
-          if (networkFeeErrorRef.current) {
-            return reject(new Error(networkFeeErrorRef.current.message));
-          }
-
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
           if (!inAmountInput.amount || !outAmountInput.amount)
@@ -461,10 +439,10 @@ export function useSwap(
           //
           // This occurs because 1CT transactions require more gas, which makes
           // our current quote's gas estimation incorrect and low. This results in out of gas error.
-          const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
+          const messageCanBeSignedWithOneClickTrading = !isNil(messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages: quote.messages,
+                messages,
               }))
             : false;
 
@@ -538,122 +516,90 @@ export function useSwap(
               : {}),
           };
 
-          /**
-           * Send messages to account
-           */
-          if (quoteType === "out-given-in") {
-            const { routes, tokenIn, tokenOutMinAmount } = txParams;
-            const typedRoutes = routes as SwapTxRouteOutGivenIn[];
-            if (routes.length === 1) {
-              const { pools } = typedRoutes[0];
-              account.osmosis
-                .sendSwapExactAmountInMsg(
-                  pools,
-                  tokenIn!,
-                  tokenOutMinAmount!,
-                  undefined,
-                  signOptions,
-                  ({ code }) => {
-                    if (code)
-                      reject(
-                        new Error("Failed to send swap exact amount in message")
-                      );
-                    else resolve(pools.length === 1 ? "exact-in" : "multihop");
+          const { routes } = txParams;
+          const typedRoutes = routes as SwapTxRouteOutGivenIn[];
+          accountStore
+            .signAndBroadcast(
+              chainStore.osmosis.chainId,
+              quoteType === "out-given-in"
+                ? routes.length === 1
+                  ? "swapExactAmountIn"
+                  : "splitRouteSwapExactAmountIn"
+                : routes.length === 1
+                ? "swapExactAmountOut"
+                : "splitRouteSwapExactAmountOut",
+              messages,
+              undefined,
+              signOptions?.fee,
+              signOptions,
+              (tx) => {
+                const { code } = tx;
+                if (code) {
+                  reject(
+                    new Error("Failed to send swap exact amount in message")
+                  );
+                } else {
+                  if (
+                    shouldSend1CTTx &&
+                    oneClickMessages &&
+                    oneClickMessages.type === "create-1ct-session"
+                  ) {
+                    onAdd1CTSession({
+                      privateKey: oneClickMessages.key,
+                      tx,
+                      userOsmoAddress: account?.address ?? "",
+                      fallbackGetAuthenticatorId:
+                        apiUtils.local.oneClickTrading.getSessionAuthenticator
+                          .fetch,
+                      accountStore,
+                      allowedMessages: oneClickMessages.allowedMessages,
+                      sessionPeriod: oneClickMessages.sessionPeriod,
+                      spendLimitTokenDecimals:
+                        oneClickMessages.spendLimitTokenDecimals,
+                      transaction1CTParams:
+                        oneClickMessages.transaction1CTParams,
+                      allowedAmount: oneClickMessages.allowedAmount,
+                      t,
+                    });
                   }
-                )
-                .catch(reject);
-            } else if (routes.length > 1) {
-              account.osmosis
-                .sendSplitRouteSwapExactAmountInMsg(
-                  typedRoutes,
-                  tokenIn!,
-                  tokenOutMinAmount!,
-                  undefined,
-                  signOptions,
-                  ({ code }) => {
-                    if (code)
-                      reject(
-                        new Error(
-                          "Failed to send split route swap exact amount in message"
-                        )
-                      );
-                    else resolve("multiroute");
-                  }
-                )
-                .catch(reject);
-            } else {
-              // should not be possible because button should be disabled
-              reject(new Error("No routes given"));
-            }
-          } else {
-            const { routes, tokenOut, tokenInMaxAmount } = txParams;
-            const typedRoutes = routes as SwapTxRouteInGivenOut[];
-            if (routes.length === 1) {
-              const { pools } = typedRoutes[0];
-              account.osmosis
-                .sendSwapExactAmountOutMsg(
-                  pools,
-                  {
-                    coinMinimalDenom: tokenOut!.coinMinimalDenom,
-                    amount: tokenOut!.amount,
-                  },
-                  tokenInMaxAmount!,
-                  undefined,
-                  signOptions,
-                  ({ code }) => {
-                    if (code)
-                      reject(
-                        new Error("Failed to send swap exact amount in message")
-                      );
-                    else resolve(pools.length === 1 ? "exact-in" : "multihop");
-                  }
-                )
-                .catch(reject);
-            } else if (routes.length > 1) {
-              account.osmosis
-                .sendSplitRouteSwapExactAmountOutMsg(
-                  typedRoutes,
-                  tokenOut!,
-                  tokenInMaxAmount!,
-                  undefined,
-                  signOptions,
-                  ({ code }) => {
-                    if (code)
-                      reject(
-                        new Error(
-                          "Failed to send split route swap exact amount in message"
-                        )
-                      );
-                    else resolve("multiroute");
-                  }
-                )
-                .catch(reject);
-            } else {
-              // should not be possible because button should be disabled
-              reject(new Error("No routes given"));
-            }
-          }
+
+                  resolve(
+                    routes.length === 1
+                      ? typedRoutes[0].pools.length === 1
+                        ? "exact-in"
+                        : "multihop"
+                      : "multiroute"
+                  );
+                }
+              }
+            )
+            .catch(reject);
         }
       ).finally(() => {
         inAmountInput.reset();
         outAmountInput.reset();
       }),
     [
-      maxSlippage,
-      inAmountInput,
       account,
-      quote,
-      isOneClickTradingEnabled,
       accountStore,
-      hasOverSpendLimitError,
-      networkFeeError,
+      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      chainStore.osmosis.chainId,
       featureFlags.swapToolSimulateFee,
+      hasOverSpendLimitError,
+      inAmountInput,
+      isOneClickTradingEnabled,
+      maxSlippage,
+      messages,
       networkFee,
+      networkFeeError,
+      oneClickMessages,
+      outAmountInput,
+      quote,
+      quoteType,
+      shouldSend1CTTx,
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
-      quoteType,
-      outAmountInput,
     ]
   );
 
@@ -782,6 +728,7 @@ export function useSwap(
     networkFee,
     isLoadingNetworkFee:
       inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
+    isLoadingOneClickMessages,
     networkFeeError,
     error: precedentError,
     spotPriceQuote,
@@ -1098,6 +1045,8 @@ function useSwapAmountInput({
 
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
 
+  const { oneClickMessages } = use1CTSwapReviewMessages();
+
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
@@ -1108,7 +1057,10 @@ function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quoteForCurrentBalance?.messages,
+    messages: [
+      ...(quoteForCurrentBalance?.messages ?? []),
+      ...(oneClickMessages?.msgs ?? []),
+    ],
     enabled: networkFeeQueryEnabled,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,

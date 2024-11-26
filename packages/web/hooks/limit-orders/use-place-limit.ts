@@ -14,7 +14,10 @@ import {
   isValidNumericalRawInput,
   useAmountInput,
 } from "~/hooks/input/use-amount-input";
+import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
+import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -67,6 +70,8 @@ export const usePlaceLimit = ({
   maxSlippage,
   quoteType = "out-given-in",
 }: UsePlaceLimitParams) => {
+  const apiUtils = api.useUtils();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
   const {
@@ -279,6 +284,15 @@ export const usePlaceLimit = ({
     placeLimitMsg,
   ]);
 
+  const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
+    use1CTSwapReviewMessages();
+
+  const limitMessages = useMemo(() => {
+    return encodedMsg && !isMarket
+      ? [encodedMsg, ...(oneClickMessages?.msgs ?? [])]
+      : [];
+  }, [encodedMsg, isMarket, oneClickMessages?.msgs]);
+
   const placeLimit = useCallback(async () => {
     const quantity = paymentTokenValue?.toCoin().amount ?? "0";
     if (quantity === "0") {
@@ -335,7 +349,7 @@ export const usePlaceLimit = ({
       }
     }
 
-    if (!placeLimitMsg) return;
+    if (!limitMessages || limitMessages.length === 0) return;
 
     const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
@@ -360,16 +374,38 @@ export const usePlaceLimit = ({
 
     try {
       logEvent([EventName.LimitOrder.placeOrderStarted, baseEvent]);
-      await account?.cosmwasm.sendExecuteContractMsg(
+      await accountStore.signAndBroadcast(
+        accountStore.osmosisChainId,
         "executeWasm",
-        orderbookContractAddress,
-        placeLimitMsg!,
-        [
-          {
-            amount: quantity,
-            denom: paymentDenom,
-          },
-        ]
+        limitMessages,
+        "",
+        undefined,
+        undefined,
+        (tx) => {
+          if (!tx.code) {
+            if (
+              shouldSend1CTTx &&
+              oneClickMessages &&
+              oneClickMessages.type === "create-1ct-session"
+            ) {
+              onAdd1CTSession({
+                privateKey: oneClickMessages.key,
+                tx,
+                userOsmoAddress: account?.address ?? "",
+                fallbackGetAuthenticatorId:
+                  apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+                accountStore,
+                allowedMessages: oneClickMessages.allowedMessages,
+                sessionPeriod: oneClickMessages.sessionPeriod,
+                spendLimitTokenDecimals:
+                  oneClickMessages.spendLimitTokenDecimals,
+                transaction1CTParams: oneClickMessages.transaction1CTParams,
+                allowedAmount: oneClickMessages.allowedAmount,
+                t,
+              });
+            }
+          }
+        }
       );
       logEvent([EventName.LimitOrder.placeOrderCompleted, baseEvent]);
     } catch (error) {
@@ -385,19 +421,23 @@ export const usePlaceLimit = ({
       ]);
     }
   }, [
-    orderbookContractAddress,
-    account,
-    orderDirection,
     paymentTokenValue,
     isMarket,
-    marketState,
+    limitMessages,
     paymentFiatValue,
-    baseAsset,
-    quoteAsset,
-    logEvent,
+    orderDirection,
+    baseAsset?.coinDenom,
+    quoteAsset?.coinDenom,
     page,
     feeUsdValue,
-    placeLimitMsg,
+    marketState,
+    logEvent,
+    accountStore,
+    shouldSend1CTTx,
+    oneClickMessages,
+    account?.address,
+    apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+    t,
   ]);
 
   const { data, isLoading: isBalancesLoading } =
@@ -585,7 +625,7 @@ export const usePlaceLimit = ({
     error: limitGasError,
   } = useEstimateTxFees({
     chainId: accountStore.osmosisChainId,
-    messages: encodedMsg && !isMarket ? [encodedMsg] : [],
+    messages: limitMessages,
     enabled: shouldEstimateLimitGas,
   });
 
@@ -642,6 +682,7 @@ export const usePlaceLimit = ({
     reset,
     error,
     feeUsdValue,
+    isLoadingOneClickMessages,
     gas: {
       gasAmountFiat,
       isLoading: isGasLoading,

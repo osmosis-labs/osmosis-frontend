@@ -547,9 +547,6 @@ const OneClickTradingProfileSection: FunctionComponent<{
                   spendLimitTokenDecimals:
                     oneClickTradingInfo.spendLimit.decimals,
                   transaction1CTParams,
-                  walletRepo: accountStore.getWalletRepo(
-                    accountStore.osmosisChainId
-                  ),
                   /**
                    * If the user has an existing session, remove it and add the new one.
                    */
