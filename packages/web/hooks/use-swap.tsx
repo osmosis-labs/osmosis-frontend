@@ -334,12 +334,25 @@ export function useSwap(
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
 
-  const isLedger = account?.walletInfo?.mode === "ledger";
+  /**
+   * Compute the negative first so we can default to the ledger case,
+   * just in case the wallet does not return the correct value
+   */
+  const { value: isNotLedger } = useAsync(async () => {
+    const result = await account?.client?.getAccount?.(
+      accountStore.osmosisChainId
+    );
+    return !(result?.isNanoLedger ?? false);
+    // Disable deps to include account address in order to recompute the value as the other are memoized mobx values
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, account?.address, accountStore.osmosisChainId]);
 
   const messages = useMemo(() => {
-    if (isLedger) return quote?.messages ?? [];
-    return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
-  }, [isLedger, quote?.messages, oneClickMessages?.msgs]);
+    if (isNotLedger) {
+      return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
+    }
+    return quote?.messages ?? [];
+  }, [isNotLedger, quote?.messages, oneClickMessages?.msgs]);
 
   const {
     data: networkFee,
@@ -529,7 +542,7 @@ export function useSwap(
            * before broadcasting the transaction as there is a payload limit on ledger
            */
           if (
-            isLedger &&
+            !isNotLedger &&
             oneClickMessages &&
             oneClickMessages.msgs &&
             shouldSend1CTTx
@@ -585,7 +598,10 @@ export function useSwap(
                   }
                 }
               )
-              .catch(reject);
+              .catch((e) => {
+                reject(e);
+                throw e;
+              });
 
             await accountStore
               .signAndBroadcast(
@@ -707,7 +723,7 @@ export function useSwap(
       featureFlags.swapToolSimulateFee,
       hasOverSpendLimitError,
       inAmountInput,
-      isLedger,
+      isNotLedger,
       isOneClickTradingEnabled,
       logEvent,
       maxSlippage,
