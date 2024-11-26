@@ -334,9 +334,25 @@ export function useSwap(
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
 
+  /**
+   * Default isLedger to true, just in case the wallet does
+   * not return the correct value
+   */
+  const { value: isLedger } = useAsync(async () => {
+    const result = await account?.client?.getAccount?.(
+      accountStore.osmosisChainId
+    );
+    return result?.isNanoLedger ?? true;
+    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, account?.address, accountStore.osmosisChainId]);
+
   const messages = useMemo(() => {
+    if (isLedger) {
+      return quote?.messages ?? [];
+    }
     return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
-  }, [quote?.messages, oneClickMessages?.msgs]);
+  }, [isLedger, quote?.messages, oneClickMessages?.msgs]);
 
   const {
     data: networkFee,
@@ -520,73 +536,180 @@ export function useSwap(
 
           const { routes } = txParams;
           const typedRoutes = routes as SwapTxRouteOutGivenIn[];
-          accountStore
-            .signAndBroadcast(
-              chainStore.osmosis.chainId,
-              quoteType === "out-given-in"
-                ? routes.length === 1
-                  ? "swapExactAmountIn"
-                  : "splitRouteSwapExactAmountIn"
-                : routes.length === 1
-                ? "swapExactAmountOut"
-                : "splitRouteSwapExactAmountOut",
-              messages,
-              undefined,
-              signOptions?.fee,
-              signOptions,
-              (tx) => {
-                const { code } = tx;
-                if (code) {
-                  reject(
-                    new Error("Failed to send swap exact amount in message")
-                  );
-                } else {
-                  if (
-                    shouldSend1CTTx &&
-                    oneClickMessages &&
-                    oneClickMessages.type === "create-1ct-session"
-                  ) {
-                    onAdd1CTSession({
-                      privateKey: oneClickMessages.key,
-                      tx,
-                      userOsmoAddress: account?.address ?? "",
-                      fallbackGetAuthenticatorId:
-                        apiUtils.local.oneClickTrading.getSessionAuthenticator
-                          .fetch,
-                      accountStore,
-                      allowedMessages: oneClickMessages.allowedMessages,
-                      sessionPeriod: oneClickMessages.sessionPeriod,
-                      spendLimitTokenDecimals:
-                        oneClickMessages.spendLimitTokenDecimals,
-                      transaction1CTParams:
-                        oneClickMessages.transaction1CTParams,
-                      allowedAmount: oneClickMessages.allowedAmount,
-                      t,
-                      logEvent,
-                    });
-                  } else if (
-                    shouldSend1CTTx &&
-                    oneClickMessages &&
-                    oneClickMessages.type === "remove-1ct-session"
-                  ) {
-                    onEnd1CTSession({
-                      accountStore,
-                      authenticatorId: oneClickMessages.authenticatorId,
-                      logEvent,
-                    });
-                  }
 
-                  resolve(
-                    routes.length === 1
-                      ? typedRoutes[0].pools.length === 1
-                        ? "exact-in"
-                        : "multihop"
-                      : "multiroute"
-                  );
+          /**
+           * If it's ledger and we have one-click messages, we need to add a 1CT session
+           * before broadcasting the transaction as there is a payload limit on ledger
+           */
+          if (
+            isLedger &&
+            oneClickMessages &&
+            oneClickMessages.msgs &&
+            shouldSend1CTTx
+          ) {
+            await accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                "Add 1CT session",
+                oneClickMessages.msgs,
+                undefined,
+                undefined,
+                undefined,
+                async (tx) => {
+                  const { code } = tx;
+                  if (code) {
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  } else {
+                    if (
+                      oneClickMessages &&
+                      oneClickMessages.type === "create-1ct-session"
+                    ) {
+                      await onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        accountStore,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                        logEvent,
+                      });
+                    } else if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "remove-1ct-session"
+                    ) {
+                      await onEnd1CTSession({
+                        accountStore,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                        logEvent,
+                      });
+                    }
+                  }
                 }
-              }
-            )
-            .catch(reject);
+              )
+              .catch((e) => {
+                reject(e);
+                throw e;
+              });
+
+            await accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                quoteType === "out-given-in"
+                  ? routes.length === 1
+                    ? "swapExactAmountIn"
+                    : "splitRouteSwapExactAmountIn"
+                  : routes.length === 1
+                  ? "swapExactAmountOut"
+                  : "splitRouteSwapExactAmountOut",
+                messages,
+                undefined,
+                undefined,
+                {
+                  ...signOptions,
+                  useOneClickTrading:
+                    await accountStore.shouldBeSignedWithOneClickTrading({
+                      messages,
+                    }),
+                },
+                (tx) => {
+                  const { code } = tx;
+                  if (code) {
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  } else {
+                    resolve(
+                      routes.length === 1
+                        ? typedRoutes[0].pools.length === 1
+                          ? "exact-in"
+                          : "multihop"
+                        : "multiroute"
+                    );
+                  }
+                }
+              )
+              .catch(reject);
+          } else {
+            accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                quoteType === "out-given-in"
+                  ? routes.length === 1
+                    ? "swapExactAmountIn"
+                    : "splitRouteSwapExactAmountIn"
+                  : routes.length === 1
+                  ? "swapExactAmountOut"
+                  : "splitRouteSwapExactAmountOut",
+                messages,
+                undefined,
+                signOptions?.fee,
+                signOptions,
+                (tx) => {
+                  const { code } = tx;
+                  if (code) {
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  } else {
+                    if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "create-1ct-session"
+                    ) {
+                      onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        accountStore,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                        logEvent,
+                      });
+                    } else if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "remove-1ct-session"
+                    ) {
+                      onEnd1CTSession({
+                        accountStore,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                        logEvent,
+                      });
+                    }
+
+                    resolve(
+                      routes.length === 1
+                        ? typedRoutes[0].pools.length === 1
+                          ? "exact-in"
+                          : "multihop"
+                        : "multiroute"
+                    );
+                  }
+                }
+              )
+              .catch(reject);
+          }
         }
       ).finally(() => {
         inAmountInput.reset();
@@ -600,7 +723,9 @@ export function useSwap(
       featureFlags.swapToolSimulateFee,
       hasOverSpendLimitError,
       inAmountInput,
+      isLedger,
       isOneClickTradingEnabled,
+      logEvent,
       maxSlippage,
       messages,
       networkFee,

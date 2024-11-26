@@ -515,7 +515,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee?: StdFee,
     signOptions?: SignOptions,
     onTxEvents?:
-      | ((tx: DeliverTxResponse) => void)
+      | ((tx: DeliverTxResponse) => void | Promise<void>)
       | {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
@@ -709,7 +709,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onFulfill) {
-        onFulfill(tx);
+        await onFulfill(tx);
       }
     } catch (e) {
       const error = e as Error | AccountStoreNoBroadcastErrorEvent;
