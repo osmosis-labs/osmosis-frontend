@@ -7,7 +7,11 @@ import {
 } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
-import { QuoteDirection } from "@osmosis-labs/tx";
+import {
+  type makeAddAuthenticatorMsg,
+  type makeRemoveAuthenticatorMsg,
+  QuoteDirection,
+} from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
@@ -31,7 +35,7 @@ import {
   OneClickTradingParamsChanges,
   useAmplitudeAnalytics,
   useFeatureFlags,
-  useOneClickTradingSessionManager,
+  useOneClickTradingSwapReview,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -49,7 +53,14 @@ import {
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  confirmAction: () => void;
+  confirmAction: (params: {
+    create1CTSessionMsg:
+      | Awaited<ReturnType<typeof makeAddAuthenticatorMsg>>
+      | undefined;
+    remove1CTSessionMsg:
+      | Awaited<ReturnType<typeof makeRemoveAuthenticatorMsg>>
+      | undefined;
+  }) => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
   amountWithSlippage?: IntPretty;
@@ -128,15 +139,8 @@ export function ReviewOrder({
     remainingSpendLimit: remaining1CTSpendLimit,
     wouldExceedSpendLimit: wouldExceedSpendLimit1CT,
     setTransactionParams: setTransaction1CTParams,
-    commitSessionChange: commit1CTSessionChange,
     resetParams: reset1CTParams,
-    commitSessionChangeIsLoading: commit1CTSessionChangeIsLoading,
-  } = useOneClickTradingSessionManager({
-    onCommit: () => {
-      confirmAction();
-      onClose();
-    },
-  });
+  } = useOneClickTradingSwapReview({ isModalOpen: isOpen });
 
   const wouldExceedSpendLimit = useMemo(() => {
     return wouldExceedSpendLimit1CT({
@@ -762,12 +766,13 @@ export function ReviewOrder({
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
                     mode="primary"
-                    onClick={commit1CTSessionChange}
-                    disabled={
-                      isConfirmationDisabled ||
-                      commit1CTSessionChangeIsLoading ||
-                      wouldExceedSpendLimit
-                    }
+                    onClick={() => {
+                      confirmAction({
+                        create1CTSessionMsg: undefined,
+                        remove1CTSessionMsg: undefined,
+                      });
+                    }}
+                    disabled={isConfirmationDisabled || wouldExceedSpendLimit}
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>

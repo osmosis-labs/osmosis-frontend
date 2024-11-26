@@ -72,7 +72,6 @@ export const ProfileOneClickTradingSettings = ({
           {
             spendLimitTokenDecimals,
             transaction1CTParams,
-            walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
             /**
              * If the user has an existing session, remove it and add the new one.
              */
