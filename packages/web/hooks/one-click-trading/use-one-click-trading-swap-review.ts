@@ -119,7 +119,7 @@ export function useOneClickTradingSwapReview({
       state.setChanges(undefined);
       state.setInitialTransactionParams(undefined);
     }
-  });
+  }, [isModalOpen, resetParams]);
 
   return {
     isEnabled,

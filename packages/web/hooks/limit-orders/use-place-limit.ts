@@ -349,7 +349,7 @@ export const usePlaceLimit = ({
       }
     }
 
-    if (!limitMessages) return;
+    if (!limitMessages || limitMessages.length === 0) return;
 
     const paymentDenom = paymentTokenValue?.toCoin().denom ?? "";
 
