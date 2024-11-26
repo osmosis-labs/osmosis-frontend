@@ -289,7 +289,7 @@ export const usePlaceLimit = ({
     use1CTSwapReviewMessages();
 
   /**
-   * Default isLedger to True, just in case the wallet does
+   * Default isLedger to true, just in case the wallet does
    * not return the correct value
    */
   const { value: isLedger } = useAsync(async () => {
@@ -297,7 +297,7 @@ export const usePlaceLimit = ({
       accountStore.osmosisChainId
     );
     return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the other are memoized mobx values
+    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, account?.address, accountStore.osmosisChainId]);
 
