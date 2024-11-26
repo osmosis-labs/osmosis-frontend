@@ -288,7 +288,7 @@ export const usePlaceLimit = ({
   const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
     use1CTSwapReviewMessages();
 
-  const isLedger = true ?? account?.walletInfo?.mode === "ledger";
+  const isLedger = account?.walletInfo?.mode === "ledger";
 
   const limitMessages = useMemo(() => {
     if (isLedger) return encodedMsg && !isMarket ? [encodedMsg] : [];
