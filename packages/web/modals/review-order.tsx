@@ -7,11 +7,7 @@ import {
 } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
-import {
-  type makeAddAuthenticatorMsg,
-  type makeRemoveAuthenticatorMsg,
-  QuoteDirection,
-} from "@osmosis-labs/tx";
+import { QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image from "next/image";
@@ -53,14 +49,7 @@ import {
 interface ReviewOrderProps {
   isOpen: boolean;
   onClose: () => void;
-  confirmAction: (params: {
-    create1CTSessionMsg:
-      | Awaited<ReturnType<typeof makeAddAuthenticatorMsg>>
-      | undefined;
-    remove1CTSessionMsg:
-      | Awaited<ReturnType<typeof makeRemoveAuthenticatorMsg>>
-      | undefined;
-  }) => void;
+  confirmAction: () => void;
   isConfirmationDisabled: boolean;
   slippageConfig?: ObservableSlippageConfig;
   amountWithSlippage?: IntPretty;
@@ -767,10 +756,7 @@ export function ReviewOrder({
                   <Button
                     mode="primary"
                     onClick={() => {
-                      confirmAction({
-                        create1CTSessionMsg: undefined,
-                        remove1CTSessionMsg: undefined,
-                      });
+                      confirmAction();
                     }}
                     disabled={isConfirmationDisabled || wouldExceedSpendLimit}
                     className="body2 sm:caption !rounded-2xl"
