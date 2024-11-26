@@ -1,7 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { PaginationType, SortType } from "../../queries/complex/pools";
 import { IS_TESTNET, SIDECAR_BASE_URL } from "../../env";
+import { PaginationType, SortType } from "../../queries/complex/pools";
 import {
   ConcentratedPoolRawResponse,
   CosmwasmPoolRawResponse,
@@ -82,14 +82,14 @@ export type SQSPoolFeesData = {
 };
 
 export type SQSMetaResponse = {
-	total_items: number;
-	next_cursor: number | undefined; 
-}
+  total_items: number;
+  next_cursor: number | undefined;
+};
 
 export type SQSGetPoolsResponse = {
-	data: SqsPool[];
-	meta: SQSMetaResponse;
-}
+  data: SqsPool[];
+  meta: SQSMetaResponse;
+};
 
 export type SqsPool = {
   /** Sidecar returns the same pool models as the node. */
@@ -113,10 +113,10 @@ type PoolType = {
 
 // Define the mapping of PoolType enums to integers
 const PoolTypeEnum: PoolType = {
-  weighted: 0,        // Maps to Balancer
-  stable: 1,          // Maps to Stableswap
-  concentrated: 2,    // Maps to Concentrated
-  cosmwasm: 3,        // Maps to CosmWasm
+  weighted: 0, // Maps to Balancer
+  stable: 1, // Maps to Stableswap
+  concentrated: 2, // Maps to Concentrated
+  cosmwasm: 3, // Maps to CosmWasm
 };
 
 // Function to retrieve integer values from the filter types
@@ -155,10 +155,10 @@ export async function queryPools({
   }
 
   if (types) {
-	params.append("filter[type]", getPoolTypeIntegers(types).join(","));
+    params.append("filter[type]", getPoolTypeIntegers(types).join(","));
   }
 
-   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
+  // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
   // // information.
   if (minLiquidityCap && !IS_TESTNET) {
     params.append("filter[min_liquidity_cap]", minLiquidityCap);
@@ -169,16 +169,17 @@ export async function queryPools({
   }
 
   if (pagination) {
-	if (pagination.cursor != null) {
-	  params.append("page[cursor]", pagination.cursor.toString());
-	}
-	if (pagination.limit != null) {
-	  params.append("page[size]", pagination.limit.toString());
-	}
+    if (pagination.cursor != null) {
+      params.append("page[cursor]", pagination.cursor.toString());
+    }
+    if (pagination.limit != null) {
+      params.append("page[size]", pagination.limit.toString());
+    }
   }
 
   if (sort) {
-    const keyPathWithDirection = sort.direction === "desc" ? `-${sort.keyPath}` : sort.keyPath;
+    const keyPathWithDirection =
+      sort.direction === "desc" ? `-${sort.keyPath}` : sort.keyPath;
     params.append("sort", keyPathWithDirection);
   }
 
@@ -188,8 +189,8 @@ export async function queryPools({
   return apiClient<SQSGetPoolsResponse>(url.toString()).then((response) => {
     // When next_cursor is -1 that means we have reached the end of the list
     if (response.meta.next_cursor === -1) {
-        response.meta.next_cursor = undefined;
+      response.meta.next_cursor = undefined;
     }
-		  return response;
-	});
+    return response;
+  });
 }

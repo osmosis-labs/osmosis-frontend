@@ -1,11 +1,15 @@
-import { CoinPretty, /*Dec,*/ PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  /*Dec,*/ PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";
+import { CursorPaginationSchema } from "../../../utils/pagination";
 import { /*search,*/ SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
-import { CursorPaginationSchema } from "../../../utils/pagination";
 import { PoolRawResponse } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar } from "./providers";
@@ -117,13 +121,17 @@ export async function getPools(
   total: number;
   nextCursor: number | undefined;
 }> {
-    params.notPoolIds = FILTERABLE_IDS;
-    let pools = await poolProvider(params);
+  params.notPoolIds = FILTERABLE_IDS;
+  const pools = await poolProvider(params);
 
-	console.log("getPools pools", pools.data.length);
-	console.log("getPools pagination", params.pagination);
+  console.log("getPools pools", pools.data.length);
+  console.log("getPools pagination", params.pagination);
 
-	return { items: pools.data, total: pools.total, nextCursor: pools.nextCursor };
+  return {
+    items: pools.data,
+    total: pools.total,
+    nextCursor: pools.nextCursor,
+  };
 
   // TODO: migrate
   //pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS

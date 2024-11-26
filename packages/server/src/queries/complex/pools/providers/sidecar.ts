@@ -5,16 +5,20 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
+import {
+  PaginationType,
+  PoolProviderResponse,
+  SortType,
+} from "../../../../queries/complex/pools";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
-import { PoolProviderResponse, PaginationType, SortType } from "../../../../queries/complex/pools";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolIncentiveType, PoolType } from "../index";
 
-type SidecarPool = Awaited<ReturnType<typeof queryPools>>['data'][number];
+type SidecarPool = Awaited<ReturnType<typeof queryPools>>["data"][number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -48,17 +52,18 @@ export function getPoolsFromSidecar({
   if (poolIds && !poolIds.length) {
     return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
   }
-  
+
   return cachified({
     cache: poolsCache,
-    key: JSON.stringify(assetLists) +
-    (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-    (notPoolIds?.join(",") ?? "") +
-    (types?.join(",") ?? "") + 
-    (minLiquidityUsd ?? "") + 
-    withMarketIncentives.toString() + 
-    (pagination ? JSON.stringify(pagination) : "") +
-    (sort ? JSON.stringify(sort) : ""),
+    key:
+      JSON.stringify(assetLists) +
+      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+      (notPoolIds?.join(",") ?? "") +
+      (types?.join(",") ?? "") +
+      (minLiquidityUsd ?? "") +
+      withMarketIncentives.toString() +
+      (pagination ? JSON.stringify(pagination) : "") +
+      (sort ? JSON.stringify(sort) : ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
@@ -66,17 +71,17 @@ export function getPoolsFromSidecar({
           queryPools({
             poolIds,
             notPoolIds,
-			types,
+            types,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
-			pagination,
+            pagination,
             sort,
           }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
 
-			//console.log("sidecarPools", sidecarPools);
+      //console.log("sidecarPools", sidecarPools);
       const reserveCoins = sidecarPools.data.map((sidecarPool) => {
         try {
           return getListedReservesFromSidecarPool(assetLists, sidecarPool);
@@ -85,19 +90,18 @@ export function getPoolsFromSidecar({
         }
       });
 
-	  return {
-
-      data: sidecarPools.data
-        .map((sidecarPool, index) =>
-          makePoolFromSidecarPool({
-            sidecarPool,
-            reserveCoins: reserveCoins[index] ?? null,
-          })
-        )
-        .filter(Boolean) as Pool[],
-	    total: sidecarPools.meta.total_items,
-	    nextCursor: sidecarPools.meta.next_cursor,
-	  }
+      return {
+        data: sidecarPools.data
+          .map((sidecarPool, index) =>
+            makePoolFromSidecarPool({
+              sidecarPool,
+              reserveCoins: reserveCoins[index] ?? null,
+            })
+          )
+          .filter(Boolean) as Pool[],
+        total: sidecarPools.meta.total_items,
+        nextCursor: sidecarPools.meta.next_cursor,
+      };
     },
   });
 }

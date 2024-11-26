@@ -106,16 +106,16 @@ export const poolsRouter = createTRPCRouter({
         ctx,
       }) =>
         getPools({
-              ...ctx,
-              search,
-              minLiquidityUsd,
-              types,
-              denoms,
-              pagination: {
-                cursor,
-                limit,
-              },
-			  sort: sortInput,
+          ...ctx,
+          search,
+          minLiquidityUsd,
+          types,
+          denoms,
+          pagination: {
+            cursor,
+            limit,
+          },
+          sort: sortInput,
         })
     ),
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>

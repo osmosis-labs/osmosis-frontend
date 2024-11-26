@@ -23,4 +23,4 @@ export function createSortSchema<
 export const SortSchema = z.object({
   keyPath: z.string(),
   direction: z.string(),
-})
+});
