@@ -34,6 +34,7 @@ export function getPoolsFromSidecar({
   poolIds,
   notPoolIds,
   types,
+  incentives,
   minLiquidityUsd,
   withMarketIncentives = true,
   pagination,
@@ -44,6 +45,7 @@ export function getPoolsFromSidecar({
   poolIds?: string[];
   notPoolIds?: string[];
   types?: PoolType[];
+  incentives?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
@@ -60,6 +62,7 @@ export function getPoolsFromSidecar({
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
       (notPoolIds?.join(",") ?? "") +
       (types?.join(",") ?? "") +
+      (incentives?.join(",") ?? "") +
       (minLiquidityUsd ?? "") +
       withMarketIncentives.toString() +
       (pagination ? JSON.stringify(pagination) : "") +
@@ -72,6 +75,7 @@ export function getPoolsFromSidecar({
             poolIds,
             notPoolIds,
             types,
+            incentives,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
             pagination,
@@ -81,7 +85,6 @@ export function getPoolsFromSidecar({
         "sidecarQueryPools"
       )();
 
-      //console.log("sidecarPools", sidecarPools);
       const reserveCoins = sidecarPools.data.map((sidecarPool) => {
         try {
           return getListedReservesFromSidecarPool(assetLists, sidecarPool);

@@ -126,10 +126,31 @@ export const getPoolTypeIntegers = (filters: string[]): number[] => {
     .filter((value) => value !== -1); // Exclude invalid mappings
 };
 
+type IncentiveType = Record<string, number>;
+
+// Define the mapping of IncentiveType enums to integers
+const IncentiveType: IncentiveType = {
+  superfluid: 0, // Maps to Superfluid
+  osmosis: 1, // Maps to Osmosis
+  boost: 2, // Maps to Boost
+  none: 3, // Maps to None
+};
+
+// Function to retrieve integer values from the incentive filters
+export const getIncentiveTypeIntegers = (filters: string[]): number[] =>
+  filters.reduce<number[]>((result, filter) => {
+    const value = IncentiveType[filter];
+    if (value !== undefined) {
+      result.push(value);
+    }
+    return result;
+  }, []);
+
 export async function queryPools({
   poolIds,
   notPoolIds,
   types,
+  incentives,
   minLiquidityCap,
   withMarketIncentives,
   pagination,
@@ -138,6 +159,7 @@ export async function queryPools({
   poolIds?: string[];
   notPoolIds?: string[];
   types?: string[];
+  incentives?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
   pagination?: PaginationType;
@@ -156,6 +178,13 @@ export async function queryPools({
 
   if (types) {
     params.append("filter[type]", getPoolTypeIntegers(types).join(","));
+  }
+
+  if (incentives) {
+    params.append(
+      "filter[incentive]",
+      getIncentiveTypeIntegers(incentives).join(",")
+    );
   }
 
   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing

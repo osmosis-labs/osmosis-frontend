@@ -73,6 +73,8 @@ export const PoolFilterSchema = z.object({
   minLiquidityUsd: z.number().optional(),
   /** Only include pools of given type. */
   types: z.array(z.enum(allPooltypes)).optional(),
+  /** Only include pools of provided incentive types */
+  incentives: z.array(z.string()).optional(),
   /** Search using exact match with pools denoms */
   denoms: z.array(z.string()).optional(),
   /** Sort results by keyPath and direction */
@@ -124,9 +126,6 @@ export async function getPools(
   params.notPoolIds = FILTERABLE_IDS;
   const pools = await poolProvider(params);
 
-  console.log("getPools pools", pools.data.length);
-  console.log("getPools pagination", params.pagination);
-
   return {
     items: pools.data,
     total: pools.total,
@@ -134,23 +133,6 @@ export async function getPools(
   };
 
   // TODO: migrate
-  //pools = pools.filter((pool) => !FILTERABLE_IDS.includes(pool.id)); // Filter out ids in FILTERABLE_IDS
-  // if (params?.types) {
-  //   pools = pools.filter(({ type }) =>
-  //     params?.types ? params.types.includes(type) : true
-  //   );
-  // }
-
-  // // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
-  // // information.
-  // if (params?.minLiquidityUsd && !IS_TESTNET) {
-  //   console.log("minLiquidityUsd", params.minLiquidityUsd);
-  //   pools = pools.filter(({ totalFiatValueLocked }) =>
-  //     params?.minLiquidityUsd
-  //       ? totalFiatValueLocked.toDec().gte(new Dec(params.minLiquidityUsd))
-  //       : true
-  //   );
-  // }
 
   // // add denoms so user can search them
   // let denomPools = pools.map((pool) => ({
