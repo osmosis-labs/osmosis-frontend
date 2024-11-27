@@ -8,6 +8,7 @@ import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
 import {
   PaginationType,
   PoolProviderResponse,
+  SearchType,
   SortType,
 } from "../../../../queries/complex/pools";
 import { PoolRawResponse } from "../../../../queries/osmosis";
@@ -39,6 +40,7 @@ export function getPoolsFromSidecar({
   withMarketIncentives = true,
   pagination,
   sort,
+  search,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
@@ -48,6 +50,7 @@ export function getPoolsFromSidecar({
   incentives?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
+  search?: SearchType;
   pagination?: PaginationType;
   sort?: SortType;
 }): Promise<PoolProviderResponse> {
@@ -66,7 +69,8 @@ export function getPoolsFromSidecar({
       (minLiquidityUsd ?? "") +
       withMarketIncentives.toString() +
       (pagination ? JSON.stringify(pagination) : "") +
-      (sort ? JSON.stringify(sort) : ""),
+      (sort ? JSON.stringify(sort) : "") +
+      (search ? JSON.stringify(search) : ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
@@ -78,6 +82,7 @@ export function getPoolsFromSidecar({
             incentives,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
+            search,
             pagination,
             sort,
           }),

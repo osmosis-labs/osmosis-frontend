@@ -1,7 +1,11 @@
 import { apiClient } from "@osmosis-labs/utils";
 
 import { IS_TESTNET, SIDECAR_BASE_URL } from "../../env";
-import { PaginationType, SortType } from "../../queries/complex/pools";
+import {
+  PaginationType,
+  SearchType,
+  SortType,
+} from "../../queries/complex/pools";
 import {
   ConcentratedPoolRawResponse,
   CosmwasmPoolRawResponse,
@@ -153,6 +157,7 @@ export async function queryPools({
   incentives,
   minLiquidityCap,
   withMarketIncentives,
+  search,
   pagination,
   sort,
 }: {
@@ -162,6 +167,7 @@ export async function queryPools({
   incentives?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
+  search?: SearchType;
   pagination?: PaginationType;
   sort?: SortType;
 } = {}) {
@@ -195,6 +201,12 @@ export async function queryPools({
 
   if (withMarketIncentives) {
     params.append("filter[with_market_incentives]", "true");
+  }
+
+  if (search) {
+    if (search.query != null) {
+      params.append("filter[search]", search.query.toString());
+    }
   }
 
   if (pagination) {

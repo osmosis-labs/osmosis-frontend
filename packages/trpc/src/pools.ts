@@ -19,9 +19,9 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./api";
 import { UserOsmoAddressSchema } from "./parameter-types";
 
-const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
-  IncentivePoolFilterSchema
-);
+const GetInfinitePoolsSchema = CursorPaginationSchema.merge(
+  PoolFilterSchema
+).merge(IncentivePoolFilterSchema);
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
@@ -83,7 +83,7 @@ export const poolsRouter = createTRPCRouter({
     ),
   getPools: publicProcedure
     .input(
-      GetInfinitePoolsSchema.and(
+      GetInfinitePoolsSchema.merge(
         z.object({
           sort: createSortSchema(marketIncentivePoolsSortKeys).default({
             keyPath: "totalFiatValueLocked",
