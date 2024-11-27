@@ -135,7 +135,7 @@
   },
   "devDependencies": {
     "@keplr-wallet/provider-mock": "0.12.12",
-    "@playwright/test": "^1.48.0",
+    "@playwright/test": "^1.49.0",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.5.1",
