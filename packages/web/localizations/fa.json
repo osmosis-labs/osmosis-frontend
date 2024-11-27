@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "جدید"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-روی محدودیت معاملاتی کلیک کنید",
+      "enableTitle": "شروع تجارت با 1 کلیک",
+      "enableDescription": "تجارت سریع تر و راحت تر",
+      "paramsDescription": "جلسه {sessionLength} با محدودیت محافظت از دست دادن {lossProtectionLimit}",
+      "defaultSpendLimit": "5000 دلار آمریکا",
+      "change": "تغییر دهید",
+      "edit": "ویرایش کنید",
+      "exceeded": "فراتر رفت",
+      "exceededTooltip": {
+        "title": "از حد حفاظت از ضرر فعلی فراتر می رود",
+        "body": "شما باید به صورت دستی این تراکنش را در کیف پول خود تأیید کنید."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 دقیقه",
+      "10min": "10 دقیقه",
+      "30min": "30 دقیقه",
+      "1hour": "1 ساعت",
+      "3hours": "3 ساعت",
+      "12hours": "12 ساعت"
+    },
     "settings": {
       "header": "1- روی تجارت کلیک کنید",
       "description": "1-Click Trading به شما امکان می دهد بدون دردسر امضای هر تراکنش در کیف پول خود، با خیال راحت در این دستگاه معامله کنید.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "دوره جلسه",
-        "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود.",
-        "periods": {
-          "5min": "5 دقیقه",
-          "10min": "10 دقیقه",
-          "30min": "30 دقیقه",
-          "1hour": "1 ساعت",
-          "3hours": "3 ساعت",
-          "12hours": "12 ساعت"
-        }
+        "description": "مدت زمانی را تنظیم کنید تا امکان معامله با 1 کلیک در این دستگاه فراهم شود."
       },
       "discardChanges": {
         "title": "لغو تغییرات؟",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "فاکتور گسترش",
     "showDetails": "نمایش جزئیات",
     "hideDetails": "پنهان شدن",
-    "continueAnyway": "ادامه دادن به هر طریق",
-    "warning": {
-      "exceedsSpendLimit": "این مبادله از حد باقیمانده هزینه شما برای تجارت 1 کلیک بیشتر است.",
-      "increaseSpendLimit": "افزایش سقف هزینه"
-    },
     "settings": {
       "slippage": "تغیرات قابل قبول"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "به آدرس دیگری ارسال کنید",
     "invalidAddress": "آدرس {chain} نامعتبر است",
     "acknowledgement": "در صورت ارائه آدرس گیرنده نادرست یا تلاش برای خروج از صرافی، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
+    "acknowledgementWithoutExchange": "در صورت ارائه آدرس گیرنده نادرست، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
     "done": "انجام شده",
     "transferFrom": "انتقال از {noun}",
     "transferWithNoun": "انتقال با {noun}",
@@ -1082,6 +1092,16 @@
     "minutes": "دقایق",
     "hour": "ساعت",
     "hours": "ساعت ها",
+    "day": "روز",
+    "days": "روز"
+  },
+  "timeUnitsShort": {
+    "second": "ثانیه",
+    "seconds": "ثانیه",
+    "minute": "دقیقه",
+    "minutes": "دقیقه",
+    "hour": "ساعت",
+    "hours": "ساعت",
     "day": "روز",
     "days": "روز"
   },

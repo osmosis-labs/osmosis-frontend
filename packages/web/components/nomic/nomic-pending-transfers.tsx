@@ -168,60 +168,62 @@ export const NomicPendingTransfers = ({
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        {Array.from(transactions.values()).map((deposit) => {
-          const confirmationPercentage =
-            (deposit.confirmations / successThreshold) * 100;
-          const isSuccess = deposit.confirmations === successThreshold;
+        {Array.from(transactions.values())
+          .reverse()
+          .map((deposit) => {
+            const confirmationPercentage =
+              (deposit.confirmations / successThreshold) * 100;
+            const isSuccess = deposit.confirmations === successThreshold;
 
-          return (
-            <div
-              key={deposit.transactionId}
-              className="flex items-center justify-between py-1.5"
-            >
-              <div className="flex w-full flex-col">
-                <p className="text-osmoverse-100">
-                  {deposit.fiatValue
-                    ?.sub(deposit.networkFee.fiatValue ?? new Dec(0))
-                    .sub(deposit.providerFee.fiatValue ?? new Dec(0))
-                    .toString()}{" "}
-                  <span className="text-osmoverse-300">
-                    (
-                    {deposit.amount
-                      .sub(deposit.networkFee.amount)
-                      .sub(deposit.providerFee.amount)
-                      .toString()}
-                    )
-                  </span>
-                </p>
-                <TransactionDetailsModal
-                  confirmationPercentage={confirmationPercentage}
-                  depositData={deposit}
-                  fromChain={fromChain}
-                  toChain={toChain}
-                />
+            return (
+              <div
+                key={deposit.transactionId}
+                className="flex items-center justify-between py-1.5"
+              >
+                <div className="flex w-full flex-col">
+                  <p className="text-osmoverse-100">
+                    {deposit.fiatValue
+                      ?.sub(deposit.networkFee.fiatValue ?? new Dec(0))
+                      .sub(deposit.providerFee.fiatValue ?? new Dec(0))
+                      .toString()}{" "}
+                    <span className="text-osmoverse-300">
+                      (
+                      {deposit.amount
+                        .sub(deposit.networkFee.amount)
+                        .sub(deposit.providerFee.amount)
+                        .toString()}
+                      )
+                    </span>
+                  </p>
+                  <TransactionDetailsModal
+                    confirmationPercentage={confirmationPercentage}
+                    depositData={deposit}
+                    fromChain={fromChain}
+                    toChain={toChain}
+                  />
+                </div>
+                {isSuccess ? (
+                  <p className="caption flex-shrink-0 rounded-xl border border-bullish-500 py-1 px-2 text-bullish-500">
+                    {t("transfer.nomic.depositSuccess")}
+                  </p>
+                ) : (
+                  <ProgressBar
+                    classNames="h-[8px] w-[96px]"
+                    segments={[
+                      {
+                        percentage: confirmationPercentage.toString(),
+                        classNames: "bg-bullish-500",
+                      },
+                      {
+                        percentage: (100 - confirmationPercentage).toString(),
+                        classNames: "bg-osmoverse-600",
+                      },
+                    ]}
+                  />
+                )}
               </div>
-              {isSuccess ? (
-                <p className="caption flex-shrink-0 rounded-xl border border-bullish-500 py-1 px-2 text-bullish-500">
-                  {t("transfer.nomic.depositSuccess")}
-                </p>
-              ) : (
-                <ProgressBar
-                  classNames="h-[8px] w-[96px]"
-                  segments={[
-                    {
-                      percentage: confirmationPercentage.toString(),
-                      classNames: "bg-bullish-500",
-                    },
-                    {
-                      percentage: (100 - confirmationPercentage).toString(),
-                      classNames: "bg-osmoverse-600",
-                    },
-                  ]}
-                />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </>
   );

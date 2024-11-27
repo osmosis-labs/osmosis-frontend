@@ -8,7 +8,6 @@ import { observer } from "mobx-react-lite";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import {
   FunctionComponent,
-  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -17,6 +16,7 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
+import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
   AssetFieldset,
@@ -48,7 +48,6 @@ import {
   useDynamicSlippageConfig,
   useSwap,
 } from "~/hooks/use-swap";
-import { useGlobalIs1CTIntroModalScreen } from "~/modals";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
@@ -92,7 +91,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { isLoading: isWalletLoading, onOpenWalletSelect } =
       useWalletSelect();
     const featureFlags = useFeatureFlags();
-    const [, setIs1CTIntroModalScreen] = useGlobalIs1CTIntroModalScreen();
     const { isOneClickTradingEnabled } = useOneClickTradingSession();
     const [isSendingTx, setIsSendingTx] = useState(false);
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
@@ -219,7 +217,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action
-    const sendSwapTx = () => {
+    const sendSwapTx = useCallback(() => {
       if (!swapState.inAmountInput.amount) return;
 
       let valueUsd = Number(
@@ -283,20 +281,26 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           onRequestModalClose?.();
           setShowSwapReviewModal(false);
         });
-    };
+    }, [
+      swapState,
+      page,
+      logEvent,
+      resetSlippage,
+      onSwapSuccess,
+      onRequestModalClose,
+    ]);
 
     const isSwapToolLoading =
       isWalletLoading ||
       swapState.isQuoteLoading ||
-      swapState.isLoadingNetworkFee;
+      swapState.isLoadingNetworkFee ||
+      swapState.isLoadingOneClickMessages;
 
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
-    } else if (swapState.hasOverSpendLimitError) {
-      buttonText = t("swap.continueAnyway");
     } else if (
       !!swapState.networkFeeError &&
       swapState.isSlippageOverBalance &&
@@ -305,24 +309,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       buttonText = t("swap.slippageOverBalance");
     } else {
       buttonText = t("swap.button");
-    }
-
-    let warningText: string | ReactNode;
-    if (swapState.hasOverSpendLimitError) {
-      warningText = (
-        <span>
-          {t("swap.warning.exceedsSpendLimit")}{" "}
-          <Button
-            variant="link"
-            className="!inline !h-auto !px-0 !py-0 text-wosmongton-300"
-            onClick={() => {
-              setIs1CTIntroModalScreen("settings-no-back-button");
-            }}
-          >
-            {t("swap.warning.increaseSpendLimit")}
-          </Button>
-        </span>
-      );
     }
 
     const isLoadingMaxButton =
@@ -341,7 +327,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           !Boolean(swapState.quote) ||
           isSwapToolLoading ||
           Boolean(swapState.error) ||
-          Boolean(swapState.networkFeeError)));
+          Boolean(
+            swapState.networkFeeError &&
+              /**
+               * We can increase spend limit from the review order modal
+               * so the decision to disable the button should be made there
+               */
+              !isOverspendErrorMessage({
+                message: swapState.networkFeeError.message,
+              })
+          )));
 
     const showTokenSelectRecommendedTokens = isNil(forceSwapInPoolId);
 
@@ -626,16 +621,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </AssetFieldset>
             </div>
           </div>
-          {!isNil(warningText) && (
-            <div
-              className={classNames(
-                "body2 flex animate-[fadeIn_0.3s_ease-in-out_0s] items-center justify-center rounded-xl border border-rust-600 px-3 py-2 text-center text-rust-500",
-                swapState.isLoadingNetworkFee && "animate-pulse"
-              )}
-            >
-              {warningText}
-            </div>
-          )}
           {swapButton ?? (
             <div className="flex w-full pb-3">
               <Button
@@ -764,6 +749,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           gasAmount={swapState.networkFee?.gasUsdValueToPay}
           isGasLoading={swapState.isLoadingNetworkFee}
           gasError={swapState.networkFeeError}
+          overspendErrorParams={swapState.overspendErrorParams}
           quoteType={swapState.quoteType}
         />
         <AddFundsModal
