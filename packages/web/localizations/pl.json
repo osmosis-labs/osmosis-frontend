@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Nowy"
     },
+    "reviewOrder": {
+      "recapRowTitle": "Limit handlu jednym kliknięciem",
+      "enableTitle": "Rozpocznij handel jednym kliknięciem",
+      "enableDescription": "Szybszy, łatwiejszy handel",
+      "paramsDescription": "{sessionLength} sesja z {lossProtectionLimit} limitem ochrony przed stratami",
+      "defaultSpendLimit": "5000 dolarów amerykańskich",
+      "change": "Zmiana",
+      "edit": "Redagować",
+      "exceeded": "Przekroczony",
+      "exceededTooltip": {
+        "title": "Przekracza aktualny limit ochrony przed stratami",
+        "body": "Będziesz musiał ręcznie zatwierdzić tę transakcję w swoim portfelu."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minut",
+      "10min": "10 minut",
+      "30min": "30 minut",
+      "1hour": "1 godzina",
+      "3hours": "3 godziny",
+      "12hours": "12 godzin"
+    },
     "settings": {
       "header": "Handel jednym kliknięciem",
       "description": "Handel 1-Click pozwala bezpiecznie handlować na tym urządzeniu bez konieczności podpisywania każdej transakcji w portfelu.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Okres sesji",
-        "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu.",
-        "periods": {
-          "5min": "5 minut",
-          "10min": "10 minut",
-          "30min": "30 minut",
-          "1hour": "1 godzina",
-          "3hours": "3 godziny",
-          "12hours": "12 godzin"
-        }
+        "description": "Ustaw czas trwania transakcji jednym kliknięciem na tym urządzeniu."
       },
       "discardChanges": {
         "title": "Odrzucać zmiany?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu",
     "showDetails": "Pokaż szczegóły",
     "hideDetails": "Ukrywać",
-    "continueAnyway": "Kontynuować mimo to",
-    "warning": {
-      "exceedsSpendLimit": "Ta zamiana przekracza pozostały limit wydatków w ramach handlu jednym kliknięciem.",
-      "increaseSpendLimit": "Zwiększ limit wydatków"
-    },
     "settings": {
       "slippage": "Tolerowane odchylenie"
     },
@@ -1084,6 +1093,16 @@
     "hours": "godziny",
     "day": "dzień",
     "days": "dni"
+  },
+  "timeUnitsShort": {
+    "second": "sek.",
+    "seconds": "sek.",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "godz.",
+    "hours": "godz.",
+    "day": "dzień",
+    "days": "dzień"
   },
   "transactions": {
     "noRecent": "Brak ostatnich transferów",

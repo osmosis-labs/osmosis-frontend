@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "새로운"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-클릭 거래 한도",
+      "enableTitle": "1-클릭 트레이딩 시작",
+      "enableDescription": "더 빠르고 쉬운 거래",
+      "paramsDescription": "{sessionLength} 세션과 {lossProtectionLimit} 손실 보호 한도",
+      "defaultSpendLimit": "5,000달러",
+      "change": "변화",
+      "edit": "편집하다",
+      "exceeded": "초과했습니다",
+      "exceededTooltip": {
+        "title": "현재 손실 보호 한도를 초과합니다.",
+        "body": "지갑에서 이 거래를 수동으로 승인해야 합니다."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5분",
+      "10min": "10분",
+      "30min": "30분",
+      "1hour": "1시간",
+      "3hours": "3시간",
+      "12hours": "12시간"
+    },
     "settings": {
       "header": "1-클릭 거래",
       "description": "1-클릭 거래를 사용하면 지갑의 모든 거래에 서명하는 번거로움 없이 이 장치에서 안전하게 거래할 수 있습니다.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "세션 기간",
-        "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요.",
-        "periods": {
-          "5min": "5 분",
-          "10min": "10 분",
-          "30min": "30 분",
-          "1hour": "1 시간",
-          "3hours": "3 시간",
-          "12hours": "12 시간"
-        }
+        "description": "이 장치에서 1-클릭 거래를 허용하는 기간을 설정하세요."
       },
       "discardChanges": {
         "title": "변경 사항을 취소?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "스프레드 팩터",
     "showDetails": "세부정보 표시",
     "hideDetails": "숨다",
-    "continueAnyway": "계속 진행",
-    "warning": {
-      "exceedsSpendLimit": "이 교환은 1-클릭 거래에 대한 남은 지출 한도를 초과합니다.",
-      "increaseSpendLimit": "지출 한도 늘리기"
-    },
     "settings": {
       "slippage": "슬리피지 허용치"
     },
@@ -1084,6 +1093,16 @@
     "hours": "시간",
     "day": "낮",
     "days": "날"
+  },
+  "timeUnitsShort": {
+    "second": "비서",
+    "seconds": "비서",
+    "minute": "분",
+    "minutes": "분",
+    "hour": "시간",
+    "hours": "시간",
+    "day": "낮",
+    "days": "낮"
   },
   "transactions": {
     "noRecent": "최근 이적 없음",

@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Yeni"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-Tıkla İşlem limiti",
+      "enableTitle": "1-Tıkla İşlem Başlat",
+      "enableDescription": "Daha hızlı, daha kolay ticaret",
+      "paramsDescription": "{sessionLength} oturumu {spendLimit} kayıp koruma sınırıyla",
+      "defaultSpendLimit": "5.000 ABD doları",
+      "change": "Değiştirmek",
+      "edit": "Düzenlemek",
+      "exceeded": "Aşıldı",
+      "exceededTooltip": {
+        "title": "Mevcut kayıp koruma sınırını aşar",
+        "body": "Bu işlemi cüzdanınızda manuel olarak onaylamanız gerekecektir."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 dakika",
+      "10min": "10 dakika",
+      "30min": "30 dakika",
+      "1hour": "1 saat",
+      "3hours": "3 saat",
+      "12hours": "12 saat"
+    },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
       "description": "Tek Tıklamayla Ticaret, cüzdanınızdaki her işlemi imzalama zahmetine girmeden bu cihazda güvenli bir şekilde ticaret yapmanızı sağlar.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Oturum dönemi",
-        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın.",
-        "periods": {
-          "5min": "5 dakika",
-          "10min": "10 dakika",
-          "30min": "30 dakika",
-          "1hour": "1 saat",
-          "3hours": "3 saat",
-          "12hours": "12 saat"
-        }
+        "description": "Bu cihazda Tek Tıklamayla Ticarete izin vermek için bir süre ayarlayın."
       },
       "discardChanges": {
         "title": "Değişiklikleri gözardı et?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Yayılma Faktörü",
     "showDetails": "Detayları göster",
     "hideDetails": "Saklamak",
-    "continueAnyway": "Her halükarda devam et",
-    "warning": {
-      "exceedsSpendLimit": "Bu takas, Tek Tıklamayla Ticaret için kalan harcama limitinizi aşıyor.",
-      "increaseSpendLimit": "Harcama sınırını artırın"
-    },
     "settings": {
       "slippage": "Slipaj toleransı"
     },
@@ -1084,6 +1093,16 @@
     "hours": "saat",
     "day": "gün",
     "days": "günler"
+  },
+  "timeUnitsShort": {
+    "second": "saniye",
+    "seconds": "saniye",
+    "minute": "dakika",
+    "minutes": "dakika",
+    "hour": "saat",
+    "hours": "saat",
+    "day": "gün",
+    "days": "gün"
   },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",

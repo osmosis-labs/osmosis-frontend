@@ -14,12 +14,12 @@ export function getSessionPeriodTranslationKey(
   input: OneClickTradingHumanizedSessionPeriod
 ) {
   const timeMappings = {
-    "5min": "oneClickTrading.settings.sessionPeriodScreen.periods.5min",
-    "10min": "oneClickTrading.settings.sessionPeriodScreen.periods.10min",
-    "30min": "oneClickTrading.settings.sessionPeriodScreen.periods.30min",
-    "1hour": "oneClickTrading.settings.sessionPeriodScreen.periods.1hour",
-    "3hours": "oneClickTrading.settings.sessionPeriodScreen.periods.3hours",
-    "12hours": "oneClickTrading.settings.sessionPeriodScreen.periods.12hours",
+    "5min": "oneClickTrading.sessionPeriods.5min",
+    "10min": "oneClickTrading.sessionPeriods.10min",
+    "30min": "oneClickTrading.sessionPeriods.30min",
+    "1hour": "oneClickTrading.sessionPeriods.1hour",
+    "3hours": "oneClickTrading.sessionPeriods.3hours",
+    "12hours": "oneClickTrading.sessionPeriods.12hours",
   };
   const mapped = timeMappings[input];
   if (!mapped) throw new Error(`No mapping for ${input}`);
