@@ -1,4 +1,5 @@
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -13,27 +14,63 @@ type UseRemoveOneClickTradingMutationOptions = UseMutationOptions<
   unknown
 >;
 
+export async function onEnd1CTSession({
+  accountStore,
+  authenticatorId,
+  logEvent,
+}: {
+  accountStore: ReturnType<typeof useStore>["accountStore"];
+  authenticatorId: string;
+  logEvent: ReturnType<typeof useAmplitudeAnalytics>["logEvent"];
+}) {
+  const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
+
+  if (oneClickTradingInfo?.authenticatorId === authenticatorId) {
+    accountStore.setOneClickTradingInfo(undefined);
+    accountStore.setShouldUseOneClickTrading({ nextValue: false });
+    displayToast(
+      {
+        titleTranslationKey: "oneClickTrading.toast.oneClickTradingDisabled",
+        captionTranslationKey: "oneClickTrading.toast.sessionEnded",
+      },
+      ToastType.ONE_CLICK_TRADING
+    );
+  }
+  logEvent([EventName.OneClickTrading.endSession]);
+}
+
 export const useRemoveOneClickTradingSession = ({
   queryOptions,
 }: {
   queryOptions?: UseRemoveOneClickTradingMutationOptions;
 } = {}) => {
   const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { logEvent } = useAmplitudeAnalytics();
 
-  return useMutation(
-    async ({ authenticatorId }) => {
-      if (!account?.osmosis) {
-        throw new Error("Osmosis account not found");
-      }
+  return useMutation(async ({ authenticatorId }) => {
+    const userOsmoAddress = accountStore.getWallet(
+      accountStore.osmosisChainId
+    )?.address;
 
-      await new Promise<DeliverTxResponse>((resolve, reject) => {
-        account.osmosis
-          .sendAddOrRemoveAuthenticatorsMsg({
-            addAuthenticators: [],
-            removeAuthenticators: [BigInt(authenticatorId)],
-            memo: "",
+    if (!userOsmoAddress) {
+      throw new Error("User Osmo address not found");
+    }
+
+    const msg = await makeRemoveAuthenticatorMsg({
+      id: BigInt(authenticatorId),
+      sender: userOsmoAddress,
+    });
+
+    await new Promise<DeliverTxResponse>((resolve, reject) => {
+      accountStore
+        .signAndBroadcast(
+          accountStore.osmosisChainId,
+          "addOrRemoveAuthenticators",
+          [msg],
+          "",
+          undefined,
+          { preferNoSetFee: true },
+          {
             onFulfill: (tx) => {
               if (tx.code === 0) {
                 resolve(tx);
@@ -41,35 +78,13 @@ export const useRemoveOneClickTradingSession = ({
                 reject(new Error("Transaction failed"));
               }
             },
-            signOptions: {
-              preferNoSetFee: true,
-            },
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
+          }
+        )
+        .catch((error) => {
+          reject(error);
+        });
+    });
 
-      const oneClickTradingInfo = await accountStore.getOneClickTradingInfo();
-
-      if (oneClickTradingInfo?.authenticatorId === authenticatorId) {
-        accountStore.setOneClickTradingInfo(undefined);
-        displayToast(
-          {
-            titleTranslationKey:
-              "oneClickTrading.toast.oneClickTradingDisabled",
-            captionTranslationKey: "oneClickTrading.toast.sessionEnded",
-          },
-          ToastType.ONE_CLICK_TRADING
-        );
-      }
-    },
-    {
-      ...queryOptions,
-      onSuccess: (...params) => {
-        queryOptions?.onSuccess?.(...params);
-        logEvent([EventName.OneClickTrading.endSession]);
-      },
-    }
-  );
+    onEnd1CTSession({ accountStore, authenticatorId, logEvent });
+  }, queryOptions);
 };

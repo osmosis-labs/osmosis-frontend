@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "新しい"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1クリック取引制限",
+      "enableTitle": "ワンクリック取引を開始",
+      "enableDescription": "より速く、より簡単に取引",
+      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "defaultSpendLimit": "5,000米ドル",
+      "change": "変化",
+      "edit": "編集",
+      "exceeded": "超過",
+      "exceededTooltip": {
+        "title": "現在の損失保護限度額を超えています",
+        "body": "この取引はウォレットで手動で承認する必要があります。"
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5分",
+      "10min": "10分",
+      "30min": "30分",
+      "1hour": "1時間",
+      "3hours": "3時間",
+      "12hours": "12時間"
+    },
     "settings": {
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "会期",
-        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
-        "periods": {
-          "5min": "5分",
-          "10min": "10分",
-          "30min": "30分",
-          "1hour": "1時間",
-          "3hours": "3時間",
-          "12hours": "12時間"
-        }
+        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。"
       },
       "discardChanges": {
         "title": "変更を破棄？",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "スプレッドファクター",
     "showDetails": "詳細を表示",
     "hideDetails": "隠れる",
-    "continueAnyway": "とにかく続けます",
-    "warning": {
-      "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
-      "increaseSpendLimit": "支出制限を増やす"
-    },
     "settings": {
       "slippage": "滑り許容差"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "別のアドレスに送信",
     "invalidAddress": "無効な{chain}アドレス",
     "acknowledgement": "間違った受取人アドレスを提供したり、取引所に引き出しを試みたりした場合に資金が失われるリスクを認識し、受け入れます。",
+    "acknowledgementWithoutExchange": "受取人住所を間違えて入力した場合、資金が失われるリスクがあることを認識し、同意します。",
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "transferWithNoun": "{noun}で転送する",
@@ -1077,6 +1087,16 @@
   "remaining": "残り",
   "timeUnits": {
     "second": "2番",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
     "seconds": "秒",
     "minute": "分",
     "minutes": "分",

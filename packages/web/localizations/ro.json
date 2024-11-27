@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Nou"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
+      "enableTitle": "Începeți tranzacționarea cu 1 clic",
+      "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
+      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "defaultSpendLimit": "5.000 USD",
+      "change": "Schimba",
+      "edit": "Edita",
+      "exceeded": "Depășit",
+      "exceededTooltip": {
+        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "body": "Va trebui să aprobați manual această tranzacție în portofel."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minute",
+      "10min": "10 minute",
+      "30min": "30 de minute",
+      "1hour": "1 oră",
+      "3hours": "3 ore",
+      "12hours": "12 ore"
+    },
     "settings": {
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Perioada de sesiune",
-        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
-        "periods": {
-          "5min": "5 minute",
-          "10min": "10 minute",
-          "30min": "30 minute",
-          "1hour": "1 oră",
-          "3hours": "3 ore",
-          "12hours": "12 ore"
-        }
+        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv."
       },
       "discardChanges": {
         "title": "Renunțați la modificări?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Factorul de răspândire",
     "showDetails": "Arata detaliile",
     "hideDetails": "Ascunde",
-    "continueAnyway": "Continua oricum",
-    "warning": {
-      "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
-      "increaseSpendLimit": "Creșteți limita de cheltuieli"
-    },
     "settings": {
       "slippage": "Toleranta modificare pret"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "Trimite la o altă adresă",
     "invalidAddress": "Adresă {chain} nevalidă",
     "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
+    "acknowledgementWithoutExchange": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului.",
     "done": "Terminat",
     "transferFrom": "Transfer de la {noun}",
     "transferWithNoun": "Transferați cu {noun}",
@@ -1084,6 +1094,16 @@
     "hours": "ore",
     "day": "zi",
     "days": "zile"
+  },
+  "timeUnitsShort": {
+    "second": "sec",
+    "seconds": "sec",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "hr",
+    "hours": "hr",
+    "day": "zi",
+    "days": "zi"
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",

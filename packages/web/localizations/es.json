@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Nuevo"
     },
+    "reviewOrder": {
+      "recapRowTitle": "Límite de negociación con un solo clic",
+      "enableTitle": "Comience a operar con un solo clic",
+      "enableDescription": "Comercio más rápido y sencillo",
+      "paramsDescription": "Sesión {sessionLength} con límite de protección contra pérdidas {lossProtectionLimit}",
+      "defaultSpendLimit": "$5,000 USD",
+      "change": "Cambiar",
+      "edit": "Editar",
+      "exceeded": "Excedido",
+      "exceededTooltip": {
+        "title": "Supera el límite actual de protección contra pérdidas",
+        "body": "Tendrá que aprobar manualmente esta transacción en su billetera."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutos",
+      "10min": "10 minutos",
+      "30min": "30 minutos",
+      "1hour": "1 hora",
+      "3hours": "3 horas",
+      "12hours": "12 horas"
+    },
     "settings": {
       "header": "Comercio con 1 clic",
       "description": "1-Click Trading le permite operar de forma segura en este dispositivo sin la molestia de firmar cada transacción en su billetera.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Período de sesión",
-        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo.",
-        "periods": {
-          "5min": "5 minutos",
-          "10min": "10 minutos",
-          "30min": "30 minutos",
-          "1hour": "1 hora",
-          "3hours": "3 horas",
-          "12hours": "12 horas"
-        }
+        "description": "Establezca una duración para permitir el comercio con 1 clic en este dispositivo."
       },
       "discardChanges": {
         "title": "¿Descartar los cambios?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Factor de dispersión",
     "showDetails": "Mostrar detalles",
     "hideDetails": "Esconder",
-    "continueAnyway": "De todas maneras, continúe",
-    "warning": {
-      "exceedsSpendLimit": "Este intercambio excede su límite de gasto restante para 1-Click Trading.",
-      "increaseSpendLimit": "Aumentar el límite de gasto"
-    },
     "settings": {
       "slippage": "Tolerancia de deslizamiento"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "Enviar a otra dirección",
     "invalidAddress": "Dirección {chain} no válida",
     "acknowledgement": "Reconozco y acepto los riesgos de pérdida de fondos si proporciono una dirección de destinatario incorrecta o intento retirar dinero a un intercambio.",
+    "acknowledgementWithoutExchange": "Reconozco y acepto los riesgos de pérdida de fondos si proporciono una dirección de destinatario incorrecta.",
     "done": "Hecho",
     "transferFrom": "Transferir desde {noun}",
     "transferWithNoun": "Transferir con {noun}",
@@ -1084,6 +1094,16 @@
     "hours": "horas",
     "day": "día",
     "days": "días"
+  },
+  "timeUnitsShort": {
+    "second": "segundo",
+    "seconds": "segundo",
+    "minute": "mín.",
+    "minutes": "mín.",
+    "hour": "hora",
+    "hours": "hora",
+    "day": "día",
+    "days": "día"
   },
   "transactions": {
     "noRecent": "Sin transferencias recientes",

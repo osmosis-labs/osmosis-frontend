@@ -39,7 +39,7 @@ export const useOneClickTradingSession = ({
     }
 
     const info = await accountStore.getOneClickTradingInfo();
-    const isEnabled = await accountStore.isOneCLickTradingEnabled();
+    const isEnabled = await accountStore.isOneClickTradingEnabled();
     setIsExpired(await accountStore.isOneClickTradingExpired());
 
     if (info?.userOsmoAddress !== account?.address) {
@@ -48,6 +48,12 @@ export const useOneClickTradingSession = ({
     }
 
     return { info, isEnabled, isExpired };
+    /**
+     * accountStore.oneClickTradingInfo is a computed value from the mobx store
+     * and we need to include it as a dependency to retrigger session refresh
+     * when the oneClickTradingInfo changes
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountStore,
     isExpired,

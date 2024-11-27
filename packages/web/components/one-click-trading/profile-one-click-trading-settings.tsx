@@ -15,7 +15,7 @@ export const ProfileOneClickTradingSettings = ({
   onClose: () => void;
 }) => {
   const { accountStore, chainStore } = useStore();
-  const { oneClickTradingInfo, isOneClickTradingEnabled } =
+  const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
@@ -49,7 +49,6 @@ export const ProfileOneClickTradingSettings = ({
   const {
     transaction1CTParams,
     setTransaction1CTParams,
-    isLoading: isLoading1CTParams,
     spendLimitTokenDecimals,
     reset: reset1CTParams,
   } = useOneClickTradingParams({
@@ -62,7 +61,7 @@ export const ProfileOneClickTradingSettings = ({
       transaction1CTParams={transaction1CTParams}
       setTransaction1CTParams={setTransaction1CTParams}
       isLoading={
-        isLoading1CTParams ||
+        isLoadingInfo ||
         (shouldFetchSessionAuthenticator
           ? isLoadingSessionAuthenticator
           : false)
@@ -73,7 +72,6 @@ export const ProfileOneClickTradingSettings = ({
           {
             spendLimitTokenDecimals,
             transaction1CTParams,
-            walletRepo: accountStore.getWalletRepo(chainStore.osmosis.chainId),
             /**
              * If the user has an existing session, remove it and add the new one.
              */

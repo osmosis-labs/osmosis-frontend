@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "新的"
     },
+    "reviewOrder": {
+      "recapRowTitle": "一鍵交易限額",
+      "enableTitle": "開始一鍵交易",
+      "enableDescription": "交易更快、更輕鬆",
+      "paramsDescription": "{sessionLength}會話，具有{spendLimit}丟失保護限制",
+      "defaultSpendLimit": "5,000 美元",
+      "change": "改變",
+      "edit": "編輯",
+      "exceeded": "超過",
+      "exceededTooltip": {
+        "title": "超過當前損失保護限制",
+        "body": "您必須在錢包中手動批准此交易。"
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5分鐘",
+      "10min": "10分鐘",
+      "30min": "30分鐘",
+      "1hour": "1小時",
+      "3hours": "3小時",
+      "12hours": "12小時"
+    },
     "settings": {
       "header": "一鍵交易",
       "description": "一鍵交易讓您可以在此裝置上安全地進行交易，而無需在錢包中簽署每筆交易。",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "會議期間",
-        "description": "設定允許在此裝置上進行一鍵交易的持續時間。",
-        "periods": {
-          "5min": "5分鐘",
-          "10min": "10分鐘",
-          "30min": "30分鐘",
-          "1hour": "1小時",
-          "3hours": "3小時",
-          "12hours": "12小時"
-        }
+        "description": "設定允許在此裝置上進行一鍵交易的持續時間。"
       },
       "discardChanges": {
         "title": "放棄更改？",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "擴頻因子",
     "showDetails": "顯示詳細資料",
     "hideDetails": "隱藏",
-    "continueAnyway": "無論如何繼續",
-    "warning": {
-      "exceedsSpendLimit": "此交換超出了您一鍵交易的剩餘支出限額。",
-      "increaseSpendLimit": "提高支出限額"
-    },
     "settings": {
       "slippage": "允許嘅滑價"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "發送到另一個地址",
     "invalidAddress": "無效的{chain}地址",
     "acknowledgement": "我承認並接受如果我提供不正確的收款人地址或嘗試提款到交易所，則存在資金損失的風險。",
+    "acknowledgementWithoutExchange": "我承認並接受如果我提供不正確的收款人地址，將面臨資金損失的風險。",
     "done": "完畢",
     "transferFrom": "從{noun}轉移",
     "transferWithNoun": "使用{noun}進行傳輸",
@@ -1077,6 +1087,16 @@
   "remaining": "其餘的",
   "timeUnits": {
     "second": "第二",
+    "seconds": "秒",
+    "minute": "分分鐘",
+    "minutes": "分分鐘",
+    "hour": "小時",
+    "hours": "小時",
+    "day": "天",
+    "days": "天"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
     "seconds": "秒",
     "minute": "分分鐘",
     "minutes": "分分鐘",

@@ -43,7 +43,7 @@ export const useConnectWallet = ({
   onRequestClose?: () => void;
 
   isOneClickEnabled?: boolean;
-  onCreate1CTSession?: (params: { walletRepo: WalletRepo }) => Promise<void>;
+  onCreate1CTSession?: () => Promise<void>;
 }) => {
   const { accountStore, chainStore } = useStore();
 
@@ -144,7 +144,7 @@ export const useConnectWallet = ({
 
         if (isOneClickEnabled && onCreate1CTSession) {
           try {
-            await onCreate1CTSession({ walletRepo });
+            await onCreate1CTSession();
           } catch (e) {
             const error = e as CreateOneClickSessionError | Error;
 

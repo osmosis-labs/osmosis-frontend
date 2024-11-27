@@ -532,7 +532,7 @@ const SendToAnotherAddressForm: FunctionComponent<
             } else if (toChain.chainType === "bitcoin") {
               isValid = isBitcoinAddressValid({
                 address: nextValue,
-                isTestnet: IS_TESTNET,
+                env: IS_TESTNET ? "testnet" : "mainnet",
               });
             }
 
@@ -570,7 +570,9 @@ const SendToAnotherAddressForm: FunctionComponent<
           className="body1 cursor-pointer select-none text-osmoverse-300"
           onClick={() => setIsAcknowledged(!isAcknowledged)}
         >
-          {t("transfer.acknowledgement")}
+          {toChain.chainType === "bitcoin"
+            ? t("transfer.acknowledgementWithoutExchange")
+            : t("transfer.acknowledgement")}
         </p>
       </div>
       <Button
