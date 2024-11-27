@@ -61,7 +61,7 @@ const Home = () => {
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
-            <TopGainers />
+            {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
         </div>
       </div>
@@ -72,6 +72,7 @@ const Home = () => {
 const TopGainers = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { data: topGainerAssets, isLoading: isTopGainerAssetsLoading } =
     api.edge.assets.getTopGainerAssets.useQuery({
@@ -86,7 +87,11 @@ const TopGainers = () => {
       isLoading={isTopGainerAssetsLoading}
       assets={(topGainerAssets ?? []).map(highlightPrice24hChangeAsset)}
       onClickSeeAll={() => {
+        logEvent([EventName.Swap.checkTopGainers, { token: "All" }]);
         router.push(`/assets?category=topGainers`);
+      }}
+      onClickAsset={(asset) => {
+        logEvent([EventName.Swap.checkTopGainers, { token: asset.coinDenom }]);
       }}
       highlight="topGainers"
     />

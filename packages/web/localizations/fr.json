@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Nouveau"
     },
+    "reviewOrder": {
+      "recapRowTitle": "Limite de trading en 1 clic",
+      "enableTitle": "Commencez à trader en 1 clic",
+      "enableDescription": "Des échanges plus rapides et plus faciles",
+      "paramsDescription": "Session {sessionLength} avec limite de protection contre les pertes {lossProtectionLimit}",
+      "defaultSpendLimit": "5 000 USD",
+      "change": "Changement",
+      "edit": "Modifier",
+      "exceeded": "Dépassé",
+      "exceededTooltip": {
+        "title": "Dépasse la limite actuelle de protection contre les pertes",
+        "body": "Vous devrez approuver manuellement cette transaction dans votre portefeuille."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutes",
+      "10min": "10 minutes",
+      "30min": "30 minutes",
+      "1hour": "1 heure",
+      "3hours": "3 heures",
+      "12hours": "12 heures"
+    },
     "settings": {
       "header": "Trading en 1 clic",
       "description": "Le trading en 1 clic vous permet de négocier en toute sécurité sur cet appareil sans avoir à signer chaque transaction dans votre portefeuille.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Période de séance",
-        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil.",
-        "periods": {
-          "5min": "5 minutes",
-          "10min": "10 minutes",
-          "30min": "30 minutes",
-          "1hour": "1 heure",
-          "3hours": "3 heures",
-          "12hours": "12 heures"
-        }
+        "description": "Définissez une durée pour autoriser le trading en 1 clic sur cet appareil."
       },
       "discardChanges": {
         "title": "Annuler les modifications?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Facteur de propagation",
     "showDetails": "Afficher les détails",
     "hideDetails": "Cacher",
-    "continueAnyway": "Continuer quand même",
-    "warning": {
-      "exceedsSpendLimit": "Cet échange dépasse votre limite de dépenses restantes pour le trading en 1 clic.",
-      "increaseSpendLimit": "Augmenter la limite de dépenses"
-    },
     "settings": {
       "slippage": "Tolérance de glissement"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "Envoyer à une autre adresse",
     "invalidAddress": "Adresse {chain} non valide",
     "acknowledgement": "Je reconnais et accepte les risques de perte de fonds si je fournis une adresse de destinataire incorrecte ou si je tente de me retirer vers un échange.",
+    "acknowledgementWithoutExchange": "Je reconnais et accepte les risques de perte de fonds si je fournis une adresse de destinataire incorrecte.",
     "done": "Fait",
     "transferFrom": "Transfert depuis {noun}",
     "transferWithNoun": "Transférer avec {noun}",
@@ -1084,6 +1094,16 @@
     "hours": "heures",
     "day": "jour",
     "days": "jours"
+  },
+  "timeUnitsShort": {
+    "second": "seconde",
+    "seconds": "seconde",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "heure",
+    "hours": "heure",
+    "day": "jour",
+    "days": "jour"
   },
   "transactions": {
     "noRecent": "Aucun transfert récent",

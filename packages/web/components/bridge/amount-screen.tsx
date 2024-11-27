@@ -424,6 +424,14 @@ export const AmountScreen = observer(
             type: fromChain.chainType,
             assets: assets as Extract<SupportedAsset, { chainType: "tron" }>[],
           };
+        case "penumbra":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "penumbra" }
+            >[],
+          };
         default:
           return {
             type: fromChain.chainType,
@@ -782,8 +790,6 @@ export const AmountScreen = observer(
           }
         />
       );
-
-    console.log(fromAsset);
 
     if (
       featureFlags.bridgeDepositAddress &&

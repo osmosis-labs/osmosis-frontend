@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "新的"
     },
+    "reviewOrder": {
+      "recapRowTitle": "一键交易限制",
+      "enableTitle": "开始一键交易",
+      "enableDescription": "交易更快捷、更轻松",
+      "paramsDescription": "{sessionLength}会话，具有{spendLimit}损失保护限制",
+      "defaultSpendLimit": "5,000 美元",
+      "change": "改变",
+      "edit": "编辑",
+      "exceeded": "超出",
+      "exceededTooltip": {
+        "title": "超过当前损失保护限制",
+        "body": "您必须在钱包中手动批准此交易。"
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 分钟",
+      "10min": "10 分钟",
+      "30min": "30 分钟",
+      "1hour": "1 小时",
+      "3hours": "3 小时",
+      "12hours": "12 小时"
+    },
     "settings": {
       "header": "一键交易",
       "description": "一键交易让您可以在此设备上安全地进行交易，而无需在钱包中签署每笔交易。",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "会议期间",
-        "description": "设置允许在此设备上进行一键交易的持续时间。",
-        "periods": {
-          "5min": "5分钟",
-          "10min": "10分钟",
-          "30min": "30分钟",
-          "1hour": "1小时",
-          "3hours": "3小时",
-          "12hours": "12小时"
-        }
+        "description": "设置允许在此设备上进行一键交易的持续时间。"
       },
       "discardChanges": {
         "title": "放弃更改？",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "扩频因子",
     "showDetails": "显示详细资料",
     "hideDetails": "隐藏",
-    "continueAnyway": "无论如何继续",
-    "warning": {
-      "exceedsSpendLimit": "此交换超出了您一键交易的剩余支出限额。",
-      "increaseSpendLimit": "提高支出限额"
-    },
     "settings": {
       "slippage": "滑点上限"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "发送到另一个地址",
     "invalidAddress": "无效的{chain}地址",
     "acknowledgement": "如果我提供了错误的收款地址或尝试提取到交易所，我承认并接受资金损失的风险。",
+    "acknowledgementWithoutExchange": "如果我提供了错误的收件人地址，我承认并接受资金损失的风险。",
     "done": "完毕",
     "transferFrom": "从{noun}转移",
     "transferWithNoun": "使用{noun}进行传输",
@@ -1082,6 +1092,16 @@
     "minutes": "分钟",
     "hour": "小时",
     "hours": "小时",
+    "day": "天",
+    "days": "天"
+  },
+  "timeUnitsShort": {
+    "second": "秒",
+    "seconds": "秒",
+    "minute": "分钟",
+    "minutes": "分钟",
+    "hour": "時間",
+    "hours": "時間",
     "day": "天",
     "days": "天"
   },

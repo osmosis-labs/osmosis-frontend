@@ -444,7 +444,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
   );
 };
 
-const AssetsInfo: FunctionComponent<
+export const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
@@ -479,7 +479,7 @@ const AssetsInfo: FunctionComponent<
                     )}
                   </div>
                   <span className="whitespace-nowrap">
-                    {formatPretty(asset, { maxDecimals: 2 })}
+                    {formatPretty(asset, { maxDecimals: 6 })}
                   </span>
                 </div>
               ))}

@@ -8,7 +8,7 @@ import {
   EvmBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { isNil } from "@osmosis-labs/utils";
+import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
@@ -18,6 +18,7 @@ import { BaseError } from "wagmi";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";
+import { IS_TESTNET } from "~/config";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
@@ -433,10 +434,18 @@ export const useBridgeQuotes = ({
     ({
       sendTxHash,
       quote,
+      nomicCheckpointIndex,
     }: {
       sendTxHash: string;
       quote: NonNullable<typeof selectedQuote>["quote"];
+      nomicCheckpointIndex?: number;
     }) => {
+      if (quote.provider.id === "Nomic" && isNil(nomicCheckpointIndex)) {
+        throw new Error(
+          "Nomic checkpoint index is required. Skipping tracking."
+        );
+      }
+
       if (
         inputAmountRaw !== "" &&
         availableBalance &&
@@ -482,6 +491,7 @@ export const useBridgeQuotes = ({
                 amount: quote.transferFee.amount.toCoin().amount,
               }
             : undefined,
+          nomicCheckpointIndex,
         });
       }
     },
@@ -612,6 +622,8 @@ export const useBridgeQuotes = ({
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
     const gasFee = transactionRequest.gasFee;
+    let nomicCheckpointIndex: number | undefined;
+
     return accountStore.signAndBroadcast(
       fromChain.chainId,
       `${fromChain.chainId}:${fromAsset?.denom} -> ${toChain?.chainId}:${toAsset?.denom}`,
@@ -635,8 +647,25 @@ export const useBridgeQuotes = ({
         preferNoSetFee: Boolean(gasFee),
       },
       {
+        /**
+         * This is a special case for Nomic withdrawals
+         * We need to get the checkpoint index in order to track the transaction
+         */
+        onSign: async () => {
+          if (quote.provider.id !== "Nomic") return;
+
+          const { getCheckpoint } = await import("nomic-bitcoin");
+          const { index } = await getCheckpoint({
+            relayers: getNomicRelayerUrl({
+              env: IS_TESTNET ? "testnet" : "mainnet",
+            }),
+          });
+          /** Add one since the current transfer is not included in the current index */
+          nomicCheckpointIndex = index + 1;
+        },
         onBroadcastFailed: () => setIsBroadcastingTx(false),
         onBroadcasted: () => setIsBroadcastingTx(true),
+
         onFulfill: (tx: DeliverTxResponse) => {
           if (tx.code == null || tx.code === 0) {
             const queries = queriesStore.get(fromChain.chainId);
@@ -659,6 +688,7 @@ export const useBridgeQuotes = ({
             trackTransferStatus({
               sendTxHash: tx.transactionHash,
               quote,
+              nomicCheckpointIndex,
             });
 
             onTransferProp?.();

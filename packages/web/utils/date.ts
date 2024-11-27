@@ -1,6 +1,9 @@
 import dayjs from "dayjs";
 
-export function humanizeTime(date: dayjs.Dayjs): {
+export function humanizeTime(
+  date: dayjs.Dayjs,
+  useShortTimeUnits = false
+): {
   value: number | string;
   unitTranslationKey: string;
 } {
@@ -10,7 +13,13 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: Math.max(secondsDiff, 0),
       unitTranslationKey:
-        secondsDiff === 1 ? "timeUnits.second" : "timeUnits.seconds",
+        secondsDiff === 1
+          ? useShortTimeUnits
+            ? "timeUnitsShort.second"
+            : "timeUnits.second"
+          : useShortTimeUnits
+          ? "timeUnitsShort.seconds"
+          : "timeUnits.seconds",
     };
   }
 
@@ -19,7 +28,13 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: minutesDiff,
       unitTranslationKey:
-        minutesDiff === 1 ? "timeUnits.minute" : "timeUnits.minutes",
+        minutesDiff === 1
+          ? useShortTimeUnits
+            ? "timeUnitsShort.minute"
+            : "timeUnits.minute"
+          : useShortTimeUnits
+          ? "timeUnitsShort.minutes"
+          : "timeUnits.minutes",
     };
   }
 
@@ -28,7 +43,13 @@ export function humanizeTime(date: dayjs.Dayjs): {
     return {
       value: hoursDiff,
       unitTranslationKey:
-        hoursDiff === 1 ? "timeUnits.hour" : "timeUnits.hours",
+        hoursDiff === 1
+          ? useShortTimeUnits
+            ? "timeUnitsShort.hour"
+            : "timeUnits.hour"
+          : useShortTimeUnits
+          ? "timeUnitsShort.hours"
+          : "timeUnits.hours",
     };
   }
 
@@ -36,7 +57,14 @@ export function humanizeTime(date: dayjs.Dayjs): {
   if (daysDiff < 30) {
     return {
       value: daysDiff,
-      unitTranslationKey: daysDiff === 1 ? "timeUnits.day" : "timeUnits.days",
+      unitTranslationKey:
+        daysDiff === 1
+          ? useShortTimeUnits
+            ? "timeUnitsShort.day"
+            : "timeUnits.day"
+          : useShortTimeUnits
+          ? "timeUnitsShort.days"
+          : "timeUnits.days",
     };
   }
 
