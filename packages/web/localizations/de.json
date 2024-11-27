@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "An andere Adresse versenden",
     "invalidAddress": "Ungültige {chain} -Adresse",
     "acknowledgement": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere dieses, wenn ich eine falsche Empfängeradresse angebe oder versuche, das Geld über eine Börse abzuheben.",
+    "acknowledgementWithoutExchange": "Ich bin mir des Risikos eines Geldverlusts bewusst und akzeptiere es, wenn ich eine falsche Empfängeradresse angebe.",
     "done": "Erledigt",
     "transferFrom": "Übertragung von {noun}",
     "transferWithNoun": "Übertragen mit {noun}",

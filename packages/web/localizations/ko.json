@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "다른 주소로 보내기",
     "invalidAddress": "잘못된 {chain} 주소",
     "acknowledgement": "나는 잘못된 수취인 주소를 제공하거나 거래소로 출금을 시도할 경우 자금 손실의 위험을 인정하고 받아들입니다.",
+    "acknowledgementWithoutExchange": "수취인 주소를 잘못 입력할 경우 자금 손실 위험이 발생할 수 있음을 인지하고 수락합니다.",
     "done": "완료",
     "transferFrom": "{noun} 에서 전송",
     "transferWithNoun": "{noun} 사용하여 전송",

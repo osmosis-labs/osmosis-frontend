@@ -61,39 +61,65 @@ describe("shorten", () => {
 describe("isBitcoinAddressValid", () => {
   it("should return true for a valid Bitcoin address (P2PKH)", () => {
     const validAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
-    expect(isBitcoinAddressValid({ address: validAddress })).toBe(true);
+    expect(
+      isBitcoinAddressValid({ address: validAddress, env: "mainnet" })
+    ).toBe(true);
   });
 
   it("should return true for a valid Bitcoin address (P2SH)", () => {
     const validAddress = "3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy";
-    expect(isBitcoinAddressValid({ address: validAddress })).toBe(true);
+    expect(
+      isBitcoinAddressValid({ address: validAddress, env: "mainnet" })
+    ).toBe(true);
   });
 
   it("should return true for a valid Bitcoin address (P2WPKH)", () => {
     const validAddress = "bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq";
-    expect(isBitcoinAddressValid({ address: validAddress })).toBe(true);
+    expect(
+      isBitcoinAddressValid({ address: validAddress, env: "mainnet" })
+    ).toBe(true);
   });
 
   it("should return true for a valid testnet Bitcoin address ", () => {
     const validAddress = "tb1qq9epaj33z79vwz5zu9gw40j00yma7cm7g2ympl";
     expect(
-      isBitcoinAddressValid({ address: validAddress, isTestnet: true })
+      isBitcoinAddressValid({ address: validAddress, env: "testnet" })
     ).toBe(true);
   });
 
   it("should return false for an invalid Bitcoin address", () => {
     const invalidAddress = "invalidBitcoinAddress";
-    expect(isBitcoinAddressValid({ address: invalidAddress })).toBe(false);
+    expect(
+      isBitcoinAddressValid({ address: invalidAddress, env: "mainnet" })
+    ).toBe(false);
   });
 
   it("should return false for an empty address", () => {
     const emptyAddress = "";
-    expect(isBitcoinAddressValid({ address: emptyAddress })).toBe(false);
+    expect(
+      isBitcoinAddressValid({ address: emptyAddress, env: "mainnet" })
+    ).toBe(false);
   });
 
   it("should return false for a malformed address", () => {
     const malformedAddress = "12345";
-    expect(isBitcoinAddressValid({ address: malformedAddress })).toBe(false);
+    expect(
+      isBitcoinAddressValid({ address: malformedAddress, env: "mainnet" })
+    ).toBe(false);
+  });
+
+  it("should return false for a testnet address in mainnet", () => {
+    const testnetAddress = "tb1qq9epaj33z79vwz5zu9gw40j00yma7cm7g2ympl";
+    expect(
+      isBitcoinAddressValid({ address: testnetAddress, env: "mainnet" })
+    ).toBe(false);
+  });
+
+  it("should return true for a mainnet address in mainnet", () => {
+    const mainnetAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+    expect(
+      isBitcoinAddressValid({ address: mainnetAddress, env: "mainnet" })
+    ).toBe(true);
   });
 });
 

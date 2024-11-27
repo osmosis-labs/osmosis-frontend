@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "Send to another address",
     "invalidAddress": "Invalid {chain} address",
     "acknowledgement": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address or try to withdraw to an exchange.",
+    "acknowledgementWithoutExchange": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address.",
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
     "transferWithNoun": "Transfer with {noun}",

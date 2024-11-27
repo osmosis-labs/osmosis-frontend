@@ -517,6 +517,7 @@ const txSnapshotSchema = z.object({
     })
   ),
   estimatedArrivalUnix: z.number(),
+  nomicCheckpointIndex: z.number().optional(),
 });
 
 export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
