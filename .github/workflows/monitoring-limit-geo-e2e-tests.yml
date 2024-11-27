@@ -26,7 +26,7 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests in EU
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -36,7 +36,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           USE_TEST_PROXY: "use"
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test monitoring.market --timeout 180000
       - name: upload monitoring test results
         if: failure()
@@ -44,10 +44,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eu-trade-test-results-${{ github.run_id }}
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   fe-limit-eu-tests:
-    timeout-minutes: 12
+    timeout-minutes: 15
     name: prod-fe-limit-eu-tests
     needs: fe-trade-eu-tests
     runs-on: macos-latest
@@ -67,7 +67,7 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Limit tests in EU
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -77,7 +77,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           USE_TEST_PROXY: "use"
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
       - name: upload monitoring test results
         if: failure()
@@ -85,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: eu-limit-test-results-${{ github.run_id }}
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   fe-trade-sg-tests:
     timeout-minutes: 12
@@ -107,7 +107,7 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests in SG
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -117,7 +117,7 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
       - name: upload monitoring test results
         if: failure()
@@ -125,7 +125,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: sg-trade-test-results-${{ github.run_id }}
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   fe-trade-us-tests:
     timeout-minutes: 10
@@ -147,14 +147,14 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests in US
         id: run-us
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
       - name: upload monitoring test results
         if: failure()
@@ -162,10 +162,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: us-trade-test-results-${{ github.run_id }}
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   fe-limit-us-tests:
-    timeout-minutes: 10
+    timeout-minutes: 15
     needs: fe-trade-us-tests
     name: prod-fe-limit-us-tests
     runs-on: macos-latest
@@ -185,14 +185,14 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Limit tests in US
         id: run-us
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
       - name: upload monitoring test results
         if: failure()
@@ -200,7 +200,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: us-limit-test-results-${{ github.run_id }}
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   fe-bot-alert:
     runs-on: ubuntu-latest
