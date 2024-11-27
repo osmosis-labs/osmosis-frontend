@@ -43,6 +43,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>
   test.afterEach(async ({}, testInfo) => {
+    console.log(`Test status: ${testInfo.status}`);
     if (testInfo.status === "failed") {
       const name = testInfo.title;
       process.env.GITHUB_STEP_SUMMARY = `Test ${name} failed.`;
