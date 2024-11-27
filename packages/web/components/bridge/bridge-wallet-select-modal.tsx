@@ -570,7 +570,9 @@ const SendToAnotherAddressForm: FunctionComponent<
           className="body1 cursor-pointer select-none text-osmoverse-300"
           onClick={() => setIsAcknowledged(!isAcknowledged)}
         >
-          {t("transfer.acknowledgement")}
+          {toChain.chainType === "bitcoin"
+            ? t("transfer.acknowledgementWithoutExchange")
+            : t("transfer.acknowledgement")}
         </p>
       </div>
       <Button
