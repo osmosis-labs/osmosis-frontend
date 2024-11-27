@@ -11,6 +11,7 @@ export const DefaultTheme = createTheme({
   ...DefaultNavigationTheme,
   colors: {
     ...DefaultNavigationTheme.colors,
+    text: Colors.text,
     background: Colors.background,
     tabBarBackground: "hsla(248, 77%, 8%, 0.2)",
   },

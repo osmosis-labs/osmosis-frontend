@@ -2,13 +2,12 @@ import { Dec } from "@keplr-wallet/unit";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { FlashList } from "@shopify/flash-list";
 import { debounce } from "debounce";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
   ActivityIndicator,
   Image,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -17,10 +16,11 @@ import { SvgUri } from "react-native-svg";
 
 import { ChevronDownIcon } from "~/components/icons/chevron-down";
 import { FilterIcon } from "~/components/icons/filter";
-import { SearchIcon } from "~/components/icons/search";
+import { SearchInput } from "~/components/search-input";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/colors";
+import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const itemSize = 70;
@@ -69,15 +69,10 @@ export default function TabTwoScreen() {
             gap: 8,
           }}
         >
-          <View style={styles.searchContainer}>
-            <SearchIcon />
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search"
-              placeholderTextColor={Colors["osmoverse"][400]}
-              onChangeText={onSearch}
-            />
-          </View>
+          <SearchInput
+            onSearch={onSearch}
+            activeColor={Colors["osmoverse"][500]}
+          />
 
           <TouchableOpacity style={styles.filterButton}>
             <FilterIcon />
@@ -120,60 +115,65 @@ const AssetItem = ({
 }: {
   asset: RouterOutputs["local"]["assets"]["getMarketAssets"]["items"][number];
 }) => {
+  const router = useRouter();
+
   return (
-    <Link
-      push
-      href={`/asset/${asset.coinMinimalDenom.replace(/\//g, "-")}`}
-      asChild
+    <TouchableOpacity
+      onPress={() =>
+        router.push({
+          pathname: "/asset/[id]",
+          params: {
+            id: asset.coinMinimalDenom.replace(/\//g, "-"),
+            coinDenom: asset.coinDenom,
+            coinImageUrl: asset.coinImageUrl,
+          },
+        })
+      }
+      style={styles.assetItem}
     >
-      <TouchableOpacity style={styles.assetItem}>
-        <View style={styles.assetLeft}>
-          {asset.coinImageUrl?.endsWith(".svg") ? (
-            <SvgUri
-              uri={asset.coinImageUrl}
-              width={40}
-              height={40}
-              style={styles.assetIcon}
-            />
+      <View style={styles.assetLeft}>
+        {asset.coinImageUrl?.endsWith(".svg") ? (
+          <SvgUri
+            uri={asset.coinImageUrl}
+            width={40}
+            height={40}
+            style={styles.assetIcon}
+          />
+        ) : (
+          <Image
+            source={{ uri: asset.coinImageUrl }}
+            style={styles.assetIcon}
+          />
+        )}
+        <View>
+          <Text style={styles.assetName}>{asset.coinDenom}</Text>
+        </View>
+      </View>
+      <View style={styles.assetRight}>
+        <Text style={styles.price}>
+          {asset.currentPrice ? (
+            <>
+              {asset.currentPrice.symbol}
+              <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
+            </>
           ) : (
-            <Image
-              source={{ uri: asset.coinImageUrl }}
-              style={styles.assetIcon}
-            />
+            ""
           )}
-          <View>
-            <Text style={styles.assetName}>{asset.coinDenom}</Text>
-            {/* <Text style={styles.assetValue}>{asset.amount}</Text> */}
-          </View>
-        </View>
-        <View style={styles.assetRight}>
-          <Text style={styles.price}>
-            {asset.currentPrice ? (
-              <>
-                {asset.currentPrice.symbol}
-                <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
-              </>
-            ) : (
-              ""
-            )}
-          </Text>
-          <Text
-            style={[
-              styles.percentage,
-              asset.priceChange24h &&
-              asset.priceChange24h.toDec().gt(new Dec(0))
-                ? { color: Colors["bullish"][500] }
-                : asset.priceChange24h &&
-                  asset.priceChange24h.toDec().equals(new Dec(0))
-                ? { color: Colors["wosmongton"][200] }
-                : { color: Colors["rust"][300] },
-            ]}
-          >
-            {asset.priceChange24h?.toString()}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </Link>
+        </Text>
+        <Text
+          style={[
+            styles.percentage,
+            {
+              color: getChangeColor(
+                asset.priceChange24h?.toDec() || new Dec(0)
+              ),
+            },
+          ]}
+        >
+          {asset.priceChange24h?.toString()}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
