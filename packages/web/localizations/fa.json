@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "به آدرس دیگری ارسال کنید",
     "invalidAddress": "آدرس {chain} نامعتبر است",
     "acknowledgement": "در صورت ارائه آدرس گیرنده نادرست یا تلاش برای خروج از صرافی، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
+    "acknowledgementWithoutExchange": "در صورت ارائه آدرس گیرنده نادرست، خطر از دست دادن وجوه را می پذیرم و می پذیرم.",
     "done": "انجام شده",
     "transferFrom": "انتقال از {noun}",
     "transferWithNoun": "انتقال با {noun}",

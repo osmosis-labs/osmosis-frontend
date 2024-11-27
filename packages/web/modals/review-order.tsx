@@ -31,7 +31,7 @@ import {
   OneClickTradingParamsChanges,
   useAmplitudeAnalytics,
   useFeatureFlags,
-  useOneClickTradingSessionManager,
+  useOneClickTradingSwapReview,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
@@ -128,15 +128,8 @@ export function ReviewOrder({
     remainingSpendLimit: remaining1CTSpendLimit,
     wouldExceedSpendLimit: wouldExceedSpendLimit1CT,
     setTransactionParams: setTransaction1CTParams,
-    commitSessionChange: commit1CTSessionChange,
     resetParams: reset1CTParams,
-    commitSessionChangeIsLoading: commit1CTSessionChangeIsLoading,
-  } = useOneClickTradingSessionManager({
-    onCommit: () => {
-      confirmAction();
-      onClose();
-    },
-  });
+  } = useOneClickTradingSwapReview({ isModalOpen: isOpen });
 
   const wouldExceedSpendLimit = useMemo(() => {
     return wouldExceedSpendLimit1CT({
@@ -762,12 +755,10 @@ export function ReviewOrder({
                 <div className="flex w-full justify-between gap-3 pt-3">
                   <Button
                     mode="primary"
-                    onClick={commit1CTSessionChange}
-                    disabled={
-                      isConfirmationDisabled ||
-                      commit1CTSessionChangeIsLoading ||
-                      wouldExceedSpendLimit
-                    }
+                    onClick={() => {
+                      confirmAction();
+                    }}
+                    disabled={isConfirmationDisabled || wouldExceedSpendLimit}
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>

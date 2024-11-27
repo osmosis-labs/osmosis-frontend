@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "發送到另一個地址",
     "invalidAddress": "無效的{chain}地址",
     "acknowledgement": "我承認並接受如果我提供不正確的收款人地址或嘗試提款到交易所，則存在資金損失的風險。",
+    "acknowledgementWithoutExchange": "我承認並接受如果我提供不正確的收款人地址，將面臨資金損失的風險。",
     "done": "完畢",
     "transferFrom": "從{noun}轉移",
     "transferWithNoun": "使用{noun}進行傳輸",

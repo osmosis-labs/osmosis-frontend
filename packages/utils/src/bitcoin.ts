@@ -3,6 +3,7 @@ export const BitcoinChainInfo = {
   chainId: "bitcoin",
   chainName: "Bitcoin",
   color: "#F7931A",
+  logoUri: "/networks/bitcoin.svg",
 };
 
 export const BitcoinMainnetExplorerUrl =
@@ -39,5 +40,15 @@ export const getnBTCMinimalDenom = ({
 }) => {
   return env === "mainnet"
     ? "ibc/75345531D87BD90BF108BE7240BD721CB2CB0A1F16D4EBA71B09EC3C43E15C8F" // nBTC
-    : "ibc/72D483F0FD4229DBF3ACC78E648F0399C4ACADDFDBCDD9FE791FEE4443343422"; // Testnet nBTC
+    : "ibc/8D294CE85345F171AAF6B1FF6E64B5A9EE197C99CDAD64D79EA4ACAB270AC95C"; // Testnet nBTC
 };
+
+export function getNomicRelayerUrl({ env }: { env: "mainnet" | "testnet" }) {
+  return env === "testnet"
+    ? ["https://testnet-relayer.nomic.io:8443"]
+    : [
+        "https://btc-relayer.nomic.io",
+        "https://btc-relay.nomic-main.ccvalidators.com",
+        "https://nomic-relayer.forbole.com",
+      ];
+}

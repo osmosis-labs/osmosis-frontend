@@ -791,8 +791,6 @@ export const AmountScreen = observer(
         />
       );
 
-    console.log(fromAsset);
-
     if (
       featureFlags.bridgeDepositAddress &&
       !quote.enabled &&

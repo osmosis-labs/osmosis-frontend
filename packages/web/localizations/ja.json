@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "別のアドレスに送信",
     "invalidAddress": "無効な{chain}アドレス",
     "acknowledgement": "間違った受取人アドレスを提供したり、取引所に引き出しを試みたりした場合に資金が失われるリスクを認識し、受け入れます。",
+    "acknowledgementWithoutExchange": "受取人住所を間違えて入力した場合、資金が失われるリスクがあることを認識し、同意します。",
     "done": "終わり",
     "transferFrom": "{noun}からの転送",
     "transferWithNoun": "{noun}で転送する",

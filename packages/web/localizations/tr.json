@@ -877,6 +877,7 @@
     "sendToAnotherAddress": "Başka bir adrese gönder",
     "invalidAddress": "Geçersiz {chain} adresi",
     "acknowledgement": "Yanlış bir alıcı adresi verirsem veya bir borsaya çekilmeye çalışırsam fon kaybı riskini kabul ediyorum ve kabul ediyorum.",
+    "acknowledgementWithoutExchange": "Yanlış bir alıcı adresi vermem halinde para kaybı riskini kabul ediyorum ve onaylıyorum.",
     "done": "Tamamlamak",
     "transferFrom": "{noun} kaynağından aktarım",
     "transferWithNoun": "{noun} ile aktarım",

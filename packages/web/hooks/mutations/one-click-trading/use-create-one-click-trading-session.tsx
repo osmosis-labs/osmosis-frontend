@@ -1,8 +1,11 @@
 import { toBase64 } from "@cosmjs/encoding";
-import { WalletRepo } from "@cosmos-kit/core";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import {
+  makeAddAuthenticatorMsg,
+  makeRemoveAuthenticatorMsg,
+} from "@osmosis-labs/tx";
 import {
   AuthenticatorType,
   AvailableOneClickTradingMessages,
@@ -18,7 +21,6 @@ import {
 } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 import dayjs from "dayjs";
-import { useLocalStorage } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { OneClickFloatingBannerDoNotShowKey } from "~/components/one-click-trading/one-click-trading-toast";
@@ -169,6 +171,220 @@ export async function getAuthenticatorIdFromTx({
   return authenticatorId;
 }
 
+export async function onAdd1CTSession({
+  privateKey,
+  tx,
+  userOsmoAddress,
+  fallbackGetAuthenticatorId,
+  accountStore,
+  allowedMessages,
+  sessionPeriod,
+  spendLimitTokenDecimals,
+  transaction1CTParams,
+  allowedAmount,
+  t,
+  logEvent,
+}: {
+  privateKey: PrivKeySecp256k1;
+  tx: DeliverTxResponse;
+  userOsmoAddress: string;
+  fallbackGetAuthenticatorId: Parameters<
+    typeof getAuthenticatorIdFromTx
+  >[0]["fallbackGetAuthenticatorId"];
+  accountStore: ReturnType<typeof useStore>["accountStore"];
+  allowedMessages: AvailableOneClickTradingMessages[];
+  sessionPeriod: OneClickTradingTimeLimit;
+  spendLimitTokenDecimals: number;
+  transaction1CTParams: OneClickTradingTransactionParams;
+  allowedAmount: string;
+  t: ReturnType<typeof useTranslation>["t"];
+  logEvent: ReturnType<typeof useAmplitudeAnalytics>["logEvent"];
+}) {
+  const publicKey = toBase64(privateKey.getPubKey().toBytes());
+
+  const authenticatorId = await getAuthenticatorIdFromTx({
+    events: tx.events,
+    userOsmoAddress,
+    fallbackGetAuthenticatorId,
+    publicKey,
+  });
+
+  accountStore.setOneClickTradingInfo({
+    authenticatorId,
+    publicKey,
+    sessionKey: toBase64(privateKey.toBytes()),
+    allowedMessages,
+    sessionPeriod,
+    sessionStartedAtUnix: dayjs().unix(),
+    networkFeeLimit: transaction1CTParams.networkFeeLimit,
+    spendLimit: {
+      amount: allowedAmount,
+      decimals: spendLimitTokenDecimals,
+    },
+    hasSeenExpiryToast: false,
+    humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
+    userOsmoAddress,
+  });
+
+  localStorage.setItem(OneClickFloatingBannerDoNotShowKey, "true");
+  accountStore.setShouldUseOneClickTrading({ nextValue: true });
+
+  const sessionEndDate = dayjs.unix(
+    unixNanoSecondsToSeconds(sessionPeriod.end)
+  );
+  const humanizedTime = humanizeTime(sessionEndDate);
+  displayToast(
+    {
+      titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",
+      captionElement: (
+        <p className="text-sm text-osmoverse-300 md:text-xs">
+          {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
+          {t("remaining")}
+        </p>
+      ),
+    },
+    ToastType.ONE_CLICK_TRADING
+  );
+  logEvent([
+    EventName.OneClickTrading.startSession,
+    {
+      spendLimit: Number(transaction1CTParams.spendLimit.toDec().toString()),
+      sessionPeriod: transaction1CTParams.sessionPeriod.end,
+    },
+  ]);
+}
+
+export async function makeCreate1CTSessionMessage({
+  transaction1CTParams,
+  spendLimitTokenDecimals,
+  additionalAuthenticatorsToRemove,
+  userOsmoAddress,
+  apiUtils,
+}: {
+  transaction1CTParams: OneClickTradingTransactionParams;
+  spendLimitTokenDecimals: number;
+  additionalAuthenticatorsToRemove?: bigint[];
+  userOsmoAddress: string;
+  apiUtils: ReturnType<typeof api.useUtils>;
+}) {
+  let authenticators: ParsedAuthenticator[];
+  try {
+    ({ authenticators } =
+      await apiUtils.local.oneClickTrading.getAuthenticators.fetch({
+        userOsmoAddress,
+      }));
+  } catch (error) {
+    throw new CreateOneClickSessionError(
+      "Failed to fetch account public key and authenticators."
+    );
+  }
+
+  const key = PrivKeySecp256k1.generateRandomKey();
+  const allowedAmount = transaction1CTParams.spendLimit
+    .toDec()
+    .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
+    .truncate()
+    .toString();
+  const allowedMessages: AvailableOneClickTradingMessages[] = [
+    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+    "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+    "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+    "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
+    "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
+  ];
+
+  let sessionPeriod: OneClickTradingTimeLimit;
+  switch (transaction1CTParams.sessionPeriod.end) {
+    case "5min":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
+      };
+      break;
+    case "10min":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
+      };
+      break;
+    case "30min":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
+      };
+      break;
+    case "1hour":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+      };
+      break;
+    case "3hours":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
+      };
+      break;
+    case "12hours":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
+      };
+      break;
+    default:
+      throw new Error(
+        `Unsupported time limit: ${transaction1CTParams.sessionPeriod.end}`
+      );
+  }
+
+  const oneClickTradingAuthenticator = getOneClickTradingSessionAuthenticator({
+    key,
+    allowedAmount,
+    allowedMessages,
+    sessionPeriod,
+  });
+
+  const authenticatorToRemoveId =
+    authenticators.length === 15
+      ? authenticators
+          .filter((authenticator) =>
+            isAuthenticatorOneClickTradingSession({ authenticator })
+          )
+          .reduce((min, authenticator) => {
+            if (isNil(min)) return authenticator.id;
+            return new Dec(authenticator.id).lt(new Dec(min))
+              ? authenticator.id
+              : min;
+          }, null as string | null)
+      : undefined;
+
+  const authenticatorsToRemove = authenticatorToRemoveId
+    ? [BigInt(authenticatorToRemoveId)]
+    : [];
+
+  if (additionalAuthenticatorsToRemove) {
+    authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
+  }
+
+  const addAuthenticatorMsg = makeAddAuthenticatorMsg({
+    authenticatorType: oneClickTradingAuthenticator.authenticatorType,
+    data: oneClickTradingAuthenticator.data,
+    sender: userOsmoAddress,
+  });
+
+  const removeAuthenticatorMsgs = authenticatorsToRemove.map((id) =>
+    makeRemoveAuthenticatorMsg({
+      id,
+      sender: userOsmoAddress,
+    })
+  );
+
+  return {
+    msgs: await Promise.all([...removeAuthenticatorMsgs, addAuthenticatorMsg]),
+    allowedMessages,
+    allowedAmount,
+    sessionPeriod,
+    key,
+    transaction1CTParams,
+    spendLimitTokenDecimals,
+  };
+}
+
 export const useCreateOneClickTradingSession = ({
   onBroadcasted,
   queryOptions,
@@ -178,7 +394,6 @@ export const useCreateOneClickTradingSession = ({
     unknown,
     unknown,
     {
-      walletRepo: WalletRepo;
       spendLimitTokenDecimals: number | undefined;
       transaction1CTParams: OneClickTradingTransactionParams | undefined;
       additionalAuthenticatorsToRemove?: bigint[];
@@ -187,24 +402,22 @@ export const useCreateOneClickTradingSession = ({
   >;
 } = {}) => {
   const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { logEvent } = useAmplitudeAnalytics();
 
   const apiUtils = api.useUtils();
-  const [, setDoNotShowFloatingBannerAgain] = useLocalStorage(
-    OneClickFloatingBannerDoNotShowKey,
-    false
-  );
   const { t } = useTranslation();
 
   return useMutation(
     async ({
-      walletRepo,
       transaction1CTParams,
       spendLimitTokenDecimals,
       additionalAuthenticatorsToRemove,
     }) => {
-      if (!account?.osmosis) {
+      const userOsmoAddress = accountStore.getWallet(
+        accountStore.osmosisChainId
+      )?.address;
+
+      if (!userOsmoAddress) {
         throw new CreateOneClickSessionError("Osmosis account not found");
       }
 
@@ -214,204 +427,62 @@ export const useCreateOneClickTradingSession = ({
         );
       }
 
-      if (!walletRepo.current) {
-        throw new CreateOneClickSessionError(
-          "walletRepo.current is not defined."
-        );
-      }
-
       if (!spendLimitTokenDecimals) {
         throw new CreateOneClickSessionError(
           "Spend limit token decimals are not defined."
         );
       }
 
-      let authenticators: ParsedAuthenticator[];
-      try {
-        ({ authenticators } =
-          await apiUtils.local.oneClickTrading.getAuthenticators.fetch({
-            userOsmoAddress: walletRepo.current.address!,
-          }));
-      } catch (error) {
-        throw new CreateOneClickSessionError(
-          "Failed to fetch account public key and authenticators."
-        );
-      }
-
-      const key = PrivKeySecp256k1.generateRandomKey();
-      const allowedAmount = transaction1CTParams.spendLimit
-        .toDec()
-        .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
-        .truncate()
-        .toString();
-      const allowedMessages: AvailableOneClickTradingMessages[] = [
-        "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
-        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
-        "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
-        "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
-        "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition",
-        "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
-      ];
-
-      let sessionPeriod: OneClickTradingTimeLimit;
-      switch (transaction1CTParams.sessionPeriod.end) {
-        case "5min":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
-          };
-          break;
-        case "10min":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
-          };
-          break;
-        case "30min":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
-          };
-          break;
-        case "1hour":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
-          };
-          break;
-        case "3hours":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
-          };
-          break;
-        case "12hours":
-          sessionPeriod = {
-            end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
-          };
-          break;
-        default:
-          throw new Error(
-            `Unsupported time limit: ${transaction1CTParams.sessionPeriod.end}`
-          );
-      }
-
-      const oneClickTradingAuthenticator =
-        getOneClickTradingSessionAuthenticator({
-          key,
-          allowedAmount,
-          allowedMessages,
-          sessionPeriod,
+      const { msgs, allowedMessages, allowedAmount, sessionPeriod, key } =
+        await makeCreate1CTSessionMessage({
+          transaction1CTParams,
+          spendLimitTokenDecimals,
+          additionalAuthenticatorsToRemove,
+          userOsmoAddress,
+          apiUtils,
         });
 
-      /**
-       * If the user has 15 authenticators, remove the oldest AllOf
-       * which is the previous OneClickTrading session
-       */
-      const authenticatorToRemoveId =
-        authenticators.length === 15
-          ? authenticators
-              .filter((authenticator) =>
-                isAuthenticatorOneClickTradingSession({ authenticator })
-              )
-              /**
-               * Find the oldest 1-Click Trading Session by comparing the id.
-               * The smallest id is the oldest authenticator.
-               */
-              .reduce((min, authenticator) => {
-                if (isNil(min)) return authenticator.id;
-                return new Dec(authenticator.id).lt(new Dec(min))
-                  ? authenticator.id
-                  : min;
-              }, null as string | null)
-          : undefined;
-
-      const authenticatorsToRemove = authenticatorToRemoveId
-        ? [BigInt(authenticatorToRemoveId)]
-        : [];
-
-      if (additionalAuthenticatorsToRemove) {
-        authenticatorsToRemove.push(...additionalAuthenticatorsToRemove);
-      }
-
       const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
-        account.osmosis
-          .sendAddOrRemoveAuthenticatorsMsg({
-            addAuthenticators: [oneClickTradingAuthenticator],
-            removeAuthenticators: authenticatorsToRemove,
-            memo: "",
-
-            onBroadcasted,
-            onFulfill: (tx) => {
-              if (tx.code === 0) {
-                resolve(tx);
-              } else {
-                reject(new Error("Transaction failed"));
-              }
-            },
-          })
+        accountStore
+          .signAndBroadcast(
+            accountStore.osmosisChainId,
+            "addOrRemoveAuthenticators",
+            msgs,
+            "",
+            undefined,
+            undefined,
+            {
+              onBroadcasted,
+              onFulfill: (tx) => {
+                if (tx.code === 0) {
+                  resolve(tx);
+                } else {
+                  reject(new Error("Transaction failed"));
+                }
+              },
+            }
+          )
           .catch((error) => {
             reject(error);
           });
       });
 
-      const publicKey = toBase64(key.getPubKey().toBytes());
-
-      const authenticatorId = await getAuthenticatorIdFromTx({
-        events: tx.events,
-        userOsmoAddress: walletRepo.current.address!,
+      onAdd1CTSession({
+        privateKey: key,
+        tx,
+        userOsmoAddress,
         fallbackGetAuthenticatorId:
           apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-        publicKey,
-      });
-
-      accountStore.setOneClickTradingInfo({
-        authenticatorId,
-        publicKey,
-        sessionKey: toBase64(key.toBytes()),
+        accountStore,
         allowedMessages,
         sessionPeriod,
-        sessionStartedAtUnix: dayjs().unix(),
-        networkFeeLimit: transaction1CTParams.networkFeeLimit,
-        spendLimit: {
-          amount: allowedAmount,
-          decimals: spendLimitTokenDecimals,
-        },
-        hasSeenExpiryToast: false,
-        humanizedSessionPeriod: transaction1CTParams.sessionPeriod.end,
-        userOsmoAddress: walletRepo.current!.address!,
+        spendLimitTokenDecimals,
+        transaction1CTParams,
+        allowedAmount,
+        t,
+        logEvent,
       });
-
-      setDoNotShowFloatingBannerAgain(true);
-      accountStore.setShouldUseOneClickTrading({ nextValue: true });
-
-      const sessionEndDate = dayjs.unix(
-        unixNanoSecondsToSeconds(sessionPeriod.end)
-      );
-      const humanizedTime = humanizeTime(sessionEndDate);
-      displayToast(
-        {
-          titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",
-          captionElement: (
-            <p className="text-sm text-osmoverse-300 md:text-xs">
-              {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
-              {t("remaining")}
-            </p>
-          ),
-        },
-        ToastType.ONE_CLICK_TRADING
-      );
     },
-    {
-      ...queryOptions,
-      onSuccess: (...params) => {
-        const [, { transaction1CTParams }] = params;
-        queryOptions?.onSuccess?.(...params);
-        logEvent([
-          EventName.OneClickTrading.startSession,
-          {
-            spendLimit: Number(
-              transaction1CTParams?.spendLimit.toDec().toString()
-            ),
-            sessionPeriod: transaction1CTParams?.sessionPeriod.end,
-          },
-        ]);
-      },
-    }
+    queryOptions
   );
 };
