@@ -1,4 +1,4 @@
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../big-dec";
 import { approxSqrt } from "../../utils";

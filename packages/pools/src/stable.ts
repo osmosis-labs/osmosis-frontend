@@ -1,5 +1,5 @@
-import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import { StableSwapMath, StableSwapToken } from "@osmosis-labs/math";
+import { Coin, Dec, Int } from "@osmosis-labs/unit";
 
 import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";

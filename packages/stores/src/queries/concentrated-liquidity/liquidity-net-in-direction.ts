@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Dec, Int } from "@keplr-wallet/unit";
 import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { BigDec, LiquidityDepth, maxTick, minTick } from "@osmosis-labs/math";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { computed, makeObservable, observable } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";

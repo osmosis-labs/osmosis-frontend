@@ -1,5 +1,5 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolMath } from "@osmosis-labs/math";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { NotEnoughQuotedError } from "./errors";
 import { SharePool } from "./interface";

@@ -1,5 +1,5 @@
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { BondStatus } from "@osmosis-labs/types";
+import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import {
   createColumnHelper,
   flexRender,

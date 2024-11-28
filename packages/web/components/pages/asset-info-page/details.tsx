@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

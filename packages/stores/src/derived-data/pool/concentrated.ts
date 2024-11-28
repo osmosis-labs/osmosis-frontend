@@ -1,12 +1,12 @@
 import { FiatCurrency } from "@keplr-wallet/types";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   CoinPretty,
   Dec,
   DecUtils,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
+} from "@osmosis-labs/unit";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";

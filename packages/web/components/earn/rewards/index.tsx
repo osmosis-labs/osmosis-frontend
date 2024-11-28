@@ -1,11 +1,11 @@
 import { sleep } from "@axelar-network/axelarjs-sdk";
 import type { EncodeObject } from "@cosmjs/proto-signing";
-import { PricePretty } from "@keplr-wallet/unit";
 import { EarnStrategy } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,
   makeWithdrawDelegationRewardsMsg,
 } from "@osmosis-labs/tx";
+import { PricePretty } from "@osmosis-labs/unit";
 import { useCallback } from "react";
 
 import { Button } from "~/components/ui/button";

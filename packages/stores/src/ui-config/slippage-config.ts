@@ -1,4 +1,4 @@
-import { Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { InvalidSlippageError, NegativeSlippageError } from "./errors";

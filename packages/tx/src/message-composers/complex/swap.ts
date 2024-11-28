@@ -1,8 +1,8 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
 import type {
   getRouteTokenInGivenOut,
   getRouteTokenOutGivenIn,
 } from "@osmosis-labs/server";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 
 import {

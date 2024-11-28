@@ -1,4 +1,3 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import {
   captureIfError,
   getAsset,
@@ -6,6 +5,7 @@ import {
   makeGammShareCurrency,
   queryBalances,
 } from "@osmosis-labs/server";
+import { CoinPretty } from "@osmosis-labs/unit";
 import z from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";

@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

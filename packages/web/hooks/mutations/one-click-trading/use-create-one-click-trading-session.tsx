@@ -1,6 +1,5 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import {
   makeAddAuthenticatorMsg,
@@ -14,6 +13,7 @@ import {
   OneClickTradingTransactionParams,
   ParsedAuthenticator,
 } from "@osmosis-labs/types";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import {
   isNil,
   unixNanoSecondsToSeconds,

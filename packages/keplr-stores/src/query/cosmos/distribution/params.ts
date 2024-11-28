@@ -3,7 +3,7 @@ import { DistributionParams } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
-import { RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@osmosis-labs/unit";
 
 export class ObservableQueryDistributionParams extends ObservableChainQuery<DistributionParams> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

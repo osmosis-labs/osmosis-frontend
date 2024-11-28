@@ -1,9 +1,9 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import {
   Asset as AssetListAsset,
   AssetList,
   MinimalAsset,
 } from "@osmosis-labs/types";
+import { CoinPretty } from "@osmosis-labs/unit";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import { z } from "zod";
 

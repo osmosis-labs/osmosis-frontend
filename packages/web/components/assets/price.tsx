@@ -1,6 +1,6 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { Dec } from "@keplr-wallet/unit";
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
+import { PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 

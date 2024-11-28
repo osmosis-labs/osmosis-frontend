@@ -1,4 +1,4 @@
-import { CoinUtils, Dec, Int } from "@keplr-wallet/unit";
+import { CoinUtils, Dec, Int } from "@osmosis-labs/unit";
 import bigInteger from "big-integer";
 
 export class BigDec {

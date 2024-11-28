@@ -6,7 +6,7 @@ import {
 } from "../../chain-query";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import { Currency } from "@keplr-wallet/types";
 import { StoreUtils } from "../../../common";
 import { computedFn } from "mobx-utils";

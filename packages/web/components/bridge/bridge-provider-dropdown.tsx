@@ -1,6 +1,6 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Dec } from "@keplr-wallet/unit";
 import { Bridge } from "@osmosis-labs/bridge";
+import { Dec } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";

@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import { Asset } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 

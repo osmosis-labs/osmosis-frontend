@@ -1,6 +1,6 @@
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useMemo } from "react";

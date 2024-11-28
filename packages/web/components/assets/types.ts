@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@osmosis-labs/unit";
 
 export type PoolAssetInfo = {
   coinDenom: string;

@@ -1,6 +1,6 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, MinimalAsset } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { sort } from "@osmosis-labs/utils";
 
 import { captureIfError } from "../../../utils";

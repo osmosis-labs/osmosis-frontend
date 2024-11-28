@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
-import { Coin, Int } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import { Coin, Int } from "@osmosis-labs/unit";
 import { when } from "mobx";
 import WebSocket from "ws";
 

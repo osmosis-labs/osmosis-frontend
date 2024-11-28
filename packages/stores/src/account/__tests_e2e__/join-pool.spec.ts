@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { Dec, DecUtils, CoinPretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, CoinPretty } from "@osmosis-labs/unit";
 import {
   deepContained,
   getEventFromTx,

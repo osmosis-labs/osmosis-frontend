@@ -1,5 +1,5 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import cases from "jest-in-case";
 
 import { compressZeros, formatFiatPrice } from "../formatter";

@@ -1,8 +1,8 @@
-import { PricePretty } from "@keplr-wallet/unit";
 import {
   DEFAULT_VS_CURRENCY,
   type TokenHistoricalPrice,
 } from "@osmosis-labs/server";
+import { PricePretty } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Time } from "lightweight-charts";
 import { action, computed, makeObservable, observable } from "mobx";

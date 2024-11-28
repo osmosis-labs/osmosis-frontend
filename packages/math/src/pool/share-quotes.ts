@@ -6,7 +6,7 @@ import {
   DecUtils,
   Int,
   IntPretty,
-} from "@keplr-wallet/unit";
+} from "@osmosis-labs/unit";
 
 import { StableSwapMath } from "./stable";
 import { WeightedPoolMath } from "./weighted";

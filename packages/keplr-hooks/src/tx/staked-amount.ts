@@ -5,7 +5,7 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { override } from "mobx";
-import { Dec, CoinPretty } from "@keplr-wallet/unit";
+import { Dec, CoinPretty } from "@osmosis-labs/unit";
 import { useState } from "react";
 import { AmountConfig } from "./amount";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";

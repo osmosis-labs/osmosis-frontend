@@ -1,6 +1,6 @@
 import type { Msg, StdFee } from "@cosmjs/launchpad";
 import type { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import type { KeplrSignOptions } from "@keplr-wallet/types";
 
 export type ProtoMsgsOrWithAminoMsgs = {

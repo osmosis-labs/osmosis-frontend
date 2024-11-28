@@ -1,5 +1,5 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 

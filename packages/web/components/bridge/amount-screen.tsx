@@ -3,8 +3,8 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { IntPretty } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
+import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
