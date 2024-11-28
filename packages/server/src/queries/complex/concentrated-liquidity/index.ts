@@ -1,4 +1,4 @@
-import { BigDec, maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { BigDec, maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
@@ -154,6 +154,22 @@ export function getPriceFromSqrtPrice({
   return price;
 }
 
+export function getDisplayPriceFromPrice({
+  price,
+  baseCoin,
+  quoteCoin,
+}: {
+  baseCoin: CoinPretty;
+  quoteCoin: CoinPretty;
+  price: Dec;
+}) {
+  const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+    baseCoin.currency.coinDecimals - quoteCoin.currency.coinDecimals
+  );
+  const displayPrice = price.mul(multiplicationQuoteOverBase);
+  return displayPrice;
+}
+
 export function getTickPrice({
   tick,
   baseCoin,
@@ -163,11 +179,11 @@ export function getTickPrice({
   baseCoin: CoinPretty;
   quoteCoin: CoinPretty;
 }) {
-  const sqrtPrice = tickToSqrtPrice(tick);
-  return getPriceFromSqrtPrice({
+  const price = tickToPrice(tick);
+  return getDisplayPriceFromPrice({
     baseCoin,
     quoteCoin,
-    sqrtPrice,
+    price,
   });
 }
 
