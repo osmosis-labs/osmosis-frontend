@@ -29,8 +29,9 @@ export class TestConfig {
 
     if (USE_PROXY) {
       console.info(
-        "Get Test Proxy configuration for server: " +
+        `Get Test Proxy configuration for server: ${
           this.getProxyConfig().server
+        }`
       );
       return {
         headless: headless,
@@ -54,8 +55,9 @@ export class TestConfig {
     const viewport = { width: 1440, height: 1280 };
     if (USE_PROXY) {
       console.info(
-        "Get Test Proxy configuration for server: " +
+        `Get Test Proxy configuration for server: ${
           this.getProxyConfig().server
+        }`
       );
       return {
         headless: headless,

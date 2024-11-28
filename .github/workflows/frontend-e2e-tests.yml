@@ -54,14 +54,14 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test -g "Test Swap feature"
       - name: upload Swap test results
         if: failure()
@@ -69,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-swap-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   preview-portfolio-trx-tests:
     timeout-minutes: 10
@@ -91,14 +91,14 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test portfolio transactions
       - name: upload Portfolio and transactions test results
         if: failure()
@@ -106,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-portfolio-trx-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   preview-pools-and-select-pair-tests:
     timeout-minutes: 10
@@ -128,12 +128,12 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Pools tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test pools select
       - name: upload pools test results
         if: failure()
@@ -141,7 +141,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-pools-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   preview-trade-tests:
     timeout-minutes: 10
@@ -164,14 +164,14 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test trade
       - name: upload Trade test results
         if: failure()
@@ -179,7 +179,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-trade-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   preview-claim-tests:
     timeout-minutes: 10
@@ -202,14 +202,14 @@ jobs:
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test claim
       - name: upload Claim test results
         if: failure()
@@ -217,4 +217,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: preview-claim-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
