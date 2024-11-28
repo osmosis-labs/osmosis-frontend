@@ -24,7 +24,7 @@ export class PoolPage extends BasePage {
   }
 
   async getBalance() {
-    let totalBalance: string = await this.balance.innerText();
+    const totalBalance: string = await this.balance.innerText();
     console.log(`Total Balance for a Pool [${totalBalance}]`);
     return totalBalance;
   }

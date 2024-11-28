@@ -5,7 +5,6 @@ import {
   type Page,
   test,
 } from "@playwright/test";
-import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
@@ -22,20 +21,12 @@ test.describe("Test Select Swap Pair feature", () => {
       new TestConfig().getBrowserConfig(true)
     );
     page = context.pages()[0];
-    await page.coverage.startJSCoverage({
-      resetOnNavigation: false,
-    });
     swapPage = new TradePage(page);
     await swapPage.goto();
   });
 
   test.afterAll(async () => {
-    const coverage = await page.coverage.stopJSCoverage();
-    // coverage report
-    const report = await attachCoverageReport(coverage, test.info());
-    console.log(report.summary);
-
-    await addCoverageReport(coverage, test.info());
+    console.log(test.info());
     await context.close();
   });
 

@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {
   type BrowserContext,
   chromium,
@@ -6,7 +5,6 @@ import {
   type Page,
   test,
 } from "@playwright/test";
-import process from "process";
 
 import { SwapPage } from "~/e2e/pages/swap-page";
 import { TransactionsPage } from "~/e2e/pages/transactions-page";

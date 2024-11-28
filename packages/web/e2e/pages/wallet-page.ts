@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export class WalletPage {
   readonly page: Page;
@@ -49,10 +49,7 @@ export class WalletPage {
     await this.importBtn.click();
   }
 
-  async setWalletNameAndPassword(
-    name: string,
-    password: string = "TestPassword2024."
-  ) {
+  async setWalletNameAndPassword(name: string, password = "TestPassword2024.") {
     await this.walletNameInput.fill(name);
     await this.walletPassInput.fill(password);
     await this.walletRePassInput.fill(password);

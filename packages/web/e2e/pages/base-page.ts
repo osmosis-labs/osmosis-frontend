@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { expect, Locator, Page } from "@playwright/test";
+import { expect, type Locator, type Page } from "@playwright/test";
 
 export class BasePage {
   readonly page: Page;
@@ -28,7 +28,7 @@ export class BasePage {
     const newPage = await pagePromise;
     await newPage.waitForLoadState("load", { timeout: 10000 });
     const pageTitle = await newPage.title();
-    console.log("Title of the new page: " + pageTitle);
+    console.log(`Title of the new page: ${pageTitle}`);
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
@@ -53,6 +53,6 @@ export class BasePage {
 
   async printUrl() {
     const currentUrl = this.page.url();
-    console.log("FE opened at: " + currentUrl);
+    console.log(`FE opened at: ${currentUrl}`);
   }
 }

@@ -5,7 +5,6 @@ import {
   type Page,
   test,
 } from "@playwright/test";
-import { addCoverageReport, attachCoverageReport } from "monocart-reporter";
 
 import { TestConfig } from "~/e2e/test-config";
 import { UnzipExtension } from "~/e2e/unzip-extension";
@@ -40,9 +39,6 @@ test.describe("Test Portfolio feature", () => {
     await walletPage.finish();
     // Switch to Application
     page = context.pages()[0];
-    await page.coverage.startJSCoverage({
-      resetOnNavigation: false,
-    });
     portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
     await portfolioPage.connectWallet();
@@ -51,12 +47,6 @@ test.describe("Test Portfolio feature", () => {
   });
 
   test.afterAll(async () => {
-    const coverage = await page.coverage.stopJSCoverage();
-    // coverage report
-    const report = await attachCoverageReport(coverage, test.info());
-    console.log(report.summary);
-
-    await addCoverageReport(coverage, test.info());
     await context.close();
   });
 

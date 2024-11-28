@@ -1,5 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, expect, Page, test } from "@playwright/test";
+import {
+  type BrowserContext,
+  chromium,
+  expect,
+  type Page,
+  test,
+} from "@playwright/test";
 
 import { TestConfig } from "~/e2e/test-config";
 

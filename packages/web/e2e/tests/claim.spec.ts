@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, chromium, test } from "@playwright/test";
-import process from "process";
+import { type BrowserContext, chromium, test } from "@playwright/test";
 
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
 import { TestConfig } from "~/e2e/test-config";

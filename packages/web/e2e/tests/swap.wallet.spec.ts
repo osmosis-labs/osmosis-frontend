@@ -1,6 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-import process from "process";
 
 import { TradePage } from "~/e2e/pages/trade-page";
 import { TestConfig } from "~/e2e/test-config";
@@ -51,6 +49,7 @@ test.describe("Test Swap feature", () => {
   });
 
   test.afterAll(async () => {
+    console.log(test.info());
     await context.close();
   });
 

@@ -1,5 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { BrowserContext, expect, Locator, Page } from "@playwright/test";
+import {
+  type BrowserContext,
+  expect,
+  type Locator,
+  type Page,
+} from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
 const TRANSACTION_CONFIRMATION_TIMEOUT = 2000;
@@ -38,12 +43,12 @@ export class TransactionsPage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  async viewBySwapAmount(amount: any) {
+  async viewBySwapAmount(amount: number | string) {
     // Transactions need some time to get loaded, wait for 30 seconds.
     await this.page.waitForTimeout(30000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
-    let isTransactionVisible = await this.page
+    const isTransactionVisible = await this.page
       .locator(loc)
       .isVisible({ timeout: 3000 });
     if (!isTransactionVisible) {
@@ -64,7 +69,7 @@ export class TransactionsPage extends BasePage {
 
   async getOnExplorerLink() {
     const trxUrl = await this.viewExplorerLink.getAttribute("href");
-    console.log("Trx url: " + trxUrl);
+    console.log(`Trx url: ${trxUrl}`);
     return trxUrl;
   }
 
@@ -81,7 +86,7 @@ export class TransactionsPage extends BasePage {
     context: BrowserContext
   ) {
     const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[.='$${price}']/../../..//button`;
-    console.log("Use locator for a cancel btn: " + cancelBtn);
+    console.log(`Use locator for a cancel btn: ${cancelBtn}`);
     await this.page.locator(cancelBtn).first().click();
     const pageApprove = context.waitForEvent("page");
     const approvePage = await pageApprove;
@@ -93,7 +98,7 @@ export class TransactionsPage extends BasePage {
     const msgContentAmount = await approvePage
       .getByText("Execute contract")
       .textContent();
-    console.log("Wallet is approving this msg: \n" + msgContentAmount);
+    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
     // Approve trx
     await approveBtn.click();
     // Expect that this is a cancel limit call
@@ -102,9 +107,9 @@ export class TransactionsPage extends BasePage {
     await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT);
   }
 
-  async isFilledByLimitPrice(price: any) {
+  async isFilledByLimitPrice(price: number | string) {
     const loc = `//td//span[.='Filled']/../../..//td//p[.='$${price}']`;
-    console.log("Use Limit Order locator: " + loc);
+    console.log(`Use Limit Order locator: ${loc}`);
     await expect(this.page.locator(loc).first()).toBeVisible({
       timeout: 120_000,
       visible: true,
@@ -136,10 +141,7 @@ export class TransactionsPage extends BasePage {
       .last()
       .textContent();
     console.log(
-      "Wallet is approving this msg: \n" +
-        msgContentAmount1 +
-        "---- \n" +
-        msgContentAmount2
+      `Wallet is approving this msg: \n${msgContentAmount1}---- \n${msgContentAmount2}`
     );
     // Approve trx
     await approveBtn.click();

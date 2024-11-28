@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Locator, Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
 
@@ -55,45 +55,45 @@ export class PoolsPage extends BasePage {
   async getPoolsNumber() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
     const num = await this.page.locator(loc).count();
-    console.log("Pools Count: " + num);
+    console.log(`Pools Count: ${num}`);
     return num;
   }
 
   async getTopTenPoolsByLiquidity() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
-    let liquidityList = [];
+    const liquidityList = [];
     for (let i = 0; i < 10; i++) {
-      let tt = this.page.locator(loc).nth(i).locator("//td").nth(2);
-      let text: string = await tt.innerText();
-      let n: number = Number(text.replace(/[^0-9.-]+/g, ""));
+      const tt = this.page.locator(loc).nth(i).locator("//td").nth(2);
+      const text: string = await tt.innerText();
+      const n: number = Number(text.replace(/[^0-9.-]+/g, ""));
       liquidityList.push(n);
     }
-    console.log("Top 10 pools Liquidity: " + liquidityList);
+    console.log(`Top 10 pools Liquidity: ${liquidityList}`);
     return liquidityList;
   }
 
   async getTopTenPoolsByVolume() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
-    let volumeList = [];
+    const volumeList = [];
     for (let i = 0; i < 10; i++) {
-      let tt = this.page.locator(loc).nth(i).locator("//td").nth(1);
-      let text: string = await tt.innerText();
-      let n: number = Number(text.replace(/[^0-9.-]+/g, ""));
+      const tt = this.page.locator(loc).nth(i).locator("//td").nth(1);
+      const text: string = await tt.innerText();
+      const n: number = Number(text.replace(/[^0-9.-]+/g, ""));
       volumeList.push(n);
     }
-    console.log("Top 10 pools Volume: " + volumeList);
+    console.log(`Top 10 pools Volume: ${volumeList}`);
     return volumeList;
   }
 
   async getTopTenPoolsByAPR() {
     const loc = '//tr/td//a[contains(@href, "/pool/")]/../..';
-    let aprList = [];
+    const aprList = [];
     for (let i = 0; i < 10; i++) {
-      let tt = this.page.locator(loc).nth(i).locator("//td").nth(3);
-      let text: string = await tt.innerText();
+      const tt = this.page.locator(loc).nth(i).locator("//td").nth(3);
+      const text: string = await tt.innerText();
       aprList.push(text);
     }
-    console.log("Top 10 pools APRs: " + aprList);
+    console.log(`Top 10 pools APRs: ${aprList}`);
     return aprList;
   }
 }

@@ -162,7 +162,6 @@
     "jest-in-case": "^1.0.2",
     "jest-launchdarkly-mock": "^2.1.0",
     "knip": "^5.17.4",
-    "monocart-reporter": "^2.6.0",
     "msw-trpc": "1.3.3",
     "postcss": "^8.4.5",
     "prettier": "^2.8.8",

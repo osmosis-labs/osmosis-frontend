@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Locator, Page } from "@playwright/test";
+import type { Locator, Page } from "@playwright/test";
 
 import { BasePage } from "~/e2e/pages/base-page";
 import { TransactionsPage } from "~/e2e/pages/transactions-page";
@@ -30,7 +30,7 @@ export class PortfolioPage extends BasePage {
     // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000);
     const currentUrl = this.page.url();
-    console.log("FE opened at: " + currentUrl);
+    console.log(`FE opened at: ${currentUrl}`);
   }
 
   async getBalanceFor(token: string) {
@@ -38,7 +38,7 @@ export class PortfolioPage extends BasePage {
     const bal = this.page
       .locator(`//tbody/tr//a[contains(@href, "/assets/${token}")]`)
       .nth(1);
-    let tokenBalance: string = await bal.innerText();
+    const tokenBalance: string = await bal.innerText();
     console.log(`Balance for ${token}: ${tokenBalance}`);
     return tokenBalance;
   }
