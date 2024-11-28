@@ -1,10 +1,10 @@
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
 
-import { TradePage } from "~/e2e/pages/trade-page";
-import { TestConfig } from "~/e2e/test-config";
-import { UnzipExtension } from "~/e2e/unzip-extension";
+import { TestConfig } from "../test-config";
+import { UnzipExtension } from "../unzip-extension";
 
-import { WalletPage } from "../pages/wallet-page";
+import { WalletPage } from "../pages/keplr-page";
+import { TradePage } from "../pages/trade-page";
 
 test.describe("Test Swap feature", () => {
   let context: BrowserContext;

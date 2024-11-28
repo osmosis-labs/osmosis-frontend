@@ -6,7 +6,7 @@ import {
   test,
 } from "@playwright/test";
 
-import { TestConfig } from "~/e2e/test-config";
+import { TestConfig } from "../test-config";
 
 import { PoolsPage } from "../pages/pools-page";
 

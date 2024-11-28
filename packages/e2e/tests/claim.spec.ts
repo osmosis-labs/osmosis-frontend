@@ -1,11 +1,11 @@
 import { type BrowserContext, chromium, test } from "@playwright/test";
 
-import { TransactionsPage } from "~/e2e/pages/transactions-page";
-import { TestConfig } from "~/e2e/test-config";
-import { UnzipExtension } from "~/e2e/unzip-extension";
+import { TransactionsPage } from "../pages/transactions-page";
+import { TestConfig } from "../test-config";
+import { UnzipExtension } from "../unzip-extension";
 
+import { WalletPage } from "../pages/keplr-page";
 import { TradePage } from "../pages/trade-page";
-import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Claim All Orders feature", () => {
   let context: BrowserContext;

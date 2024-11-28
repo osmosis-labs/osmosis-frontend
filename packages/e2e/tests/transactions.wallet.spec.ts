@@ -6,13 +6,12 @@ import {
   test,
 } from "@playwright/test";
 
-import { SwapPage } from "~/e2e/pages/swap-page";
-import { TransactionsPage } from "~/e2e/pages/transactions-page";
-import { TestConfig } from "~/e2e/test-config";
-import { UnzipExtension } from "~/e2e/unzip-extension";
-
+import { SwapPage } from "../pages/swap-page";
+import { TransactionsPage } from "../pages/transactions-page";
+import { TestConfig } from "../test-config";
+import { UnzipExtension } from "../unzip-extension";
+import { WalletPage } from "../pages/keplr-page";
 import { PortfolioPage } from "../pages/portfolio-page";
-import { WalletPage } from "../pages/wallet-page";
 
 test.describe("Test Transactions feature", () => {
   let context: BrowserContext;

@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { Locator, Page } from "@playwright/test";
 
-import { BasePage } from "~/e2e/pages/base-page";
+import { BasePage } from "./base-page";
 
 import { PoolPage } from "./pool-page";
 

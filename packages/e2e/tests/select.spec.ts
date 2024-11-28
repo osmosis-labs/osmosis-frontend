@@ -6,8 +6,8 @@ import {
   test,
 } from "@playwright/test";
 
-import { TradePage } from "~/e2e/pages/trade-page";
-import { TestConfig } from "~/e2e/test-config";
+import { TradePage } from "../pages/trade-page";
+import { TestConfig } from "../test-config";
 
 // Pairs are selected from top 10
 test.describe("Test Select Swap Pair feature", () => {

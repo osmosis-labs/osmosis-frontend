@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { Locator, Page } from "@playwright/test";
 
-import { BasePage } from "~/e2e/pages/base-page";
-import { TransactionsPage } from "~/e2e/pages/transactions-page";
+import { BasePage } from "./base-page";
+import { TransactionsPage } from "./transactions-page";
 
 export class PortfolioPage extends BasePage {
   readonly hideZeros: Locator;

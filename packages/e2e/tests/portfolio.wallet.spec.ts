@@ -6,11 +6,11 @@ import {
   test,
 } from "@playwright/test";
 
-import { TestConfig } from "~/e2e/test-config";
-import { UnzipExtension } from "~/e2e/unzip-extension";
+import { TestConfig } from "../test-config";
+import { UnzipExtension } from "../unzip-extension";
 
 import { PortfolioPage } from "../pages/portfolio-page";
-import { WalletPage } from "../pages/wallet-page";
+import { WalletPage } from "../pages/keplr-page";
 
 test.describe("Test Portfolio feature", () => {
   let context: BrowserContext;

@@ -6,7 +6,7 @@ import {
   type Page,
 } from "@playwright/test";
 
-import { BasePage } from "~/e2e/pages/base-page";
+import { BasePage } from "./base-page";
 
 export class SwapPage extends BasePage {
   readonly page: Page;
