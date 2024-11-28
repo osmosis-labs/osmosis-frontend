@@ -28,6 +28,7 @@ import { useClipboard } from "~/hooks/use-clipboard";
 import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
+import { displayHumanizedTime } from "~/utils/date";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -593,8 +594,7 @@ const RemainingTime = ({ unix }: { unix: number }) => {
 
   return (
     <span className="text-inherit">
-      {humanizedRemainingTime?.value}{" "}
-      {t(humanizedRemainingTime?.unitTranslationKey)}
+      {displayHumanizedTime({ humanizedTime: humanizedRemainingTime, t })}
     </span>
   );
 };
