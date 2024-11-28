@@ -1,5 +1,5 @@
-import { PricePretty } from "@keplr-wallet/unit";
-import { RatePretty } from "@keplr-wallet/unit";
+import { PricePretty } from "@osmosis-labs/unit";
+import { RatePretty } from "@osmosis-labs/unit";
 import { FunctionComponent } from "react";
 
 import { PriceChange } from "~/components/assets/price";

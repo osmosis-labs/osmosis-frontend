@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 /** Use the before spot price, in amount, and slippage setting to get the min out amount received. */
 export function calcPriceImpactWithAmount(

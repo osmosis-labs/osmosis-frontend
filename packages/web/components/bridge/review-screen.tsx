@@ -3,7 +3,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import Image from "next/image";
 import Link from "next/link";

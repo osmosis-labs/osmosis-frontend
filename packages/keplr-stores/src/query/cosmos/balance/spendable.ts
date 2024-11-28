@@ -5,7 +5,7 @@ import {
   ObservableChainQueryMap,
 } from "../../chain-query";
 import { ChainGetter } from "../../../common";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@osmosis-labs/unit";
 import { computed } from "mobx";
 
 export class ObservableChainQuerySpendableBalances extends ObservableChainQuery<SpendableBalances> {

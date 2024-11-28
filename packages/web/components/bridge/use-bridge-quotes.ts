@@ -1,4 +1,3 @@
-import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
   BridgeAsset,
@@ -8,6 +7,7 @@ import {
   EvmBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";

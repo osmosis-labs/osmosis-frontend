@@ -1,4 +1,5 @@
 import { FiatCurrency } from "@keplr-wallet/types";
+import { Currency } from "@osmosis-labs/types";
 import {
   CoinPretty,
   CoinPrettyOptions,
@@ -8,8 +9,7 @@ import {
   PricePrettyOptions,
   RatePretty,
   RatePrettyOptions,
-} from "@keplr-wallet/unit";
-import { Currency } from "@osmosis-labs/types";
+} from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import duration, { type Duration } from "dayjs/plugin/duration";
 import superjson from "superjson";

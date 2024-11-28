@@ -1,4 +1,3 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   DEFAULT_VS_CURRENCY,
   getAsset,
@@ -7,6 +6,7 @@ import {
   queryAuthenticatorSpendLimit,
 } from "@osmosis-labs/server";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { OneClickTradingMaxGasLimit } from "@osmosis-labs/utils";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";

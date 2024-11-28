@@ -1,5 +1,5 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {

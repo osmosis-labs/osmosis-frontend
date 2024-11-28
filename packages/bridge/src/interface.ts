@@ -1,6 +1,6 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { RatePretty } from "@keplr-wallet/unit";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { RatePretty } from "@osmosis-labs/unit";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";

@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 

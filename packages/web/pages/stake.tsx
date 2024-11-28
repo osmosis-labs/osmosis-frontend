@@ -1,8 +1,8 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
 import { BondStatus } from "@osmosis-labs/types";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 

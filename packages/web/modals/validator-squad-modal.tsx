@@ -1,10 +1,10 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
 import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {

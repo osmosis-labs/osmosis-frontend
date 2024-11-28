@@ -1,4 +1,4 @@
-import { Coin, Dec, Int } from "@keplr-wallet/unit";
+import { Coin, Dec, Int } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../big-dec";
 

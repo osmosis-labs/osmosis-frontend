@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import { superjson } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
 import dayjs from "dayjs";

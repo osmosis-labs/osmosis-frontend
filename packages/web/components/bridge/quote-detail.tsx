@@ -1,4 +1,4 @@
-import { DecUtils } from "@keplr-wallet/unit";
+import { DecUtils } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, PropsWithChildren } from "react";

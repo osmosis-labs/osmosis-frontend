@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { Duration } from "dayjs/plugin/duration";
 
 /** Non OSMO gauge. */

@@ -1,6 +1,6 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
+import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
 type Position = {

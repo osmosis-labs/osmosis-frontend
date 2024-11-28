@@ -1,9 +1,9 @@
-import { Coin, Dec, Int } from "@keplr-wallet/unit";
 import {
   BigDec,
   ConcentratedLiquidityMath,
   LiquidityDepth,
 } from "@osmosis-labs/math";
+import { Coin, Dec, Int } from "@osmosis-labs/unit";
 
 import {
   NotEnoughLiquidityError,

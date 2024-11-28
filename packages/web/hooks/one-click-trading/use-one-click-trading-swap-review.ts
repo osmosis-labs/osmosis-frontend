@@ -1,7 +1,7 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";

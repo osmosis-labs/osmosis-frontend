@@ -1,7 +1,7 @@
 import { DenomHelper, KVStore } from "@keplr-wallet/common";
 import { ChainGetter, QueryResponse } from "../../../common";
 import { computed, makeObservable, override } from "mobx";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Int } from "@osmosis-labs/unit";
 import { StoreUtils } from "../../../common";
 import { BalanceRegistry, ObservableQueryBalanceInner } from "../../balances";
 import { ObservableChainQuery } from "../../chain-query";
@@ -119,10 +119,8 @@ export class ObservableQueryCosmosBalances extends ObservableChainQuery<Balances
 }
 
 export class ObservableQueryCosmosBalanceRegistry implements BalanceRegistry {
-  protected nativeBalances: Map<
-    string,
-    ObservableQueryCosmosBalances
-  > = new Map();
+  protected nativeBalances: Map<string, ObservableQueryCosmosBalances> =
+    new Map();
 
   constructor(protected readonly kvStore: KVStore) {}
 

@@ -3,9 +3,9 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
-import { DecUtils } from "@keplr-wallet/unit";
 import { Bridge, BridgeAsset } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
+import { DecUtils } from "@osmosis-labs/unit";
 import { isNil, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";

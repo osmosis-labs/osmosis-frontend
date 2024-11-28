@@ -1,5 +1,5 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { PoolType } from "../types";
 

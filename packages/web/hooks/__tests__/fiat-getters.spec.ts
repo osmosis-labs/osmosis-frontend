@@ -1,5 +1,5 @@
-import { Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { Asset, DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec, Int, PricePretty } from "@osmosis-labs/unit";
 
 import {
   getTokenInFeeAmountFiatValue,
