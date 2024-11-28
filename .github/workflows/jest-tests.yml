@@ -19,6 +19,7 @@ jobs:
             "bridge",
             "tx",
             "proto-codecs",
+            "unit",
           ]
 
     steps:
