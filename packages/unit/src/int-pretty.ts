@@ -4,7 +4,6 @@ import { DeepReadonly } from "utility-types";
 import { CoinUtils } from "./coin-utils";
 import { DecUtils } from "./dec-utils";
 import { Dec } from "./decimal";
-import { Int } from "./int";
 
 export type IntPrettyOptions = {
   maxDecimals: number;
@@ -16,8 +15,6 @@ export type IntPrettyOptions = {
   inequalitySymbol: boolean;
   inequalitySymbolSeparator: string;
 };
-
-const dec10 = new Dec(10);
 
 export class IntPretty {
   protected dec: Dec;
@@ -46,20 +43,24 @@ export class IntPretty {
       return;
     }
 
-    let dec = num;
-    let decPrecision = 0;
-    // TODO: remove this being a loop in the first place, and use a more efficient method
-    for (let i = 0; i < 18; i++) {
-      const truncated = dec.truncate();
-      if (
-        !truncated.equals(new Int(0)) &&
-        dec.equals(new Dec(truncated))
-      ) {
-        break;
-      }
-      dec = dec.mul(dec10);
-      decPrecision++;
+    // Get string representation and find decimal position
+    const decStr = num.toString();
+    const decimalIndex = decStr.indexOf('.');
+    
+    // If no decimal point no precision needed
+    if (decimalIndex === -1) {
+      this.dec = num;
+      this._options.maxDecimals = 0;
+      return;
     }
+  
+    // Count significant digits by walking backwards until non-zero digit
+    const decimalPart = decStr.slice(decimalIndex + 1);
+    let trailingZeros = 0;
+    for (let i = decimalPart.length - 1; i >= 0 && decimalPart[i] === '0'; i--) {
+      trailingZeros++;
+    }
+    const decPrecision = decimalPart.length - trailingZeros;
 
     this.dec = num;
     this._options.maxDecimals = decPrecision;
