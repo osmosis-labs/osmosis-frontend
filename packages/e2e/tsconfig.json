@@ -1,29 +1,19 @@
 {
   "compilerOptions": {
-    "experimentalDecorators": true,
-    "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["*"]
-    },
-    "plugins": [{ "name": "next" }]
+    "target": "ES6", // Specify ECMAScript target version
+    "module": "commonjs", // Specify module code generation
+    "strict": true, // Enable all strict type-checking options
+    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules
+    "skipLibCheck": true, // Skip type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file
+    "types": ["node"] // Include Node.js type definitions
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"],
-  "types": ["node", "jest", "@testing-library/jest-dom"]
+  "include": [
+    "pages/**/*",
+    "tests/**/*",
+    "test-config.ts",
+    "unzip-extension.ts",
+    "playwright.config.ts"
+  ],
+  "exclude": ["node_modules"]
 }

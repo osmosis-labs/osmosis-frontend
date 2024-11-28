@@ -24,7 +24,7 @@ export default defineConfig({
   workers: 1,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: process.env.BASE_URL ?? "http://localhost:3000",
+    baseURL: process.env.BASE_URL ?? "https://stage.osmosis.zone",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "off",
