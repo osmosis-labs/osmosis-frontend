@@ -30,7 +30,7 @@ jobs:
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -111,7 +111,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -152,7 +152,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -193,7 +193,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -234,7 +234,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
