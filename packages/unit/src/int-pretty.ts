@@ -17,6 +17,8 @@ export type IntPrettyOptions = {
   inequalitySymbolSeparator: string;
 };
 
+const dec10 = new Dec(10);
+
 export class IntPretty {
   protected dec: Dec;
   protected floatingDecimalPointRight = 0;
@@ -45,14 +47,16 @@ export class IntPretty {
 
     let dec = num;
     let decPrecision = 0;
+    // TODO: remove this being a loop in the first place, and use a more efficient method
     for (let i = 0; i < 18; i++) {
+      const truncated = dec.truncate();
       if (
-        !dec.truncate().equals(new Int(0)) &&
-        dec.equals(new Dec(dec.truncate()))
+        !truncated.equals(new Int(0)) &&
+        dec.equals(new Dec(truncated))
       ) {
         break;
       }
-      dec = dec.mul(new Dec(10));
+      dec = dec.mul(dec10);
       decPrecision++;
     }
 
