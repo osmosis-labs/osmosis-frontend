@@ -4,11 +4,12 @@ import dayjs from "dayjs";
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 
 export const OneClickTradingRemainingTime: FunctionComponent<{
   className?: string;
-}> = ({ className }) => {
+  useShortTimeUnits?: boolean;
+}> = ({ className, useShortTimeUnits }) => {
   const { oneClickTradingInfo, isOneClickTradingExpired } =
     useOneClickTradingSession();
   const { t } = useTranslation();
@@ -24,7 +25,8 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
         humanizeTime(
           dayjs.unix(
             unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end)
-          )
+          ),
+          useShortTimeUnits
         )
       );
     };
@@ -39,7 +41,7 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
     );
 
     return () => clearInterval(intervalId);
-  }, [oneClickTradingInfo]);
+  }, [oneClickTradingInfo, useShortTimeUnits]);
 
   if (isOneClickTradingExpired) {
     return (
@@ -53,8 +55,7 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
 
   return (
     <p className={classNames("body1 text-wosmongton-200", className)}>
-      {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
-      {t("remaining")}
+      {displayHumanizedTime({ humanizedTime, t })} {t("remaining")}
     </p>
   );
 };

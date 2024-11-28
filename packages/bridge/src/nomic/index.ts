@@ -1,5 +1,4 @@
 import type { Registry } from "@cosmjs/proto-signing";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
 import {
   estimateGasFee,
@@ -8,18 +7,22 @@ import {
   SkipSwapIbcHookContractAddress,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   deriveCosmosAddress,
   getAllBtcMinimalDenom,
   getnBTCMinimalDenom,
+  getNomicRelayerUrl,
   isCosmosAddressValid,
   timeout,
 } from "@osmosis-labs/utils";
 import {
   BaseDepositOptions,
   buildDestination,
+  Checkpoint,
   DepositInfo,
   generateDepositAddressIbc,
+  getCheckpoint,
   getPendingDeposits,
   IbcDepositOptions,
 } from "nomic-bitcoin";
@@ -43,9 +46,10 @@ import {
 } from "../interface";
 import { getGasAsset } from "../utils/gas";
 import { getLaunchDarklyFlagValue } from "../utils/launchdarkly";
+import { NomicProviderId } from "./utils";
 
 export class NomicBridgeProvider implements BridgeProvider {
-  static readonly ID = "Nomic";
+  static readonly ID = NomicProviderId;
   readonly providerName = NomicBridgeProvider.ID;
 
   readonly relayers: string[];
@@ -54,15 +58,11 @@ export class NomicBridgeProvider implements BridgeProvider {
   protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
+    this.relayers = getNomicRelayerUrl({ env: this.ctx.env });
     this.allBtcMinimalDenom = getAllBtcMinimalDenom({ env: this.ctx.env });
     this.nBTCMinimalDenom = getnBTCMinimalDenom({
       env: this.ctx.env,
     });
-
-    this.relayers =
-      this.ctx.env === "testnet"
-        ? ["https://testnet-relayer.nomic.io:8443"]
-        : ["https://relayer.nomic.mappum.io:8443"];
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
@@ -182,16 +182,29 @@ export class NomicBridgeProvider implements BridgeProvider {
       }),
     };
 
-    const [ibcTxMessages, estimatedTime] = await Promise.all([
-      ibcProvider.getTxMessages({
-        ...transactionDataParams,
-        memo: destMemo,
-      }),
-      ibcProvider.estimateTransferTime(
-        transactionDataParams.fromChain.chainId.toString(),
-        transactionDataParams.toChain.chainId.toString()
-      ),
-    ]);
+    const [ibcTxMessages, ibcEstimatedTimeSeconds, nomicCheckpoint] =
+      await Promise.all([
+        ibcProvider.getTxMessages({
+          ...transactionDataParams,
+          memo: destMemo,
+        }),
+        ibcProvider.estimateTransferTime(
+          transactionDataParams.fromChain.chainId.toString(),
+          transactionDataParams.toChain.chainId.toString()
+        ),
+        getCheckpoint({
+          relayers: this.relayers,
+          bitcoinNetwork: this.ctx.env === "mainnet" ? "bitcoin" : "testnet",
+        }),
+      ]);
+
+    // 4 hours
+    const nomicEstimatedTimeSeconds = 4 * 60 * 60;
+
+    const transferFeeInSats = Math.ceil(
+      (nomicCheckpoint as Checkpoint & { minerFee: number }).minerFee * 64 + 546
+    );
+    const transferFeeInMicroSats = transferFeeInSats * 1e6;
 
     const msgs = [...swapMessages, ...ibcTxMessages];
 
@@ -238,22 +251,29 @@ export class NomicBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: !!swapRoute
-          ? swapRoute.amount.toCoin().amount
-          : params.fromAmount,
+        amount: (!!swapRoute
+          ? new Dec(swapRoute.amount.toCoin().amount)
+          : new Dec(params.fromAmount)
+        )
+          // Use micro sats because the amount will always be nomic btc which has 14 decimals (micro sats)
+          .sub(new Dec(transferFeeInMicroSats))
+          .toString(),
         ...nomicBridgeAsset,
         denom: "BTC",
         priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
-      // currently subsidized by relayers, but could be paid by user in future by charging the user the gas cost of
       transferFee: {
         ...params.fromAsset,
+        denom: "BTC",
         chainId: params.fromChain.chainId,
-        amount: "0",
+        amount: (params.fromAsset.decimals === 14
+          ? transferFeeInMicroSats
+          : transferFeeInSats
+        ).toString(),
       },
-      estimatedTime,
+      estimatedTime: ibcEstimatedTimeSeconds + nomicEstimatedTimeSeconds,
       estimatedGasFee: gasFee
         ? {
             address: gasAsset?.address ?? gasFee.denom,

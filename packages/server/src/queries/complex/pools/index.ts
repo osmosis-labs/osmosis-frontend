@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { z } from "zod";
 
 import { IS_TESTNET } from "../../../env";

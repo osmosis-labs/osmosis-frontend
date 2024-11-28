@@ -1,5 +1,5 @@
-import { Int } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
+import { Int } from "@osmosis-labs/unit";
 import { ChainIdHelper, getChain } from "@osmosis-labs/utils";
 
 import { queryRPCStatus } from "../../queries/cosmos";

@@ -1,3 +1,5 @@
+import { BigDec, maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
@@ -5,9 +7,7 @@ import {
   Int,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { BigDec, maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
-import { AssetList, Chain } from "@osmosis-labs/types";
+} from "@osmosis-labs/unit";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";

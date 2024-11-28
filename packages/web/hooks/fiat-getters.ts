@@ -1,6 +1,6 @@
-import { Dec, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
+import { Dec, DecUtils, Int, PricePretty } from "@osmosis-labs/unit";
 
 // getTokenInFeeAmountFiatValue returns the fiat value of the token in fee amount.
 // If any of the input values are undefined, it returns a PricePretty with 0 value.

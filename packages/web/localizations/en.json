@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "New"
     },
+    "reviewOrder": {
+      "recapRowTitle": "1-Click Trading limit",
+      "enableTitle": "Start 1-Click Trading",
+      "enableDescription": "Quicker, easier trading",
+      "paramsDescription": "{sessionLength} session with {spendLimit} loss protection limit",
+      "defaultSpendLimit": "$5,000 USD",
+      "change": "Change",
+      "edit": "Edit",
+      "exceeded": "Exceeded",
+      "exceededTooltip": {
+        "title": "Exceeds current loss-protection limit",
+        "body": "You will have to manually approve this transaction in your wallet."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutes",
+      "10min": "10 minutes",
+      "30min": "30 minutes",
+      "1hour": "1 hour",
+      "3hours": "3 hours",
+      "12hours": "12 hours"
+    },
     "settings": {
       "header": "1-Click Trading",
       "description": "1-Click Trading lets you securely trade on this device without the hassle of signing every transaction in your wallet.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Session period",
-        "description": "Set a duration to allow 1-Click Trading on this device.",
-        "periods": {
-          "5min": "5 minutes",
-          "10min": "10 minutes",
-          "30min": "30 minutes",
-          "1hour": "1 hour",
-          "3hours": "3 hours",
-          "12hours": "12 hours"
-        }
+        "description": "Set a duration to allow 1-Click Trading on this device."
       },
       "discardChanges": {
         "title": "Discard Changes?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Spread Factor",
     "showDetails": "Show details",
     "hideDetails": "Hide",
-    "continueAnyway": "Continue Anyway",
-    "warning": {
-      "exceedsSpendLimit": "This swap exceeds your remaining spend limit for 1-Click Trading.",
-      "increaseSpendLimit": "Increase spend limit"
-    },
     "settings": {
       "slippage": "Slippage tolerance"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "Send to another address",
     "invalidAddress": "Invalid {chain} address",
     "acknowledgement": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address or try to withdraw to an exchange.",
+    "acknowledgementWithoutExchange": "I acknowledge and accept the risks of loss of funds if I provide an incorrect recipient address.",
     "done": "Done",
     "transferFrom": "Transfer from {noun}",
     "transferWithNoun": "Transfer with {noun}",
@@ -1084,6 +1094,16 @@
     "hours": "hours",
     "day": "day",
     "days": "days"
+  },
+  "timeUnitsShort": {
+    "second": "sec",
+    "seconds": "sec",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "hr",
+    "hours": "hr",
+    "day": "day",
+    "days": "day"
   },
   "transactions": {
     "noRecent": "No recent transactions",

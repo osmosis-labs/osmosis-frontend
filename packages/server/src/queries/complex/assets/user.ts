@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import {
   aggregateCoinsByDenom,
   isNil,

@@ -1,5 +1,5 @@
-import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { Chain } from "@osmosis-labs/types";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";

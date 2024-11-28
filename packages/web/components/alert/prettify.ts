@@ -1,9 +1,9 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
 import {
   isInsufficientFeeError,
   isSlippageErrorMessage,
 } from "@osmosis-labs/tx";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 
 import { MultiLanguageT } from "~/hooks";
 
@@ -26,6 +26,34 @@ const regexRejectedTx = /Request rejected/;
 
 const regexOverspendError =
   /Spend limit error: Overspend: (\d+) has been spent but limit is (\d+)/;
+
+export function getParametersFromOverspendErrorMessage(
+  message: string | undefined
+): { wouldSpendTotal: Dec; limit: Dec } | undefined {
+  if (!message) return;
+
+  const match = message.match(regexOverspendError);
+  if (!match) return;
+
+  const [, wouldSpendTotal, limit] = match;
+
+  if (!wouldSpendTotal || !limit) return;
+
+  try {
+    // Validate that extracted values are valid numbers
+    if (isNaN(Number(wouldSpendTotal)) || isNaN(Number(limit))) {
+      return;
+    }
+
+    return {
+      wouldSpendTotal: new Dec(wouldSpendTotal, 6),
+      limit: new Dec(limit, 6),
+    };
+  } catch (error) {
+    console.error("Failed to parse overspend error parameters:", error);
+    return;
+  }
+}
 
 export function isOverspendErrorMessage({
   message,

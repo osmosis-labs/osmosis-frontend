@@ -1,4 +1,4 @@
-import { PricePretty } from "@keplr-wallet/unit";
+import { PricePretty } from "@osmosis-labs/unit";
 
 export interface PoolsRewards {
   pools: {

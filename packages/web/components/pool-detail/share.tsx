@@ -1,11 +1,11 @@
+import type { BondDuration, Pool } from "@osmosis-labs/server";
 import {
   CoinPretty,
   Dec,
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import type { BondDuration, Pool } from "@osmosis-labs/server";
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";

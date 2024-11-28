@@ -17,7 +17,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { Dec } from "@keplr-wallet/unit";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -35,6 +34,7 @@ import {
   TxTracer,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,
@@ -216,7 +216,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
+      const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
@@ -515,11 +515,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee?: StdFee,
     signOptions?: SignOptions,
     onTxEvents?:
-      | ((tx: DeliverTxResponse) => void)
+      | ((tx: DeliverTxResponse) => void | Promise<void>)
       | {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
+          onSign?: () => Promise<void> | void;
         }
   ) {
     runInAction(() => {
@@ -547,6 +548,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
+      let onSign: (() => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -554,6 +556,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         } else {
           onBroadcasted = onTxEvents?.onBroadcasted;
           onFulfill = onTxEvents?.onFulfill;
+          onSign = onTxEvents?.onSign;
         }
       }
 
@@ -597,6 +600,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
       const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
+
+      if (this.options.preTxEvents?.onSign) {
+        await this.options.preTxEvents.onSign();
+      }
+
+      if (onSign) {
+        await onSign();
+      }
 
       const restEndpoint = getEndpointString(
         await wallet.getRestEndpoint(true)
@@ -709,7 +720,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onFulfill) {
-        onFulfill(tx);
+        await onFulfill(tx);
       }
     } catch (e) {
       const error = e as Error | AccountStoreNoBroadcastErrorEvent;
@@ -1472,7 +1483,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     messages: readonly EncodeObject[];
   }): Promise<boolean> {
-    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
@@ -1535,7 +1546,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  async isOneCLickTradingEnabled(): Promise<boolean> {
+  async isOneClickTradingEnabled(): Promise<boolean> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (isNil(oneClickTradingInfo)) return false;

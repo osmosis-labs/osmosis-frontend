@@ -76,19 +76,42 @@ export function isEvmAddressValid({ address }: { address: string }): boolean {
 
 export function isBitcoinAddressValid({
   address,
-  isTestnet = false,
+  env,
 }: {
   address: string;
-  isTestnet?: boolean;
+  env: "mainnet" | "testnet";
 }): boolean {
   try {
-    bitcoin.address.toOutputScript(
-      address,
-      isTestnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin
-    );
-    return true;
+    // Attempt to decode the address
+    const decoded = bitcoin.address.fromBase58Check(address);
+    const isTestnet =
+      decoded.version === bitcoin.networks.testnet.pubKeyHash ||
+      decoded.version === bitcoin.networks.testnet.scriptHash;
+    const isMainnet =
+      decoded.version === bitcoin.networks.bitcoin.pubKeyHash ||
+      decoded.version === bitcoin.networks.bitcoin.scriptHash;
+
+    if ((env === "mainnet" && isMainnet) || (env === "testnet" && isTestnet)) {
+      return true; // Address is valid for the given environment
+    }
+    return false; // Address is invalid for the given environment
   } catch (e) {
-    return false;
+    try {
+      // If Base58 decoding fails, try Bech32 decoding
+      const decoded = bitcoin.address.fromBech32(address);
+      const isTestnet = decoded.prefix === "tb" || decoded.prefix === "bcrt";
+      const isMainnet = decoded.prefix === "bc";
+
+      if (
+        (env === "mainnet" && isMainnet) ||
+        (env === "testnet" && isTestnet)
+      ) {
+        return true; // Address is valid for the given environment
+      }
+      return false; // Address is invalid for the given environment
+    } catch (e) {
+      return false; // Address is invalid
+    }
   }
 }
 

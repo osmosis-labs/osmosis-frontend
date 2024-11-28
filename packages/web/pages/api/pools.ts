@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import {
   CONCENTRATED_LIQ_POOL_TYPE,
   COSMWASM_POOL_TYPE,
@@ -7,6 +6,7 @@ import {
   WEIGHTED_POOL_TYPE,
 } from "@osmosis-labs/pools/build/types";
 import { getPools, queryNumPools } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { isNumeric } from "@osmosis-labs/utils";
 
 import { AssetLists } from "~/config/generated/asset-lists";

@@ -1,4 +1,4 @@
-import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
+import { Coin, Dec, DecUtils } from "@osmosis-labs/unit";
 
 import { BigDec } from "../big-dec";
 import { checkMultiplicativeErrorTolerance } from "../rounding";

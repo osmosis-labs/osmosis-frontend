@@ -6,12 +6,12 @@ import {
   type TokensResponse,
   type TransactionRequest,
 } from "@0xsquid/sdk";
-import { Dec } from "@keplr-wallet/unit";
 import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
 } from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,

@@ -383,6 +383,28 @@
     "floatingBanner": {
       "newPill": "Novo"
     },
+    "reviewOrder": {
+      "recapRowTitle": "Limite de negociação de 1 clique",
+      "enableTitle": "Comece a negociar com 1 clique",
+      "enableDescription": "Negociação mais rápida e fácil",
+      "paramsDescription": "{sessionLength} sessão com limite de proteção contra perdas {lossProtectionLimit}",
+      "defaultSpendLimit": "US$ 5.000",
+      "change": "Mudar",
+      "edit": "Editar",
+      "exceeded": "Excedido",
+      "exceededTooltip": {
+        "title": "Excede o limite atual de proteção contra perdas",
+        "body": "Você terá que aprovar manualmente esta transação em sua carteira."
+      }
+    },
+    "sessionPeriods": {
+      "5min": "5 minutos",
+      "10min": "10 minutos",
+      "30min": "30 minutos",
+      "1hour": "1 hora",
+      "3hours": "3 horas",
+      "12hours": "12 horas"
+    },
     "settings": {
       "header": "Negociação em 1 clique",
       "description": "A negociação com 1 clique permite que você negocie com segurança neste dispositivo, sem o incômodo de assinar todas as transações em sua carteira.",
@@ -402,15 +424,7 @@
       },
       "sessionPeriodScreen": {
         "title": "Período da sessão",
-        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo.",
-        "periods": {
-          "5min": "5 minutos",
-          "10min": "10 minutos",
-          "30min": "30 minutos",
-          "1hour": "1 hora",
-          "3hours": "3 horas",
-          "12hours": "12 horas"
-        }
+        "description": "Defina uma duração para permitir a negociação em 1 clique neste dispositivo."
       },
       "discardChanges": {
         "title": "Descartar mudanças?",
@@ -691,11 +705,6 @@
     "routerTooltipSpreadFactor": "Fator de propagação",
     "showDetails": "Mostrar detalhes",
     "hideDetails": "Esconder",
-    "continueAnyway": "Continue de qualquer maneira",
-    "warning": {
-      "exceedsSpendLimit": "Esta troca excede o limite de gastos restantes para negociação em 1 clique.",
-      "increaseSpendLimit": "Aumentar o limite de gastos"
-    },
     "settings": {
       "slippage": "Tolerância de spread"
     },
@@ -868,6 +877,7 @@
     "sendToAnotherAddress": "Enviar para outro endereço",
     "invalidAddress": "Endereço {chain} inválido",
     "acknowledgement": "Reconheço e aceito os riscos de perda de fundos se fornecer um endereço de destinatário incorreto ou tentar sacar para uma exchange.",
+    "acknowledgementWithoutExchange": "Reconheço e aceito os riscos de perda de fundos se eu fornecer um endereço de destinatário incorreto.",
     "done": "Feito",
     "transferFrom": "Transferir de {noun}",
     "transferWithNoun": "Transferir com {noun}",
@@ -1084,6 +1094,16 @@
     "hours": "horas",
     "day": "dia",
     "days": "dias"
+  },
+  "timeUnitsShort": {
+    "second": "segundo",
+    "seconds": "segundo",
+    "minute": "mínimo",
+    "minutes": "mínimo",
+    "hour": "hora",
+    "hours": "hora",
+    "day": "dia",
+    "days": "dia"
   },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",

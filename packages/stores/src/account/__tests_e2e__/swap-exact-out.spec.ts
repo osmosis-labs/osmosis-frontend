@@ -7,7 +7,7 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../tests/test-env";
-import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { Dec, Int, Coin, DecUtils, IntPretty } from "@osmosis-labs/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";

@@ -3,9 +3,9 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import type { Registry } from "@cosmjs/proto-signing";
-import { CoinPretty, Dec, IntPretty } from "@keplr-wallet/unit";
 import { estimateGasFee, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import type { IbcTransferMethod } from "@osmosis-labs/types";
+import { CoinPretty, Dec, IntPretty } from "@osmosis-labs/unit";
 import {
   EthereumChainInfo,
   getAssetFromAssetList,

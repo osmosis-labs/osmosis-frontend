@@ -1,6 +1,6 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import type { Pool } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
+import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";

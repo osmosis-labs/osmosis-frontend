@@ -1,5 +1,5 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { formatICNSName, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -547,9 +547,6 @@ const OneClickTradingProfileSection: FunctionComponent<{
                   spendLimitTokenDecimals:
                     oneClickTradingInfo.spendLimit.decimals,
                   transaction1CTParams,
-                  walletRepo: accountStore.getWalletRepo(
-                    accountStore.osmosisChainId
-                  ),
                   /**
                    * If the user has an existing session, remove it and add the new one.
                    */

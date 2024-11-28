@@ -1,5 +1,4 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
@@ -12,6 +11,7 @@ import {
   SwapRequiresError,
 } from "@osmosis-labs/stores";
 import { QuoteStdFee } from "@osmosis-labs/tx";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
@@ -91,7 +91,11 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
-    queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
+    queryKey: [
+      "estimate-tx-fees",
+      superjson.stringify(messages),
+      superjson.stringify(signOptions),
+    ],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({
