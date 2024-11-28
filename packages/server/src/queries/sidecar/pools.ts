@@ -194,7 +194,7 @@ export async function queryPools({
   }
 
   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing
-  // // information.
+  // information.
   if (minLiquidityCap && !IS_TESTNET) {
     params.append("filter[min_liquidity_cap]", minLiquidityCap);
   }
@@ -226,7 +226,6 @@ export async function queryPools({
 
   url.search = params.toString();
 
-  console.log("sidecar url", url.toString());
   return apiClient<SQSGetPoolsResponse>(url.toString()).then((response) => {
     // When next_cursor is -1 that means we have reached the end of the list
     if (response.meta.next_cursor === -1) {

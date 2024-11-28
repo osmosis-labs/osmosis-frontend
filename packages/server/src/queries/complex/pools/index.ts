@@ -1,8 +1,4 @@
-import {
-  CoinPretty,
-  /*Dec,*/ PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { z } from "zod";
 
@@ -135,10 +131,6 @@ export async function getPools(
     total: pools.total,
     nextCursor: pools.nextCursor,
   };
-
-  // TODO: migrate
-
-  // return denomPools;
 }
 
 export * from "./bonding";
