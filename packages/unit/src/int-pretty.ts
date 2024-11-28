@@ -32,6 +32,7 @@ export class IntPretty {
     inequalitySymbol: false,
     inequalitySymbolSeparator: " ",
   };
+  // note if you add another field, update clone()
 
   constructor(num: Dec | { toDec(): Dec } | bigInteger.BigNumber) {
     if (typeof num === "object" && "toDec" in num) {
@@ -265,12 +266,10 @@ export class IntPretty {
   }
 
   clone(): IntPretty {
-    const pretty = new IntPretty(this.dec);
-    pretty.dec = this.dec;
-    pretty.floatingDecimalPointRight = this.floatingDecimalPointRight;
-    pretty._options = {
-      ...this._options,
-    };
-    return pretty;
+    // doing a constructor call is slow, so we use this method instead
+    return Object.setPrototypeOf(
+      { dec: this.dec, floatingDecimalPointRight: this.floatingDecimalPointRight, _options: { ...this._options } },
+      IntPretty.prototype
+    );
   }
 }
