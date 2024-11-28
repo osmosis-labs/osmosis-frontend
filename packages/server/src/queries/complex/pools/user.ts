@@ -72,7 +72,7 @@ export async function getUserPools(params: {
   });
 
   return await Promise.all(
-    pools.items.map(async (pool) => {
+    pools.items?.map(async (pool) => {
       const { id, reserveCoins, totalFiatValueLocked, type } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,

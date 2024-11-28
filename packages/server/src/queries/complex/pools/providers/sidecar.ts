@@ -61,7 +61,6 @@ export function getPoolsFromSidecar({
   return cachified({
     cache: poolsCache,
     key:
-      JSON.stringify(assetLists) +
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
       (notPoolIds?.join(",") ?? "") +
       (types?.join(",") ?? "") +
