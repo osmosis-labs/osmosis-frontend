@@ -33,6 +33,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
