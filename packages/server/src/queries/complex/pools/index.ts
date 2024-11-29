@@ -122,7 +122,7 @@ export async function getPools(
   total: number;
   nextCursor: number | undefined;
 }> {
-  params.notPoolIds = [...(params.notPoolIds ?? []), ...FILTERABLE_IDS];
+  params.notPoolIds = !params.notPoolIds ? FILTERABLE_IDS : params.notPoolIds;
 
   const pools = await poolProvider(params);
 
