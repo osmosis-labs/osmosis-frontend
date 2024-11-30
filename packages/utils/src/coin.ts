@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@osmosis-labs/unit";
 
 import { sum } from "./math";
 

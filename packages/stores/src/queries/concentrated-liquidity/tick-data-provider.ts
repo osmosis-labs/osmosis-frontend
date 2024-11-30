@@ -1,4 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { estimateInitialTickBound } from "@osmosis-labs/math";
 import {
   ConcentratedLiquidityPool,
@@ -6,6 +5,7 @@ import {
   TickDataProvider,
   TickDepths,
 } from "@osmosis-labs/pools";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "./liquidity-net-in-direction";
 

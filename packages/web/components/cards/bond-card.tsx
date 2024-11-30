@@ -1,5 +1,5 @@
-import { CoinPretty, RatePretty } from "@keplr-wallet/unit";
 import type { BondDuration } from "@osmosis-labs/server";
+import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
 import { Duration } from "dayjs/plugin/duration";

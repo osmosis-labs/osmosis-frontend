@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { NotEnoughLiquidityError, NotEnoughQuotedError } from "../errors";
 import { NoRouteError } from "./errors";

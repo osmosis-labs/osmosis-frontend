@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 

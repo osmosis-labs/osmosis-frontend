@@ -1,14 +1,14 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import { QuoteDirection } from "@osmosis-labs/tx";
+import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ObservableSlippageConfig } from "@osmosis-labs/stores";
-import { QuoteDirection } from "@osmosis-labs/tx";
-import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";

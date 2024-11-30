@@ -1,5 +1,5 @@
-import { RatePretty } from "@keplr-wallet/unit";
 import type { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
+import { RatePretty } from "@osmosis-labs/unit";
 import { NextPage } from "next";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";

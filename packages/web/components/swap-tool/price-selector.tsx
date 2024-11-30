@@ -1,7 +1,7 @@
 import { Menu, Transition } from "@headlessui/react";
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, MaybeUserAssetCoin } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import { superjson } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
 import dayjs from "dayjs";
@@ -20,7 +20,7 @@ import { useClipboard } from "~/hooks/use-clipboard";
 import { ModalBase } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 interface NomicPendingTransfersProps {
@@ -287,9 +287,10 @@ const TransactionDetailsModal = ({
                 </h2>
                 <p className="body1 text-osmoverse-300">
                   {t("transfer.nomic.estimatedAboutTime", {
-                    time: `${humanizedEstimatedTime.value} ${t(
-                      humanizedEstimatedTime.unitTranslationKey
-                    )}`,
+                    time: displayHumanizedTime({
+                      humanizedTime: humanizedEstimatedTime,
+                      t,
+                    }),
                   })}
                 </p>
                 <ProgressBar

@@ -1,11 +1,3 @@
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
 import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
@@ -31,6 +23,14 @@ import {
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 

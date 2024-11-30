@@ -8,7 +8,7 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { Fragment, useState } from "react";

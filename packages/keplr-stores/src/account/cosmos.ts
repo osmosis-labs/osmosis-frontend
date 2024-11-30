@@ -2,7 +2,7 @@ import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
 import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
 import type { BroadcastMode, Msg, StdFee, StdSignDoc } from "@cosmjs/launchpad";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
 import {
   AuthInfo,

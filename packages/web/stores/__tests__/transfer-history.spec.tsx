@@ -15,6 +15,12 @@ describe("PendingTransferCaption", () => {
     if (key === "timeUnits.seconds") {
       return "seconds";
     }
+    if (key === "timeUnits.minutes") {
+      return "minutes";
+    }
+    if (key === "timeUnits.hours") {
+      return "hours";
+    }
     if (key === "transfer.amountToChain") {
       return `Transfer ${options.amount} to ${options.chain}`;
     }
@@ -85,5 +91,25 @@ describe("PendingTransferCaption", () => {
     jest.advanceTimersByTime(296000); // Advance time by 4 minutes and 56 seconds
 
     expect(screen.getByText(/About 5 seconds remaining/)).toBeInTheDocument();
+  });
+
+  it.only("displays the hours and minutes", () => {
+    const estimatedArrivalUnix = dayjs()
+      .add(3, "hours")
+      .add(59, "minutes")
+      .unix();
+
+    render(
+      <PendingTransferCaption
+        isWithdraw={true}
+        amount="10 OSMO"
+        chainPrettyName="Osmosis"
+        estimatedArrivalUnix={estimatedArrivalUnix}
+      />
+    );
+
+    expect(
+      screen.getByText(/Estimated 3 hours and 58 minutes remaining/)
+    ).toBeInTheDocument();
   });
 });

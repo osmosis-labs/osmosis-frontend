@@ -1,6 +1,5 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import {
   makeAddAuthenticatorMsg,
@@ -14,6 +13,7 @@ import {
   OneClickTradingTransactionParams,
   ParsedAuthenticator,
 } from "@osmosis-labs/types";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import {
   isNil,
   unixNanoSecondsToSeconds,
@@ -28,7 +28,7 @@ import { EventName, SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { useTranslation } from "~/hooks/language";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 export class CreateOneClickSessionError extends Error {
@@ -238,8 +238,7 @@ export async function onAdd1CTSession({
       titleTranslationKey: "oneClickTrading.toast.oneClickTradingActive",
       captionElement: (
         <p className="text-sm text-osmoverse-300 md:text-xs">
-          {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
-          {t("remaining")}
+          {displayHumanizedTime({ humanizedTime, t })} {t("remaining")}
         </p>
       ),
     },

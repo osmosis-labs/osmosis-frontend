@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int } from "@osmosis-labs/unit";
 import cases from "jest-in-case";
 
 import { calcPositionStatus, getPriceFromSqrtPrice, getTickPrice } from "..";

@@ -1,4 +1,4 @@
-import type { Dec } from "@keplr-wallet/unit";
+import type { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 
 import type { LimitOrder } from "../../osmosis";

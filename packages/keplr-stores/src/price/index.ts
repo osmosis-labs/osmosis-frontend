@@ -2,7 +2,7 @@ import { ObservableQuery, QueryResponse } from "../common";
 import { CoinGeckoSimplePrice } from "./types";
 import Axios from "axios";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { Dec, CoinPretty, Int, PricePretty } from "@keplr-wallet/unit";
+import { Dec, CoinPretty, Int, PricePretty } from "@osmosis-labs/unit";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { DeepReadonly } from "utility-types";
 import deepmerge from "deepmerge";

@@ -1,4 +1,3 @@
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
@@ -10,6 +9,7 @@ import {
   InsufficientBalanceForFeeError,
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 

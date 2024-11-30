@@ -4,9 +4,9 @@
  * production data from the SQS Osmosis API to ensure
  * functionality and stability.
  */
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import { getAssetPrice, getPools, superjson } from "@osmosis-labs/server";
 import { Asset } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@osmosis-labs/unit";
 import {
   getAssetFromAssetList,
   isNumeric,

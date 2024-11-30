@@ -1,6 +1,6 @@
-import { Dec } from "@keplr-wallet/unit";
 import type { AssetVariant } from "@osmosis-labs/server";
 import { getSwapMessages, type QuoteOutGivenIn } from "@osmosis-labs/tx";
+import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useMemo } from "react";
 
 import { EventName } from "~/config";

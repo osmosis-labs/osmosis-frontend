@@ -17,7 +17,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { Dec } from "@keplr-wallet/unit";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -35,6 +34,7 @@ import {
   TxTracer,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,

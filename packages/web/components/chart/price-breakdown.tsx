@@ -1,4 +1,4 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 

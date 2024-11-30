@@ -1,4 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import {
   BaseAccount,
   BaseAccountTypeStr,
@@ -13,6 +12,7 @@ import {
   VestingAccount,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";

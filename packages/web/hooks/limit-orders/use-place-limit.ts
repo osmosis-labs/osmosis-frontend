@@ -1,10 +1,10 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { priceToTick } from "@osmosis-labs/math";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,
   QuoteDirection,
 } from "@osmosis-labs/tx";
+import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 

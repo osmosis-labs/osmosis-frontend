@@ -1,12 +1,5 @@
 import type { StdFee } from "@cosmjs/amino";
 import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-} from "@keplr-wallet/unit";
-import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
@@ -20,6 +13,13 @@ import {
   SwapTxRouteOutGivenIn,
 } from "@osmosis-labs/tx";
 import { Currency, MinimalAsset } from "@osmosis-labs/types";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@osmosis-labs/unit";
 import {
   getAssetFromAssetList,
   isNil,

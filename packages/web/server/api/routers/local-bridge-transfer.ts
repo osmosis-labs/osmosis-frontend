@@ -1,4 +1,3 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import type { Bridge } from "@osmosis-labs/bridge";
 import {
   bridgeChainSchema,
@@ -20,6 +19,7 @@ import {
   UserCosmosAddressSchema,
   UserEvmAddressSchema,
 } from "@osmosis-labs/trpc";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import { getAddress } from "viem";
 import { z } from "zod";
 

@@ -1,5 +1,5 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { AssetVariant } from "@osmosis-labs/server";
+import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";

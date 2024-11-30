@@ -1,7 +1,7 @@
-import { Dec } from "@keplr-wallet/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { MaybeUserAssetCoin, Orderbook } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { useCallback, useMemo } from "react";
 

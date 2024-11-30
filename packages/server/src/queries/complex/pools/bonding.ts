@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import type { Duration } from "dayjs/plugin/duration";
 
 import { dayjs } from "../../../utils/dayjs";

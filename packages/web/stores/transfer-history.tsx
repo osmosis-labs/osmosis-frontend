@@ -1,5 +1,4 @@
 import { KVStore } from "@keplr-wallet/common";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   TransferFailureReason,
   TransferStatus,
@@ -7,6 +6,7 @@ import {
   TransferStatusReceiver,
   TxSnapshot,
 } from "@osmosis-labs/bridge";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import {
   action,
@@ -23,7 +23,7 @@ import { FunctionComponent, useEffect, useRef } from "react";
 import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
 import { useTranslation } from "~/hooks";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
 
 export const TRANSFER_HISTORY_STORE_KEY = "transfer_history";
@@ -440,9 +440,10 @@ export const PendingTransferCaption: FunctionComponent<{
             ? t("aboutSecondsRemaining", {
                 seconds: "5 " + t("timeUnits.seconds"),
               })
-            : `${t("estimated")} ${humanizedTime.value} ${t(
-                humanizedTime.unitTranslationKey
-              )} ${t("remaining")}`;
+            : `${t("estimated")} ${displayHumanizedTime({
+                humanizedTime,
+                t,
+              })} ${t("remaining")}`;
       }
     };
 
