@@ -21,14 +21,14 @@ describe("PendingTransferCaption", () => {
     if (key === "timeUnits.hours") {
       return "hours";
     }
+    if (key === "unknownTimeRemaining") {
+      return "Unknown time remaining";
+    }
     if (key === "transfer.amountToChain") {
       return `Transfer ${options.amount} to ${options.chain}`;
     }
     if (key === "transfer.amountFromChain") {
       return `Transfer ${options.amount} from ${options.chain}`;
-    }
-    if (key === "aboutSecondsRemaining") {
-      return `About ${options.seconds} remaining`;
     }
     if (key === "estimated") {
       return "Estimated";
@@ -88,12 +88,12 @@ describe("PendingTransferCaption", () => {
       />
     );
 
-    jest.advanceTimersByTime(296000); // Advance time by 4 minutes and 56 seconds
+    jest.advanceTimersByTime(300000); // Advance time by 5 minutes
 
-    expect(screen.getByText(/About 5 seconds remaining/)).toBeInTheDocument();
+    expect(screen.getByText(/Unknown time remaining/)).toBeInTheDocument();
   });
 
-  it.only("displays the hours and minutes", () => {
+  it("displays the hours and minutes", () => {
     const estimatedArrivalUnix = dayjs()
       .add(3, "hours")
       .add(59, "minutes")

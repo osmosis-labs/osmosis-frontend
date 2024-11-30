@@ -2,7 +2,7 @@
   "404": {
     "title": "नहीं मिला"
   },
-  "aboutSecondsRemaining": "लगभग {seconds} शेष हैं",
+  "unknownTimeRemaining": "शेष समय अज्ञात",
   "addLiquidity": {
     "allAssets": "सारी संपत्ति",
     "autoswapCaption": "एकल परिसंपत्ति में तरलता जोड़ने के लिए ऑटोस्वैप का उपयोग करें।",
