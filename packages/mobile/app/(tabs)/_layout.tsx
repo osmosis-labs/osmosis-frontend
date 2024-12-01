@@ -8,7 +8,7 @@ import { PieIcon } from "~/components/icons/pie";
 import { SearchListIcon } from "~/components/icons/search-list";
 import { TrendIcon } from "~/components/icons/trend";
 import { BlurTabBarBackground } from "~/components/ui/tab-bar-background";
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 import { useTheme } from "~/hooks/use-theme";
 
 export default function TabLayout() {

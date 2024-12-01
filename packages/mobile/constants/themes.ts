@@ -3,7 +3,7 @@ import {
   Theme,
 } from "@react-navigation/native";
 
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 
 const createTheme = <T extends Theme>(theme: T) => theme;
 

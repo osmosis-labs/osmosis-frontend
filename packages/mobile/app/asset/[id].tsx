@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
@@ -15,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ChevronLeftIcon } from "~/components/icons/chevron-left";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Text } from "~/components/ui/text";
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
 import { api } from "~/utils/trpc";
 
@@ -31,8 +31,6 @@ const AssetRoute = () => {
     { findMinDenomOrSymbol: id.replace(/-/g, "/") },
     { enabled: !!id }
   );
-
-  console.log(asset);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -136,7 +134,11 @@ const AssetContent = ({ id }: { id: string }) => {
   );
 
   if (isLoading) {
-    return <ActivityIndicator />;
+    return (
+      <View style={styles.assetContent}>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   if (!asset) {

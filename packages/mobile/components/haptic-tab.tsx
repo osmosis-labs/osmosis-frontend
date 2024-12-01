@@ -2,7 +2,7 @@ import { BottomTabBarButtonProps } from "@react-navigation/bottom-tabs";
 import { PlatformPressable } from "@react-navigation/elements";
 import * as Haptics from "expo-haptics";
 
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 export function HapticTab(props: BottomTabBarButtonProps) {
   const isActive = props.accessibilityState?.selected === true;
   return (

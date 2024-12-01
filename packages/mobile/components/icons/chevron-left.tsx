@@ -3,7 +3,7 @@ import { StyleProp } from "react-native";
 import { ViewStyle } from "react-native";
 import Svg, { Path } from "react-native-svg";
 
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 
 export const ChevronLeftIcon = ({
   width = 16,

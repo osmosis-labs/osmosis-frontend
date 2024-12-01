@@ -1,15 +1,16 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "Osmosis",
+    "slug": "osmosis-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
+    "scheme": "osmosis-mobile",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.osmosis.mobile"
     },
     "android": {
       "adaptiveIcon": {
@@ -33,10 +34,24 @@
           "backgroundColor": "#140F34"
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-dev-launcher",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "c6d39670-7676-40d9-813b-ff7104304289"
+      }
     }
   }
 }

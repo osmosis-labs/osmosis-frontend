@@ -1,6 +1,6 @@
 import { StyleSheet, Text as RNText, type TextProps } from "react-native";
 
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 import { useTheme } from "~/hooks/use-theme";
 
 export type ThemedTextProps = TextProps & {

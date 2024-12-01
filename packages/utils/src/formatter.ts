@@ -5,7 +5,7 @@ import {
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
+} from "@osmosis-labs/unit";
 
 import {
   getDecimalCount,

@@ -1,9 +1,9 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { FlashList } from "@shopify/flash-list";
 import { debounce } from "debounce";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -13,20 +13,47 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from "react-native-svg";
+import { create } from "zustand";
 
 import { ChevronDownIcon } from "~/components/icons/chevron-down";
 import { FilterIcon } from "~/components/icons/filter";
 import { SearchInput } from "~/components/search-input";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
+import {
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItemTitle,
+  DropdownMenuRoot,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown";
 import { Text } from "~/components/ui/text";
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const itemSize = 70;
 
+const displayOptions = [
+  { key: "price", title: "Price (24h)" },
+  { key: "volume", title: "Volume" },
+  { key: "market-cap", title: "Market Cap" },
+  { key: "favorite", title: "Favorite" },
+] as const;
+
+type DisplayOptionStore = {
+  displayOption: (typeof displayOptions)[number]["key"];
+  setDisplayOption: (option: (typeof displayOptions)[number]["key"]) => void;
+};
+
+const useDisplayOptionStore = create<DisplayOptionStore>((set) => ({
+  displayOption: displayOptions[0].key,
+  setDisplayOption: (option: (typeof displayOptions)[number]["key"]) =>
+    set({ displayOption: option }),
+}));
+
 export default function TabTwoScreen() {
   const [search, setSearch] = useState("");
+  const { displayOption, setDisplayOption } = useDisplayOptionStore();
   const {
     data,
     isLoading,
@@ -51,7 +78,13 @@ export default function TabTwoScreen() {
     setSearch(query);
   }, 200);
 
-  const items = data?.pages.flatMap((page) => page.items) || [];
+  const items = useMemo(
+    () => data?.pages.flatMap((page) => page.items) || [],
+    [data]
+  );
+  const selectedDisplayOption = useMemo(() => {
+    return displayOptions.find((item) => item.key === displayOption);
+  }, [items, displayOption]);
 
   return (
     <SafeAreaView
@@ -83,10 +116,30 @@ export default function TabTwoScreen() {
       <View style={styles.contentContainer}>
         <View style={styles.subheaderContainer}>
           <Text style={styles.subheader}>All Assets</Text>
-          <TouchableOpacity style={styles.volumeButton}>
-            <Text style={styles.volumeText}>Volume</Text>
-            <ChevronDownIcon />
-          </TouchableOpacity>
+
+          <DropdownMenuRoot>
+            <DropdownMenuTrigger>
+              <TouchableOpacity style={styles.volumeButton}>
+                <Text style={styles.volumeText}>
+                  {selectedDisplayOption?.title}
+                </Text>
+                <ChevronDownIcon />
+              </TouchableOpacity>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {displayOptions.map((item) => (
+                <DropdownMenuCheckboxItem
+                  value={displayOption === item.key ? "on" : "off"}
+                  key={item.key}
+                  onValueChange={() => {
+                    setDisplayOption(item.key);
+                  }}
+                >
+                  <DropdownMenuItemTitle>{item.title}</DropdownMenuItemTitle>
+                </DropdownMenuCheckboxItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenuRoot>
         </View>
 
         {isLoading ? (
@@ -116,6 +169,7 @@ const AssetItem = ({
   asset: RouterOutputs["local"]["assets"]["getMarketAssets"]["items"][number];
 }) => {
   const router = useRouter();
+  const { displayOption } = useDisplayOptionStore();
 
   return (
     <TouchableOpacity
@@ -150,28 +204,42 @@ const AssetItem = ({
         </View>
       </View>
       <View style={styles.assetRight}>
-        <Text style={styles.price}>
-          {asset.currentPrice ? (
-            <>
-              {asset.currentPrice.symbol}
-              <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
-            </>
-          ) : (
-            ""
-          )}
-        </Text>
-        <Text
-          style={[
-            styles.percentage,
-            {
-              color: getChangeColor(
-                asset.priceChange24h?.toDec() || new Dec(0)
-              ),
-            },
-          ]}
-        >
-          {asset.priceChange24h?.toString()}
-        </Text>
+        {displayOption === "price" && (
+          <>
+            <Text style={styles.price}>
+              {asset.currentPrice ? (
+                <>
+                  {asset.currentPrice.symbol}
+                  <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
+                </>
+              ) : (
+                ""
+              )}
+            </Text>
+            <Text
+              style={[
+                styles.percentage,
+                {
+                  color: getChangeColor(
+                    asset.priceChange24h?.toDec() || new Dec(0)
+                  ),
+                },
+              ]}
+            >
+              {asset.priceChange24h?.toString()}
+            </Text>
+          </>
+        )}
+
+        {displayOption === "volume" && (
+          <Text style={styles.price}>{asset.volume24h?.toString() ?? "-"}</Text>
+        )}
+
+        {displayOption === "market-cap" && (
+          <Text style={styles.price}>{asset.marketCap?.toString() ?? "-"}</Text>
+        )}
+
+        {displayOption === "favorite" && <Text>Favorite</Text>}
       </View>
     </TouchableOpacity>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import Svg, { Path } from "react-native-svg";
 
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 
 export const SearchIcon = ({
   width = 24,

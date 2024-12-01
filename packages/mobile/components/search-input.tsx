@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { StyleSheet, TextInput, View } from "react-native";
 
 import { SearchIcon } from "~/components/icons/search";
-import { Colors } from "~/constants/colors";
+import { Colors } from "~/constants/theme-colors";
 
 interface SearchInputProps {
   onSearch: (query: string) => void;
