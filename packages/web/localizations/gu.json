@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "એસેટ",
       "amount": "રકમ",
-      "review": "સમીક્ષા"
+      "review": "સમીક્ષા",
+      "deposit": "જમા"
     },
     "moreBridgeOptions": {
       "titleDeposit": "વધુ થાપણ વિકલ્પો",

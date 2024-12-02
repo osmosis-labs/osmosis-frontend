@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Activo",
       "amount": "Cantidad",
-      "review": "Revisar"
+      "review": "Revisar",
+      "deposit": "Depósito"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Más opciones de depósito",

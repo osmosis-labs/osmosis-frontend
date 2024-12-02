@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Объект",
       "amount": "Количество",
-      "review": "Обзор"
+      "review": "Обзор",
+      "deposit": "Депозит"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Больше вариантов депозита",

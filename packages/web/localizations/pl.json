@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Zaleta",
       "amount": "Kwota",
-      "review": "Recenzja"
+      "review": "Recenzja",
+      "deposit": "Depozyt"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Więcej opcji depozytu",

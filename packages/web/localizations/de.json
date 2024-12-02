@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Vermögenswert",
       "amount": "Menge",
-      "review": "Rezension"
+      "review": "Rezension",
+      "deposit": "Kaution"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mehr Einzahlungsmöglichkeiten",

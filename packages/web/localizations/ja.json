@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
-      "review": "レビュー"
+      "review": "レビュー",
+      "deposit": "デポジット"
     },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",

@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Atu",
       "amount": "Cantitate",
-      "review": "Revizuire"
+      "review": "Revizuire",
+      "deposit": "Depozit"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",

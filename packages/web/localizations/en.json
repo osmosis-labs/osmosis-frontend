@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
-      "review": "Review"
+      "review": "Review",
+      "deposit": "Deposit"
     },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",
