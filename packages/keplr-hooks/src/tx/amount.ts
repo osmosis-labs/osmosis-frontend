@@ -15,7 +15,7 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "./errors";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
 import { useState } from "react";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {

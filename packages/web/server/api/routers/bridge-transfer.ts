@@ -1,4 +1,3 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   Bridge,
   BridgeChain,
@@ -21,6 +20,7 @@ import {
   UserOsmoAddressSchema,
 } from "@osmosis-labs/trpc";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   BitcoinChainInfo,
   EthereumChainInfo,
@@ -735,6 +735,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
           return {
             ...deposit,
+            userOsmoAddress: input.userOsmoAddress,
             amount: new CoinPretty(
               {
                 coinDecimals: deposit.networkFee.decimals,

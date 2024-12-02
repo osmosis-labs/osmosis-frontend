@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 

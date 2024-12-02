@@ -1,3 +1,5 @@
+import { BigDec, maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
@@ -5,9 +7,7 @@ import {
   Int,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { BigDec, maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
-import { AssetList, Chain } from "@osmosis-labs/types";
+} from "@osmosis-labs/unit";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -154,6 +154,22 @@ export function getPriceFromSqrtPrice({
   return price;
 }
 
+export function getDisplayPriceFromPrice({
+  price,
+  baseCoin,
+  quoteCoin,
+}: {
+  baseCoin: CoinPretty;
+  quoteCoin: CoinPretty;
+  price: Dec;
+}) {
+  const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+    baseCoin.currency.coinDecimals - quoteCoin.currency.coinDecimals
+  );
+  const displayPrice = price.mul(multiplicationQuoteOverBase);
+  return displayPrice;
+}
+
 export function getTickPrice({
   tick,
   baseCoin,
@@ -163,11 +179,11 @@ export function getTickPrice({
   baseCoin: CoinPretty;
   quoteCoin: CoinPretty;
 }) {
-  const sqrtPrice = tickToSqrtPrice(tick);
-  return getPriceFromSqrtPrice({
+  const price = tickToPrice(tick);
+  return getDisplayPriceFromPrice({
     baseCoin,
     quoteCoin,
-    sqrtPrice,
+    price,
   });
 }
 

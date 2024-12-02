@@ -1,6 +1,6 @@
-import { Dec } from "@keplr-wallet/unit";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";

@@ -1,7 +1,7 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { OneClickTradingMaxGasLimit, runIfFn } from "@osmosis-labs/utils";
 import {
   SetStateAction,

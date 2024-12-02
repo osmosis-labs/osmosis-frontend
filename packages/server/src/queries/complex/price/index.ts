@@ -1,4 +1,4 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 
 import { DEFAULT_VS_CURRENCY } from "../../../queries/complex/assets/config";
 

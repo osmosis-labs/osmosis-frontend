@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Dec } from "@keplr-wallet/unit";
 import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
+import { Dec } from "@osmosis-labs/unit";
 import { computed } from "mobx";
 
 export type ConcentratedLiquidityParams = {

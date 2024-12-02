@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
+import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";

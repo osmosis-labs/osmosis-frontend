@@ -1,10 +1,10 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import type {
   PositionHistoricalPerformance,
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";

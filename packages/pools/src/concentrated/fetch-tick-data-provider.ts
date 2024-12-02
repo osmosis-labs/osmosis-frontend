@@ -1,4 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import {
   BigDec,
   estimateInitialTickBound,
@@ -6,6 +5,7 @@ import {
   maxTick,
   minTick,
 } from "@osmosis-labs/math";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import {
   ConcentratedLiquidityPool,

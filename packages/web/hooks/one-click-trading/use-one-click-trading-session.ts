@@ -103,7 +103,7 @@ export const useOneClickTradingSession = ({
   return {
     oneClickTradingInfo: featureFlags.oneClickTrading ? value?.info : undefined,
     isOneClickTradingEnabled: featureFlags.oneClickTrading
-      ? value?.isEnabled
+      ? value?.isEnabled ?? false
       : false,
     isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
     getTimeRemaining,

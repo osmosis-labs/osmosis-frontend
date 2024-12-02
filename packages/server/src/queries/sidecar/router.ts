@@ -1,4 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
@@ -10,6 +9,7 @@ import {
   SplitTokenOutQuote,
   Token,
 } from "@osmosis-labs/pools/build/router";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
 import { SIDECAR_BASE_URL } from "../../env";

@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import React from "react";
 

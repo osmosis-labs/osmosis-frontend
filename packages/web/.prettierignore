@@ -29,3 +29,5 @@ public/tradingview/**/*
 public/datafeeds/**/*
 
 *.zip
+
+tsconfig.script.tsbuildinfo

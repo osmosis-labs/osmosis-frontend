@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 
 export const OneClickTradingRemainingTime: FunctionComponent<{
   className?: string;
@@ -55,7 +55,11 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
 
   return (
     <p className={classNames("body1 text-wosmongton-200", className)}>
-      {humanizedTime.value} {t(humanizedTime.unitTranslationKey)}{" "}
+      {displayHumanizedTime({
+        humanizedTime,
+        t,
+        delimitedBy: useShortTimeUnits ? " " : undefined,
+      })}{" "}
       {t("remaining")}
     </p>
   );

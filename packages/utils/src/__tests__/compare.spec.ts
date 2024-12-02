@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 import cases from "jest-in-case";
 
 import {

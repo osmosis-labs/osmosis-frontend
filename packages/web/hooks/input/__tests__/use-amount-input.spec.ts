@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Currency } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { act, waitFor } from "@testing-library/react";
 
 import { server, trpcMsw } from "~/__tests__/msw";

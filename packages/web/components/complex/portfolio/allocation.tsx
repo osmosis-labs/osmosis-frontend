@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import type { PortfolioAssets } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 

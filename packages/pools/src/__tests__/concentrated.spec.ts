@@ -1,5 +1,5 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { BigDec, LiquidityDepth } from "@osmosis-labs/math";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import {
   ConcentratedLiquidityPool,

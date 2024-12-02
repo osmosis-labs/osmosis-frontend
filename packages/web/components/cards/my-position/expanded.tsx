@@ -1,9 +1,9 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import type {
   PositionHistoricalPerformance,
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
 import { observer } from "mobx-react-lite";

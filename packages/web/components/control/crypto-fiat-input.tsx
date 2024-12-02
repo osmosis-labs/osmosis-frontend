@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import {

@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import React, { FunctionComponent } from "react";
 
 import { FallbackImg } from "~/components/assets";

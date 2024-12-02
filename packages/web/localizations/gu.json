@@ -2,7 +2,7 @@
   "404": {
     "title": "મળી નથી"
   },
-  "aboutSecondsRemaining": "લગભગ {seconds} બાકી",
+  "unknownTimeRemaining": "અજ્ઞાત સમય બાકી",
   "addLiquidity": {
     "allAssets": "બધી સંપત્તિ",
     "autoswapCaption": "સિંગલ એસેટ સાથે લિક્વિડિટી ઉમેરવા માટે ઑટોસ્વેપનો ઉપયોગ કરો.",

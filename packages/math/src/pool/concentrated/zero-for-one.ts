@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../big-dec";
 import { minSpotPrice } from "./const";

@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { ObservableChainQueryRPC } from "../../chain-rpc-query";
-import { Int } from "@keplr-wallet/unit";
+import { Int } from "@osmosis-labs/unit";
 
 export class ObservableQueryRPCStatus extends ObservableChainQueryRPC<{
   jsonrpc: "2.0";

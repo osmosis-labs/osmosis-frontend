@@ -1,6 +1,6 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { WeightedPoolRawResponse } from "@osmosis-labs/server";
 import { NoAvailableSharesError } from "@osmosis-labs/stores";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback, useState } from "react";
 

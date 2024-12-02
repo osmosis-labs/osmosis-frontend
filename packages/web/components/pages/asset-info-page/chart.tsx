@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { UTCTimestamp } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";

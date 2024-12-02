@@ -1,5 +1,5 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import type { MappedLimitOrder } from "@osmosis-labs/server";
+import { Dec, Int } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import React, { useMemo } from "react";
 

@@ -1,5 +1,5 @@
-import { RatePretty } from "@keplr-wallet/unit";
 import { EarnStrategy, StrategyCMSData } from "@osmosis-labs/server";
+import { RatePretty } from "@osmosis-labs/unit";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
 import dayjs from "dayjs";
 

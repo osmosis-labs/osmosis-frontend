@@ -1,4 +1,3 @@
-import { Dec } from "@keplr-wallet/unit";
 import {
   BaseAccountTypeStr,
   queryBalances,
@@ -9,6 +8,7 @@ import {
   queryFeeTokenSpotPrice,
   sendTxSimulate,
 } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import type { Any } from "cosmjs-types/google/protobuf/any";
 

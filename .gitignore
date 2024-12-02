@@ -25,3 +25,7 @@ packages/web/e2e/keplr-extension-manifest
 .*.swp
 .*.swo
 packages/web/e2e/metamask-extension-manifest/
+packages/e2e/keplr-extension-manifest/
+packages/e2e/playwright-report/
+packages/e2e/test-results/
+packages/e2e/.env

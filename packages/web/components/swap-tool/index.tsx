@@ -1,7 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, DecUtils, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
+import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";

@@ -7,9 +7,9 @@ import {
   waitAccountLoaded,
 } from "../../tests/test-env";
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
-import { Int, Dec } from "@keplr-wallet/unit";
+import { Int, Dec } from "@osmosis-labs/unit";
 import { TestOsmosisChainId } from "../../tests/mock-data";
-// import { Int } from "@keplr-wallet/unit";
+// import { Int } from "@osmosis-labs/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
