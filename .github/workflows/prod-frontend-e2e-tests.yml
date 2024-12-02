@@ -111,6 +111,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
