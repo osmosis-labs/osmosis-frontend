@@ -7,6 +7,10 @@ export const ChevronDownIcon = ({
   width = 16,
   height = 16,
   fill = Colors.osmoverse[500],
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
 }) => (
   <Svg width={width} height={height} viewBox="0 0 16 16" fill="none">
     <Path

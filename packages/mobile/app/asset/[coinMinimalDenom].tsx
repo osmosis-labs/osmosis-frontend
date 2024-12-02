@@ -8,7 +8,10 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { AssetChart, AssetChartHeader } from "~/components/asset/asset-chart";
 import { AssetDetails } from "~/components/asset/asset-details";
@@ -28,13 +31,21 @@ const AssetRoute = () => {
   }>();
   const router = useRouter();
 
+  const inset = useSafeAreaInsets();
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView
+      style={[
+        styles.container,
+        { paddingBottom: TRADE_BUTTON_HEIGHT - inset.bottom },
+      ]}
+    >
       <Stack.Screen
         options={{
           headerShown: false,
         }}
       />
+
       <View style={{ paddingHorizontal: 24 }}>
         <RouteHeader>
           <View style={styles.assetInfo}>
@@ -119,7 +130,6 @@ const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: TRADE_BUTTON_HEIGHT,
   },
   assetInfo: {
     flexDirection: "row",
@@ -132,7 +142,7 @@ const styles = StyleSheet.create({
   },
   assetContent: {
     padding: 24,
-    height: "100%",
+    flex: 1,
   },
   tradeButtonContainer: {
     position: "absolute",

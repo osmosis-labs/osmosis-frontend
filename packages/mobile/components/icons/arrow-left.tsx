@@ -1,4 +1,5 @@
 import React from "react";
+import { StyleProp, ViewStyle } from "react-native";
 import Svg, { G, Path } from "react-native-svg";
 
 import { Colors } from "~/constants/theme-colors";
@@ -7,8 +8,20 @@ export const ArrowLeftIcon = ({
   width = 32,
   height = 32,
   fill = Colors["wosmongton"][100],
+  style,
+}: {
+  width?: number;
+  height?: number;
+  fill?: string;
+  style?: StyleProp<ViewStyle>;
 }) => (
-  <Svg width={width} height={height} viewBox="0 0 33 32" fill="none">
+  <Svg
+    width={width}
+    height={height}
+    viewBox="0 0 33 32"
+    fill="none"
+    style={style}
+  >
     <G id="icon">
       <G id="svg">
         <Path

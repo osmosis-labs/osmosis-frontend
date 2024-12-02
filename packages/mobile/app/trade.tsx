@@ -2,7 +2,10 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { ArrowLeftIcon } from "~/components/icons/arrow-left";
@@ -57,7 +60,7 @@ const PREVIEW_BUTTON_HEIGHT = 100;
 
 export function TradeInterface() {
   const [amount, setAmount] = useState("0");
-  const [error, setError] = useState("You don't have enough ETH");
+  const [error, setError] = useState("");
 
   const handleNumberClick = (num: string) => {
     if (amount === "0" && num !== ".") {
@@ -77,8 +80,15 @@ export function TradeInterface() {
     });
   };
 
+  const inset = useSafeAreaInsets();
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={[
+        styles.container,
+        { paddingBottom: PREVIEW_BUTTON_HEIGHT - inset.bottom },
+      ]}
+    >
       {/* Amount Display */}
       <View>
         <Text type="title" style={styles.amountDisplay}>
@@ -91,7 +101,7 @@ export function TradeInterface() {
         <TradeCard title="Pay" subtitle="Choose Asset" />
 
         <View style={styles.swapButtonContainer}>
-          <TouchableOpacity style={styles.swapButton}>
+          <TouchableOpacity activeOpacity={0.8} style={styles.swapButton}>
             <ArrowDownIcon width={20} height={20} />
           </TouchableOpacity>
         </View>
@@ -100,7 +110,7 @@ export function TradeInterface() {
       </View>
 
       {/* Error Message */}
-      {error && <Text style={styles.errorMessage}>{error}</Text>}
+      <Text style={styles.errorMessage}>{error}</Text>
 
       {/* Number Pad */}
       <View style={styles.numberPad}>
@@ -113,8 +123,11 @@ export function TradeInterface() {
             <Text style={styles.numberButtonText}>{num}</Text>
           </TouchableOpacity>
         ))}
-        <TouchableOpacity style={styles.numberButton} onPress={handleDelete}>
-          <ArrowLeftIcon width={20} height={20} />
+        <TouchableOpacity
+          style={[styles.numberButton, { paddingTop: 8 }]}
+          onPress={handleDelete}
+        >
+          <ArrowLeftIcon width={32} height={32} />
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -128,22 +141,22 @@ const TradeCard = ({
   title: string;
   subtitle: string;
 }) => (
-  <View style={styles.tradeCard}>
-    <TouchableOpacity style={styles.addButton}>
+  <TouchableOpacity style={styles.tradeCard} activeOpacity={0.8}>
+    <View style={styles.addButton}>
       <PlusIcon width={24} height={24} />
-    </TouchableOpacity>
+    </View>
     <View>
       <Text style={styles.tradeCardTitle}>{title}</Text>
       <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
     </View>
-  </View>
+  </TouchableOpacity>
 );
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
-    paddingBottom: PREVIEW_BUTTON_HEIGHT,
-    padding: 24,
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 24,
   },
   amountDisplay: {
     fontWeight: "600",
@@ -151,7 +164,7 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   tradeCardsContainer: {
-    marginBottom: 32,
+    marginBottom: 16,
     gap: 4,
   },
   tradeCard: {
@@ -207,25 +220,23 @@ const styles = StyleSheet.create({
     color: "#ff4444",
     fontSize: 14,
     textAlign: "center",
-    marginBottom: 24,
   },
   numberPad: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    marginBottom: 32,
+    gap: 16,
   },
   numberButton: {
     width: "30%",
-    aspectRatio: 1,
+    aspectRatio: 1.3,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 16,
   },
   numberButtonText: {
     color: "white",
-    fontSize: 24,
-    fontWeight: "500",
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: 500,
   },
   previewButtonContainer: {
     position: "absolute",
