@@ -19,7 +19,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useMeasure } from "react-use";
+import { useMeasure, useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { BridgeReceiveAssetDropdown } from "~/components/bridge/bridge-receive-asset-dropdown";
@@ -41,7 +41,7 @@ import {
   useFeatureFlags,
   useTranslation,
 } from "~/hooks";
-import { BridgeScreen } from "~/hooks/bridge";
+import { BridgeScreen, useBridgeStore } from "~/hooks/bridge";
 import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -609,6 +609,10 @@ export const AmountScreen = observer(
       toChain,
     ]);
 
+    useUnmount(() => {
+      useBridgeStore.getState().setType("quote");
+    });
+
     /** If an asset is disabled */
     const areAssetTransfersDisabled = useMemo(() => {
       return direction === "withdraw"
@@ -802,6 +806,7 @@ export const AmountScreen = observer(
       toChain &&
       toAsset
     ) {
+      useBridgeStore.getState().setType("deposit-address");
       return (
         <DepositAddressScreen
           canonicalAsset={canonicalAsset}
@@ -850,6 +855,8 @@ export const AmountScreen = observer(
         </>
       );
     }
+
+    useBridgeStore.getState().setType("quote");
 
     /**
      * This will trigger an error boundary

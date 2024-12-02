@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "संपत्ति",
       "amount": "मात्रा",
-      "review": "समीक्षा"
+      "review": "समीक्षा",
+      "deposit": "जमा"
     },
     "moreBridgeOptions": {
       "titleDeposit": "अधिक जमा विकल्प",

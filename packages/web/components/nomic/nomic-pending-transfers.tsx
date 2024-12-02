@@ -165,9 +165,11 @@ export const NomicPendingTransfers = ({
                   refetchInterval={refetchInterval}
                   dataUpdatedAt={nomicDepositsDataUpdatedAt}
                 />
-                <p className="text-white-full">
-                  {t("transfer.nomic.awaitingBtc")}
-                </p>
+                {transactions.length === 0 && (
+                  <p className="text-white-full">
+                    {t("transfer.nomic.awaitingBtc")}
+                  </p>
+                )}
               </div>
             )}
           </>

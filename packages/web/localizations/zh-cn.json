@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "资产",
       "amount": "数量",
-      "review": "审查"
+      "review": "审查",
+      "deposit": "订金"
     },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款选择",

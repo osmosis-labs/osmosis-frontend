@@ -36,6 +36,7 @@ export const useBridgeStore = create(
   combine(
     {
       isVisible: false,
+      type: "quote" as "quote" | "deposit-address",
       step: BridgeScreen.Asset,
       direction: undefined as "deposit" | "withdraw" | undefined,
       selectedAssetDenom: undefined as string | undefined,
@@ -112,6 +113,9 @@ export const useBridgeStore = create(
           fiatRampSelectionOpen: nextValue ?? !state.fiatRampSelectionOpen,
         }));
       },
+      setType: (type: "quote" | "deposit-address") => {
+        set({ type });
+      },
     })
   )
 );
@@ -125,6 +129,7 @@ export const ImmersiveBridge = () => {
   const { isReady: isRouterReady } = useRouter();
 
   const {
+    type,
     direction,
     isVisible,
     selectedAssetDenom,
@@ -143,6 +148,7 @@ export const ImmersiveBridge = () => {
       isVisible: state.isVisible,
       step: state.step,
       direction: state.direction,
+      type: state.type,
       selectedAssetDenom: state.selectedAssetDenom,
       setIsVisible: state.setIsVisible,
       setStep: state.setStep,
@@ -298,28 +304,56 @@ export const ImmersiveBridge = () => {
                         )}
                         <StepProgress
                           className="mx-6 max-w-3xl shrink md:hidden"
-                          steps={[
-                            {
-                              displayLabel: t("transfer.stepLabels.asset"),
-                              onClick:
-                                step !== BridgeScreen.Asset
-                                  ? () => {
-                                      setStep(BridgeScreen.Asset);
-                                      setSelectedAssetDenom(undefined);
-                                    }
-                                  : undefined,
-                            },
-                            {
-                              displayLabel: t("transfer.stepLabels.amount"),
-                              onClick:
-                                step === BridgeScreen.Review
-                                  ? () => setStep(BridgeScreen.Amount)
-                                  : undefined,
-                            },
-                            {
-                              displayLabel: t("transfer.stepLabels.review"),
-                            },
-                          ]}
+                          steps={
+                            type === "quote"
+                              ? [
+                                  {
+                                    displayLabel: t(
+                                      "transfer.stepLabels.asset"
+                                    ),
+                                    onClick:
+                                      step !== BridgeScreen.Asset
+                                        ? () => {
+                                            setStep(BridgeScreen.Asset);
+                                            setSelectedAssetDenom(undefined);
+                                          }
+                                        : undefined,
+                                  },
+                                  {
+                                    displayLabel: t(
+                                      "transfer.stepLabels.amount"
+                                    ),
+                                    onClick:
+                                      step === BridgeScreen.Review
+                                        ? () => setStep(BridgeScreen.Amount)
+                                        : undefined,
+                                  },
+                                  {
+                                    displayLabel: t(
+                                      "transfer.stepLabels.review"
+                                    ),
+                                  },
+                                ]
+                              : [
+                                  {
+                                    displayLabel: t(
+                                      "transfer.stepLabels.asset"
+                                    ),
+                                    onClick:
+                                      step !== BridgeScreen.Asset
+                                        ? () => {
+                                            setStep(BridgeScreen.Asset);
+                                            setSelectedAssetDenom(undefined);
+                                          }
+                                        : undefined,
+                                  },
+                                  {
+                                    displayLabel: t(
+                                      "transfer.stepLabels.deposit"
+                                    ),
+                                  },
+                                ]
+                          }
                           currentStep={Number(step)}
                         />
                         <IconButton

@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Varlık",
       "amount": "Miktar",
-      "review": "Gözden geçirmek"
+      "review": "Gözden geçirmek",
+      "deposit": "Depozito"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Daha fazla para yatırma seçeneği",

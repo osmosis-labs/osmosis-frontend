@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
-      "review": "مرور"
+      "review": "مرور",
+      "deposit": "سپرده گذاری"
     },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",

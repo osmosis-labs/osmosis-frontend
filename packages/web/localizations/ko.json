@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "유산",
       "amount": "양",
-      "review": "검토"
+      "review": "검토",
+      "deposit": "보증금"
     },
     "moreBridgeOptions": {
       "titleDeposit": "더 많은 입금 옵션",
