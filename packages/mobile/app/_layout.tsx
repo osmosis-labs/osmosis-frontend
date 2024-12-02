@@ -1,3 +1,4 @@
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { superjson } from "@osmosis-labs/server";
 import { localLink } from "@osmosis-labs/trpc";
 import { ThemeProvider } from "@react-navigation/native";
@@ -115,10 +116,12 @@ export default function RootLayout() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="+not-found" />
-            </Stack>
+            <BottomSheetModalProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
+            </BottomSheetModalProvider>
             <StatusBar style="auto" />
           </GestureHandlerRootView>
         </ThemeProvider>

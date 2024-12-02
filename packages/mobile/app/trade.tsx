@@ -1,5 +1,11 @@
+import {
+  BottomSheetBackdrop,
+  BottomSheetBackdropProps,
+  BottomSheetModal,
+  BottomSheetView,
+} from "@gorhom/bottom-sheet";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import {
@@ -140,17 +146,51 @@ const TradeCard = ({
 }: {
   title: string;
   subtitle: string;
-}) => (
-  <TouchableOpacity style={styles.tradeCard} activeOpacity={0.8}>
-    <View style={styles.addButton}>
-      <PlusIcon width={24} height={24} />
-    </View>
-    <View>
-      <Text style={styles.tradeCardTitle}>{title}</Text>
-      <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
-    </View>
-  </TouchableOpacity>
-);
+}) => {
+  const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
+
+  return (
+    <>
+      <TouchableOpacity
+        style={styles.tradeCard}
+        activeOpacity={0.8}
+        onPress={() => {
+          selectAssetBottomSheetRef.current?.present();
+        }}
+      >
+        <View style={styles.addButton}>
+          <PlusIcon width={24} height={24} />
+        </View>
+        <View>
+          <Text style={styles.tradeCardTitle}>{title}</Text>
+          <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
+        </View>
+      </TouchableOpacity>
+
+      <BottomSheetModal
+        ref={selectAssetBottomSheetRef}
+        enablePanDownToClose
+        index={2}
+        snapPoints={["40%", "80%"]}
+        backdropComponent={useCallback(
+          (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+            />
+          ),
+          []
+        )}
+        backgroundStyle={{ backgroundColor: Colors["osmoverse"][825] }}
+      >
+        <BottomSheetView>
+          <Text>Awesome 🎉</Text>
+        </BottomSheetView>
+      </BottomSheetModal>
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
