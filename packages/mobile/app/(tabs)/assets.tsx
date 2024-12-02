@@ -254,7 +254,7 @@ const AssetItem = ({
                     styles.percentage,
                     {
                       color: getChangeColor(
-                        asset.priceChange24h?.toDec() || new Dec(0)
+                        asset.priceChange7d?.toDec() || new Dec(0)
                       ),
                     },
                   ]}
