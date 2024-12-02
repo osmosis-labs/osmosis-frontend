@@ -2,7 +2,7 @@
   "404": {
     "title": "Не найдено"
   },
-  "aboutSecondsRemaining": "Около {seconds} осталось",
+  "unknownTimeRemaining": "Неизвестно оставшееся время",
   "addLiquidity": {
     "allAssets": "Все активы",
     "autoswapCaption": "Используйте автосвоп, чтобы добавить ликвидность с помощью одного актива.",

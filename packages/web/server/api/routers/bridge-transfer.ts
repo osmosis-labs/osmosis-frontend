@@ -735,6 +735,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
           return {
             ...deposit,
+            userOsmoAddress: input.userOsmoAddress,
             amount: new CoinPretty(
               {
                 coinDecimals: deposit.networkFee.decimals,

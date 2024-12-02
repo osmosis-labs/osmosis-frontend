@@ -55,7 +55,12 @@ export const OneClickTradingRemainingTime: FunctionComponent<{
 
   return (
     <p className={classNames("body1 text-wosmongton-200", className)}>
-      {displayHumanizedTime({ humanizedTime, t })} {t("remaining")}
+      {displayHumanizedTime({
+        humanizedTime,
+        t,
+        delimitedBy: useShortTimeUnits ? " " : undefined,
+      })}{" "}
+      {t("remaining")}
     </p>
   );
 };

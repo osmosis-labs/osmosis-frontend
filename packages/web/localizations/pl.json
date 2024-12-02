@@ -2,7 +2,7 @@
   "404": {
     "title": "Nie znaleziono"
   },
-  "aboutSecondsRemaining": "Pozostało około {seconds}",
+  "unknownTimeRemaining": "Nieznany pozostały czas",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",

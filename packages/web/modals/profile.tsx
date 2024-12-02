@@ -138,7 +138,7 @@ export const ProfileModal: FunctionComponent<
         onAfterClose={() => {
           setShow1CTSettings(false);
         }}
-        className="relative max-h-screen overflow-hidden"
+        className="relative max-h-screen overflow-hidden sm:mx-0"
       >
         <div className="flex flex-col items-center overflow-auto">
           {show1CT && show1CTSettings ? (

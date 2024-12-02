@@ -2,7 +2,7 @@
   "404": {
     "title": "No encontrado"
   },
-  "aboutSecondsRemaining": "Quedan aproximadamente {seconds}",
+  "unknownTimeRemaining": "Tiempo restante desconocido",
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",

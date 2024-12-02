@@ -157,7 +157,7 @@ export const AssetsOverview: FunctionComponent<
     value: undefined,
   });
 
-  const [range, setRange] = useState<Range>("1d");
+  const [range, setRange] = useState<Range>("7d");
 
   const {
     data: portfolioOverTimeData,

@@ -65,10 +65,9 @@ export class TradePage extends BasePage {
   }
 
   async gotoOrdersHistory(timeout = 1) {
-    console.log("Go to Order History page.");
     await this.page.waitForTimeout(1000);
     await this.orderHistoryLink.click();
-    await this.page.waitForTimeout(4000);
+    await this.page.waitForTimeout(1000);
     await new Promise((f) => setTimeout(f, timeout * 1000));
     const currentUrl = this.page.url();
     console.log(`FE opened at: ${currentUrl}`);

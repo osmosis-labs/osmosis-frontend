@@ -331,9 +331,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
       (await this.kvStore.get<TxSnapshot[]>(TRANSFER_HISTORY_STORE_KEY)) ?? [];
 
     storedSnapshots.forEach(async (snapshot) => {
-      if (this.isSnapshotExpired(snapshot)) {
-        return;
-      }
       const statusSource = this.transferStatusProviders.find((source) =>
         snapshot.provider.startsWith(source.providerId)
       );
@@ -357,11 +354,6 @@ export class TransferHistoryStore implements TransferStatusReceiver {
     runInAction(() => {
       this.isRestoredFromIndexedDB = true;
     });
-  }
-
-  protected isSnapshotExpired(snapshot: TxSnapshot): boolean {
-    const expiryMs = this.historyExpireDays * 86_400_00;
-    return Date.now() - snapshot.createdAtUnix * 1000 > expiryMs;
   }
 }
 
@@ -436,10 +428,8 @@ export const PendingTransferCaption: FunctionComponent<{
       if (progressRef.current) {
         // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
         progressRef.current.textContent =
-          date.diff(dayjs(), "seconds") < 5
-            ? t("aboutSecondsRemaining", {
-                seconds: "5 " + t("timeUnits.seconds"),
-              })
+          date.diff(dayjs(), "seconds") < 1
+            ? t("unknownTimeRemaining")
             : `${t("estimated")} ${displayHumanizedTime({
                 humanizedTime,
                 t,
