@@ -525,6 +525,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     }, [swapState.isBalancesFetched]);
 
     const errorDisplay = useMemo(() => {
+      if (
+        swapState.error === "limitOrders.insufficientFunds" &&
+        !account?.isWalletConnected
+      ) {
+        return;
+      }
+
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
         if (swapState.error === "errors.generic") {
           return t("errors.uhOhSomethingWentWrong");
