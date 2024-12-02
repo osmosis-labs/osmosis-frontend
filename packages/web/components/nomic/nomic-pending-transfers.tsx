@@ -1,9 +1,9 @@
-import { Dec } from "@keplr-wallet/unit";
 import { superjson } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { getBitcoinExplorerUrl, shorten } from "@osmosis-labs/utils";
 import classnames from "classnames";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { useShallow } from "zustand/react/shallow";
@@ -20,7 +20,7 @@ import { useClipboard } from "~/hooks/use-clipboard";
 import { ModalBase } from "~/modals";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
-import { humanizeTime } from "~/utils/date";
+import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 interface NomicPendingTransfersProps {
@@ -34,7 +34,7 @@ interface TransactionStore {
     RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number]
   >;
   upsertTransaction: (
-    transactions: RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"]
+    transactions: RouterOutputs["bridgeTransfer"]["getNomicPendingDeposits"]["pendingDeposits"][number][]
   ) => void;
 }
 
@@ -101,14 +101,15 @@ export const NomicPendingTransfers = ({
 }: NomicPendingTransfersProps) => {
   const { t } = useTranslation();
   const { accountStore } = useStore();
-  const { upsertTransaction, transactions } = useNomicTransactionsStore(
-    useShallow((state) => ({
-      upsertTransaction: state.upsertTransaction,
-      transactions: state.transactions,
-    }))
-  );
+  const { upsertTransaction, transactions: rawTransactions } =
+    useNomicTransactionsStore(
+      useShallow((state) => ({
+        upsertTransaction: state.upsertTransaction,
+        transactions: state.transactions,
+      }))
+    );
 
-  const osmosisAddress = accountStore.getWallet(
+  const userOsmoAddress = accountStore.getWallet(
     accountStore.osmosisChainId
   )?.address;
 
@@ -118,10 +119,10 @@ export const NomicPendingTransfers = ({
     dataUpdatedAt: nomicDepositsDataUpdatedAt,
   } = api.bridgeTransfer.getNomicPendingDeposits.useQuery(
     {
-      userOsmoAddress: osmosisAddress!,
+      userOsmoAddress: userOsmoAddress!,
     },
     {
-      enabled: !!osmosisAddress,
+      enabled: !!userOsmoAddress,
       refetchInterval,
       trpc: {
         context: {
@@ -135,7 +136,13 @@ export const NomicPendingTransfers = ({
     if (pendingDepositsData) {
       upsertTransaction(pendingDepositsData.pendingDeposits);
     }
-  }, [pendingDepositsData, upsertTransaction]);
+  }, [userOsmoAddress, pendingDepositsData, upsertTransaction]);
+
+  const transactions = useMemo(() => {
+    return Array.from(rawTransactions.values()).filter(
+      (transaction) => transaction.userOsmoAddress === userOsmoAddress
+    );
+  }, [rawTransactions, userOsmoAddress]);
 
   return (
     <>
@@ -158,9 +165,11 @@ export const NomicPendingTransfers = ({
                   refetchInterval={refetchInterval}
                   dataUpdatedAt={nomicDepositsDataUpdatedAt}
                 />
-                <p className="text-white-full">
-                  {t("transfer.nomic.awaitingBtc")}
-                </p>
+                {transactions.length === 0 && (
+                  <p className="text-white-full">
+                    {t("transfer.nomic.awaitingBtc")}
+                  </p>
+                )}
               </div>
             )}
           </>
@@ -168,62 +177,60 @@ export const NomicPendingTransfers = ({
       </div>
 
       <div className="flex w-full flex-col gap-2">
-        {Array.from(transactions.values())
-          .reverse()
-          .map((deposit) => {
-            const confirmationPercentage =
-              (deposit.confirmations / successThreshold) * 100;
-            const isSuccess = deposit.confirmations === successThreshold;
+        {transactions.reverse().map((deposit) => {
+          const confirmationPercentage =
+            (deposit.confirmations / successThreshold) * 100;
+          const isSuccess = deposit.confirmations === successThreshold;
 
-            return (
-              <div
-                key={deposit.transactionId}
-                className="flex items-center justify-between py-1.5"
-              >
-                <div className="flex w-full flex-col">
-                  <p className="text-osmoverse-100">
-                    {deposit.fiatValue
-                      ?.sub(deposit.networkFee.fiatValue ?? new Dec(0))
-                      .sub(deposit.providerFee.fiatValue ?? new Dec(0))
-                      .toString()}{" "}
-                    <span className="text-osmoverse-300">
-                      (
-                      {deposit.amount
-                        .sub(deposit.networkFee.amount)
-                        .sub(deposit.providerFee.amount)
-                        .toString()}
-                      )
-                    </span>
-                  </p>
-                  <TransactionDetailsModal
-                    confirmationPercentage={confirmationPercentage}
-                    depositData={deposit}
-                    fromChain={fromChain}
-                    toChain={toChain}
-                  />
-                </div>
-                {isSuccess ? (
-                  <p className="caption flex-shrink-0 rounded-xl border border-bullish-500 py-1 px-2 text-bullish-500">
-                    {t("transfer.nomic.depositSuccess")}
-                  </p>
-                ) : (
-                  <ProgressBar
-                    classNames="h-[8px] w-[96px]"
-                    segments={[
-                      {
-                        percentage: confirmationPercentage.toString(),
-                        classNames: "bg-bullish-500",
-                      },
-                      {
-                        percentage: (100 - confirmationPercentage).toString(),
-                        classNames: "bg-osmoverse-600",
-                      },
-                    ]}
-                  />
-                )}
+          return (
+            <div
+              key={deposit.transactionId}
+              className="flex items-center justify-between py-1.5"
+            >
+              <div className="flex w-full flex-col">
+                <p className="text-osmoverse-100">
+                  {deposit.fiatValue
+                    ?.sub(deposit.networkFee.fiatValue ?? new Dec(0))
+                    .sub(deposit.providerFee.fiatValue ?? new Dec(0))
+                    .toString()}{" "}
+                  <span className="text-osmoverse-300">
+                    (
+                    {deposit.amount
+                      .sub(deposit.networkFee.amount)
+                      .sub(deposit.providerFee.amount)
+                      .toString()}
+                    )
+                  </span>
+                </p>
+                <TransactionDetailsModal
+                  confirmationPercentage={confirmationPercentage}
+                  depositData={deposit}
+                  fromChain={fromChain}
+                  toChain={toChain}
+                />
               </div>
-            );
-          })}
+              {isSuccess ? (
+                <p className="caption flex-shrink-0 rounded-xl border border-bullish-500 py-1 px-2 text-bullish-500">
+                  {t("transfer.nomic.depositSuccess")}
+                </p>
+              ) : (
+                <ProgressBar
+                  classNames="h-[8px] w-[96px]"
+                  segments={[
+                    {
+                      percentage: confirmationPercentage.toString(),
+                      classNames: "bg-bullish-500",
+                    },
+                    {
+                      percentage: (100 - confirmationPercentage).toString(),
+                      classNames: "bg-osmoverse-600",
+                    },
+                  ]}
+                />
+              )}
+            </div>
+          );
+        })}
       </div>
     </>
   );
@@ -287,9 +294,10 @@ const TransactionDetailsModal = ({
                 </h2>
                 <p className="body1 text-osmoverse-300">
                   {t("transfer.nomic.estimatedAboutTime", {
-                    time: `${humanizedEstimatedTime.value} ${t(
-                      humanizedEstimatedTime.unitTranslationKey
-                    )}`,
+                    time: displayHumanizedTime({
+                      humanizedTime: humanizedEstimatedTime,
+                      t,
+                    }),
                   })}
                 </p>
                 <ProgressBar

@@ -1,5 +1,4 @@
 import type { Registry } from "@cosmjs/proto-signing";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
 import {
   estimateGasFee,
@@ -8,6 +7,7 @@ import {
   SkipSwapIbcHookContractAddress,
 } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import {
   deriveCosmosAddress,
   getAllBtcMinimalDenom,

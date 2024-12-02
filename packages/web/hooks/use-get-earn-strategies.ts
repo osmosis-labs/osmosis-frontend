@@ -1,9 +1,9 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   DEFAULT_VS_CURRENCY,
   type EarnStrategy,
   getDailyApr,
 } from "@osmosis-labs/server";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";

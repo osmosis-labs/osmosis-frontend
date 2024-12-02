@@ -1,5 +1,5 @@
-import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { BondStatus, Chain } from "@osmosis-labs/types";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 

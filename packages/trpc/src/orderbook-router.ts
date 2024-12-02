@@ -1,4 +1,3 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { tickToPrice } from "@osmosis-labs/math";
 import {
   CursorPaginationSchema,
@@ -12,6 +11,7 @@ import {
   maybeCachePaginatedItems,
   OrderStatus,
 } from "@osmosis-labs/server";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 

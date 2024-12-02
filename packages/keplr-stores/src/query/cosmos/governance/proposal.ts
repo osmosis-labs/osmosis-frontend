@@ -4,7 +4,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
 import { DeepReadonly } from "utility-types";
-import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import { ObservableQueryGovernance } from "./proposals";
 
 export class ObservableQueryProposal extends ObservableChainQuery<ProposalTally> {

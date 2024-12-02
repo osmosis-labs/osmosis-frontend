@@ -1,5 +1,5 @@
-import { Int } from "@keplr-wallet/unit";
 import { TxEvent } from "@osmosis-labs/server";
+import { Int } from "@osmosis-labs/unit";
 
 /** Reliably use the bank module's `coin_spent` event attribute to extract the combined
  *  sum of coins spent in a transaction for a given spender.  */

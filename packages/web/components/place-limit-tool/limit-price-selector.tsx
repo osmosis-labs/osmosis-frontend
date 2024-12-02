@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { parseAsString, useQueryState } from "nuqs";
 import React, { FC, useCallback, useEffect, useMemo, useState } from "react";

@@ -1,4 +1,4 @@
-import { Int } from "@keplr-wallet/unit";
+import { Int } from "@osmosis-labs/unit";
 
 import { NotEnoughLiquidityError } from "../../errors";
 import { RouteWithInAmount } from "../route";

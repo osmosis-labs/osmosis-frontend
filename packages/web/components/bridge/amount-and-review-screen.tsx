@@ -1,5 +1,5 @@
-import { CoinPretty } from "@keplr-wallet/unit";
 import type { Bridge, BridgeSupportedAsset } from "@osmosis-labs/bridge";
+import { CoinPretty } from "@osmosis-labs/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";

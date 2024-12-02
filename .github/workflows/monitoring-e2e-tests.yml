@@ -101,6 +101,9 @@ jobs:
         run: curl -L "https://ipinfo.io" -s
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -114,12 +117,12 @@ jobs:
             ${{ runner.OS }}-20.x-
       - name: Install Playwright
         run: |
-          yarn --cwd packages/web install --frozen-lockfile && npx playwright install --with-deps chromium
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap tests on ${{ matrix.env }}
         env:
           BASE_URL: ${{ matrix.base-url }}
         run: |
-          cd packages/web
+          cd packages/e2e
           npx playwright test pools
       - name: upload test results
         if: failure()
@@ -127,7 +130,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.env }}-quote-test-results
-          path: packages/web/playwright-report
+          path: packages/e2e/playwright-report
 
   delete-deployments:
     runs-on: ubuntu-latest

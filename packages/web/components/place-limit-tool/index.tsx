@@ -1,6 +1,6 @@
-import { Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
+import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -525,6 +525,13 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     }, [swapState.isBalancesFetched]);
 
     const errorDisplay = useMemo(() => {
+      if (
+        swapState.error === "limitOrders.insufficientFunds" &&
+        !account?.isWalletConnected
+      ) {
+        return;
+      }
+
       if (swapState.error && !NON_DISPLAY_ERRORS.includes(swapState.error)) {
         if (swapState.error === "errors.generic") {
           return t("errors.uhOhSomethingWentWrong");

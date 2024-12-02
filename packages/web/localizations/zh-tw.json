@@ -2,7 +2,7 @@
   "404": {
     "title": "找不到這頁面"
   },
-  "aboutSecondsRemaining": "大約剩餘{seconds}",
+  "unknownTimeRemaining": "剩餘時間未知",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "資產",
       "amount": "數量",
-      "review": "審查"
+      "review": "審查",
+      "deposit": "訂金"
     },
     "moreBridgeOptions": {
       "titleDeposit": "更多存款選擇",

@@ -9,7 +9,7 @@ import { computed, makeObservable, observable, runInAction } from "mobx";
 import { ObservableQuery, QueryResponse } from "../../../common";
 import Axios from "axios";
 import PQueue from "p-queue";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { computedFn } from "mobx-utils";
 import { BondStatus } from "@osmosis-labs/types";
 

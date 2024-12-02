@@ -1,4 +1,3 @@
-import { PricePretty } from "@keplr-wallet/unit";
 import {
   AssetFilterSchema,
   AvailableRangeValues,
@@ -29,6 +28,7 @@ import {
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
+import { PricePretty } from "@osmosis-labs/unit";
 import {
   compareCommon,
   getAllBtcMinimalDenom,

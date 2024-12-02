@@ -3,7 +3,7 @@ import { StakingPool } from "./types";
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { computed, makeObservable } from "mobx";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@osmosis-labs/unit";
 
 export class ObservableQueryStakingPool extends ObservableChainQuery<StakingPool> {
   constructor(kvStore: KVStore, chainId: string, chainGetter: ChainGetter) {

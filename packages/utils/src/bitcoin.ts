@@ -46,5 +46,9 @@ export const getnBTCMinimalDenom = ({
 export function getNomicRelayerUrl({ env }: { env: "mainnet" | "testnet" }) {
   return env === "testnet"
     ? ["https://testnet-relayer.nomic.io:8443"]
-    : ["https://relayer.nomic.mappum.io:8443"];
+    : [
+        "https://btc-relayer.nomic.io",
+        "https://btc-relay.nomic-main.ccvalidators.com",
+        "https://nomic-relayer.forbole.com",
+      ];
 }

@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import { useCallback, useMemo, useRef, useState } from "react";
 

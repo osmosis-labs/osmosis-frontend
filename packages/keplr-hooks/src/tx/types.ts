@@ -1,6 +1,6 @@
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import type { StdFee } from "@cosmjs/launchpad";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty } from "@osmosis-labs/unit";
 import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 
 export interface ITxChainSetter {

@@ -1,4 +1,4 @@
-import type { PricePretty } from "@keplr-wallet/unit";
+import type { PricePretty } from "@osmosis-labs/unit";
 
 export type AvailableOneClickTradingMessages =
   | "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn"

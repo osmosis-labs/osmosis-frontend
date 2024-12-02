@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

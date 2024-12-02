@@ -2,7 +2,7 @@
   "404": {
     "title": "Not found"
   },
-  "aboutSecondsRemaining": "About {seconds} remaining",
+  "unknownTimeRemaining": "Unknown time remaining",
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Asset",
       "amount": "Amount",
-      "review": "Review"
+      "review": "Review",
+      "deposit": "Deposit"
     },
     "moreBridgeOptions": {
       "titleDeposit": "More deposit options",

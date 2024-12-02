@@ -1,15 +1,15 @@
 import {
+  ChainGetter,
+  HasMapStore,
+  IQueriesStore,
+} from "@osmosis-labs/keplr-stores";
+import {
   CoinPretty,
   Dec,
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import {
-  ChainGetter,
-  HasMapStore,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
+} from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";

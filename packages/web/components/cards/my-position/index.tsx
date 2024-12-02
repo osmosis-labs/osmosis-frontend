@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import type { UserPosition } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";

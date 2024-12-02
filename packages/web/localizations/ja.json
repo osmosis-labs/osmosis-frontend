@@ -2,7 +2,7 @@
   "404": {
     "title": "見つかりません"
   },
-  "aboutSecondsRemaining": "残り約{seconds}",
+  "unknownTimeRemaining": "残り時間不明",
   "addLiquidity": {
     "allAssets": "すべての資産",
     "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "資産",
       "amount": "額",
-      "review": "レビュー"
+      "review": "レビュー",
+      "deposit": "デポジット"
     },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",

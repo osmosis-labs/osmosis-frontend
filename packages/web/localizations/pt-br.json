@@ -2,7 +2,7 @@
   "404": {
     "title": "Não encontrado"
   },
-  "aboutSecondsRemaining": "Cerca de {seconds} restantes",
+  "unknownTimeRemaining": "Tempo restante desconhecido",
   "addLiquidity": {
     "allAssets": "Todos os ativos",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Ativo",
       "amount": "Quantia",
-      "review": "Análise"
+      "review": "Análise",
+      "deposit": "Depósito"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Mais opções de depósito",

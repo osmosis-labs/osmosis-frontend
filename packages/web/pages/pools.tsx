@@ -1,4 +1,4 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";

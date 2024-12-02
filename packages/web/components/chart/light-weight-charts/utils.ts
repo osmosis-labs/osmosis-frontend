@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { isBusinessDay, Time } from "lightweight-charts";
 
 import { FormatOptions, formatPretty } from "~/utils/formatter";

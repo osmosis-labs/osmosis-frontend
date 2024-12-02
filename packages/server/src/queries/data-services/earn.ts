@@ -1,5 +1,5 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { MinimalAsset } from "@osmosis-labs/types";
+import { PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { apiClient } from "@osmosis-labs/utils";
 
 export const EarnStrategyCategories = [

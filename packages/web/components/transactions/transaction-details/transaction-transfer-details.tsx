@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import {
   getBitcoinExplorerUrl,
   getEvmExplorerUrl,

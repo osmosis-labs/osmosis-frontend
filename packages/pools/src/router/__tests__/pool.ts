@@ -1,4 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@osmosis-labs/unit";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import deepmerge from "deepmerge";
 
