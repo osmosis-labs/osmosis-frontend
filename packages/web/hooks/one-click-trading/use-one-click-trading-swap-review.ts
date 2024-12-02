@@ -302,6 +302,7 @@ function useOneClickRemainingSpendLimit({
       wantToSpend: Dec;
       maybeWouldSpendTotal?: Dec;
     }) => {
+      if (!enabled) return false;
       if (wantToSpend.isZero()) return false;
 
       const spendLimit = transactionParams?.spendLimit?.toDec() ?? new Dec(0);
@@ -315,7 +316,7 @@ function useOneClickRemainingSpendLimit({
 
       return wouldSpend.gt(spendLimit);
     },
-    [amountSpentData, transactionParams]
+    [amountSpentData?.amountSpent, enabled, transactionParams?.spendLimit]
   );
 
   return {
