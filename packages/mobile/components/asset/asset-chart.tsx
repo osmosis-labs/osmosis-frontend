@@ -1,16 +1,20 @@
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import * as Haptics from "expo-haptics";
-import { transparentize } from "polished";
 import { useEffect, useMemo, useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
-import { GraphPoint, LineGraph } from "react-native-graph";
+import {
+  ActivityIndicator,
+  LayoutChangeEvent,
+  StyleSheet,
+  View,
+} from "react-native";
+import { runOnJS, useDerivedValue } from "react-native-reanimated";
+import { LineChart, TLineChartPoint } from "react-native-wagmi-charts";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
 import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -31,8 +35,8 @@ const AssetChartAvailableDataTypes = ["price", "volume"] as const;
 type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 
 interface SelectedPointState {
-  selectedPoint: GraphPoint | null;
-  setSelectedPoint: (point: GraphPoint | null) => void;
+  selectedPoint: TLineChartPoint | null;
+  setSelectedPoint: (point: TLineChartPoint | null) => void;
   timeFrame: string;
   setTimeFrame: (frame: string) => void;
   priceChangeOverride: RatePretty | undefined;
@@ -56,6 +60,8 @@ export const AssetChart = ({
 }: {
   asset: RouterOutputs["local"]["assets"]["getMarketAsset"];
 }) => {
+  const [parentWidth, setParentWidth] = useState<number>();
+
   const { setSelectedPoint } = useAssetChartSelectedPointStore(
     useShallow((state) => ({
       setSelectedPoint: state.setSelectedPoint,
@@ -136,10 +142,9 @@ export const AssetChart = ({
     }
   );
 
-  const points = useMemo<GraphPoint[]>(() => {
-    if (!historicalPriceData) return [];
+  const points = useMemo<TLineChartPoint[] | undefined>(() => {
     return historicalPriceData?.map((point) => ({
-      date: new Date(point.time),
+      timestamp: point.time,
       value: dataType === "price" ? point.close : point.volume,
     }));
   }, [historicalPriceData, dataType]);
@@ -150,8 +155,8 @@ export const AssetChart = ({
       return;
     }
 
-    const lastPoint = points[points.length - 1];
-    const firstPoint = points[0];
+    const lastPoint = points?.[points.length - 1];
+    const firstPoint = points?.[0];
     if (points && lastPoint && firstPoint) {
       setPriceChangeOverride(
         new RatePretty((lastPoint.value - firstPoint.value) / lastPoint.value)
@@ -161,7 +166,6 @@ export const AssetChart = ({
 
   const changeColor = useMemo(() => {
     let change: RatePretty | undefined;
-    console.log({ timeFrame });
     if (timeFrame === "1h") {
       change = asset.priceChange1h;
     } else if (timeFrame === "1d") {
@@ -181,43 +185,50 @@ export const AssetChart = ({
     timeFrame,
   ]);
 
+  const onLayout = (event: LayoutChangeEvent) => {
+    const { width } = event.nativeEvent.layout;
+    setParentWidth(width);
+  };
+
   return (
-    <View>
+    <View onLayout={onLayout}>
       {/* // TODO: Add skeleton */}
-      {isHistoricalPriceDataLoading ? (
+      {isHistoricalPriceDataLoading || !points || !parentWidth ? (
         <ActivityIndicator />
       ) : (
-        <LineGraph
-          animated
-          color={changeColor}
-          points={points}
-          enablePanGesture
-          style={{
-            alignSelf: "center",
-            width: "100%",
-            aspectRatio: 2,
-          }}
-          gradientFillColors={[
-            transparentize(0.75, changeColor),
-            transparentize(0.7, changeColor),
-            transparentize(0.8, Colors.osmoverse[1000]),
-            Colors.osmoverse[1000],
-          ]}
-          lineThickness={2.5}
-          onGestureStart={() => {
-            if (process.env.EXPO_OS === "ios") {
-              // Add a soft haptic feedback when pressing down.
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            }
-          }}
-          onPointSelected={(point) => {
-            setSelectedPoint(point);
-          }}
-          onGestureEnd={() => {
-            setSelectedPoint(null);
-          }}
-        />
+        <View>
+          <LineChart.Provider
+            data={points}
+            onCurrentIndexChange={(index) => {
+              setSelectedPoint(points[index]);
+            }}
+          >
+            <InnerChartConsumer />
+            <LineChart width={parentWidth}>
+              <LineChart.Path color={changeColor}>
+                <LineChart.Gradient />
+              </LineChart.Path>
+              <LineChart.CursorLine />
+              <LineChart.CursorCrosshair
+                color={changeColor}
+                onActivated={() => {
+                  if (process.env.EXPO_OS === "ios") {
+                    // Add a soft haptic feedback when pressing down on the tabs.
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
+                }}
+                onEnded={() => {
+                  if (process.env.EXPO_OS === "ios") {
+                    // Add a soft haptic feedback when pressing down on the tabs.
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  }
+                }}
+              />
+            </LineChart>
+          </LineChart.Provider>
+        </View>
       )}
+
       <View style={styles.timeFrameButtons}>
         <Button
           title="1D"
@@ -262,6 +273,22 @@ export const AssetChart = ({
       </View>
     </View>
   );
+};
+
+const InnerChartConsumer = () => {
+  const { setSelectedPoint } = useAssetChartSelectedPointStore(
+    useShallow((state) => ({
+      setSelectedPoint: state.setSelectedPoint,
+    }))
+  );
+
+  const { isActive } = LineChart.useChart();
+
+  useDerivedValue(() => {
+    if (!isActive.value) runOnJS(setSelectedPoint)(null);
+  }, [isActive]);
+
+  return null;
 };
 
 export const AssetChartHeader = ({

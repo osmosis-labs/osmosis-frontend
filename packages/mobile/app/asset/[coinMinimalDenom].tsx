@@ -6,25 +6,23 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { AssetChart, AssetChartHeader } from "~/components/asset-chart";
-import { AssetDetails } from "~/components/asset-details";
-import { ChevronLeftIcon } from "~/components/icons/chevron-left";
+import { AssetChart, AssetChartHeader } from "~/components/asset/asset-chart";
+import { AssetDetails } from "~/components/asset/asset-details";
+import { RouteHeader } from "~/components/route-header";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
 import { api } from "~/utils/trpc";
 
 const TRADE_BUTTON_HEIGHT = 100;
 
 const AssetRoute = () => {
-  const { id, coinDenom, coinImageUrl } = useLocalSearchParams<{
-    id: string;
+  const { coinMinimalDenom, coinDenom, coinImageUrl } = useLocalSearchParams<{
+    coinMinimalDenom: string;
     coinDenom: string;
     coinImageUrl: string;
   }>();
@@ -32,19 +30,13 @@ const AssetRoute = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-        />
-        <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.chevronLeftIcon}
-            onPress={() => router.back()}
-          >
-            <ChevronLeftIcon width={24} height={24} />
-          </TouchableOpacity>
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+      <View style={{ paddingHorizontal: 24 }}>
+        <RouteHeader>
           <View style={styles.assetInfo}>
             <Image
               source={{ uri: coinImageUrl }}
@@ -52,15 +44,22 @@ const AssetRoute = () => {
             />
             <Text style={styles.assetDenom}>{coinDenom}</Text>
           </View>
-        </View>
-
-        <AssetContent id={id} />
+        </RouteHeader>
       </View>
+
+      <AssetContent coinMinimalDenom={coinMinimalDenom} />
 
       <View style={styles.tradeButtonContainer}>
         <Button
           title="Trade"
-          onPress={() => {}}
+          onPress={() => {
+            router.push({
+              pathname: "/trade",
+              params: {
+                toToken: coinMinimalDenom,
+              },
+            });
+          }}
           buttonStyle={styles.tradeButton}
         />
       </View>
@@ -68,10 +67,10 @@ const AssetRoute = () => {
   );
 };
 
-const AssetContent = ({ id }: { id: string }) => {
+const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
   const { data: asset, isLoading } = api.local.assets.getMarketAsset.useQuery(
-    { findMinDenomOrSymbol: id.replace(/-/g, "/") },
-    { enabled: !!id }
+    { findMinDenomOrSymbol: coinMinimalDenom.replace(/-/g, "/") },
+    { enabled: !!coinMinimalDenom }
   );
 
   if (isLoading) {
@@ -119,32 +118,20 @@ const AssetContent = ({ id }: { id: string }) => {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
+    flex: 1,
     paddingBottom: TRADE_BUTTON_HEIGHT,
-  },
-  content: {
-    paddingHorizontal: 24,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
   },
   assetInfo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
   },
-  chevronLeftIcon: {
-    position: "absolute",
-    left: 0,
-  },
   assetDenom: {
     fontSize: 20,
     fontWeight: "600",
   },
   assetContent: {
-    paddingVertical: 24,
+    padding: 24,
     height: "100%",
   },
   tradeButtonContainer: {
@@ -158,11 +145,8 @@ const styles = StyleSheet.create({
     borderTopColor: "rgba(255, 255, 255, 0.2)",
   },
   tradeButton: {
-    backgroundColor: Colors["wosmongton"][500],
     paddingHorizontal: 15,
     paddingVertical: 15,
-    borderRadius: 255,
-    alignItems: "center",
     width: "80%",
   },
 });

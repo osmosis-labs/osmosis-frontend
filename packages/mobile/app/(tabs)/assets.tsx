@@ -2,7 +2,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { FlashList } from "@shopify/flash-list";
 import { debounce } from "debounce";
-import { useRouter } from "expo-router";
+import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -96,7 +96,7 @@ export default function TabTwoScreen() {
   );
   const selectedDisplayOption = useMemo(() => {
     return displayOptions.find((item) => item.key === displayOption);
-  }, [items, displayOption]);
+  }, [displayOption]);
 
   return (
     <SafeAreaView
@@ -155,7 +155,9 @@ export default function TabTwoScreen() {
         </View>
 
         {isLoading ? (
-          <ActivityIndicator />
+          <View style={{ paddingHorizontal: 24 }}>
+            <ActivityIndicator />
+          </View>
         ) : (
           <FlashList
             data={items}
@@ -169,7 +171,11 @@ export default function TabTwoScreen() {
             onEndReached={fetchNextPage}
           />
         )}
-        {isFetchingNextPage && <ActivityIndicator />}
+        {isFetchingNextPage && (
+          <View style={{ paddingHorizontal: 24 }}>
+            <ActivityIndicator />
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -180,112 +186,116 @@ const AssetItem = ({
 }: {
   asset: RouterOutputs["local"]["assets"]["getMarketAssets"]["items"][number];
 }) => {
-  const router = useRouter();
   const { displayOption } = useDisplayOptionStore();
 
   return (
-    <TouchableOpacity
-      onPress={() =>
-        router.push({
-          pathname: "/asset/[id]",
-          params: {
-            id: asset.coinMinimalDenom.replace(/\//g, "-"),
-            coinDenom: asset.coinDenom,
-            coinImageUrl: asset.coinImageUrl,
-          },
-        })
-      }
-      style={styles.assetItem}
+    <Link
+      href={{
+        pathname: "/asset/[coinMinimalDenom]",
+        params: {
+          coinMinimalDenom: asset.coinMinimalDenom,
+          coinDenom: asset.coinDenom,
+          coinImageUrl: asset.coinImageUrl,
+        },
+      }}
+      asChild
+      push
     >
-      <View style={styles.assetLeft}>
-        {asset.coinImageUrl?.endsWith(".svg") ? (
-          <SvgUri
-            uri={asset.coinImageUrl}
-            width={40}
-            height={40}
-            style={styles.assetIcon}
-          />
-        ) : (
-          <Image
-            source={{ uri: asset.coinImageUrl }}
-            style={styles.assetIcon}
-          />
-        )}
-        <View>
-          <Text style={styles.assetName}>{asset.coinDenom}</Text>
+      <TouchableOpacity style={styles.assetItem}>
+        <View style={styles.assetLeft}>
+          {asset.coinImageUrl?.endsWith(".svg") ? (
+            <SvgUri
+              uri={asset.coinImageUrl}
+              width={40}
+              height={40}
+              style={styles.assetIcon}
+            />
+          ) : (
+            <Image
+              source={{ uri: asset.coinImageUrl }}
+              style={styles.assetIcon}
+            />
+          )}
+          <View>
+            <Text style={styles.assetName}>{asset.coinDenom}</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.assetRight}>
-        {displayOption.startsWith("price") && (
-          <>
-            <Text style={styles.price}>
-              {asset.currentPrice ? (
-                <>
-                  {asset.currentPrice.symbol}
-                  <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
-                </>
-              ) : (
-                ""
+        <View style={styles.assetRight}>
+          {displayOption.startsWith("price") && (
+            <>
+              <Text style={styles.price}>
+                {asset.currentPrice ? (
+                  <>
+                    {asset.currentPrice.symbol}
+                    <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
+                  </>
+                ) : (
+                  ""
+                )}
+              </Text>
+              {displayOption === "price-24h" && (
+                <Text
+                  style={[
+                    styles.percentage,
+                    {
+                      color: getChangeColor(
+                        asset.priceChange24h?.toDec() || new Dec(0)
+                      ),
+                    },
+                  ]}
+                >
+                  {asset.priceChange24h?.toString()}
+                </Text>
               )}
+
+              {displayOption === "price-7d" && (
+                <Text
+                  style={[
+                    styles.percentage,
+                    {
+                      color: getChangeColor(
+                        asset.priceChange24h?.toDec() || new Dec(0)
+                      ),
+                    },
+                  ]}
+                >
+                  {asset.priceChange7d?.toString()}
+                </Text>
+              )}
+
+              {displayOption === "price-1h" && (
+                <Text
+                  style={[
+                    styles.percentage,
+                    {
+                      color: getChangeColor(
+                        asset.priceChange1h?.toDec() || new Dec(0)
+                      ),
+                    },
+                  ]}
+                >
+                  {asset.priceChange1h?.toString()}
+                </Text>
+              )}
+            </>
+          )}
+
+          {displayOption === "volume" && (
+            <Text style={styles.price}>
+              {asset.volume24h?.toString() ?? "-"}
             </Text>
-            {displayOption === "price-24h" && (
-              <Text
-                style={[
-                  styles.percentage,
-                  {
-                    color: getChangeColor(
-                      asset.priceChange24h?.toDec() || new Dec(0)
-                    ),
-                  },
-                ]}
-              >
-                {asset.priceChange24h?.toString()}
-              </Text>
-            )}
+          )}
 
-            {displayOption === "price-7d" && (
-              <Text
-                style={[
-                  styles.percentage,
-                  {
-                    color: getChangeColor(
-                      asset.priceChange24h?.toDec() || new Dec(0)
-                    ),
-                  },
-                ]}
-              >
-                {asset.priceChange7d?.toString()}
-              </Text>
-            )}
+          {displayOption === "market-cap" && (
+            <Text style={styles.price}>
+              {asset.marketCap?.toString() ?? "-"}
+            </Text>
+          )}
 
-            {displayOption === "price-1h" && (
-              <Text
-                style={[
-                  styles.percentage,
-                  {
-                    color: getChangeColor(
-                      asset.priceChange1h?.toDec() || new Dec(0)
-                    ),
-                  },
-                ]}
-              >
-                {asset.priceChange1h?.toString()}
-              </Text>
-            )}
-          </>
-        )}
-
-        {displayOption === "volume" && (
-          <Text style={styles.price}>{asset.volume24h?.toString() ?? "-"}</Text>
-        )}
-
-        {displayOption === "market-cap" && (
-          <Text style={styles.price}>{asset.marketCap?.toString() ?? "-"}</Text>
-        )}
-
-        {displayOption === "favorite" && <Text>Favorite</Text>}
-      </View>
-    </TouchableOpacity>
+          {displayOption === "favorite" && <Text>Favorite</Text>}
+        </View>
+      </TouchableOpacity>
+    </Link>
   );
 };
 
@@ -293,7 +303,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#0F172A",
-    padding: 16,
   },
   header: {
     fontSize: 24,
@@ -331,6 +340,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 16,
+    paddingHorizontal: 24,
   },
   subheader: {
     fontSize: 16,
@@ -352,6 +362,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 12,
+    paddingHorizontal: 24,
   },
   assetLeft: {
     flexDirection: "row",
@@ -401,7 +412,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     backgroundColor: Colors.osmoverse[900],
     flex: 1,
-    paddingHorizontal: 24,
     paddingTop: 32,
     borderTopEndRadius: 32,
     borderTopStartRadius: 32,

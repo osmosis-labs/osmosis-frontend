@@ -4,18 +4,10 @@ import { Colors } from "~/constants/theme-colors";
 import { useTheme } from "~/hooks/use-theme";
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
   type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
 };
 
-export function Text({
-  style,
-  lightColor,
-  darkColor,
-  type = "default",
-  ...rest
-}: ThemedTextProps) {
+export function Text({ style, type = "default", ...rest }: ThemedTextProps) {
   const { colors } = useTheme();
 
   return (
