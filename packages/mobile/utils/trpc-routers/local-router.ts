@@ -1,6 +1,7 @@
 import {
   assetsRouter,
   balancesRouter,
+  cmsRouter,
   createTRPCRouter,
   portfolioRouter,
   swapRouter,
@@ -14,4 +15,5 @@ export const localRouter = createTRPCRouter({
   quoteRouter: swapRouter,
   portfolio: portfolioRouter,
   assets: assetsRouter,
+  cms: cmsRouter,
 });

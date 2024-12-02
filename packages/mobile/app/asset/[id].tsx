@@ -11,17 +11,16 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import {
-  AssetChart,
-  useAssetChartSelectedPointStore,
-} from "~/components/asset-chart";
+import { AssetChart, AssetChartHeader } from "~/components/asset-chart";
+import { AssetDetails } from "~/components/asset-details";
 import { ChevronLeftIcon } from "~/components/icons/chevron-left";
-import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
-import { api, RouterOutputs } from "~/utils/trpc";
+import { api } from "~/utils/trpc";
+
+const TRADE_BUTTON_HEIGHT = 100;
 
 const AssetRoute = () => {
   const { id, coinDenom, coinImageUrl } = useLocalSearchParams<{
@@ -30,11 +29,6 @@ const AssetRoute = () => {
     coinImageUrl: string;
   }>();
   const router = useRouter();
-
-  const { data: asset, isLoading } = api.local.assets.getMarketAsset.useQuery(
-    { findMinDenomOrSymbol: id.replace(/-/g, "/") },
-    { enabled: !!id }
-  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -95,49 +89,38 @@ const AssetContent = ({ id }: { id: string }) => {
   return (
     <ScrollView style={styles.assetContent}>
       <AssetChartHeader asset={asset} />
-
       <AssetChart asset={asset} />
+
+      {false && (
+        <View style={{ gap: 10, marginTop: 40 }}>
+          <Text type="subtitle">Your Balance:</Text>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Text type="title">{asset.currentPrice?.toString()}</Text>
+            <Text
+              style={{
+                color: getChangeColor(
+                  asset.priceChange24h?.toDec() || new Dec(0)
+                ),
+              }}
+            >
+              {asset.priceChange24h?.toString()}
+            </Text>
+          </View>
+          <Text style={{ fontWeight: "400", fontSize: 20 }}>
+            {asset.currentPrice?.toDec().toString()}
+          </Text>
+        </View>
+      )}
+
+      {asset && <AssetDetails asset={asset} />}
     </ScrollView>
-  );
-};
-
-const AssetChartHeader = ({
-  asset,
-}: {
-  asset: RouterOutputs["local"]["assets"]["getMarketAsset"];
-}) => {
-  const { selectedPoint } = useAssetChartSelectedPointStore((state) => state);
-
-  return (
-    <View style={styles.assetPriceContainer}>
-      <Text type="title">
-        {asset.currentPrice?.symbol}
-        {asset.currentPrice || selectedPoint ? (
-          <SubscriptDecimal
-            decimal={
-              selectedPoint
-                ? new Dec(selectedPoint?.value)
-                : asset.currentPrice.toDec() ?? new Dec(0)
-            }
-          />
-        ) : null}
-      </Text>
-      <Text
-        type="subtitle"
-        style={{
-          color: getChangeColor(asset.priceChange24h?.toDec() || new Dec(0)),
-          marginBottom: 5,
-        }}
-      >
-        {asset.priceChange24h?.toString()}
-      </Text>
-    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     height: "100%",
+    paddingBottom: TRADE_BUTTON_HEIGHT,
   },
   content: {
     paddingHorizontal: 24,
@@ -160,19 +143,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "600",
   },
-  assetPriceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-    marginBottom: 10,
-  },
   assetContent: {
     paddingVertical: 24,
     height: "100%",
   },
   tradeButtonContainer: {
     position: "absolute",
-    height: 100,
+    height: TRADE_BUTTON_HEIGHT,
     bottom: 0,
     width: "100%",
     paddingTop: 10,

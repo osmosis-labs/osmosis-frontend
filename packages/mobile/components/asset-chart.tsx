@@ -1,13 +1,15 @@
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import * as Haptics from "expo-haptics";
 import { transparentize } from "polished";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { GraphPoint, LineGraph } from "react-native-graph";
-import { useMMKVString } from "react-native-mmkv";
 import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
+import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Button } from "~/components/ui/button";
+import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -31,12 +33,21 @@ type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 interface SelectedPointState {
   selectedPoint: GraphPoint | null;
   setSelectedPoint: (point: GraphPoint | null) => void;
+  timeFrame: string;
+  setTimeFrame: (frame: string) => void;
+  priceChangeOverride: RatePretty | undefined;
+  setPriceChangeOverride: (priceChange: RatePretty | undefined) => void;
 }
 
 export const useAssetChartSelectedPointStore = create<SelectedPointState>(
   (set) => ({
     selectedPoint: null,
     setSelectedPoint: (point) => set({ selectedPoint: point }),
+    timeFrame: "7d",
+    setTimeFrame: (frame) => set({ timeFrame: frame }),
+    priceChangeOverride: undefined,
+    setPriceChangeOverride: (priceChange) =>
+      set({ priceChangeOverride: priceChange }),
   })
 );
 
@@ -45,15 +56,26 @@ export const AssetChart = ({
 }: {
   asset: RouterOutputs["local"]["assets"]["getMarketAsset"];
 }) => {
-  const setSelectedPoint = useAssetChartSelectedPointStore(
-    (state) => state.setSelectedPoint
+  const { setSelectedPoint } = useAssetChartSelectedPointStore(
+    useShallow((state) => ({
+      setSelectedPoint: state.setSelectedPoint,
+    }))
   );
   const [dataType] = useState<AssetChartDataType>("price");
-  const [timeFrame, setTimeFrame] = useMMKVString("asset-chart-time-frame");
+  const [timeFrame, setTimeFrame] = useAssetChartSelectedPointStore(
+    useShallow((state) => [state.timeFrame, state.setTimeFrame])
+  );
+  const [priceChangeOverride, setPriceChangeOverride] =
+    useAssetChartSelectedPointStore(
+      useShallow((state) => [
+        state.priceChangeOverride,
+        state.setPriceChangeOverride,
+      ])
+    );
 
   useEffect(() => {
     if (!timeFrame) setTimeFrame("7d");
-  }, []);
+  }, [setTimeFrame, timeFrame]);
 
   const customTimeFrame = useMemo(() => {
     let frame = 60;
@@ -89,7 +111,7 @@ export const AssetChart = ({
       timeFrame: frame,
       numRecentFrames,
     };
-  }, [asset?.coinMinimalDenom, asset?.coinDenom, timeFrame]);
+  }, [dataType, timeFrame]);
 
   const {
     data: historicalPriceData,
@@ -122,9 +144,42 @@ export const AssetChart = ({
     }));
   }, [historicalPriceData, dataType]);
 
+  useEffect(() => {
+    if (!(timeFrame === "1mo" || timeFrame === "1y" || timeFrame === "all")) {
+      setPriceChangeOverride(undefined);
+      return;
+    }
+
+    const lastPoint = points[points.length - 1];
+    const firstPoint = points[0];
+    if (points && lastPoint && firstPoint) {
+      setPriceChangeOverride(
+        new RatePretty((lastPoint.value - firstPoint.value) / lastPoint.value)
+      );
+    }
+  }, [points, setPriceChangeOverride, timeFrame]);
+
   const changeColor = useMemo(() => {
-    return getChangeColor(asset.priceChange24h?.toDec() || new Dec(0));
-  }, [asset.priceChange24h]);
+    let change: RatePretty | undefined;
+    console.log({ timeFrame });
+    if (timeFrame === "1h") {
+      change = asset.priceChange1h;
+    } else if (timeFrame === "1d") {
+      change = asset.priceChange24h;
+    } else if (timeFrame === "7d") {
+      change = asset.priceChange7d;
+    } else {
+      change = priceChangeOverride;
+    }
+
+    return getChangeColor(change?.toDec() ?? new Dec(0));
+  }, [
+    asset.priceChange1h,
+    asset.priceChange24h,
+    asset.priceChange7d,
+    priceChangeOverride,
+    timeFrame,
+  ]);
 
   return (
     <View>
@@ -209,6 +264,60 @@ export const AssetChart = ({
   );
 };
 
+export const AssetChartHeader = ({
+  asset,
+}: {
+  asset: RouterOutputs["local"]["assets"]["getMarketAsset"];
+}) => {
+  const { selectedPoint, timeFrame, priceChangeOverride } =
+    useAssetChartSelectedPointStore(
+      useShallow((state) => ({
+        selectedPoint: state.selectedPoint,
+        timeFrame: state.timeFrame,
+        priceChangeOverride: state.priceChangeOverride,
+      }))
+    );
+
+  return (
+    <View style={styles.assetPriceContainer}>
+      <Text type="title">
+        {asset.currentPrice?.symbol}
+        {asset.currentPrice || selectedPoint ? (
+          <SubscriptDecimal
+            decimal={
+              selectedPoint
+                ? new Dec(selectedPoint?.value)
+                : asset.currentPrice?.toDec() ?? new Dec(0)
+            }
+          />
+        ) : null}
+      </Text>
+      {timeFrame === "1h" && asset.priceChange1h && (
+        <PriceChange change={asset.priceChange1h} />
+      )}
+      {timeFrame === "1d" && asset.priceChange24h && (
+        <PriceChange change={asset.priceChange24h} />
+      )}
+      {timeFrame === "7d" && asset.priceChange7d && (
+        <PriceChange change={asset.priceChange7d} />
+      )}
+      {priceChangeOverride && <PriceChange change={priceChangeOverride} />}
+    </View>
+  );
+};
+
+const PriceChange = ({ change }: { change: RatePretty }) => (
+  <Text
+    type="subtitle"
+    style={{
+      color: getChangeColor(change.toDec() || new Dec(0)),
+      marginBottom: 5,
+    }}
+  >
+    {change.toString()}
+  </Text>
+);
+
 const styles = StyleSheet.create({
   timeFrameButtons: {
     marginTop: 20,
@@ -216,4 +325,10 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   timeFrameButton: { flex: 1 },
+  assetPriceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
+  },
 });
