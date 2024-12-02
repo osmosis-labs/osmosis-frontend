@@ -14,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from "react-native-svg";
 import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 import { ChevronDownIcon } from "~/components/icons/chevron-down";
 import { FilterIcon } from "~/components/icons/filter";
@@ -28,13 +29,16 @@ import {
 } from "~/components/ui/dropdown";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { mmkvStorage } from "~/utils/mmkv";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const itemSize = 70;
 
 const displayOptions = [
-  { key: "price", title: "Price (24h)" },
+  { key: "price-1h", title: "Price (1h)" },
+  { key: "price-24h", title: "Price (24h)" },
+  { key: "price-7d", title: "Price (7d)" },
   { key: "volume", title: "Volume" },
   { key: "market-cap", title: "Market Cap" },
   { key: "favorite", title: "Favorite" },
@@ -45,11 +49,19 @@ type DisplayOptionStore = {
   setDisplayOption: (option: (typeof displayOptions)[number]["key"]) => void;
 };
 
-const useDisplayOptionStore = create<DisplayOptionStore>((set) => ({
-  displayOption: displayOptions[0].key,
-  setDisplayOption: (option: (typeof displayOptions)[number]["key"]) =>
-    set({ displayOption: option }),
-}));
+const useDisplayOptionStore = create<DisplayOptionStore>()(
+  persist(
+    (set) => ({
+      displayOption: displayOptions[1].key,
+      setDisplayOption: (option: (typeof displayOptions)[number]["key"]) =>
+        set({ displayOption: option }),
+    }),
+    {
+      name: "display-option",
+      storage: createJSONStorage(() => mmkvStorage),
+    }
+  )
+);
 
 export default function TabTwoScreen() {
   const [search, setSearch] = useState("");
@@ -204,7 +216,7 @@ const AssetItem = ({
         </View>
       </View>
       <View style={styles.assetRight}>
-        {displayOption === "price" && (
+        {displayOption.startsWith("price") && (
           <>
             <Text style={styles.price}>
               {asset.currentPrice ? (
@@ -216,18 +228,50 @@ const AssetItem = ({
                 ""
               )}
             </Text>
-            <Text
-              style={[
-                styles.percentage,
-                {
-                  color: getChangeColor(
-                    asset.priceChange24h?.toDec() || new Dec(0)
-                  ),
-                },
-              ]}
-            >
-              {asset.priceChange24h?.toString()}
-            </Text>
+            {displayOption === "price-24h" && (
+              <Text
+                style={[
+                  styles.percentage,
+                  {
+                    color: getChangeColor(
+                      asset.priceChange24h?.toDec() || new Dec(0)
+                    ),
+                  },
+                ]}
+              >
+                {asset.priceChange24h?.toString()}
+              </Text>
+            )}
+
+            {displayOption === "price-7d" && (
+              <Text
+                style={[
+                  styles.percentage,
+                  {
+                    color: getChangeColor(
+                      asset.priceChange24h?.toDec() || new Dec(0)
+                    ),
+                  },
+                ]}
+              >
+                {asset.priceChange7d?.toString()}
+              </Text>
+            )}
+
+            {displayOption === "price-1h" && (
+              <Text
+                style={[
+                  styles.percentage,
+                  {
+                    color: getChangeColor(
+                      asset.priceChange1h?.toDec() || new Dec(0)
+                    ),
+                  },
+                ]}
+              >
+                {asset.priceChange1h?.toString()}
+              </Text>
+            )}
           </>
         )}
 

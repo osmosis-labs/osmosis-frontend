@@ -1,8 +1,7 @@
 import { superjson } from "@osmosis-labs/server";
 import { localLink } from "@osmosis-labs/trpc";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemeProvider } from "@react-navigation/native";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
@@ -15,14 +14,12 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { DefaultTheme } from "~/constants/themes";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
+import { mmkvStorage } from "~/utils/mmkv";
 import { api } from "~/utils/trpc";
 import { appRouter } from "~/utils/trpc-routers/root-router";
 
-const localStoragePersister = createAsyncStoragePersister({
-  storage: AsyncStorage,
-  serialize: (client) => superjson.stringify(client),
-  deserialize: (cachedString) => superjson.parse(cachedString),
-});
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+global.Buffer = require("buffer").Buffer;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,6 +27,19 @@ const queryClient = new QueryClient({
       cacheTime: 1000 * 60 * 60 * 24, // 24 hours
     },
   },
+});
+
+const localStoragePersister = createSyncStoragePersister({
+  storage: mmkvStorage,
+  serialize: (client) => {
+    try {
+      return superjson.stringify(client);
+    } catch (error) {
+      console.error("Error serializing client", error);
+      return "";
+    }
+  },
+  deserialize: (cachedString) => superjson.parse(cachedString),
 });
 
 persistQueryClient({
@@ -60,7 +70,6 @@ export default function RootLayout() {
             (opts.direction === "down" && opts.result instanceof Error),
         }),
         (runtime) => {
-          // initialize the different links for different targets (edge and node)
           const servers = {
             local: localLink({
               router: appRouter,

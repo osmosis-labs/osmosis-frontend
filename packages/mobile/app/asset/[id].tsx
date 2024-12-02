@@ -9,15 +9,19 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { GraphPoint, LineGraph } from "react-native-graph";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import {
+  AssetChart,
+  useAssetChartSelectedPointStore,
+} from "~/components/asset-chart";
 import { ChevronLeftIcon } from "~/components/icons/chevron-left";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
+import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { getChangeColor } from "~/utils/price";
-import { api } from "~/utils/trpc";
+import { api, RouterOutputs } from "~/utils/trpc";
 
 const AssetRoute = () => {
   const { id, coinDenom, coinImageUrl } = useLocalSearchParams<{
@@ -60,72 +64,15 @@ const AssetRoute = () => {
       </View>
 
       <View style={styles.tradeButtonContainer}>
-        <TouchableOpacity style={styles.tradeButton}>
-          <Text>Trade</Text>
-        </TouchableOpacity>
+        <Button
+          title="Trade"
+          onPress={() => {}}
+          buttonStyle={styles.tradeButton}
+        />
       </View>
     </SafeAreaView>
   );
 };
-function gaussian(mean: number, variance: number) {
-  return {
-    ppf: (p: number) => {
-      // Using the inverse error function to approximate the inverse CDF of a Gaussian distribution
-      const a1 = 0.254829592;
-      const a2 = -0.284496736;
-      const a3 = 1.421413741;
-      const a4 = -1.453152027;
-      const a5 = 1.061405429;
-      const p_low = 0.02425;
-      const p_high = 1 - p_low;
-
-      if (p < p_low) {
-        const q = Math.sqrt(-2 * Math.log(p));
-        return (
-          mean +
-          (Math.sqrt(variance) *
-            ((((a5 * q + a4) * q + a3) * q + a2) * q + a1)) /
-            (1 + q)
-        );
-      } else if (p_high < p) {
-        const q = Math.sqrt(-2 * Math.log(1 - p));
-        return (
-          mean -
-          (Math.sqrt(variance) *
-            ((((a5 * q + a4) * q + a3) * q + a2) * q + a1)) /
-            (1 + q)
-        );
-      } else {
-        const q = p - 0.5;
-        const r = q * q;
-        return (
-          mean +
-          (Math.sqrt(variance) *
-            q *
-            ((((a5 * r + a4) * r + a3) * r + a2) * r + a1)) /
-            (1 + r)
-        );
-      }
-    },
-  };
-}
-
-function weightedRandom(mean: number, variance: number): number {
-  const distribution = gaussian(mean, variance);
-  // Take a random sample using inverse transform sampling method.
-  return distribution.ppf(Math.random());
-}
-
-export function generateRandomGraphData(length: number): GraphPoint[] {
-  return Array<number>(length)
-    .fill(0)
-    .map((_, index) => ({
-      date: new Date(
-        new Date(2000, 0, 1).getTime() + 1000 * 60 * 60 * 24 * index
-      ),
-      value: weightedRandom(10, Math.pow(index + 1, 2)),
-    }));
-}
 
 const AssetContent = ({ id }: { id: string }) => {
   const { data: asset, isLoading } = api.local.assets.getMarketAsset.useQuery(
@@ -147,36 +94,44 @@ const AssetContent = ({ id }: { id: string }) => {
 
   return (
     <ScrollView style={styles.assetContent}>
-      <View style={styles.assetPriceContainer}>
-        <Text type="title">
-          {asset.currentPrice?.symbol}
-          {asset.currentPrice ? (
-            <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
-          ) : null}
-        </Text>
-        <Text
-          type="subtitle"
-          style={{
-            color: getChangeColor(asset.priceChange24h?.toDec() || new Dec(0)),
-            marginBottom: 5,
-          }}
-        >
-          {asset.priceChange24h?.toString()}
-        </Text>
-      </View>
+      <AssetChartHeader asset={asset} />
 
-      <LineGraph
-        animated
-        color={getChangeColor(asset.priceChange24h?.toDec() || new Dec(0))}
-        points={generateRandomGraphData(100)}
-        enablePanGesture
-        style={{
-          height: 220,
-          width: "100%",
-        }}
-        gradientFillColors={["#ff00005D", "#ff000000"]}
-      />
+      <AssetChart asset={asset} />
     </ScrollView>
+  );
+};
+
+const AssetChartHeader = ({
+  asset,
+}: {
+  asset: RouterOutputs["local"]["assets"]["getMarketAsset"];
+}) => {
+  const { selectedPoint } = useAssetChartSelectedPointStore((state) => state);
+
+  return (
+    <View style={styles.assetPriceContainer}>
+      <Text type="title">
+        {asset.currentPrice?.symbol}
+        {asset.currentPrice || selectedPoint ? (
+          <SubscriptDecimal
+            decimal={
+              selectedPoint
+                ? new Dec(selectedPoint?.value)
+                : asset.currentPrice.toDec() ?? new Dec(0)
+            }
+          />
+        ) : null}
+      </Text>
+      <Text
+        type="subtitle"
+        style={{
+          color: getChangeColor(asset.priceChange24h?.toDec() || new Dec(0)),
+          marginBottom: 5,
+        }}
+      >
+        {asset.priceChange24h?.toString()}
+      </Text>
+    </View>
   );
 };
 
@@ -227,7 +182,8 @@ const styles = StyleSheet.create({
   },
   tradeButton: {
     backgroundColor: Colors["wosmongton"][500],
-    padding: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
     borderRadius: 255,
     alignItems: "center",
     width: "80%",
