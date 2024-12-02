@@ -132,11 +132,18 @@ export function ReviewOrder({
   } = useOneClickTradingSwapReview({ isModalOpen: isOpen });
 
   const wouldExceedSpendLimit = useMemo(() => {
+    if (!is1CTEnabled) return false;
+
     return wouldExceedSpendLimit1CT({
       wantToSpend: fiatAmountWithSlippage?.toDec() ?? new Dec(0),
       maybeWouldSpendTotal: overspendErrorParams?.wouldSpendTotal,
     });
-  }, [overspendErrorParams, fiatAmountWithSlippage, wouldExceedSpendLimit1CT]);
+  }, [
+    is1CTEnabled,
+    wouldExceedSpendLimit1CT,
+    fiatAmountWithSlippage,
+    overspendErrorParams?.wouldSpendTotal,
+  ]);
 
   const [orderType] = useQueryState(
     "type",
