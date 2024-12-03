@@ -359,7 +359,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       return undefined;
     }
 
-    const url = new URL("https://geo.tfm.com/");
+    const url = new URL("https://app.tfm.com/");
     if (fromChain) {
       url.searchParams.set("chainFrom", fromChain.chainId);
     }
