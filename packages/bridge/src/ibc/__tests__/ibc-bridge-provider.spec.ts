@@ -331,7 +331,7 @@ describe("IbcBridgeProvider.getExternalUrl", () => {
 
   it("should generate the correct URL for given parameters", async () => {
     const expectedUrl =
-      "https://geo.tfm.com/?chainFrom=osmosis-1&token0=uosmo&chainTo=cosmoshub-4&token1=uatom";
+      "https://app.tfm.com/?chainFrom=osmosis-1&token0=uosmo&chainTo=cosmoshub-4&token1=uatom";
     const result = await provider.getExternalUrl({
       fromChain: { chainId: "osmosis-1", chainType: "cosmos" },
       toChain: { chainId: "cosmoshub-4", chainType: "cosmos" },
