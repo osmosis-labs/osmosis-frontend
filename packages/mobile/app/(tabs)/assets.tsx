@@ -378,10 +378,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  assetValue: {
-    color: "#6B7280",
-    fontSize: 14,
-  },
   assetRight: {
     alignItems: "flex-end",
   },

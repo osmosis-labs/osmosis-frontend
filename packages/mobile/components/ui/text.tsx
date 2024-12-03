@@ -1,10 +1,9 @@
 import { StyleSheet, Text as RNText, type TextProps } from "react-native";
 
-import { Colors } from "~/constants/theme-colors";
 import { useTheme } from "~/hooks/use-theme";
 
 export type ThemedTextProps = TextProps & {
-  type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
+  type?: "default" | "title" | "subtitle" | "caption";
 };
 
 export function Text({ style, type = "default", ...rest }: ThemedTextProps) {
@@ -16,9 +15,8 @@ export function Text({ style, type = "default", ...rest }: ThemedTextProps) {
         { color: colors.text },
         type === "default" ? styles.default : undefined,
         type === "title" ? styles.title : undefined,
-        type === "defaultSemiBold" ? styles.defaultSemiBold : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
-        type === "link" ? styles.link : undefined,
+        type === "caption" ? styles.caption : undefined,
         style,
       ]}
       {...rest}
@@ -45,9 +43,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: Colors.osmoverse[100],
+  caption: {
+    fontSize: 14,
+    lineHeight: 16,
   },
 });
