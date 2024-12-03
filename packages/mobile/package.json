@@ -67,7 +67,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.4",
     "zeego": "^2.0.4",
-    "zustand": "^4.5.5"
+    "zustand": "^4.5.5",
+    "dayjs": "^1.10.7"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

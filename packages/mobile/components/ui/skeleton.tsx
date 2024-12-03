@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, ViewProps } from "react-native";
+import { StyleSheet, View, ViewProps } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -8,11 +8,14 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 
+import { Colors } from "~/constants/theme-colors";
+
 interface SkeletonProps extends ViewProps {
   className?: string;
+  isLoaded?: boolean;
 }
 
-const Skeleton: React.FC<SkeletonProps> = ({ style, ...props }) => {
+const Skeleton: React.FC<SkeletonProps> = ({ style, isLoaded, ...props }) => {
   const opacity = useSharedValue(0.5);
 
   opacity.value = withRepeat(
@@ -30,15 +33,24 @@ const Skeleton: React.FC<SkeletonProps> = ({ style, ...props }) => {
     };
   });
 
+  if (isLoaded) {
+    return <View style={style} {...props} />;
+  }
+
   return (
-    <Animated.View style={[styles.skeleton, animatedStyle, style]} {...props} />
+    <Animated.View style={[styles.skeleton, animatedStyle, style]} {...props}>
+      <View style={[styles.invisible, { opacity: 0 }]}>{props.children}</View>
+    </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
   skeleton: {
-    backgroundColor: "#1F2937", // Equivalent to bg-osmoverse-700
-    borderRadius: 4, // Equivalent to rounded-md
+    backgroundColor: Colors["osmoverse"][825],
+    borderRadius: 4,
+  },
+  invisible: {
+    opacity: 0,
   },
 });
 
