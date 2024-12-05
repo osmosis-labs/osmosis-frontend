@@ -34,7 +34,7 @@ export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
   const filters = useMemo(
     () => ({
       ...defaultFilters,
-      denoms: [denom],
+      searchQuery: denom,
     }),
     [denom]
   );
