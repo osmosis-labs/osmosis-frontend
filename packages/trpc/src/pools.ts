@@ -11,7 +11,6 @@ import {
   getUserPools,
   getUserSharePools,
   IncentivePoolFilterSchema,
-  maybeCachePaginatedItems,
   PoolFilterSchema,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
@@ -20,9 +19,9 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./api";
 import { UserOsmoAddressSchema } from "./parameter-types";
 
-const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
-  IncentivePoolFilterSchema
-);
+const GetInfinitePoolsSchema = CursorPaginationSchema.merge(
+  PoolFilterSchema
+).merge(IncentivePoolFilterSchema);
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
@@ -84,7 +83,7 @@ export const poolsRouter = createTRPCRouter({
     ),
   getPools: publicProcedure
     .input(
-      GetInfinitePoolsSchema.and(
+      GetInfinitePoolsSchema.merge(
         z.object({
           sort: createSortSchema(marketIncentivePoolsSortKeys).default({
             keyPath: "totalFiatValueLocked",
@@ -106,29 +105,18 @@ export const poolsRouter = createTRPCRouter({
         },
         ctx,
       }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-            const pools = await getPools({
-              ...ctx,
-              search,
-              minLiquidityUsd,
-              types,
-              denoms,
-            });
-
-            if (search) return pools;
-            else return sort(pools, sortInput.keyPath, sortInput.direction);
+        getPools({
+          ...ctx,
+          search,
+          minLiquidityUsd,
+          types,
+          incentives: incentiveTypes,
+          denoms,
+          pagination: {
+            cursor,
+            limit,
           },
-          cacheKey: JSON.stringify({
-            search,
-            sortInput,
-            minLiquidityUsd,
-            types,
-            denoms,
-            incentiveTypes,
-          }),
-          cursor,
-          limit,
+          sort: sortInput,
         })
     ),
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>

@@ -5,6 +5,12 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
+import {
+  PaginationType,
+  PoolProviderResponse,
+  SearchType,
+  SortType,
+} from "../../../../queries/complex/pools";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
@@ -13,7 +19,7 @@ import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
 import { Pool, PoolIncentiveType, PoolType } from "../index";
 
-type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
+type SidecarPool = Awaited<ReturnType<typeof queryPools>>["data"][number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -27,36 +33,63 @@ const ExcludedExternalBoostPools: string[] =
 export function getPoolsFromSidecar({
   assetLists,
   poolIds,
+  notPoolIds,
+  types,
+  incentives,
   minLiquidityUsd,
   withMarketIncentives = true,
+  pagination,
+  sort,
+  search,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
+  notPoolIds?: string[];
+  types?: PoolType[];
+  incentives?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
-}): Promise<Pool[]> {
-  if (poolIds && !poolIds.length) return Promise.resolve([]);
+  search?: SearchType;
+  pagination?: PaginationType;
+  sort?: SortType;
+}): Promise<PoolProviderResponse> {
+  if (poolIds && !poolIds.length) {
+    return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
+  }
 
   return cachified({
     cache: poolsCache,
     key:
       (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
-      minLiquidityUsd +
-      withMarketIncentives.toString(),
+      (notPoolIds?.join(",") ?? "") +
+      (types?.join(",") ?? "") +
+      (incentives?.join(",") ?? "") +
+      (minLiquidityUsd ?? "") +
+      withMarketIncentives.toString() +
+      (pagination ? JSON.stringify(pagination) : "") +
+      (sort ? JSON.stringify(sort) : "") +
+      (search ? JSON.stringify(search) : ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
         () =>
           queryPools({
             poolIds,
+            notPoolIds,
+            types,
+            incentives,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
+            search,
+            pagination,
+            sort,
           }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
-      const reserveCoins = sidecarPools.map((sidecarPool) => {
+
+      const reserveCoins = sidecarPools.data.map((sidecarPool) => {
         try {
           return getListedReservesFromSidecarPool(assetLists, sidecarPool);
         } catch {
@@ -64,14 +97,18 @@ export function getPoolsFromSidecar({
         }
       });
 
-      return sidecarPools
-        .map((sidecarPool, index) =>
-          makePoolFromSidecarPool({
-            sidecarPool,
-            reserveCoins: reserveCoins[index] ?? null,
-          })
-        )
-        .filter(Boolean) as Pool[];
+      return {
+        data: sidecarPools.data
+          .map((sidecarPool, index) =>
+            makePoolFromSidecarPool({
+              sidecarPool,
+              reserveCoins: reserveCoins[index] ?? null,
+            })
+          )
+          .filter(Boolean) as Pool[],
+        total: sidecarPools.meta.total_items,
+        nextCursor: sidecarPools.meta.next_cursor,
+      };
     },
   });
 }

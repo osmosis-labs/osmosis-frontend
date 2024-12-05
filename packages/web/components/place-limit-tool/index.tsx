@@ -562,6 +562,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.isMarket,
       swapState.marketState.networkFeeError,
       swapState.marketState.isSlippageOverBalance,
+      account?.isWalletConnected,
       t,
     ]);
 

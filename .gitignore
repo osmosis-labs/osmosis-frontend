@@ -24,6 +24,7 @@ packages/web/e2e/keplr-extension-manifest
 # Vim swap files
 .*.swp
 .*.swo
+
 packages/web/e2e/metamask-extension-manifest/
 packages/e2e/keplr-extension-manifest/
 packages/e2e/playwright-report/

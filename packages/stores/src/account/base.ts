@@ -1388,18 +1388,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           })
         : undefined;
 
-      apiClient("/api/transaction-scan", {
-        data: {
-          chainId: wallet.chainId,
-          messages: encodedMessages.map(encodeAnyBase64),
-          nonCriticalExtensionOptions:
-            nonCriticalExtensionOptions?.map(encodeAnyBase64),
-          bech32Address: wallet.address,
-        },
-      }).catch((e) => {
-        console.error("API transaction scan error", e);
-      });
-
       const estimate = await apiClient<QuoteStdFee>("/api/estimate-gas-fee", {
         data: {
           chainId: wallet.chainId,
