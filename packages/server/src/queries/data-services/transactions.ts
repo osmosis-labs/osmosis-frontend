@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 interface Route {
   pools: Pool[];
@@ -88,7 +88,7 @@ export async function queryTransactions({
   page: string;
   pageSize: string;
 }): Promise<Transaction[]> {
-  const url = new URL(`/v2/txs/${address}`, NUMIA_BASE_URL);
+  const url = new URL(`/v2/txs/${address}`, HISTORICAL_DATA_URL);
 
   url.searchParams.append("page", page);
   url.searchParams.append("pageSize", pageSize);
