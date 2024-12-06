@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 export interface TokenPairHistoricalPrice {
   close: number;
@@ -33,7 +33,7 @@ export async function queryTokenPairHistoricalChart(
   // collect params
   const url = new URL(
     `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteCoinMinimalDenom}&asset_out=${baseCoinMinimalDenom}&range=${priceRange}&asset_type=denom`,
-    TIMESERIES_DATA_URL
+    HISTORICAL_DATA_URL
   );
   try {
     const response = await apiClient<
