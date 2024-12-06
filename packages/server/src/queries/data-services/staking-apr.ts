@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_API_KEY, HISTORICAL_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL, NUMIA_API_KEY } from "../../env";
 
 interface StakingAprResponse {
   labels: string;
