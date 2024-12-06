@@ -20,7 +20,7 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
-  TxEvents,
+  type TxEvents,
   UnsafeIbcCurrencyRegistrar,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
@@ -32,9 +32,8 @@ import {
 } from "~/components/alert/tx-event-toast";
 import {
   BlacklistedPoolIds,
-  INDEXER_DATA_URL,
+  HISTORICAL_DATA_URL,
   IS_TESTNET,
-  TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -159,8 +158,8 @@ export class RootStore {
         this.chainStore.osmosis.chainId
       ).osmosis!.queryIncentivizedPools,
       webApiBaseUrl,
-      TIMESERIES_DATA_URL,
-      INDEXER_DATA_URL
+      HISTORICAL_DATA_URL,
+      HISTORICAL_DATA_URL
     );
 
     this.accountStore = new AccountStore(

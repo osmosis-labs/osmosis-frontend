@@ -1,4 +1,3 @@
-export * from "./blockaid";
 export * from "./coingecko";
 export * from "./complex";
 export * from "./contracts";

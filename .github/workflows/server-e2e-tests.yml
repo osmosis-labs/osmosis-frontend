@@ -15,9 +15,9 @@ jobs:
           MAIN_BRANCH: "refs/heads/master"
         run: |
           if [[ "${{ github.ref }}" == "${{ env.MAIN_BRANCH }}" ]]; then
-            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
           else
-            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://stage-proxy-data-api.osmosis-labs.workers.dev\"}]}" >> "$GITHUB_OUTPUT"
+            echo "matrix={\"include\":[{ \"server-url\":\"https://sqs.osmosis.zone\", \"env\": \"production\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}, { \"server-url\":\"https://sqs.stage.osmosis.zone\", \"env\": \"staging\", \"timeseries-url\":\"https://data.app.osmosis.zone\"}]}" >> "$GITHUB_OUTPUT"
           fi
 
   test:

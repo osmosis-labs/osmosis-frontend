@@ -1,6 +1,6 @@
-import { Chain } from "@osmosis-labs/types";
+import type { Chain } from "@osmosis-labs/types";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import cachified, { type CacheEntry } from "cachified";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -11,13 +11,13 @@ import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS } from "../../../env";
 import { queryPriceRangeApr } from "../../../queries/data-services";
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import {
-  PoolDataRange,
+  type PoolDataRange,
   queryPoolAprsRange,
 } from "../../data-services/pool-aprs";
-import { Gauge, queryGauges } from "../../osmosis";
+import { type Gauge, queryGauges } from "../../osmosis";
 import { queryIncentivizedPools } from "../../osmosis/incentives/incentivized-pools";
 import { getEpochs } from "../osmosis";
-import { Epoch } from "../osmosis/epochs";
+import type { Epoch } from "../osmosis/epochs";
 
 /**
  * Pools that are excluded from showing external boost incentives APRs.
@@ -234,7 +234,9 @@ export function getLockableDurations() {
 
   return lockable_durations
     .map((durationStr: string) => {
-      return dayjs.duration(parseInt(durationStr.replace("s", "")) * 1000);
+      return dayjs.duration(
+        Number.parseInt(durationStr.replace("s", "")) * 1000
+      );
     })
     .sort((v1, v2) => {
       return v1.asMilliseconds() > v2.asMilliseconds() ? 1 : -1;
@@ -255,7 +257,7 @@ export function getIncentivizedPools({ chainList }: { chainList: Chain[] }) {
       return incentivized_pools.map((pool) => ({
         pool_id: pool.pool_id,
         lockable_duration: dayjs.duration(
-          parseInt(pool.lockable_duration.replace("s", "")) * 1000
+          Number.parseInt(pool.lockable_duration.replace("s", "")) * 1000
         ),
         gauge_id: pool.gauge_id,
       }));
@@ -282,7 +284,11 @@ export function getActiveGauges({ chainList }: { chainList: Chain[] }) {
               coin.denom.match(/gamm\/pool\/[0-9]+/m)
             ) && // no gamm share rewards
             gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
-            checkForStaleness(gauge, parseInt(data[data.length - 1].id), epochs)
+            checkForStaleness(
+              gauge,
+              Number.parseInt(data[data.length - 1].id),
+              epochs
+            )
         )
         .map((gauge) => ({
           ...gauge,
@@ -290,7 +296,8 @@ export function getActiveGauges({ chainList }: { chainList: Chain[] }) {
           distribute_to: {
             ...gauge.distribute_to,
             duration: dayjs.duration(
-              parseInt(gauge.distribute_to.duration.replace("s", "")) * 1000
+              Number.parseInt(gauge.distribute_to.duration.replace("s", "")) *
+                1000
             ),
           },
         }));
@@ -312,6 +319,6 @@ function checkForStaleness(gauge: Gauge, lastGaugeId: number, epochs: Epoch[]) {
     (parsedGaugeStartTime > NOW - DURATION_1_DAY &&
       parsedGaugeStartTime < CURRENT_EPOCH_START_TIME + DURATION_1_DAY) ||
     (parsedGaugeStartTime < NOW &&
-      parseInt(gauge.id) > lastGaugeId - MAX_NEW_GAUGES_PER_DAY)
+      Number.parseInt(gauge.id) > lastGaugeId - MAX_NEW_GAUGES_PER_DAY)
   );
 }
