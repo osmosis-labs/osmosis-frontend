@@ -11,6 +11,11 @@ export const config = {
   runtime: "edge",
 };
 
+const imageHeight = 240;
+const imageAspectRatio = 1.97;
+const textOsmoverse300 = "text-[#B0AADC]";
+const baseUrl = getBaseUrl();
+
 export default async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const tokenDenom = searchParams.get("denom");
@@ -59,8 +64,8 @@ export default async function GET(request: Request) {
       </>
     ),
     {
-      width: 1200,
-      height: 630,
+      width: imageHeight * imageAspectRatio,
+      height: imageHeight,
     }
   );
 }
