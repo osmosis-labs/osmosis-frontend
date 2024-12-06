@@ -2,6 +2,7 @@ import { getAsset, getAssetPrice } from "@osmosis-labs/server";
 import { ImageResponse } from "next/og";
 
 import { AssetLists } from "~/config/generated/asset-lists";
+import { loadGoogleFont } from "~/utils/og-images";
 
 // App router includes @vercel/og.
 // No need to install it.
@@ -39,6 +40,7 @@ export default async function GET(request: Request) {
     });
   const token = tokenDetails;
   const title = token.coinName;
+  const formattedTokenPrice = tokenPrice ? tokenPrice.toString(2) : "";
   return new ImageResponse(
     (
       <>
@@ -66,6 +68,16 @@ export default async function GET(request: Request) {
     {
       width: imageHeight * imageAspectRatio,
       height: imageHeight,
+      fonts: [
+        {
+          name: "Geist",
+          data: await loadGoogleFont(
+            "Inter",
+            token.coinDenom.toString() + title + formattedTokenPrice
+          ),
+          style: "normal",
+        },
+      ],
     }
   );
 }
