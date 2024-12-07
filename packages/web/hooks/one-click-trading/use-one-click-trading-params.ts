@@ -21,6 +21,14 @@ export function getParametersFromOneClickTradingInfo({
   oneClickTradingInfo: OneClickTradingInfo;
   defaultIsOneClickEnabled: boolean;
 }): OneClickTradingTransactionParams {
+  const OldHumanizedSessionPeriods = [
+    "5min",
+    "10min",
+    "30min",
+    "3hours",
+    "12hours",
+  ] as const;
+
   return {
     isOneClickEnabled: defaultIsOneClickEnabled,
     networkFeeLimit:
@@ -28,7 +36,11 @@ export function getParametersFromOneClickTradingInfo({
         ? OneClickTradingMaxGasLimit
         : oneClickTradingInfo.networkFeeLimit,
     sessionPeriod: {
-      end: oneClickTradingInfo.humanizedSessionPeriod,
+      end: OldHumanizedSessionPeriods.includes(
+        oneClickTradingInfo.humanizedSessionPeriod as (typeof OldHumanizedSessionPeriods)[number]
+      ) // If the session period is one of the old ones, map it to "1hour"
+        ? "7days"
+        : oneClickTradingInfo.humanizedSessionPeriod,
     },
     spendLimit: new PricePretty(
       DEFAULT_VS_CURRENCY,

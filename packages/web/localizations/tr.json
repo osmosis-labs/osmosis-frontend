@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 dakika",
-      "10min": "10 dakika",
-      "30min": "30 dakika",
       "1hour": "1 saat",
-      "3hours": "3 saat",
-      "12hours": "12 saat"
+      "1day": "1 gün",
+      "7days": "7 gün",
+      "30days": "30 gün"
     },
     "settings": {
       "header": "Tek Tıklamayla Ticaret",
@@ -1104,7 +1102,7 @@
     "hour": "saat",
     "hours": "saat",
     "day": "gün",
-    "days": "gün"
+    "days": "günler"
   },
   "transactions": {
     "noRecent": "Yakın zamanda transfer yok",

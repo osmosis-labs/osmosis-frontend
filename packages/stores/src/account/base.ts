@@ -1550,6 +1550,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     if (isNil(oneClickTradingInfo)) return false;
 
+    console.log(oneClickTradingInfo.sessionPeriod.end);
+
     return dayjs
       .unix(unixNanoSecondsToSeconds(oneClickTradingInfo.sessionPeriod.end))
       .isBefore(dayjs());

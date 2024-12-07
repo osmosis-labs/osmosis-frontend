@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 minutes",
-      "10min": "10 minutes",
-      "30min": "30 minutes",
       "1hour": "1 hour",
-      "3hours": "3 hours",
-      "12hours": "12 hours"
+      "1day": "1 day",
+      "7days": "7 days",
+      "30days": "30 days"
     },
     "settings": {
       "header": "1-Click Trading",
@@ -1104,7 +1102,7 @@
     "hour": "hr",
     "hours": "hr",
     "day": "day",
-    "days": "day"
+    "days": "days"
   },
   "transactions": {
     "noRecent": "No recent transactions",

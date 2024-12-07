@@ -4,7 +4,7 @@ import {
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTransactionParams,
 } from "@osmosis-labs/types";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   OneClickTradingMaxGasLimit,
   unixSecondsToNanoSeconds,
@@ -147,7 +147,7 @@ describe("useOneClickTradingParams", () => {
       act(() => {
         result.current.setTransaction1CTParams({
           ...result.current.transaction1CTParams!,
-          sessionPeriod: { end: "12hours" },
+          sessionPeriod: { end: "30days" },
         });
       });
 
@@ -195,7 +195,7 @@ describe("useOneClickTradingParams", () => {
         result.current.setTransaction1CTParams({
           ...result.current.transaction1CTParams!,
           networkFeeLimit: "200000",
-          sessionPeriod: { end: "12hours" },
+          sessionPeriod: { end: "30days" },
         });
       });
 
@@ -233,7 +233,7 @@ describe("useOneClickTradingParams", () => {
         result.current.setTransaction1CTParams({
           ...result.current.transaction1CTParams!,
           networkFeeLimit: "300000",
-          sessionPeriod: { end: "3hours" },
+          sessionPeriod: { end: "7days" },
         });
       });
 
@@ -257,5 +257,164 @@ describe("useOneClickTradingParams", () => {
         })
       );
     });
+  });
+});
+
+describe("getParametersFromOneClickTradingInfo", () => {
+  it("should set isOneClickEnabled based on defaultIsOneClickEnabled", () => {
+    const params = getParametersFromOneClickTradingInfo({
+      oneClickTradingInfo: {
+        networkFeeLimit: "50000",
+        humanizedSessionPeriod: "1hour",
+        spendLimit: { amount: "1000", decimals: 2 },
+        allowedMessages: [],
+        authenticatorId: "test-id",
+        publicKey: "test-key",
+        sessionKey: "test-session",
+        userOsmoAddress: "test-address",
+        hasSeenExpiryToast: false,
+        sessionPeriod: {
+          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+        },
+        sessionStartedAtUnix: Date.now(),
+      },
+      defaultIsOneClickEnabled: true,
+    });
+
+    expect(params.isOneClickEnabled).toBe(true);
+  });
+
+  it("should use OneClickTradingMaxGasLimit when networkFeeLimit is not a string", () => {
+    const params = getParametersFromOneClickTradingInfo({
+      oneClickTradingInfo: {
+        // @ts-expect-error - this is to test the networkFeeLimit not being a string
+        networkFeeLimit: 50000,
+        humanizedSessionPeriod: "1hour",
+        spendLimit: { amount: "1000", decimals: 2 },
+        allowedMessages: [],
+        authenticatorId: "test-id",
+        publicKey: "test-key",
+        sessionKey: "test-session",
+        userOsmoAddress: "test-address",
+        hasSeenExpiryToast: false,
+        sessionPeriod: {
+          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+        },
+        sessionStartedAtUnix: Date.now(),
+      },
+      defaultIsOneClickEnabled: false,
+    });
+
+    expect(params.networkFeeLimit).toBe(OneClickTradingMaxGasLimit);
+  });
+
+  it("should use the provided networkFeeLimit when it is a string", () => {
+    const customFeeLimit = "75000";
+    const params = getParametersFromOneClickTradingInfo({
+      oneClickTradingInfo: {
+        networkFeeLimit: customFeeLimit,
+        humanizedSessionPeriod: "1hour",
+        spendLimit: { amount: "1000", decimals: 2 },
+        allowedMessages: [],
+        authenticatorId: "test-id",
+        publicKey: "test-key",
+        sessionKey: "test-session",
+        userOsmoAddress: "test-address",
+        hasSeenExpiryToast: false,
+        sessionPeriod: {
+          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+        },
+        sessionStartedAtUnix: Date.now(),
+      },
+      defaultIsOneClickEnabled: false,
+    });
+
+    expect(params.networkFeeLimit).toBe(customFeeLimit);
+  });
+
+  it("should map old humanizedSessionPeriod values to '7days'", () => {
+    const oldPeriods = ["5min", "10min", "30min", "3hours", "12hours"] as const;
+
+    oldPeriods.forEach((period) => {
+      const params = getParametersFromOneClickTradingInfo({
+        oneClickTradingInfo: {
+          networkFeeLimit: "50000",
+          // @ts-expect-error - this is to test the old period mapping
+          humanizedSessionPeriod: period,
+          spendLimit: { amount: "1000", decimals: 2 },
+          allowedMessages: [],
+          authenticatorId: "test-id",
+          publicKey: "test-key",
+          sessionKey: "test-session",
+          userOsmoAddress: "test-address",
+          hasSeenExpiryToast: false,
+          sessionPeriod: {
+            end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+          },
+          sessionStartedAtUnix: Date.now(),
+        },
+        defaultIsOneClickEnabled: true,
+      });
+
+      expect(params.sessionPeriod.end).toBe("7days");
+    });
+  });
+
+  it("should retain humanizedSessionPeriod values that are not old", () => {
+    const newPeriods = ["1day", "7days", "30days"] as const;
+
+    newPeriods.forEach((period) => {
+      const params = getParametersFromOneClickTradingInfo({
+        oneClickTradingInfo: {
+          networkFeeLimit: "50000",
+          humanizedSessionPeriod: period,
+          spendLimit: { amount: "1000", decimals: 2 },
+          allowedMessages: [],
+          authenticatorId: "test-id",
+          publicKey: "test-key",
+          sessionKey: "test-session",
+          userOsmoAddress: "test-address",
+          hasSeenExpiryToast: false,
+          sessionPeriod: {
+            end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+          },
+          sessionStartedAtUnix: Date.now(),
+        },
+        defaultIsOneClickEnabled: true,
+      });
+
+      expect(params.sessionPeriod.end).toBe(period);
+    });
+  });
+
+  it("should correctly calculate spendLimit", () => {
+    const spendLimit = { amount: "1000", decimals: 2 };
+    const expectedSpendLimitValue = new Dec("1000").quo(
+      DecUtils.getTenExponentN(2)
+    );
+
+    const params = getParametersFromOneClickTradingInfo({
+      oneClickTradingInfo: {
+        networkFeeLimit: "50000",
+        humanizedSessionPeriod: "1hour",
+        spendLimit: spendLimit,
+        allowedMessages: [],
+        authenticatorId: "test-id",
+        publicKey: "test-key",
+        sessionKey: "test-session",
+        userOsmoAddress: "test-address",
+        hasSeenExpiryToast: false,
+        sessionPeriod: {
+          end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
+        },
+        sessionStartedAtUnix: Date.now(),
+      },
+      defaultIsOneClickEnabled: true,
+    });
+
+    expect(params.spendLimit.toDec().toString()).toBe(
+      expectedSpendLimitValue.toString()
+    );
+    expect(params.spendLimit.fiatCurrency).toBe(DEFAULT_VS_CURRENCY);
   });
 });

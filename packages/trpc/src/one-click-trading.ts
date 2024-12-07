@@ -33,7 +33,7 @@ export const oneClickTradingRouter = createTRPCRouter({
         spendLimitTokenDecimals: usdcAsset.coinDecimals,
         networkFeeLimit: OneClickTradingMaxGasLimit,
         sessionPeriod: {
-          end: "1hour" as const,
+          end: "7days" as const,
         },
       };
     }
