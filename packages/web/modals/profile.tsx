@@ -486,8 +486,6 @@ const OneClickTradingProfileSection: FunctionComponent<{
   const create1CTSession = useCreateOneClickTradingSession();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-  console.log(isOneClickTradingExpired);
-
   const shouldFetchSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
   const { data: sessionAuthenticator } =
