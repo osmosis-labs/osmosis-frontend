@@ -219,7 +219,7 @@ describe("useOneClickTradingParams", () => {
         ...defaultOneClickTradingInfo,
         networkFeeLimit: "200000",
         humanizedSessionPeriod:
-          "12hours" as OneClickTradingHumanizedSessionPeriod,
+          "1hour" as OneClickTradingHumanizedSessionPeriod,
       };
 
       const { result } = renderHook(() =>
