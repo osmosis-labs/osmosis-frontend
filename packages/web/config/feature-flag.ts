@@ -3,7 +3,10 @@ import { IS_TESTNET } from "./env";
 /** Blacklists pools out at the query level. Marks them as non existant. */
 export const BlacklistedPoolIds: string[] = ["895"];
 
-/** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
+/**
+ * Cosmwasm Code Ids confirmed to be transmuter pools in current env.
+ * @deprecated Use packages/server/src/queries/complex/pools/env.ts instead.
+ */
 export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
