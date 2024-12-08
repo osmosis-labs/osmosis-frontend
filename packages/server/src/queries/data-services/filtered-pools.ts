@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 export type PoolToken = {
   name: string;
@@ -81,7 +81,7 @@ export async function queryFilteredPools(
   pagination?: Partial<Pagination>
 ): Promise<FilteredPoolsResponse> {
   // collect params
-  const url = new URL("/stream/pool/v1/all", TIMESERIES_DATA_URL);
+  const url = new URL("/stream/pool/v1/all", HISTORICAL_DATA_URL);
   const queryParams = new URLSearchParams();
   if (filters)
     Object.entries(filters).forEach(([key, value]) => {

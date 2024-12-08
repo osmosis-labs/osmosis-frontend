@@ -29,7 +29,7 @@ const useOrderbooks = (): {
 /**
  * Retrieves all available base and quote denoms for the current chain.
  * Fetch is asynchronous so a loading state is returned.
- * @returns A state including an an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
+ * @returns A state including an array of selectable base denom strings, selectable base denom assets, selectable quote assets organised by base assets in the form of an object and a loading boolean.
  */
 export const useOrderbookSelectableDenoms = () => {
   const { orderbooks, isLoading } = useOrderbooks();

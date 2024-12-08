@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { INDEXER_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 interface Asset {
   denom: string;
@@ -46,7 +46,7 @@ export async function queryPositionPerformance({
 }): Promise<PositionPerformance> {
   const url = new URL(
     `/cl/v1/position/last/id/${positionId}`,
-    INDEXER_DATA_URL
+    HISTORICAL_DATA_URL
   );
 
   return await apiClient<PositionPerformance>(url.toString());

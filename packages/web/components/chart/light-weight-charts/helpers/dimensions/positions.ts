@@ -10,7 +10,7 @@ function centreOffset(lineBitmapWidth: number): number {
  * @param positionMedia - position coordinate for the bar (in media coordinates)
  * @param pixelRatio - pixel ratio. Either horizontal for x positions, or vertical for y positions
  * @param desiredWidthMedia - desired width (in media coordinates)
- * @returns Position of of the start point and length dimension.
+ * @returns Position of the start point and length dimension.
  */
 export function positionsLine(
   positionMedia: number,
@@ -32,7 +32,7 @@ export function positionsLine(
  * @param position1Media - media coordinate for the first point
  * @param position2Media - media coordinate for the second point
  * @param pixelRatio - pixel ratio for the corresponding axis (vertical or horizontal)
- * @returns Position of of the start point and length dimension.
+ * @returns Position of the start point and length dimension.
  */
 export function positionsBox(
   position1Media: number,

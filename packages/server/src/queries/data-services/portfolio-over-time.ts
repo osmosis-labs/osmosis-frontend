@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 export interface PortfolioOverTimeResponse {
   timestamp: string;
@@ -14,7 +14,7 @@ export async function queryPortfolioOverTime({
   address: string;
   range: string;
 }): Promise<PortfolioOverTimeResponse[]> {
-  const url = new URL("/users/portfolio/over_time", NUMIA_BASE_URL);
+  const url = new URL("/users/portfolio/over_time", HISTORICAL_DATA_URL);
 
   url.searchParams.append("address", address);
   url.searchParams.append("range", range);

@@ -2,7 +2,7 @@
   "404": {
     "title": "Page non trouvée"
   },
-  "aboutSecondsRemaining": "Il reste environ {seconds}",
+  "unknownTimeRemaining": "Temps restant inconnu",
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "Actif",
       "amount": "Montant",
-      "review": "Revoir"
+      "review": "Revoir",
+      "deposit": "Dépôt"
     },
     "moreBridgeOptions": {
       "titleDeposit": "Plus d'options de dépôt",

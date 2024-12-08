@@ -161,17 +161,20 @@ export function use1CTSwapReviewMessages() {
   const shouldFetchExistingSessionAuthenticator =
     !!account?.address && !!oneClickTradingInfo;
 
+  const enabledFetchingSessionAuthenticator =
+    isOneClickTradingEnabled && shouldFetchExistingSessionAuthenticator;
+
   const {
     data: sessionAuthenticator,
     isLoading: isLoadingSessionAuthenticator,
+    error: sessionAuthenticatorError,
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       userOsmoAddress: account?.address ?? "",
       publicKey: oneClickTradingInfo?.publicKey ?? "",
     },
     {
-      enabled:
-        isOneClickTradingEnabled && shouldFetchExistingSessionAuthenticator,
+      enabled: enabledFetchingSessionAuthenticator,
       cacheTime: 15_000, // 15 seconds
       staleTime: 15_000, // 15 seconds
       retry: false,
@@ -244,17 +247,20 @@ export function use1CTSwapReviewMessages() {
       spendLimitTokenDecimals,
       transaction1CTParams,
     ]);
+  const isLoading = shouldSend1CTTx
+    ? isLoadingOneClickMessages ||
+      (shouldFetchExistingSessionAuthenticator &&
+      !sessionAuthenticatorError &&
+      enabledFetchingSessionAuthenticator
+        ? isLoadingSessionAuthenticator
+        : false) ||
+      isLoadingInfo
+    : false;
 
   return {
     oneClickMessages,
     shouldSend1CTTx,
-    isLoadingOneClickMessages: shouldSend1CTTx
-      ? isLoadingOneClickMessages ||
-        (shouldFetchExistingSessionAuthenticator
-          ? isLoadingSessionAuthenticator
-          : false) ||
-        isLoadingInfo
-      : false,
+    isLoadingOneClickMessages: isLoading,
   };
 }
 
@@ -296,6 +302,7 @@ function useOneClickRemainingSpendLimit({
       wantToSpend: Dec;
       maybeWouldSpendTotal?: Dec;
     }) => {
+      if (!enabled) return false;
       if (wantToSpend.isZero()) return false;
 
       const spendLimit = transactionParams?.spendLimit?.toDec() ?? new Dec(0);
@@ -309,7 +316,7 @@ function useOneClickRemainingSpendLimit({
 
       return wouldSpend.gt(spendLimit);
     },
-    [amountSpentData, transactionParams]
+    [amountSpentData?.amountSpent, enabled, transactionParams?.spendLimit]
   );
 
   return {

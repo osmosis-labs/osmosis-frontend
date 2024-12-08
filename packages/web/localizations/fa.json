@@ -2,7 +2,7 @@
   "404": {
     "title": "پیدا نشد"
   },
-  "aboutSecondsRemaining": "درباره {seconds} باقی مانده است",
+  "unknownTimeRemaining": "زمان نامعلوم باقی مانده است",
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -818,7 +818,8 @@
     "stepLabels": {
       "asset": "دارایی",
       "amount": "میزان",
-      "review": "مرور"
+      "review": "مرور",
+      "deposit": "سپرده گذاری"
     },
     "moreBridgeOptions": {
       "titleDeposit": "گزینه های سپرده بیشتر",

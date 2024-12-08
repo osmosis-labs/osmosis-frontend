@@ -19,3 +19,8 @@ export function createSortSchema<
     direction: z.enum(["asc", "desc"]).default("desc"),
   });
 }
+
+export const SortSchema = z.object({
+  keyPath: z.string(),
+  direction: z.string(),
+});

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 /**
  * Time frame represents the amount of minutes per bar, basically price every
@@ -56,7 +56,7 @@ export async function queryTokenHistoricalChart({
     `/tokens/v2/historical/${encodeURIComponent(
       coinMinimalDenom
     )}/chart?tf=${timeFrameMinutes}`,
-    TIMESERIES_DATA_URL
+    HISTORICAL_DATA_URL
   );
   try {
     const response = await apiClient<
