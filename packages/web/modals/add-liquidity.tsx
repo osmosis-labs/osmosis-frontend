@@ -49,7 +49,7 @@ export const AddLiquidityModal: FunctionComponent<
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
   // initialize pool data stores once root pool store is loaded
-  const { data: pool } = api.edge.pools.getPool.useQuery({ poolId });
+  const { data: pool } = api.local.pools.getPool.useQuery({ poolId });
 
   const config =
     pool?.type === "concentrated" ? addConliqConfig : addLiquidityConfig;
