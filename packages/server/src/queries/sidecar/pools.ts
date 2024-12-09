@@ -155,6 +155,7 @@ export async function queryPools({
   notPoolIds,
   types,
   incentives,
+  denoms,
   minLiquidityCap,
   withMarketIncentives,
   search,
@@ -165,6 +166,7 @@ export async function queryPools({
   notPoolIds?: string[];
   types?: string[];
   incentives?: string[];
+  denoms?: string[];
   minLiquidityCap?: string;
   withMarketIncentives?: boolean;
   search?: SearchType;
@@ -191,6 +193,10 @@ export async function queryPools({
       "filter[incentive]",
       getIncentiveTypeIntegers(incentives).join(",")
     );
+  }
+
+  if (denoms) {
+    params.append("filter[denom]", denoms.join(","));
   }
 
   // Note: we do not want to filter the pools if we are in testnet because we do not have accurate pricing

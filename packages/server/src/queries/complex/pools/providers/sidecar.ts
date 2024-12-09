@@ -36,6 +36,7 @@ export function getPoolsFromSidecar({
   notPoolIds,
   types,
   incentives,
+  denoms,
   minLiquidityUsd,
   withMarketIncentives = true,
   pagination,
@@ -48,6 +49,7 @@ export function getPoolsFromSidecar({
   notPoolIds?: string[];
   types?: PoolType[];
   incentives?: string[];
+  denoms?: string[];
   minLiquidityUsd?: number;
   withMarketIncentives?: boolean;
   search?: SearchType;
@@ -65,6 +67,7 @@ export function getPoolsFromSidecar({
       (notPoolIds?.join(",") ?? "") +
       (types?.join(",") ?? "") +
       (incentives?.join(",") ?? "") +
+      (denoms?.join(",") ?? "") +
       (minLiquidityUsd ?? "") +
       withMarketIncentives.toString() +
       (pagination ? JSON.stringify(pagination) : "") +
@@ -79,6 +82,7 @@ export function getPoolsFromSidecar({
             notPoolIds,
             types,
             incentives,
+            denoms,
             minLiquidityCap: minLiquidityUsd?.toString(),
             withMarketIncentives,
             search,

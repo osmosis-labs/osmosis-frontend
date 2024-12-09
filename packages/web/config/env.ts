@@ -14,8 +14,7 @@ export const WALLETCONNECT_PROJECT_KEY =
 export const WALLETCONNECT_RELAY_URL =
   process.env.NEXT_PUBLIC_WALLETCONNECT_RELAY_URL;
 
-export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
-export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+export const HISTORICAL_DATA_URL = process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL;
 
 export const TWITTER_PUBLIC_URL = "https://x.com";
 export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";

@@ -92,6 +92,18 @@ describe("getSumTotalSpenderCoinsSpent", () => {
 
     expect(coins).toEqual(expectedResult);
   });
+
+  it("should handle token swaps coins spent", () => {
+    const coins = getSumTotalSpenderCoinsSpent(
+      "osmo1gtgx92pxk6hvhc3c3g0xlkrwqq6knymu0e0caw",
+      mockTokenSwapEvents
+    );
+
+    expect(coins).toEqual([
+      { denom: "uosmo", amount: "100000000" },
+      { denom: "uion", amount: "100000000" },
+    ]);
+  });
 });
 
 describe("matchRawCoinValue", () => {
@@ -272,6 +284,60 @@ const mockMultipleEvents = [
       {
         key: "msg_index",
         value: "0",
+        index: true,
+      },
+    ],
+  },
+];
+
+const mockTokenSwapEvents = [
+  {
+    type: "message",
+    attributes: [
+      {
+        key: "action",
+        value: "/osmosis.gamm.v1beta1.MsgJoinPool",
+        index: true,
+      },
+      {
+        key: "sender",
+        value: "osmo1gtgx92pxk6hvhc3c3g0xlkrwqq6knymu0e0caw",
+        index: true,
+      },
+      {
+        key: "msg_index",
+        value: "0",
+        index: true,
+      },
+    ],
+  },
+  {
+    type: "coin_spent",
+    attributes: [
+      {
+        key: "spender",
+        value: "osmo1gtgx92pxk6hvhc3c3g0xlkrwqq6knymu0e0caw",
+        index: true,
+      },
+      {
+        key: "amount",
+        value:
+          "58573factory/osmo1z0qrq605sjgcqpylfl4aa6s90x738j7m58wyatt0tdzflg2ha26q67k743/wbtc,10541840163500050ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5,65605821922677750ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D,47899690uosmo",
+        index: true,
+      },
+      {
+        key: "msg_index",
+        value: "0",
+        index: true,
+      },
+    ],
+  },
+  {
+    type: "token_swapped",
+    attributes: [
+      {
+        key: "tokens_in",
+        value: "100000000uosmo,100000000uion",
         index: true,
       },
     ],

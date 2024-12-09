@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 export interface HistoricalLimitOrder {
   place_timestamp: string;
@@ -22,7 +22,7 @@ export function queryHistoricalOrders(
 ): Promise<HistoricalLimitOrder[]> {
   const url = new URL(
     `/users/limit_orders/history/closed?address=${userOsmoAddress}`,
-    NUMIA_BASE_URL
+    HISTORICAL_DATA_URL
   );
   return apiClient<HistoricalLimitOrder[]>(url.toString());
 }

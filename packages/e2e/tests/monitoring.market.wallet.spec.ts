@@ -52,7 +52,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
   });
 
   // biome-ignore lint/complexity/noForEach: <explanation>
-  [{ name: "WBTC" }, { name: "OSMO" }].forEach(({ name }) => {
+  [{ name: "BTC" }, { name: "OSMO" }].forEach(({ name }) => {
     test(`User should be able to Market Buy ${name}`, async () => {
       await tradePage.goto();
       await tradePage.openBuyTab();
@@ -69,10 +69,10 @@ test.describe("Test Market Buy/Sell Order feature", () => {
   });
 
   // unwrapped market sell tests just in case this affects anything.
-  test("User should be able to Market Sell WBTC", async () => {
+  test("User should be able to Market Sell BTC", async () => {
     await tradePage.goto();
     await tradePage.openSellTab();
-    await tradePage.selectAsset("WBTC");
+    await tradePage.selectAsset("BTC");
     await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();

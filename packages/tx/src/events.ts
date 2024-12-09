@@ -10,6 +10,42 @@ export function getSumTotalSpenderCoinsSpent(
   // denom => sum amount
   const coinsSpentMap = new Map<string, Int>();
 
+  const tokenSwapEvent = txEvents.find(({ type }) => type === "token_swapped");
+
+  /**
+   * If the transaction is a token swap, we need to extract the coins spent from the
+   * "tokens_in" attribute.
+   */
+  if (tokenSwapEvent) {
+    const tokenSwapEventAttribute = tokenSwapEvent.attributes.find(
+      ({ key }) => key === "tokens_in"
+    );
+    if (tokenSwapEventAttribute) {
+      const coinsSpentRaw = tokenSwapEventAttribute.value.split(",");
+
+      coinsSpentRaw.forEach((coinSpentRaw) => {
+        const coin = matchRawCoinValue(coinSpentRaw);
+
+        if (coin) {
+          const existingCoin = coinsSpentMap.get(coin.denom);
+          if (existingCoin) {
+            coinsSpentMap.set(
+              coin.denom,
+              existingCoin.add(new Int(coin.amount))
+            );
+          } else {
+            coinsSpentMap.set(coin.denom, new Int(coin.amount));
+          }
+        }
+      });
+
+      return Array.from(coinsSpentMap, ([denom, amount]) => ({
+        denom,
+        amount: amount.toString(),
+      }));
+    }
+  }
+
   txEvents.forEach(({ type, attributes }) => {
     // validate that it's a spend event affecting the spender
     if (type !== "coin_spent") return;
