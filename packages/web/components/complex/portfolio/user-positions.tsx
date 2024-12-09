@@ -96,7 +96,7 @@ function useUserPositionsData(address: string | undefined) {
   const hasPositions = Boolean(positions?.length);
 
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
-    api.local.pools.getUserPools.useQuery(
+    api.edge.pools.getUserPools.useQuery(
       {
         userOsmoAddress: address ?? "",
       },
