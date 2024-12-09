@@ -8,6 +8,7 @@ import {
   paramsRouter,
   portfolioRouter,
   swapRouter,
+  poolsRouter,
 } from "@osmosis-labs/trpc";
 
 import { localBridgeTransferRouter } from "~/server/api/routers/local-bridge-transfer";
@@ -25,4 +26,5 @@ export const localRouter = createTRPCRouter({
   portfolio: portfolioRouter,
   params: paramsRouter,
   orderbooks: orderbookRouter,
+  pools: poolsRouter,
 });

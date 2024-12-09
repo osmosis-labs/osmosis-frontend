@@ -129,7 +129,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-  } = api.edge.pools.getPools.useInfiniteQuery(
+  } = api.local.pools.getPools.useInfiniteQuery(
     {
       limit,
       search: filters.searchQuery
