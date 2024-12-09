@@ -35,6 +35,7 @@
     "@tanstack/react-query-persist-client": "^4.36.1",
     "@trpc/client": "^10.45.1",
     "@trpc/react-query": "^10.45.1",
+    "dayjs": "^1.10.7",
     "debounce": "^1.2.1",
     "expo": "~52.0.8",
     "expo-blur": "~14.0.1",
@@ -67,8 +68,7 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.4",
     "zeego": "^2.0.4",
-    "zustand": "^4.5.5",
-    "dayjs": "^1.10.7"
+    "zustand": "^4.5.5"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

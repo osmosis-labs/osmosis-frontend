@@ -16,7 +16,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { DefaultTheme } from "~/constants/themes";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
-import { api } from "~/utils/trpc";
+import { api, RouterKeys } from "~/utils/trpc";
 import { appRouter } from "~/utils/trpc-routers/root-router";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -46,7 +46,25 @@ const localStoragePersister = createSyncStoragePersister({
 persistQueryClient({
   queryClient,
   persister: localStoragePersister,
+  dehydrateOptions: {
+    shouldDehydrateQuery: (query) => {
+      const [key] = query.queryKey as [string[]];
+      if (Array.isArray(key)) {
+        const trpcKey = key.join(".") as RouterKeys;
+        const excludedKeys: RouterKeys[] = [
+          "local.assets.getAssetHistoricalPrice",
+        ];
 
+        /**
+         * If the key is in the excludedKeys, we don't want to persist it in the cache.
+         */
+        if (excludedKeys.includes(trpcKey)) {
+          return false;
+        }
+      }
+      return true;
+    },
+  },
   // !! IMPORTANT !!
   // If you change a data model,
   // it's important to bump this buster value

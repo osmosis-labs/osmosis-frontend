@@ -209,7 +209,7 @@ export const AssetChart = ({
     <View onLayout={onLayout}>
       {isHistoricalPriceDataLoading ? (
         <AssetChartSkeleton />
-      ) : !points || !parentWidth ? (
+      ) : !points || points.length === 0 || !parentWidth ? (
         <ChartUnavailable />
       ) : (
         <View>
