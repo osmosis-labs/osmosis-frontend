@@ -18,12 +18,10 @@ export interface OneClickTradingTimeLimit {
 }
 
 export type OneClickTradingHumanizedSessionPeriod =
-  | "5min"
-  | "10min"
-  | "30min"
   | "1hour"
-  | "3hours"
-  | "12hours";
+  | "1day"
+  | "7days"
+  | "30days";
 
 export interface OneClickTradingTransactionParams {
   isOneClickEnabled: boolean;

@@ -1,5 +1,5 @@
 import type { OneClickTradingInfo } from "@osmosis-labs/stores";
-import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
+import { safeTimeout, unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useAsync } from "react-use";
@@ -68,16 +68,16 @@ export const useOneClickTradingSession = ({
     const sessionEndDate = dayjs.unix(
       unixNanoSecondsToSeconds(value.info.sessionPeriod.end)
     );
-    const timeRemaining = sessionEndDate.unix() - dayjs().unix();
+    const timeRemainingSeconds = sessionEndDate.unix() - dayjs().unix();
 
-    const timeoutId = setTimeout(() => {
+    const { clear } = safeTimeout(() => {
       if (!value?.info) return;
 
       setIsExpired(true);
       onExpire?.({ oneClickTradingInfo: value.info });
-    }, timeRemaining * 1000);
+    }, timeRemainingSeconds * 1000);
 
-    return () => clearTimeout(timeoutId);
+    return () => clear();
   }, [isExpired, t, value?.info, onExpire]);
 
   const getTimeRemaining = useCallback(() => {

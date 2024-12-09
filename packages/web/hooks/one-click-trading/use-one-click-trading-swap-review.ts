@@ -3,7 +3,7 @@ import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo } from "react";
-import { useAsync } from "react-use";
+import { useAsync, useLocalStorage } from "react-use";
 import { create } from "zustand";
 import { useShallow } from "zustand/react/shallow";
 
@@ -21,7 +21,6 @@ const use1CTSwapReviewStore = create<{
   transaction1CTParams?: OneClickTradingTransactionParams;
   spendLimitTokenDecimals?: number;
   changes?: OneClickTradingParamsChanges;
-  initialTransactionParams?: OneClickTradingTransactionParams;
   setTransaction1CTParams: (
     transaction1CTParams: OneClickTradingTransactionParams | undefined
   ) => void;
@@ -29,21 +28,15 @@ const use1CTSwapReviewStore = create<{
     spendLimitTokenDecimals: number | undefined
   ) => void;
   setChanges: (changes: OneClickTradingParamsChanges | undefined) => void;
-  setInitialTransactionParams: (
-    initialTransactionParams: OneClickTradingTransactionParams | undefined
-  ) => void;
 }>((set) => ({
   spendLimitTokenDecimals: undefined,
   transaction1CTParams: undefined,
   changes: undefined,
-  initialTransactionParams: undefined,
   setTransaction1CTParams: (transaction1CTParams) =>
     set({ transaction1CTParams }),
   setSpendLimitTokenDecimals: (spendLimitTokenDecimals) =>
     set({ spendLimitTokenDecimals }),
   setChanges: (changes) => set({ changes }),
-  setInitialTransactionParams: (initialTransactionParams) =>
-    set({ initialTransactionParams }),
 }));
 
 export function useOneClickTradingSwapReview({
@@ -51,6 +44,9 @@ export function useOneClickTradingSwapReview({
 }: {
   isModalOpen: boolean;
 }) {
+  const [previousIsOneClickEnabled, setPreviousIsOneClickEnabled] =
+    useLocalStorage("previous-one-click-enabled", true);
+
   const {
     isOneClickTradingEnabled: isEnabled,
     isOneClickTradingExpired: isExpired,
@@ -59,7 +55,6 @@ export function useOneClickTradingSwapReview({
   } = useOneClickTradingSession();
 
   const {
-    initialTransaction1CTParams: initialTransactionParams,
     transaction1CTParams: transactionParams,
     setTransaction1CTParams: setTransactionParams,
     spendLimitTokenDecimals,
@@ -68,7 +63,7 @@ export function useOneClickTradingSwapReview({
     setChanges,
   } = useOneClickTradingParams({
     oneClickTradingInfo,
-    defaultIsOneClickEnabled: isEnabled ?? false,
+    defaultIsOneClickEnabled: previousIsOneClickEnabled,
   });
 
   const { wouldExceedSpendLimit, remainingSpendLimit } =
@@ -98,14 +93,6 @@ export function useOneClickTradingSwapReview({
 
   useEffect(() => {
     if (isModalOpen) {
-      use1CTSwapReviewStore
-        .getState()
-        .setInitialTransactionParams(initialTransactionParams);
-    }
-  }, [isModalOpen, initialTransactionParams]);
-
-  useEffect(() => {
-    if (isModalOpen) {
       use1CTSwapReviewStore.getState().setChanges(changes);
     }
   }, [isModalOpen, changes]);
@@ -117,7 +104,6 @@ export function useOneClickTradingSwapReview({
       state.setTransaction1CTParams(undefined);
       state.setSpendLimitTokenDecimals(undefined);
       state.setChanges(undefined);
-      state.setInitialTransactionParams(undefined);
     }
   }, [isModalOpen, resetParams]);
 
@@ -132,6 +118,7 @@ export function useOneClickTradingSwapReview({
     remainingSpendLimit,
     setTransactionParams,
     resetParams,
+    setPreviousIsOneClickEnabled,
   };
 }
 
@@ -141,19 +128,14 @@ export function use1CTSwapReviewMessages() {
   const { accountStore } = useStore();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const {
-    transaction1CTParams,
-    spendLimitTokenDecimals,
-    changes,
-    initialTransactionParams,
-  } = use1CTSwapReviewStore(
-    useShallow((state) => ({
-      transaction1CTParams: state.transaction1CTParams,
-      spendLimitTokenDecimals: state.spendLimitTokenDecimals,
-      changes: state.changes,
-      initialTransactionParams: state.initialTransactionParams,
-    }))
-  );
+  const { transaction1CTParams, spendLimitTokenDecimals, changes } =
+    use1CTSwapReviewStore(
+      useShallow((state) => ({
+        transaction1CTParams: state.transaction1CTParams,
+        spendLimitTokenDecimals: state.spendLimitTokenDecimals,
+        changes: state.changes,
+      }))
+    );
 
   const { oneClickTradingInfo, isOneClickTradingEnabled, isLoadingInfo } =
     useOneClickTradingSession();
@@ -182,25 +164,10 @@ export function use1CTSwapReviewMessages() {
   );
 
   const shouldSend1CTTx = useMemo(() => {
-    // Turn on or off: The session status have changed either turned on or off explicitly
-    if (
-      transaction1CTParams?.isOneClickEnabled !==
-      initialTransactionParams?.isOneClickEnabled
-    ) {
-      return true;
-    }
-
-    // Modify: The session was already on, wasn't turned off and the params have changed
-    if (
-      transaction1CTParams?.isOneClickEnabled &&
-      initialTransactionParams?.isOneClickEnabled &&
-      (changes ?? [])?.length > 0
-    ) {
-      return true;
-    }
-
+    if (isOneClickTradingEnabled && (changes ?? []).length === 0) return false;
+    if (transaction1CTParams?.isOneClickEnabled) return true;
     return false;
-  }, [transaction1CTParams, initialTransactionParams, changes]);
+  }, [transaction1CTParams, changes, isOneClickTradingEnabled]);
 
   const { value: oneClickMessages, loading: isLoadingOneClickMessages } =
     useAsync(async () => {

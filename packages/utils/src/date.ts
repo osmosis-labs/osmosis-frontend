@@ -19,3 +19,38 @@ export function unixNanoSecondsToSeconds(
 ): number {
   return Number(unixNanoSeconds) / 1000000000;
 }
+
+/**
+ * A safe version of setTimeout that splits large timeouts into smaller intervals.
+ * This is necessary because the maximum timeout for setTimeout is 24.8 days.
+ * @param callback - The function to call after the timeout.
+ * @param milliseconds - The number of milliseconds to wait before calling the callback.
+ */
+export function safeTimeout(callback: () => void, milliseconds: number) {
+  const MAX_TIMEOUT = 2 ** 31 - 1; // Maximum safe timeout
+  let timeoutId: NodeJS.Timeout | null = null; // Track the current timeout
+  let cleared = false; // Track if the timeout has been cleared
+
+  const clear = () => {
+    cleared = true; // Mark as cleared
+    if (timeoutId) {
+      clearTimeout(timeoutId); // Clear the current timeout
+    }
+  };
+
+  const runTimeout = (remainingTime: number) => {
+    if (cleared) return; // Do nothing if cleared
+
+    if (remainingTime <= MAX_TIMEOUT) {
+      timeoutId = setTimeout(callback, remainingTime);
+    } else {
+      timeoutId = setTimeout(() => {
+        runTimeout(remainingTime - MAX_TIMEOUT); // Recurse with the remaining time
+      }, MAX_TIMEOUT);
+    }
+  };
+
+  runTimeout(milliseconds);
+
+  return { clear };
+}
