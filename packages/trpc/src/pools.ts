@@ -75,6 +75,7 @@ export const poolsRouter = createTRPCRouter({
         .merge(UserOsmoAddressSchema)
     )
     .query(async ({ input: { poolId, userOsmoAddress }, ctx }) =>
+
       getSharePoolBondDurations({
         ...ctx,
         poolId,
