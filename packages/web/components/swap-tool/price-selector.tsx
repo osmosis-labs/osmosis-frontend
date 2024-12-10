@@ -30,7 +30,7 @@ import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
-const UI_DEFAULT_QUOTES: MainnetAssetSymbols[] = ["USDC", "USDT"];
+const UI_DEFAULT_QUOTES: MainnetAssetSymbols[] = ["USDC", "USDT", "USDY"];
 
 const VALID_QUOTES: MainnetAssetSymbols[] = [
   ...UI_DEFAULT_QUOTES,
