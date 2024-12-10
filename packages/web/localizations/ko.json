@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5분",
-      "10min": "10분",
-      "30min": "30분",
       "1hour": "1시간",
-      "3hours": "3시간",
-      "12hours": "12시간"
+      "1day": "1일",
+      "7days": "7일",
+      "30days": "30일"
     },
     "settings": {
       "header": "1-클릭 거래",
@@ -1104,7 +1102,7 @@
     "hour": "시간",
     "hours": "시간",
     "day": "낮",
-    "days": "낮"
+    "days": "날"
   },
   "transactions": {
     "noRecent": "최근 이적 없음",

@@ -76,7 +76,7 @@ export const AddConcLiquidity: FunctionComponent<
     const { queryQuasarVaults } = queriesExternalStore;
     const { vaults: quasarVaults } = queryQuasarVaults.get(poolId);
 
-    const { data: pool } = api.edge.pools.getPool.useQuery({
+    const { data: pool } = api.local.pools.getPool.useQuery({
       poolId,
     });
 

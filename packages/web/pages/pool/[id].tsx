@@ -26,7 +26,7 @@ const Pool: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
-  const { data: pool, isError } = api.edge.pools.getPool.useQuery({ poolId });
+  const { data: pool, isError } = api.local.pools.getPool.useQuery({ poolId });
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 

@@ -19,6 +19,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
+import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
 import { RecapRow } from "~/components/ui/recap-row";
@@ -129,6 +130,7 @@ export function ReviewOrder({
     wouldExceedSpendLimit: wouldExceedSpendLimit1CT,
     setTransactionParams: setTransaction1CTParams,
     resetParams: reset1CTParams,
+    setPreviousIsOneClickEnabled,
   } = useOneClickTradingSwapReview({ isModalOpen: isOpen });
 
   const wouldExceedSpendLimit = useMemo(() => {
@@ -749,6 +751,8 @@ export function ReviewOrder({
                     setTransaction1CTParams((prev) => {
                       if (!prev) return;
 
+                      setPreviousIsOneClickEnabled(!prev.isOneClickEnabled);
+
                       return {
                         ...prev,
                         isOneClickEnabled: !prev.isOneClickEnabled,
@@ -924,9 +928,12 @@ const OneClickTradingActiveSessionParamsEdit = ({
           <span> {remainingSpendLimit} </span>
         )}
         {" / "}
-        {changes.includes("sessionPeriod") ? (
+        {changes.includes("sessionPeriod") &&
+        transactionParams?.sessionPeriod.end ? (
           <span className="text-bullish-400">
-            {transactionParams?.sessionPeriod.end}
+            {t(
+              oneClickTradingTimeMappings[transactionParams.sessionPeriod.end]
+            )}
           </span>
         ) : (
           <OneClickTradingRemainingTime className="inline" useShortTimeUnits />
