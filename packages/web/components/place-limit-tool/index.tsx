@@ -290,19 +290,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           ? swapState.marketState.inAmountInput.setAmount
           : swapState.marketState.outAmountInput.setAmount;
 
-        setQuoteType(
-          !isMarketOutAmount || !featureFlags.inGivenOut
-            ? "out-given-in"
-            : "in-given-out"
-        );
-
         // If value is empty clear values
-        if (!value?.trim()) {
+        if (!value || value.trim().length === 0) {
           if (type === "market") {
             setMarketAmount("");
             setOppositeMarketAmount("");
           }
-          return update("");
+
+          if (fiatAmount.length > 0 || tokenAmount.length > 0) {
+            return update("");
+          }
+
+          return;
         }
 
         const updatedValue = transformAmount(
@@ -329,6 +328,21 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         const formattedValue = !isFocused
           ? trimPlaceholderZeros(updatedValue)
           : updatedValue;
+
+        if (amountType === "fiat" && fiatAmount === formattedValue) {
+          return;
+        }
+
+        if (amountType === "token" && tokenAmount === formattedValue) {
+          return;
+        }
+
+        setQuoteType(
+          !isMarketOutAmount || !featureFlags.inGivenOut
+            ? "out-given-in"
+            : "in-given-out"
+        );
+
         update(formattedValue);
       },
       [
@@ -341,6 +355,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type,
         resetSlippage,
         featureFlags.inGivenOut,
+        fiatAmount,
+        tokenAmount,
       ]
     );
 
@@ -352,7 +368,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         type === "market"
       )
         return;
-
       const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
       const fiatValue = value
         ? swapState.priceState.price.mul(value)
