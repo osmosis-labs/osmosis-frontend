@@ -121,7 +121,7 @@ export const HistoricalChart = memo((props: HistoricalChartProps) => {
           data,
         },
       ]}
-      onCrosshairMove={(params) => {
+      onDataPointHover={(params) => {
         if (params.seriesData.size > 0) {
           const [data] = [...params.seriesData.values()] as AreaData[];
 

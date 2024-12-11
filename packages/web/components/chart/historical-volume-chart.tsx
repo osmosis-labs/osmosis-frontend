@@ -95,7 +95,7 @@ export const HistoricalVolumeChart = memo(
             data,
           },
         ]}
-        onCrosshairMove={(params) => {
+        onDataPointHover={(params) => {
           if (params.seriesData.size > 0) {
             const [data] = [...params.seriesData.values()] as AreaData[];
 
