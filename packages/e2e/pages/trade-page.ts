@@ -133,14 +133,14 @@ export class TradePage extends BasePage {
       const approvePage = pages[1];
       const approvePageTitle = approvePage.url();
       console.log(`Approve page is opened at: ${approvePageTitle}`);
-      const msgContentAmount = await approvePage
+      const msgContent = await approvePage
         .getByText("type: osmosis/poolmanager/")
         .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      console.log(`Wallet is approving this msg: \n${msgContent}`);
       await approvePage
         .getByRole("button", { name: "Approve" })
         .click({ timeout: 4000 });
-      return msgContentAmount;
+      return msgContent;
     }
     console.log("Second page was not opened in 5 seconds.");
   }
