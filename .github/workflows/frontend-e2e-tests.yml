@@ -203,7 +203,8 @@ jobs:
   preview-trade-tests:
     timeout-minutes: 15
     runs-on: macos-latest
-    needs: [wait-for-deployment, preview-swap-osmo-tests]
+    needs:
+      [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
