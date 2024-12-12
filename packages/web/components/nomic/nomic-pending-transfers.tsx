@@ -336,7 +336,8 @@ const TransactionDetailsModal = ({
                   </p>
                 </div>
               </div>
-              <p className="body1 text-osmoverse-300">bc0123ab...456def</p>
+              {/* TODO: Get origin bitcoin address from pending deposit */}
+              {/* <p className="body1 text-osmoverse-300">bc0123ab...456def</p> */}
             </div>
 
             <div className="flex h-12 w-12 items-center justify-center self-start">
