@@ -124,6 +124,27 @@ export class TradePage extends BasePage {
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
+  private async approveInKeplr(context: BrowserContext) {
+    console.log("Wait for 5 seconds for any popup");
+    await this.page.waitForTimeout(5_000);
+    const pages = context.pages();
+    console.log(`Number of Open Pages: ${pages.length}`);
+    if (pages.length === 2) {
+      const approvePage = pages[1];
+      const approvePageTitle = approvePage.url();
+      console.log(`Approve page is opened at: ${approvePageTitle}`);
+      const msgContentAmount = await approvePage
+        .getByText("type: osmosis/poolmanager/")
+        .textContent();
+      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      await approvePage
+        .getByRole("button", { name: "Approve" })
+        .click({ timeout: 4000 });
+      return { msgContentAmount };
+    }
+    console.log("Second page was not opened in 5 seconds.");
+  }
+
   async swapAndGetWalletMsg(context: BrowserContext) {
     // Make sure to have sufficient balance and swap button is enabled
     expect(
@@ -131,30 +152,15 @@ export class TradePage extends BasePage {
       "Insufficient balance for the swap!"
     ).toBeFalsy();
     console.log("Swap and Sign now..");
-    await expect(this.swapBtn).toBeEnabled({ timeout: 7000 });
-    // Handle Pop-up page ->
-    await this.swapBtn.click();
-    const pageApprove = context.waitForEvent("page");
-    await this.confirmSwapBtn.click();
-    const approvePage = await pageApprove;
-    await approvePage.waitForLoadState();
-    const approvePageTitle = approvePage.url();
-    console.log(`Approve page is opened at: ${approvePageTitle}`);
-    const approveBtn = approvePage.getByRole("button", {
-      name: "Approve",
+    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
+      timeout: 7000,
     });
-    await expect(approveBtn).toBeEnabled();
-    const msgContentAmount = await approvePage
-      .getByText("type: osmosis/poolmanager/")
-      .textContent();
-    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-    // Approve trx
-    await approveBtn.click();
+    await this.swapBtn.click({ timeout: 4000 });
+    await this.confirmSwapBtn.click({ timeout: 5000 });
+    const msgContent = this.approveInKeplr(context);
     // wait for trx confirmation
     await this.page.waitForTimeout(4000);
-    //await approvePage.close();
-    // Handle Pop-up page <-
-    return { msgContentAmount };
+    return { msgContent };
   }
 
   async selectAsset(token: string) {
