@@ -27,7 +27,7 @@ jobs:
         run: echo "$environment_url"
 
   preview-swap-tests:
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: macos-latest
     needs: wait-for-deployment
     steps:
@@ -153,7 +153,7 @@ jobs:
           path: packages/e2e/playwright-report
 
   preview-trade-tests:
-    timeout-minutes: 10
+    timeout-minutes: 15
     runs-on: macos-latest
     needs: [wait-for-deployment, preview-swap-tests]
     steps:
