@@ -44,7 +44,7 @@ const useNomicTransactionsStore = create(
       transactions: new Map(),
       upsertTransaction: (transactions) => {
         set((state) => {
-          const nextTransactions = state.transactions;
+          const nextTransactions = new Map(state.transactions);
           transactions.forEach((transaction) => {
             nextTransactions.set(transaction.transactionId, transaction);
           });
