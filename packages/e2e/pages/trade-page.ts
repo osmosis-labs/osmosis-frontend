@@ -124,7 +124,7 @@ export class TradePage extends BasePage {
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
-  private async approveInKeplr(context: BrowserContext) {
+  private async approveInKeplrAndGetMsg(context: BrowserContext) {
     console.log("Wait for 5 seconds for any popup");
     await this.page.waitForTimeout(5_000);
     const pages = context.pages();
@@ -140,9 +140,34 @@ export class TradePage extends BasePage {
       await approvePage
         .getByRole("button", { name: "Approve" })
         .click({ timeout: 4000 });
-      return { msgContentAmount };
+      return msgContentAmount;
     }
     console.log("Second page was not opened in 5 seconds.");
+  }
+
+  async justSwapAnaApproveIfNeeded(context: BrowserContext) {
+    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
+      timeout: 7000,
+    });
+    await this.swapBtn.click({ timeout: 4000 });
+    await this.confirmSwapBtn.click({ timeout: 5000 });
+    console.log("Wait for 7 seconds for any popup");
+    await this.page.waitForTimeout(7_000);
+    const pages = context.pages();
+    console.log(`Number of Open Pages: ${pages.length}`);
+    if (pages.length === 2) {
+      const approvePage = pages[1];
+      const approvePageTitle = approvePage.url();
+      console.log(`Approve page is opened at: ${approvePageTitle}`);
+      const msgContentAmount = await approvePage
+        .getByText("type: osmosis/poolmanager/")
+        .textContent();
+      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      await approvePage
+        .getByRole("button", { name: "Approve" })
+        .click({ timeout: 4000 });
+    }
+    console.log("Second page was not opened in 7 seconds.");
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
@@ -156,11 +181,13 @@ export class TradePage extends BasePage {
       timeout: 7000,
     });
     await this.swapBtn.click({ timeout: 4000 });
+    // Handle 1-click by default
+    const oneClick = '//div[@role="dialog"]//button[@data-state="checked"]';
+    if (await this.page.locator(oneClick).isVisible({ timeout: 2000 })) {
+      await this.page.locator(oneClick).click({ timeout: 3000 });
+    }
     await this.confirmSwapBtn.click({ timeout: 5000 });
-    const msgContent = this.approveInKeplr(context);
-    // wait for trx confirmation
-    await this.page.waitForTimeout(4000);
-    return { msgContent };
+    return await this.approveInKeplrAndGetMsg(context);
   }
 
   async selectAsset(token: string) {

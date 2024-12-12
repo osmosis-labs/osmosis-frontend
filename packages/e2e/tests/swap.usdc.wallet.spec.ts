@@ -57,7 +57,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("OSMO", "USDC");
     await tradePage.enterAmount("0.2");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`token_out_denom: ${USDC}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -71,7 +71,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "OSMO");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain("token_out_denom: uosmo");
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -85,7 +85,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("ATOM", "USDC");
     await tradePage.enterAmount("0.015");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${ATOM}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -99,7 +99,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "ATOM");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${USDC}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -113,7 +113,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "TIA");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${USDC}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -127,7 +127,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("TIA", "USDC");
     await tradePage.enterAmount("0.02");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${TIA}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -141,7 +141,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "INJ");
     await tradePage.enterAmount("0.2");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${USDC}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -155,7 +155,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("INJ", "USDC");
     await tradePage.enterAmount("0.01");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${INJ}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -169,7 +169,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "AKT");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${USDC}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
@@ -183,7 +183,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("AKT", "USDC");
     await tradePage.enterAmount("0.025");
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.swapAndGetWalletMsg(context);
+    const msgContentAmount = await tradePage.swapAndGetWalletMsg(context);
     expect(msgContentAmount).toBeTruthy();
     expect(msgContentAmount).toContain(`denom: ${AKT}`);
     expect(msgContentAmount).toContain(`sender: ${walletId}`);
