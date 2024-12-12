@@ -190,6 +190,8 @@ export async function getPortfolioAssets({
     new Dec(categories["total-assets"].capitalization)
   );
 
+  console.log("categories: total-assets", categories["total-assets"].capitalization);
+
   // Update userBalanceDenoms to be a list of objects with denom and amount
   const userBalanceDenoms =
     categories["user-balances"]?.account_coins_result?.map((result) => ({
