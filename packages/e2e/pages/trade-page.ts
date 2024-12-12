@@ -145,12 +145,7 @@ export class TradePage extends BasePage {
     console.log("Second page was not opened in 5 seconds.");
   }
 
-  async justSwapAnaApproveIfNeeded(context: BrowserContext) {
-    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
-      timeout: 7000,
-    });
-    await this.swapBtn.click({ timeout: 4000 });
-    await this.confirmSwapBtn.click({ timeout: 5000 });
+  async justApproveIfNeeded(context: BrowserContext) {
     console.log("Wait for 7 seconds for any popup");
     await this.page.waitForTimeout(7_000);
     const pages = context.pages();
@@ -159,10 +154,6 @@ export class TradePage extends BasePage {
       const approvePage = pages[1];
       const approvePageTitle = approvePage.url();
       console.log(`Approve page is opened at: ${approvePageTitle}`);
-      const msgContentAmount = await approvePage
-        .getByText("type: osmosis/poolmanager/")
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
       await approvePage
         .getByRole("button", { name: "Approve" })
         .click({ timeout: 4000 });
@@ -385,5 +376,41 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(2000);
     // Handle Pop-up page <-
     return { msgContentAmount };
+  }
+
+  async sellAndApprove(context: BrowserContext) {
+    // Make sure Sell button is enabled
+    await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
+      timeout: 9000,
+    });
+    await this.sellBtn.click();
+    await this.confirmSwapBtn.click();
+    await this.justApproveIfNeeded(context);
+    await this.page.waitForTimeout(1000);
+  }
+
+  async buyAndApprove(context: BrowserContext, limit = false) {
+    await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
+      timeout: 9000,
+    });
+    await this.buyBtn.click();
+    await this.confirmSwapBtn.click();
+    await this.justApproveIfNeeded(context);
+    await this.page.waitForTimeout(1000);
+  }
+
+  async swapAndApprove(context: BrowserContext) {
+    // Make sure to have sufficient balance and swap button is enabled
+    expect(
+      await this.isInsufficientBalanceForSwap(),
+      "Insufficient balance for the swap!"
+    ).toBeFalsy();
+    console.log("Swap and Sign now..");
+    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
+      timeout: 7000,
+    });
+    await this.swapBtn.click({ timeout: 4000 });
+    await this.confirmSwapBtn.click({ timeout: 5000 });
+    await this.justApproveIfNeeded(context);
   }
 }

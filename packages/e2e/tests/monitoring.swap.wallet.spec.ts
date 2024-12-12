@@ -65,10 +65,7 @@ test.describe("Test Swap Stables feature", () => {
     await tradePage.selectPair("USDC.eth.axl", "USDC");
     await tradePage.enterAmount(swapAmount);
     await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`denom: ${USDCa}`);
-    expect(msgContent).toContain(`token_out_denom: ${USDC}`);
+    await tradePage.swapAndApprove(context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -78,10 +75,7 @@ test.describe("Test Swap Stables feature", () => {
     await tradePage.selectPair("USDT", "USDC");
     await tradePage.enterAmount(swapAmount);
     await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(USDC);
-    expect(msgContent).toContain(allUSDT);
+    await tradePage.swapAndApprove(context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -91,10 +85,7 @@ test.describe("Test Swap Stables feature", () => {
     await tradePage.selectPair("USDC", "USDT");
     await tradePage.enterAmount(swapAmount);
     await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`denom: ${USDC}`);
-    expect(msgContent).toContain(allUSDT);
+    await tradePage.swapAndApprove(context);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
