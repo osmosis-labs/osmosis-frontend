@@ -74,7 +74,7 @@ export const TextareaBox: FunctionComponent<TextareaBoxProps> = ({
           key={textareaKey}
           ref={textareaRef}
           className={classNames(
-            "md:leading-0 w-full resize-none appearance-none bg-transparent pt-px align-middle leading-10 outline-none placeholder:text-osmoverse-500 md:p-0",
+            "w-full resize-none appearance-none bg-transparent py-2 align-middle outline-none placeholder:text-osmoverse-500 md:p-0",
             {
               "text-white-disabled": disabled,
               "text-white-high": currentValue != "" && !disabled,
@@ -103,7 +103,7 @@ export const TextareaBox: FunctionComponent<TextareaBoxProps> = ({
         />
 
         {trailingSymbol && (
-          <span className={classNames("pt-3", classes?.trailingSymbol)}>
+          <span className={classNames("pt-2", classes?.trailingSymbol)}>
             {trailingSymbol}
           </span>
         )}
