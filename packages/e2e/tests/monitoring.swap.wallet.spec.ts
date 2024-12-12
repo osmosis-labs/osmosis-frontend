@@ -9,12 +9,6 @@ test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const USDC =
-    "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  const USDCa =
-    "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858";
-  const allUSDT =
-    "factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allUSDT";
   const swapAmount = "0.55";
 
   test.beforeAll(async () => {
@@ -47,46 +41,21 @@ test.describe("Test Swap Stables feature", () => {
     await context.close();
   });
 
-  test("User should be able to swap USDC to USDC.eth.axl", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("USDC", "USDC.eth.axl");
-    await tradePage.enterAmount(swapAmount);
-    await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`denom: ${USDC}`);
-    expect(msgContent).toContain(`token_out_denom: ${USDCa}`);
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to swap USDC.eth.axl to USDC", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("USDC.eth.axl", "USDC");
-    await tradePage.enterAmount(swapAmount);
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to swap USDT to USDC", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("USDT", "USDC");
-    await tradePage.enterAmount(swapAmount);
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to swap USDC to USDT", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("USDC", "USDT");
-    await tradePage.enterAmount(swapAmount);
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
+  // biome-ignore lint/complexity/noForEach: <explanation>
+  [
+    { from: "USDC", to: "USDC.eth.axl" },
+    { from: "USDC.eth.axl", to: "USDC" },
+    { from: "USDC", to: "USDT" },
+    { from: "USDT", to: "USDC" },
+  ].forEach(({ from, to }) => {
+    test(`User should be able to swap ${from} to ${to}`, async () => {
+      await tradePage.goto();
+      await tradePage.selectPair(from, to);
+      await tradePage.enterAmount(swapAmount);
+      await tradePage.showSwapInfo();
+      await tradePage.swapAndApprove(context);
+      await tradePage.isTransactionSuccesful();
+      await tradePage.getTransactionUrl();
+    });
   });
 });

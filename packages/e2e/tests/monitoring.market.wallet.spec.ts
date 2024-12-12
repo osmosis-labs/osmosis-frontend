@@ -74,7 +74,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
-    await tradePage.buyAndApprove(context);
+    await tradePage.sellAndApprove(context);
     await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
     await tradePage.getTransactionUrl();
   });
@@ -86,7 +86,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
-    await tradePage.buyAndApprove(context);
+    await tradePage.sellAndApprove(context);
     await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
     await tradePage.getTransactionUrl();
   });
