@@ -61,7 +61,7 @@ export function useAddConcentratedLiquidityConfig(
   const address = account?.address ?? "";
 
   const { data: pool, isFetched: isPoolFetched } =
-    api.edge.pools.getPool.useQuery(
+    api.local.pools.getPool.useQuery(
       { poolId },
       {
         refetchInterval: 5_000, // 5 seconds

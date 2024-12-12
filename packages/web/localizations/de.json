@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 Minuten",
-      "10min": "10 Minuten",
-      "30min": "30 Minuten",
       "1hour": "1 Stunde",
-      "3hours": "3 Stunden",
-      "12hours": "12 Stunden"
+      "1day": "1 Tag",
+      "7days": "7 Tage",
+      "30days": "30 Tage"
     },
     "settings": {
       "header": "1-Klick-Handel",
@@ -1104,7 +1102,7 @@
     "hour": "Std",
     "hours": "Std",
     "day": "Tag",
-    "days": "Tag"
+    "days": "Tage"
   },
   "transactions": {
     "noRecent": "Keine aktuellen Transfers",

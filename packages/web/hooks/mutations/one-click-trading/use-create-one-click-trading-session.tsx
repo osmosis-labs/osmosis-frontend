@@ -295,36 +295,27 @@ export async function makeCreate1CTSessionMessage({
 
   let sessionPeriod: OneClickTradingTimeLimit;
   switch (transaction1CTParams.sessionPeriod.end) {
-    case "5min":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(5, "minute").unix()),
-      };
-      break;
-    case "10min":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(10, "minute").unix()),
-      };
-      break;
-    case "30min":
-      sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(30, "minute").unix()),
-      };
-      break;
     case "1hour":
       sessionPeriod = {
         end: unixSecondsToNanoSeconds(dayjs().add(1, "hour").unix()),
       };
       break;
-    case "3hours":
+    case "1day":
       sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(3, "hours").unix()),
+        end: unixSecondsToNanoSeconds(dayjs().add(1, "day").unix()),
       };
       break;
-    case "12hours":
+    case "7days":
       sessionPeriod = {
-        end: unixSecondsToNanoSeconds(dayjs().add(12, "hours").unix()),
+        end: unixSecondsToNanoSeconds(dayjs().add(7, "day").unix()),
       };
       break;
+    case "30days":
+      sessionPeriod = {
+        end: unixSecondsToNanoSeconds(dayjs().add(30, "day").unix()),
+      };
+      break;
+
     default:
       throw new Error(
         `Unsupported time limit: ${transaction1CTParams.sessionPeriod.end}`

@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 minute",
-      "10min": "10 minute",
-      "30min": "30 de minute",
       "1hour": "1 oră",
-      "3hours": "3 ore",
-      "12hours": "12 ore"
+      "1day": "1 zi",
+      "7days": "7 zile",
+      "30days": "30 de zile"
     },
     "settings": {
       "header": "1-Click Trading",
@@ -1104,7 +1102,7 @@
     "hour": "hr",
     "hours": "hr",
     "day": "zi",
-    "days": "zi"
+    "days": "zile"
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",

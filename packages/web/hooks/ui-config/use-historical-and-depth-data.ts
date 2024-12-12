@@ -33,7 +33,7 @@ export function useHistoricalAndLiquidityData(
     [config]
   );
 
-  const { data: pool } = api.edge.pools.getPool.useQuery(
+  const { data: pool } = api.local.pools.getPool.useQuery(
     {
       poolId,
     },

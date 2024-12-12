@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 minutos",
-      "10min": "10 minutos",
-      "30min": "30 minutos",
       "1hour": "1 hora",
-      "3hours": "3 horas",
-      "12hours": "12 horas"
+      "1day": "1 dia",
+      "7days": "7 dias",
+      "30days": "30 dias"
     },
     "settings": {
       "header": "Negociação em 1 clique",
@@ -1104,7 +1102,7 @@
     "hour": "hora",
     "hours": "hora",
     "day": "dia",
-    "days": "dia"
+    "days": "dias"
   },
   "transactions": {
     "noRecent": "Nenhuma transferência recente",

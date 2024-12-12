@@ -398,12 +398,10 @@
       }
     },
     "sessionPeriods": {
-      "5min": "5 分钟",
-      "10min": "10 分钟",
-      "30min": "30 分钟",
       "1hour": "1 小时",
-      "3hours": "3 小时",
-      "12hours": "12 小时"
+      "1day": "1天",
+      "7days": "7 天",
+      "30days": "30 天"
     },
     "settings": {
       "header": "一键交易",

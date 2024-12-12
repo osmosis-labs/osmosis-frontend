@@ -73,6 +73,7 @@ export function humanizeTime(
 
   const daysDiff = date.diff(dayjs(), "days");
   if (daysDiff < 30) {
+    const hours = date.diff(dayjs(), "hours") % 24;
     return [
       {
         value: daysDiff,
@@ -84,6 +85,17 @@ export function humanizeTime(
             : useShortTimeUnits
             ? "timeUnitsShort.days"
             : "timeUnits.days",
+      },
+      {
+        value: hours,
+        unitTranslationKey:
+          hours === 1
+            ? useShortTimeUnits
+              ? "timeUnitsShort.hour"
+              : "timeUnits.hour"
+            : useShortTimeUnits
+            ? "timeUnitsShort.hours"
+            : "timeUnits.hours",
       },
     ];
   }
