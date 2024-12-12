@@ -26,7 +26,7 @@ jobs:
           environment_url: ${{ steps.vercel.outputs.environment_url }}
         run: echo "$environment_url"
 
-  preview-swap-tests:
+  preview-swap-osmo-tests:
     timeout-minutes: 15
     runs-on: macos-latest
     needs: wait-for-deployment
@@ -65,13 +65,61 @@ jobs:
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/e2e
-          npx playwright test -g "Test Swap feature"
+          npx playwright test swap.osmo.wallet
       - name: upload Swap test results
         if: failure()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
-          name: preview-swap-test-results
+          name: osmo-swap-test-results
+          path: packages/e2e/playwright-report
+
+  preview-swap-usdc-tests:
+    timeout-minutes: 15
+    runs-on: macos-latest
+    needs: [wait-for-deployment, preview-swap-osmo-tests]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: print environment_url and BRANCH_NAME
+        env:
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+        run: |
+          echo "$BASE_URL"
+          echo "$BRANCH_NAME"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          echo "$GITHUB_OUTPUT"
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Swap Pair tests
+        env:
+          BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+        run: |
+          cd packages/e2e
+          npx playwright test swap.usdc.wallet
+      - name: upload Swap test results
+        if: failure()
+        id: swap-test-results
+        uses: actions/upload-artifact@v4
+        with:
+          name: usdc-swap-test-results
           path: packages/e2e/playwright-report
 
   preview-portfolio-trx-tests:
@@ -155,7 +203,7 @@ jobs:
   preview-trade-tests:
     timeout-minutes: 15
     runs-on: macos-latest
-    needs: [wait-for-deployment, preview-swap-tests]
+    needs: [wait-for-deployment, preview-swap-osmo-tests]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4

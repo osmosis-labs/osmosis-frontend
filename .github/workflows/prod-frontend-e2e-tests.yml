@@ -62,7 +62,7 @@ jobs:
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/e2e
-          npx playwright test transactions portfolio swap.wallet
+          npx playwright test transactions portfolio swap.osmo.wallet
       - name: upload test results
         if: always()
         id: e2e-test-results
