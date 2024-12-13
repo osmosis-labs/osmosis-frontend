@@ -192,12 +192,6 @@ export const AssetsOverview: FunctionComponent<
         )
       : undefined;
 
-	console.log("data point", dataPoint);
-  const dataPointValue = 
-    dataPoint.value !== undefined
-      ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
-	  : "";
-
   const totalDisplayValue =
     dataPoint.value !== undefined
       ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
@@ -255,7 +249,7 @@ export const AssetsOverview: FunctionComponent<
             {isMobile ? (
               <h4>{totalDisplayValue?.toString()}</h4>
             ) : (
-              <h3>{totalDisplayValue?.toString()} - {dataPointValue?.toString()}</h3>
+              <h3>{totalDisplayValue?.toString()}</h3>
             )}
           </SkeletonLoader>
           <SkeletonLoader
