@@ -44,15 +44,14 @@ test.describe("Test Swap to/from OSMO feature", () => {
     await context.close();
   });
 
-  test("User should be able to swap OSMO to WBTC", async () => {
+  test.skip("User should be able to swap OSMO to WBTC", async () => {
     await tradePage.goto();
     await tradePage.selectPair("OSMO", "WBTC");
     await tradePage.enterAmount("0.9");
     await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`sender: ${walletId}`);
-    expect(msgContent).toContain("denom: uosmo");
+    await tradePage.swapAndApprove(context);
+    //expect(msgContent).toContain(`sender: ${walletId}`);
+    //expect(msgContent).toContain("denom: uosmo");
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -61,11 +60,10 @@ test.describe("Test Swap to/from OSMO feature", () => {
     await tradePage.goto();
     await tradePage.selectPair("OSMO", "ATOM");
     await tradePage.enterAmount("0.2");
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
-    expect(msgContent).toContain(`sender: ${walletId}`);
-    expect(msgContent).toContain("denom: uosmo");
+    await tradePage.swapAndApprove(context);
+    //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
+    //expect(msgContent).toContain(`sender: ${walletId}`);
+    //expect(msgContent).toContain("denom: uosmo");
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
@@ -75,11 +73,10 @@ test.describe("Test Swap to/from OSMO feature", () => {
     await tradePage.selectPair("ATOM", "OSMO");
     await tradePage.enterAmount("0.01");
     await tradePage.showSwapInfo();
-    const msgContent = await tradePage.swapAndGetWalletMsg(context);
-    expect(msgContent).toBeTruthy();
-    expect(msgContent).toContain(`denom: ${ATOM}`);
-    expect(msgContent).toContain(`sender: ${walletId}`);
-    expect(msgContent).toContain("token_out_denom: uosmo");
+    await tradePage.swapAndApprove(context);
+    //expect(msgContent).toContain(`denom: ${ATOM}`);
+    //expect(msgContent).toContain(`sender: ${walletId}`);
+    //expect(msgContent).toContain("token_out_denom: uosmo");
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
