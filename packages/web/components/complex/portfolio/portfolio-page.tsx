@@ -53,6 +53,8 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const totalCap = allocation?.totalCap;
 
+ console.log("totalCap", totalCap);
+
   const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
 
   const [overviewRef, { height: overviewHeight }] =
