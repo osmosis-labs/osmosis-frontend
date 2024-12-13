@@ -17,6 +17,11 @@ const Options = (
   }
 > => [
   {
+    ...FiatRampDisplayInfos.moonpay,
+    initialAsset: "OSMO",
+    subtitle: t("components.fiatOnrampSelection.moonpay"),
+  },
+  {
     ...FiatRampDisplayInfos.kado,
     initialAsset: "USDC",
     subtitle: t("components.fiatOnrampSelection.kadoSubtitle"),
