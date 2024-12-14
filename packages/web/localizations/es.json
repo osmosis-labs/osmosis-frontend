@@ -928,8 +928,8 @@
     "addressAboutToExpire": "Esta dirección está a punto de caducar. Solicite una nueva dirección para evitar perder fondos.",
     "createNewDepositAddress": "Crear nueva dirección de depósito",
     "transactionDetails": "Detalles de la transacción",
-    "continue": "Continuar",
-    "inputBitcoinAddress": "Introducir dirección de Bitcoin"
+    "confirmAmount": "Confirmar importe",
+    "enterBitcoinAddress": "Introducir dirección de Bitcoin"
   },
   "unknownError": "Error desconocido",
   "viewExplorer": "Ver Explorador",

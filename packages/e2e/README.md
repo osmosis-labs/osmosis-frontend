@@ -16,7 +16,7 @@ All you need to add is a private keys for wallets that are being used:
 To install Playwright, please execute `npx playwright install --with-deps chromium` from the /web folder.
 
 To run a Select pair tests, please execute `npx playwright test -g "Test Select Swap Pair feature"` from the /web folder.
-To run a Swap E2E tests, please execute `npx playwright test -g "Test Swap feature"` from the /web folder.
+To run a Swap E2E tests, please execute `npx playwright test swap.osmo.wallet` from the /web folder.
 To run a Monitoring E2E tests, please execute `npx playwright test monitoring --timeout 180000` from the /web folder.
 
 Tests can be executed locally in a browser by changing `headless: true` to `headless: false`.

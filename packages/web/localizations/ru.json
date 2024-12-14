@@ -928,8 +928,8 @@
     "addressAboutToExpire": "Срок действия этого адреса истекает. Пожалуйста, запросите новый адрес, чтобы избежать потери средств.",
     "createNewDepositAddress": "Создать новый адрес депозита",
     "transactionDetails": "Подробности транзакции",
-    "continue": "Продолжать",
-    "inputBitcoinAddress": "Введите адрес Bitcoin"
+    "confirmAmount": "Подтвердите сумму",
+    "enterBitcoinAddress": "Введите адрес Bitcoin"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

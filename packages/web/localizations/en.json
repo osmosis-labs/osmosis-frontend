@@ -928,8 +928,8 @@
     "addressAboutToExpire": "This address is about to expire. Please request a new address to avoid losing funds.",
     "createNewDepositAddress": "Create new deposit address",
     "transactionDetails": "Transaction details",
-    "continue": "Continue",
-    "inputBitcoinAddress": "Input Bitcoin address"
+    "confirmAmount": "Confirm Amount",
+    "enterBitcoinAddress": "Enter Bitcoin address"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
