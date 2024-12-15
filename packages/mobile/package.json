@@ -39,6 +39,7 @@
     "debounce": "^1.2.1",
     "expo": "~52.0.8",
     "expo-blur": "~14.0.1",
+    "expo-clipboard": "^7.0.0",
     "expo-constants": "~17.0.3",
     "expo-dev-client": "~5.0.4",
     "expo-font": "~13.0.1",
@@ -67,6 +68,7 @@
     "react-native-wagmi-charts": "^2.6.0",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.4",
+    "sonner-native": "^0.16.2",
     "zeego": "^2.0.4",
     "zustand": "^4.5.5"
   },

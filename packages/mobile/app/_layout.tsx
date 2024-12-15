@@ -12,6 +12,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { Toaster } from "sonner-native";
 
 import { DefaultTheme } from "~/constants/themes";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
@@ -135,6 +136,7 @@ export default function RootLayout() {
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView>
             <BottomSheetModalProvider>
+              <Toaster />
               <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="+not-found" />

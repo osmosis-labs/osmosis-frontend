@@ -39,6 +39,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     top: 0,
+    width: 44,
+    height: 44,
   },
   assetDenom: {
     fontSize: 20,
