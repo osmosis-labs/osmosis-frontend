@@ -1,14 +1,16 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { calculatePortfolioPerformance } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
-import { timeToLocal } from "@osmosis-labs/utils";
+import { formatPretty, shorten, timeToLocal } from "@osmosis-labs/utils";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { FlashList } from "@shopify/flash-list";
 import dayjs from "dayjs";
-import { Link } from "expo-router";
-import { useMemo, useState } from "react";
+import { Link, useRouter } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
+  Pressable,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -17,9 +19,11 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { SvgUri } from "react-native-svg";
 
 import { ProfileWoz } from "~/components/icons/profile-woz";
+import { SettingsIcon } from "~/components/icons/settings";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Text } from "~/components/ui/text";
+import { WalletBottomSheet } from "~/components/wallet-bottom-sheet";
 import { Colors } from "~/constants/theme-colors";
 import { useCosmosWallet } from "~/hooks/use-cosmos-wallet";
 import { getChangeColor } from "~/utils/price";
@@ -27,6 +31,12 @@ import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
 export default function HomeScreen() {
   const { address } = useCosmosWallet();
+  const router = useRouter();
+  const bottomSheetModalRef = useRef<BottomSheetModal>(null);
+
+  const handleAvatarPress = useCallback(() => {
+    bottomSheetModalRef.current?.present();
+  }, []);
 
   const {
     data: allocation,
@@ -56,7 +66,8 @@ export default function HomeScreen() {
           gap: 16,
         }}
       >
-        <View
+        <TouchableOpacity
+          onPress={handleAvatarPress}
           style={{
             alignSelf: "flex-start",
             backgroundColor: Colors["osmoverse"][700],
@@ -65,9 +76,31 @@ export default function HomeScreen() {
           }}
         >
           <ProfileWoz style={{ flexShrink: 0 }} width={48} height={48} />
+        </TouchableOpacity>
+
+        <View>
+          <Text type="title">Wallet 1</Text>
+          <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
+            {shorten(address ?? "")}
+          </Text>
         </View>
 
-        <Text type="title">Portfolio</Text>
+        <View style={{ marginLeft: "auto" }}>
+          <Pressable
+            onPress={() => {
+              router.push("/settings");
+            }}
+            style={{
+              width: 44,
+              height: 44,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <SettingsIcon />
+          </Pressable>
+        </View>
       </View>
 
       <View style={{ marginBottom: 16 }}>
@@ -77,6 +110,8 @@ export default function HomeScreen() {
         />
       </View>
       <PortfolioAssetBalancesTable />
+
+      <WalletBottomSheet ref={bottomSheetModalRef} />
     </SafeAreaView>
   );
 }
@@ -277,15 +312,20 @@ const AssetItem = ({
             />
           )}
           <View>
-            <Text style={styles.assetName}>{asset.coinDenom}</Text>
+            <Text style={styles.assetName}>{asset.coinName}</Text>
+            {asset.amount && (
+              <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
+                {formatPretty(asset.amount, { maxDecimals: 8 })}
+              </Text>
+            )}
           </View>
         </View>
         <View style={styles.assetRight}>
           <Text style={styles.price}>
-            {asset.currentPrice ? (
+            {asset.usdValue ? (
               <>
-                {asset.currentPrice.symbol}
-                <SubscriptDecimal decimal={asset.currentPrice.toDec()} />
+                {asset.usdValue.symbol}
+                <SubscriptDecimal decimal={asset.usdValue.toDec()} />
               </>
             ) : (
               ""
@@ -418,7 +458,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     backgroundColor: Colors.osmoverse[900],
     flex: 1,
-    paddingTop: 32,
     borderTopEndRadius: 32,
     borderTopStartRadius: 32,
   },

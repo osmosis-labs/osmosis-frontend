@@ -55,18 +55,18 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="assets"
+        name="trade"
         options={{
           tabBarIcon: ({ color }) => (
-            <SearchListIcon width={28} height={28} fill={color} />
+            <TrendIcon width={28} height={28} fill={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="trends"
+        name="assets"
         options={{
           tabBarIcon: ({ color }) => (
-            <TrendIcon width={28} height={28} fill={color} />
+            <SearchListIcon width={28} height={28} fill={color} />
           ),
         }}
       />
