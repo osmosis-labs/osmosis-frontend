@@ -102,28 +102,3 @@ JavaScript;
 ```
 
 It returns `unknown` types, so you may need to type cast to resolve TS errors.
-
-## E2E Tests
-
-### Run E2E Tests
-
-To install Playwright, please execute `npx playwright install` from the /web folder.
-
-To run Select pair tests, please execute `npx playwright test -g "Test Select Swap Pair feature"` from the /web folder.
-To run Swap E2E tests, please execute `npx playwright test -g "Test Swap feature"` from the /web folder.
-
-Tests can be executed locally in a browser by changing `headless: true` to `headless: false`.
-
-## GitHub E2E Tests workflow
-
-[Tests Workflow](https://github.com/osmosis-labs/osmosis-frontend/blob/stage/.github/workflows/frontend-e2e-tests.yml) is initiated on `push: branches-ignore: - master` event and awaits a deployment to a Vercel environment. The `await_deployment` script is querying for a building deployment and fails if deployment failed or not started in 30 seconds.
-
-It contains following jobs:
-
-- initial `wait-for-deployment` script
-- Preview tests `preview-swap-tests`
-- Preview tests `preview-portfolio-trx-tests`
-- Preview tests `preview-pools-and-select-pair-tests`
-- Preview tests `preview-trade-tests`
-- Preview tests `preview-claim-tests`
-- Test report is uploaded as Artifact on fail.

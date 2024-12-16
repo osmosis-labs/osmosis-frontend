@@ -928,8 +928,8 @@
     "addressAboutToExpire": "यह पता समाप्त होने वाला है। कृपया धनराशि खोने से बचने के लिए नया पता मांगें।",
     "createNewDepositAddress": "नया जमा पता बनाएं",
     "transactionDetails": "लेन-देन विवरण",
-    "continue": "जारी रखना",
-    "inputBitcoinAddress": "बिटकॉइन पता इनपुट करें"
+    "confirmAmount": "राशि की पुष्टि करें",
+    "enterBitcoinAddress": "बिटकॉइन पता दर्ज करें"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

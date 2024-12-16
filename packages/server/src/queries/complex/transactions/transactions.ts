@@ -141,6 +141,12 @@ export async function getTransactions({
         address,
         page,
         pageSize,
+        messageTypes: [
+          "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+          "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
+          "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
+          "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
+        ],
       });
 
       // if the length of the data is equal to the page size, there is a next page

@@ -30,7 +30,7 @@ jobs:
 
   prod-e2e-tests:
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     needs: wait-for-deployment
     environment:
       name: prod_swap_test
@@ -38,6 +38,8 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          sparse-checkout: |
+            packages/e2e
           ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -60,7 +62,7 @@ jobs:
           WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
         run: |
           cd packages/e2e
-          npx playwright test transactions portfolio swap.wallet
+          npx playwright test transactions portfolio swap.osmo.wallet
       - name: upload test results
         if: always()
         id: e2e-test-results
