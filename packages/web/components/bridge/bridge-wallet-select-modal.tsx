@@ -66,7 +66,7 @@ export const BridgeWalletSelectModal: FunctionComponent<
     props.direction === "withdraw" &&
     props.toChain.chainType === "bitcoin"
   ) {
-    modalTitle = t("transfer.inputBitcoinAddress");
+    modalTitle = t("transfer.enterBitcoinAddress");
   } else {
     modalTitle = t("transfer.selectWithdrawWallet", {
       network: props.toChain.prettyName,
@@ -578,7 +578,7 @@ const SendToAnotherAddressForm: FunctionComponent<
       <Button
         onClick={handleConfirm}
         disabled={!isAcknowledged || isInvalidAddress || !address}
-        className="w-full"
+        className="w-full !text-subtitle1"
       >
         {t("transfer.done")}
       </Button>

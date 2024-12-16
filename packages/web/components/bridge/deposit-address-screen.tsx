@@ -155,7 +155,7 @@ export const DepositAddressScreen = observer(
           )}
         >
           {showQrCode ? (
-            <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4">
+            <div className="z-20 flex w-full items-center gap-4 rounded-2xl bg-osmoverse-100 p-4 relative">
               <div className="flex h-[180px] w-[180px] items-center justify-center">
                 {isLoading || !data?.depositData?.depositAddress ? (
                   <Spinner className="text-black" />
@@ -188,6 +188,13 @@ export const DepositAddressScreen = observer(
                     : t("transfer.copyToClipboard")}
                 </button>
               </div>
+              <IconButton
+                aria-label="Close"
+                data-testid="close"
+                className="absolute transition-colors duration-200 top-0 right-0 !bg-transparent !shadow-none z-50 !h-12 !w-12 cursor-pointer !py-0 text-wosmongton-800 hover:text-osmoverse-500"
+                icon={<Icon id="close" className="w-4 h-4" />}
+                onClick={() => setShowQrCode(false)}
+              />
             </div>
           ) : (
             <div className="z-20 flex w-full items-center justify-between rounded-2xl bg-osmoverse-850 p-4">
@@ -443,8 +450,12 @@ const TransferDetails: FunctionComponent<{
                         {totalFees
                           .inequalitySymbol(showTotalFeeIneqSymbol)
                           .toString()}
-                        {" + "}
-                        {depositData.providerFee.toString()}{" "}
+                        {!depositData.providerFee.toDec().isZero() && (
+                          <>
+                            {" + "}
+                            {depositData.providerFee.toString()}
+                          </>
+                        )}{" "}
                         {t("transfer.fees")}
                       </span>
                     )}
@@ -521,7 +532,13 @@ const ProviderFeesRow: FunctionComponent<{
       label={t("transfer.providerFees")}
       isLoading={isRefetchingQuote}
     >
-      <p className="text-osmoverse-100">{depositData.providerFee.toString()}</p>
+      {depositData.providerFee.toDec().isZero() ? (
+        <p className="text-bullish-400">{t("transfer.free")}</p>
+      ) : (
+        <p className="text-osmoverse-100">
+          {depositData.providerFee.toString()}
+        </p>
+      )}
     </QuoteDetailRow>
   );
 };

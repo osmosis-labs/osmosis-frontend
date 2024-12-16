@@ -6,9 +6,9 @@ import {
   oneClickTradingRouter,
   orderbookRouter,
   paramsRouter,
+  poolsRouter,
   portfolioRouter,
   swapRouter,
-  poolsRouter,
 } from "@osmosis-labs/trpc";
 
 import { localBridgeTransferRouter } from "~/server/api/routers/local-bridge-transfer";

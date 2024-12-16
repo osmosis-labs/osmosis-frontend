@@ -928,8 +928,8 @@
     "addressAboutToExpire": "Bu adresin süresi dolmak üzere. Lütfen para kaybetmemek için yeni bir adres talep edin.",
     "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
     "transactionDetails": "İşlem detayları",
-    "continue": "Devam etmek",
-    "inputBitcoinAddress": "Bitcoin adresini girin"
+    "confirmAmount": "Tutarı Onayla",
+    "enterBitcoinAddress": "Bitcoin adresini girin"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

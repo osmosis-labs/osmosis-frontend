@@ -60,9 +60,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
       await tradePage.enterAmount("1.55");
       await tradePage.isSufficientBalanceForTrade();
       await tradePage.showSwapInfo();
-      const { msgContentAmount } = await tradePage.buyAndGetWalletMsg(context);
-      expect(msgContentAmount).toBeTruthy();
-      expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
+      await tradePage.buyAndApprove(context);
       await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
       await tradePage.getTransactionUrl();
     });
@@ -76,9 +74,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
+    await tradePage.sellAndApprove(context);
     await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
     await tradePage.getTransactionUrl();
   });
@@ -90,9 +86,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.enterAmount("1.54");
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
-    const { msgContentAmount } = await tradePage.sellAndGetWalletMsg(context);
-    expect(msgContentAmount).toBeTruthy();
-    expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
+    await tradePage.sellAndApprove(context);
     await tradePage.isTransactionSuccesful(TRX_SUCCESS_TIMEOUT);
     await tradePage.getTransactionUrl();
   });

@@ -1177,7 +1177,7 @@ export const AmountScreen = observer(
                   <h6 className="flex items-center gap-3">
                     {toChain?.chainType === "bitcoin" &&
                     direction === "withdraw"
-                      ? t("transfer.continue")
+                      ? t("transfer.confirmAmount")
                       : pendingChainApproval
                       ? t("transfer.pendingApproval")
                       : t("transfer.connectTo", {
