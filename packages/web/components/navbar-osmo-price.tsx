@@ -12,6 +12,7 @@ import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 export const NavbarOsmoPrice = observer(() => {
@@ -46,8 +47,9 @@ export const NavbarOsmoPrice = observer(() => {
             </div>
 
             <p className="mt-[3px]">
-              {osmo.currentPrice?.fiatCurrency.symbol}
-              {Number(osmo.currentPrice?.toDec().toString()).toFixed(2)}
+              {formatPretty(osmo.currentPrice, {
+                maxDecimals: 2,
+              })}
             </p>
           </div>
         </SkeletonLoader>
