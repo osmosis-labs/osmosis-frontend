@@ -213,7 +213,7 @@ export const assetsRouter = createTRPCRouter({
       });
       const userMarketAsset = await getMarketAsset({
         ...ctx,
-        extended: true,
+        includeTotalSupply: true,
         asset: userAsset,
       });
 
