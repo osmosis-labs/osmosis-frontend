@@ -40,9 +40,9 @@ const use1CTSwapReviewStore = create<{
 }));
 
 export function useOneClickTradingSwapReview({
-  isModalOpen,
+  enabled,
 }: {
-  isModalOpen: boolean;
+  enabled: boolean;
 }) {
   const [previousIsOneClickEnabled, setPreviousIsOneClickEnabled] =
     useLocalStorage("previous-one-click-enabled", true);
@@ -76,36 +76,36 @@ export function useOneClickTradingSwapReview({
   const isLoading = isLoadingInfo;
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (enabled) {
       use1CTSwapReviewStore
         .getState()
         .setTransaction1CTParams(transactionParams);
     }
-  }, [transactionParams, isModalOpen]);
+  }, [transactionParams, enabled]);
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (enabled) {
       use1CTSwapReviewStore
         .getState()
         .setSpendLimitTokenDecimals(spendLimitTokenDecimals);
     }
-  }, [isModalOpen, spendLimitTokenDecimals]);
+  }, [enabled, spendLimitTokenDecimals]);
 
   useEffect(() => {
-    if (isModalOpen) {
+    if (enabled) {
       use1CTSwapReviewStore.getState().setChanges(changes);
     }
-  }, [isModalOpen, changes]);
+  }, [enabled, changes]);
 
   useEffect(() => {
-    if (!isModalOpen) {
+    if (!enabled) {
       const state = use1CTSwapReviewStore.getState();
       resetParams();
       state.setTransaction1CTParams(undefined);
       state.setSpendLimitTokenDecimals(undefined);
       state.setChanges(undefined);
     }
-  }, [isModalOpen, resetParams]);
+  }, [enabled, resetParams]);
 
   return {
     isEnabled,
