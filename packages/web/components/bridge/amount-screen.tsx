@@ -84,6 +84,7 @@ interface AmountScreenProps {
 
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
   supportedBridgeInfo: SupportedBridgeInfo;
+  hasNoSupportedChains: boolean;
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -125,6 +126,7 @@ export const AmountScreen = observer(
       isLoading: isLoadingSupportedAssets,
     },
     supportedBridgeInfo,
+    hasNoSupportedChains,
 
     fromChain,
     setFromChain,
@@ -829,7 +831,7 @@ export const AmountScreen = observer(
      * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
      */
     if (
-      !isLoading &&
+      (!isLoading || hasNoSupportedChains) &&
       (areAssetTransfersDisabled ||
         !fromChain ||
         !fromAsset ||
@@ -840,11 +842,22 @@ export const AmountScreen = observer(
     ) {
       return (
         <>
-          {chainSelection}
+          {!hasNoSupportedChains && chainSelection}
           <OnlyExternalBridgeSuggest
             direction={direction}
             toChain={toChain}
-            toAsset={toAsset}
+            toAsset={
+              // If we haven't supported a chain, we can't suggest an asset
+              // so we use the canonical asset as a fallback
+              canonicalAsset && !toAsset && hasNoSupportedChains
+                ? {
+                    address: canonicalAsset?.coinMinimalDenom,
+                    decimals: canonicalAsset?.coinDecimals,
+                    denom: canonicalAsset?.coinDenom,
+                    coinGeckoId: canonicalAsset?.coinGeckoId,
+                  }
+                : toAsset
+            }
             canonicalAssetDenom={canonicalAsset?.coinDenom}
             fromChain={fromChain}
             fromAsset={fromAsset}
