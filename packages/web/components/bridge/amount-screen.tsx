@@ -84,7 +84,7 @@ interface AmountScreenProps {
 
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
   supportedBridgeInfo: SupportedBridgeInfo;
-  hasNoSupportedChains: boolean;
+  hasSupportedChains: boolean;
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -126,7 +126,7 @@ export const AmountScreen = observer(
       isLoading: isLoadingSupportedAssets,
     },
     supportedBridgeInfo,
-    hasNoSupportedChains,
+    hasSupportedChains,
 
     fromChain,
     setFromChain,
@@ -666,9 +666,13 @@ export const AmountScreen = observer(
       isLoadingAssetsInOsmosis ||
       !canonicalAsset ||
       !canonicalAssetPrice ||
-      (direction === "withdraw"
-        ? !fromChain || !fromAsset
-        : !toChain || !toAsset);
+      // If we don't have supported chains, we won't have a fromAsset or toAsset
+      // so we can't consider the loading state.
+      // therefore we only consider the loading state if we have supported chains.
+      (hasSupportedChains &&
+        (direction === "withdraw"
+          ? !fromChain || !fromAsset
+          : !toChain || !toAsset));
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
@@ -831,8 +835,9 @@ export const AmountScreen = observer(
      * - Quoting is disabled for the current selection, meaning providers can't provide quotes but they may provide external URLs
      */
     if (
-      (!isLoading || hasNoSupportedChains) &&
-      (areAssetTransfersDisabled ||
+      !isLoading &&
+      (!hasSupportedChains ||
+        areAssetTransfersDisabled ||
         !fromChain ||
         !fromAsset ||
         !toChain ||
@@ -842,14 +847,14 @@ export const AmountScreen = observer(
     ) {
       return (
         <>
-          {!hasNoSupportedChains && chainSelection}
+          {hasSupportedChains && chainSelection}
           <OnlyExternalBridgeSuggest
             direction={direction}
             toChain={toChain}
             toAsset={
               // If we haven't supported a chain, we can't suggest an asset
               // so we use the canonical asset as a fallback
-              canonicalAsset && !toAsset && hasNoSupportedChains
+              canonicalAsset && !toAsset && !hasSupportedChains
                 ? {
                     address: canonicalAsset?.coinMinimalDenom,
                     decimals: canonicalAsset?.coinDecimals,
