@@ -139,9 +139,8 @@ export const AmountAndReviewScreen = observer(
     const { supportedAssetsByChainId: counterpartySupportedAssetsByChainId } =
       supportedAssets;
 
-    const hasNoSupportedChains =
-      !supportedAssets.isLoading &&
-      supportedAssets.supportedChains.length === 0;
+    const hasSupportedChains =
+      !supportedAssets.isLoading && supportedAssets.supportedChains.length > 0;
 
     /** Filter for bridges for the current to/from chain/asset selection. */
     const supportedBridgeInfo = useMemo<SupportedBridgeInfo>(() => {
@@ -287,7 +286,7 @@ export const AmountAndReviewScreen = observer(
               isLoadingAssetsInOsmosis={isLoadingAssetsInOsmosis}
               bridgesSupportedAssets={supportedAssets}
               supportedBridgeInfo={supportedBridgeInfo}
-              hasNoSupportedChains={hasNoSupportedChains}
+              hasSupportedChains={hasSupportedChains}
               fromChain={fromChain}
               setFromChain={setFromChain}
               toChain={toChain}
