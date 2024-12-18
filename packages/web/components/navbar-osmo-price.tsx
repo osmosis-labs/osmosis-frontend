@@ -1,4 +1,3 @@
-import { makeMinimalAsset } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -9,17 +8,12 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Sparkline } from "~/components/chart/sparkline";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
-import { AssetLists } from "~/config/generated/asset-lists";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
-
-const osmoAsset = AssetLists.flatMap(({ assets }) => assets).find(
-  (asset) => asset.symbol === "OSMO"
-);
-const osmoCurrency = makeMinimalAsset(osmoAsset!);
 
 export const NavbarOsmoPrice = observer(() => {
   const { accountStore, chainStore } = useStore();
@@ -29,21 +23,23 @@ export const NavbarOsmoPrice = observer(() => {
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: osmoPrice } = api.edge.assets.getAssetPrice.useQuery(
-    { coinMinimalDenom: osmoCurrency?.coinMinimalDenom ?? "" },
-    { enabled: Boolean(osmoCurrency) }
-  );
+  const { data: osmo } = api.edge.assets.getMarketAsset.useQuery({
+    findMinDenomOrSymbol: "OSMO",
+  });
 
-  if (!osmoPrice || !osmoCurrency) return null;
+  if (!osmo || !osmo.currentPrice) return null;
 
   return (
     <div className="flex flex-col gap-6 px-2">
       <div className="flex items-center justify-between px-2">
-        <SkeletonLoader isLoaded={osmoPrice.isReady} className="min-w-[70px]">
+        <SkeletonLoader
+          isLoaded={osmo.currentPrice.isReady}
+          className="min-w-[70px]"
+        >
           <div className="flex items-center gap-1">
             <div className="h-[20px] w-[20px]">
               <Image
-                src={osmoCurrency.coinImageUrl!}
+                src={osmo.coinImageUrl!}
                 alt="Osmo icon"
                 width={20}
                 height={20}
@@ -51,8 +47,9 @@ export const NavbarOsmoPrice = observer(() => {
             </div>
 
             <p className="mt-[3px]">
-              {osmoPrice.fiatCurrency.symbol}
-              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+              {formatPretty(osmo.currentPrice, {
+                maxDecimals: 2,
+              })}
             </p>
           </div>
         </SkeletonLoader>
@@ -61,7 +58,7 @@ export const NavbarOsmoPrice = observer(() => {
       </div>
 
       {wallet?.isWalletConnected && (
-        <SkeletonLoader isLoaded={osmoPrice.isReady}>
+        <SkeletonLoader isLoaded={osmo.currentPrice.isReady}>
           <Button
             variant="outline"
             className="button group relative flex w-full items-center justify-center gap-2 overflow-hidden !rounded-full border-osmoverse-700 font-bold text-osmoverse-100 transition-all duration-300 ease-in-out hover:border-none hover:bg-gradient-positive hover:text-osmoverse-1000"

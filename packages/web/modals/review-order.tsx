@@ -131,7 +131,7 @@ export function ReviewOrder({
     setTransactionParams: setTransaction1CTParams,
     resetParams: reset1CTParams,
     setPreviousIsOneClickEnabled,
-  } = useOneClickTradingSwapReview({ isModalOpen: isOpen });
+  } = useOneClickTradingSwapReview({ enabled: isOpen && show1CT });
 
   const wouldExceedSpendLimit = useMemo(() => {
     if (!is1CTEnabled) return false;
