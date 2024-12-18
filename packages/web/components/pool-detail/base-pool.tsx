@@ -95,6 +95,7 @@ export const BasePoolDetails: FunctionComponent<{
                   amount: coin,
                 }))}
                 totalWeight={new IntPretty(pool.reserveCoins.length)}
+                hideWeights={pool.type === "concentrated"}
               />
             </div>
           </div>
