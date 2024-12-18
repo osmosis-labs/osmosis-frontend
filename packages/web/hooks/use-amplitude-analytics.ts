@@ -60,7 +60,7 @@ export function useAmplitudeAnalytics({
     if (init) {
       if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
         amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
-          serverUrl: "https://amplitude.osmosis.zone/2/httpapi",
+          serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
         });
       }
     }
