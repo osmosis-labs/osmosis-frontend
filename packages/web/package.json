@@ -34,6 +34,7 @@
     "@cosmos-kit/cosmostation": "^2.11.2",
     "@cosmos-kit/keplr": "^2.12.2",
     "@cosmos-kit/leap": "^2.12.2",
+    "@cosmos-kit/okto-extension": "^2.10.1",
     "@cosmos-kit/okxwallet": "^2.9.2",
     "@cosmos-kit/station": "^2.10.2",
     "@cosmos-kit/trust": "^2.11.2",
