@@ -59,7 +59,9 @@ export function useAmplitudeAnalytics({
   useEffect(() => {
     if (init) {
       if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
-        amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY);
+        amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
+          serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+        });
       }
     }
 
