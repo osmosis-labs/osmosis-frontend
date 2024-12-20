@@ -1,13 +1,16 @@
 import { Stack } from "expo-router";
 import { router } from "expo-router";
 import React from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, Switch, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useShallow } from "zustand/react/shallow";
 
 import { RouteHeader } from "~/components/route-header";
 import { SettingsGroup } from "~/components/settings/settings-group";
 import { SettingsItem } from "~/components/settings/settings-item";
 import { Text } from "~/components/ui/text";
+import { Colors } from "~/constants/theme-colors";
+import { useSettingsStore } from "~/stores/settings";
 
 export default function SettingsScreen() {
   return (
@@ -82,6 +85,7 @@ export default function SettingsScreen() {
             title="Face ID"
             onPress={() => router.push("/settings/face-id")}
           />
+          <PreviewAssetsToggle />
           {/* <SettingsItem title="Recovery phrase" onPress={() => {}} />
           <SettingsItem title="iCloud backup" onPress={() => {}} /> */}
         </SettingsGroup>
@@ -89,3 +93,25 @@ export default function SettingsScreen() {
     </SafeAreaView>
   );
 }
+
+const PreviewAssetsToggle: React.FC = () => {
+  const { showUnverifiedAssets, setShowUnverifiedAssets } = useSettingsStore(
+    useShallow((state) => ({
+      showUnverifiedAssets: state.showUnverifiedAssets,
+      setShowUnverifiedAssets: state.setShowUnverifiedAssets,
+    }))
+  );
+
+  return (
+    <SettingsItem
+      title="Show unverified assets"
+      rightElement={
+        <Switch
+          value={showUnverifiedAssets}
+          onValueChange={setShowUnverifiedAssets}
+          trackColor={{ true: Colors.wosmongton["500"] }}
+        />
+      }
+    />
+  );
+};

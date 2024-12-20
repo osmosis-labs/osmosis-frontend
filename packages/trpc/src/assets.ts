@@ -370,21 +370,22 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          sort: createSortSchema([
-            "currentPrice",
-            "priceChange24h",
-            "usdValue",
-          ] as const).optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.omit({ onlyVerified: true })
+        .merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            sort: createSortSchema([
+              "currentPrice",
+              "priceChange24h",
+              "usdValue",
+            ] as const).optional(),
+          })
+        )
     )
     .query(
       ({
         input: {
           search,
-          onlyVerified,
           userOsmoAddress,
           sort: sortInput,
           categories,
@@ -446,7 +447,6 @@ export const assetsRouter = createTRPCRouter({
           },
           cacheKey: JSON.stringify({
             search,
-            onlyVerified,
             userOsmoAddress,
             sort: sortInput,
             categories,

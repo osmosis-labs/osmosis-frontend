@@ -1,8 +1,9 @@
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dec } from "@osmosis-labs/unit";
 import { formatPretty } from "@osmosis-labs/utils";
 import { FlashList } from "@shopify/flash-list";
 import { Link } from "expo-router";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -11,11 +12,15 @@ import {
   View,
 } from "react-native";
 import { SvgUri } from "react-native-svg";
+import { useShallow } from "zustand/react/shallow";
 
+import { UnverifiedAssetModal } from "~/components/modals/unverified-asset-modal";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
+import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useCosmosWallet } from "~/hooks/use-cosmos-wallet";
+import { useSettingsStore } from "~/stores/settings";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -24,6 +29,11 @@ const itemSize = 70;
 export const PortfolioAssetBalancesTable = () => {
   const { address } = useCosmosWallet();
   const [searchQuery, setSearchQuery] = useState("");
+  const { showUnverifiedAssets } = useSettingsStore(
+    useShallow((state) => ({
+      showUnverifiedAssets: state.showUnverifiedAssets,
+    }))
+  );
 
   const {
     data: assetPagesData,
@@ -37,6 +47,10 @@ export const PortfolioAssetBalancesTable = () => {
       userOsmoAddress: address!,
       limit: 50,
       ...(searchQuery && { search: { query: searchQuery } }),
+      sort: {
+        keyPath: "usdValue",
+        direction: "desc",
+      },
     },
     {
       enabled: Boolean(address),
@@ -89,6 +103,62 @@ const AssetItem = ({
 }: {
   asset: RouterOutputs["local"]["assets"]["getUserBridgeAssets"]["items"][number];
 }) => {
+  const unverifiedAssetModalRef = useRef<BottomSheetModal>(null);
+  const { showUnverifiedAssets, setShowUnverifiedAssets } = useSettingsStore(
+    useShallow((state) => ({
+      showUnverifiedAssets: state.showUnverifiedAssets,
+      setShowUnverifiedAssets: state.setShowUnverifiedAssets,
+    }))
+  );
+
+  const isUnverified = !asset.isVerified;
+
+  if (isUnverified && !showUnverifiedAssets) {
+    return (
+      <View style={styles.assetItem}>
+        <View style={[styles.assetLeft, { opacity: 0.5 }]}>
+          {asset.coinImageUrl?.endsWith(".svg") ? (
+            <SvgUri
+              uri={asset.coinImageUrl}
+              width={40}
+              height={40}
+              style={styles.assetIcon}
+            />
+          ) : (
+            <Image
+              source={{ uri: asset.coinImageUrl }}
+              style={styles.assetIcon}
+            />
+          )}
+          <View>
+            <Text style={styles.assetName}>{asset.coinName}</Text>
+            {asset.amount && (
+              <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
+                {formatPretty(asset.amount, { maxDecimals: 8 })}
+              </Text>
+            )}
+          </View>
+        </View>
+        <Button
+          title="Activate"
+          variant="primary"
+          onPress={() => {
+            unverifiedAssetModalRef.current?.present();
+          }}
+        />
+
+        <UnverifiedAssetModal
+          ref={unverifiedAssetModalRef}
+          onActivate={() => {
+            setShowUnverifiedAssets(true);
+          }}
+          assetSymbol={asset.coinDenom}
+          assetImageUrl={asset.coinImageUrl}
+        />
+      </View>
+    );
+  }
+
   return (
     <Link
       href={{

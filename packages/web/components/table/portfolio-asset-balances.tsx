@@ -128,7 +128,6 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
       userOsmoAddress: account?.address,
       limit: 50,
       search: searchQuery,
-      onlyVerified: !searchQuery && showUnverifiedAssets === false,
       includePreview: showPreviewAssets,
       sort,
     },
