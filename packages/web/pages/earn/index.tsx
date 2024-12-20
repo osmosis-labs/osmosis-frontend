@@ -70,7 +70,9 @@ function Earn() {
     unclaimedRewards,
   } = useGetEarnStrategies(userOsmoAddress, isWalletConnected);
 
-  const { logEvent } = useAmplitudeAnalytics();
+  useAmplitudeAnalytics({
+    onLoadEvent: [EventName.EarnPage.pageViewed],
+  });
 
   const defaultFilters: Filters = useMemo(
     () => ({
@@ -99,8 +101,7 @@ function Earn() {
     if (!earnPage && _isInitialized) {
       router.push("/");
     }
-    logEvent([EventName.EarnPage.pageViewed]);
-  }, [earnPage, router, _isInitialized, logEvent]);
+  }, [earnPage, router, _isInitialized]);
 
   return (
     <div className="relative mx-auto flex max-w-[1508px] flex-col gap-10 py-10 pl-8 pr-9">

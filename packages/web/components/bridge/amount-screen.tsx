@@ -84,6 +84,7 @@ interface AmountScreenProps {
 
   bridgesSupportedAssets: ReturnType<typeof useBridgesSupportedAssets>;
   supportedBridgeInfo: SupportedBridgeInfo;
+  hasSupportedChains: boolean;
 
   fromChain: BridgeChainWithDisplayInfo | undefined;
   setFromChain: (chain: BridgeChainWithDisplayInfo) => void;
@@ -125,6 +126,7 @@ export const AmountScreen = observer(
       isLoading: isLoadingSupportedAssets,
     },
     supportedBridgeInfo,
+    hasSupportedChains,
 
     fromChain,
     setFromChain,
@@ -664,9 +666,13 @@ export const AmountScreen = observer(
       isLoadingAssetsInOsmosis ||
       !canonicalAsset ||
       !canonicalAssetPrice ||
-      (direction === "withdraw"
-        ? !fromChain || !fromAsset
-        : !toChain || !toAsset);
+      // If we don't have supported chains, we won't have a fromAsset or toAsset
+      // so we can't consider the loading state.
+      // therefore we only consider the loading state if we have supported chains.
+      (hasSupportedChains &&
+        (direction === "withdraw"
+          ? !fromChain || !fromAsset
+          : !toChain || !toAsset));
 
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
@@ -830,7 +836,8 @@ export const AmountScreen = observer(
      */
     if (
       !isLoading &&
-      (areAssetTransfersDisabled ||
+      (!hasSupportedChains ||
+        areAssetTransfersDisabled ||
         !fromChain ||
         !fromAsset ||
         !toChain ||
@@ -840,11 +847,22 @@ export const AmountScreen = observer(
     ) {
       return (
         <>
-          {chainSelection}
+          {hasSupportedChains && chainSelection}
           <OnlyExternalBridgeSuggest
             direction={direction}
             toChain={toChain}
-            toAsset={toAsset}
+            toAsset={
+              // If we haven't supported a chain, we can't suggest an asset
+              // so we use the canonical asset as a fallback
+              canonicalAsset && !toAsset && !hasSupportedChains
+                ? {
+                    address: canonicalAsset?.coinMinimalDenom,
+                    decimals: canonicalAsset?.coinDecimals,
+                    denom: canonicalAsset?.coinDenom,
+                    coinGeckoId: canonicalAsset?.coinGeckoId,
+                  }
+                : toAsset
+            }
             canonicalAssetDenom={canonicalAsset?.coinDenom}
             fromChain={fromChain}
             fromAsset={fromAsset}
