@@ -6,16 +6,15 @@ import { Link } from "expo-router";
 import { useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
 } from "react-native";
-import { SvgUri } from "react-native-svg";
 import { useShallow } from "zustand/react/shallow";
 
 import { UnverifiedAssetModal } from "~/components/modals/unverified-asset-modal";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
+import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
@@ -117,18 +116,8 @@ const AssetItem = ({
     return (
       <View style={styles.assetItem}>
         <View style={[styles.assetLeft, { opacity: 0.5 }]}>
-          {asset.coinImageUrl?.endsWith(".svg") ? (
-            <SvgUri
-              uri={asset.coinImageUrl}
-              width={40}
-              height={40}
-              style={styles.assetIcon}
-            />
-          ) : (
-            <Image
-              source={{ uri: asset.coinImageUrl }}
-              style={styles.assetIcon}
-            />
+          {asset.coinImageUrl && (
+            <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
           )}
           <View>
             <Text style={styles.assetName}>{asset.coinName}</Text>
@@ -174,21 +163,17 @@ const AssetItem = ({
     >
       <TouchableOpacity style={styles.assetItem}>
         <View style={styles.assetLeft}>
-          {asset.coinImageUrl?.endsWith(".svg") ? (
-            <SvgUri
-              uri={asset.coinImageUrl}
-              width={40}
-              height={40}
-              style={styles.assetIcon}
-            />
-          ) : (
-            <Image
-              source={{ uri: asset.coinImageUrl }}
-              style={styles.assetIcon}
-            />
+          {asset.coinImageUrl && (
+            <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
           )}
           <View>
-            <Text style={styles.assetName}>{asset.coinName}</Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.assetName, { width: 160 }]}
+            >
+              {asset.coinName}
+            </Text>
             {asset.amount && (
               <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
                 {formatPretty(asset.amount, { maxDecimals: 8 })}

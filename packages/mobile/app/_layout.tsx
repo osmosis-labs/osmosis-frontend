@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
 
+import { FaceIDGate } from "~/components/face-id-gate";
 import { DefaultTheme } from "~/constants/themes";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
@@ -134,13 +135,18 @@ export default function RootLayout() {
     <api.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={DefaultTheme}>
-          <GestureHandlerRootView>
+          <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
-              <Toaster />
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="+not-found" />
-              </Stack>
+              <FaceIDGate>
+                <Toaster />
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen name="+not-found" />
+                </Stack>
+              </FaceIDGate>
             </BottomSheetModalProvider>
             <StatusBar style="auto" />
           </GestureHandlerRootView>
