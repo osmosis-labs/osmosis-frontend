@@ -10,13 +10,17 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.osmosis.mobile"
+      "bundleIdentifier": "com.osmosis-dev.mobile"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.USE_BIOMETRIC",
+        "android.permission.USE_FINGERPRINT"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -56,8 +60,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "c6d39670-7676-40d9-813b-ff7104304289"
+        "projectId": "f9cff7d3-52fd-4589-9f2b-15f730332467"
       }
-    }
+    },
+    "owner": "jfelx"
   }
 }

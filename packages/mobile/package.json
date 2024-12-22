@@ -1,5 +1,5 @@
 {
-  "name": "@osmosis-frontend/mobile",
+  "name": "@osmosis-labs/mobile",
   "private": true,
   "main": "index.ts",
   "version": "1.0.0",
@@ -11,7 +11,8 @@
     "test": "jest --watchAll",
     "lint": "expo lint",
     "prebuild:ios": "expo prebuild --platform ios",
-    "build:local:ios": "eas build --platform ios --profile ios-simulator --local"
+    "build:local:ios": "eas build --platform ios --profile ios-simulator --local",
+    "eas-build-post-install": "tsx scripts/post-install.ts"
   },
   "jest": {
     "preset": "jest-expo"

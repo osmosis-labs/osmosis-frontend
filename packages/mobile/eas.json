@@ -2,7 +2,11 @@
   "build": {
     "development": {
       "developmentClient": true,
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "20.11.1",
+      "env": {
+        "EXPO_PUBLIC_OSMOSIS_ADDRESS": "osmo13t8prr8hu7hkuksnfrd25vpvvnrfxr223k59ph"
+      }
     },
     "ios-simulator": {
       "extends": "development",
@@ -11,8 +15,11 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "node": "20.11.1"
     },
-    "production": {}
+    "production": {
+      "node": "20.11.1"
+    }
   }
 }
