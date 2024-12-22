@@ -14,7 +14,7 @@ import { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
 
-import { FaceIDGate } from "~/components/face-id-gate";
+import { LockScreenModal } from "~/components/lock-screen-modal";
 import { DefaultTheme } from "~/constants/themes";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
@@ -80,6 +80,11 @@ persistQueryClient({
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
 export default function RootLayout() {
   const [trpcClient] = useState(() =>
     api.createClient({
@@ -137,16 +142,12 @@ export default function RootLayout() {
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
-              <FaceIDGate>
-                <Toaster />
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen name="+not-found" />
-                </Stack>
-              </FaceIDGate>
+              <LockScreenModal />
+              <Toaster />
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="+not-found" />
+              </Stack>
             </BottomSheetModalProvider>
             <StatusBar style="auto" />
           </GestureHandlerRootView>

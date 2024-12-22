@@ -4,7 +4,7 @@ import { SvgUri } from "react-native-svg";
 
 interface AssetImageProps {
   uri: string;
-  style?: ViewStyle;
+  style?: ViewStyle | ViewStyle[];
 }
 
 export const AssetImage = ({ uri, style }: AssetImageProps) => {

@@ -24,7 +24,7 @@ export const TradeBottomSheetAssetItem = ({
           {asset.coinImageUrl && (
             <AssetImage
               uri={asset.coinImageUrl}
-              style={styles.recommendedAssetImage}
+              style={[styles.assetImage, styles.recommendedAssetImage]}
             />
           )}
           <View>
@@ -38,7 +38,9 @@ export const TradeBottomSheetAssetItem = ({
   return (
     <TouchableOpacity>
       <View style={styles.assetLeft} key={asset.coinMinimalDenom}>
-        {asset.coinImageUrl && <AssetImage uri={asset.coinImageUrl} />}
+        {asset.coinImageUrl && (
+          <AssetImage uri={asset.coinImageUrl} style={styles.assetImage} />
+        )}
         <View>
           <Text style={styles.assetName}>{asset.coinName}</Text>
           <Text type="caption" style={styles.assetDenom}>
@@ -62,6 +64,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 4,
     paddingRight: 8,
+  },
+  assetImage: {
+    marginRight: 8,
   },
   recommendedAssetImage: {
     width: 24,

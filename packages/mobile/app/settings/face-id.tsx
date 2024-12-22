@@ -8,26 +8,42 @@ import { RouteHeader } from "~/components/route-header";
 import { SettingsItem } from "~/components/settings/settings-item";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { useFaceId } from "~/hooks/use-face-id";
+import {
+  useBiometricPrompt,
+  useOsBiometricAuthEnabled,
+} from "~/hooks/biometrics";
 import { useSettingsStore } from "~/stores/settings";
 
 export default function FaceIDScreen() {
-  const { isFaceIdAvailable, authenticate } = useFaceId();
+  const { isBiometricEnabled } = useOsBiometricAuthEnabled();
+
   const {
-    faceIdForAppAccess,
-    faceIdForTransactions,
-    setFaceIdForAppAccess,
-    setFaceIdForTransactions,
+    biometricForAppAccess,
+    biometricForTransactions,
+    setBiometricForAppAccess,
+    setBiometricForTransactions,
   } = useSettingsStore(
     useShallow((state) => ({
-      faceIdForAppAccess: state.faceIdForAppAccess,
-      faceIdForTransactions: state.faceIdForTransactions,
-      setFaceIdForAppAccess: state.setFaceIdForAppAccess,
-      setFaceIdForTransactions: state.setFaceIdForTransactions,
+      biometricForAppAccess: state.biometricForAppAccess,
+      biometricForTransactions: state.biometricForTransactions,
+      setBiometricForAppAccess: state.setBiometricForAppAccess,
+      setBiometricForTransactions: state.setBiometricForTransactions,
     }))
   );
 
-  if (!isFaceIdAvailable) {
+  const { authenticate: authenticateAppAccess } = useBiometricPrompt({
+    onSuccess: () => {
+      setBiometricForAppAccess(!biometricForAppAccess);
+    },
+  });
+
+  const { authenticate: authenticateTransactions } = useBiometricPrompt({
+    onSuccess: () => {
+      setBiometricForTransactions(!biometricForTransactions);
+    },
+  });
+
+  if (!isBiometricEnabled) {
     return (
       <SafeAreaView
         edges={["top"]}
@@ -72,12 +88,9 @@ export default function FaceIDScreen() {
           subtitle="Require Face ID to open app"
           rightElement={
             <Switch
-              value={faceIdForAppAccess}
-              onValueChange={async (nextValue) => {
-                const result = await authenticate();
-                if (result) {
-                  setFaceIdForAppAccess(nextValue);
-                }
+              value={biometricForAppAccess}
+              onValueChange={async () => {
+                await authenticateAppAccess();
               }}
               trackColor={{ true: Colors.wosmongton["500"] }}
             />
@@ -88,12 +101,9 @@ export default function FaceIDScreen() {
           subtitle="Require Face ID to transact"
           rightElement={
             <Switch
-              value={faceIdForTransactions}
-              onValueChange={async (nextValue) => {
-                const result = await authenticate();
-                if (result) {
-                  setFaceIdForTransactions(nextValue);
-                }
+              value={biometricForTransactions}
+              onValueChange={async () => {
+                await authenticateTransactions();
               }}
               trackColor={{ true: Colors.wosmongton["500"] }}
             />

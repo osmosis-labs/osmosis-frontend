@@ -8,10 +8,10 @@ interface SettingsState {
   setShowUnverifiedAssets: (show: boolean) => void;
 
   // Face ID settings
-  faceIdForAppAccess: boolean;
-  faceIdForTransactions: boolean;
-  setFaceIdForAppAccess: (enabled: boolean) => void;
-  setFaceIdForTransactions: (enabled: boolean) => void;
+  biometricForAppAccess: boolean;
+  biometricForTransactions: boolean;
+  setBiometricForAppAccess: (enabled: boolean) => void;
+  setBiometricForTransactions: (enabled: boolean) => void;
 }
 
 export const useSettingsStore = create<SettingsState>()(
@@ -20,12 +20,13 @@ export const useSettingsStore = create<SettingsState>()(
       showUnverifiedAssets: false,
       setShowUnverifiedAssets: (show) => set({ showUnverifiedAssets: show }),
 
-      // Face ID settings
-      faceIdForAppAccess: false,
-      faceIdForTransactions: false,
-      setFaceIdForAppAccess: (enabled) => set({ faceIdForAppAccess: enabled }),
-      setFaceIdForTransactions: (enabled) =>
-        set({ faceIdForTransactions: enabled }),
+      // Biometric settings
+      biometricForAppAccess: false,
+      biometricForTransactions: false,
+      setBiometricForAppAccess: (enabled) =>
+        set({ biometricForAppAccess: enabled }),
+      setBiometricForTransactions: (enabled) =>
+        set({ biometricForTransactions: enabled }),
     }),
     {
       name: "settings-store",
