@@ -35,7 +35,7 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#140F34"
+          "backgroundColor": "#090524"
         }
       ],
       "expo-asset",

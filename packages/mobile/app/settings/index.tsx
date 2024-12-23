@@ -5,6 +5,8 @@ import { ScrollView, Switch, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
+import { AlertTriangle } from "~/components/icons/alert-triangle";
+import { BiometricsIcon } from "~/components/icons/biometrics";
 import { RouteHeader } from "~/components/route-header";
 import { SettingsGroup } from "~/components/settings/settings-group";
 import { SettingsItem } from "~/components/settings/settings-item";
@@ -14,7 +16,7 @@ import { useSettingsStore } from "~/stores/settings";
 
 export default function SettingsScreen() {
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: "black" }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: false,
@@ -80,12 +82,16 @@ export default function SettingsScreen() {
           />
         </SettingsGroup> */}
 
+        <SettingsGroup title="Preferences">
+          <PreviewAssetsToggle />
+        </SettingsGroup>
+
         <SettingsGroup title="Security">
           <SettingsItem
             title="Face ID"
+            icon={<BiometricsIcon />}
             onPress={() => router.push("/settings/face-id")}
           />
-          <PreviewAssetsToggle />
           {/* <SettingsItem title="Recovery phrase" onPress={() => {}} />
           <SettingsItem title="iCloud backup" onPress={() => {}} /> */}
         </SettingsGroup>
@@ -105,6 +111,7 @@ const PreviewAssetsToggle: React.FC = () => {
   return (
     <SettingsItem
       title="Show unverified assets"
+      icon={<AlertTriangle />}
       rightElement={
         <Switch
           value={showUnverifiedAssets}

@@ -1,8 +1,10 @@
 import {
   authenticateAsync,
+  AuthenticationType,
   hasHardwareAsync,
   isEnrolledAsync,
   LocalAuthenticationOptions,
+  supportedAuthenticationTypesAsync,
 } from "expo-local-authentication";
 import { useCallback, useEffect, useState } from "react";
 import { Platform } from "react-native";
@@ -136,4 +138,29 @@ export function useOsBiometricAuthEnabled() {
   }, []);
 
   return { isBiometricEnabled };
+}
+
+export function useDeviceSupportsBiometricAuth(): {
+  touchId: boolean;
+  faceId: boolean;
+} {
+  const [authenticationTypes, setAuthenticationTypes] = useState<
+    AuthenticationType[]
+  >([]);
+
+  useEffect(() => {
+    const getAuthTypes = async () => {
+      const types = await supportedAuthenticationTypesAsync();
+      setAuthenticationTypes(types);
+    };
+    getAuthTypes();
+  }, []);
+
+  return {
+    touchId:
+      authenticationTypes?.includes(AuthenticationType.FINGERPRINT) ?? false,
+    faceId:
+      authenticationTypes?.includes(AuthenticationType.FACIAL_RECOGNITION) ??
+      false,
+  };
 }

@@ -16,7 +16,7 @@ import {
   View,
 } from "react-native";
 
-import OsmosisIcon from "~/assets/images/lock-screen-icon.png";
+import OsmosisIcon from "~/assets/images/splash-icon.png";
 import { Colors } from "~/constants/theme-colors";
 import {
   BiometricAuthenticationStatus,

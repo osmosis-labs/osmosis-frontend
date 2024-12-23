@@ -45,10 +45,7 @@ export default function FaceIDScreen() {
 
   if (!isBiometricEnabled) {
     return (
-      <SafeAreaView
-        edges={["top"]}
-        style={{ flex: 1, backgroundColor: "black" }}
-      >
+      <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
         <Stack.Screen
           options={{
             headerShown: false,
@@ -69,7 +66,7 @@ export default function FaceIDScreen() {
   }
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1, backgroundColor: "black" }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <Stack.Screen
         options={{
           headerShown: false,
