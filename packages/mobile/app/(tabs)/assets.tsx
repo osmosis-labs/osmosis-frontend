@@ -401,6 +401,7 @@ const styles = StyleSheet.create({
   },
   safeAreaView: {
     flex: 1,
+    paddingTop: 12,
   },
   headerContainer: {
     paddingHorizontal: 24,

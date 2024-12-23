@@ -23,11 +23,12 @@ export default function SettingsScreen() {
         }}
       />
 
-      <View style={{ paddingHorizontal: 24 }}>
+      <View style={{ paddingHorizontal: 24, paddingTop: 12 }}>
         <RouteHeader>
           <Text
             style={{
               fontSize: 20,
+              fontWeight: "600",
             }}
           >
             Settings

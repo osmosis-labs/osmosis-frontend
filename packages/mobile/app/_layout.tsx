@@ -144,7 +144,14 @@ export default function RootLayout() {
             <BottomSheetModalProvider>
               <LockScreenModal />
               <Toaster />
-              <Stack>
+              <Stack
+                screenOptions={{
+                  animation: "simple_push",
+                  animationDuration: 400,
+                  animationTypeForReplace: "push",
+                  presentation: "card",
+                }}
+              >
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="+not-found" />
               </Stack>

@@ -26,8 +26,6 @@ export const UnverifiedAssetModal = forwardRef<
     <BottomSheetModal
       ref={ref}
       enablePanDownToClose
-      //   enableDynamicSizing={false}
-      //   snapPoints={["50%"]}
       backdropComponent={useCallback(
         (props: BottomSheetBackdropProps) => (
           <BottomSheetBackdrop

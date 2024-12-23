@@ -3,7 +3,7 @@ import { shorten } from "@osmosis-labs/utils";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useRouter } from "expo-router";
 import { useRef } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { toast } from "sonner-native";
 
@@ -48,25 +48,12 @@ export default function PortfolioScreen() {
   return (
     <SafeAreaView
       edges={["top"]}
-      style={[{ flex: 1 }, { paddingBottom: bottomTabBarHeight }]}
+      style={[styles.container, { paddingBottom: bottomTabBarHeight }]}
     >
-      <View
-        style={{
-          paddingHorizontal: 24,
-          paddingVertical: 24,
-          flexDirection: "row",
-          alignItems: "center",
-          gap: 16,
-        }}
-      >
+      <View style={styles.header}>
         <TouchableOpacity
           onPress={handleAvatarPress}
-          style={{
-            alignSelf: "flex-start",
-            backgroundColor: Colors["osmoverse"][700],
-            borderRadius: 8,
-            overflow: "hidden",
-          }}
+          style={styles.avatarButton}
         >
           <ProfileWoz style={{ flexShrink: 0 }} width={48} height={48} />
         </TouchableOpacity>
@@ -75,7 +62,7 @@ export default function PortfolioScreen() {
           <Text type="title">{walletName}</Text>
           <TouchableOpacity
             activeOpacity={0.8}
-            style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+            style={styles.addressButton}
             onPress={handleCopyPress}
           >
             <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
@@ -85,25 +72,19 @@ export default function PortfolioScreen() {
           </TouchableOpacity>
         </View>
 
-        <View style={{ marginLeft: "auto" }}>
+        <View style={styles.settingsContainer}>
           <TouchableOpacity
             onPress={() => {
               router.push("/settings");
             }}
-            style={{
-              width: 44,
-              height: 44,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
+            style={styles.settingsButton}
           >
             <SettingsIcon width={30} height={30} />
           </TouchableOpacity>
         </View>
       </View>
 
-      <View style={{ marginBottom: 16 }}>
+      <View style={styles.portfolioValueContainer}>
         <PortfolioValue
           allocation={allocation}
           isLoadingAllocation={isLoadingAllocation}
@@ -115,3 +96,41 @@ export default function PortfolioScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    paddingTop: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 16,
+  },
+  avatarButton: {
+    alignSelf: "flex-start",
+    backgroundColor: Colors["osmoverse"][700],
+    borderRadius: 8,
+    overflow: "hidden",
+  },
+  addressButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  settingsContainer: {
+    marginLeft: "auto",
+  },
+  settingsButton: {
+    width: 44,
+    height: 44,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  portfolioValueContainer: {
+    marginBottom: 16,
+  },
+});

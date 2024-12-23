@@ -25,17 +25,19 @@ const TradeScreen = (props: Props) => {
         }}
       />
 
-      <RouteHeader headerStyle={{ marginHorizontal: 24 }}>
-        <Text
-          type="subtitle"
-          style={{
-            fontSize: 20,
-            fontWeight: "600",
-          }}
-        >
-          Trade
-        </Text>
-      </RouteHeader>
+      <View style={{ marginHorizontal: 24, paddingTop: 12 }}>
+        <RouteHeader>
+          <Text
+            type="subtitle"
+            style={{
+              fontSize: 20,
+              fontWeight: "600",
+            }}
+          >
+            Trade
+          </Text>
+        </RouteHeader>
+      </View>
 
       <TradeInterface />
 

@@ -3,6 +3,7 @@ import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
   BottomSheetModal,
+  BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
@@ -31,10 +32,7 @@ export const WalletBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
   return (
     <BottomSheetModal
       ref={ref}
-      index={0}
       enablePanDownToClose
-      snapPoints={["60%"]}
-      enableDynamicSizing={false}
       backdropComponent={useCallback(
         (props: BottomSheetBackdropProps) => (
           <BottomSheetBackdrop
@@ -48,7 +46,7 @@ export const WalletBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
       backgroundStyle={styles.bottomSheetBackground}
       handleIndicatorStyle={styles.indicator}
     >
-      <View style={styles.contentContainer}>
+      <BottomSheetView style={styles.contentContainer}>
         <View style={styles.header}>
           <Text type="title" style={styles.title}>
             Manage wallet
@@ -67,7 +65,7 @@ export const WalletBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
           ))}
           <AddWalletButton />
         </View>
-      </View>
+      </BottomSheetView>
     </BottomSheetModal>
   );
 });
@@ -111,7 +109,9 @@ const AddWalletButton = ({ onPress }: AddWalletButtonProps) => {
 const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    padding: 24,
+    paddingTop: 5,
+    paddingBottom: 42,
+    paddingHorizontal: 24,
   },
   bottomSheetBackground: {
     backgroundColor: Colors.osmoverse[900],

@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import React from "react";
-import { ScrollView, Switch, View } from "react-native";
+import { ScrollView, StyleSheet, Switch, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
@@ -43,21 +43,25 @@ export default function FaceIDScreen() {
     },
   });
 
+  const routeHeader = (
+    <View style={styles.headerContainer}>
+      <RouteHeader>
+        <Text style={styles.headerText}>Face ID</Text>
+      </RouteHeader>
+    </View>
+  );
+
   if (!isBiometricEnabled) {
     return (
-      <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+      <SafeAreaView edges={["top"]} style={styles.container}>
         <Stack.Screen
           options={{
             headerShown: false,
           }}
         />
-        <View style={{ paddingHorizontal: 24 }}>
-          <RouteHeader>
-            <Text style={{ fontSize: 20 }}>Face ID</Text>
-          </RouteHeader>
-        </View>
-        <View style={{ flex: 1, padding: 24 }}>
-          <Text style={{ color: Colors.wosmongton["500"] }}>
+        {routeHeader}
+        <View style={styles.messageContainer}>
+          <Text style={styles.disabledText}>
             Face ID is not available on this device
           </Text>
         </View>
@@ -66,20 +70,16 @@ export default function FaceIDScreen() {
   }
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+    <SafeAreaView edges={["top"]} style={styles.container}>
       <Stack.Screen
         options={{
           headerShown: false,
         }}
       />
 
-      <View style={{ paddingHorizontal: 24 }}>
-        <RouteHeader>
-          <Text style={{ fontSize: 20 }}>Face ID</Text>
-        </RouteHeader>
-      </View>
+      {routeHeader}
 
-      <ScrollView style={{ flex: 1, padding: 24 }}>
+      <ScrollView style={styles.scrollView}>
         <SettingsItem
           title="App access"
           subtitle="Require Face ID to open app"
@@ -110,3 +110,29 @@ export default function FaceIDScreen() {
     </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  headerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 12,
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: "600",
+  },
+  messageContainer: {
+    flex: 1,
+    padding: 24,
+  },
+  disabledText: {
+    color: Colors.wosmongton["500"],
+  },
+  scrollView: {
+    flex: 1,
+    paddingHorizontal: 24,
+    paddingTop: 12,
+  },
+});

@@ -72,7 +72,7 @@ export const PortfolioAssetBalancesTable = () => {
   return (
     <View style={styles.contentContainer}>
       {isLoading ? (
-        <View style={{ paddingHorizontal: 24 }}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator />
         </View>
       ) : (
@@ -89,7 +89,7 @@ export const PortfolioAssetBalancesTable = () => {
         />
       )}
       {isFetchingNextPage && (
-        <View style={{ paddingHorizontal: 24 }}>
+        <View style={styles.loadingContainer}>
           <ActivityIndicator />
         </View>
       )}
@@ -122,7 +122,7 @@ const AssetItem = ({
           <View>
             <Text style={styles.assetName}>{asset.coinName}</Text>
             {asset.amount && (
-              <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
+              <Text type="caption" style={styles.assetAmount}>
                 {formatPretty(asset.amount, { maxDecimals: 8 })}
               </Text>
             )}
@@ -170,12 +170,12 @@ const AssetItem = ({
             <Text
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={[styles.assetName, { width: 160 }]}
+              style={[styles.assetName, styles.assetNameWidth]}
             >
               {asset.coinName}
             </Text>
             {asset.amount && (
-              <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
+              <Text type="caption" style={styles.assetAmount}>
                 {formatPretty(asset.amount, { maxDecimals: 8 })}
               </Text>
             )}
@@ -216,6 +216,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderTopEndRadius: 32,
     borderTopStartRadius: 32,
+    paddingTop: 6,
   },
   assetItem: {
     flexDirection: "row",
@@ -247,5 +248,14 @@ const styles = StyleSheet.create({
   },
   percentage: {
     fontSize: 14,
+  },
+  loadingContainer: {
+    paddingHorizontal: 24,
+  },
+  assetAmount: {
+    color: Colors.osmoverse[400],
+  },
+  assetNameWidth: {
+    width: 160,
   },
 });

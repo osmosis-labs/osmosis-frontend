@@ -1,7 +1,14 @@
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import * as Haptics from "expo-haptics";
-import { FunctionComponent, useEffect, useMemo, useRef, useState } from "react";
-import { LayoutChangeEvent, StyleSheet, View } from "react-native";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { LayoutChangeEvent, Platform, StyleSheet, View } from "react-native";
 import Animated, {
   runOnJS,
   useAnimatedStyle,
@@ -77,10 +84,8 @@ export const AssetChart = ({
   const [parentWidth, setParentWidth] = useState<number>();
   const pointsRef = useRef<TLineChartPoint[]>([]);
 
-  const { setSelectedPoint } = useAssetChartSelectedPointStore(
-    useShallow((state) => ({
-      setSelectedPoint: state.setSelectedPoint,
-    }))
+  const setSelectedPoint = useAssetChartSelectedPointStore(
+    (state) => state.setSelectedPoint
   );
   const [dataType] = useState<AssetChartDataType>("price");
   const [timeFrame, setTimeFrame] = useAssetChartSelectedPointStore(
@@ -97,6 +102,13 @@ export const AssetChart = ({
   useEffect(() => {
     if (!timeFrame) setTimeFrame("7d");
   }, [setTimeFrame, timeFrame]);
+
+  const handleCurrentIndexChange = useCallback(
+    (index: number) => {
+      setSelectedPoint(pointsRef.current[index]);
+    },
+    [setSelectedPoint]
+  );
 
   const customTimeFrame = useMemo(() => {
     let frame = 60;
@@ -215,9 +227,7 @@ export const AssetChart = ({
         <View>
           <LineChart.Provider
             data={points}
-            onCurrentIndexChange={(index) => {
-              setSelectedPoint(pointsRef.current[index]);
-            }}
+            onCurrentIndexChange={handleCurrentIndexChange}
           >
             <InnerChartConsumer />
             <LineChart width={parentWidth} height={CHART_HEIGHT}>
@@ -228,13 +238,13 @@ export const AssetChart = ({
               <LineChart.CursorCrosshair
                 color={changeColor}
                 onActivated={() => {
-                  if (process.env.EXPO_OS === "ios") {
+                  if (Platform.OS === "ios") {
                     // Add a soft haptic feedback when pressing down on the tabs.
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }
                 }}
                 onEnded={() => {
-                  if (process.env.EXPO_OS === "ios") {
+                  if (Platform.OS === "ios") {
                     // Add a soft haptic feedback when pressing down on the tabs.
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   }

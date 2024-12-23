@@ -46,13 +46,10 @@ const AssetRoute = () => {
         }}
       />
 
-      <View style={{ paddingHorizontal: 24 }}>
+      <View style={styles.headerContainer}>
         <RouteHeader>
           <View style={styles.assetInfo}>
-            <Image
-              source={{ uri: coinImageUrl }}
-              style={{ width: 24, height: 24 }}
-            />
+            <Image source={{ uri: coinImageUrl }} style={styles.assetImage} />
             <Text style={styles.assetDenom}>{coinDenom}</Text>
           </View>
         </RouteHeader>
@@ -102,9 +99,9 @@ const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
       <AssetChart asset={asset} />
 
       {false && (
-        <View style={{ gap: 10, marginTop: 40 }}>
+        <View style={styles.balanceContainer}>
           <Text type="subtitle">Your Balance:</Text>
-          <View style={{ flexDirection: "row", gap: 8 }}>
+          <View style={styles.balanceRow}>
             <Text type="title">{asset.currentPrice?.toString()}</Text>
             <Text
               style={{
@@ -116,7 +113,7 @@ const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
               {asset.priceChange24h?.toString()}
             </Text>
           </View>
-          <Text style={{ fontWeight: "400", fontSize: 20 }}>
+          <Text style={styles.balanceAmount}>
             {asset.currentPrice?.toDec().toString()}
           </Text>
         </View>
@@ -131,10 +128,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  headerContainer: {
+    paddingHorizontal: 24,
+    paddingTop: 12,
+  },
   assetInfo: {
     flexDirection: "row",
     alignItems: "center",
     gap: 8,
+  },
+  assetImage: {
+    width: 24,
+    height: 24,
   },
   assetDenom: {
     fontSize: 20,
@@ -143,6 +148,18 @@ const styles = StyleSheet.create({
   assetContent: {
     padding: 24,
     flex: 1,
+  },
+  balanceContainer: {
+    gap: 10,
+    marginTop: 40,
+  },
+  balanceRow: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  balanceAmount: {
+    fontWeight: "400",
+    fontSize: 20,
   },
   tradeButtonContainer: {
     position: "absolute",

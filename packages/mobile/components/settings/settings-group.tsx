@@ -25,10 +25,10 @@ export const SettingsGroup: React.FC<SettingsGroupProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 32,
+    marginBottom: 20,
   },
   title: {
     color: Colors.osmoverse[400],
-    marginBottom: 16,
+    marginBottom: 8,
   },
 });

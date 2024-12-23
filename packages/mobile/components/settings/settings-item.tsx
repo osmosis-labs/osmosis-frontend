@@ -30,7 +30,7 @@ export const SettingsItem: React.FC<SettingsItemProps> = ({
       style={{
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 16,
+        paddingVertical: 8,
       }}
     >
       {icon && <View style={{ marginRight: 12 }}>{icon}</View>}
