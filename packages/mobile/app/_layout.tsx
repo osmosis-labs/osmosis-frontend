@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
@@ -16,6 +16,7 @@ import { Toaster } from "sonner-native";
 
 import { LockScreenModal } from "~/components/lock-screen-modal";
 import { DefaultTheme } from "~/constants/themes";
+import { useWallets } from "~/hooks/use-wallets";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
 import { api, RouterKeys } from "~/utils/trpc";
@@ -142,6 +143,7 @@ export default function RootLayout() {
         <ThemeProvider value={DefaultTheme}>
           <GestureHandlerRootView style={{ flex: 1 }}>
             <BottomSheetModalProvider>
+              <OnboardingObserver />
               <LockScreenModal />
               <Toaster />
               <Stack
@@ -163,3 +165,13 @@ export default function RootLayout() {
     </api.Provider>
   );
 }
+
+const OnboardingObserver = () => {
+  const { currentWallet } = useWallets();
+
+  if (!currentWallet) {
+    return <Redirect href="/onboarding/welcome" />;
+  }
+
+  return null;
+};
