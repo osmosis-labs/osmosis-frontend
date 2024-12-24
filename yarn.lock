@@ -14574,6 +14574,13 @@ expo-constants@~17.0.0, expo-constants@~17.0.3:
     "@expo/config" "~10.0.4"
     "@expo/env" "~0.4.0"
 
+expo-crypto@~14.0.1:
+  version "14.0.1"
+  resolved "https://registry.yarnpkg.com/expo-crypto/-/expo-crypto-14.0.1.tgz#2aabfebf202f8390db9060c033a18ad8eabe8cd9"
+  integrity sha512-/gGpD9UAz8fgZtU08cwwqeQElkFmMy2Hc8lLa9laSjD3YN0XM07zDJyJ+CC1VhQ63G8WpUnq1IHSmaPbbLp+oQ==
+  dependencies:
+    base64-js "^1.3.0"
+
 expo-dev-client@~5.0.4:
   version "5.0.4"
   resolved "https://registry.yarnpkg.com/expo-dev-client/-/expo-dev-client-5.0.4.tgz#54c0d942dcb7aa0ef80a4bd5ef6e102f26a76bb4"
@@ -14834,11 +14841,6 @@ fancy-canvas@2.1.0, fancy-canvas@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/fancy-canvas/-/fancy-canvas-2.1.0.tgz#44b40e40419ad8ef8304df365e4276767e918552"
   integrity sha512-nifxXJ95JNLFR2NgRV4/MxVP45G9909wJTEKz5fg/TZS20JJZA6hfgRVh/bC9bwl2zBtBNcYPjiBE4njQHVBwQ==
-
-fast-base64-decode@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/fast-base64-decode/-/fast-base64-decode-1.0.0.tgz#b434a0dd7d92b12b43f26819300d2dafb83ee418"
-  integrity sha512-qwaScUgUGBYeDNRnbc/KyllVU88Jk1pRHPStuF/lO7B0/RTRLj7U0lkdTAutlBblY08rwZDff6tNU9cjv6j//Q==
 
 fast-deep-equal@3.1.1:
   version "3.1.1"
@@ -22059,13 +22061,6 @@ react-native-gesture-handler@~2.20.2:
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
     prop-types "^15.7.2"
-
-react-native-get-random-values@^1.11.0:
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.11.0.tgz#1ca70d1271f4b08af92958803b89dccbda78728d"
-  integrity sha512-4BTbDbRmS7iPdhYLRcz3PGFIpFJBwNZg9g42iwa2P6FOv9vZj/xJc678RZXnLNZzd0qd7Q3CCF6Yd+CU2eoXKQ==
-  dependencies:
-    fast-base64-decode "^1.0.0"
 
 react-native-haptic-feedback@^2.3.3:
   version "2.3.3"

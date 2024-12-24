@@ -1,19 +1,33 @@
+import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { keyringMMKVStorage } from "~/utils/mmkv";
 
-export interface KeyInfo {
-  type: "view-only" | "smart-account" | "wallet-connect";
+const version = 1;
+
+interface BasekeyInfo {
   name: string;
   address: string;
-  privateKey?: string;
+  version: number;
 }
+
+interface ViewOnlyKeyInfo extends BasekeyInfo {
+  type: "view-only";
+}
+
+interface SmartAccountKeyInfo extends BasekeyInfo {
+  type: "smart-account";
+  privateKey: string;
+  allowedMessages: AvailableOneClickTradingMessages[];
+}
+
+export type KeyInfo = ViewOnlyKeyInfo | SmartAccountKeyInfo;
 
 export interface WalletKeyring {
   keys: KeyInfo[];
   addKey: (keyInfo: KeyInfo) => Promise<void>;
-  deleteKey: (address: string) => Promise<void>;
+  deleteKey: (index: number) => Promise<void>;
   changeOrder: (addressesInOrder: string[]) => Promise<void>;
   getKey: (address: string) => KeyInfo | undefined;
 }
@@ -23,15 +37,15 @@ export const useKeyringStore = create<WalletKeyring>()(
     (set, get) => ({
       keys: [],
 
-      addKey: async (keyInfo: KeyInfo) => {
+      addKey: async (keyInfo: Omit<KeyInfo, "version">) => {
         set((state) => ({
-          keys: [...state.keys, keyInfo],
+          keys: [...state.keys, { ...keyInfo, version } as KeyInfo],
         }));
       },
 
-      deleteKey: async (address: string) => {
+      deleteKey: async (index: number) => {
         set((state) => ({
-          keys: state.keys.filter((key) => key.address !== address),
+          keys: state.keys.filter((_, i) => i !== index),
         }));
       },
 

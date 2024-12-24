@@ -18,7 +18,7 @@ import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { useCosmosWallet } from "~/hooks/use-cosmos-wallet";
+import { useWallets } from "~/hooks/use-wallets";
 import { useSettingsStore } from "~/stores/settings";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -26,7 +26,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 const itemSize = 70;
 
 export const PortfolioAssetBalancesTable = () => {
-  const { address } = useCosmosWallet();
+  const { currentWallet } = useWallets();
   const [searchQuery, setSearchQuery] = useState("");
   const { showUnverifiedAssets } = useSettingsStore(
     useShallow((state) => ({
@@ -43,7 +43,7 @@ export const PortfolioAssetBalancesTable = () => {
     fetchNextPage,
   } = api.local.assets.getUserBridgeAssets.useInfiniteQuery(
     {
-      userOsmoAddress: address!,
+      userOsmoAddress: currentWallet?.address ?? "",
       limit: 50,
       ...(searchQuery && { search: { query: searchQuery } }),
       sort: {
@@ -52,7 +52,7 @@ export const PortfolioAssetBalancesTable = () => {
       },
     },
     {
-      enabled: Boolean(address),
+      enabled: Boolean(currentWallet?.address),
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
       keepPreviousData: true,

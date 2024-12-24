@@ -1,5 +1,5 @@
+import { getRandomBytes } from "expo-crypto";
 import * as SecureStore from "expo-secure-store";
-import { randomBytes } from "react-native-get-random-values";
 import { MMKV } from "react-native-mmkv";
 import { StateStorage } from "zustand/middleware";
 
@@ -26,7 +26,7 @@ async function getOrCreateEncryptionKey(): Promise<string> {
     }
 
     // If no key exists, generate a new random 32-byte key (Base64 or hex)
-    const rawKey = randomBytes(32); // 32 bytes = 256 bits
+    const rawKey = getRandomBytes(32); // 32 bytes = 256 bits
     // Convert to base64 (or hex) so it's string-safe
     const base64Key = btoa(String.fromCharCode(...rawKey));
 
@@ -40,23 +40,23 @@ async function getOrCreateEncryptionKey(): Promise<string> {
   }
 }
 
-let mmkvInstance: MMKV | null = null;
+let keyringMMKV: MMKV | null = null;
 
 /**
  * Returns an MMKV instance, creating it if needed.
  */
 async function getMMKV(): Promise<MMKV> {
-  if (mmkvInstance) {
-    return mmkvInstance;
+  if (keyringMMKV) {
+    return keyringMMKV;
   }
 
   const encryptionKey = await getOrCreateEncryptionKey();
-  mmkvInstance = new MMKV({
+  keyringMMKV = new MMKV({
     id: "keyring-store",
     encryptionKey, // This ensures data is encrypted at rest
   });
 
-  return mmkvInstance;
+  return keyringMMKV;
 }
 
 export const keyringMMKVStorage: StateStorage = {

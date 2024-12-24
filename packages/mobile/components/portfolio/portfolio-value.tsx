@@ -6,7 +6,7 @@ import { View } from "react-native";
 
 import { Skeleton } from "~/components/ui/skeleton";
 import { Text } from "~/components/ui/text";
-import { useCosmosWallet } from "~/hooks/use-cosmos-wallet";
+import { useWallets } from "~/hooks/use-wallets";
 import { getChangeColor } from "~/utils/price";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
@@ -19,7 +19,7 @@ export const PortfolioValue = ({
     | undefined;
   isLoadingAllocation: boolean;
 }) => {
-  const { address } = useCosmosWallet();
+  const { currentWallet } = useWallets();
   const [range, setRange] =
     useState<
       RouterInputs["local"]["portfolio"]["getPortfolioOverTime"]["range"]
@@ -37,11 +37,11 @@ export const PortfolioValue = ({
     isFetched: isPortfolioOverTimeDataIsFetched,
   } = api.local.portfolio.getPortfolioOverTime.useQuery(
     {
-      address: address!,
+      address: currentWallet?.address ?? "",
       range,
     },
     {
-      enabled: Boolean(address),
+      enabled: Boolean(currentWallet?.address),
       onSuccess: (data) => {
         if (data && data.length > 0) {
           const lastDataPoint = data[data.length - 1];

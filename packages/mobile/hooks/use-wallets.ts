@@ -1,25 +1,29 @@
-import { create } from "zustand";
-import { createJSONStorage, persist } from "zustand/middleware";
+import { useMemo } from "react";
 
-import { mmkvStorage } from "~/utils/mmkv";
+import { useCurrentWalletStore } from "~/stores/current-wallet";
+import { KeyInfo, useKeyringStore } from "~/stores/keyring";
 
-interface WalletState {
-  currentSelectedWalletIndex?: number;
-  setCurrentSelectedWalletIndex: (index: number | undefined) => void;
-}
+export const useWallets = () => {
+  const wallets = useKeyringStore((state) => state.keys);
+  const currentWalletIndex = useCurrentWalletStore(
+    (state) => state.currentSelectedWalletIndex
+  );
 
-export const useWalletStore = create<WalletState>()(
-  persist(
-    (set) => ({
-      currentSelectedWalletIndex: undefined,
-      setCurrentSelectedWalletIndex: (index) =>
-        set({ currentSelectedWalletIndex: index }),
-    }),
-    {
-      name: "wallet-store",
-      storage: createJSONStorage(() => mmkvStorage),
+  const currentWallet = useMemo<KeyInfo | undefined>(() => {
+    if (!!process.env.EXPO_PUBLIC_OSMOSIS_ADDRESS) {
+      return {
+        type: "view-only",
+        name: "Wallet 1",
+        address: process.env.EXPO_PUBLIC_OSMOSIS_ADDRESS,
+        version: 1,
+      };
     }
-  )
-);
+    if (!currentWalletIndex) return undefined;
+    return wallets[currentWalletIndex];
+  }, [wallets, currentWalletIndex]);
 
-export const useWallets = () => {};
+  return {
+    wallets,
+    currentWallet,
+  };
+};

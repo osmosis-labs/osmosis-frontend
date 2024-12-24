@@ -16,14 +16,14 @@ import { WalletBottomSheet } from "~/components/portfolio/wallet-bottom-sheet";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useClipboard } from "~/hooks/use-clipboard";
-import { useCosmosWallet } from "~/hooks/use-cosmos-wallet";
+import { useWallets } from "~/hooks/use-wallets";
 import { api } from "~/utils/trpc";
 
 export default function PortfolioScreen() {
-  const { walletName, address } = useCosmosWallet();
+  const { currentWallet } = useWallets();
   const router = useRouter();
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const { onCopy } = useClipboard(address ?? "");
+  const { onCopy } = useClipboard(currentWallet?.address ?? "");
 
   const handleCopyPress = async () => {
     await onCopy();
@@ -37,10 +37,10 @@ export default function PortfolioScreen() {
   const { data: allocation, isLoading: isLoadingAllocation } =
     api.local.portfolio.getPortfolioAssets.useQuery(
       {
-        address: address ?? "",
+        address: currentWallet?.address ?? "",
       },
       {
-        enabled: Boolean(address),
+        enabled: Boolean(currentWallet?.address),
       }
     );
   const bottomTabBarHeight = useBottomTabBarHeight();
@@ -59,14 +59,14 @@ export default function PortfolioScreen() {
         </TouchableOpacity>
 
         <View>
-          <Text type="title">{walletName}</Text>
+          <Text type="title">{currentWallet?.name}</Text>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.addressButton}
             onPress={handleCopyPress}
           >
             <Text type="caption" style={{ color: Colors.osmoverse[400] }}>
-              {shorten(address ?? "")}
+              {shorten(currentWallet?.address ?? "")}
             </Text>
             <CopyIcon />
           </TouchableOpacity>
