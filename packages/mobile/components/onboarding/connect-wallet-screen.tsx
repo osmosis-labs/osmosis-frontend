@@ -2,7 +2,7 @@ import { useState } from "react";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from "~/config/colors";
+import { Colors } from "~/constants/theme-colors";
 
 import { Button } from "../ui/button";
 

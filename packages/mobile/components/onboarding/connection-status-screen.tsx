@@ -7,7 +7,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from "../../config/colors";
+import { Colors } from "~/constants/theme-colors";
+
 import { Button } from "../ui/button";
 
 type ConnectionStatus = "connecting" | "success" | "failure";
@@ -18,8 +19,8 @@ export const ConnectionStatusScreen = ({
   onContinue,
 }: {
   status: ConnectionStatus;
-  onRetry?: () => void;
-  onContinue?: () => void;
+  onRetry: () => void;
+  onContinue: () => void;
 }) => {
   const spinStyle = useAnimatedStyle(() => {
     return {
@@ -79,13 +80,11 @@ export const ConnectionStatusScreen = ({
             <Text style={styles.title}>Pairing Successful</Text>
             <View style={styles.buttonContainer}>
               <Button
-                mode="contained"
+                buttonStyle={styles.button}
+                textStyle={styles.buttonLabel}
                 onPress={onContinue}
-                style={styles.button}
-                labelStyle={styles.buttonLabel}
-              >
-                Continue
-              </Button>
+                title="Continue"
+              />
             </View>
           </>
         );
@@ -105,13 +104,11 @@ export const ConnectionStatusScreen = ({
             </Text>
             <View style={styles.buttonContainer}>
               <Button
-                mode="contained"
+                buttonStyle={styles.button}
+                textStyle={styles.buttonLabel}
                 onPress={onRetry}
-                style={styles.button}
-                labelStyle={styles.buttonLabel}
-              >
-                Try again
-              </Button>
+                title="Try again"
+              />
             </View>
           </>
         );
@@ -169,7 +166,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     width: 60,
     height: 60,
-    backgroundColor: Colors.success[500],
+    backgroundColor: Colors.wosmongton[500],
     borderRadius: 30,
     top: 70,
     left: 70,

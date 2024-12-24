@@ -1,7 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from "../../config/colors";
+import { Colors } from "~/constants/theme-colors";
+
 import { Button } from "../ui/button";
 
 export const DeviceSecurityScreen = ({
@@ -37,21 +38,17 @@ export const DeviceSecurityScreen = ({
 
         <View style={styles.buttonContainer}>
           <Button
-            mode="contained"
+            buttonStyle={styles.button}
+            textStyle={styles.buttonLabel}
             onPress={onUseFaceID}
-            style={styles.button}
-            labelStyle={styles.buttonLabel}
-          >
-            Use FaceID
-          </Button>
+            title="Use FaceID"
+          />
           <Button
-            mode="text"
+            buttonStyle={styles.pinButton}
+            textStyle={styles.pinButtonLabel}
             onPress={onUseDevicePin}
-            style={styles.pinButton}
-            labelStyle={styles.pinButtonLabel}
-          >
-            Use Device Pin
-          </Button>
+            title="Use Device Pin"
+          />
         </View>
       </View>
     </SafeAreaView>

@@ -79,13 +79,29 @@ export const OnboardingFlow = () => {
         />
       );
     case "connecting":
-      return <ConnectionStatusScreen status="connecting" />;
+      return (
+        <ConnectionStatusScreen
+          status="connecting"
+          onRetry={handleRetry}
+          onContinue={handleContinue}
+        />
+      );
     case "success":
       return (
-        <ConnectionStatusScreen status="success" onContinue={handleContinue} />
+        <ConnectionStatusScreen
+          status="success"
+          onRetry={handleRetry}
+          onContinue={handleContinue}
+        />
       );
     case "failure":
-      return <ConnectionStatusScreen status="failure" onRetry={handleRetry} />;
+      return (
+        <ConnectionStatusScreen
+          status="failure"
+          onRetry={handleRetry}
+          onContinue={handleContinue}
+        />
+      );
     default:
       return null;
   }

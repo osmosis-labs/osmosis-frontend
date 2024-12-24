@@ -6,7 +6,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Colors } from "../../config/colors";
+import { Colors } from "~/constants/theme-colors";
+
 import { Button } from "../ui/button";
 
 export const WelcomeScreen = ({
@@ -66,7 +67,7 @@ export const WelcomeScreen = ({
             <View
               style={[
                 styles.tokenCircle,
-                { backgroundColor: Colors.purple[500] },
+                { backgroundColor: Colors.wosmongton[500] },
               ]}
             />
           </View>
@@ -77,7 +78,7 @@ export const WelcomeScreen = ({
           <Text style={[styles.title, { color: Colors.wosmongton[500] }]}>
             Osmosis
           </Text>
-          <Text style={[styles.title, { color: Colors.purple[500] }]}>
+          <Text style={[styles.title, { color: Colors.wosmongton[500] }]}>
             Mobile App
           </Text>
         </View>
@@ -89,21 +90,17 @@ export const WelcomeScreen = ({
 
         <View style={styles.buttonContainer}>
           <Button
-            mode="contained"
+            buttonStyle={styles.button}
             onPress={onLinkDesktop}
-            style={styles.button}
-            labelStyle={styles.buttonLabel}
-          >
-            Link via desktop
-          </Button>
+            title="Link via desktop"
+            textStyle={styles.buttonLabel}
+          />
           <Button
-            mode="text"
+            buttonStyle={styles.skipButton}
             onPress={onSkip}
-            style={styles.skipButton}
-            labelStyle={styles.skipButtonLabel}
-          >
-            Skip for now
-          </Button>
+            title="Skip for now"
+            textStyle={styles.skipButtonLabel}
+          />
         </View>
       </View>
     </SafeAreaView>

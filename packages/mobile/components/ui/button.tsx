@@ -15,6 +15,7 @@ interface ButtonProps {
   variant?: "primary" | "secondary";
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
+  disabled?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -23,6 +24,7 @@ export const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   buttonStyle,
   textStyle,
+  disabled,
 }) => {
   return (
     <TouchableOpacity
@@ -31,6 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
         variant === "primary" ? styles.primary : styles.secondary,
         buttonStyle,
       ]}
+      disabled={disabled}
       onPress={onPress}
     >
       <Text style={[styles.text, textStyle]}>{title}</Text>
