@@ -106,9 +106,10 @@ export function fixDecimalCount(
     return roundUpToDecimal(parseFloat(value), decimalCount).toString();
   }
   const split = value.split(".");
+  const integerPart = split[0];
+  const fractionalPart = split[1] ? split[1].substring(0, decimalCount) : "";
   const result =
-    split[0] +
-    (decimalCount > 0 ? "." + split[1].substring(0, decimalCount) : "");
+    integerPart + (decimalCount > 0 ? "." + fractionalPart : "");
   return result;
 }
 
