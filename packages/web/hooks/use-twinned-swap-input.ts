@@ -220,7 +220,10 @@ export const useTwinnedSwapInput = ({
 
       const fiatValue = new Dec(fiatAmount);
       const tokenValue = trimPlaceholderZeros(fiatValue.quo(price).toString());
-      if (tokenAmount === tokenValue) {
+      if (
+        !isEmptyString(tokenAmount) &&
+        new Dec(tokenAmount) == new Dec(tokenValue)
+      ) {
         // Nothing to update
         return;
       }
@@ -243,7 +246,10 @@ export const useTwinnedSwapInput = ({
 
       const tokenValue = new Dec(tokenAmount);
       const fiatValue = trimPlaceholderZeros(tokenValue.mul(price).toString());
-      if (fiatAmount === fiatValue) {
+      if (
+        !isEmptyString(fiatAmount) &&
+        new Dec(fiatAmount) == new Dec(fiatValue)
+      ) {
         // Nothing to update
         return;
       }
