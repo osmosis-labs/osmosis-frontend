@@ -228,12 +228,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     });
 
     const setAmountSafe = useCallback(
-      (amountType: "fiat" | "token", value?: string) => {
+      (amountType: "fiat" | "token", value = "") => {
         resetSlippage();
         if (amountType === "fiat") {
-          onFiatAmountChange(value ?? "");
+          onFiatAmountChange(value);
         } else {
-          onTokenAmountChange(value ?? "");
+          onTokenAmountChange(value);
         }
       },
       [onFiatAmountChange, onTokenAmountChange, resetSlippage]
@@ -241,39 +241,33 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
-        // Tab is buy so use quote amount
+        // When buying we want to use the quote token balance
+        const amount = swapState.quoteTokenBalance?.toDec().toString();
+        if (!amount) {
+          return;
+        }
 
-        // Determine amount based on current input
-        const amount =
-          focused === "fiat"
-            ? swapState.quoteTokenBalance?.toDec().toString()
-            : swapState.quoteTokenBalance
-                ?.toDec()
-                .quo(swapState.priceState.price)
-                .toString();
-
-        setAmountSafe(focused, amount);
-
-        return;
+        setFocused("fiat");
+        setAmountSafe("fiat", amount);
       }
 
-      // Tab must be sell so we use base amount
-      // Determine amount based on current input
-      const amount =
-        focused === "token"
-          ? swapState.baseTokenBalance?.toDec().toString()
-          : swapState.baseTokenBalance
-              ?.toDec()
-              .mul(swapState.priceState.price)
-              .toString();
-      return setAmountSafe(focused, amount);
+      if (tab === "sell") {
+        // When selling we want to use the base token balance
+        const amount = swapState.marketState.inAmountInput.maxAmountWithGas
+          ?.toDec()
+          .toString();
+        if (!amount) {
+          return;
+        }
+
+        setFocused("token");
+        setAmountSafe("token", amount);
+      }
     }, [
       tab,
       setAmountSafe,
-      swapState.baseTokenBalance,
+      swapState.marketState.inAmountInput.maxAmountWithGas,
       swapState.quoteTokenBalance,
-      focused,
-      swapState.priceState.price,
     ]);
 
     // Determines the input value based on the current
