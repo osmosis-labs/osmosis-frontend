@@ -253,9 +253,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
       if (tab === "sell") {
         // When selling we want to use the base token balance
-        const amount = swapState.marketState.inAmountInput.maxAmountWithGas
-          ?.toDec()
-          .toString();
+        const amount =
+          type === "market"
+            ? swapState.marketState.inAmountInput.maxAmountWithGas
+                ?.toDec()
+                .toString()
+            : swapState.marketState.inAmountInput.balance?.toDec().toString();
         if (!amount) {
           return;
         }
@@ -267,7 +270,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       tab,
       setAmountSafe,
       swapState.marketState.inAmountInput.maxAmountWithGas,
+      swapState.marketState.inAmountInput.balance,
       swapState.quoteTokenBalance,
+      type,
     ]);
 
     // Determines the input value based on the current
