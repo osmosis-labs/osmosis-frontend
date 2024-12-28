@@ -1,7 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -45,11 +44,12 @@ import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
 } from "~/hooks/use-swap";
+import { useTwinnedSwapInput } from "~/hooks/use-twinned-swap-input";
 import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { useStore } from "~/stores";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
-import { countDecimals, trimPlaceholderZeros } from "~/utils/number";
+import { transformAmount, trimPlaceholderZeros } from "~/utils/number";
 
 interface PlaceLimitToolProps {
   page: EventPage;
@@ -57,57 +57,6 @@ interface PlaceLimitToolProps {
   initialQuoteDenom?: string;
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
-
-/* Roundes a given number to the given precision
- * i.e. roundUpToDecimal(0.23456, 2) = 0.24
- */
-function roundUpToDecimal(value: number, precision: number) {
-  const multiplier = Math.pow(10, precision || 0);
-  return Math.ceil(value * multiplier) / multiplier;
-}
-
-/**
- * Fixes a given string representation of a number to the given decimal count
- * Rounds to the decimal count if rounding is true
- */
-const fixDecimalCount = (
-  value: string,
-  decimalCount = 18,
-  rounding = false
-) => {
-  if (rounding) {
-    return roundUpToDecimal(parseFloat(value), decimalCount).toString();
-  }
-  const split = value.split(".");
-  const result =
-    split[0] +
-    (decimalCount > 0 ? "." + split[1].substring(0, decimalCount) : "");
-  return result;
-};
-
-/**
- * Transforms a given amount to the given decimal count and handles period inputs
- * Rounds to the decimal count if rounding is true
- */
-const transformAmount = (
-  value: string,
-  decimalCount = 18,
-  rounding = false
-) => {
-  let updatedValue = value;
-  if (value.endsWith(".") && value.length === 1) {
-    updatedValue = value + "0";
-  }
-
-  if (value.startsWith(".")) {
-    updatedValue = "0" + value;
-  }
-
-  const decimals = countDecimals(updatedValue);
-  return decimals > decimalCount
-    ? fixDecimalCount(updatedValue, decimalCount, rounding)
-    : updatedValue;
-};
 
 // Certain errors we do not wish to show on the button
 const NON_DISPLAY_ERRORS = [
@@ -238,11 +187,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       [swapState.baseTokenBalance, swapState.quoteTokenBalance, tab]
     );
 
-    const tokenAmount = useMemo(
-      () => swapState.inAmountInput.inputAmount,
-      [swapState.inAmountInput.inputAmount]
-    );
-
     const isMarketLoading = useMemo(() => {
       return (
         swapState.isMarket &&
@@ -268,157 +212,32 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         quoteType,
       });
 
-    const setAmountSafe = useCallback(
-      (
-        amountType: "fiat" | "token",
-        value?: string,
-        maxDecimals: number = 2,
-        rounding: boolean = false
-      ) => {
-        resetSlippage();
-        const update =
-          amountType === "fiat"
-            ? setFiatAmount
-            : swapState.inAmountInput.setAmount;
-        const isMarketOutAmount =
-          (tab === "sell" && amountType === "fiat") ||
-          (tab === "buy" && amountType === "token");
-        const setMarketAmount = isMarketOutAmount
-          ? swapState.marketState.outAmountInput.setAmount
-          : swapState.marketState.inAmountInput.setAmount;
-        const setOppositeMarketAmount = isMarketOutAmount
-          ? swapState.marketState.inAmountInput.setAmount
-          : swapState.marketState.outAmountInput.setAmount;
-
-        // If value is empty clear values
-        if (!value || value.trim().length === 0) {
-          if (type === "market") {
-            setMarketAmount("");
-            setOppositeMarketAmount("");
-          }
-
-          if (fiatAmount.length > 0 || tokenAmount.length > 0) {
-            return update("");
-          }
-
-          return;
-        }
-
-        const updatedValue = transformAmount(
-          value,
-          amountType === "fiat"
-            ? maxDecimals
-            : swapState.baseAsset?.coinDecimals,
-          rounding
-        ).trim();
-
-        if (
-          !isValidNumericalRawInput(updatedValue) ||
-          updatedValue.length > 26 ||
-          (updatedValue.length > 0 && updatedValue.startsWith("-"))
-        ) {
-          return;
-        }
-
-        if (type === "market" || (amountType === "fiat" && tab === "buy")) {
-          setMarketAmount(updatedValue);
-        }
-        const isFocused = focused === amountType;
-
-        const formattedValue = !isFocused
-          ? trimPlaceholderZeros(updatedValue)
-          : updatedValue;
-
-        if (amountType === "fiat" && fiatAmount === formattedValue) {
-          return;
-        }
-
-        if (amountType === "token" && tokenAmount === formattedValue) {
-          return;
-        }
-
-        setQuoteType(
-          !isMarketOutAmount || !featureFlags.inGivenOut
-            ? "out-given-in"
-            : "in-given-out"
-        );
-
-        update(formattedValue);
-      },
-      [
-        focused,
-        swapState.baseAsset?.coinDecimals,
-        swapState.inAmountInput,
-        swapState.marketState.inAmountInput.setAmount,
-        swapState.marketState.outAmountInput.setAmount,
-        tab,
-        type,
-        resetSlippage,
-        featureFlags.inGivenOut,
-        fiatAmount,
-        tokenAmount,
-      ]
-    );
-
-    // Adjusts the token value when the user updates the fiat value
-    useEffect(() => {
-      if (
-        focused !== "token" ||
-        !swapState.priceState.price ||
-        type === "market"
-      )
-        return;
-      const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
-      const fiatValue = value
-        ? swapState.priceState.price.mul(value)
-        : undefined;
-
-      setAmountSafe("fiat", fiatValue ? fiatValue.toString() : undefined, 10);
-    }, [
-      focused,
-      setAmountSafe,
-      swapState.priceState.price,
-      tokenAmount,
-      swapState.marketState.inAmountInput,
-      tab,
-      type,
-    ]);
-
-    // Adjusts the token value when the user updates the fiat value
-    useEffect(() => {
-      if (
-        focused !== "fiat" ||
-        !swapState.priceState.price ||
-        type === "market"
-      )
-        return;
-
-      const value =
-        fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
-      const tokenValue = value
-        ? new Dec(value).quo(swapState.priceState.price)
-        : undefined;
-
-      // When setting the token amount for a sell we want to round up due to
-      // rounding occuring when dividing the fiat amount by the token price.
-      // Without rounding there is a common case where the user inputs $1
-      // but the actual token value is only $0.99 (0.999999....) and the
-      // user is unable to place the order. With rounding we overestimate by a value of
-      // 1*10^(-tokenDecimals).
-      setAmountSafe(
-        "token",
-        tokenValue ? tokenValue.toString() : undefined,
-        swapState.baseAsset?.coinDecimals,
-        true
-      );
-    }, [
+    const { onTokenAmountChange, onFiatAmountChange } = useTwinnedSwapInput({
+      setTokenAmount: swapState.inAmountInput.setAmount,
+      setFiatAmount: setFiatAmount,
+      setMarketOutAmount: swapState.marketState.outAmountInput.setAmount,
+      setMarketAmount: swapState.marketState.inAmountInput.setAmount,
+      setQuoteType,
       fiatAmount,
-      setAmountSafe,
+      tokenAmount: swapState.inAmountInput.inputAmount,
+      price: swapState.priceState.price,
       focused,
-      swapState.priceState.price,
       type,
-      swapState.baseAsset?.coinDecimals,
-    ]);
+      tab: (tab ?? "buy") as "sell" | "buy",
+      baseAssetDecimals: swapState.baseAsset?.coinDecimals ?? 0,
+    });
+
+    const setAmountSafe = useCallback(
+      (amountType: "fiat" | "token", value?: string) => {
+        resetSlippage();
+        if (amountType === "fiat") {
+          onFiatAmountChange(value ?? "");
+        } else {
+          onTokenAmountChange(value ?? "");
+        }
+      },
+      [onFiatAmountChange, onTokenAmountChange, resetSlippage]
+    );
 
     const toggleMax = useCallback(() => {
       if (tab === "buy") {
@@ -439,7 +258,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       }
 
       // Tab must be sell so we use base amount
-
       // Determine amount based on current input
       const amount =
         focused === "token"
@@ -458,39 +276,41 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.priceState.price,
     ]);
 
+    // Determines the input value based on the current
+    // focused input and the type of order
     const inputValue = useMemo(() => {
       const shouldTrim = (amount: string) =>
         parseInt(amount) !== 0 && !amount.endsWith(".");
-      if (type === "market") {
-        if (tab === "sell") {
-          return focused === "fiat"
-            ? transformAmount(
-                swapState.marketState.outAmountInput.inputAmount ?? "",
-                2
-              )
-            : shouldTrim(swapState.marketState.inAmountInput.inputAmount)
-            ? trimPlaceholderZeros(
-                swapState.marketState.inAmountInput.inputAmount
-              )
-            : swapState.marketState.inAmountInput.inputAmount ?? "";
-        } else {
-          return focused === "fiat"
-            ? transformAmount(
-                swapState.marketState.inAmountInput.inputAmount ?? "",
-                2
-              )
-            : shouldTrim(swapState.marketState.outAmountInput.inputAmount)
-            ? trimPlaceholderZeros(
-                swapState.marketState.outAmountInput.inputAmount
-              )
-            : swapState.marketState.outAmountInput.inputAmount ?? "";
+
+      const formatAmount = (amount: string | undefined, isFiat: boolean) => {
+        if (!amount) return "";
+
+        if (isFiat) {
+          return transformAmount(amount, 2);
         }
+
+        return shouldTrim(amount) ? trimPlaceholderZeros(amount) : amount;
+      };
+
+      // Market order case
+      if (type === "market") {
+        const isSellTab = tab === "sell";
+        const marketAmount = isSellTab
+          ? focused === "fiat"
+            ? swapState.marketState.outAmountInput.inputAmount
+            : swapState.marketState.inAmountInput.inputAmount
+          : focused === "fiat"
+          ? swapState.marketState.inAmountInput.inputAmount
+          : swapState.marketState.outAmountInput.inputAmount;
+
+        return formatAmount(marketAmount, focused === "fiat");
       }
-      return focused === "fiat"
-        ? transformAmount(fiatAmount, 2)
-        : shouldTrim(swapState.inAmountInput.inputAmount)
-        ? trimPlaceholderZeros(swapState.inAmountInput.inputAmount)
-        : swapState.inAmountInput.inputAmount ?? "";
+
+      // Limit order case
+      const limitAmount =
+        focused === "fiat" ? fiatAmount : swapState.inAmountInput.inputAmount;
+
+      return formatAmount(limitAmount, focused === "fiat");
     }, [
       focused,
       tab,
@@ -683,7 +503,6 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.baseTokenBalance,
       swapState.baseAssetPrice,
     ]);
-
     return (
       <>
         <div>
