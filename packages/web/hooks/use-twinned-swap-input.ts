@@ -95,6 +95,11 @@ export const useTwinnedSwapInput = ({
         return;
       }
 
+      if (price.isNegative()) {
+        console.error("INPUT WARNING: Price is negative");
+        return;
+      }
+
       const tokenValue = transformAmount(value, baseAssetDecimals, false);
 
       if (
@@ -156,6 +161,11 @@ export const useTwinnedSwapInput = ({
       // This should never happen but we should avoid dividing by zero
       if (price.isZero()) {
         console.error("INPUT WARNING: Price is zero");
+        return;
+      }
+
+      if (price.isNegative()) {
+        console.error("INPUT WARNING: Price is negative");
         return;
       }
 

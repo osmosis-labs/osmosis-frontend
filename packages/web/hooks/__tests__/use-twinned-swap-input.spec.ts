@@ -92,6 +92,7 @@ describe("useTwinnedSwapInput", () => {
           }
 
           act(() => {
+            result.current.setPrice("1");
             setAmount("");
             result.current.setQuoteType("in-given-out");
           });
@@ -144,20 +145,33 @@ describe("useTwinnedSwapInput", () => {
             expectedToken: focused === "fiat" ? "100.12" : "100.123456",
             expectedFiat: focused === "fiat" ? "100.12" : "100.123456",
           },
+          {
+            scenario: "a non-standard price",
+            input: "100",
+            price: "0.125",
+            expectedToken: focused === "fiat" ? "800" : "100",
+            expectedFiat: focused === "fiat" ? "100" : "12.5",
+          },
         ])(
           "should handle $scenario",
-          ({ input, expectedToken, expectedFiat, fail }) => {
+          ({ input, expectedToken, expectedFiat, fail, price = "1" }) => {
             act(() => {
+              result.current.setPrice(price);
               setAmount(input);
             });
+
+            // Check primary inputs are set correctly
             expect(result.current.tokenAmount).toBe(expectedToken);
             expect(result.current.fiatAmount).toBe(expectedFiat);
+
+            // Check market conditions are set correctly
             expect(result.current.quoteType).toBe(
               fail ? "in-given-out" : expectedQuoteType
             );
-
             if (!fail) {
-              expect(result.current[updatedMarketField]).toBe(expectedToken);
+              expect(result.current[updatedMarketField]).toBe(
+                focused === "fiat" ? expectedFiat : expectedToken
+              );
             }
           }
         );
