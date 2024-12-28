@@ -108,8 +108,7 @@ export function fixDecimalCount(
   const split = value.split(".");
   const integerPart = split[0];
   const fractionalPart = split[1] ? split[1].substring(0, decimalCount) : "";
-  const result =
-    integerPart + (decimalCount > 0 ? "." + fractionalPart : "");
+  const result = integerPart + (decimalCount > 0 ? "." + fractionalPart : "");
   return result;
 }
 
