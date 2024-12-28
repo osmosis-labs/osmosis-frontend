@@ -199,6 +199,10 @@ export const useTwinnedSwapInput = ({
       return;
     }
 
+    if (price.isNegative()) {
+      return;
+    }
+
     if (focused === "fiat") {
       if (isEmptyString(fiatAmount)) {
         return;
@@ -214,7 +218,6 @@ export const useTwinnedSwapInput = ({
       setTokenAmount(tokenValue);
 
       if (tab === "buy") {
-        console.log(`PRICE UDPATED: ${tokenAmount} -> ${tokenValue}`);
         // Case 1: Focused is fiat and tab is buy
         setMarketOutAmount(tokenValue);
       } else if (tab === "sell") {
