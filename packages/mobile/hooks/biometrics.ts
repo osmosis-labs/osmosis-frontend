@@ -123,21 +123,25 @@ export const useBiometricPrompt = ({
 };
 
 export function useOsBiometricAuthEnabled() {
+  const [isCheckingBiometricAvailability, setIsCheckingBiometricAvailability] =
+    useState(false);
   const [isBiometricEnabled, setIsBiometricEnabled] = useState(false);
 
   useEffect(() => {
     const checkBiometricAvailability = async () => {
+      setIsCheckingBiometricAvailability(true);
       const [hasHardware, isEnrolled] = await Promise.all([
         hasHardwareAsync(),
         isEnrolledAsync(),
       ]);
       setIsBiometricEnabled(hasHardware && isEnrolled);
+      setIsCheckingBiometricAvailability(false);
     };
 
     checkBiometricAvailability();
   }, []);
 
-  return { isBiometricEnabled };
+  return { isBiometricEnabled, isCheckingBiometricAvailability };
 }
 
 export function useDeviceSupportsBiometricAuth(): {

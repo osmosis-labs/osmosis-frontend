@@ -23,15 +23,17 @@ import {
   useAuthenticationStore,
   useBiometricPrompt,
 } from "~/hooks/biometrics";
+import { useWallets } from "~/hooks/use-wallets";
 import { useSettingsStore } from "~/stores/settings";
 
 export const LockScreenModal = () => {
   const biometricForAppAccess = useSettingsStore(
     (state) => state.biometricForAppAccess
   );
+  const { currentWallet } = useWallets();
 
   const [showLockScreen, setShowLockScreen] = useState(
-    biometricForAppAccess ? true : false
+    biometricForAppAccess && currentWallet ? true : false
   );
 
   const { authenticate } = useBiometricPrompt({
@@ -41,7 +43,7 @@ export const LockScreenModal = () => {
   });
 
   const triggerBiometricCheck = useCallback(async () => {
-    if (biometricForAppAccess) {
+    if (biometricForAppAccess && currentWallet) {
       await authenticate();
     }
     // Run only on mount so it doesn't trigger a biometric check on setting change
@@ -54,7 +56,7 @@ export const LockScreenModal = () => {
     const subscription = AppState.addEventListener(
       "change",
       async (nextAppState) => {
-        if (!biometricForAppAccess) {
+        if (!biometricForAppAccess || !currentWallet) {
           return;
         }
 
@@ -108,14 +110,16 @@ export const LockScreenModal = () => {
     return () => {
       subscription.remove();
     };
-  }, [biometricForAppAccess, triggerBiometricCheck]);
+  }, [biometricForAppAccess, triggerBiometricCheck, currentWallet]);
 
   useLayoutEffect(() => {
-    triggerBiometricCheck();
+    if (currentWallet) {
+      triggerBiometricCheck();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!showLockScreen) {
+  if (!showLockScreen || !currentWallet) {
     return null;
   }
 
