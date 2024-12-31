@@ -39,6 +39,7 @@
     "@osmosis-labs/utils": "^1.0.0",
     "@trpc/client": "^10.45.1",
     "@trpc/server": "^10.45.1",
+    "@upstash/ratelimit": "^2.0.5",
     "zod": "^3.22.4"
   },
   "devDependencies": {

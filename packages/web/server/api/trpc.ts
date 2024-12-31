@@ -7,7 +7,7 @@ import { ChainList } from "~/config/generated/chain-list";
 import { getOpentelemetryServiceName } from "~/utils/service-name";
 
 /** tRPC context for Next.js endpoints. */
-export const createNextTrpcContext = (_opts: CreateNextContextOptions) => {
+export const createNextTrpcContext = (opts: CreateNextContextOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,
@@ -16,10 +16,11 @@ export const createNextTrpcContext = (_opts: CreateNextContextOptions) => {
 };
 
 /** tRPC context for Next.js endpoints running on Vercel's edge runtime. */
-export const createEdgeTrpcContext = (_opts: FetchCreateContextFnOptions) => {
+export const createEdgeTrpcContext = (opts: FetchCreateContextFnOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,
     opentelemetryServiceName: getOpentelemetryServiceName(),
+    req: opts.req,
   });
 };

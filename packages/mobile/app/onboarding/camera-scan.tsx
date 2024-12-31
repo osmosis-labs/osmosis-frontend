@@ -14,7 +14,7 @@ const CAMERA_ASPECT_RATIO = 4 / 3;
 const SCAN_ICON_WIDTH_RATIO = 0.7;
 
 export default function Welcome() {
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
 
   const resetCameraAutoFocus = () => {
@@ -35,12 +35,21 @@ export default function Welcome() {
     Math.min(overlayWidth, cameraWidth) * SCAN_ICON_WIDTH_RATIO;
 
   return (
-    <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.7)" }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+      }}
+    >
       <View
         style={{
+          position: "absolute",
           paddingHorizontal: 24,
           paddingTop: 12,
-          backgroundColor: "rgba(0, 0, 0, 1)",
+          marginTop: top,
+          left: 0,
+          right: 0,
+          zIndex: 1000,
         }}
       >
         <RouteHeader>
@@ -73,6 +82,7 @@ export default function Welcome() {
                 width: scannerSize,
                 height: scannerSize,
                 position: "relative",
+                marginBottom: 48,
               }}
             />
           </View>
@@ -83,13 +93,14 @@ export default function Welcome() {
           onBarcodeScanned={({ data }) => {
             console.log(data);
           }}
+          autofocus={autoFocus}
         />
         <View
           style={{
             position: "absolute",
             width: scannerSize,
             height: scannerSize,
-            top: "50%",
+            top: "47.25%",
             left: "50%",
             transform: [
               { translateX: -scannerSize / 2 },
@@ -109,12 +120,28 @@ export default function Welcome() {
           onPress={resetCameraAutoFocus}
         />
       </MaskedView>
-      <Text style={styles.scanText}>Scan your QR Code</Text>
-      <Text style={styles.instructionText}>
-        With your wallet connected, navigate{"\n"}
-        to &apos;Profile&apos; &gt; &apos;Link mobile device&apos; on{"\n"}
-        Osmosis web app.
-      </Text>
+      <View
+        style={{
+          justifyContent: "center",
+          alignItems: "center",
+          paddingBottom: bottom + 12,
+          paddingTop: 32,
+          borderTopStartRadius: 32,
+          borderTopEndRadius: 32,
+          backgroundColor: Colors.osmoverse[1000],
+          position: "absolute",
+          bottom: 0,
+          left: 0,
+          right: 0,
+        }}
+      >
+        <Text style={styles.scanText}>Scan your QR Code</Text>
+        <Text style={styles.instructionText}>
+          With your wallet connected, navigate{"\n"}
+          to &apos;Profile&apos; &gt; &apos;Link mobile device&apos; on{"\n"}
+          Osmosis web app.
+        </Text>
+      </View>
     </View>
   );
 }
