@@ -1,6 +1,10 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { superjson } from "@osmosis-labs/server";
-import { localLink } from "@osmosis-labs/trpc";
+import { localLink, makeSkipBatchLink } from "@osmosis-labs/trpc";
+import {
+  constructEdgeRouterKey,
+  constructEdgeUrlPathname,
+} from "@osmosis-labs/utils";
 import { ThemeProvider } from "@react-navigation/native";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -97,6 +101,7 @@ export default function RootLayout() {
             (opts.direction === "down" && opts.result instanceof Error),
         }),
         (runtime) => {
+          const removeLastSlash = (url: string) => url.replace(/\/$/, "");
           const servers = {
             local: localLink({
               router: appRouter,
@@ -115,9 +120,38 @@ export default function RootLayout() {
               },
               opentelemetryServiceName: "osmosis-mobile",
             })(runtime),
+            [constructEdgeRouterKey("main")]: makeSkipBatchLink(
+              removeLastSlash(
+                process.env.EXPO_PUBLIC_OSMOSIS_BE_BASE_URL ?? ""
+              ) +
+                "/" +
+                constructEdgeUrlPathname("main")
+            )(runtime),
           };
 
-          return (ctx) => servers["local"](ctx);
+          return (ctx) => {
+            const { op } = ctx;
+            const pathParts = op.path.split(".");
+            const basePath = pathParts.shift() as string | "osmosisFe";
+
+            /**
+             * Combine the rest of the parts of the paths. This is what we're actually calling on the edge server.
+             * E.g. It will convert `edge.pools.getPool` to `pools.getPool`
+             */
+            const possibleOsmosisFePath = pathParts.join(".");
+
+            if (basePath === "osmosisFe") {
+              return servers[constructEdgeRouterKey("main")]({
+                ...ctx,
+                op: {
+                  ...op,
+                  path: possibleOsmosisFePath,
+                },
+              });
+            }
+
+            return servers[basePath](ctx);
+          };
         },
       ],
     })

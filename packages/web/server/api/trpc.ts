@@ -7,7 +7,7 @@ import { ChainList } from "~/config/generated/chain-list";
 import { getOpentelemetryServiceName } from "~/utils/service-name";
 
 /** tRPC context for Next.js endpoints. */
-export const createNextTrpcContext = (opts: CreateNextContextOptions) => {
+export const createNextTrpcContext = (_opts: CreateNextContextOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,

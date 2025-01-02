@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { STUN_SERVER } from "@osmosis-labs/utils";
+import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { QRCode } from "~/components/qrcode";
 import { api } from "~/utils/trpc";
-
-/**
- * STUN server configuration for WebRTC peer connections.
- * Enables NAT traversal and peer discovery through Google's public STUN server.
- * This allows peers behind different networks/firewalls to establish direct connections.
- * The server runs on Google's infrastructure at stun.l.google.com:19302
- */
-const STUN_SERVER = { urls: "stun:stun.l.google.com:19302" };
 
 export default function DesktopPage() {
   const [sessionToken, setSessionToken] = useState("");
@@ -39,12 +32,16 @@ export default function DesktopPage() {
     }
   );
 
-  useEffect(() => {
-    // 1. Generate session token
+  /**
+   * Helper function to create a peer connection, generate a new offer,
+   * and post it to the server.
+   */
+  const generateOffer = useCallback(async () => {
+    // Generate new session token
     const token = uuidv4();
     setSessionToken(token);
 
-    // 2. Create RTCPeerConnection
+    // Create new PeerConnection
     const peer = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
 
     // Create data channel if you want
@@ -56,43 +53,47 @@ export default function DesktopPage() {
       console.log("[Desktop] Received from phone:", e.data);
     };
 
-    // 3. ICE candidate handling
+    // ICE candidate handling
     peer.onicecandidate = async (event) => {
-      if (event.candidate && sessionToken) {
+      if (event.candidate && token) {
         // Send candidate to server
         await postCandidateMutation.mutateAsync({
-          sessionToken,
+          sessionToken: token,
           candidate: JSON.stringify(event.candidate),
         });
       }
     };
 
-    // 4. Create local offer
-    (async () => {
-      const offer = await peer.createOffer();
-      await peer.setLocalDescription(offer);
-      // Store on the server
-      await createOfferMutation.mutateAsync({
-        sessionToken: token,
-        offerSDP: offer.sdp ?? "",
-      });
-      // 5. Create QR code with sessionToken + server URL
-      const payload = {
-        sessionToken: token,
-        serverUrl: "https://your-deployed-domain.com/trpc",
-        // or wherever your tRPC server is
-      };
-      setQrValue(JSON.stringify(payload));
-      setIsReady(true);
-    })();
+    // Create local offer, store on the server, and generate QR
+    const offer = await peer.createOffer();
+    await peer.setLocalDescription(offer);
 
+    await createOfferMutation.mutateAsync({
+      sessionToken: token,
+      offerSDP: offer.sdp ?? "",
+    });
+
+    const payload = {
+      sessionToken: token,
+    };
+    setQrValue(JSON.stringify(payload));
+    setIsReady(true);
     setPc(peer);
+  }, [createOfferMutation, postCandidateMutation]);
 
-    // Should only run on mount
+  /**
+   * On mount, generate the initial offer.
+   */
+  useEffect(() => {
+    generateOffer().catch((err) => {
+      console.error("Failed to generate initial offer:", err);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 6. If we have an answer from fetchAnswer, set remote desc
+  /**
+   * If we have an answer from the fetchAnswer query, set it as remote description.
+   */
   useEffect(() => {
     const answerSDP = fetchAnswerQuery.data?.answerSDP;
     if (answerSDP && pc) {
@@ -101,7 +102,9 @@ export default function DesktopPage() {
     }
   }, [fetchAnswerQuery.data, pc]);
 
-  // 7. If we have ICE candidates from fetchCandidates, add them
+  /**
+   * If we have ICE candidates from the server, add them.
+   */
   useEffect(() => {
     const candidateList = fetchCandidatesQuery.data?.candidates ?? [];
     if (candidateList && pc) {
@@ -115,6 +118,36 @@ export default function DesktopPage() {
       });
     }
   }, [fetchCandidatesQuery.data, pc]);
+
+  /**
+   * Set a timer to regenerate the offer if still no answer after 5 minutes
+   * (300000 ms). If the user never scanned the QR code or the phone didn't
+   * respond, this re-creates a fresh session.
+   */
+  useEffect(() => {
+    // Only start timer if we actually have a sessionToken generated
+    if (!sessionToken) return;
+
+    const timerId = setTimeout(async () => {
+      // If we still have no answer at this point, regenerate
+      if (!fetchAnswerQuery.data?.answerSDP) {
+        console.log("[Desktop] Offer expired. Regenerating new offer...");
+        // Close old peer if it exists
+        if (pc) {
+          pc.close();
+          setPc(null);
+        }
+        setSessionToken("");
+        setIsReady(false);
+        // Generate a fresh offer
+        await generateOffer();
+      }
+    }, 5 * 60 * 1000);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "2rem" }}>

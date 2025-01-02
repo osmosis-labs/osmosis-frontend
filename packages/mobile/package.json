@@ -74,6 +74,7 @@
     "react-native-svg": "15.8.0",
     "react-native-wagmi-charts": "^2.6.0",
     "react-native-web": "~0.19.13",
+    "react-native-webrtc": "^124.0.4",
     "react-native-webview": "13.12.4",
     "sonner-native": "^0.16.2",
     "zeego": "^2.0.4",

@@ -143,7 +143,7 @@ const getRateLimiter = () => {
   if (!rateLimiter && KV_STORE_REST_API_URL && KV_STORE_REST_API_TOKEN) {
     rateLimiter = new Ratelimit({
       redis: getRedisClient(),
-      limiter: Ratelimit.slidingWindow(10, "10 s"),
+      limiter: Ratelimit.slidingWindow(50, "10 s"),
       analytics: true,
     });
   }

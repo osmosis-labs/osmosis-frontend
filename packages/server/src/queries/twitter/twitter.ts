@@ -3,7 +3,11 @@ import { Redis } from "@upstash/redis";
 import { Cache, cachified } from "cachified";
 
 import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "../../env";
-import { getRedisClient, redisKvStoreAdapter } from "../../utils";
+import {
+  getRedisClient,
+  REDIS_DEFAULT_TTL,
+  redisKvStoreAdapter,
+} from "../../utils";
 
 interface RawUser {
   id: string;
@@ -62,7 +66,7 @@ export class Twitter {
    *
    * It should be enought if we wanna get tweets from 35 tokens every 7 days.
    */
-  constructor(cacheExpireTime: number = DEFAULT_TTL) {
+  constructor(cacheExpireTime: number = REDIS_DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
     this.kvStore = getRedisClient();
     this.cache = redisKvStoreAdapter(this.kvStore);
