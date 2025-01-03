@@ -33,7 +33,7 @@ type WebRTCStatus =
   | "AwaitingConnection"
   | "Error";
 
-const useWebRTC = () => {
+const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
   const [status, setStatus] = useState<WebRTCStatus>("Init");
   const [connected, setConnected] = useState(false);
 
@@ -44,11 +44,19 @@ const useWebRTC = () => {
 
   // Keep a reference to the peer connection
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
-  const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSession = useCallback(
-    async (sessionToken: string) => {
+  // Add a ref to store the data channel
+  const dataChannelRef = useRef<RTCDataChannel | null>(null);
+
+  useEffect(() => {
+    if (!sessionToken) return;
+    let intervalId: NodeJS.Timeout | null = null;
+    let isCleanedUp = false;
+
+    const startSession = async () => {
       try {
+        if (isCleanedUp) return;
+
         setStatus("FetchingOffer");
         // 1) Fetch the offer
         const offerRes = await apiUtils.osmosisFe.webRTC.fetchOffer.ensureData({
@@ -64,104 +72,112 @@ const useWebRTC = () => {
         const pc = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
         peerConnectionRef.current = pc;
 
-        // 3) When we get local ICE candidates, post them to the server
-        pc.onicecandidate = async (event) => {
-          if (event.candidate) {
-            await postCandidateMutation.mutate({
-              sessionToken,
-              candidate: JSON.stringify(event.candidate),
-            });
-          }
-        };
-
-        // 4) If the desktop created a data channel, handle it
-        pc.ondatachannel = (ev) => {
-          const channel = ev.channel;
-          channel.onopen = () => {
-            console.log("[Mobile] Data channel open, can receive data.");
-            setStatus("ChannelOpen");
-            setConnected(true);
-          };
-          channel.onmessage = (msgEvent) => {
-            console.log("[Mobile] Received data:", msgEvent.data);
-            // If the desktop sends the private key, you'd handle it here
-          };
-        };
-
-        // 5) Set remote description (the desktop’s offer)
+        // 3) Set remote description (the desktop’s offer)
         await pc.setRemoteDescription({
           type: "offer",
           sdp: offerRes.offerSDP,
         });
 
+        // 4) When we get local ICE candidates, post them to the server
+        pc.addEventListener("icecandidate", async (event) => {
+          if (event.candidate) {
+            await postCandidateMutation.mutateAsync({
+              sessionToken,
+              candidate: JSON.stringify(event.candidate),
+            });
+          }
+        });
+
+        // 5) If the desktop created a data channel, handle it
+        pc.addEventListener("datachannel", (ev) => {
+          const channel = ev.channel;
+          // @ts-ignore
+          dataChannelRef.current = channel; // Store the channel reference
+
+          channel.addEventListener("open", () => {
+            console.log("[Mobile] Data channel open, can receive data.");
+            setStatus("ChannelOpen");
+            setConnected(true);
+
+            // Send initial message when channel opens
+            channel.send("Hello from mobile device!");
+          });
+
+          channel.addEventListener("message", (msgEvent) => {
+            console.log("[Mobile] Received from desktop:", msgEvent.data);
+            // Handle incoming messages here
+          });
+
+          channel.addEventListener("close", () => {
+            console.log("[Mobile] Data channel closed");
+            setConnected(false);
+          });
+        });
+
         setStatus("CreatingAnswer");
         // 6) Create answer
+        if (isCleanedUp) return;
         const answer = await pc.createAnswer();
+        if (isCleanedUp) return;
         await pc.setLocalDescription(answer);
 
         setStatus("PostingAnswer");
-        await postAnswerMutation.mutate({
+        await postAnswerMutation.mutateAsync({
           sessionToken,
           answerSDP: answer.sdp ?? "",
         });
 
         // 7) Start polling for desktop ICE candidates
-        const intervalId = setInterval(async () => {
+        intervalId = setInterval(async () => {
           const candRes =
             await apiUtils.osmosisFe.webRTC.fetchCandidates.ensureData({
               sessionToken,
             });
           const candidates = candRes.candidates || [];
-          for (const cStr of candidates) {
+          for (const c of candidates) {
             try {
-              const candidate = new RTCIceCandidate(JSON.parse(cStr));
+              const candidate = new RTCIceCandidate(c);
               await pc.addIceCandidate(candidate);
             } catch (err) {
               console.warn("[Mobile] Failed to add ICE candidate:", err);
             }
           }
         }, 3000);
-        intervalIdRef.current = intervalId;
+
         setStatus("AwaitingConnection");
       } catch (err: any) {
         console.error(err);
-        setStatus("Error");
-      }
-    },
-    [
-      apiUtils.osmosisFe.webRTC.fetchCandidates,
-      apiUtils.osmosisFe.webRTC.fetchOffer,
-      postAnswerMutation,
-      postCandidateMutation,
-    ]
-  );
-
-  useEffect(() => {
-    return () => {
-      peerConnectionRef.current?.close();
-      if (intervalIdRef.current) {
-        clearInterval(intervalIdRef.current);
-        intervalIdRef.current = null;
+        if (!isCleanedUp) setStatus("Error");
       }
     };
-  }, []);
+    startSession();
+
+    return () => {
+      isCleanedUp = true;
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+      if (peerConnectionRef.current) {
+        peerConnectionRef.current.close();
+        peerConnectionRef.current = null;
+      }
+    };
+  }, [sessionToken]);
 
   const handleSendTest = () => {
-    // If we created our own data channel, you could send from here
-    // Or if the desktop created the channel, we handle ondatachannel
-    // This is optional, depending on your flow
-    const pc = peerConnectionRef.current;
-    if (!pc) return;
-    const sendChannel = pc.createDataChannel("mobileChannel");
-    sendChannel.onopen = () => {
-      sendChannel.send("Hello from Mobile!");
-    };
+    if (
+      dataChannelRef.current &&
+      dataChannelRef.current.readyState === "open"
+    ) {
+      dataChannelRef.current.send("Test message from mobile!");
+    } else {
+      console.log("[Mobile] Data channel not ready");
+    }
   };
 
   return {
     status,
     handleSendTest,
-    handleSession,
     connected,
   };
 };
@@ -169,9 +185,13 @@ const useWebRTC = () => {
 export default function Welcome() {
   const { top, bottom } = useSafeAreaInsets();
   const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
-  const [shouldFreezeCamera, setShouldFreezeCamera] = useState(false);
+  const [sessionToken, setSessionToken] = useState("");
 
-  const { status, handleSendTest, handleSession, connected } = useWebRTC();
+  const shouldFreezeCamera = sessionToken !== "";
+
+  const { status, handleSendTest, connected } = useWebRTC({
+    sessionToken,
+  });
 
   const resetCameraAutoFocus = () => {
     const abortController = new AbortController();
@@ -189,10 +209,8 @@ export default function Welcome() {
       return;
     }
 
-    setShouldFreezeCamera(true);
     const parsedData = JSON.parse(data);
-    await handleSession(parsedData.sessionToken);
-    setShouldFreezeCamera(false);
+    setSessionToken(parsedData.sessionToken);
   };
 
   const overlayWidth = Dimensions.get("window").height / CAMERA_ASPECT_RATIO;

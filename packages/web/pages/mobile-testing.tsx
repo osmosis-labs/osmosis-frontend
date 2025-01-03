@@ -107,10 +107,10 @@ export default function DesktopPage() {
    */
   useEffect(() => {
     const candidateList = fetchCandidatesQuery.data?.candidates ?? [];
-    if (candidateList && pc) {
-      candidateList.forEach(async (cStr) => {
+    if (candidateList && pc && fetchAnswerQuery.data?.answerSDP) {
+      candidateList.forEach(async (c) => {
         try {
-          const candidate = new RTCIceCandidate(JSON.parse(cStr));
+          const candidate = new RTCIceCandidate(c);
           await pc.addIceCandidate(candidate);
         } catch (e) {
           console.error("Failed to add ICE candidate:", e);

@@ -95,11 +95,11 @@ export default function RootLayout() {
     api.createClient({
       transformer: superjson,
       links: [
-        loggerLink({
-          enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
-            (opts.direction === "down" && opts.result instanceof Error),
-        }),
+        // loggerLink({
+        //   enabled: (opts) =>
+        //     process.env.NODE_ENV === "development" ||
+        //     (opts.direction === "down" && opts.result instanceof Error),
+        // }),
         (runtime) => {
           const removeLastSlash = (url: string) => url.replace(/\/$/, "");
           const servers = {
@@ -123,9 +123,7 @@ export default function RootLayout() {
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
               removeLastSlash(
                 process.env.EXPO_PUBLIC_OSMOSIS_BE_BASE_URL ?? ""
-              ) +
-                "/" +
-                constructEdgeUrlPathname("main")
+              ) + constructEdgeUrlPathname("main")
             )(runtime),
           };
 
@@ -141,6 +139,7 @@ export default function RootLayout() {
             const possibleOsmosisFePath = pathParts.join(".");
 
             if (basePath === "osmosisFe") {
+              console.log("possibleOsmosisFePath", possibleOsmosisFePath);
               return servers[constructEdgeRouterKey("main")]({
                 ...ctx,
                 op: {

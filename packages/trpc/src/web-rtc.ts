@@ -4,9 +4,7 @@ import { z } from "zod";
 import { createTRPCRouter, rateLimitedProcedure } from "./api";
 
 export const WebRTCSessionDataSchema = z.object({
-  offerSDP: z.string().optional(),
-  answerSDP: z.string().optional(),
-  candidates: z.array(z.string()).optional(),
+  offerSDP: z.string(),
   createdAt: z.number(),
 });
 
@@ -16,7 +14,15 @@ export type WebRTCSessionData = z.infer<typeof WebRTCSessionDataSchema>;
 const TTL_FIVE_MINUTES = 5 * 60; // 5 minutes
 
 function getSessionKey(sessionToken: string) {
-  return `session:${sessionToken}`;
+  return `session:${sessionToken}:offer`;
+}
+
+function getAnswerKey(sessionToken: string) {
+  return `session:${sessionToken}:answer`;
+}
+
+function getCandidatesKey(sessionToken: string) {
+  return `session:${sessionToken}:candidates`;
 }
 
 export const webRTCRouter = createTRPCRouter({
@@ -32,7 +38,6 @@ export const webRTCRouter = createTRPCRouter({
       const sessionKey = getSessionKey(input.sessionToken);
       const sessionData = WebRTCSessionDataSchema.parse({
         offerSDP: input.offerSDP,
-        candidates: [],
         createdAt: Date.now(),
       });
 
@@ -67,21 +72,8 @@ export const webRTCRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const sessionKey = getSessionKey(input.sessionToken);
-      const existingData = await getRedisClient().get<WebRTCSessionData>(
-        sessionKey
-      );
-      if (!existingData) {
-        return { success: false, error: "Session not found" };
-      }
-
-      const validatedExistingData = WebRTCSessionDataSchema.parse(existingData);
-      const updatedData = WebRTCSessionDataSchema.parse({
-        ...validatedExistingData,
-        answerSDP: input.answerSDP,
-      });
-
-      await getRedisClient().set(sessionKey, JSON.stringify(updatedData), {
+      const answerKey = getAnswerKey(input.sessionToken);
+      await getRedisClient().set(answerKey, input.answerSDP, {
         ex: TTL_FIVE_MINUTES,
       });
       return { success: true };
@@ -95,12 +87,9 @@ export const webRTCRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const sessionKey = getSessionKey(input.sessionToken);
-      const data = await getRedisClient().get<WebRTCSessionData>(sessionKey);
-      if (!data) return { answerSDP: null };
-
-      const validatedData = WebRTCSessionDataSchema.parse(data);
-      return { answerSDP: validatedData.answerSDP ?? null };
+      const answerKey = getAnswerKey(input.sessionToken);
+      const answerSDP = await getRedisClient().get<string>(answerKey);
+      return { answerSDP: answerSDP ?? null };
     }),
 
   // 5. Either side: post ICE candidate
@@ -112,26 +101,9 @@ export const webRTCRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const sessionKey = getSessionKey(input.sessionToken);
-      const existingData = await getRedisClient().get<WebRTCSessionData>(
-        sessionKey
-      );
-      if (!existingData) {
-        return { success: false, error: "Session not found" };
-      }
-
-      const validatedExistingData = WebRTCSessionDataSchema.parse(existingData);
-      const updatedData = WebRTCSessionDataSchema.parse({
-        ...validatedExistingData,
-        candidates: [
-          ...(validatedExistingData.candidates ?? []),
-          input.candidate,
-        ],
-      });
-
-      await getRedisClient().set(sessionKey, JSON.stringify(updatedData), {
-        ex: TTL_FIVE_MINUTES,
-      });
+      const candidatesKey = getCandidatesKey(input.sessionToken);
+      await getRedisClient().rpush(candidatesKey, input.candidate);
+      await getRedisClient().expire(candidatesKey, TTL_FIVE_MINUTES);
       return { success: true };
     }),
 
@@ -143,11 +115,13 @@ export const webRTCRouter = createTRPCRouter({
       })
     )
     .query(async ({ input }) => {
-      const sessionKey = getSessionKey(input.sessionToken);
-      const data = await getRedisClient().get<WebRTCSessionData>(sessionKey);
-      if (!data) return { candidates: [] };
-
-      const validatedData = WebRTCSessionDataSchema.parse(data);
-      return { candidates: validatedData.candidates ?? [] };
+      const candidatesKey = getCandidatesKey(input.sessionToken);
+      const candidates = await getRedisClient().lrange<{
+        candidate: string;
+        sdpMid: string;
+        sdpMLineIndex: number;
+        usernameFragment: string;
+      }>(candidatesKey, 0, -1);
+      return { candidates: candidates ?? [] };
     }),
 });

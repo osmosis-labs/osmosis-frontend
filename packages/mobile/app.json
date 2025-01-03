@@ -64,6 +64,7 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ]
+      // "@config-plugins/react-native-webrtc"
     ],
     "experiments": {
       "typedRoutes": true
