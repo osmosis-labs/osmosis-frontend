@@ -1,15 +1,36 @@
-import { STUN_SERVER } from "@osmosis-labs/utils";
+import {
+  deserializeWebRTCMessage,
+  serializeWebRTCMessage,
+  STUN_SERVER,
+} from "@osmosis-labs/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 import { QRCode } from "~/components/qrcode";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "~/components/ui/input-otp";
 import { api } from "~/utils/trpc";
+
+interface CustomRTCPeerConnection extends RTCPeerConnection {
+  dataChannel?: RTCDataChannel;
+}
 
 export default function DesktopPage() {
   const [sessionToken, setSessionToken] = useState("");
   const [qrValue, setQrValue] = useState("");
-  const [pc, setPc] = useState<RTCPeerConnection | null>(null);
+  const [pc, setPc] = useState<CustomRTCPeerConnection | null>(null);
   const [isReady, setIsReady] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [verificationState, setVerificationState] = useState<{
+    code?: string;
+    secret?: string;
+    error?: boolean;
+    verified: boolean;
+  }>({ verified: false });
 
   const createOfferMutation = api.edge.webRTC.createOffer.useMutation();
   const postCandidateMutation = api.edge.webRTC.postCandidate.useMutation();
@@ -18,7 +39,7 @@ export default function DesktopPage() {
   const fetchAnswerQuery = api.edge.webRTC.fetchAnswer.useQuery(
     { sessionToken },
     {
-      enabled: !!sessionToken,
+      enabled: !!sessionToken && !isConnected,
       refetchInterval: 3000,
     }
   );
@@ -27,10 +48,29 @@ export default function DesktopPage() {
   const fetchCandidatesQuery = api.edge.webRTC.fetchCandidates.useQuery(
     { sessionToken },
     {
-      enabled: !!sessionToken,
+      enabled: !!sessionToken && !isConnected,
       refetchInterval: 3000,
     }
   );
+
+  const handleVerificationCode = (pin: string) => {
+    if (verificationState.code === pin) {
+      // Send success message back to mobile
+      if (pc && pc.dataChannel) {
+        pc.dataChannel.send(
+          serializeWebRTCMessage({
+            type: "verification_success",
+          })
+        );
+        setVerificationState((prev) => ({ ...prev, verified: true }));
+      }
+    } else {
+      setVerificationState((prev) => ({ ...prev, error: true }));
+      setTimeout(() => {
+        setVerificationState((prev) => ({ ...prev, error: false }));
+      }, 2000);
+    }
+  };
 
   /**
    * Helper function to create a peer connection, generate a new offer,
@@ -42,15 +82,34 @@ export default function DesktopPage() {
     setSessionToken(token);
 
     // Create new PeerConnection
-    const peer = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
+    const peer = new RTCPeerConnection({
+      iceServers: [STUN_SERVER],
+    }) as CustomRTCPeerConnection;
 
     // Create data channel if you want
     const dc = peer.createDataChannel("keyTransferChannel");
+    peer.dataChannel = dc;
     dc.onopen = () => {
       console.log("[Desktop] Data channel open, can send data now.");
     };
-    dc.onmessage = (e) => {
+    dc.onclose = () => {
+      console.log("[Desktop] Data channel closed.");
+    };
+    dc.onmessage = async (e) => {
       console.log("[Desktop] Received from phone:", e.data);
+      try {
+        const data = await deserializeWebRTCMessage(e.data);
+        if (data.type === "verification") {
+          setVerificationState({
+            code: data.code,
+            secret: data.secret,
+            verified: false,
+            error: false,
+          });
+        }
+      } catch (err) {
+        console.error("Failed to parse message:", err);
+      }
     };
 
     // ICE candidate handling
@@ -60,6 +119,23 @@ export default function DesktopPage() {
         await postCandidateMutation.mutateAsync({
           sessionToken: token,
           candidate: JSON.stringify(event.candidate),
+        });
+      }
+    };
+
+    peer.onconnectionstatechange = () => {
+      if (peer.connectionState === "connected") {
+        console.log("[Desktop] Connection established.");
+        setIsConnected(true);
+      } else if (peer.connectionState === "disconnected") {
+        console.log("[Desktop] Connection lost.");
+        setIsConnected(false);
+        setPc(null);
+        setSessionToken("");
+        setIsReady(false);
+        setVerificationState({ verified: false });
+        generateOffer().catch((err) => {
+          console.error("Failed to generate initial offer:", err);
         });
       }
     };
@@ -117,16 +193,14 @@ export default function DesktopPage() {
         }
       });
     }
-  }, [fetchCandidatesQuery.data, pc]);
+  }, [fetchAnswerQuery.data?.answerSDP, fetchCandidatesQuery.data, pc]);
 
   /**
    * Set a timer to regenerate the offer if still no answer after 5 minutes
-   * (300000 ms). If the user never scanned the QR code or the phone didn't
-   * respond, this re-creates a fresh session.
    */
   useEffect(() => {
-    // Only start timer if we actually have a sessionToken generated
-    if (!sessionToken) return;
+    // Skip timer if connected or no session token
+    if (!sessionToken || isConnected) return;
 
     const timerId = setTimeout(async () => {
       // If we still have no answer at this point, regenerate
@@ -147,18 +221,62 @@ export default function DesktopPage() {
     return () => {
       clearTimeout(timerId);
     };
-  }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer]);
+  }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer, isConnected]);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "2rem" }}>
-      <h1>Desktop WebRTC Transfer</h1>
+    <div className="flex flex-col items-center gap-4">
+      <h1 className="font-h3 text-h3">Desktop WebRTC Transfer</h1>
       {!isReady && <p>Generating offer...</p>}
-      {isReady && (
-        <div className="bg-white-full">
+      {isReady && !isConnected && (
+        <div className="flex flex-col items-center gap-3">
           <p>Scan this QR code with your mobile:</p>
-          <QRCode value={qrValue} size={180} />
+          <div className="bg-white-full w-fit rounded-lg p-2">
+            <QRCode value={qrValue} size={240} />
+          </div>
         </div>
+      )}
+      {isConnected && !verificationState.verified && (
+        <div className="flex flex-col items-center gap-4">
+          <p>Enter the 6-digit code shown on your mobile device:</p>
+          <InputPin onComplete={handleVerificationCode} />
+          {verificationState.error && (
+            <p className="text-missionError">Invalid code. Please try again.</p>
+          )}
+        </div>
+      )}
+      {verificationState.verified && (
+        <p className="text-success">
+          Connected and verified with mobile device!
+        </p>
       )}
     </div>
   );
 }
+
+const InputPin = ({ onComplete }: { onComplete: (pin: string) => void }) => {
+  const [pin, setPin] = useState("");
+  return (
+    <InputOTP
+      maxLength={6}
+      value={pin}
+      onChange={(value) => {
+        setPin(value);
+        if (value.length === 6) {
+          onComplete(value);
+        }
+      }}
+    >
+      <InputOTPGroup>
+        <InputOTPSlot index={0} />
+        <InputOTPSlot index={1} />
+        <InputOTPSlot index={2} />
+      </InputOTPGroup>
+      <InputOTPSeparator />
+      <InputOTPGroup>
+        <InputOTPSlot index={3} />
+        <InputOTPSlot index={4} />
+        <InputOTPSlot index={5} />
+      </InputOTPGroup>
+    </InputOTP>
+  );
+};

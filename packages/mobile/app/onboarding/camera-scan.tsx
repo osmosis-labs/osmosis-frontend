@@ -1,7 +1,12 @@
-import { STUN_SERVER } from "@osmosis-labs/utils";
+import {
+  deserializeWebRTCMessage,
+  serializeWebRTCMessage,
+  STUN_SERVER,
+} from "@osmosis-labs/utils";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { BarcodeScanningResult, CameraView, FocusMode } from "expo-camera";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { getRandomBytes } from "expo-crypto";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Dimensions,
@@ -31,11 +36,25 @@ type WebRTCStatus =
   | "CreatingAnswer"
   | "PostingAnswer"
   | "AwaitingConnection"
+  | "AwaitingVerification"
+  | "Verified"
   | "Error";
+
+// Move functions outside before the hook
+const generateVerificationCode = () => {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+};
+
+const generateSecureSecret = () => {
+  const rawKey = getRandomBytes(32); // 32 bytes = 256 bits
+  const base64Key = btoa(String.fromCharCode(...rawKey));
+  return base64Key;
+};
 
 const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
   const [status, setStatus] = useState<WebRTCStatus>("Init");
   const [connected, setConnected] = useState(false);
+  const [verificationCode, setVerificationCode] = useState<string>("");
 
   const apiUtils = api.useUtils();
   const postCandidateMutation =
@@ -72,7 +91,7 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
         const pc = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
         peerConnectionRef.current = pc;
 
-        // 3) Set remote description (the desktop’s offer)
+        // 3) Set remote description (the desktop's offer)
         await pc.setRemoteDescription({
           type: "offer",
           sdp: offerRes.offerSDP,
@@ -92,20 +111,37 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
         pc.addEventListener("datachannel", (ev) => {
           const channel = ev.channel;
           // @ts-ignore
-          dataChannelRef.current = channel; // Store the channel reference
+          dataChannelRef.current = channel;
 
           channel.addEventListener("open", () => {
             console.log("[Mobile] Data channel open, can receive data.");
             setStatus("ChannelOpen");
             setConnected(true);
 
-            // Send initial message when channel opens
-            channel.send("Hello from mobile device!");
+            // Generate and send verification code
+            const code = generateVerificationCode();
+            setVerificationCode(code);
+            const secret = generateSecureSecret();
+            channel.send(
+              serializeWebRTCMessage({
+                type: "verification",
+                code,
+                secret,
+              })
+            );
+            setStatus("AwaitingVerification");
           });
 
-          channel.addEventListener("message", (msgEvent) => {
+          channel.addEventListener("message", async (msgEvent) => {
             console.log("[Mobile] Received from desktop:", msgEvent.data);
-            // Handle incoming messages here
+            try {
+              const data = await deserializeWebRTCMessage(msgEvent.data);
+              if (data.type === "verification_success") {
+                setStatus("Verified");
+              }
+            } catch (e) {
+              console.error("Failed to parse message:", e);
+            }
           });
 
           channel.addEventListener("close", () => {
@@ -162,6 +198,7 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
         peerConnectionRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionToken]);
 
   const handleSendTest = () => {
@@ -179,6 +216,7 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
     status,
     handleSendTest,
     connected,
+    verificationCode,
   };
 };
 
@@ -189,9 +227,11 @@ export default function Welcome() {
 
   const shouldFreezeCamera = sessionToken !== "";
 
-  const { status, handleSendTest, connected } = useWebRTC({
+  const { status, handleSendTest, connected, verificationCode } = useWebRTC({
     sessionToken,
   });
+
+  console.log("verificationCode", verificationCode);
 
   const resetCameraAutoFocus = () => {
     const abortController = new AbortController();
