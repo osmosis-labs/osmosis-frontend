@@ -46,6 +46,7 @@ import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { trpcHelpers } from "~/utils/helpers";
+import { getBaseUrl } from "~/utils/url";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -78,6 +79,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
     const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
+
+    const pageTitle = `${
+      title ? `${title} (${asset.coinDenom})` : asset.coinDenom
+    } | Osmosis`;
 
     if (!asset) {
       return null;
@@ -166,10 +171,20 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
           strategy="afterInteractive"
         />
         <NextSeo
-          title={`${
-            title ? `${title} (${asset.coinDenom})` : asset.coinDenom
-          } | Osmosis`}
+          title={pageTitle}
           description={details?.description}
+          openGraph={{
+            title: pageTitle,
+            description: details?.description?.substring(0, 120) + "...",
+            images: [
+              {
+                url: `${getBaseUrl(true)}/api/og-images/assets/${
+                  asset.coinDenom
+                }`,
+                alt: title,
+              },
+            ],
+          }}
         />
         <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
           <LinkButton
