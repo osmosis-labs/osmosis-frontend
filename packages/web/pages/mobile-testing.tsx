@@ -13,6 +13,8 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "~/components/ui/input-otp";
+import { useCreateMobileSession } from "~/hooks/mutations/mobile-session/use-create-mobile-session";
+import { encryptAES } from "~/utils/encryption";
 import { api } from "~/utils/trpc";
 
 interface CustomRTCPeerConnection extends RTCPeerConnection {
@@ -34,6 +36,7 @@ export default function DesktopPage() {
 
   const createOfferMutation = api.edge.webRTC.createOffer.useMutation();
   const postCandidateMutation = api.edge.webRTC.postCandidate.useMutation();
+  const createMobileSessionMutation = useCreateMobileSession();
 
   // Poll for the answer
   const fetchAnswerQuery = api.edge.webRTC.fetchAnswer.useQuery(
@@ -53,16 +56,49 @@ export default function DesktopPage() {
     }
   );
 
-  const handleVerificationCode = (pin: string) => {
+  const handleVerificationCode = async (pin: string) => {
     if (verificationState.code === pin) {
       // Send success message back to mobile
       if (pc && pc.dataChannel) {
-        pc.dataChannel.send(
-          serializeWebRTCMessage({
-            type: "verification_success",
-          })
-        );
-        setVerificationState((prev) => ({ ...prev, verified: true }));
+        try {
+          pc.dataChannel.send(
+            serializeWebRTCMessage({
+              type: "starting_verification",
+            })
+          );
+          const { address, allowedMessages, key, publicKey } =
+            await createMobileSessionMutation.mutateAsync();
+
+          // Encrypt the sensitive data using the secret from mobile
+          const sensitiveData = JSON.stringify({
+            address,
+            allowedMessages,
+            key,
+            publicKey,
+          });
+          const encryptedData = await encryptAES(
+            sensitiveData,
+            verificationState.secret!
+          );
+
+          pc.dataChannel.send(
+            serializeWebRTCMessage({
+              type: "verification_success",
+              encryptedData,
+            })
+          );
+          setVerificationState((prev) => ({ ...prev, verified: true }));
+        } catch (error) {
+          pc.dataChannel.send(
+            serializeWebRTCMessage({
+              type: "verification_failed",
+            })
+          );
+          setVerificationState((prev) => ({ ...prev, error: true }));
+          setTimeout(() => {
+            setVerificationState((prev) => ({ ...prev, error: false }));
+          }, 2000);
+        }
       }
     } else {
       setVerificationState((prev) => ({ ...prev, error: true }));
@@ -235,14 +271,21 @@ export default function DesktopPage() {
           </div>
         </div>
       )}
-      {isConnected && !verificationState.verified && (
-        <div className="flex flex-col items-center gap-4">
-          <p>Enter the 6-digit code shown on your mobile device:</p>
-          <InputPin onComplete={handleVerificationCode} />
-          {verificationState.error && (
-            <p className="text-missionError">Invalid code. Please try again.</p>
-          )}
-        </div>
+      {isConnected &&
+        !verificationState.verified &&
+        !createMobileSessionMutation.isLoading && (
+          <div className="flex flex-col items-center gap-4">
+            <p>Enter the 6-digit code shown on your mobile device:</p>
+            <InputPin onComplete={handleVerificationCode} />
+            {verificationState.error && (
+              <p className="text-missionError">
+                Invalid code. Please try again.
+              </p>
+            )}
+          </div>
+        )}
+      {createMobileSessionMutation.isLoading && (
+        <p className="text-success">Creating mobile session...</p>
       )}
       {verificationState.verified && (
         <p className="text-success">
@@ -258,6 +301,7 @@ const InputPin = ({ onComplete }: { onComplete: (pin: string) => void }) => {
   return (
     <InputOTP
       maxLength={6}
+      autoFocus
       value={pin}
       onChange={(value) => {
         setPin(value);

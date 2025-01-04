@@ -1,3 +1,4 @@
+import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import {
   deserializeWebRTCMessage,
   serializeWebRTCMessage,
@@ -6,22 +7,20 @@ import {
 import MaskedView from "@react-native-masked-view/masked-view";
 import { BarcodeScanningResult, CameraView, FocusMode } from "expo-camera";
 import { getRandomBytes } from "expo-crypto";
+import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  Dimensions,
-  StyleSheet,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RTCIceCandidate, RTCPeerConnection } from "react-native-webrtc";
 
+import { ConnectionProgressModal } from "~/components/connection-progress-modal";
 import { RouteHeader } from "~/components/route-header";
-import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useStateRef } from "~/hooks/use-state-ref";
+import { decryptAES } from "~/utils/encryption";
 import { api } from "~/utils/trpc";
+import { WalletFactory } from "~/utils/wallet-factory";
 
 const CAMERA_ASPECT_RATIO = 4 / 3;
 const SCAN_ICON_WIDTH_RATIO = 0.7;
@@ -29,14 +28,10 @@ const SCAN_ICON_WIDTH_RATIO = 0.7;
 // Define a type for the statuses
 type WebRTCStatus =
   | "Init"
-  | "FetchingOffer"
   | "NoOffer"
-  | "CreatingPC"
-  | "ChannelOpen"
-  | "CreatingAnswer"
-  | "PostingAnswer"
   | "AwaitingConnection"
   | "AwaitingVerification"
+  | "Verifying"
   | "Verified"
   | "Error";
 
@@ -51,10 +46,15 @@ const generateSecureSecret = () => {
   return base64Key;
 };
 
-const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
+const useWalletCreationWebRTC = ({
+  sessionToken,
+}: {
+  sessionToken: string;
+}) => {
   const [status, setStatus] = useState<WebRTCStatus>("Init");
   const [connected, setConnected] = useState(false);
   const [verificationCode, setVerificationCode] = useState<string>("");
+  const [_, setSecret, secretRef] = useStateRef<string>("");
 
   const apiUtils = api.useUtils();
   const postCandidateMutation =
@@ -76,7 +76,6 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
       try {
         if (isCleanedUp) return;
 
-        setStatus("FetchingOffer");
         // 1) Fetch the offer
         const offerRes = await apiUtils.osmosisFe.webRTC.fetchOffer.ensureData({
           sessionToken,
@@ -86,7 +85,8 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
           return;
         }
 
-        setStatus("CreatingPC");
+        setStatus("AwaitingConnection");
+
         // 2) Create peer connection
         const pc = new RTCPeerConnection({ iceServers: [STUN_SERVER] });
         peerConnectionRef.current = pc;
@@ -115,13 +115,13 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
 
           channel.addEventListener("open", () => {
             console.log("[Mobile] Data channel open, can receive data.");
-            setStatus("ChannelOpen");
             setConnected(true);
 
-            // Generate and send verification code
+            // Generate and send verification code and secret
             const code = generateVerificationCode();
-            setVerificationCode(code);
             const secret = generateSecureSecret();
+            setVerificationCode(code);
+            setSecret(secret);
             channel.send(
               serializeWebRTCMessage({
                 type: "verification",
@@ -137,27 +137,68 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
             try {
               const data = await deserializeWebRTCMessage(msgEvent.data);
               if (data.type === "verification_success") {
+                // Decrypt the verification success data using the secret
+                const decryptedData = decryptAES(
+                  data.encryptedData,
+                  secretRef.current
+                );
+                const { address, allowedMessages, key, publicKey } = JSON.parse(
+                  decryptedData
+                ) as {
+                  address: string;
+                  allowedMessages: AvailableOneClickTradingMessages[];
+                  key: string;
+                  publicKey: string;
+                };
+
+                // Store the decrypted data in secure storage
+                await new WalletFactory().createWallet({
+                  keyInfo: {
+                    type: "smart-account",
+                    address,
+                    allowedMessages,
+                    privateKey: key,
+                    publicKey,
+                    name: "Wallet 1",
+                    version: 1,
+                  },
+                });
+
                 setStatus("Verified");
+              }
+              if (data.type === "verification_failed") {
+                setStatus("Error");
+              }
+              if (data.type === "starting_verification") {
+                setStatus("Verifying");
               }
             } catch (e) {
               console.error("Failed to parse message:", e);
+              setStatus("Error");
             }
           });
 
           channel.addEventListener("close", () => {
             console.log("[Mobile] Data channel closed");
             setConnected(false);
+            setStatus("Error");
           });
         });
 
-        setStatus("CreatingAnswer");
+        pc.addEventListener("connectionstatechange", () => {
+          if (pc.connectionState === "disconnected") {
+            console.log("[Mobile] Connection lost.");
+            setConnected(false);
+            setStatus("Error");
+          }
+        });
+
         // 6) Create answer
         if (isCleanedUp) return;
         const answer = await pc.createAnswer();
         if (isCleanedUp) return;
         await pc.setLocalDescription(answer);
 
-        setStatus("PostingAnswer");
         await postAnswerMutation.mutateAsync({
           sessionToken,
           answerSDP: answer.sdp ?? "",
@@ -179,8 +220,6 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
             }
           }
         }, 3000);
-
-        setStatus("AwaitingConnection");
       } catch (err: any) {
         console.error(err);
         if (!isCleanedUp) setStatus("Error");
@@ -201,22 +240,17 @@ const useWebRTC = ({ sessionToken }: { sessionToken: string }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionToken]);
 
-  const handleSendTest = () => {
-    if (
-      dataChannelRef.current &&
-      dataChannelRef.current.readyState === "open"
-    ) {
-      dataChannelRef.current.send("Test message from mobile!");
-    } else {
-      console.log("[Mobile] Data channel not ready");
-    }
+  const reset = () => {
+    setStatus("Init");
+    setConnected(false);
+    setVerificationCode("");
   };
 
   return {
     status,
-    handleSendTest,
     connected,
     verificationCode,
+    reset,
   };
 };
 
@@ -224,14 +258,13 @@ export default function Welcome() {
   const { top, bottom } = useSafeAreaInsets();
   const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
   const [sessionToken, setSessionToken] = useState("");
+  const [showConnectionModal, setShowConnectionModal] = useState(false);
 
-  const shouldFreezeCamera = sessionToken !== "";
+  const shouldFreezeCamera = !!sessionToken;
 
-  const { status, handleSendTest, connected, verificationCode } = useWebRTC({
+  const { status, verificationCode, reset } = useWalletCreationWebRTC({
     sessionToken,
   });
-
-  console.log("verificationCode", verificationCode);
 
   const resetCameraAutoFocus = () => {
     const abortController = new AbortController();
@@ -251,7 +284,46 @@ export default function Welcome() {
 
     const parsedData = JSON.parse(data);
     setSessionToken(parsedData.sessionToken);
+    setShowConnectionModal(true);
   };
+
+  const handleRetry = () => {
+    setSessionToken("");
+    setShowConnectionModal(false);
+    reset();
+  };
+
+  const handleClose = () => {
+    if (status === "Verified") {
+      router.replace("/(tabs)");
+    } else {
+      setShowConnectionModal(false);
+      reset();
+    }
+  };
+
+  const getConnectionState = () => {
+    if (!showConnectionModal) return null;
+
+    switch (status) {
+      case "Init":
+      case "AwaitingConnection":
+        return "connecting";
+      case "AwaitingVerification":
+        return "input-code";
+      case "Verified":
+        return "success";
+      case "Verifying":
+        return "verifying";
+      case "Error":
+      case "NoOffer":
+        return "failed";
+      default:
+        return "connecting";
+    }
+  };
+
+  const connectionState = getConnectionState();
 
   const overlayWidth = Dimensions.get("window").height / CAMERA_ASPECT_RATIO;
   const cameraWidth = Dimensions.get("window").width;
@@ -314,11 +386,13 @@ export default function Welcome() {
           </View>
         }
       >
-        <CameraView
-          style={{ flex: 1 }}
-          onBarcodeScanned={onScanCode}
-          autofocus={autoFocus}
-        />
+        {!connectionState && (
+          <CameraView
+            style={{ flex: 1 }}
+            onBarcodeScanned={onScanCode}
+            autofocus={autoFocus}
+          />
+        )}
         {!shouldFreezeCamera && (
           <View
             style={{
@@ -346,23 +420,13 @@ export default function Welcome() {
           onPress={resetCameraAutoFocus}
         />
       </MaskedView>
-      {shouldFreezeCamera && (
-        <View
-          style={{
-            flex: 1,
-            justifyContent: "center",
-            alignItems: "center",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            gap: 12,
-          }}
-        >
-          <ActivityIndicator color={Colors.white.full} />
-          <Text style={{ fontSize: 20, fontWeight: 600 }}>Loading...</Text>
-        </View>
+      {connectionState && (
+        <ConnectionProgressModal
+          state={connectionState}
+          verificationCode={verificationCode}
+          onRetry={handleRetry}
+          onClose={handleClose}
+        />
       )}
       <View
         style={{
@@ -385,14 +449,6 @@ export default function Welcome() {
           to &apos;Profile&apos; &gt; &apos;Link mobile device&apos; on{"\n"}
           Osmosis web app.
         </Text>
-        {connected && (
-          <Button
-            title="Send test message"
-            onPress={() => {
-              handleSendTest();
-            }}
-          />
-        )}
       </View>
     </View>
   );

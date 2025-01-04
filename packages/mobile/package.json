@@ -38,6 +38,7 @@
     "@tanstack/react-query-persist-client": "^4.36.1",
     "@trpc/client": "^10.45.1",
     "@trpc/react-query": "^10.45.1",
+    "crypto-es": "^2.1.0",
     "dayjs": "^1.10.7",
     "debounce": "^1.2.1",
     "expo": "~52.0.23",

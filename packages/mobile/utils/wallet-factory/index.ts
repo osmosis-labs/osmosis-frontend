@@ -8,10 +8,10 @@ export class WalletFactory implements BaseWalletFactory {
   public async createWallet({ keyInfo }: { keyInfo: KeyInfo }): Promise<void> {
     switch (keyInfo.type) {
       case "view-only":
-        cosmosViewOnlyWalletFactory.createWallet({ keyInfo });
+        await cosmosViewOnlyWalletFactory.createWallet({ keyInfo });
         break;
       case "smart-account":
-        cosmosSmartAccountWalletFactory.createWallet({ keyInfo });
+        await cosmosSmartAccountWalletFactory.createWallet({ keyInfo });
         break;
       default:
         throw new Error("Invalid wallet type");
@@ -24,10 +24,12 @@ export class WalletFactory implements BaseWalletFactory {
   }): Promise<void> {
     switch (params.type) {
       case "view-only":
-        cosmosViewOnlyWalletFactory.deleteWallet({ index: params.index });
+        await cosmosViewOnlyWalletFactory.deleteWallet({ index: params.index });
         break;
       case "smart-account":
-        cosmosSmartAccountWalletFactory.deleteWallet({ index: params.index });
+        await cosmosSmartAccountWalletFactory.deleteWallet({
+          index: params.index,
+        });
         break;
       default:
         throw new Error("Invalid wallet type");

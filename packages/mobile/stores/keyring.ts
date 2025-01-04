@@ -20,6 +20,7 @@ interface SmartAccountKeyInfo extends BasekeyInfo {
   type: "smart-account";
   privateKey: string;
   allowedMessages: AvailableOneClickTradingMessages[];
+  publicKey: string;
 }
 
 export type KeyInfo = ViewOnlyKeyInfo | SmartAccountKeyInfo;
@@ -38,6 +39,7 @@ export const useKeyringStore = create<WalletKeyring>()(
       keys: [],
 
       addKey: async (keyInfo: Omit<KeyInfo, "version">) => {
+        console.log("addKey", keyInfo);
         set((state) => ({
           keys: [...state.keys, { ...keyInfo, version } as KeyInfo],
         }));

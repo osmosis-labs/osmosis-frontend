@@ -19,15 +19,26 @@ export const VerificationMessageSchema = BaseMessageSchema.extend({
   secret: z.string(),
 });
 
+export const StartingVerificationMessageSchema = BaseMessageSchema.extend({
+  type: z.literal("starting_verification"),
+});
+
+export const VerificationFailedMessageSchema = BaseMessageSchema.extend({
+  type: z.literal("verification_failed"),
+});
+
 // Schema for verification success message sent from desktop to mobile
 export const VerificationSuccessMessageSchema = BaseMessageSchema.extend({
   type: z.literal("verification_success"),
+  encryptedData: z.string(), // Base64 encoded encrypted data
 });
 
 // Union of all possible message types
 export const WebRTCMessageSchema = z.discriminatedUnion("type", [
   VerificationMessageSchema,
   VerificationSuccessMessageSchema,
+  StartingVerificationMessageSchema,
+  VerificationFailedMessageSchema,
 ]);
 
 // Type exports
@@ -36,11 +47,19 @@ export type VerificationMessage = z.infer<typeof VerificationMessageSchema>;
 export type VerificationSuccessMessage = z.infer<
   typeof VerificationSuccessMessageSchema
 >;
+export type StartingVerificationMessage = z.infer<
+  typeof StartingVerificationMessageSchema
+>;
+export type VerificationFailedMessage = z.infer<
+  typeof VerificationFailedMessageSchema
+>;
 
 // Message parameters
 export type WebRTCMessageParams =
-  | { type: "verification"; code: string; secret: string }
-  | { type: "verification_success" };
+  | VerificationMessage
+  | VerificationSuccessMessage
+  | StartingVerificationMessage
+  | VerificationFailedMessage;
 
 // Unified message creation function
 export const createWebRTCMessage = (

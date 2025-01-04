@@ -9,7 +9,6 @@ import { ThemeProvider } from "@react-navigation/native";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
-import { loggerLink } from "@trpc/client";
 import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -139,7 +138,6 @@ export default function RootLayout() {
             const possibleOsmosisFePath = pathParts.join(".");
 
             if (basePath === "osmosisFe") {
-              console.log("possibleOsmosisFePath", possibleOsmosisFePath);
               return servers[constructEdgeRouterKey("main")]({
                 ...ctx,
                 op: {
@@ -204,9 +202,9 @@ export default function RootLayout() {
 }
 
 const OnboardingObserver = () => {
-  const { currentWallet } = useWallets();
+  const { currentWallet, wallets } = useWallets();
 
-  if (!currentWallet) {
+  if (!currentWallet && wallets.length === 0) {
     return <Redirect href="/onboarding/welcome" />;
   }
 

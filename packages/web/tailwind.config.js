@@ -294,7 +294,7 @@ module.exports = {
         loading: "loading 1s ease-in-out infinite",
         "spin-slow": "spin 1.5s ease-in-out infinite",
         flash: "flash 1s ease-in-out infinite",
-        "caret-blink": "caret-blink 1.25s ease-out infinite",
+        "caret-blink": "caret-blink 0.75s ease-out infinite",
       },
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",

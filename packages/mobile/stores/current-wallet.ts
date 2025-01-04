@@ -16,7 +16,7 @@ export const useCurrentWalletStore = create<WalletState>()(
         set({ currentSelectedWalletIndex: index }),
     }),
     {
-      name: "wallet-store",
+      name: "current-wallet-store",
       storage: createJSONStorage(() => mmkvStorage),
     }
   )

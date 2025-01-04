@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  ActivityIndicator,
   StyleSheet,
   Text,
   TextStyle,
@@ -16,6 +17,7 @@ interface ButtonProps {
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
   disabled?: boolean;
+  loading?: boolean;
   icon?: React.ReactNode;
 }
 
@@ -26,6 +28,7 @@ export const Button: React.FC<ButtonProps> = ({
   buttonStyle,
   textStyle,
   disabled,
+  loading,
   icon,
 }) => {
   let variantStyles = {};
@@ -44,13 +47,19 @@ export const Button: React.FC<ButtonProps> = ({
         styles.button,
         variantStyles,
         buttonStyle,
-        disabled && styles.disabled,
+        (disabled || loading) && styles.disabled,
       ]}
-      disabled={disabled}
+      disabled={disabled || loading}
       onPress={onPress}
     >
-      {icon}
-      <Text style={[styles.text, textStyle]}>{title}</Text>
+      {loading ? (
+        <ActivityIndicator color="#fff" />
+      ) : (
+        <>
+          {icon}
+          <Text style={[styles.text, textStyle]}>{title}</Text>
+        </>
+      )}
     </TouchableOpacity>
   );
 };
