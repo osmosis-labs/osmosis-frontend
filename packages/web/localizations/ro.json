@@ -570,7 +570,8 @@
     "viewAllAssets": "Vedeți toate activele",
     "wallet": "Portofel",
     "transactions": "Tranzacții",
-    "oneClickTrading": "1-Click Trading"
+    "oneClickTrading": "1-Click Trading",
+    "mobileSessions": "Mobil"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actiuni",

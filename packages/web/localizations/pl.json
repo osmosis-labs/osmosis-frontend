@@ -570,7 +570,8 @@
     "viewAllAssets": "Ver todos os recursos",
     "wallet": "Portfel",
     "transactions": "Transakcje",
-    "oneClickTrading": "Handel jednym kliknięciem"
+    "oneClickTrading": "Handel jednym kliknięciem",
+    "mobileSessions": "Przenośny"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",

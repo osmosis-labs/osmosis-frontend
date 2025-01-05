@@ -570,7 +570,8 @@
     "viewAllAssets": "نمایش همه دارایی ها",
     "wallet": "کیف پول",
     "transactions": "معاملات",
-    "oneClickTrading": "1- روی تجارت کلیک کنید"
+    "oneClickTrading": "1- روی تجارت کلیک کنید",
+    "mobileSessions": "موبایل"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",

@@ -53,13 +53,13 @@ export default function LinkViaDesktop() {
             title="Open Settings"
             textStyle={styles.buttonLabel}
           />
-          <Button
+          {/* <Button
             buttonStyle={styles.manualButton}
             onPress={handleConnectManually}
             title="Connect Manually"
             textStyle={styles.manualButtonLabel}
             variant="outline"
-          />
+          /> */}
         </View>
 
         <Text style={styles.alternateText}>

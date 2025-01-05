@@ -570,7 +570,8 @@
     "viewAllAssets": "모든 자산 보기",
     "wallet": "지갑",
     "transactions": "업무",
-    "oneClickTrading": "1-클릭 거래"
+    "oneClickTrading": "1-클릭 거래",
+    "mobileSessions": "이동하는"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",

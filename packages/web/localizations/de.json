@@ -570,7 +570,8 @@
     "viewAllAssets": "Alle Assets anzeigen",
     "wallet": "Geldbörse",
     "transactions": "Transaktionen",
-    "oneClickTrading": "1-Klick-Handel"
+    "oneClickTrading": "1-Klick-Handel",
+    "mobileSessions": "Mobile"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",

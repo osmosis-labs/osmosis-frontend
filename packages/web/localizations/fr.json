@@ -570,7 +570,8 @@
     "viewAllAssets": "Voir tous les actifs",
     "wallet": "Portefeuille",
     "transactions": "Transactions",
-    "oneClickTrading": "Trading en 1 clic"
+    "oneClickTrading": "Trading en 1 clic",
+    "mobileSessions": "Mobile"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",

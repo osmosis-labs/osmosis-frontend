@@ -564,13 +564,18 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Existing Sessions",
+    "createSession": "Create Session"
+  },
   "profile": {
     "balance": "Balance",
     "modalTitle": "Profile",
     "viewAllAssets": "View all assets",
     "wallet": "Wallet",
     "transactions": "Transactions",
-    "oneClickTrading": "1-Click Trading"
+    "oneClickTrading": "1-Click Trading",
+    "mobileSessions": "Mobile"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",

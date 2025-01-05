@@ -10,9 +10,9 @@ import { toast } from "sonner-native";
 import { CopyIcon } from "~/components/icons/copy";
 import { ProfileWoz } from "~/components/icons/profile-woz";
 import { SettingsIcon } from "~/components/icons/settings";
+import { ManageWalletBottomSheet } from "~/components/portfolio/manage-wallet-bottom-sheet";
 import { PortfolioAssetBalancesTable } from "~/components/portfolio/portfolio-asset-balances-table";
 import { PortfolioValue } from "~/components/portfolio/portfolio-value";
-import { WalletBottomSheet } from "~/components/portfolio/wallet-bottom-sheet";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useClipboard } from "~/hooks/use-clipboard";
@@ -31,6 +31,8 @@ export default function PortfolioScreen() {
   };
 
   const handleAvatarPress = () => {
+    // TODO: Support multiple wallets
+    return;
     bottomSheetModalRef.current?.present();
   };
 
@@ -54,6 +56,7 @@ export default function PortfolioScreen() {
         <TouchableOpacity
           onPress={handleAvatarPress}
           style={styles.avatarButton}
+          activeOpacity={1}
         >
           <ProfileWoz style={{ flexShrink: 0 }} width={48} height={48} />
         </TouchableOpacity>
@@ -92,7 +95,7 @@ export default function PortfolioScreen() {
       </View>
       <PortfolioAssetBalancesTable />
 
-      <WalletBottomSheet ref={bottomSheetModalRef} />
+      <ManageWalletBottomSheet ref={bottomSheetModalRef} />
     </SafeAreaView>
   );
 }

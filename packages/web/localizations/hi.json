@@ -570,7 +570,8 @@
     "viewAllAssets": "सभी संपत्तियां देखें",
     "wallet": "बटुआ",
     "transactions": "लेनदेन",
-    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें"
+    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें",
+    "mobileSessions": "गतिमान"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",

@@ -9,6 +9,7 @@ import { ThemeProvider } from "@react-navigation/native";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
+import { loggerLink } from "@trpc/client";
 import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -59,6 +60,7 @@ persistQueryClient({
         const trpcKey = key.join(".") as RouterKeys;
         const excludedKeys: RouterKeys[] = [
           "local.assets.getAssetHistoricalPrice",
+          "local.oneClickTrading.getSessionAuthenticator",
         ];
 
         /**
@@ -94,11 +96,11 @@ export default function RootLayout() {
     api.createClient({
       transformer: superjson,
       links: [
-        // loggerLink({
-        //   enabled: (opts) =>
-        //     process.env.NODE_ENV === "development" ||
-        //     (opts.direction === "down" && opts.result instanceof Error),
-        // }),
+        loggerLink({
+          enabled: (opts) =>
+            process.env.NODE_ENV === "development" ||
+            (opts.direction === "down" && opts.result instanceof Error),
+        }),
         (runtime) => {
           const removeLastSlash = (url: string) => url.replace(/\/$/, "");
           const servers = {
@@ -205,7 +207,7 @@ const OnboardingObserver = () => {
   const { currentWallet, wallets } = useWallets();
 
   if (!currentWallet && wallets.length === 0) {
-    return <Redirect href="/onboarding/welcome" />;
+    return <Redirect withAnchor href="/onboarding/welcome" />;
   }
 
   return null;

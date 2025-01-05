@@ -1,6 +1,6 @@
-import { AvailableOneClickTradingMessages } from "@osmosis-labs/types";
 import {
   deserializeWebRTCMessage,
+  MobileSessionEncryptedDataSchema,
   serializeWebRTCMessage,
   STUN_SERVER,
 } from "@osmosis-labs/utils";
@@ -17,7 +17,9 @@ import { ConnectionProgressModal } from "~/components/connection-progress-modal"
 import { RouteHeader } from "~/components/route-header";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useOsBiometricAuthEnabled } from "~/hooks/biometrics";
 import { useStateRef } from "~/hooks/use-state-ref";
+import { useCurrentWalletStore } from "~/stores/current-wallet";
 import { decryptAES } from "~/utils/encryption";
 import { api } from "~/utils/trpc";
 import { WalletFactory } from "~/utils/wallet-factory";
@@ -142,14 +144,10 @@ const useWalletCreationWebRTC = ({
                   data.encryptedData,
                   secretRef.current
                 );
-                const { address, allowedMessages, key, publicKey } = JSON.parse(
-                  decryptedData
-                ) as {
-                  address: string;
-                  allowedMessages: AvailableOneClickTradingMessages[];
-                  key: string;
-                  publicKey: string;
-                };
+                const { address, allowedMessages, key, publicKey } =
+                  MobileSessionEncryptedDataSchema.parse(
+                    JSON.parse(decryptedData)
+                  );
 
                 // Store the decrypted data in secure storage
                 await new WalletFactory().createWallet({
@@ -160,8 +158,11 @@ const useWalletCreationWebRTC = ({
                     privateKey: key,
                     publicKey,
                     name: "Wallet 1",
-                    version: 1,
+                    version: data.version,
                   },
+                });
+                useCurrentWalletStore.setState({
+                  currentSelectedWalletIndex: 0,
                 });
 
                 setStatus("Verified");
@@ -259,6 +260,8 @@ export default function Welcome() {
   const [autoFocus, setAutoFocus] = useState<FocusMode>("off");
   const [sessionToken, setSessionToken] = useState("");
   const [showConnectionModal, setShowConnectionModal] = useState(false);
+  const { isCheckingBiometricAvailability, isBiometricEnabled } =
+    useOsBiometricAuthEnabled();
 
   const shouldFreezeCamera = !!sessionToken;
 
@@ -294,7 +297,9 @@ export default function Welcome() {
   };
 
   const handleClose = () => {
-    if (status === "Verified") {
+    if (status === "Verified" && isBiometricEnabled) {
+      router.replace("/onboarding/set-up-biometrics");
+    } else if (status === "Verified" && !isBiometricEnabled) {
       router.replace("/(tabs)");
     } else {
       setShowConnectionModal(false);
@@ -361,6 +366,7 @@ export default function Welcome() {
       </View>
       <MaskedView
         style={{ flex: 1 }}
+        key={String(shouldFreezeCamera)}
         maskElement={
           <View
             style={{
@@ -426,6 +432,7 @@ export default function Welcome() {
           verificationCode={verificationCode}
           onRetry={handleRetry}
           onClose={handleClose}
+          loading={isCheckingBiometricAvailability}
         />
       )}
       <View

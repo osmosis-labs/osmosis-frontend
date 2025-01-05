@@ -16,6 +16,7 @@ type ConnectionProgressState =
 interface ConnectionProgressModalProps {
   state: ConnectionProgressState;
   verificationCode?: string;
+  loading?: boolean;
   onRetry?: () => void;
   onClose?: () => void;
 }
@@ -23,6 +24,7 @@ interface ConnectionProgressModalProps {
 export const ConnectionProgressModal = ({
   state,
   verificationCode,
+  loading,
   onRetry,
   onClose,
 }: ConnectionProgressModalProps) => {
@@ -74,6 +76,7 @@ export const ConnectionProgressModal = ({
                 onPress={onRetry}
                 variant="primary"
                 buttonStyle={styles.button}
+                loading={loading}
               />
             )}
           </>
@@ -97,6 +100,7 @@ export const ConnectionProgressModal = ({
                 onPress={onClose}
                 variant="primary"
                 buttonStyle={styles.button}
+                loading={loading}
               />
             )}
           </>

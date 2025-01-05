@@ -6,90 +6,72 @@ import {
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
 import { forwardRef, useCallback } from "react";
-import { Pressable, StyleSheet, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useWallets } from "~/hooks/use-wallets";
 
-export const WalletBottomSheet = forwardRef<BottomSheetModal>((props, ref) => {
-  const wallets = [
-    {
-      id: "1",
-      name: "Wallet 1",
-      address: "0x27ed...Dcdb",
-      balance: "$0.00",
-      isActive: true,
-    },
-    {
-      id: "2",
-      name: "Wallet 2",
-      address: "0x607C...4285",
-      balance: "$0.00",
-      isActive: false,
-    },
-  ];
+export const ManageWalletBottomSheet = forwardRef<BottomSheetModal>(
+  (_props, ref) => {
+    const { wallets } = useWallets();
 
-  return (
-    <BottomSheetModal
-      ref={ref}
-      enablePanDownToClose
-      backdropComponent={useCallback(
-        (props: BottomSheetBackdropProps) => (
-          <BottomSheetBackdrop
-            {...props}
-            appearsOnIndex={0}
-            disappearsOnIndex={-1}
-          />
-        ),
-        []
-      )}
-      backgroundStyle={styles.bottomSheetBackground}
-      handleIndicatorStyle={styles.indicator}
-    >
-      <BottomSheetView style={styles.contentContainer}>
-        <View style={styles.header}>
-          <Text type="title" style={styles.title}>
-            Manage wallet
-          </Text>
-        </View>
-
-        <View style={styles.walletSection}>
-          <Text style={styles.sectionTitle}>Your other wallets</Text>
-          {wallets.map((wallet) => (
-            <WalletListItem
-              key={wallet.id}
-              name={wallet.name}
-              address={wallet.address}
-              balance={wallet.balance}
+    return (
+      <BottomSheetModal
+        ref={ref}
+        enablePanDownToClose
+        backdropComponent={useCallback(
+          (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
             />
-          ))}
-          <AddWalletButton />
-        </View>
-      </BottomSheetView>
-    </BottomSheetModal>
-  );
-});
+          ),
+          []
+        )}
+        backgroundStyle={styles.bottomSheetBackground}
+        handleIndicatorStyle={styles.indicator}
+      >
+        <BottomSheetView style={styles.contentContainer}>
+          <View style={styles.header}>
+            <Text type="title" style={styles.title}>
+              Manage wallet
+            </Text>
+          </View>
+
+          <View style={styles.walletSection}>
+            <Text style={styles.sectionTitle}>Your other wallets</Text>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {wallets.map((wallet, index) => (
+                <WalletListItem
+                  key={index + wallet.name}
+                  name={wallet.name}
+                  address={wallet.address}
+                />
+              ))}
+            </ScrollView>
+            <AddWalletButton />
+          </View>
+        </BottomSheetView>
+      </BottomSheetModal>
+    );
+  }
+);
 
 interface WalletListItemProps {
   name: string;
   address: string;
-  balance: string;
   onPress?: () => void;
 }
 
-const WalletListItem = ({
-  name,
-  address,
-  balance,
-  onPress,
-}: WalletListItemProps) => {
+const WalletListItem = ({ name, address, onPress }: WalletListItemProps) => {
   return (
     <Pressable onPress={onPress} style={styles.walletItem}>
       <View style={styles.walletInfo}>
         <Text style={styles.walletName}>{name}</Text>
         <Text style={styles.address}>{address}</Text>
       </View>
-      <Text style={styles.balance}>{balance}</Text>
     </Pressable>
   );
 };
@@ -128,14 +110,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   walletSection: {
-    gap: 16,
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 20,
     color: Colors.osmoverse[300],
     marginBottom: 8,
   },
-  // WalletListItem styles
   walletItem: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -143,6 +124,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: Colors.osmoverse[800],
     borderRadius: 12,
+    marginVertical: 4,
   },
   walletInfo: {
     gap: 4,

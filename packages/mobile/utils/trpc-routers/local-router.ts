@@ -3,6 +3,7 @@ import {
   balancesRouter,
   cmsRouter,
   createTRPCRouter,
+  oneClickTradingRouter,
   portfolioRouter,
   swapRouter,
 } from "@osmosis-labs/trpc";
@@ -16,4 +17,5 @@ export const localRouter = createTRPCRouter({
   portfolio: portfolioRouter,
   assets: assetsRouter,
   cms: cmsRouter,
+  oneClickTrading: oneClickTradingRouter,
 });

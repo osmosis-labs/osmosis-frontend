@@ -570,7 +570,8 @@
     "viewAllAssets": "すべてのアセットを表示",
     "wallet": "財布",
     "transactions": "取引",
-    "oneClickTrading": "1クリック取引"
+    "oneClickTrading": "1クリック取引",
+    "mobileSessions": "携帯"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",

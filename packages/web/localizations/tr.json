@@ -570,7 +570,8 @@
     "viewAllAssets": "Tüm varlıkları görüntüle",
     "wallet": "Cüzdan",
     "transactions": "İşlemler",
-    "oneClickTrading": "Tek Tıklamayla Ticaret"
+    "oneClickTrading": "Tek Tıklamayla Ticaret",
+    "mobileSessions": "Mobil"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",

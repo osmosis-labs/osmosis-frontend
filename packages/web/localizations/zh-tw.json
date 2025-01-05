@@ -570,7 +570,8 @@
     "viewAllAssets": "查看所有資產",
     "wallet": "錢包",
     "transactions": "交易",
-    "oneClickTrading": "一鍵交易"
+    "oneClickTrading": "一鍵交易",
+    "mobileSessions": "移動的"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",

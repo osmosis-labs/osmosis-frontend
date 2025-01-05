@@ -1,3 +1,4 @@
+import { AvailableOneClickTradingMessagesSchema } from "@osmosis-labs/types";
 import { z } from "zod";
 
 /**
@@ -30,7 +31,15 @@ export const VerificationFailedMessageSchema = BaseMessageSchema.extend({
 // Schema for verification success message sent from desktop to mobile
 export const VerificationSuccessMessageSchema = BaseMessageSchema.extend({
   type: z.literal("verification_success"),
+  version: z.number(),
   encryptedData: z.string(), // Base64 encoded encrypted data
+});
+
+export const MobileSessionEncryptedDataSchema = z.object({
+  address: z.string(),
+  allowedMessages: AvailableOneClickTradingMessagesSchema.array(),
+  key: z.string(),
+  publicKey: z.string(),
 });
 
 // Union of all possible message types

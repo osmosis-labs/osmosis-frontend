@@ -570,7 +570,8 @@
     "viewAllAssets": "બધી સંપત્તિઓ જુઓ",
     "wallet": "વૉલેટ",
     "transactions": "વ્યવહારો",
-    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ"
+    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ",
+    "mobileSessions": "મોબાઈલ"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",

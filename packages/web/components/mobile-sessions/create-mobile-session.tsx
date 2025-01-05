@@ -13,6 +13,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "~/components/ui/input-otp";
+import { Skeleton } from "~/components/ui/skeleton";
 import { useCreateMobileSession } from "~/hooks/mutations/mobile-session/use-create-mobile-session";
 import { encryptAES } from "~/utils/encryption";
 import { api } from "~/utils/trpc";
@@ -21,7 +22,7 @@ interface CustomRTCPeerConnection extends RTCPeerConnection {
   dataChannel?: RTCDataChannel;
 }
 
-export default function DesktopPage() {
+export function CreateMobileSession() {
   const [sessionToken, setSessionToken] = useState("");
   const [qrValue, setQrValue] = useState("");
   const [pc, setPc] = useState<CustomRTCPeerConnection | null>(null);
@@ -85,6 +86,7 @@ export default function DesktopPage() {
             serializeWebRTCMessage({
               type: "verification_success",
               encryptedData,
+              version: 1,
             })
           );
           setVerificationState((prev) => ({ ...prev, verified: true }));
@@ -261,11 +263,21 @@ export default function DesktopPage() {
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <h1 className="font-h3 text-h3">Desktop WebRTC Transfer</h1>
-      {!isReady && <p>Generating offer...</p>}
+      {!isReady && (
+        <div className="flex flex-col items-center gap-3">
+          <p className="text-center text-osmoverse-100">
+            Generating QR Code...
+          </p>
+          <Skeleton className="w-[240px] h-[240px] rounded-lg" />
+        </div>
+      )}
       {isReady && !isConnected && (
         <div className="flex flex-col items-center gap-3">
-          <p>Scan this QR code with your mobile:</p>
+          <p className="text-center text-osmoverse-100">
+            Download the Osmosis app on your mobile device,
+            <br />
+            and scan this QR Code.
+          </p>
           <div className="bg-white-full w-fit rounded-lg p-2">
             <QRCode value={qrValue} size={240} />
           </div>
@@ -285,7 +297,7 @@ export default function DesktopPage() {
           </div>
         )}
       {createMobileSessionMutation.isLoading && (
-        <p className="text-success">Creating mobile session...</p>
+        <p className="text-success">Signing mobile creation transaction...</p>
       )}
       {verificationState.verified && (
         <p className="text-success">
