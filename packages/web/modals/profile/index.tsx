@@ -145,6 +145,7 @@ export const ProfileModal: FunctionComponent<
         }}
         onAfterClose={() => {
           setShow1CTSettings(false);
+          setIsMobileSessionOpen(false);
         }}
         className="relative max-h-screen overflow-hidden sm:mx-0"
       >

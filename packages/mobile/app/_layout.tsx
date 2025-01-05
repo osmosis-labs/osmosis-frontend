@@ -4,6 +4,7 @@ import { localLink, makeSkipBatchLink } from "@osmosis-labs/trpc";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
+  isNil,
 } from "@osmosis-labs/utils";
 import { ThemeProvider } from "@react-navigation/native";
 import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
@@ -15,12 +16,15 @@ import { Redirect, Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
 
 import { LockScreenModal } from "~/components/lock-screen-modal";
 import { DefaultTheme } from "~/constants/themes";
 import { useWallets } from "~/hooks/use-wallets";
+import { useCurrentWalletStore } from "~/stores/current-wallet";
+import { useKeyringStore } from "~/stores/keyring";
 import { getMobileAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
 import { api, RouterKeys } from "~/utils/trpc";
@@ -204,7 +208,68 @@ export default function RootLayout() {
 }
 
 const OnboardingObserver = () => {
+  const [signedOut, setSignedOut] = useState(false);
   const { currentWallet, wallets } = useWallets();
+  const currentWalletIndex = useCurrentWalletStore(
+    (state) => state.currentSelectedWalletIndex
+  );
+
+  const enabled = wallets.length > 0 && currentWallet?.type === "smart-account";
+
+  const {
+    data: sessionAuthenticator,
+    isError: isSessionAuthenticatorError,
+    error: sessionAuthenticatorError,
+  } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
+    {
+      publicKey:
+        currentWallet?.type === "smart-account" ? currentWallet!.publicKey : "",
+      userOsmoAddress: currentWallet?.address ?? "",
+    },
+    {
+      enabled,
+      refetchInterval: 1000 * 60 * 5,
+      retry: (count, error) => {
+        if (count > 3) {
+          return false;
+        }
+        if (!error?.message?.toLowerCase().match(/session not found/i)) {
+          return true;
+        }
+        return false;
+      },
+    }
+  );
+
+  console.log(sessionAuthenticatorError);
+
+  useEffect(() => {
+    const handleSessionError = async () => {
+      if (
+        !signedOut &&
+        isSessionAuthenticatorError &&
+        sessionAuthenticatorError.message
+          .toLowerCase()
+          .match(/session not found/i) &&
+        !isNil(currentWalletIndex)
+      ) {
+        setSignedOut(true);
+        Alert.alert(
+          "Session Deleted",
+          "Your wallet session was removed. Please reconnect your wallet or connect a new one.",
+          [{ text: "OK" }]
+        );
+        await useKeyringStore.getState().deleteKey(currentWalletIndex);
+        setSignedOut(false);
+      }
+    };
+    handleSessionError();
+  }, [
+    isSessionAuthenticatorError,
+    sessionAuthenticator,
+    currentWalletIndex,
+    signedOut,
+  ]);
 
   if (!currentWallet && wallets.length === 0) {
     return <Redirect withAnchor href="/onboarding/welcome" />;

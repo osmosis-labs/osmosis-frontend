@@ -38,6 +38,7 @@ export function CreateMobileSession() {
   const createOfferMutation = api.edge.webRTC.createOffer.useMutation();
   const postCandidateMutation = api.edge.webRTC.postCandidate.useMutation();
   const createMobileSessionMutation = useCreateMobileSession();
+  const apiUtils = api.useUtils();
 
   // Poll for the answer
   const fetchAnswerQuery = api.edge.webRTC.fetchAnswer.useQuery(
@@ -89,6 +90,7 @@ export function CreateMobileSession() {
               version: 1,
             })
           );
+          apiUtils.local.oneClickTrading.getAuthenticators.invalidate();
           setVerificationState((prev) => ({ ...prev, verified: true }));
         } catch (error) {
           pc.dataChannel.send(
