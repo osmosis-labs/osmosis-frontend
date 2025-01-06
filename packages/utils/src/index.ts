@@ -10,6 +10,7 @@ export * from "./common-utils";
 export * from "./compare";
 export * from "./date";
 export * from "./ethereum";
+export * from "./fiat-getters";
 export * from "./formatter";
 export * from "./function";
 export * from "./gas-utils";

@@ -269,6 +269,7 @@ const OnboardingObserver = () => {
     sessionAuthenticator,
     currentWalletIndex,
     signedOut,
+    sessionAuthenticatorError?.message,
   ]);
 
   if (!currentWallet && wallets.length === 0) {

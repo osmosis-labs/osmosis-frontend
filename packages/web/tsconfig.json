@@ -23,7 +23,13 @@
     },
     "plugins": [{ "name": "next" }]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "../utils/src/__tests__/fiat-getters.spec.ts"
+  ],
   "exclude": ["node_modules"],
   "types": ["node", "jest", "@testing-library/jest-dom"]
 }

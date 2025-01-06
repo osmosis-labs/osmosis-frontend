@@ -4,6 +4,7 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   getSwapMessages,
@@ -20,56 +21,29 @@ import {
   PricePretty,
 } from "@osmosis-labs/unit";
 import {
-  DEFAULT_VS_CURRENCY,
   getAssetFromAssetList,
-  isNil,
-  makeMinimalAsset,
-  sum,
-} from "@osmosis-labs/utils";
-import { createTRPCReact } from "@trpc/react-query";
-import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
-import { useAsync } from "react-use";
-
-import { displayToast, ToastType } from "~/components/alert";
-import {
-  getParametersFromOverspendErrorMessage,
-  isOverspendErrorMessage,
-} from "~/components/alert/prettify";
-import { Button } from "~/components/ui/button";
-import { RecommendedSwapDenoms } from "~/config";
-import { AssetLists } from "~/config/generated/asset-lists";
-import { DefaultSlippage } from "~/config/swap";
-import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
-} from "~/hooks/fiat-getters";
-import { useTranslation } from "~/hooks/language";
-import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
-import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
-import {
-  use1CTSwapReviewMessages,
-  useOneClickTradingSession,
-} from "~/hooks/one-click-trading";
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import { useDeepMemo } from "~/hooks/use-deep-memo";
-import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
-import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
-import { AppRouter } from "~/server/api/root-router";
-import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
-import { api, RouterInputs } from "~/utils/trpc";
+  isNil,
+  makeMinimalAsset,
+  mulPrice,
+  sum,
+  trimPlaceholderZeros,
+} from "@osmosis-labs/utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useAsync } from "react-use";
 
-import { useAmountInput } from "./input/use-amount-input";
-import { useDebouncedState } from "./use-debounced-state";
-import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
-import { useWalletSelect } from "./use-wallet-select";
+import { useAmountInput } from "~/hooks/use-amount-input";
+import { useDebouncedState } from "~/hooks/use-debounced-state";
+import { useDeepMemo } from "~/hooks/use-deep-memo";
+import { usePreviousWhen } from "~/hooks/use-previous-when";
+import { useWallets } from "~/hooks/use-wallets";
+import { api, RouterInputs } from "~/utils/trpc";
 
 export type SwapState = ReturnType<typeof useSwap>;
 export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
+
+const DefaultSlippage = "0.1";
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -114,14 +88,8 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
-  const { logEvent } = useAmplitudeAnalytics();
   const apiUtils = api.useUtils();
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
-  const { isOneClickTradingEnabled } = useOneClickTradingSession();
-  const { t } = useTranslation();
-  const { isLoading: isWalletLoading } = useWalletSelect();
+  const { currentWallet } = useWallets();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -166,7 +134,6 @@ export function useSwap(
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading &&
     quoteType === "out-given-in";
 
   const inGivenOutQuoteEnabled =
@@ -177,7 +144,6 @@ export function useSwap(
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading &&
     quoteType === "in-given-out";
 
   const {
@@ -315,12 +281,11 @@ export function useSwap(
   ]);
 
   const networkFeeQueryEnabled =
-    featureFlags.swapToolSimulateFee &&
     !precedentError &&
     !isQuoteLoading &&
     (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
     Boolean(quote?.messages) &&
-    Boolean(account?.address) &&
+    Boolean(currentWallet?.address) &&
     inAmountInput.debouncedInAmount !== null &&
     inAmountInput.balance &&
     inAmountInput.amount &&
@@ -331,67 +296,16 @@ export function useSwap(
     outAmountInput.debouncedInAmount !== null &&
     Boolean(outAmountInput.amount);
 
-  const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
-    use1CTSwapReviewMessages();
-
-  /**
-   * Default isLedger to true, just in case the wallet does
-   * not return the correct value
-   */
-  const { value: isLedger } = useAsync(async () => {
-    const result = await account?.client?.getAccount?.(
-      accountStore.osmosisChainId
-    );
-    return result?.isNanoLedger ?? true;
-    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, account?.address, accountStore.osmosisChainId]);
-
-  const messages = useMemo(() => {
-    if (isLedger) {
-      return quote?.messages ?? [];
-    }
-    return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
-  }, [isLedger, quote?.messages, oneClickMessages?.msgs]);
-
   const {
     data: networkFee,
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages,
-    enabled: true,
-    signOptions: {
-      useOneClickTrading: isOneClickTradingEnabled,
-    },
+    messages: quote?.messages ?? [],
   });
 
   const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
-
-  const hasOverSpendLimitError = useMemo(() => {
-    if (
-      !networkFeeError?.message ||
-      !isOneClickTradingEnabled ||
-      inAmountInput.isEmpty ||
-      inAmountInput.inputAmount == "0" ||
-      !isOverspendErrorMessage({ message: networkFeeError?.message })
-    ) {
-      return false;
-    }
-
-    return true;
-  }, [
-    networkFeeError,
-    inAmountInput.inputAmount,
-    inAmountInput.isEmpty,
-    isOneClickTradingEnabled,
-  ]);
-
-  const overspendErrorParams = useMemo(() => {
-    if (!hasOverSpendLimitError) return;
-    return getParametersFromOverspendErrorMessage(networkFeeError?.message);
-  }, [networkFeeError?.message, hasOverSpendLimitError]);
 
   const isSlippageOverBalance = useMemo(() => {
     if (
@@ -418,7 +332,7 @@ export function useSwap(
             return reject(new Error("Max slippage is not defined."));
           if (!inAmountInput.amount || !outAmountInput.amount)
             return reject(new Error("Input amount is not specified."));
-          if (!account)
+          if (!currentWallet)
             return reject(new Error("Account information is missing."));
           if (!swapAssets.fromAsset)
             return reject(new Error("From asset is not specified."));
@@ -447,83 +361,8 @@ export function useSwap(
             );
           }
 
-          // Note about One-Click Trading (1CT) synchronization:
-          //
-          // When 1CT is enabled via the swap modal, there's a timing mismatch between
-          // the local state (isOneClickTradingEnabled) and the account store state.
-          //
-          // As a result:
-          // 1. The first swap after enabling 1CT will require manual signing
-          // 2. Subsequent swaps will use 1CT automatically
-          //
-          // This occurs because 1CT transactions require more gas, which makes
-          // our current quote's gas estimation incorrect and low. This results in out of gas error.
-          const messageCanBeSignedWithOneClickTrading = !isNil(messages)
-            ? isOneClickTradingEnabled &&
-              (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages,
-              }))
-            : false;
-
-          let shouldBeSignedWithOneClickTrading =
-            messageCanBeSignedWithOneClickTrading &&
-            !hasOverSpendLimitError &&
-            !networkFeeError;
-
-          if (
-            messageCanBeSignedWithOneClickTrading &&
-            !hasOverSpendLimitError &&
-            networkFeeError
-          ) {
-            try {
-              const TOAST_ID = networkFeeError
-                ? "ONE_CLICK_UNAVAILABLE"
-                : "ONE_CLICK_INSUFFICIENT_OSMO";
-              const titleTranslationKey = networkFeeError
-                ? "oneClickTrading.toast.currentlyUnavailable"
-                : "oneClickTrading.toast.insufficientFunds";
-              const buttonText = networkFeeError
-                ? "oneClickTrading.toast.approveManually"
-                : "oneClickTrading.toast.continueWithoutOneClickTrading";
-
-              await new Promise((continueTx, reject) => {
-                displayToast(
-                  {
-                    titleTranslationKey,
-                    captionElement: (
-                      <Button
-                        variant="link"
-                        className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
-                        onClick={() => {
-                          toast.dismiss(TOAST_ID);
-                          shouldBeSignedWithOneClickTrading = false;
-                          continueTx(void 0);
-                        }}
-                      >
-                        {t(buttonText, {
-                          walletName: account.walletInfo?.prettyName ?? "",
-                        })}
-                      </Button>
-                    ),
-                  },
-                  ToastType.ONE_CLICK_TRADING,
-                  {
-                    toastId: TOAST_ID,
-                    onClose: () => {
-                      reject();
-                    },
-                    autoClose: false,
-                  }
-                );
-              });
-            } catch (e) {
-              return reject(new Error("Rejected manual approval"));
-            }
-          }
-
           const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
-            useOneClickTrading: shouldBeSignedWithOneClickTrading,
-            ...(featureFlags.swapToolSimulateFee && networkFee
+            ...(networkFee
               ? {
                   preferNoSetFee: true,
                   fee: {
@@ -537,208 +376,44 @@ export function useSwap(
           const { routes } = txParams;
           const typedRoutes = routes as SwapTxRouteOutGivenIn[];
 
-          /**
-           * If it's ledger and we have one-click messages, we need to add a 1CT session
-           * before broadcasting the transaction as there is a payload limit on ledger
-           */
-          if (
-            isLedger &&
-            oneClickMessages &&
-            oneClickMessages.msgs &&
-            shouldSend1CTTx
-          ) {
-            await accountStore
-              .signAndBroadcast(
-                chainStore.osmosis.chainId,
-                "Add 1CT session",
-                oneClickMessages.msgs,
-                undefined,
-                undefined,
-                undefined,
-                async (tx) => {
-                  const { code } = tx;
-                  if (code) {
-                    reject(
-                      new Error("Failed to send swap exact amount in message")
-                    );
-                  } else {
-                    if (
-                      oneClickMessages &&
-                      oneClickMessages.type === "create-1ct-session"
-                    ) {
-                      await onAdd1CTSession({
-                        privateKey: oneClickMessages.key,
-                        tx,
-                        userOsmoAddress: account?.address ?? "",
-                        fallbackGetAuthenticatorId:
-                          apiUtils.local.oneClickTrading.getSessionAuthenticator
-                            .fetch,
-                        accountStore,
-                        allowedMessages: oneClickMessages.allowedMessages,
-                        sessionPeriod: oneClickMessages.sessionPeriod,
-                        spendLimitTokenDecimals:
-                          oneClickMessages.spendLimitTokenDecimals,
-                        transaction1CTParams:
-                          oneClickMessages.transaction1CTParams,
-                        allowedAmount: oneClickMessages.allowedAmount,
-                        t,
-                        logEvent,
-                      });
-                    } else if (
-                      shouldSend1CTTx &&
-                      oneClickMessages &&
-                      oneClickMessages.type === "remove-1ct-session"
-                    ) {
-                      await onEnd1CTSession({
-                        accountStore,
-                        authenticatorId: oneClickMessages.authenticatorId,
-                        logEvent,
-                      });
-                    }
-                  }
+          accountStore
+            .signAndBroadcast(
+              chainStore.osmosis.chainId,
+              quoteType === "out-given-in"
+                ? routes.length === 1
+                  ? "swapExactAmountIn"
+                  : "splitRouteSwapExactAmountIn"
+                : routes.length === 1
+                ? "swapExactAmountOut"
+                : "splitRouteSwapExactAmountOut",
+              messages,
+              undefined,
+              signOptions?.fee,
+              signOptions,
+              (tx) => {
+                const { code } = tx;
+                if (code) {
+                  reject(
+                    new Error("Failed to send swap exact amount in message")
+                  );
+                } else {
+                  resolve(
+                    routes.length === 1
+                      ? typedRoutes[0].pools.length === 1
+                        ? "exact-in"
+                        : "multihop"
+                      : "multiroute"
+                  );
                 }
-              )
-              .catch((e) => {
-                reject(e);
-                throw e;
-              });
-
-            await accountStore
-              .signAndBroadcast(
-                chainStore.osmosis.chainId,
-                quoteType === "out-given-in"
-                  ? routes.length === 1
-                    ? "swapExactAmountIn"
-                    : "splitRouteSwapExactAmountIn"
-                  : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
-                messages,
-                undefined,
-                undefined,
-                {
-                  ...signOptions,
-                  useOneClickTrading:
-                    await accountStore.shouldBeSignedWithOneClickTrading({
-                      messages,
-                    }),
-                },
-                (tx) => {
-                  const { code } = tx;
-                  if (code) {
-                    reject(
-                      new Error("Failed to send swap exact amount in message")
-                    );
-                  } else {
-                    resolve(
-                      routes.length === 1
-                        ? typedRoutes[0].pools.length === 1
-                          ? "exact-in"
-                          : "multihop"
-                        : "multiroute"
-                    );
-                  }
-                }
-              )
-              .catch(reject);
-          } else {
-            accountStore
-              .signAndBroadcast(
-                chainStore.osmosis.chainId,
-                quoteType === "out-given-in"
-                  ? routes.length === 1
-                    ? "swapExactAmountIn"
-                    : "splitRouteSwapExactAmountIn"
-                  : routes.length === 1
-                  ? "swapExactAmountOut"
-                  : "splitRouteSwapExactAmountOut",
-                messages,
-                undefined,
-                signOptions?.fee,
-                signOptions,
-                (tx) => {
-                  const { code } = tx;
-                  if (code) {
-                    reject(
-                      new Error("Failed to send swap exact amount in message")
-                    );
-                  } else {
-                    if (
-                      shouldSend1CTTx &&
-                      oneClickMessages &&
-                      oneClickMessages.type === "create-1ct-session"
-                    ) {
-                      onAdd1CTSession({
-                        privateKey: oneClickMessages.key,
-                        tx,
-                        userOsmoAddress: account?.address ?? "",
-                        fallbackGetAuthenticatorId:
-                          apiUtils.local.oneClickTrading.getSessionAuthenticator
-                            .fetch,
-                        accountStore,
-                        allowedMessages: oneClickMessages.allowedMessages,
-                        sessionPeriod: oneClickMessages.sessionPeriod,
-                        spendLimitTokenDecimals:
-                          oneClickMessages.spendLimitTokenDecimals,
-                        transaction1CTParams:
-                          oneClickMessages.transaction1CTParams,
-                        allowedAmount: oneClickMessages.allowedAmount,
-                        t,
-                        logEvent,
-                      });
-                    } else if (
-                      shouldSend1CTTx &&
-                      oneClickMessages &&
-                      oneClickMessages.type === "remove-1ct-session"
-                    ) {
-                      onEnd1CTSession({
-                        accountStore,
-                        authenticatorId: oneClickMessages.authenticatorId,
-                        logEvent,
-                      });
-                    }
-
-                    resolve(
-                      routes.length === 1
-                        ? typedRoutes[0].pools.length === 1
-                          ? "exact-in"
-                          : "multihop"
-                        : "multiroute"
-                    );
-                  }
-                }
-              )
-              .catch(reject);
-          }
+              }
+            )
+            .catch(reject);
         }
       ).finally(() => {
         inAmountInput.reset();
         outAmountInput.reset();
       }),
-    [
-      account,
-      accountStore,
-      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
-      chainStore.osmosis.chainId,
-      featureFlags.swapToolSimulateFee,
-      hasOverSpendLimitError,
-      inAmountInput,
-      isLedger,
-      isOneClickTradingEnabled,
-      logEvent,
-      maxSlippage,
-      messages,
-      networkFee,
-      networkFeeError,
-      oneClickMessages,
-      outAmountInput,
-      quote,
-      quoteType,
-      shouldSend1CTTx,
-      swapAssets.fromAsset,
-      swapAssets.toAsset,
-      t,
-    ]
+    []
   );
 
   const positivePrevQuote = usePreviousWhen(
@@ -866,7 +541,6 @@ export function useSwap(
     networkFee,
     isLoadingNetworkFee:
       inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
-    isLoadingOneClickMessages,
     networkFeeError,
     error: precedentError,
     spotPriceQuote,
@@ -874,10 +548,8 @@ export function useSwap(
     spotPriceQuoteErrorMsg,
     isQuoteLoading,
     sendTradeTokenInTx,
-    hasOverSpendLimitError,
     isSlippageOverBalance,
     quoteType,
-    overspendErrorParams,
   };
 }
 
@@ -966,7 +638,6 @@ export function determineNextFallbackToDenom(params: {
 export function useSwapAssets({
   initialFromDenom = DefaultDenoms[0],
   initialToDenom = DefaultDenoms[1],
-  useQueryParams = true,
   useOtherCurrencies = true,
   poolId,
   reverse = false,
@@ -978,9 +649,7 @@ export function useSwapAssets({
   poolId?: string;
   reverse?: boolean;
 } = {}) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
+  const { currentWallet } = useWallets();
 
   const {
     fromAssetDenom,
@@ -989,7 +658,6 @@ export function useSwapAssets({
     setToAssetDenom,
     switchAssets,
   } = useToFromDenoms({
-    useQueryParams,
     initialFromDenom,
     initialToDenom,
     reverse,
@@ -1008,13 +676,8 @@ export function useSwapAssets({
     [debouncedSearchInput]
   );
 
-  const { showPreviewAssets } = useShowPreviewAssets();
-
   const canLoadAssets =
-    !isLoadingWallet &&
-    Boolean(fromAssetDenom) &&
-    Boolean(toAssetDenom) &&
-    useOtherCurrencies;
+    Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies;
 
   const {
     data: selectableAssetPages,
@@ -1022,12 +685,11 @@ export function useSwapAssets({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
-  } = api.edge.assets.getUserAssets.useInfiniteQuery(
+  } = api.local.assets.getUserAssets.useInfiniteQuery(
     {
       poolId,
       search: queryInput,
-      userOsmoAddress: account?.address,
-      includePreview: showPreviewAssets,
+      userOsmoAddress: currentWallet?.address,
       limit: 50, // items per page
     },
     {
@@ -1136,12 +798,7 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
-
-  const featureFlags = useFeatureFlags();
-
+  const { currentWallet } = useWallets();
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
 
   const inAmountInput = useAmountInput({
@@ -1150,8 +807,6 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
-    featureFlags.swapToolSimulateFee &&
-    !isLoadingWallet &&
     !account?.txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
@@ -1172,7 +827,7 @@ function useSwapAmountInput({
     {
       tokenIn: swapAssets.fromAsset!,
       tokenOut: swapAssets.toAsset!,
-      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
+      tokenInAmount: inAmountInput.balance?.toCoin().amount ?? "",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
@@ -1180,10 +835,6 @@ function useSwapAmountInput({
   );
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
-
-  const { isOneClickTradingEnabled } = useOneClickTradingSession();
-
-  const { oneClickMessages } = use1CTSwapReviewMessages();
 
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
@@ -1195,14 +846,8 @@ function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: [
-      ...(quoteForCurrentBalance?.messages ?? []),
-      ...(oneClickMessages?.msgs ?? []),
-    ],
+    messages: quoteForCurrentBalance?.messages ?? [],
     enabled: networkFeeQueryEnabled,
-    signOptions: {
-      useOneClickTrading: isOneClickTradingEnabled,
-    },
   });
   const isLoadingCurrentBalanceNetworkFee =
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
@@ -1258,34 +903,14 @@ function useSwapAmountInput({
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
  */
 function useToFromDenoms({
-  useQueryParams,
   initialFromDenom,
   initialToDenom,
   reverse = false,
 }: {
-  useQueryParams: boolean;
   initialFromDenom?: string;
   initialToDenom?: string;
   reverse?: boolean;
 }) {
-  /**
-   * user query params as state source-of-truth
-   * ignores initial denoms if there are query params
-   */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
-    "from",
-    parseAsString.withDefault(initialFromDenom ?? "ATOM")
-  );
-  const fromDenomQueryParamStr =
-    typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
-    "to",
-    parseAsString.withDefault(initialToDenom ?? "OSMO")
-  );
-  const toDenomQueryParamStr =
-    typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
-
-  // if query params are not used, use react state as source-of-truth
   const [fromAssetState, setFromAssetState] = useState<string | undefined>(
     initialFromDenom
   );
@@ -1298,45 +923,36 @@ function useToFromDenoms({
     setFromAssetState(initialFromDenom);
   }, [initialFromDenom, initialToDenom]);
 
-  // if using query params perform one push instead of two as the router
-  // doesn't handle two immediate pushes well within `useQueryParamState` hooks
   const switchAssets = useCallback(() => {
-    if (useQueryParams) {
-      const temp = fromDenomQueryParam;
-      setFromDenomQueryParam(toAssetQueryParam);
-      setToAssetQueryParam(temp);
-      return;
-    }
-
     const temp = fromAssetState;
     setFromAssetState(toAssetState);
     setToAssetState(temp);
-  }, [
-    useQueryParams,
-    fromDenomQueryParam,
-    toAssetQueryParam,
-    setFromDenomQueryParam,
-    setToAssetQueryParam,
-    fromAssetState,
-    toAssetState,
-    setFromAssetState,
-    setToAssetState,
-  ]);
-
-  const fromAssetDenom = useQueryParams
-    ? fromDenomQueryParamStr
-    : fromAssetState;
-  const toAssetDenom = useQueryParams ? toDenomQueryParamStr : toAssetState;
+  }, [fromAssetState, toAssetState]);
 
   return {
-    fromAssetDenom: reverse ? toAssetDenom : fromAssetDenom,
-    toAssetDenom: reverse ? fromAssetDenom : toAssetDenom,
-    setFromAssetDenom: useQueryParams
-      ? setFromDenomQueryParam
-      : setFromAssetState,
-    setToAssetDenom: useQueryParams ? setToAssetQueryParam : setToAssetState,
+    fromAssetDenom: reverse ? toAssetState : fromAssetState,
+    toAssetDenom: reverse ? fromAssetState : toAssetState,
+    setFromAssetDenom: setFromAssetState,
+    setToAssetDenom: setToAssetState,
     switchAssets,
   };
+}
+
+/** Gets recommended assets directly from asset list. */
+export function useRecommendedAssets(
+  fromCoinMinimalDenom?: string,
+  toCoinMinimalDenom?: string
+) {
+  const { data: recommendedAssets } =
+    api.local.assets.getSwapRecommendedAssets.useQuery(undefined, {
+      select: (data) =>
+        data.filter(
+          (asset) =>
+            asset.coinMinimalDenom !== fromCoinMinimalDenom &&
+            asset.coinMinimalDenom !== toCoinMinimalDenom
+        ),
+    });
+  return recommendedAssets;
 }
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
@@ -1403,10 +1019,7 @@ function useQueryRouterBestQuote(
   enabled: boolean,
   quoteType: QuoteDirection = "out-given-in"
 ) {
-  const { chainStore, accountStore } = useStore();
-  const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const trpcReact = createTRPCReact<AppRouter>();
-
+  const { currentWallet } = useWallets();
   const queryOptions = {
     // quotes should not be considered fresh for long, otherwise
     // the gas simulation will fail due to slippage and the user would see errors
@@ -1431,38 +1044,36 @@ function useQueryRouterBestQuote(
     },
   };
 
-  const inGivenOutQuote =
-    trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
-      {
-        tokenOutAmount: input.tokenInAmount ?? "",
-        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-        forcePoolId: input.forcePoolId,
-      },
-      {
-        ...queryOptions,
-        enabled: enabled && quoteType === "in-given-out",
+  const inGivenOutQuote = api.local.quoteRouter.routeTokenInGivenOut.useQuery(
+    {
+      tokenOutAmount: input.tokenInAmount ?? "",
+      tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+      tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+      forcePoolId: input.forcePoolId,
+    },
+    {
+      ...queryOptions,
+      enabled: enabled && quoteType === "in-given-out",
 
-        // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
-        staleTime: 10_000,
-        cacheTime: 10_000,
-        refetchInterval: 10_000,
-      }
-    );
+      // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
+      staleTime: 10_000,
+      cacheTime: 10_000,
+      refetchInterval: 10_000,
+    }
+  );
 
-  const outGivenInQuote =
-    trpcReact.local.quoteRouter.routeTokenOutGivenIn.useQuery(
-      {
-        tokenInAmount: input.tokenInAmount,
-        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-        forcePoolId: input.forcePoolId,
-      },
-      {
-        ...queryOptions,
-        enabled: enabled && quoteType === "out-given-in",
-      }
-    );
+  const outGivenInQuote = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+    {
+      tokenInAmount: input.tokenInAmount,
+      tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+      tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+      forcePoolId: input.forcePoolId,
+    },
+    {
+      ...queryOptions,
+      enabled: enabled && quoteType === "out-given-in",
+    }
+  );
 
   const {
     data: quote,
@@ -1499,7 +1110,7 @@ function useQueryRouterBestQuote(
     const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
     const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
     const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
-    const address = account?.address;
+    const address = currentWallet?.address;
     if (
       !quote ||
       typeof tokenOutCoinDecimals === "undefined" ||
@@ -1523,7 +1134,7 @@ function useQueryRouterBestQuote(
 
     return messages;
   }, [
-    account?.address,
+    currentWallet?.address,
     quote,
     input.maxSlippage,
     input.tokenIn?.coinMinimalDenom,
@@ -1578,32 +1189,6 @@ function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
       isUnexpected: true,
     };
   }
-}
-
-/** Gets recommended assets directly from asset list. */
-export function useRecommendedAssets(
-  fromCoinMinimalDenom?: string,
-  toCoinMinimalDenom?: string
-) {
-  return useMemo(
-    () =>
-      RecommendedSwapDenoms.map((denom) => {
-        const asset = AssetLists.flatMap(({ assets }) => assets).find(
-          (asset) => asset.symbol === denom
-        );
-        if (!asset) return;
-
-        return makeMinimalAsset(asset);
-      })
-        .filter((c): c is NonNullable<typeof c> => !!c)
-        .filter(
-          (currency) =>
-            currency &&
-            currency.coinMinimalDenom !== fromCoinMinimalDenom &&
-            currency.coinMinimalDenom !== toCoinMinimalDenom
-        ),
-    [fromCoinMinimalDenom, toCoinMinimalDenom]
-  );
 }
 
 /**

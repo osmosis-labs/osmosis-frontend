@@ -23,6 +23,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@types/jest-in-case": "^1.0.6",
     "jest-in-case": "^1.0.2",
     "ts-jest": "^29.1.2",
