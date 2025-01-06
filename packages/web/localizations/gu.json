@@ -247,6 +247,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "ફિયાટ ઓનરેમ્પ પસંદ કરો",
       "kadoSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
+      "moonpaySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "transakSubtitle": "OSMO ને સપોર્ટ કરે છે",
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે"
     },

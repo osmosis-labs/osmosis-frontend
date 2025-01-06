@@ -247,6 +247,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "انتخاب حساب بانکی Onramp",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
+      "moonpaySubtitle": "پشتیبانی از OSMO، USDC",
       "transakSubtitle": "پشتیبانی OSMO",
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC"
     },

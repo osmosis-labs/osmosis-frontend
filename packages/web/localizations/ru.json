@@ -247,6 +247,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Выбирайте Фиат Онрамп",
       "kadoSubtitle": "Поддерживает OSMO, USDC",
+      "moonpaySubtitle": "Поддерживает OSMO, USDC",
       "transakSubtitle": "Поддерживает ОСМО",
       "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
     },

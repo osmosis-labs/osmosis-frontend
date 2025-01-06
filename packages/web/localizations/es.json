@@ -247,6 +247,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Seleccionar acceso de Fiat",
       "kadoSubtitle": "Soporta OSMO, USDC",
+      "moonpaySubtitle": "Compatible con OSMO y USDC",
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC"
     },

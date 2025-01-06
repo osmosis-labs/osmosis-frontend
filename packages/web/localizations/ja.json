@@ -247,6 +247,7 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "フィアット オンランプを選択してください",
       "kadoSubtitle": "OSMO、USDCをサポート",
+      "moonpaySubtitle": "OSMO、USDCをサポート",
       "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート"
     },
