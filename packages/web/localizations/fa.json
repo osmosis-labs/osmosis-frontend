@@ -245,7 +245,7 @@
       "insufficientFunds": "بودجه ناکافی"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "انتخاب حساب بانکی Onramp",
+      "chooseOnramp": "کریپتو بخر",
       "kadoSubtitle": "پشتیبانی OSMO, USDC",
       "moonpaySubtitle": "پشتیبانی از OSMO، USDC",
       "transakSubtitle": "پشتیبانی OSMO",

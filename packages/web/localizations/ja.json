@@ -245,7 +245,7 @@
       "insufficientFunds": "残高不足"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "フィアット オンランプを選択してください",
+      "chooseOnramp": "暗号通貨を購入する",
       "kadoSubtitle": "OSMO、USDCをサポート",
       "moonpaySubtitle": "OSMO、USDCをサポート",
       "transakSubtitle": "OSMOをサポート",

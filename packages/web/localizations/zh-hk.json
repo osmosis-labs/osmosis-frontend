@@ -245,7 +245,7 @@
       "insufficientFunds": "不充足的資金"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "選擇法幣入口",
+      "chooseOnramp": "購買加密貨幣",
       "kadoSubtitle": "支援OSMO, USDC",
       "moonpaySubtitle": "支援OSMO、USDC",
       "transakSubtitle": "支援OSMO",

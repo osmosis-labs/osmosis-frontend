@@ -245,7 +245,7 @@
       "insufficientFunds": "Fonds insuffisants"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Choisir une rampe de paiement en Fiat",
+      "chooseOnramp": "Acheter des crypto-monnaies",
       "kadoSubtitle": "Prend en charge OSMO, USDC",
       "moonpaySubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO",

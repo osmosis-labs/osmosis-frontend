@@ -245,7 +245,7 @@
       "insufficientFunds": "Fondos insuficientes"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Seleccionar acceso de Fiat",
+      "chooseOnramp": "Comprar criptomonedas",
       "kadoSubtitle": "Soporta OSMO, USDC",
       "moonpaySubtitle": "Compatible con OSMO y USDC",
       "transakSubtitle": "Soporta OSMO",
