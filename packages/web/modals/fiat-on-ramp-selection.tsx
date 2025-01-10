@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
@@ -68,10 +69,35 @@ export const FiatOnrampSelectionModal: FunctionComponent<
               }}
             >
               <Icon id={logoId!} className="h-16 w-16" />
-              <div className="ml-5 flex flex-col text-left">
-                <h6>{displayName}</h6>
-                <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
-              </div>
+              {rampKey === "moonpay" ? (
+                <div className="ml-5 flex flex-col text-left gap-1">
+                  <div className="flex items-center gap-2">
+                    <h6>{displayName}</h6>
+                    <span className="text-xs text-white-mid">
+                      🌎 165+ countries
+                    </span>
+                  </div>
+                  <div className="flex w-full relative">
+                    {MOONPAY_SUPPORTED_PROVIDERS.map(({ icon, id }, i) => (
+                      <Image
+                        key={id}
+                        src={icon}
+                        alt={id}
+                        width={32}
+                        height={20}
+                        style={{
+                          transform: `translateX(-${i * 4}px)`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="ml-5 flex flex-col text-left">
+                  <h6>{displayName}</h6>
+                  <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
+                </div>
+              )}
             </Button>
           )
         )}
@@ -79,3 +105,18 @@ export const FiatOnrampSelectionModal: FunctionComponent<
     </ModalBase>
   );
 });
+
+const MOONPAY_SUPPORTED_PROVIDERS = [
+  {
+    id: "apple-pay",
+    icon: "/payment-methods/apple-pay.svg",
+  },
+  {
+    id: "mastercard",
+    icon: "/payment-methods/mastercard.svg",
+  },
+  {
+    id: "visa",
+    icon: "/payment-methods/visa.svg",
+  },
+];
