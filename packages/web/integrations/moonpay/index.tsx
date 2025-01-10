@@ -1,7 +1,7 @@
 import { apiClient } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { MoonpaySignUrlResponse } from "~/integrations/moonpay/types";
 import { ModalBaseProps } from "~/modals";
@@ -31,6 +31,11 @@ export const Moonpay: FunctionComponent<
 > = observer(({ assetKey, isOpen }) => {
   const { chainStore, accountStore } = useStore();
 
+  const prefersDark = useMemo(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches,
+    []
+  );
+
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   let walletAddress = account?.address;
@@ -44,6 +49,7 @@ export const Moonpay: FunctionComponent<
       visible={isOpen}
       walletAddress={walletAddress}
       onUrlSignatureRequested={generateMoonpayUrlSignature}
+      theme={prefersDark ? "dark" : "light"}
     />
   );
 });
