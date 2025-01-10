@@ -249,7 +249,8 @@
       "kadoSubtitle": "Unterstützt OSMO, USDC",
       "moonpaySubtitle": "Unterstützt OSMO, USDC",
       "transakSubtitle": "Unterstützt OSMO",
-      "onrampMoneySubtitle": "Unterstützt OSMO, USDC"
+      "onrampMoneySubtitle": "Unterstützt OSMO, USDC",
+      "moonpayCountrySupport": "165+ Länder"
     },
     "incentive": {
       "title": "Anreizarten"

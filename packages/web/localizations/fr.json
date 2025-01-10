@@ -249,7 +249,8 @@
       "kadoSubtitle": "Prend en charge OSMO, USDC",
       "moonpaySubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO",
-      "onrampMoneySubtitle": "Prend en charge OSMO, USDC"
+      "onrampMoneySubtitle": "Prend en charge OSMO, USDC",
+      "moonpayCountrySupport": "Plus de 165 pays"
     },
     "incentive": {
       "title": "Types d'incitations"

@@ -74,7 +74,10 @@ export const FiatOnrampSelectionModal: FunctionComponent<
                   <div className="flex items-center gap-2">
                     <h6>{displayName}</h6>
                     <span className="text-xs text-white-mid">
-                      🌎 165+ countries
+                      🌎{" "}
+                      {t(
+                        "components.fiatOnrampSelection.moonpayCountrySupport"
+                      )}
                     </span>
                   </div>
                   <div className="flex w-full relative">

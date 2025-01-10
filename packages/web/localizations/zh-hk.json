@@ -249,7 +249,8 @@
       "kadoSubtitle": "支援OSMO, USDC",
       "moonpaySubtitle": "支援OSMO、USDC",
       "transakSubtitle": "支援OSMO",
-      "onrampMoneySubtitle": "支援OSMO、USDC"
+      "onrampMoneySubtitle": "支援OSMO、USDC",
+      "moonpayCountrySupport": "超過 165 個國家"
     },
     "incentive": {
       "title": "激勵類型"

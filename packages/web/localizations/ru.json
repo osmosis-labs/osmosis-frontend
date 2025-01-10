@@ -249,7 +249,8 @@
       "kadoSubtitle": "Поддерживает OSMO, USDC",
       "moonpaySubtitle": "Поддерживает OSMO, USDC",
       "transakSubtitle": "Поддерживает ОСМО",
-      "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
+      "onrampMoneySubtitle": "Поддерживает OSMO, USDC",
+      "moonpayCountrySupport": "165+ стран"
     },
     "incentive": {
       "title": "Типы стимулов"
