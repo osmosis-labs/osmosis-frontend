@@ -48,14 +48,11 @@ export const FiatOnrampSelectionModal: FunctionComponent<
   return (
     <ModalBase
       className="max-w-[30.625rem]"
-      title={
-        <h6 className="mb-4">
-          {t("components.fiatOnrampSelection.chooseOnramp")}
-        </h6>
-      }
+      title={<h6>{t("components.fiatOnrampSelection.chooseOnramp")}</h6>}
+      hideDefaultBackButton
       {...modalProps}
     >
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 pt-8">
         {Options(t).map(
           ({ rampKey, displayName, initialAsset, logoId, subtitle }) => (
             <Button
