@@ -2,6 +2,7 @@ import { SpriteIconId } from "~/config";
 
 // Fiat on/off ramps
 export type FiatRampKey =
+  | "moonpay"
   | "kado"
   | "transak"
   | "layerswapcoinbase"
@@ -15,6 +16,12 @@ export const FiatRampDisplayInfos: Record<
     logoId?: SpriteIconId;
   }
 > = {
+  moonpay: {
+    rampKey: "moonpay",
+    iconUrl: "/logos/moonpay.svg",
+    displayName: "MoonPay",
+    logoId: "moonpay-logo",
+  },
   kado: {
     rampKey: "kado",
     iconUrl: "/logos/kado.svg",

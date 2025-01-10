@@ -245,10 +245,12 @@
       "insufficientFunds": "不充足的资金"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "选择法币入口",
+      "chooseOnramp": "购买加密货币",
       "kadoSubtitle": "支持OSMO, USDC",
+      "moonpaySubtitle": "支持OSMO、USDC",
       "transakSubtitle": "支持OSMO",
-      "onrampMoneySubtitle": "支持OSMO、USDC"
+      "onrampMoneySubtitle": "支持OSMO、USDC",
+      "moonpayCountrySupport": "165+ 个国家"
     },
     "incentive": {
       "title": "激励类型"

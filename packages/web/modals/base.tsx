@@ -23,6 +23,7 @@ export interface ModalBaseProps {
   bodyOpenClassName?: string;
   overlayClassName?: string;
   hideCloseButton?: boolean;
+  hideDefaultBackButton?: boolean;
 }
 
 export const ModalBase = ({
@@ -36,6 +37,7 @@ export const ModalBase = ({
   bodyOpenClassName,
   overlayClassName,
   hideCloseButton,
+  hideDefaultBackButton,
   children,
 }: PropsWithChildren<ModalBaseProps>) => {
   const { isMobile } = useWindowSize();
@@ -65,14 +67,22 @@ export const ModalBase = ({
     >
       <div className="flex place-content-between items-center">
         {onRequestBack && (
-          <IconButton
-            aria-label="Back"
-            className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7"
-            icon={
-              <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
-            }
-            onClick={onRequestBack}
-          />
+          <>
+            {!hideDefaultBackButton && (
+              <IconButton
+                aria-label="Back"
+                className="top-9.5 absolute left-8 z-50 cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7"
+                icon={
+                  <Icon
+                    id={backIcon ?? "chevron-left"}
+                    width={18}
+                    height={18}
+                  />
+                }
+                onClick={onRequestBack}
+              />
+            )}
+          </>
         )}
         {typeof title === "string" ? (
           <div className="relative mx-auto">

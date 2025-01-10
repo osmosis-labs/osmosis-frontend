@@ -245,10 +245,12 @@
       "insufficientFunds": "Yetersiz bakiye"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Fiat Onramp Seçin",
+      "chooseOnramp": "Kripto satın al",
       "kadoSubtitle": "OSMO, USDC'yi destekler",
+      "moonpaySubtitle": "OSMO ve USDC'yi destekler",
       "transakSubtitle": "OSMO'yu destekler",
-      "onrampMoneySubtitle": "OSMO, USDC'yi destekler"
+      "onrampMoneySubtitle": "OSMO, USDC'yi destekler",
+      "moonpayCountrySupport": "165+ ülke"
     },
     "incentive": {
       "title": "Teşvik türleri"

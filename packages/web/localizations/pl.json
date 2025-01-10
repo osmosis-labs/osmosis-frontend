@@ -245,10 +245,12 @@
       "insufficientFunds": "Niewystarczające środki"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Wybierz rampę Fiat",
+      "chooseOnramp": "Kup kryptowalutę",
       "kadoSubtitle": "Obsługuje OSMO, USDC",
+      "moonpaySubtitle": "Obsługuje OSMO, USDC",
       "transakSubtitle": "Obsługuje OSMO",
-      "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
+      "onrampMoneySubtitle": "Obsługuje OSMO, USDC",
+      "moonpayCountrySupport": "165+ krajów"
     },
     "incentive": {
       "title": "Rodzaje zachęt"

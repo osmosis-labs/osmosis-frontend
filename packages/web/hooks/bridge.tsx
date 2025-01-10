@@ -404,6 +404,10 @@ export const ImmersiveBridge = () => {
           onRequestClose={() => {
             setFiatRampParams(null);
           }}
+          onRequestBack={() => {
+            setFiatRampParams(null);
+            toggleFiatOnRampSelection(true);
+          }}
           assetKey={fiatRampParams.assetKey}
           fiatRampKey={fiatRampParams.fiatRampKey}
         />
