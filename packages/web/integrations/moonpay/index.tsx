@@ -37,7 +37,7 @@ export const Moonpay: FunctionComponent<
 
   return (
     <MoonPayBuyWidget
-      className="!m-0"
+      className="!m-0 !border-[0px]"
       variant="embedded"
       baseCurrencyCode={assetKey}
       defaultCurrencyCode="OSMO"
