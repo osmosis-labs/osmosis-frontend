@@ -4,7 +4,6 @@ import type { StdFee } from "@cosmjs/launchpad";
 import {
   type EncodeObject,
   type OfflineDirectSigner,
-  type Registry,
 } from "@cosmjs/proto-signing";
 import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {
@@ -14,9 +13,6 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { KVStore } from "@keplr-wallet/common";
-import { BaseAccount } from "@keplr-wallet/cosmos";
-import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -28,10 +24,14 @@ import {
 import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
 import { queryRPCStatus } from "@osmosis-labs/server";
 import {
+  broadcastTx,
+  DeliverTxResponse,
   encodeAnyBase64,
+  getAccountFromNode,
+  getRegistry,
   QuoteStdFee,
+  signWithAuthenticator,
   SimulateNotAvailableError,
-  TxTracer,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
@@ -43,8 +43,6 @@ import {
   OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
-import axios from "axios";
-import { Buffer } from "buffer/";
 import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
@@ -58,16 +56,13 @@ import { getAminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   CosmosRegistryWallet,
-  DeliverTxResponse,
   OneClickTradingInfo,
   SignOptions,
-  TxEvent,
   TxEvents,
 } from "./types";
 import {
   AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
-  getEndpointString,
   getPublicKeyTypeUrl,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
@@ -75,7 +70,6 @@ import {
   makeSignDocAmino,
   NEXT_TX_TIMEOUT_HEIGHT_OFFSET,
   OneClickTradingLocalStorageKey,
-  removeLastSlash,
   UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -124,7 +118,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   >();
 
   private _aminoTypes: AminoTypes | null = null;
-  private _registry: Registry | null = null;
 
   private async getAminoTypes() {
     if (!this._aminoTypes) {
@@ -135,31 +128,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this._aminoTypes = new AminoTypes(aminoConverters);
     }
     return this._aminoTypes;
-  }
-
-  private async getRegistry() {
-    if (!this._registry) {
-      const [
-        {
-          cosmosProtoRegistry,
-          cosmwasmProtoRegistry,
-          ibcProtoRegistry,
-          osmosisProtoRegistry,
-        },
-        { Registry },
-      ] = await Promise.all([
-        import("@osmosis-labs/proto-codecs"),
-        import("@cosmjs/proto-signing"),
-      ]);
-
-      this._registry = new Registry([
-        ...cosmwasmProtoRegistry,
-        ...cosmosProtoRegistry,
-        ...ibcProtoRegistry,
-        ...osmosisProtoRegistry,
-      ]);
-    }
-    return this._registry;
   }
 
   /**
@@ -598,8 +566,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         messages: msgs,
         signOptions: mergedSignOptions,
       });
-      const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
-      const encodedTx = TxRaw.encode(txRaw).finish();
 
       if (this.options.preTxEvents?.onSign) {
         await this.options.preTxEvents.onSign();
@@ -609,88 +575,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         await onSign();
       }
 
-      const restEndpoint = getEndpointString(
-        await wallet.getRestEndpoint(true)
-      );
+      const tx = await broadcastTx({
+        tx: txRaw,
+        chainId: chainNameOrId,
+        chainList: this.chains,
+        proxyBroadcastUrl:
+          this.options?.broadcastUrl ?? "/api/broadcast-transaction",
+        wsObject: this.options.wsObject,
+        onBroadcasted: ({ txHash }) => {
+          if (this.options.preTxEvents?.onBroadcasted) {
+            this.options.preTxEvents.onBroadcasted(chainNameOrId, txHash);
+          }
 
-      const res = await axios.post<{
-        tx_response: {
-          height: string;
-          txhash: string;
-          codespace: string;
-          code: number;
-          data: string;
-          raw_log: string;
-          logs: unknown[];
-          info: string;
-          gas_wanted: string;
-          gas_used: string;
-          tx: unknown;
-          timestamp: string;
-          events: unknown[];
-        };
-      }>(this.options?.broadcastUrl ?? "/api/broadcast-transaction", {
-        restEndpoint: removeLastSlash(restEndpoint),
-        tx_bytes: Buffer.from(encodedTx).toString("base64"),
-        mode: "BROADCAST_MODE_SYNC",
+          if (onBroadcasted) {
+            onBroadcasted(txHash);
+          }
+        },
       });
-
-      const broadcasted = res.data.tx_response;
-
-      const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
-
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
-        wsObject: this?.options?.wsObject,
-      });
-
-      if (broadcasted.code) {
-        const { BroadcastTxError } = await import("@cosmjs/stargate");
-        throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
-      }
-
-      const txHashBuffer = Buffer.from(broadcasted.txhash, "hex");
-
-      if (this.options.preTxEvents?.onBroadcasted) {
-        this.options.preTxEvents.onBroadcasted(chainNameOrId, txHashBuffer);
-      }
-
-      if (onBroadcasted) {
-        onBroadcasted(txHashBuffer);
-      }
-
-      const tx = await txTracer.traceTx(txHashBuffer).then(
-        (tx: {
-          data?: string;
-          events?: TxEvent[];
-          gas_used?: string;
-          gas_wanted?: string;
-          log?: string;
-          code?: number;
-          height?: number;
-          tx_result?: {
-            data: string;
-            code?: number;
-            codespace: string;
-            events: TxEvent[];
-            gas_used: string;
-            gas_wanted: string;
-            info: string;
-            log: string;
-          };
-        }) => {
-          txTracer.close();
-
-          return {
-            transactionHash: broadcasted.txhash.toLowerCase(),
-            code: tx?.code ?? tx?.tx_result?.code ?? 0,
-            height: tx?.height,
-            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
-            events: tx?.events ?? tx?.tx_result?.events,
-            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
-            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
-          };
-        }
-      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -907,102 +808,22 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (memo === "") {
-      // If the memo is empty, set it to "1CT" so we know it originated from the frontend for
-      // QA purposes.
       memo = "1CT";
     } else {
-      // Otherwise, tack on "1CT" to the end of the memo.
       memo += " \n1CT";
     }
 
-    const [
-      { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
-      { TxExtension },
-      { fromBase64 },
-      { Int53 },
-      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
-      { TxRaw },
-    ] = await Promise.all([
-      import("@cosmjs/amino"),
-      import(
-        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-      ),
-      import("@cosmjs/encoding"),
-      import("@cosmjs/math"),
-      import("@cosmjs/proto-signing"),
-      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
-    ]);
+    const registry = await getRegistry();
 
-    const pubkey = encodePubkey(
-      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
-    );
-
-    const pubKeyTypeUrl = getPublicKeyTypeUrl({
-      chainId: wallet.chain.chain_id,
-      chainFeatures:
-        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
-    });
-
-    pubkey.typeUrl = pubKeyTypeUrl;
-
-    const registry = await this.getRegistry();
-    const txBodyBytes = registry.encodeTxBody({
+    return signWithAuthenticator({
       messages,
+      fee,
       memo,
-      nonCriticalExtensionOptions: [
-        {
-          typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
-          value: TxExtension.encode({
-            selectedAuthenticators: [
-              BigInt(oneClickTradingInfo.authenticatorId),
-            ],
-          }).finish(),
-        },
-      ],
-    }) as Uint8Array;
-
-    const privateKey = new PrivKeySecp256k1(
-      fromBase64(oneClickTradingInfo.sessionKey)
-    );
-
-    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
-    const authInfoBytes = makeAuthInfoBytes(
-      [{ pubkey, sequence }],
-      fee.amount,
-      gasLimit,
-      undefined,
-      undefined
-    );
-    const signDoc = makeSignDoc(
-      txBodyBytes,
-      authInfoBytes,
-      chainId,
-      accountNumber
-    );
-
-    const sig = privateKey.signDigest32(
-      Hash.sha256(
-        SignDoc.encode(
-          SignDoc.fromPartial({
-            bodyBytes: signDoc.bodyBytes,
-            authInfoBytes: signDoc.authInfoBytes,
-            chainId: signDoc.chainId,
-            accountNumber: signDoc.accountNumber.toString(),
-          })
-        ).finish()
-      )
-    );
-
-    const signature = encodeSecp256k1Signature(
-      privateKey.getPubKey().toBytes(),
-      new Uint8Array([...sig.r, ...sig.s])
-    );
-
-    return TxRaw.fromPartial({
-      bodyBytes: signDoc.bodyBytes,
-      authInfoBytes: signDoc.authInfoBytes,
-      signatures: [fromBase64(signature.signature)],
+      privateKey: oneClickTradingInfo.sessionKey,
+      publicKey: accountFromSigner.pubkey,
+      authenticatorId: oneClickTradingInfo.authenticatorId,
+      registry,
+      signerData: { accountNumber, sequence, chainId },
     });
   }
 
@@ -1082,7 +903,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
     const aminoTypes = await this.getAminoTypes();
-    const registry = await this.getRegistry();
+    const registry = await getRegistry();
 
     /**
      * Encode the messages to the proto format to normalize data types like Decimals.
@@ -1257,7 +1078,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     };
 
-    const registry = await this.getRegistry();
+    const registry = await getRegistry();
     const txBodyBytes = registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
@@ -1293,40 +1114,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  public async getAccountFromNode(wallet: AccountStoreWallet) {
-    try {
-      const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
-      const address = wallet?.address;
-
-      if (!address) {
-        throw new Error("Address is not provided");
-      }
-
-      if (!endpoint) {
-        throw new Error("Endpoint is not provided");
-      }
-
-      const account = await BaseAccount.fetchFromRest(
-        axios.create({
-          baseURL: removeLastSlash(endpoint),
-        }),
-        address,
-        true
-      );
-
-      return {
-        accountNumber: account.getAccountNumber(),
-        sequence: account.getSequence(),
-      };
-    } catch (error: any) {
-      throw error;
-    }
-  }
-
   public async getSequence(
     wallet: AccountStoreWallet
   ): Promise<{ accountNumber: number; sequence: number }> {
-    const account = await this.getAccountFromNode(wallet);
+    if (!wallet.address) {
+      throw new Error("Address is not provided");
+    }
+
+    const account = await getAccountFromNode({
+      chainId: wallet.chainId,
+      address: wallet.address,
+      chainList: this.chains,
+    });
+
     if (!account) {
       throw new Error(
         `Account '${wallet?.address}' does not exist on chain. Send some tokens there before trying to query sequence.`
@@ -1375,7 +1175,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const registry = await this.getRegistry();
+      const registry = await getRegistry();
       const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
       // check for one click trading tx decoration

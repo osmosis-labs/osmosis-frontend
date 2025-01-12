@@ -149,3 +149,7 @@ export function camelToKebabCase(str: string): string {
     .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
     .replace(/^-/, "");
 }
+
+export function removeLastSlash(url: string) {
+  return url.replace(/\/$/, "");
+}

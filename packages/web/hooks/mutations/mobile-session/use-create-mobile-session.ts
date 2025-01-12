@@ -1,6 +1,6 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,
@@ -161,12 +161,23 @@ export const useCreateMobileSession = ({
   const apiUtils = api.useUtils();
 
   return useMutation(async () => {
-    const userOsmoAddress = accountStore.getWallet(
-      accountStore.osmosisChainId
-    )?.address;
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+    const userOsmoAddress = wallet?.address;
 
     if (!userOsmoAddress) {
       throw new CreateMobileSessionError("Osmosis account not found");
+    }
+
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
+      (account) => account.address === userOsmoAddress
+    );
+
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
     }
 
     const { msgs, key, allowedMessages } = await makeCreateMobileSessionMessage(
@@ -201,11 +212,9 @@ export const useCreateMobileSession = ({
         });
     });
 
-    const publicKey = toBase64(key.getPubKey().toBytes());
-
     return {
       key: toBase64(key.toBytes()),
-      publicKey,
+      publicKey: accountFromSigner.pubkey,
       address: userOsmoAddress,
       allowedMessages,
     };

@@ -1,6 +1,8 @@
 import { AvailableOneClickTradingMessagesSchema } from "@osmosis-labs/types";
 import { z } from "zod";
 
+import { isNumeric } from "./assertion";
+
 /**
  * STUN server configuration for WebRTC peer connections.
  * Enables NAT traversal and peer discovery through Google's public STUN server.
@@ -40,6 +42,7 @@ export const MobileSessionEncryptedDataSchema = z.object({
   allowedMessages: AvailableOneClickTradingMessagesSchema.array(),
   key: z.string(),
   publicKey: z.string(),
+  authenticatorId: z.string().refine((id) => isNumeric(id)),
 });
 
 // Union of all possible message types

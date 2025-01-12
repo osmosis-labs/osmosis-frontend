@@ -133,7 +133,7 @@ export function useSwap(
       swapAssets.fromAsset?.coinMinimalDenom &&
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    !account?.txTypeInProgress &&
+    // !account?.txTypeInProgress &&
     quoteType === "out-given-in";
 
   const inGivenOutQuoteEnabled =
@@ -143,7 +143,7 @@ export function useSwap(
       swapAssets.toAsset?.coinMinimalDenom &&
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
-    !account?.txTypeInProgress &&
+    // !account?.txTypeInProgress &&
     quoteType === "in-given-out";
 
   const {
@@ -807,7 +807,7 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
-    !account?.txTypeInProgress &&
+    // !account?.txTypeInProgress &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     // since the in amount is debounced, the asset could be wrong when switching assets

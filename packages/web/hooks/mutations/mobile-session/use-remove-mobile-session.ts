@@ -1,4 +1,4 @@
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
