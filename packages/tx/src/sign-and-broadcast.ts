@@ -10,6 +10,24 @@ import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import { TxTracer } from "./tracer";
 
+export async function getSmartAccountExtensionOptions({
+  authenticatorId,
+}: {
+  authenticatorId: string;
+}): Promise<{ typeUrl: string; value: Uint8Array }[]> {
+  const { TxExtension } = await import(
+    "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
+  );
+  return [
+    {
+      typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
+      value: TxExtension.encode({
+        selectedAuthenticators: [BigInt(authenticatorId)],
+      }).finish(),
+    },
+  ];
+}
+
 export async function signWithAuthenticator({
   messages,
   fee,
@@ -31,16 +49,12 @@ export async function signWithAuthenticator({
 }): Promise<TxRaw> {
   const [
     { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
-    { TxExtension },
     { fromBase64 },
     { Int53 },
     { makeAuthInfoBytes, makeSignDoc, encodePubkey },
     { TxRaw },
   ] = await Promise.all([
     import("@cosmjs/amino"),
-    import(
-      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-    ),
     import("@cosmjs/encoding"),
     import("@cosmjs/math"),
     import("@cosmjs/proto-signing"),
@@ -53,12 +67,9 @@ export async function signWithAuthenticator({
     messages,
     memo,
     nonCriticalExtensionOptions: [
-      {
-        typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
-        value: TxExtension.encode({
-          selectedAuthenticators: [BigInt(authenticatorId)],
-        }).finish(),
-      },
+      ...(await getSmartAccountExtensionOptions({
+        authenticatorId,
+      })),
     ],
   }) as Uint8Array;
 
@@ -102,6 +113,14 @@ export async function signWithAuthenticator({
     authInfoBytes: signDoc.authInfoBytes,
     signatures: [fromBase64(signature.signature)],
   });
+}
+
+export interface TxFee {
+  readonly amount: readonly {
+    readonly denom: string;
+    readonly amount: string;
+  }[];
+  readonly gas: string;
 }
 
 export type TxEvent = {

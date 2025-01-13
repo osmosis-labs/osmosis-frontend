@@ -29,6 +29,7 @@ import {
   encodeAnyBase64,
   getAccountFromNode,
   getRegistry,
+  getSmartAccountExtensionOptions,
   QuoteStdFee,
   signWithAuthenticator,
   SimulateNotAvailableError,
@@ -1294,19 +1295,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
-    const { TxExtension } = await import(
-      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
-    );
-    return [
-      {
-        typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
-        value: TxExtension.encode({
-          selectedAuthenticators: [
-            BigInt(oneClickTradingInfo?.authenticatorId),
-          ],
-        }).finish(),
-      },
-    ];
+    return getSmartAccountExtensionOptions({
+      authenticatorId: oneClickTradingInfo.authenticatorId,
+    });
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {

@@ -25,7 +25,7 @@ import { DefaultTheme } from "~/constants/themes";
 import { useWallets } from "~/hooks/use-wallets";
 import { useCurrentWalletStore } from "~/stores/current-wallet";
 import { useKeyringStore } from "~/stores/keyring";
-import { getMobileAssetListAndChains } from "~/utils/asset-lists";
+import { getCachedAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
 import { api, RouterKeys } from "~/utils/trpc";
 import { appRouter } from "~/utils/trpc-routers/root-router";
@@ -110,19 +110,11 @@ export default function RootLayout() {
           const servers = {
             local: localLink({
               router: appRouter,
-              getLists: async () => {
-                const data = await queryClient.ensureQueryData({
-                  queryKey: ["assetLists-and-chainLists"],
-                  queryFn: async () =>
-                    getMobileAssetListAndChains({
-                      environment: "mainnet",
-                    }),
-                  cacheTime: 1000 * 60 * 30, // 30 minutes
-                  retry: 3,
-                });
-
-                return data;
-              },
+              getLists: async () =>
+                getCachedAssetListAndChains({
+                  queryClient,
+                  environment: "mainnet",
+                }),
               opentelemetryServiceName: "osmosis-mobile",
             })(runtime),
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
@@ -223,7 +215,9 @@ const OnboardingObserver = () => {
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       publicKey:
-        currentWallet?.type === "smart-account" ? currentWallet!.publicKey : "",
+        currentWallet?.type === "smart-account"
+          ? currentWallet!.accountOwnerPublicKey
+          : "",
       userOsmoAddress: currentWallet?.address ?? "",
     },
     {
@@ -240,8 +234,6 @@ const OnboardingObserver = () => {
       },
     }
   );
-
-  console.log(sessionAuthenticatorError);
 
   useEffect(() => {
     const handleSessionError = async () => {

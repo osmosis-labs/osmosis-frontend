@@ -1,7 +1,9 @@
 import {
   deserializeWebRTCMessage,
+  MobileSessionEncryptedDataSchema,
   serializeWebRTCMessage,
   STUN_SERVER,
+  uint8ArrayToString,
 } from "@osmosis-labs/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -68,16 +70,24 @@ export function CreateMobileSession() {
               type: "starting_verification",
             })
           );
-          const { address, allowedMessages, key, publicKey } =
-            await createMobileSessionMutation.mutateAsync();
-
-          // Encrypt the sensitive data using the secret from mobile
-          const sensitiveData = JSON.stringify({
+          const {
             address,
             allowedMessages,
             key,
-            publicKey,
+            authenticatorId,
+            accountOwnerPublicKey,
+          } = await createMobileSessionMutation.mutateAsync();
+
+          // Encrypt the sensitive data using the secret from mobile
+          const validatedData = MobileSessionEncryptedDataSchema.parse({
+            address,
+            allowedMessages,
+            key,
+            authenticatorId,
+            accountOwnerPublicKey: uint8ArrayToString(accountOwnerPublicKey),
           });
+          const sensitiveData = JSON.stringify(validatedData);
+
           const encryptedData = await encryptAES(
             sensitiveData,
             verificationState.secret!

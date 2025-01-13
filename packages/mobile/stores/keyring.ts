@@ -20,7 +20,8 @@ interface SmartAccountKeyInfo extends BasekeyInfo {
   type: "smart-account";
   privateKey: string;
   allowedMessages: AvailableOneClickTradingMessages[];
-  publicKey: string;
+  accountOwnerPublicKey: string;
+  authenticatorId: string;
 }
 
 export type KeyInfo = ViewOnlyKeyInfo | SmartAccountKeyInfo;

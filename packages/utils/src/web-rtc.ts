@@ -41,7 +41,7 @@ export const MobileSessionEncryptedDataSchema = z.object({
   address: z.string(),
   allowedMessages: AvailableOneClickTradingMessagesSchema.array(),
   key: z.string(),
-  publicKey: z.string(),
+  accountOwnerPublicKey: z.string(),
   authenticatorId: z.string().refine((id) => isNumeric(id)),
 });
 

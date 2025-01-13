@@ -144,10 +144,15 @@ const useWalletCreationWebRTC = ({
                   data.encryptedData,
                   secretRef.current
                 );
-                const { address, allowedMessages, key, publicKey } =
-                  MobileSessionEncryptedDataSchema.parse(
-                    JSON.parse(decryptedData)
-                  );
+                const {
+                  address,
+                  allowedMessages,
+                  key,
+                  accountOwnerPublicKey,
+                  authenticatorId,
+                } = MobileSessionEncryptedDataSchema.parse(
+                  JSON.parse(decryptedData)
+                );
 
                 // Store the decrypted data in secure storage
                 await new WalletFactory().createWallet({
@@ -156,9 +161,10 @@ const useWalletCreationWebRTC = ({
                     address,
                     allowedMessages,
                     privateKey: key,
-                    publicKey,
+                    accountOwnerPublicKey,
                     name: "Wallet 1",
                     version: data.version,
+                    authenticatorId,
                   },
                 });
                 useCurrentWalletStore.setState({

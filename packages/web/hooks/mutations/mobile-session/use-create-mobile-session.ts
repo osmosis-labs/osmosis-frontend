@@ -14,6 +14,7 @@ import { Dec } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
+import { getAuthenticatorIdFromTx } from "~/hooks/mutations/one-click-trading";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -187,7 +188,7 @@ export const useCreateMobileSession = ({
       }
     );
 
-    await new Promise<DeliverTxResponse>((resolve, reject) => {
+    const tx = await new Promise<DeliverTxResponse>((resolve, reject) => {
       accountStore
         .signAndBroadcast(
           accountStore.osmosisChainId,
@@ -212,10 +213,19 @@ export const useCreateMobileSession = ({
         });
     });
 
+    const authenticatorId = await getAuthenticatorIdFromTx({
+      events: tx.events,
+      userOsmoAddress,
+      fallbackGetAuthenticatorId:
+        apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      publicKey: toBase64(key.getPubKey().toBytes()),
+    });
+
     return {
       key: toBase64(key.toBytes()),
-      publicKey: accountFromSigner.pubkey,
+      accountOwnerPublicKey: accountFromSigner.pubkey,
       address: userOsmoAddress,
+      authenticatorId,
       allowedMessages,
     };
   }, queryOptions);

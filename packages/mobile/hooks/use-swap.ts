@@ -1,11 +1,10 @@
-import type { StdFee } from "@cosmjs/amino";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
+import { ObservableSlippageConfig } from "@osmosis-labs/stores";
 import {
   getSwapMessages,
   getSwapTxParameters,
@@ -21,11 +20,9 @@ import {
   PricePretty,
 } from "@osmosis-labs/unit";
 import {
-  getAssetFromAssetList,
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
   isNil,
-  makeMinimalAsset,
   mulPrice,
   sum,
   trimPlaceholderZeros,
@@ -36,7 +33,13 @@ import { useAsync } from "react-use";
 import { useAmountInput } from "~/hooks/use-amount-input";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
+import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
+import { useOsmosisChain } from "~/hooks/use-osmosis-chain";
 import { usePreviousWhen } from "~/hooks/use-previous-when";
+import {
+  useIsTransactionInProgress,
+  useSignAndBroadcast,
+} from "~/hooks/use-sign-and-broadcast";
 import { useWallets } from "~/hooks/use-wallets";
 import { api, RouterInputs } from "~/utils/trpc";
 
@@ -88,8 +91,10 @@ export function useSwap(
     quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
-  const apiUtils = api.useUtils();
   const { currentWallet } = useWallets();
+  const osmosisChain = useOsmosisChain();
+  const signAndBroadcast = useSignAndBroadcast();
+  const { isTransactionInProgress } = useIsTransactionInProgress();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -133,7 +138,7 @@ export function useSwap(
       swapAssets.fromAsset?.coinMinimalDenom &&
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
-    // !account?.txTypeInProgress &&
+    !isTransactionInProgress &&
     quoteType === "out-given-in";
 
   const inGivenOutQuoteEnabled =
@@ -143,7 +148,7 @@ export function useSwap(
       swapAssets.toAsset?.coinMinimalDenom &&
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
-    // !account?.txTypeInProgress &&
+    !isTransactionInProgress &&
     quoteType === "in-given-out";
 
   const {
@@ -301,7 +306,7 @@ export function useSwap(
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
+    chainId: osmosisChain.chain_id,
     messages: quote?.messages ?? [],
   });
 
@@ -328,6 +333,8 @@ export function useSwap(
     () =>
       new Promise<"multiroute" | "multihop" | "exact-in">(
         async (resolve, reject) => {
+          if (!quote || !quote.messages)
+            return reject(new Error("Quote is not specified."));
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
           if (!inAmountInput.amount || !outAmountInput.amount)
@@ -361,59 +368,63 @@ export function useSwap(
             );
           }
 
-          const signOptions: (SignOptions & { fee?: StdFee }) | undefined = {
-            ...(networkFee
-              ? {
-                  preferNoSetFee: true,
-                  fee: {
-                    gas: networkFee.gasLimit,
-                    amount: networkFee.amount,
-                  },
-                }
-              : {}),
-          };
-
           const { routes } = txParams;
           const typedRoutes = routes as SwapTxRouteOutGivenIn[];
 
-          accountStore
-            .signAndBroadcast(
-              chainStore.osmosis.chainId,
-              quoteType === "out-given-in"
-                ? routes.length === 1
-                  ? "swapExactAmountIn"
-                  : "splitRouteSwapExactAmountIn"
-                : routes.length === 1
-                ? "swapExactAmountOut"
-                : "splitRouteSwapExactAmountOut",
-              messages,
-              undefined,
-              signOptions?.fee,
-              signOptions,
-              (tx) => {
-                const { code } = tx;
-                if (code) {
-                  reject(
-                    new Error("Failed to send swap exact amount in message")
-                  );
-                } else {
-                  resolve(
-                    routes.length === 1
-                      ? typedRoutes[0].pools.length === 1
-                        ? "exact-in"
-                        : "multihop"
-                      : "multiroute"
-                  );
-                }
-              }
-            )
-            .catch(reject);
+          try {
+            const { tx } = await signAndBroadcast.mutateAsync({
+              type:
+                quoteType === "out-given-in"
+                  ? routes.length === 1
+                    ? "swapExactAmountIn"
+                    : "splitRouteSwapExactAmountIn"
+                  : routes.length === 1
+                  ? "swapExactAmountOut"
+                  : "splitRouteSwapExactAmountOut",
+              chainId: osmosisChain.chain_id,
+              memo: "Osmosis Mobile Swap",
+              messages: quote.messages,
+              fee: networkFee
+                ? {
+                    gas: networkFee.gasLimit,
+                    amount: networkFee.amount,
+                  }
+                : undefined,
+            });
+
+            const { code } = tx;
+            if (code) {
+              reject(new Error("Failed to send swap exact amount in message"));
+            } else {
+              resolve(
+                routes.length === 1
+                  ? typedRoutes[0].pools.length === 1
+                    ? "exact-in"
+                    : "multihop"
+                  : "multiroute"
+              );
+            }
+          } catch (e) {
+            reject(e);
+          }
         }
       ).finally(() => {
         inAmountInput.reset();
         outAmountInput.reset();
       }),
-    []
+    [
+      currentWallet,
+      inAmountInput,
+      maxSlippage,
+      networkFee,
+      osmosisChain.chain_id,
+      outAmountInput,
+      quote,
+      quoteType,
+      signAndBroadcast,
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+    ]
   );
 
   const positivePrevQuote = usePreviousWhen(
@@ -798,8 +809,9 @@ function useSwapAmountInput({
   forceSwapInPoolId: string | undefined;
   maxSlippage: Dec | undefined;
 }) {
-  const { currentWallet } = useWallets();
+  const osmosisChain = useOsmosisChain();
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
+  const { isTransactionInProgress } = useIsTransactionInProgress();
 
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
@@ -807,7 +819,7 @@ function useSwapAmountInput({
   });
 
   const balanceQuoteQueryEnabled =
-    // !account?.txTypeInProgress &&
+    !isTransactionInProgress &&
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     // since the in amount is debounced, the asset could be wrong when switching assets
@@ -845,7 +857,7 @@ function useSwapAmountInput({
     isLoading: isLoadingCurrentBalanceNetworkFee_,
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
-    chainId: chainStore.osmosis.chainId,
+    chainId: osmosisChain.chain_id,
     messages: quoteForCurrentBalance?.messages ?? [],
     enabled: networkFeeQueryEnabled,
   });
@@ -973,19 +985,14 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
       asset.coinMinimalDenom === minDenomOrSymbol
   );
 
-  const asset = useMemo(() => {
-    if (existingAsset) return existingAsset;
-
-    const asset = getAssetFromAssetList({
-      assetLists: AssetLists,
-      coinMinimalDenom: minDenomOrSymbol,
-      symbol: minDenomOrSymbol,
-    });
-
-    if (!asset) return;
-
-    return makeMinimalAsset(asset.rawAsset);
-  }, [minDenomOrSymbol, existingAsset]);
+  const { data: asset } = api.local.assets.getUserAsset.useQuery(
+    {
+      findMinDenomOrSymbol: minDenomOrSymbol!,
+    },
+    {
+      enabled: !!minDenomOrSymbol,
+    }
+  );
 
   return {
     asset: existingAsset ?? (asset as TAsset | undefined),

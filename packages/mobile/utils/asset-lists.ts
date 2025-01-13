@@ -6,6 +6,7 @@ import {
   ChainList,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
+import { QueryClient } from "@tanstack/react-query";
 
 function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
@@ -160,4 +161,22 @@ export async function getMobileAssetListAndChains({
   });
 
   return { assetLists, chainList };
+}
+
+export function getCachedAssetListAndChains({
+  queryClient,
+  environment,
+}: {
+  queryClient: QueryClient;
+  environment: "testnet" | "mainnet";
+}) {
+  return queryClient.ensureQueryData({
+    queryKey: ["assetLists-and-chainLists"],
+    queryFn: async () =>
+      getMobileAssetListAndChains({
+        environment,
+      }),
+    cacheTime: 1000 * 60 * 30, // 30 minutes
+    retry: 3,
+  });
 }
