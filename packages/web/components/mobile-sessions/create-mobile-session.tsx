@@ -76,6 +76,7 @@ export function CreateMobileSession() {
             key,
             authenticatorId,
             accountOwnerPublicKey,
+            publicKey,
           } = await createMobileSessionMutation.mutateAsync();
 
           // Encrypt the sensitive data using the secret from mobile
@@ -84,6 +85,7 @@ export function CreateMobileSession() {
             allowedMessages,
             key,
             authenticatorId,
+            publicKey,
             accountOwnerPublicKey: uint8ArrayToString(accountOwnerPublicKey),
           });
           const sensitiveData = JSON.stringify(validatedData);

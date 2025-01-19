@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDebounce } from "react-use";
+import useDebounce from "react-use/lib/useDebounce";
 
 /**
  * A hook that returns a debounced state value.

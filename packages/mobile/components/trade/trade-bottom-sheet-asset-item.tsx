@@ -11,16 +11,22 @@ type AssetType = RouterOutputs["local"]["assets"]["getUserAssets"]["items"][0];
 type BottomSheetAssetItemProps = {
   asset: AssetType;
   type?: "recommended" | "selectable";
+  onClick: () => void;
 };
 
 export const TradeBottomSheetAssetItem = ({
   asset,
   type,
+  onClick,
 }: BottomSheetAssetItemProps) => {
   if (type === "recommended") {
     return (
-      <TouchableOpacity style={styles.recommendedAssetItem}>
-        <View style={styles.recommendedAssetLeft} key={asset.coinMinimalDenom}>
+      <TouchableOpacity
+        style={styles.recommendedAssetItem}
+        onPress={onClick}
+        key={asset.coinMinimalDenom}
+      >
+        <View style={styles.recommendedAssetLeft}>
           {asset.coinImageUrl && (
             <AssetImage
               uri={asset.coinImageUrl}
@@ -36,7 +42,7 @@ export const TradeBottomSheetAssetItem = ({
   }
 
   return (
-    <TouchableOpacity>
+    <TouchableOpacity onPress={onClick} key={asset.coinMinimalDenom}>
       <View style={styles.assetLeft} key={asset.coinMinimalDenom}>
         {asset.coinImageUrl && (
           <AssetImage uri={asset.coinImageUrl} style={styles.assetImage} />

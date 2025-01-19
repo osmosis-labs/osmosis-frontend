@@ -147,20 +147,31 @@ export function useOsBiometricAuthEnabled() {
 export function useDeviceSupportsBiometricAuth(): {
   touchId: boolean;
   faceId: boolean;
+  isCheckingBiometricAvailability: boolean;
 } {
+  const [isCheckingBiometricAvailability, setIsCheckingBiometricAvailability] =
+    useState(true);
   const [authenticationTypes, setAuthenticationTypes] = useState<
     AuthenticationType[]
   >([]);
 
   useEffect(() => {
     const getAuthTypes = async () => {
-      const types = await supportedAuthenticationTypesAsync();
-      setAuthenticationTypes(types);
+      try {
+        const types = await supportedAuthenticationTypesAsync();
+        setAuthenticationTypes(types);
+      } catch (error) {
+        console.error("Error getting authentication types:", error);
+        setAuthenticationTypes([]);
+      } finally {
+        setIsCheckingBiometricAvailability(false);
+      }
     };
     getAuthTypes();
   }, []);
 
   return {
+    isCheckingBiometricAvailability,
     touchId:
       authenticationTypes?.includes(AuthenticationType.FINGERPRINT) ?? false,
     faceId:

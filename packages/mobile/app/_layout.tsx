@@ -1,3 +1,8 @@
+process.env = {
+  ...process.env,
+  EXPO_PUBLIC_HISTORICAL_DATA_URL: process.env.EXPO_PUBLIC_HISTORICAL_DATA_URL,
+};
+
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { superjson } from "@osmosis-labs/server";
 import { localLink, makeSkipBatchLink } from "@osmosis-labs/trpc";
@@ -29,9 +34,6 @@ import { getCachedAssetListAndChains } from "~/utils/asset-lists";
 import { mmkvStorage } from "~/utils/mmkv";
 import { api, RouterKeys } from "~/utils/trpc";
 import { appRouter } from "~/utils/trpc-routers/root-router";
-
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-global.Buffer = require("buffer").Buffer;
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -215,9 +217,7 @@ const OnboardingObserver = () => {
   } = api.local.oneClickTrading.getSessionAuthenticator.useQuery(
     {
       publicKey:
-        currentWallet?.type === "smart-account"
-          ? currentWallet!.accountOwnerPublicKey
-          : "",
+        currentWallet?.type === "smart-account" ? currentWallet!.publicKey : "",
       userOsmoAddress: currentWallet?.address ?? "",
     },
     {

@@ -20,7 +20,36 @@ config.resolver.unstable_conditionNames = [
 ];
 
 // Exclude ws library imported from viem that is not compatible with react-native and is not needed for the app
-config.resolver.blacklistRE = /node_modules\/isows\/node_modules\/ws\/.*/;
+config.resolver.blacklistRE = /node_smodules\/isows\/node_modules\/ws\/.*/;
+config.resolver.extraNodeModules = {
+  ...config.resolver.extraNodeModules,
+  stream: require.resolve("stream-browserify"),
+};
+
+config.resolver.resolveRequest = (context, moduleName, platform) => {
+  if (
+    moduleName === "libsodium" ||
+    moduleName === "libsodium-wrappers" ||
+    moduleName === "libsodium-sumo" ||
+    moduleName === "libsodium-wrappers-sumo"
+  ) {
+    return context.resolveRequest(
+      context,
+      path.resolve(__dirname, "etc", "noop", "index.js"),
+      platform
+    );
+  }
+  if (moduleName === "crypto") {
+    // when importing crypto, resolve to react-native-quick-crypto
+    return context.resolveRequest(
+      context,
+      "react-native-quick-crypto",
+      platform
+    );
+  }
+  // otherwise chain to the standard Metro resolver.
+  return context.resolveRequest(context, moduleName, platform);
+};
 
 module.exports = config;
 

@@ -10,7 +10,6 @@ import { Colors } from "~/constants/theme-colors";
 import {
   useBiometricPrompt,
   useDeviceSupportsBiometricAuth,
-  useOsBiometricAuthEnabled,
 } from "~/hooks/biometrics";
 import { useSettingsStore } from "~/stores/settings";
 
@@ -18,10 +17,9 @@ import { Button } from "../../components/ui/button";
 
 export default function Security() {
   const router = useRouter();
-  const { faceId } = useDeviceSupportsBiometricAuth();
+  const { faceId, touchId, isCheckingBiometricAvailability } =
+    useDeviceSupportsBiometricAuth();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
-  const { isCheckingBiometricAvailability, isBiometricEnabled } =
-    useOsBiometricAuthEnabled();
 
   const { setBiometricForAppAccess, setBiometricForTransactions } =
     useSettingsStore(
@@ -37,19 +35,19 @@ export default function Security() {
     onSuccess: () => {
       setBiometricForAppAccess(true);
       setBiometricForTransactions(true);
-      router.push("/(tabs)");
+      router.replace("/(tabs)");
     },
   });
 
-  const handleUseDevicePin = () => {
-    router.push("/(tabs)");
+  const handleSetUpLater = () => {
+    router.replace("/(tabs)");
   };
 
   useEffect(() => {
-    if (!isCheckingBiometricAvailability && !isBiometricEnabled) {
-      router.push("/(tabs)");
+    if (!isCheckingBiometricAvailability && !touchId && !faceId) {
+      router.replace("/(tabs)");
     }
-  }, [isCheckingBiometricAvailability, isBiometricEnabled, router]);
+  }, [isCheckingBiometricAvailability, touchId, faceId, router]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -99,7 +97,7 @@ export default function Security() {
           <Button
             buttonStyle={styles.pinButton}
             textStyle={styles.pinButtonLabel}
-            onPress={handleUseDevicePin}
+            onPress={handleSetUpLater}
             variant="outline"
             title="Set Up Later"
             disabled={isAuthenticating}

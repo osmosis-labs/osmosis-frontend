@@ -7,6 +7,7 @@ import { ArrowLeftIcon } from "~/components/icons/arrow-left";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useSwap } from "~/hooks/use-swap";
 
 import { TradeCard } from "./trade-card";
 
@@ -21,6 +22,17 @@ export function TradeInterface({
 }: TradeInterfaceProps) {
   const [amount, setAmount] = useState("0");
   const [error, setError] = useState("");
+  const {
+    setToAssetDenom,
+    setFromAssetDenom,
+    fromAsset,
+    toAsset,
+    selectableAssets,
+    fetchNextPageAssets,
+    hasNextPageAssets,
+    isFetchingNextPageAssets,
+    isLoadingSelectAssets,
+  } = useSwap();
 
   const handleNumberClick = (num: string) => {
     if (amount === "0" && num !== ".") {
@@ -56,7 +68,17 @@ export function TradeInterface({
       </View>
 
       <View style={styles.tradeCardsContainer}>
-        <TradeCard title="Pay" subtitle="Choose Asset" />
+        <TradeCard
+          title="Pay"
+          subtitle="Choose Asset"
+          asset={fromAsset}
+          onSelectAsset={(asset) => setFromAssetDenom(asset.coinMinimalDenom)}
+          selectableAssets={selectableAssets}
+          fetchNextPage={fetchNextPageAssets}
+          hasNextPage={hasNextPageAssets ?? false}
+          isFetchingNextPage={isFetchingNextPageAssets}
+          isLoadingSelectAssets={isLoadingSelectAssets}
+        />
 
         <View style={styles.swapButtonContainer}>
           <TouchableOpacity activeOpacity={0.8} style={styles.swapButton}>
@@ -64,7 +86,17 @@ export function TradeInterface({
           </TouchableOpacity>
         </View>
 
-        <TradeCard title="Receive" subtitle="Choose Asset" />
+        <TradeCard
+          title="Receive"
+          subtitle="Choose Asset"
+          asset={toAsset}
+          onSelectAsset={(asset) => setToAssetDenom(asset.coinMinimalDenom)}
+          selectableAssets={selectableAssets}
+          fetchNextPage={fetchNextPageAssets}
+          hasNextPage={hasNextPageAssets ?? false}
+          isFetchingNextPage={isFetchingNextPageAssets}
+          isLoadingSelectAssets={isLoadingSelectAssets}
+        />
       </View>
 
       <Text style={styles.errorMessage}>{error}</Text>

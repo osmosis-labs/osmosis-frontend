@@ -3,10 +3,7 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "node": "20.11.1",
-      "env": {
-        "EXPO_PUBLIC_OSMOSIS_ADDRESS": "osmo13t8prr8hu7hkuksnfrd25vpvvnrfxr223k59ph"
-      }
+      "node": "20.11.1"
     },
     "ios-simulator": {
       "extends": "development",

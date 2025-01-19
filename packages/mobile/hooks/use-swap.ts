@@ -28,7 +28,7 @@ import {
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useAsync } from "react-use";
+import useAsync from "react-use/lib/useAsync";
 
 import { useAmountInput } from "~/hooks/use-amount-input";
 import { useDebouncedState } from "~/hooks/use-debounced-state";

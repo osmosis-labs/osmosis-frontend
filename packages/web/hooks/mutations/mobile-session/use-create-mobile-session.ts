@@ -39,7 +39,10 @@ export function isAuthenticatorMobileSession({
       (sub) =>
         sub.type === "AnyOf" &&
         sub.subAuthenticators.every((sub) => sub.type === "MessageFilter")
-    )
+    ) &&
+    !authenticator.subAuthenticators.some(
+      (sub) => sub.type === "CosmwasmAuthenticatorV1"
+    ) // Should not contain a spend limit authenticator. This is the main difference between 1CT and mobile session authenticators.
   );
 }
 
@@ -170,6 +173,10 @@ export const useCreateMobileSession = ({
     }
 
     if (!wallet.offlineSigner) {
+      await wallet.initOfflineSigner();
+    }
+
+    if (!wallet.offlineSigner) {
       throw new Error("offlineSigner is not available in wallet");
     }
 
@@ -224,6 +231,7 @@ export const useCreateMobileSession = ({
     return {
       key: toBase64(key.toBytes()),
       accountOwnerPublicKey: accountFromSigner.pubkey,
+      publicKey: toBase64(key.getPubKey().toBytes()),
       address: userOsmoAddress,
       authenticatorId,
       allowedMessages,

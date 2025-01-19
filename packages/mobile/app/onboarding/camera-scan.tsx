@@ -150,6 +150,7 @@ const useWalletCreationWebRTC = ({
                   key,
                   accountOwnerPublicKey,
                   authenticatorId,
+                  publicKey,
                 } = MobileSessionEncryptedDataSchema.parse(
                   JSON.parse(decryptedData)
                 );
@@ -165,6 +166,7 @@ const useWalletCreationWebRTC = ({
                     name: "Wallet 1",
                     version: data.version,
                     authenticatorId,
+                    publicKey,
                   },
                 });
                 useCurrentWalletStore.setState({
@@ -303,6 +305,7 @@ export default function Welcome() {
   };
 
   const handleClose = () => {
+    if (isCheckingBiometricAvailability) return;
     if (status === "Verified" && isBiometricEnabled) {
       router.replace("/onboarding/set-up-biometrics");
     } else if (status === "Verified" && !isBiometricEnabled) {

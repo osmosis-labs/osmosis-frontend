@@ -43,6 +43,7 @@ export const MobileSessionEncryptedDataSchema = z.object({
   key: z.string(),
   accountOwnerPublicKey: z.string(),
   authenticatorId: z.string().refine((id) => isNumeric(id)),
+  publicKey: z.string(),
 });
 
 // Union of all possible message types

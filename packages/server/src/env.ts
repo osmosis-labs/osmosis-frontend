@@ -18,6 +18,7 @@ export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 // data services
 export const HISTORICAL_DATA_URL =
   process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL ??
+  process.env.EXPO_PUBLIC_HISTORICAL_DATA_URL ??
   "https://data.stage.osmosis.zone";
 export const NUMIA_API_KEY = process.env.NUMIA_API_KEY;
 

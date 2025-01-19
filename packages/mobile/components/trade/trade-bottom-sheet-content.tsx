@@ -1,6 +1,7 @@
 import { BottomSheetFlashList, BottomSheetView } from "@gorhom/bottom-sheet";
+import { MinimalAsset } from "@osmosis-labs/types";
 import { debounce } from "debounce";
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 
 import { SearchInput } from "~/components/search-input";
@@ -10,30 +11,24 @@ import { api } from "~/utils/trpc";
 
 import { TradeBottomSheetAssetItem } from "./trade-bottom-sheet-asset-item";
 
-export const TradeBottomSheetContent = () => {
-  const [queryInput, setQueryInput] = useState("");
+interface TradeBottomSheetContentProps {
+  onSelectAsset: (asset: MinimalAsset) => void;
+  selectableAssets: MinimalAsset[];
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  isLoadingSelectAssets: boolean;
+}
 
-  const {
-    data: selectableAssetPages,
-    isLoading: isLoadingSelectAssets,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = api.local.assets.getUserAssets.useInfiniteQuery(
-    {
-      ...(queryInput ? { search: { query: queryInput } } : {}),
-      limit: 50,
-    },
-    {
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialCursor: 0,
-      trpc: {
-        context: {
-          skipBatch: true,
-        },
-      },
-    }
-  );
+export const TradeBottomSheetContent = ({
+  onSelectAsset,
+  selectableAssets,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoadingSelectAssets,
+}: TradeBottomSheetContentProps) => {
+  const [queryInput, setQueryInput] = useState("");
 
   const onSearch = debounce((query: string) => {
     setQueryInput(query);
@@ -41,11 +36,6 @@ export const TradeBottomSheetContent = () => {
 
   const { data: recommendedAssets } =
     api.local.assets.getSwapRecommendedAssets.useQuery();
-
-  const selectableAssets = useMemo(
-    () => selectableAssetPages?.pages.flatMap(({ items }) => items) ?? [],
-    [selectableAssetPages?.pages]
-  );
 
   return (
     <BottomSheetView style={styles.bottomSheetView}>
@@ -68,6 +58,7 @@ export const TradeBottomSheetContent = () => {
                 asset={asset}
                 type="recommended"
                 key={asset.coinMinimalDenom}
+                onClick={() => onSelectAsset(asset)}
               />
             ))}
           </ScrollView>
@@ -95,6 +86,7 @@ export const TradeBottomSheetContent = () => {
               <TradeBottomSheetAssetItem
                 asset={asset}
                 key={asset.coinMinimalDenom}
+                onClick={() => onSelectAsset(asset)}
               />
             )}
           />

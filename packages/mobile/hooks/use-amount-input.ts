@@ -1,18 +1,11 @@
-import {
-  EmptyAmountError,
-  InvalidNumberAmountError,
-  NegativeAmountError,
-} from "@osmosis-labs/keplr-hooks";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import {
-  InsufficientBalanceError,
-  InsufficientBalanceForFeeError,
-} from "@osmosis-labs/stores";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import { isNil, mulPrice } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { usePrice } from "~/hooks/use-price";
 import { useWallets } from "~/hooks/use-wallets";
 import { api } from "~/utils/trpc";
@@ -172,16 +165,16 @@ export function useAmountInput({
 
   const error = useMemo(() => {
     if (!amount) {
-      return new EmptyAmountError("Empty amount");
+      return new Error("Empty amount");
     }
     if (!isValidNumericalRawInput(inputAmount)) {
-      return new InvalidNumberAmountError("Invalid number amount");
+      return new Error("Invalid number amount");
     }
     if (amount.toDec().isNegative()) {
-      return new NegativeAmountError("Negative amount");
+      return new Error("Negative amount");
     }
     if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec())) {
-      return new InsufficientBalanceError("Insufficient balance");
+      return new Error("Insufficient balance");
     }
     if (
       !isNil(maxAmountWithGas) &&
