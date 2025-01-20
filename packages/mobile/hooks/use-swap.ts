@@ -639,6 +639,8 @@ export function determineNextFallbackToDenom(params: {
   }
 }
 
+export type UseSwapAssetsReturn = ReturnType<typeof useSwapAssets>;
+
 /** Use assets for swapping: the from and to assets, as well as the list of
  *  swappable assets. Sorts by balance if user is signed in.
  *
@@ -799,6 +801,8 @@ export function useSwapAssets({
     fetchNextPageAssets: fetchNextPage,
   };
 }
+
+export type UseSwapAmountInputReturn = ReturnType<typeof useSwapAmountInput>;
 
 function useSwapAmountInput({
   swapAssets,

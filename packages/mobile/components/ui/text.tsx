@@ -3,7 +3,7 @@ import { StyleSheet, Text as RNText, type TextProps } from "react-native";
 import { useTheme } from "~/hooks/use-theme";
 
 export type ThemedTextProps = TextProps & {
-  type?: "default" | "title" | "subtitle" | "caption";
+  type?: "default" | "title" | "subtitle" | "caption" | "pageTitle";
 };
 
 export function Text({ style, type = "default", ...rest }: ThemedTextProps) {
@@ -17,6 +17,7 @@ export function Text({ style, type = "default", ...rest }: ThemedTextProps) {
         type === "title" ? styles.title : undefined,
         type === "subtitle" ? styles.subtitle : undefined,
         type === "caption" ? styles.caption : undefined,
+        type === "pageTitle" ? styles.pageTitle : undefined,
         style,
       ]}
       {...rest}
@@ -46,5 +47,10 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 14,
     lineHeight: 16,
+  },
+  pageTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 16,
   },
 });
