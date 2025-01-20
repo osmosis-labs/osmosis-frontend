@@ -45,6 +45,9 @@ import { api, RouterInputs } from "~/utils/trpc";
 
 export type SwapState = ReturnType<typeof useSwap>;
 export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
+export type SendTradeTokenInTx = ReturnType<
+  typeof useSwap
+>["sendTradeTokenInTx"];
 
 const DefaultSlippage = "0.1";
 
@@ -408,10 +411,7 @@ export function useSwap(
             reject(e);
           }
         }
-      ).finally(() => {
-        inAmountInput.reset();
-        outAmountInput.reset();
-      }),
+      ),
     [
       currentWallet,
       inAmountInput,

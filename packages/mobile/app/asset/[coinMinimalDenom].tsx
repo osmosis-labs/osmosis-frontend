@@ -1,4 +1,3 @@
-import { Dec } from "@osmosis-labs/unit";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
@@ -18,7 +17,6 @@ import { AssetDetails } from "~/components/asset/asset-details";
 import { RouteHeader } from "~/components/route-header";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
-import { getChangeColor } from "~/utils/price";
 import { api } from "~/utils/trpc";
 
 const TRADE_BUTTON_HEIGHT = 100;
@@ -98,7 +96,7 @@ const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
       <AssetChartHeader asset={asset} />
       <AssetChart asset={asset} />
 
-      {false && (
+      {/* {false && (
         <View style={styles.balanceContainer}>
           <Text type="subtitle">Your Balance:</Text>
           <View style={styles.balanceRow}>
@@ -117,7 +115,7 @@ const AssetContent = ({ coinMinimalDenom }: { coinMinimalDenom: string }) => {
             {asset.currentPrice?.toDec().toString()}
           </Text>
         </View>
-      )}
+      )} */}
 
       {asset && <AssetDetails asset={asset} />}
     </ScrollView>

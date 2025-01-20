@@ -103,16 +103,21 @@ export const useBiometricPrompt = ({
       const authStatus = await tryLocalAuthenticate(authOptions);
 
       setAuthenticationStatus(authStatus);
-
-      if (
+      const isSuccess =
         authStatus === BiometricAuthenticationStatus.Authenticated ||
         authStatus === BiometricAuthenticationStatus.Unsupported ||
-        authStatus === BiometricAuthenticationStatus.MissingEnrollment
-      ) {
+        authStatus === BiometricAuthenticationStatus.MissingEnrollment;
+
+      if (isSuccess) {
         onSuccess?.();
       } else {
         onFailure?.();
       }
+
+      return {
+        status: authStatus,
+        success: isSuccess,
+      };
     },
     [onFailure, setAuthenticationStatus, onSuccess]
   );

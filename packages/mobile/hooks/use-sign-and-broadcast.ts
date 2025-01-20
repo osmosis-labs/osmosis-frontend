@@ -1,3 +1,4 @@
+import { fromBase64 } from "@cosmjs/encoding";
 import { type EncodeObject } from "@cosmjs/proto-signing";
 import {
   broadcastTx,
@@ -8,13 +9,15 @@ import {
   signWithAuthenticator,
   TxFee,
 } from "@osmosis-labs/tx";
-import { stringToUint8Array } from "@osmosis-labs/utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { create } from "zustand";
 
+import { useBiometricPrompt } from "~/hooks/biometrics";
 import { useEnvironment } from "~/hooks/use-environment";
 import { useWallets } from "~/hooks/use-wallets";
+import { useSettingsStore } from "~/stores/settings";
 import { getCachedAssetListAndChains } from "~/utils/asset-lists";
+import { api } from "~/utils/trpc";
 
 interface TxTypeState {
   txType: string | null;
@@ -31,15 +34,39 @@ export const useIsTransactionInProgress = () => {
   return { isTransactionInProgress: txType !== null };
 };
 
+/** Once data is invalidated, React Query will automatically refetch data
+ *  when the dependent component becomes visible. */
+export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
+  apiUtils.local.assets.getUserAsset.invalidate();
+  apiUtils.local.assets.getUserAssets.invalidate();
+  apiUtils.local.assets.getUserMarketAsset.invalidate();
+  apiUtils.local.assets.getUserAssetsTotal.invalidate();
+  apiUtils.local.assets.getUserBridgeAsset.invalidate();
+  apiUtils.local.assets.getUserBridgeAssets.invalidate();
+  apiUtils.local.balances.getUserBalances.invalidate();
+  apiUtils.local.assets.getImmersiveBridgeAssets.invalidate();
+  apiUtils.local.portfolio.getPortfolioAssets.invalidate();
+}
+
 export const useSignAndBroadcast = () => {
   const setTxType = useTxTypeStore((state) => state.setTxType);
   const { currentWallet } = useWallets();
   const queryClient = useQueryClient();
   const { environment } = useEnvironment();
+  const apiUtils = api.useUtils();
+
+  const { authenticate: authenticateTransactions } = useBiometricPrompt();
+
+  const biometricForTransactions = useSettingsStore(
+    (state) => state.biometricForTransactions
+  );
 
   return useMutation({
     onMutate: ({ type }) => {
       setTxType(type);
+    },
+    onSuccess: () => {
+      refetchUserQueries(apiUtils);
     },
     onSettled: () => {
       setTxType(null);
@@ -56,6 +83,13 @@ export const useSignAndBroadcast = () => {
       messages: EncodeObject[];
       type: string;
     }) => {
+      if (biometricForTransactions) {
+        const { success } = await authenticateTransactions();
+        if (!success) {
+          throw new Error("Authentication failed");
+        }
+      }
+
       if (!currentWallet?.address) {
         throw new Error("No wallet connected");
       }
@@ -98,7 +132,7 @@ export const useSignAndBroadcast = () => {
         memo,
         messages,
         privateKey: currentWallet.privateKey,
-        publicKey: stringToUint8Array(currentWallet.accountOwnerPublicKey),
+        publicKey: fromBase64(currentWallet.accountOwnerPublicKey),
         registry: await getRegistry(),
         signerData: {
           accountNumber: Number(accountNumber.toString()),

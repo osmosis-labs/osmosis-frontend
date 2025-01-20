@@ -1,9 +1,9 @@
+import { toBase64 } from "@cosmjs/encoding";
 import {
   deserializeWebRTCMessage,
   MobileSessionEncryptedDataSchema,
   serializeWebRTCMessage,
   STUN_SERVER,
-  uint8ArrayToString,
 } from "@osmosis-labs/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -86,7 +86,7 @@ export function CreateMobileSession() {
             key,
             authenticatorId,
             publicKey,
-            accountOwnerPublicKey: uint8ArrayToString(accountOwnerPublicKey),
+            accountOwnerPublicKey: toBase64(accountOwnerPublicKey),
           });
           const sensitiveData = JSON.stringify(validatedData);
 

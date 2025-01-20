@@ -1,11 +1,14 @@
-import { Dec } from "@osmosis-labs/unit";
-import React, { memo, useCallback } from "react";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
+import React, { memo, useCallback, useRef } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { create } from "zustand";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { ArrowLeftIcon } from "~/components/icons/arrow-left";
+import { ReviewTradeBottomSheet } from "~/components/trade/review-trade-bottom-sheet";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
@@ -26,11 +29,17 @@ export const useInputSelectionStore = create<SelectionState>((set) => ({
 }));
 
 interface TradeInterfaceProps {
-  showSubmitButton?: boolean;
+  showGlobalSubmitButton?: boolean;
+  initialFromDenom?: string;
+  initialToDenom?: string;
 }
 
+const maxSlippage = new Dec(0.05);
+
 export function TradeInterface({
-  showSubmitButton = false,
+  showGlobalSubmitButton = false,
+  initialFromDenom,
+  initialToDenom,
 }: TradeInterfaceProps) {
   const {
     inAmountInput,
@@ -52,8 +61,16 @@ export function TradeInterface({
     isSlippageOverBalance,
     networkFeeError,
     quote,
-  } = useSwap();
+    tokenOutFiatValue,
+    networkFee,
+    sendTradeTokenInTx,
+  } = useSwap({
+    initialFromDenom: initialFromDenom ?? "ATOM",
+    initialToDenom: initialToDenom ?? "OSMO",
+    maxSlippage,
+  });
   const { selection, setSelection } = useInputSelectionStore();
+  const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
 
@@ -182,87 +199,122 @@ export function TradeInterface({
     buttonText = "Preview Trade";
   }
 
+  const onSuccess = useCallback(() => {
+    reviewTradeBottomSheetRef.current?.dismiss();
+    inAmountInput.reset();
+    outAmountInput.reset();
+  }, [inAmountInput, outAmountInput]);
+
+  const onReviewTrade = useCallback(() => {
+    reviewTradeBottomSheetRef.current?.present();
+  }, []);
+
   return (
-    <ScrollView
-      style={[
-        styles.container,
-        { paddingBottom: PREVIEW_BUTTON_HEIGHT - inset.bottom },
-      ]}
-    >
-      <View>
-        <Text
-          type="pageTitle"
-          style={{
-            textAlign: "left",
-          }}
-        >
-          Swap
-        </Text>
-      </View>
-
-      <View style={styles.tradeCardsContainer}>
-        <TradeCard
-          amountInput={inAmountInput}
-          title="Pay"
-          subtitle="Choose Asset"
-          recommendedAssets={recommendedAssets}
-          asset={fromAsset}
-          onSelectAsset={(asset) => setFromAssetDenom(asset.coinMinimalDenom)}
-          selectableAssets={selectableAssets}
-          fetchNextPage={fetchNextPageAssets}
-          hasNextPage={hasNextPageAssets ?? false}
-          isFetchingNextPage={isFetchingNextPageAssets}
-          isLoadingSelectAssets={isLoadingSelectAssets}
-          onPressMax={() => {
-            inAmountInput.toggleMax();
-          }}
-          isSwapToolLoading={isSwapToolLoading}
-        />
-
-        <View style={styles.swapButtonContainer}>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            style={styles.swapButton}
-            onPress={switchAssets}
+    <>
+      <ScrollView
+        style={[
+          styles.container,
+          { paddingBottom: PREVIEW_BUTTON_HEIGHT - inset.bottom },
+        ]}
+      >
+        <View>
+          <Text
+            type="pageTitle"
+            style={{
+              textAlign: "left",
+            }}
           >
-            <ArrowDownIcon width={20} height={20} />
-          </TouchableOpacity>
+            Swap
+          </Text>
         </View>
 
-        <TradeCard
-          amountInput={outAmountInput}
-          title="Receive"
-          subtitle="Choose Asset"
-          recommendedAssets={recommendedAssets}
-          asset={toAsset}
-          onSelectAsset={(asset) => setToAssetDenom(asset.coinMinimalDenom)}
-          selectableAssets={selectableAssets}
-          fetchNextPage={fetchNextPageAssets}
-          hasNextPage={hasNextPageAssets ?? false}
-          isFetchingNextPage={isFetchingNextPageAssets}
-          isLoadingSelectAssets={isLoadingSelectAssets}
-          disabled
-          isSwapToolLoading={isSwapToolLoading}
-        />
-      </View>
+        <View style={styles.tradeCardsContainer}>
+          <TradeCard
+            amountInput={inAmountInput}
+            title="Pay"
+            subtitle="Choose Asset"
+            recommendedAssets={recommendedAssets}
+            asset={fromAsset}
+            onSelectAsset={(asset) => setFromAssetDenom(asset.coinMinimalDenom)}
+            selectableAssets={selectableAssets}
+            fetchNextPage={fetchNextPageAssets}
+            hasNextPage={hasNextPageAssets ?? false}
+            isFetchingNextPage={isFetchingNextPageAssets}
+            isLoadingSelectAssets={isLoadingSelectAssets}
+            onPressMax={() => {
+              inAmountInput.toggleMax();
+            }}
+            isSwapToolLoading={isSwapToolLoading}
+          />
 
-      <Button
-        title={buttonText}
-        disabled={isSwapButtonDisabled}
-        onPress={() => {}}
-      />
-      <Text style={styles.errorMessage}>{error?.message}</Text>
+          <View style={styles.swapButtonContainer}>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.swapButton}
+              onPress={switchAssets}
+            >
+              <ArrowDownIcon width={20} height={20} />
+            </TouchableOpacity>
+          </View>
 
-      <NumberPad onNumberClick={handleNumberClick} onDelete={handleDelete} />
+          <TradeCard
+            amountInput={outAmountInput}
+            title="Receive"
+            subtitle="Choose Asset"
+            recommendedAssets={recommendedAssets}
+            asset={toAsset}
+            onSelectAsset={(asset) => setToAssetDenom(asset.coinMinimalDenom)}
+            selectableAssets={selectableAssets}
+            fetchNextPage={fetchNextPageAssets}
+            hasNextPage={hasNextPageAssets ?? false}
+            isFetchingNextPage={isFetchingNextPageAssets}
+            isLoadingSelectAssets={isLoadingSelectAssets}
+            disabled
+            isSwapToolLoading={isSwapToolLoading}
+          />
+        </View>
 
-      {showSubmitButton && (
-        <Button
-          title={buttonText}
-          disabled={isSwapButtonDisabled}
-          onPress={() => {}}
-        />
+        {!showGlobalSubmitButton && (
+          <Button
+            title={buttonText}
+            disabled={isSwapButtonDisabled}
+            onPress={onReviewTrade}
+          />
+        )}
+        <Text style={styles.errorMessage}>{error?.message}</Text>
+
+        <NumberPad onNumberClick={handleNumberClick} onDelete={handleDelete} />
+
+        {fromAsset && toAsset && quote && inAmountInput.amount && (
+          <ReviewTradeBottomSheet
+            ref={reviewTradeBottomSheetRef}
+            fromAsset={fromAsset}
+            toAsset={toAsset}
+            inAmount={inAmountInput.amount}
+            inAmountFiat={
+              inAmountInput.fiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
+            }
+            expectedOutput={quote.amountOut}
+            expectedOutputFiat={
+              tokenOutFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
+            }
+            networkFee={networkFee?.gasUsdValueToPay}
+            sendTradeTokenInTx={sendTradeTokenInTx}
+            onSuccess={onSuccess}
+          />
+        )}
+      </ScrollView>
+      {showGlobalSubmitButton && (
+        <View style={styles.previewButtonContainer}>
+          <Button
+            title="Preview Trade"
+            onPress={onReviewTrade}
+            buttonStyle={styles.previewButton}
+            disabled={isSwapButtonDisabled}
+          />
+        </View>
       )}
-    </ScrollView>
+    </>
   );
 }
 
@@ -349,5 +401,20 @@ const styles = StyleSheet.create({
     fontSize: 32,
     lineHeight: 40,
     fontWeight: "500",
+  },
+  previewButtonContainer: {
+    position: "absolute",
+    height: PREVIEW_BUTTON_HEIGHT,
+    bottom: 0,
+    width: "100%",
+    paddingTop: 10,
+    borderTopWidth: 1,
+    alignItems: "center",
+    borderTopColor: "rgba(255, 255, 255, 0.2)",
+  },
+  previewButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    width: "80%",
   },
 });
