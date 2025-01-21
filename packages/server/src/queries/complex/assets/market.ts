@@ -42,7 +42,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
   const assetMarket = await cachified({
     cache: marketInfoCache,
     key: `market-asset-${asset.coinMinimalDenom}`,
-    ttl: 1000 * 60 * 5, // 5 minutes
+    ttl: 1000 * 30, // 30 seconds
     getFreshValue: async () => {
       const [assetMarketActivity, totalSupply] = await Promise.all([
         getAssetMarketActivity(asset).catch((e) =>
