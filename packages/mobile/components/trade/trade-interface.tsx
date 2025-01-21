@@ -1,5 +1,5 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
 import React, { memo, useCallback, useRef } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -69,7 +69,7 @@ export function TradeInterface({
     initialToDenom: initialToDenom ?? "OSMO",
     maxSlippage,
   });
-  const { selection, setSelection } = useInputSelectionStore();
+  const setSelection = useInputSelectionStore((state) => state.setSelection);
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
@@ -81,6 +81,7 @@ export function TradeInterface({
   const handleNumberClick = useCallback(
     (num: string) => {
       const currentText = inAmountInput.inputAmount || "";
+      const selection = useInputSelectionStore.getState().selection;
 
       // If attempting to add another '.', skip
       if (num === "." && currentText.includes(".")) {
@@ -113,13 +114,7 @@ export function TradeInterface({
         outAmountInput.setAmount("");
       }
     },
-    [
-      inAmountInput,
-      outAmountInput,
-      selection.start,
-      selection.end,
-      setSelection,
-    ]
+    [inAmountInput, outAmountInput, setSelection]
   );
 
   /**
@@ -128,6 +123,7 @@ export function TradeInterface({
    */
   const handleDelete = useCallback(() => {
     const currentText = inAmountInput.inputAmount || "";
+    const selection = useInputSelectionStore.getState().selection;
 
     // If there's a selection range, delete the selected text
     if (selection.start !== selection.end) {
@@ -164,13 +160,7 @@ export function TradeInterface({
     if (newText.length === 0) {
       outAmountInput.setAmount("");
     }
-  }, [
-    inAmountInput,
-    outAmountInput,
-    selection.start,
-    selection.end,
-    setSelection,
-  ]);
+  }, [inAmountInput, outAmountInput, setSelection]);
 
   const isSwapButtonDisabled =
     inAmountInput.isEmpty ||
@@ -209,6 +199,23 @@ export function TradeInterface({
     reviewTradeBottomSheetRef.current?.present();
   }, []);
 
+  const onPressMax = useCallback(() => {
+    inAmountInput.toggleMax();
+
+    if (!inAmountInput.balance) return;
+
+    const maxValue = new IntPretty(inAmountInput.balance)
+      .inequalitySymbol(false)
+      .locale(false)
+      .trim(true)
+      .toString();
+
+    setSelection({
+      start: maxValue.length,
+      end: maxValue.length,
+    });
+  }, [inAmountInput, setSelection]);
+
   return (
     <>
       <ScrollView
@@ -241,9 +248,7 @@ export function TradeInterface({
             hasNextPage={hasNextPageAssets ?? false}
             isFetchingNextPage={isFetchingNextPageAssets}
             isLoadingSelectAssets={isLoadingSelectAssets}
-            onPressMax={() => {
-              inAmountInput.toggleMax();
-            }}
+            onPressMax={onPressMax}
             isSwapToolLoading={isSwapToolLoading}
           />
 

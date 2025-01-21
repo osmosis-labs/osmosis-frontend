@@ -152,6 +152,7 @@ const SelectedAssetCard = memo(
     isSwapToolLoading: boolean;
   }) => {
     const setSelection = useInputSelectionStore((state) => state.setSelection);
+    const selection = useInputSelectionStore((state) => state.selection);
     const inputRef = useRef<TextInput>(null);
 
     const loadingMaxButton =
@@ -167,7 +168,7 @@ const SelectedAssetCard = memo(
 
     return (
       <View style={styles.tradeCard}>
-        <View style={{ flex: 1, gap: 4 }}>
+        <View style={styles.amountContainer}>
           <TextInput
             ref={inputRef}
             value={
@@ -188,19 +189,18 @@ const SelectedAssetCard = memo(
             placeholderTextColor={Colors["osmoverse"][400]}
             showSoftInputOnFocus={false}
             selectionColor={Colors["osmoverse"][400]}
-            style={{
-              fontSize: 36,
-              fontWeight: "500",
-              color: "#ffffff",
-              opacity: isSwapToolLoading && disabled ? 0.5 : 1,
-            }}
+            style={[
+              styles.amountInput,
+              isSwapToolLoading && disabled && styles.amountInputDisabled,
+            ]}
             editable={!disabled}
             contextMenuHidden={true}
+            selection={selection}
             onSelectionChange={(event) =>
               setSelection(event.nativeEvent.selection)
             }
           />
-          <Text style={{ color: Colors["osmoverse"][300] }}>
+          <Text style={styles.fiatValue}>
             {formatPretty(
               amountInput.fiatValue ??
                 new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
@@ -213,7 +213,7 @@ const SelectedAssetCard = memo(
           </Text>
         </View>
 
-        <View style={{ alignItems: "flex-end", gap: 5 }}>
+        <View style={styles.assetContainer}>
           <TouchableOpacity
             style={styles.assetLeft}
             onPress={onPressAsset}
@@ -227,27 +227,19 @@ const SelectedAssetCard = memo(
             </View>
           </TouchableOpacity>
           {onPressMax && asset.amount && (
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 4 }}
-            >
-              <Text style={{ color: Colors["osmoverse"][300] }}>
+            <View style={styles.maxContainer}>
+              <Text style={styles.balanceText}>
                 {formatPretty(asset.amount)}
               </Text>
               <Skeleton
                 isLoaded={!loadingMaxButton}
-                style={{
-                  backgroundColor: Colors["osmoverse"][700],
-                  borderRadius: 255,
-                }}
+                style={styles.maxButtonSkeleton}
               >
                 <Button
                   title="Max"
                   onPress={onPressMax}
-                  textStyle={{ fontSize: 12, fontWeight: 600 }}
-                  buttonStyle={{
-                    paddingVertical: 4,
-                    paddingHorizontal: 6,
-                  }}
+                  textStyle={styles.maxButtonText}
+                  buttonStyle={styles.maxButton}
                 />
               </Skeleton>
             </View>
@@ -285,6 +277,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "300",
   },
+  amountContainer: {
+    flex: 1,
+    gap: 4,
+  },
+  amountInput: {
+    fontSize: 36,
+    fontWeight: "500",
+    color: "#ffffff",
+  },
+  amountInputDisabled: {
+    opacity: 0.5,
+  },
+  fiatValue: {
+    color: Colors["osmoverse"][300],
+  },
+  assetContainer: {
+    alignItems: "flex-end",
+    gap: 5,
+  },
   assetLeft: {
     flexDirection: "row",
     alignItems: "center",
@@ -305,5 +316,25 @@ const styles = StyleSheet.create({
     color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
+  },
+  maxContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  balanceText: {
+    color: Colors["osmoverse"][300],
+  },
+  maxButtonSkeleton: {
+    backgroundColor: Colors["osmoverse"][700],
+    borderRadius: 255,
+  },
+  maxButtonText: {
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  maxButton: {
+    paddingVertical: 4,
+    paddingHorizontal: 6,
   },
 });
