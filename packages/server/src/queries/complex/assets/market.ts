@@ -1,18 +1,18 @@
-import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
+import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import cachified, { CacheEntry } from "cachified";
+import cachified, { type CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
-  CoingeckoVsCurrencies,
+  type CoingeckoVsCurrencies,
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
 } from "../../coingecko";
 import { querySupplyTotal } from "../../cosmos";
-import { queryAllTokenData, TokenData } from "../../data-services";
-import { AssetFilter, getAssets } from ".";
+import { queryAllTokenData, type TokenData } from "../../data-services";
+import { type AssetFilter, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
 
@@ -41,7 +41,7 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
 }): Promise<TAsset & AssetMarketInfo> {
   const assetMarket = await cachified({
     cache: marketInfoCache,
-    key: `market-asset-${asset.coinMinimalDenom}`,
+    key: `market-asset-${asset.coinMinimalDenom}-${includeTotalSupply}`,
     ttl: 1000 * 30, // 30 seconds
     getFreshValue: async () => {
       const [assetMarketActivity, totalSupply] = await Promise.all([
