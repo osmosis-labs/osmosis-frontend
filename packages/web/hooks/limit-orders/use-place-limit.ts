@@ -5,6 +5,7 @@ import {
   QuoteDirection,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import { mulPrice } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
@@ -19,7 +20,6 @@ import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
 import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
 import { use1CTSwapReviewMessages } from "~/hooks/one-click-trading";
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";

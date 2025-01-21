@@ -16,7 +16,11 @@
       "node": "20.11.1"
     },
     "production": {
-      "node": "20.11.1"
+      "node": "20.11.1",
+      "env": {
+        "EXPO_PUBLIC_HISTORICAL_DATA_URL": "https://data.app.osmosis.zone",
+        "EXPO_PUBLIC_OSMOSIS_BE_BASE_URL": "http://192.168.6.194:3000"
+      }
     }
   }
 }
