@@ -1,20 +1,18 @@
-import type { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
+import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import cachified, { type CacheEntry } from "cachified";
+import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { captureErrorAndReturn, captureIfError } from "../../../utils/error";
 import {
-  type CoingeckoVsCurrencies,
+  CoingeckoVsCurrencies,
   queryCoingeckoCoin,
   queryCoingeckoCoinIds,
 } from "../../coingecko";
 import { querySupplyTotal } from "../../cosmos";
-import { queryAllTokenData, type TokenData } from "../../data-services";
-import { type AssetFilter, getAssets } from ".";
-import { DEFAULT_VS_CURRENCY } from "./config";
-import { getCoinGeckoPricesBatchLoader } from "./price/providers/coingecko";
+import { queryAllTokenData, TokenData } from "../../data-services";
+import { AssetFilter, getAssets } from ".";
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
