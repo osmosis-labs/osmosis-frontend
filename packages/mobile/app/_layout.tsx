@@ -26,6 +26,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { Toaster } from "sonner-native";
 
 import { LockScreenModal } from "~/components/lock-screen-modal";
+import { Colors } from "~/constants/theme-colors";
 import { DefaultTheme } from "~/constants/themes";
 import { useWallets } from "~/hooks/use-wallets";
 import { useCurrentWalletStore } from "~/stores/current-wallet";
@@ -176,7 +177,16 @@ export default function RootLayout() {
             <BottomSheetModalProvider>
               <OnboardingObserver />
               <LockScreenModal />
-              <Toaster />
+              <Toaster
+                toastOptions={{
+                  style: {
+                    backgroundColor: Colors["osmoverse"][825],
+                  },
+                  titleStyle: {
+                    color: Colors["osmoverse"][100],
+                  },
+                }}
+              />
               <Stack
                 screenOptions={{
                   animation: "simple_push",

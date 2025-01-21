@@ -454,7 +454,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 4,
   },
-  timeFrameButton: { flex: 1 },
+  timeFrameButton: { flex: 1, paddingVertical: 8, paddingHorizontal: 8 },
   assetPriceContainer: {
     flexDirection: "row",
     alignItems: "center",

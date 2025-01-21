@@ -1,10 +1,9 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
 import React, { memo, useCallback, useRef } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { create } from "zustand";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { ArrowLeftIcon } from "~/components/icons/arrow-left";
@@ -17,16 +16,6 @@ import { useSwap } from "~/hooks/use-swap";
 import { TradeCard } from "./trade-card";
 
 const PREVIEW_BUTTON_HEIGHT = 100;
-
-interface SelectionState {
-  selection: { start: number; end: number };
-  setSelection: (selection: { start: number; end: number }) => void;
-}
-
-export const useInputSelectionStore = create<SelectionState>((set) => ({
-  selection: { start: 0, end: 0 },
-  setSelection: (selection) => set({ selection }),
-}));
 
 interface TradeInterfaceProps {
   showGlobalSubmitButton?: boolean;
@@ -69,19 +58,13 @@ export function TradeInterface({
     initialToDenom: initialToDenom ?? "OSMO",
     maxSlippage,
   });
-  const setSelection = useInputSelectionStore((state) => state.setSelection);
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
 
-  /**
-   * Attempts to insert the user's typed character (num) into the inAmountInput,
-   * respecting the selection and preventing invalid numeric formats.
-   */
   const handleNumberClick = useCallback(
     (num: string) => {
       const currentText = inAmountInput.inputAmount || "";
-      const selection = useInputSelectionStore.getState().selection;
 
       // If attempting to add another '.', skip
       if (num === "." && currentText.includes(".")) {
@@ -92,10 +75,7 @@ export function TradeInterface({
       const actuallyTyped =
         num === "." && currentText.length === 0 ? "0." : num;
 
-      const newText =
-        currentText.slice(0, selection.start) +
-        actuallyTyped +
-        currentText.slice(selection.end);
+      const newText = currentText + actuallyTyped;
 
       // Basic leading zero check: if new text starts with "0" but not "0.", trim the leading zero.
       // e.g., "0" + "2" => "2" instead of "02"
@@ -106,61 +86,24 @@ export function TradeInterface({
 
       inAmountInput.setAmount(sanitizedText);
 
-      // Update cursor position after the inserted character(s)
-      const newPosition = selection.start + actuallyTyped.length;
-      setSelection({ start: newPosition, end: newPosition });
-
       if (sanitizedText.length === 0) {
         outAmountInput.setAmount("");
       }
     },
-    [inAmountInput, outAmountInput, setSelection]
+    [inAmountInput, outAmountInput]
   );
 
-  /**
-   * Deletes the character(s) within the selection or just before the cursor,
-   * and updates cursor position accordingly.
-   */
   const handleDelete = useCallback(() => {
     const currentText = inAmountInput.inputAmount || "";
-    const selection = useInputSelectionStore.getState().selection;
-
-    // If there's a selection range, delete the selected text
-    if (selection.start !== selection.end) {
-      const newText =
-        currentText.slice(0, selection.start) +
-        currentText.slice(selection.end);
-
-      inAmountInput.setAmount(newText);
-      // Place cursor at the start of the selection
-      setSelection({ start: selection.start, end: selection.start });
-
-      // Clear outAmount if there's no input left
-      if (newText.length === 0) {
-        outAmountInput.setAmount("");
-      }
-      return;
-    }
-
-    // If cursor is at the start, do nothing
-    if (selection.start === 0) return;
-
-    // Delete the character before the cursor
-    const newText =
-      currentText.slice(0, selection.start - 1) +
-      currentText.slice(selection.start);
-
+    // Delete the last character
+    const newText = currentText.slice(0, -1);
     inAmountInput.setAmount(newText);
-
-    // Move cursor back one position
-    const newPosition = selection.start - 1;
-    setSelection({ start: newPosition, end: newPosition });
 
     // Clear outAmount if there's no input left
     if (newText.length === 0) {
       outAmountInput.setAmount("");
     }
-  }, [inAmountInput, outAmountInput, setSelection]);
+  }, [inAmountInput, outAmountInput]);
 
   const isSwapButtonDisabled =
     inAmountInput.isEmpty ||
@@ -201,20 +144,7 @@ export function TradeInterface({
 
   const onPressMax = useCallback(() => {
     inAmountInput.toggleMax();
-
-    if (!inAmountInput.balance) return;
-
-    const maxValue = new IntPretty(inAmountInput.balance)
-      .inequalitySymbol(false)
-      .locale(false)
-      .trim(true)
-      .toString();
-
-    setSelection({
-      start: maxValue.length,
-      end: maxValue.length,
-    });
-  }, [inAmountInput, setSelection]);
+  }, [inAmountInput]);
 
   return (
     <>

@@ -17,7 +17,6 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { ChevronDownIcon } from "~/components/icons/chevron-down";
-import { FilterIcon } from "~/components/icons/filter";
 import { SearchInput } from "~/components/search-input";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
 import {
@@ -41,7 +40,6 @@ const displayOptions = [
   { key: "price-7d", title: "Price (7d)" },
   { key: "volume", title: "Volume" },
   { key: "market-cap", title: "Market Cap" },
-  { key: "favorite", title: "Favorite" },
 ] as const;
 
 type DisplayOptionStore = {
@@ -119,9 +117,9 @@ export default function TabTwoScreen() {
             activeColor={Colors["osmoverse"][500]}
           />
 
-          <TouchableOpacity style={styles.filterButton}>
+          {/* <TouchableOpacity style={styles.filterButton}>
             <FilterIcon />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 
@@ -319,8 +317,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   filterButton: {
-    height: 40,
-    width: 40,
+    height: 45.3,
+    width: 42,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: Colors["osmoverse"][825],
@@ -361,7 +359,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 24,
   },
   assetLeft: {

@@ -27,12 +27,7 @@ const itemSize = 70;
 
 export const PortfolioAssetBalancesTable = () => {
   const { currentWallet } = useWallets();
-  const [searchQuery, setSearchQuery] = useState("");
-  const { showUnverifiedAssets } = useSettingsStore(
-    useShallow((state) => ({
-      showUnverifiedAssets: state.showUnverifiedAssets,
-    }))
-  );
+  const [searchQuery] = useState("");
 
   const {
     data: assetPagesData,
@@ -131,6 +126,7 @@ const AssetItem = ({
         <Button
           title="Activate"
           variant="primary"
+          buttonStyle={{ paddingVertical: 8, paddingHorizontal: 8 }}
           onPress={() => {
             unverifiedAssetModalRef.current?.present();
           }}
@@ -222,7 +218,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingVertical: 12,
+    paddingVertical: 8,
     paddingHorizontal: 24,
   },
   assetLeft: {

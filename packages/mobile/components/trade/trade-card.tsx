@@ -17,10 +17,8 @@ import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
 import { PlusIcon } from "~/components/icons/plus-icon";
 import { TradeBottomSheetContent } from "~/components/trade/trade-bottom-sheet-content";
-import { useInputSelectionStore } from "~/components/trade/trade-interface";
 import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
-import { Skeleton } from "~/components/ui/skeleton";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import {
@@ -121,7 +119,10 @@ export const TradeCard = memo(
           }}
         >
           <TradeBottomSheetContent
-            onSelectAsset={onSelectAsset}
+            onSelectAsset={(asset) => {
+              onSelectAsset(asset);
+              selectAssetBottomSheetRef.current?.dismiss();
+            }}
             selectableAssets={selectableAssets}
             fetchNextPage={fetchNextPage}
             hasNextPage={hasNextPage}
@@ -151,8 +152,6 @@ const SelectedAssetCard = memo(
     disabled?: boolean;
     isSwapToolLoading: boolean;
   }) => {
-    const setSelection = useInputSelectionStore((state) => state.setSelection);
-    const selection = useInputSelectionStore((state) => state.selection);
     const inputRef = useRef<TextInput>(null);
 
     const loadingMaxButton =
@@ -195,10 +194,7 @@ const SelectedAssetCard = memo(
             ]}
             editable={!disabled}
             contextMenuHidden={true}
-            selection={selection}
-            onSelectionChange={(event) =>
-              setSelection(event.nativeEvent.selection)
-            }
+            caretHidden={true}
           />
           <Text style={styles.fiatValue}>
             {formatPretty(
@@ -231,17 +227,14 @@ const SelectedAssetCard = memo(
               <Text style={styles.balanceText}>
                 {formatPretty(asset.amount)}
               </Text>
-              <Skeleton
-                isLoaded={!loadingMaxButton}
-                style={styles.maxButtonSkeleton}
-              >
-                <Button
-                  title="Max"
-                  onPress={onPressMax}
-                  textStyle={styles.maxButtonText}
-                  buttonStyle={styles.maxButton}
-                />
-              </Skeleton>
+
+              <Button
+                title="Max"
+                onPress={onPressMax}
+                textStyle={styles.maxButtonText}
+                disabled={loadingMaxButton}
+                buttonStyle={styles.maxButton}
+              />
             </View>
           )}
         </View>
@@ -320,7 +313,7 @@ const styles = StyleSheet.create({
   maxContainer: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 4,
+    gap: 6,
   },
   balanceText: {
     color: Colors["osmoverse"][300],

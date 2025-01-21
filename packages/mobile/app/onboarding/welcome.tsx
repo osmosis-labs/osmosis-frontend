@@ -80,13 +80,13 @@ export default function Welcome() {
             textStyle={styles.buttonLabel}
             disabled={!permission}
           />
-          <Button
+          {/* <Button
             buttonStyle={styles.skipButton}
             onPress={handleSkip}
             title="Skip for now"
             textStyle={styles.skipButtonLabel}
             variant="outline"
-          />
+          /> */}
         </View>
       </View>
     </SafeAreaView>
@@ -142,6 +142,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     width: "100%",
     gap: 12,
+    flex: 1,
+    justifyContent: "center",
   },
   button: {
     width: "100%",
