@@ -5044,6 +5044,16 @@
     superstruct "^1.0.3"
     uuid "^9.0.1"
 
+"@moonpay/moonpay-node@^0.2.7":
+  version "0.2.7"
+  resolved "https://registry.yarnpkg.com/@moonpay/moonpay-node/-/moonpay-node-0.2.7.tgz#68ae933eb03a5395e97c4e208b66c49e5bdf7422"
+  integrity sha512-UhDUznnAzEboef1uJz/FnHWjntUk0J1elzm1aQicJ8LAbYsxfY9Z2oC9q1Rqef2ZroX9ppB8pn6XM0OyZk/yjQ==
+
+"@moonpay/moonpay-react@^1.8.2":
+  version "1.8.2"
+  resolved "https://registry.yarnpkg.com/@moonpay/moonpay-react/-/moonpay-react-1.8.2.tgz#17161b448c629116ced2da45059f031dc204f861"
+  integrity sha512-zzG6y/Y41pCVoOu7So2qpINSediVSSN/T5xviOGTBlO874SAvTSVe/7G0aASdRVHP5lwd6NyBjSZZs1ODm/uCQ==
+
 "@motionone/animation@^10.15.1", "@motionone/animation@^10.17.0":
   version "10.17.0"
   resolved "https://registry.yarnpkg.com/@motionone/animation/-/animation-10.17.0.tgz#7633c6f684b5fee2b61c405881b8c24662c68fca"

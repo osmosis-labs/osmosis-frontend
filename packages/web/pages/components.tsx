@@ -740,6 +740,7 @@ const Icons = () => (
       "close-small",
       "tune",
       "help-circle",
+      "moonpay-logo",
       "kado-logo",
       "transak-logo",
       "more-menu",
