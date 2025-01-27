@@ -1,3 +1,4 @@
+// eslint-disable-next-line unused-imports/no-unused-imports
 import { ChainList } from "~/config/generated/chain-list";
 
 /**
