@@ -1,5 +1,5 @@
+import * as core from '@actions/core'
 import { type BrowserContext, chromium, expect, test } from '@playwright/test'
-
 import { WalletPage } from '../pages/keplr-page'
 import { TradePage } from '../pages/trade-page'
 import { TestConfig } from '../test-config'
@@ -39,6 +39,15 @@ test.describe('Test Swap Stables feature', () => {
 
   test.afterAll(async () => {
     await context.close()
+  })
+
+  // biome-ignore lint/correctness/noEmptyPattern: <explanation>
+  test.afterEach(async ({}, testInfo) => {
+    console.log(`Test [${testInfo.title}] status: ${testInfo.status}`)
+    if (testInfo.status === 'failed') {
+      const name = testInfo.title
+      core.notice(`Test ${name} failed.`)
+    }
   })
 
   // biome-ignore lint/complexity/noForEach: <explanation>

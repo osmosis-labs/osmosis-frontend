@@ -10,6 +10,7 @@
     "setup": "yarn install && npx playwright install --with-deps chromium"
   },
   "dependencies": {
+    "@actions/core": "^1.11.1",
     "@playwright/test": "1.49.0",
     "decompress": "4.2.1",
     "dotenv": "16.4.5"
