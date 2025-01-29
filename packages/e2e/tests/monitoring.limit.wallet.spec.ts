@@ -1,9 +1,9 @@
+import * as core from '@actions/core'
 import { type BrowserContext, chromium, expect, test } from '@playwright/test'
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
-
 import { WalletPage } from '../pages/keplr-page'
 import { TradePage } from '../pages/trade-page'
+import { TestConfig } from '../test-config'
+import { UnzipExtension } from '../unzip-extension'
 
 test.describe('Test Filled Limit Order feature', () => {
   let context: BrowserContext
@@ -44,7 +44,7 @@ test.describe('Test Filled Limit Order feature', () => {
     console.log(`Test [${testInfo.title}] status: ${testInfo.status}`)
     if (testInfo.status === 'failed') {
       const name = testInfo.title
-      process.env.GITHUB_STEP_SUMMARY = `Test ${name} failed.`
+      core.notice(`Test ${name} failed.`)
     }
   })
 
