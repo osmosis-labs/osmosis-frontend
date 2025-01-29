@@ -1,5 +1,5 @@
+import * as core from '@actions/core'
 import { type BrowserContext, chromium, expect, test } from '@playwright/test'
-
 import { TestConfig } from '../test-config'
 import { UnzipExtension } from '../unzip-extension'
 
@@ -42,6 +42,15 @@ test.describe('Test Swap to/from OSMO feature', () => {
 
   test.afterAll(async () => {
     await context.close()
+  })
+
+  // biome-ignore lint/correctness/noEmptyPattern: <explanation>
+  test.afterEach(async ({}, testInfo) => {
+    console.log(`Test [${testInfo.title}] status: ${testInfo.status}`)
+    if (testInfo.status === 'failed') {
+      const name = testInfo.title
+      core.notice(`Test ${name} failed.`)
+    }
   })
 
   test.skip('User should be able to swap OSMO to WBTC', async () => {
