@@ -33,7 +33,9 @@ export const useWallets = () => {
   }, [wallets, currentWalletIndex, setCurrentWalletIndex]);
 
   return {
-    wallets,
+    wallets: process.env.EXPO_PUBLIC_OSMOSIS_ADDRESS
+      ? [currentWallet]
+      : wallets,
     currentWallet,
   };
 };

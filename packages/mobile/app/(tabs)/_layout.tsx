@@ -1,7 +1,6 @@
 import { Tabs } from "expo-router";
 import { transparentize } from "polished";
 import React from "react";
-import { Platform } from "react-native";
 
 import { HapticTab } from "~/components/haptic-tab";
 import { PieIcon } from "~/components/icons/pie";
@@ -29,15 +28,8 @@ export default function TabLayout() {
         tabBarButton: HapticTab,
         tabBarBackground: BlurTabBarBackground,
         tabBarStyle: {
-          ...Platform.select({
-            ios: {
-              // Use a transparent background on iOS to show the blur effect
-              position: "absolute",
-            },
-            default: {
-              backgroundColor: theme.colors.tabBarBackground,
-            },
-          }),
+          backgroundColor: theme.colors.tabBarBackground,
+          position: "absolute",
           height: 100,
           paddingTop: 10,
           alignItems: "center",

@@ -2,7 +2,7 @@
   "name": "@osmosis-labs/mobile",
   "private": true,
   "main": "index.ts",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -12,7 +12,7 @@
     "lint": "expo lint",
     "prebuild:ios": "expo prebuild --platform ios",
     "build:local:ios": "eas build --platform ios --profile ios-simulator --local",
-    "eas-build-post-install": "tsx scripts/post-install.ts"
+    "eas-build-post-install": "if [ \"$CI\" = \"true\" ]; then tsx scripts/post-install.ts; fi"
   },
   "jest": {
     "preset": "jest-expo"
