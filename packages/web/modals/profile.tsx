@@ -1,6 +1,6 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { formatICNSName, getShortAddress } from "@osmosis-labs/utils";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { formatICNSName, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -38,11 +38,18 @@ import {
 import { Spinner } from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
-import { ArrowButton } from "~/components/ui/button";
+import { ArrowButton, Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import {
+  getParametersFromOneClickTradingInfo,
+  useFeatureFlags,
+  useOneClickTradingSession,
+  useTranslation,
+} from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
-import { useBridge } from "~/hooks/bridge";
+import { useBridgeStore } from "~/hooks/bridge";
+import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-trading";
+import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -57,16 +64,10 @@ export const ProfileModal: FunctionComponent<
 > = observer((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    profileStore,
-  } = useStore();
+  const { accountStore, profileStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
-  const { fiatRampSelection } = useBridge();
+  const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
   const featureFlags = useFeatureFlags();
 
   const {
@@ -80,7 +81,9 @@ export const ProfileModal: FunctionComponent<
     onOpen: onOpenQR,
   } = useDisclosure();
 
-  const wallet = accountStore.getWallet(chainId);
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isNewAccount } = useIsCosmosNewAccount({ address: wallet?.address });
+  const show1CT = featureFlags.oneClickTrading && !isNewAccount;
 
   const [show1CTSettings, setShow1CTSettings] = useState(false);
   const [hasCopied, setHasCopied] = useState(false);
@@ -135,10 +138,10 @@ export const ProfileModal: FunctionComponent<
         onAfterClose={() => {
           setShow1CTSettings(false);
         }}
-        className="relative max-h-screen overflow-hidden"
+        className="relative max-h-screen overflow-hidden sm:mx-0"
       >
         <div className="flex flex-col items-center overflow-auto">
-          {featureFlags.oneClickTrading && show1CTSettings ? (
+          {show1CT && show1CTSettings ? (
             <ProfileOneClickTradingSettings
               onGoBack={() => setShow1CTSettings(false)}
               onClose={props.onRequestClose}
@@ -217,7 +220,7 @@ export const ProfileModal: FunctionComponent<
                 <p className="subtitle1" title={props?.icnsName}>
                   {Boolean(props.icnsName)
                     ? formatICNSName(props.icnsName, width < 768 ? 32 : 48)
-                    : getShortAddress(address)}
+                    : shorten(address)}
                 </p>
               </div>
 
@@ -276,15 +279,7 @@ export const ProfileModal: FunctionComponent<
                       <span>{t("buyTokens")}</span>
                     </button>
 
-                    <Link
-                      href={
-                        featureFlags.portfolioPageAndNewAssetsPage
-                          ? "/portfolio"
-                          : "/assets"
-                      }
-                      passHref
-                      legacyBehavior
-                    >
+                    <Link href="/portfolio" passHref legacyBehavior>
                       <ArrowButton isLink>
                         {t("profile.viewAllAssets")}
                       </ArrowButton>
@@ -312,7 +307,7 @@ export const ProfileModal: FunctionComponent<
               <div
                 className={classNames(
                   "mt-5 flex w-full flex-col gap-[30px] border border-osmoverse-700 bg-osmoverse-800 p-5",
-                  featureFlags.oneClickTrading ? "rounded-t-2xl" : "rounded-2xl"
+                  show1CT ? "rounded-t-2xl" : "rounded-2xl"
                 )}
               >
                 <div className="flex items-center gap-1.5">
@@ -340,7 +335,7 @@ export const ProfileModal: FunctionComponent<
                       <p>Cosmos</p>
                       <div className="flex items-center gap-2">
                         <p title={address} className="text-osmoverse-100">
-                          {getShortAddress(address)}
+                          {shorten(address)}
                         </p>
                         <button
                           title="Copy"
@@ -410,7 +405,7 @@ export const ProfileModal: FunctionComponent<
                               title={address}
                               className="subtitle1 text-osmoverse-300"
                             >
-                              {getShortAddress(address, { prefixLength: 10 })}
+                              {shorten(address, { prefixLength: 10 })}
                             </p>
                             <button
                               className="flex h-9 w-9 items-center justify-center"
@@ -462,31 +457,13 @@ export const ProfileModal: FunctionComponent<
                   </div>
                 </div>
               </div>
-              {featureFlags.oneClickTrading && (
-                <>
-                  <button
-                    onClick={() => {
-                      setShow1CTSettings(true);
-                    }}
-                    className="group flex w-full items-center justify-between rounded-b-2xl border border-t-0 border-osmoverse-700 bg-osmoverse-800 px-5 py-3"
-                  >
-                    <p className="subtitle1 text-left tracking-wide">
-                      {t("profile.oneClickTrading")}
-                    </p>
-
-                    <div className="flex items-center gap-3 text-left">
-                      <OneClickTradingRemainingTime />
-                      <div className="flex transform transition-transform duration-100 group-hover:translate-x-1">
-                        <Icon
-                          id="chevron-right"
-                          className="text-osmoverse-500"
-                          height={18}
-                          width={18}
-                        />
-                      </div>
-                    </div>
-                  </button>
-                </>
+              {show1CT && !isNewAccount && (
+                <OneClickTradingProfileSection
+                  setShow1CTSettings={setShow1CTSettings}
+                  onRestartSession={() => {
+                    props.onRequestClose();
+                  }}
+                />
               )}
             </>
           )}
@@ -495,6 +472,115 @@ export const ProfileModal: FunctionComponent<
     </>
   );
 });
+
+const OneClickTradingProfileSection: FunctionComponent<{
+  setShow1CTSettings: (value: boolean) => void;
+  onRestartSession: () => void;
+}> = ({ setShow1CTSettings, onRestartSession }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+  const { accountStore } = useStore();
+  const { t } = useTranslation();
+  const { isOneClickTradingExpired, oneClickTradingInfo } =
+    useOneClickTradingSession();
+
+  const create1CTSession = useCreateOneClickTradingSession();
+  const account = accountStore.getWallet(accountStore.osmosisChainId);
+
+  const shouldFetchSessionAuthenticator =
+    !!account?.address && !!oneClickTradingInfo;
+  const { data: sessionAuthenticator } =
+    api.local.oneClickTrading.getSessionAuthenticator.useQuery(
+      {
+        userOsmoAddress: account?.address ?? "",
+        publicKey: oneClickTradingInfo?.publicKey ?? "",
+      },
+      {
+        enabled: shouldFetchSessionAuthenticator,
+        cacheTime: 15_000, // 15 seconds
+        staleTime: 15_000, // 15 seconds
+        retry: false,
+      }
+    );
+
+  return (
+    <div
+      onClick={() => {
+        setShow1CTSettings(true);
+        logEvent([
+          EventName.OneClickTrading.accessed,
+          {
+            source: "profile-section",
+          },
+        ]);
+      }}
+      className="group flex w-full cursor-pointer items-center justify-between rounded-b-2xl border border-t-0 border-osmoverse-700 bg-osmoverse-800 px-5 py-3"
+    >
+      <div className="flex items-center gap-2">
+        <Image
+          src="/images/1ct-small-icon.svg"
+          alt="1-Click trading icon"
+          width={24}
+          height={24}
+        />
+        <p className="subtitle1 text-left tracking-wide">
+          {t("profile.oneClickTrading")}
+        </p>
+        {isOneClickTradingExpired && oneClickTradingInfo && (
+          <Button
+            size="sm"
+            isLoading={create1CTSession.isLoading}
+            loadingText={null}
+            classes={{
+              spinner: "!h-4 !w-4",
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+
+              const transaction1CTParams = getParametersFromOneClickTradingInfo(
+                {
+                  oneClickTradingInfo,
+                  defaultIsOneClickEnabled: true,
+                }
+              );
+              create1CTSession.mutate(
+                {
+                  spendLimitTokenDecimals:
+                    oneClickTradingInfo.spendLimit.decimals,
+                  transaction1CTParams,
+                  /**
+                   * If the user has an existing session, remove it and add the new one.
+                   */
+                  additionalAuthenticatorsToRemove: sessionAuthenticator
+                    ? [BigInt(sessionAuthenticator.id)]
+                    : undefined,
+                },
+                {
+                  onSuccess: () => {
+                    onRestartSession();
+                  },
+                }
+              );
+            }}
+          >
+            {t("oneClickTrading.profile.restart")}
+          </Button>
+        )}
+      </div>
+
+      <button className="flex items-center gap-3 text-left">
+        <OneClickTradingRemainingTime />
+        <div className="flex transform transition-transform duration-100 group-hover:translate-x-1">
+          <Icon
+            id="chevron-right"
+            className="text-osmoverse-500"
+            height={18}
+            width={18}
+          />
+        </div>
+      </button>
+    </div>
+  );
+};
 
 const ActionButton = forwardRef<
   any,
@@ -567,7 +653,7 @@ const WosmongtonAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-woz.png"
+          src="/images/profile-woz.svg"
           width={140}
           height={140}
         />
@@ -591,7 +677,7 @@ const AmmeliaAvatar = forwardRef<any, ComponentProps<typeof BaseAvatar>>(
       >
         <Image
           alt="Wosmongton profile avatar"
-          src="/images/profile-ammelia.png"
+          src="/images/profile-ammelia.svg"
           width={140}
           height={140}
         />

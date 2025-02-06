@@ -10,27 +10,26 @@ import {
 } from "~/components/screen-manager";
 import { useOneClickTradingSession, useTranslation } from "~/hooks";
 
+export const oneClickTradingTimeMappings = {
+  "1hour": "oneClickTrading.sessionPeriods.1hour",
+  "1day": "oneClickTrading.sessionPeriods.1day",
+  "7days": "oneClickTrading.sessionPeriods.7days",
+  "30days": "oneClickTrading.sessionPeriods.30days",
+};
+
 export function getSessionPeriodTranslationKey(
   input: OneClickTradingHumanizedSessionPeriod
 ) {
-  const timeMappings = {
-    "10min": "oneClickTrading.settings.sessionPeriodScreen.periods.10min",
-    "30min": "oneClickTrading.settings.sessionPeriodScreen.periods.30min",
-    "1hour": "oneClickTrading.settings.sessionPeriodScreen.periods.1hour",
-    "3hours": "oneClickTrading.settings.sessionPeriodScreen.periods.3hours",
-    "12hours": "oneClickTrading.settings.sessionPeriodScreen.periods.12hours",
-  };
-  const mapped = timeMappings[input];
+  const mapped = oneClickTradingTimeMappings[input];
   if (!mapped) throw new Error(`No mapping for ${input}`);
   return mapped;
 }
 
 const SessionPeriods: OneClickTradingHumanizedSessionPeriod[] = [
-  "10min",
-  "30min",
   "1hour",
-  "3hours",
-  "12hours",
+  "1day",
+  "7days",
+  "30days",
 ];
 
 interface SessionPeriodScreenProps extends OneClickTradingBaseScreenProps {}

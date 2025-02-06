@@ -2,6 +2,7 @@
   "404": {
     "title": "見つかりません"
   },
+  "unknownTimeRemaining": "残り時間不明",
   "addLiquidity": {
     "allAssets": "すべての資産",
     "autoswapCaption": "自動スワップを使用して、単一の資産に流動性を追加します。",
@@ -53,7 +54,6 @@
       "5": "LP の自由市場では、誰もが異なる戦略に従います。流動性がより動的になり、トレーダー向けに最適化されています。"
     }
   },
-  "assetNotCompatible": "このアセットはこのウォレットと互換性がありません。",
   "clPositions": {
     "inRange": "範囲内で",
     "nearBounds": "ニアバウンズ",
@@ -95,8 +95,10 @@
     "totalBalance": "総合収支",
     "numPositions": "{numPositions}位置",
     "onePosition": "1 ポジション",
-    "goToPool": "プール #{poolId}に移動します"
+    "goToPool": "プール #{poolId}に移動します",
+    "errorFetchingPositions": "ポジションの詳細を取得できませんでした。ページを更新してください。問題が解決しない場合は、サポートにお問い合わせください。"
   },
+  "copied": "コピーしました！",
   "app": {
     "banner": {
       "backToOsmosis": "浸透に戻る",
@@ -126,85 +128,18 @@
     "secondaryCta": "30秒で学べる"
   },
   "assets": {
-    "bondedAssets": "保税済み",
     "historyTable": {
       "colums": {
-        "amount": "額",
         "deposit": "デポジット",
-        "status": "状態",
-        "transactionHash": "トランザクションハッシュ",
-        "type": "タイプ",
         "withdraw": "撤回する"
-      },
-      "errors": {
-        "insufficientFee": "不十分な料金"
-      },
-      "failed": "失敗した",
-      "failedWithReason": "失敗: {reason}",
-      "pending": "保留中",
-      "pendingRefunded": "失敗: 返金保留中",
-      "refunded": "返金されました",
-      "success": "成功",
-      "title": "転送履歴",
-      "pendingDeposit": "保留中の入金",
-      "pendingWithdraw": "保留中の撤回",
-      "successDeposit": "寄託",
-      "successWithdraw": "撤退",
-      "failDeposit": "入金に失敗しました",
-      "failWithdraw": "引き出しに失敗しました"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "追加",
-      "buttonEdit": "編集",
-      "buttonEnter": "入力",
-      "channelCongestedDeposit": "デポジット (チャネルが混雑している)",
-      "channelCongestedWithdraw": "撤退（チャンネル混雑中）",
-      "checkboxVerify": "交換用アドレスに送信していないことを確認しました。",
-      "estimatedTime": "予定時刻",
-      "selectAmount": "金額を選択してください",
-      "titleDeposit": "入金{coinDenom}",
-      "titleWithdraw": "出金{coinDenom}",
-      "waitTime": "20秒",
-      "warningLossFunds": "警告: 中央取引所アドレスに出金すると資金が失われます。",
-      "provider": "プロバイダー"
-    },
-    "myPools": "あなたのプール",
-    "poolCards": {
-      "APR": "4月",
-      "bonded": "保税済み",
-      "FeeAPY": "料金APY",
-      "liquidity": "私の流動性"
-    },
-    "selectAssetSource": {
-      "installWallet": "{walletName}をインストールします",
-      "next": "次",
-      "titleDeposit": "からの入金",
-      "titleWithdraw": "に撤退する"
-    },
-    "stakedAssets": "ステークされたOSMO",
     "table": {
       "columns": {
-        "assetChain": "アセット/チェーン",
-        "balance": "バランス",
-        "deposit": "デポジット",
-        "transfer": "移行",
-        "withdraw": "撤回する"
+        "balance": "バランス"
       },
       "depositButton": "デポジット",
-      "hideZero": "ゼロ残高を非表示にする",
-      "hideBalances": "マスクされた残高",
-      "preTransfer": {
-        "currentBal": "経常収支",
-        "deposit": "デポジット",
-        "withdraw": "撤回する"
-      },
       "search": "検索",
-      "sort": {
-        "balance": "バランス",
-        "network": "通信網",
-        "symbol": "シンボル"
-      },
-      "title": "すべての資産",
       "withdrawButton": "撤回する",
       "activate": "活性化",
       "marketCap": "時価総額",
@@ -214,72 +149,18 @@
       "lastWeek": "過去7日間",
       "asset": "資産"
     },
-    "totalAssets": "総資産",
     "totalBalance": "総合収支",
     "transfer": {
-      "availableMobile": "利用可能",
-      "availableOn": "{network}で利用可能",
       "approving": "承認中...",
-      "givePermission": "トークンを使用する権限を与える",
-      "enterAddress": "{network}アドレス",
+      "approveInWallet": "ウォレットで承認",
       "errors": {
-        "insufficientBal": "残高不足",
-        "insufficientFee": "不十分な料金",
-        "reconnectWallet": "{walletName}を再接続します",
-        "wrongNetworkInWallet": "{walletName}のネットワークが間違っています",
-        "seeRequest": "{walletName}リクエストを参照してください。",
-        "noQuotesAvailable": "利用可能な見積もりはありません",
-        "unexpectedError": "予期しないエラー。もう一度試してください。",
-        "transactionError": "トランザクション取得エラー。もう一度試してください。",
-        "invalidAddress": "無効なアドレス",
-        "missingAddress": "住所がありません"
+        "seeRequest": "{walletName}リクエストを参照してください。"
       },
-      "from": "から",
       "loading": "読み込み中",
-      "titleDeposit": "入金{coinDenom}",
-      "titleWithdraw": "出金{coinDenom}",
       "to": "に",
-      "transferFee": "転送料",
-      "waitTime": "{minutes}分",
-      "warnDepositAddressDifferent": "警告: {address}で選択したアカウントは、最後に入金したアカウントとは異なります。",
-      "expectedOutput": "期待される出力",
-      "expectedOutputInfo": "使用するプロバイダーによっては、料金、スリッページ、価格への影響に応じて出力が低下する場合があります。",
       "priceImpact": "価格への影響",
       "sending": "送信...",
       "transferAnyway": "とにかく転送"
-    },
-    "transferAssetSelect": {
-      "buttonNext": "次",
-      "deposit": "デポジット",
-      "network": "通信網",
-      "withdraw": "撤回する"
-    },
-    "unbondedAssets": "利用可能",
-    "nomic": {
-      "addresses": "アドレス。",
-      "bitcoin": "ビットコイン (BTC)",
-      "bitcoinMinerFee": "ビットコインマイナー手数料",
-      "bridgeAtCapacity": "橋は現在満杯です。後でもう一度試してください。",
-      "bridgeFee": "ノミックブリッジ料金",
-      "confirmations": "6件の確認",
-      "enterBitcoinAddress": "ビットコインアドレスを入力してください",
-      "estimatedArrival": "到着予定時刻",
-      "estimatedTimeTag": "予定時刻",
-      "estimatedTime": "5分",
-      "expirationTime": "4日",
-      "learnMore": "詳細については、こちらをご覧ください",
-      "lossOfFunds": "この期間を過ぎてアドレスを使用すると資金が失われます。",
-      "minDeposit": "最低入金額",
-      "minWithdrawal": "最低出金額",
-      "nomicCapacityLimit": "Nomic には次の容量制限があります",
-      "onlyUse": "のみ使用します",
-      "pendingDeposits": "保留中の預金",
-      "poweredBy": "搭載",
-      "proceed": "進む",
-      "depositExpiration": "この入金アドレスの有効期限は次のとおりです",
-      "undergoAudit": "監査を受けている間（完了予定は 2024 年 1 月）。",
-      "warning": "警告：",
-      "loading": "読み込み中..."
     },
     "activateUnverifiedAssetsModal": {
       "activate": "未検証のアセットをアクティブ化する",
@@ -311,30 +192,65 @@
       "new": "新しい",
       "topGainers": "上位の利益",
       "upcoming": "今後の予定"
-    },
-    "balancesMovedTitle": "残高をお探しですか?",
-    "balancesMovedDescription": "残高などを確認するための新しいホームであるポートフォリオ ページに移動します。"
+    }
+  },
+  "cypherCard": {
+    "cypherSpend": "オズモシスペイ",
+    "cypherOrder": "今すぐカードを注文する",
+    "cypherBeta": "ベータ",
+    "acceptedEverywhere": "あなたのOSMOは今やどこでも受け入れられます",
+    "newPill": "新しい"
   },
   "portfolio": {
     "buy": "買う",
-    "yourAssets": "あなたの資産",
+    "sell": "売る",
+    "yourBalances": "残高",
     "yourPositions": "あなたの立場",
-    "recentTransfers": "最近の送金",
+    "searchBalances": "残高を検索",
     "yourSuperchargedPositions": "あなたのスーパーチャージされたポジション",
     "yourLiquidityPools": "流動性プール",
     "connectWallet": "ウォレットを接続して、Osmosis で残高とポジションの追跡を開始します。",
     "noAssets": "{osmosis}に残高がありません",
     "getStarted": "始めるには資産を預けてください",
     "noPositions": "ポジションがありません",
-    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう"
+    "unlockPotential": "流動性プールを活用して収益の可能性を最大限に引き出し、資産を有効活用しましょう",
+    "allocation": "割り当て",
+    "available": "利用可能",
+    "staked": "賭けられた",
+    "unstaking": "ステーキング解除",
+    "unclaimedRewards": "未請求の報酬",
+    "pooled": "プール",
+    "other": "他の",
+    "all": "全て",
+    "assets": "資産",
+    "recentActivity": "最近のアクティビティ",
+    "seeAll": "すべて見る",
+    "showHidden": "非表示を表示 ( {hiddenDustCount} )",
+    "hideSmallBalances": "少額残高を非表示にする",
+    "openOrders": "オープン注文",
+    "last24h": "過去24時間",
+    "last7d": "過去7日間",
+    "last30d": "過去30日間",
+    "last1y": "過去1年間",
+    "allTime": "これまで",
+    "trade": "貿易",
+    "earn": "得る",
+    "deposit": "デポジット",
+    "withdraw": "撤回する",
+    "convert": "変換する"
   },
   "buyTokens": "トークンを購入する",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "残高不足"
+    },
     "fiatOnrampSelection": {
-      "chooseOnramp": "フィアット オンランプを選択してください",
+      "chooseOnramp": "暗号通貨を購入する",
       "kadoSubtitle": "OSMO、USDCをサポート",
+      "moonpaySubtitle": "OSMO、USDCをサポート",
       "transakSubtitle": "OSMOをサポート",
-      "onrampMoneySubtitle": "OSMO、USDCをサポート"
+      "onrampMoneySubtitle": "OSMO、USDCをサポート",
+      "moonpayCountrySupport": "165か国以上"
     },
     "incentive": {
       "title": "インセンティブの種類"
@@ -352,11 +268,6 @@
     "show": {
       "less": "表示を減らす",
       "more": "もっと見る"
-    },
-    "sort": {
-      "mobileMenu": "並べ替え",
-      "SORT": "並べ替え",
-      "SORTMobile": "選別"
     },
     "table": {
       "poolId": "プール番号{id}",
@@ -406,17 +317,15 @@
     "swapSlippage": "スリッページのため{coinDenom}のスワップが失敗しました。滑り許容値を増やしてみてください。",
     "invalidAmounts": "無効な金額です",
     "txTimedOutError": "トランザクションがタイムアウトしました。再試行してください。",
-    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。"
+    "insufficientFee": "取引手数料の残高が不足しています。続行するには資金を追加してください。",
+    "noData": "データなし",
+    "noOrderbook": "ペアの注文書はありません",
+    "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
+    "startAgain": "再開する"
   },
+  "estimated": "推定",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "未検証のアセットの紹介",
-    "simplifiedExperience": "あなたの経験は簡素化されました!",
-    "frontierHasNowMerged": "フロンティアページは次と統合されました",
-    "thisMeansManaging": "つまり、トークンの管理を 1 か所で簡単に行うことができます。",
-    "commitmentToDecentralization": "分散化とアクセシビリティへの取り組みに沿って、未検証のトークンを処理するオプションも引き続き利用できます。",
-    "settingIsNowEnabled": "これで設定が有効になりました。",
-    "youMayDisable": "この設定は、設定モーダルでいつでも無効にすることができます。",
-    "openSettings": "設定を開く",
     "proceed": "進む"
   },
   "lockToken": {
@@ -439,7 +348,6 @@
     "pools": "プール",
     "stake": "ステーク",
     "store": "アプリ",
-    "swap": "スワップ",
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
     "trade": "プロトレーディング",
@@ -449,56 +357,16 @@
     "levanaSubtext": "レヴァナが提供する",
     "more": "もっと",
     "new": "新しい",
-    "settings": "設定",
-    "notifications": "通知"
-  },
-  "notifi": {
-    "saveChanges": "変更内容を保存",
-    "unsupportedHistoryTitle": "サポートされていない通知",
-    "unsupportedHistoryMessage": "おっと！何かが間違っていた。お知らせください",
-    "getStartedHistoryTitle1": "トークンを購入して始めましょう",
-    "getStartedHistoryMessage1": "OSMOを取得して取引を開始する",
-    "getStartedHistoryTitle2": "取引の開始方法",
-    "getStartedHistoryMessage2": "この簡単なチュートリアルでは数分で取引できるようになります",
-    "getStartedHistoryTitle3": "資金の入金方法",
-    "getStartedHistoryMessage3": "Osmosis に資金を入金する方法を学ぶ",
-    "signupDummyHistoryTitle1": "トークンを購入して始めましょう",
-    "signupDummyHistoryMessage1": "OSMOを取得して取引を開始する",
-    "signupDummyHistoryTitle2": "資産の預け入れ方法",
-    "signupDummyHistoryMessage2": "Osmosis に資金を送金する方法を学ぶ",
-    "signupDummyHistoryTitle3": "取引の開始方法",
-    "signupDummyHistoryMessage3": "この簡単なチュートリアルでは数分で取引できるようになります",
-    "outboundTransferHistoryTitle": "浸透アウトバウンド転送",
-    "outboundTransferHistoryMessage": "額",
-    "poolExitedHistoryTitle": "浸透プールが終了しました",
-    "poolExitedHistoryMessage": "プールID",
-    "poolJoinedHistoryTitle": "浸透プールが参加しました",
-    "poolJoinedHistoryMessage": "トークン",
-    "swapHistoryTitle": "浸透圧の交換が確認されました",
-    "swapHistoryMessage": "に交換されました",
-    "emptyHistoryTitle": "タイトルなし",
-    "emptyHistoryMessage": "メッセージなし",
-    "assetReceivedHistoryTitle": "資産を受け取りました",
-    "assetReceivedHistoryMessage": "額",
-    "positionOutOfRangeHistoryTitle": "範囲外の位置",
-    "positionOutOfRangeHistoryMessage": "LP の位置が範囲外です",
-    "signupPageTitle": "通知が利用できるようになりました。",
-    "signupPageMessage": "新しいトークンのリストから重要なポジションのステータスまで、重要な更新を見逃すことはもうありません。",
-    "signupPageButton": "通知を有効にします",
-    "loadMore": "もっと読み込む",
-    "unsavedChangeModalInfo": "未保存の変更があります。したいですか",
-    "discardButton": "変更を破棄",
-    "clearAllHistory": "すべてクリア"
+    "settings": "設定"
   },
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Click取引が有効です",
-      "oneClickTradingExpired": "1-Click 取引の有効期限が切れました",
       "oneClickTradingDisabled": "1-Click 取引が無効になっています",
       "currentlyUnavailable": "1クリック取引は現在利用できません",
+      "insufficientFunds": "ワンクリック取引に必要なOSMO資金が不足しています",
+      "continueWithoutOneClickTrading": "1クリック取引なしで続行",
       "networkFeeTooHigh": "ネットワーク料金が高すぎる",
-      "enableOneClickTrading": "1-Click取引を有効にする",
-      "increaseFeeLimit": "ネットワーク料金の上限を引き上げる",
       "approveManually": "{walletName}で手動で承認する",
       "continueWithWallet": "ウォレットを続ける",
       "sessionEnded": "このデバイスでセッションが終了しました",
@@ -511,56 +379,52 @@
       "introducingSubtitle": "複数のウォレット承認の手間を省き、より迅速かつ簡単な取引を行うことができます。",
       "learnMore": "もっと詳しく知る",
       "startTradingButton": "1-Click取引を開始する",
-      "defaultParameters": "1-Click 取引は、このデバイスで 1 時間有効になり、使用制限は 5,000 米ドルになります。",
-      "changeButton": "変化"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "取引をより迅速かつ簡単に",
-      "startOneClickTradingNow": "今すぐ1-Click取引を始めましょう",
-      "iconAlt": "1-Click 取引の小さなロゴ"
+      "defaultParameters": "デフォルト設定は 1 時間に設定されており、損失保護の限度額は 5,000 米ドルです。",
+      "changeButton": "編集の設定"
     },
     "floatingBanner": {
-      "newPill": "新しい",
-      "title": "1クリック取引",
-      "tradeFasterButton": "より迅速な取引"
+      "newPill": "新しい"
+    },
+    "reviewOrder": {
+      "recapRowTitle": "1クリック取引制限",
+      "enableTitle": "ワンクリック取引を開始",
+      "enableDescription": "より速く、より簡単に取引",
+      "paramsDescription": "{sessionLength}セッション、 {lossProtectionLimit}損失保護制限",
+      "defaultSpendLimit": "5,000米ドル",
+      "change": "変化",
+      "edit": "編集",
+      "exceeded": "超過",
+      "exceededTooltip": {
+        "title": "現在の損失保護限度額を超えています",
+        "body": "この取引はウォレットで手動で承認する必要があります。"
+      }
+    },
+    "sessionPeriods": {
+      "1hour": "1時間",
+      "1day": "1日",
+      "7days": "7日間",
+      "30days": "30日間"
     },
     "settings": {
       "header": "1クリック取引",
       "description": "1-Click Trading を使用すると、ウォレット内のすべての取引に署名する手間をかけずに、このデバイスで安全に取引できます。",
       "enableTitle": "1-Click取引を有効にする",
-      "spendLimitTitle": "支出制限",
-      "networkFeeLimitTitle": "ネットワーク料金の制限",
+      "spendLimitTitle": "損失保護限度額",
       "sessionPeriodTitle": "会期",
       "startButton": "1-Click取引を開始する",
       "editSessionButton": "変更内容を保存",
       "endingSession": "セッションの終了",
       "feeToDisable": "1-Click 取引を無効にする料金:",
       "spendLimitScreen": {
-        "spendLimitDescription": "1-Click 取引セッション期間内に使用できる最大金額を設定します。",
+        "spendLimitDescription": "信頼できる資産（時価総額上位 50 位）を制限なく取引します。",
+        "spendLimitSubDescription": "その他のすべての資産については、ウォレットの手動承認が必要になる前に、取引可能な最大額に制限を設定します。取引手数料もこの制限に含まれます。",
         "fixedAmount": "定額",
         "shareOfBalance": "残高のシェア",
-        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります",
-        "fluctuationNotice": "ご利用限度額の米ドル相当額は資産価値に基づいており、変動する可能性があることに注意してください。"
-      },
-      "networkFeeLimitScreen": {
-        "title": "ネットワーク料金の制限",
-        "description": "1-Click 取引セッション中の単一取引のネットワーク手数料に費やすことができる最大金額を設定します。",
-        "info": "手数料がこの金額を超える場合は、ウォレット内で手動でトランザクションに署名して続行できます。",
-        "low": "低い",
-        "average": "平均",
-        "high": "高い",
-        "recommended": "推奨"
+        "shareOfBalanceDescription": "現在、Osmosis の合計残高{shareOfBalance}の価値があります"
       },
       "sessionPeriodScreen": {
         "title": "会期",
-        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。",
-        "periods": {
-          "10min": "10分",
-          "30min": "30分",
-          "1hour": "1時間",
-          "3hours": "3時間",
-          "12hours": "12時間"
-        }
+        "description": "このデバイスで 1-Click 取引を許可する期間を設定します。"
       },
       "discardChanges": {
         "title": "変更を破棄？",
@@ -571,6 +435,7 @@
     },
     "welcomeBack": {
       "title": "おかえり",
+      "subtitle": "ウォレットを接続して、Osmosis の探索を続けてください。",
       "description": "ウォレットに接続すると、1-Click 取引セッションを開始するための取引を承認するよう求められます。",
       "toggleLabel": "1クリック取引",
       "editParamsAriaLabel": "1CTパラメータの変更"
@@ -581,7 +446,10 @@
       "description": "選択したウォレットでの取引を承認すると、1-Click 取引セッションが開始されます。"
     },
     "profile": {
-      "sessionExpired": "セッションの有効期限が切れ"
+      "sessionExpired": "設定",
+      "restart": "再起動",
+      "tooltipHeader": "ワンクリック取引設定",
+      "resetSession": "プロフィールから 1 クリック取引セッションを再開または編集します。"
     }
   },
   "pool": {
@@ -669,8 +537,16 @@
       "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。",
       "weightedPool": "加重プール"
     },
-    "externalIncentivized": {
-      "TVL": "TVL"
+    "createSupercharged": {
+      "createNew": "新しいスーパーチャージプールを作成する",
+      "addInitialLiquidity": "プール # {poolNumber}に初期流動性を追加します",
+      "buttonAddToken": "新しいトークンを追加",
+      "base": "ベース",
+      "quote": "引用",
+      "swapFee": "スワップ手数料の設定",
+      "undersandCost": "新しいプールを作成するには{poolCreationFee}の費用がかかることを理解しています。",
+      "buttonCreate": "プールを作成",
+      "buttonCreating": "作成"
     },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",
@@ -686,9 +562,7 @@
       "total": "合計年利",
       "explainer": {
         "title": "APRはどのように計算されますか?",
-        "p1": "すべての年利は推定値です。これらは、プール内の流動性の平均 APR を取得して計算されます。",
-        "p2": "スーパーチャージされたプールでは、ほとんどのユーザーが受け取る報酬は低くなります。これは、ポジションがより集中しており、より多くのインセンティブを獲得できるためです。",
-        "p3": "見積もりを控えめに保つために、すべての APR は 3 の係数で除算されます。"
+        "subtitle": "すべての APR は過去 7 日間に基づく推定値です。取引量と価格が変動すると、それに応じて APR も変わります。表示される範囲は以下に基づいています。<inlang-LineFeed><inlang-LineFeed>スーパーチャージされたプールの場合、下限は保守的なフルレンジのポジションを参照します。流動性がすべての取引に分散されるため、APR が非常に低くなる可能性があります。上限は、スポット価格の 30% 集中のポジションに対して計算されます。ポジションが範囲外になると、利益が得られなくなることに注意してください。"
       }
     }
   },
@@ -718,7 +592,9 @@
   },
   "search": {
     "noResultsFor": "「 {query}に該当する結果はありません",
-    "adjust": "検索クエリを調整してみてください"
+    "adjust": "検索クエリを調整してみてください",
+    "noPools": "プールなし",
+    "poolsEmpty": "現在、Osmosis には{denom}のプールはありません"
   },
   "stake": {
     "available": "利用可能",
@@ -821,39 +697,30 @@
   },
   "swap": {
     "autoRouter": "通ったルート",
-    "autoRouterToggle": {
-      "hide": "隠れる",
-      "show": "見せる"
-    },
-    "maxButtonErrorNoBalance": "最大額を計算するには残高が足りません。",
-    "available": "利用可能",
     "button": "スワップ",
     "buttonError": "とにかく交換する",
-    "expectedOutput": "期待される出力",
-    "fee": "スワップ手数料 ( {fee} )",
-    "networkFee": "ネットワーク料金",
-    "totalFee": "合計料金",
     "HALF": "半分",
-    "MAX": "マックス",
-    "minimumSlippage": "スリッページ後に受信した最小値 ( {slippage} )",
     "pool": "プール番号{id}",
-    "priceImpact": "価格への影響",
     "routerTooltipFee": "手数料",
     "routerTooltipSpreadFactor": "スプレッドファクター",
-    "continueAnyway": "とにかく続けます",
-    "warning": {
-      "exceedsSpendLimit": "このスワップは、1-Click 取引の残りの支出制限を超えています。",
-      "exceedsNetworkFeeLimit": "このスワップは、1 クリック取引のネットワーク手数料制限を超えています。",
-      "increaseSpendLimit": "支出制限を増やす",
-      "increaseNetworkFeeLimit": "ネットワーク料金の上限を引き上げる"
-    },
+    "showDetails": "詳細を表示",
+    "hideDetails": "隠れる",
     "settings": {
-      "slippage": "滑り許容差",
-      "slippageInfo": "価格がこのパーセンテージを超えて不利に変化した場合、トランザクションは元に戻ります。",
-      "title": "トランザクション設定"
+      "slippage": "滑り許容差"
     },
     "title": "スワップ",
-    "dynamicSpreadFactor": "動的"
+    "dynamicSpreadFactor": "動的",
+    "gas": {
+      "oneClickTradingError": "現時点ではネットワーク手数料を見積もることはできません。手数料が 1 クリック取引ネットワーク手数料の上限を超える場合は、ウォレットで手動で承認を進めることができます。",
+      "error": "現時点ではネットワーク手数料を見積もることはできません。取引を承認する前に、ウォレットでネットワーク手数料を確認してください。",
+      "gasEstimationError": "ネットワーク料金は見積もれません",
+      "unknown": "未知",
+      "additionalNetworkFee": "追加のネットワーク料金"
+    },
+    "noRoutes": "ルートが見つかりません",
+    "route": "ルート",
+    "routes": "ルート",
+    "slippageOverBalance": "スリッページをカバーするための資金が不足している"
   },
   "walletSelect": {
     "gettingStarted": "はじめる",
@@ -872,6 +739,7 @@
     "approveOneClickTradingSession": "{walletName}での 1-Click 取引を承認します。",
     "errorInitializingOneClickTradingSession": "1-Click 取引を有効にできませんでした。",
     "retryInWalletOrContinue": "{walletName}で再試行するか、1-Click 取引を行わずに続行してください。",
+    "retryInWalletOrContinueNoFunds": "セッションを開始するには資金が足りません。さらに入金して{walletName}で再試行するか、1 クリック取引をせずに続行してください。",
     "continueWithoutOneClickTrading": "1-Click 取引を行わずに続行する",
     "retry": "リトライ",
     "openExtension": "{walletName}ブラウザ拡張機能を開いてウォレットに接続します。",
@@ -890,6 +758,7 @@
     "mobileWallets": "モバイルウォレット",
     "installedWallets": "インストールされているウォレット",
     "otherWallets": "その他のウォレット",
+    "searchWallets": "ウォレットを検索",
     "step1Title": "ウォレットとは何ですか?",
     "step1Content": "ウォレットは、OSMO や ATOM などのすべてのデジタル資産の送受信、アクセスに使用されます。",
     "step2Title": "アカウントがありません。パスワードはありません。",
@@ -897,7 +766,12 @@
     "step3Title": "あなたの鍵、あなたの資金。",
     "step3Content": "Osmosis では、自分のアセットを移動できるのは自分だけです。大きな力には大きな責任が伴います。",
     "step4Title": "始めるにはウォレットを作成してください",
-    "step4Content": "最初のウォレットを設定してサインインしてください。アセットを送信、受信、または購入します。"
+    "step4Content": "最初のウォレットを設定してサインインしてください。アセットを送信、受信、または購入します。",
+    "yourConnectedWallets": "接続されたウォレット",
+    "primaryWallet": "プライマリウォレット",
+    "done": "終わり",
+    "manage": "管理",
+    "disconnect": "切断"
   },
   "swapFailed": "交換に失敗しました。流動性が十分ではない可能性があります。許容される滑り量を調整してみてください。",
   "transactionBroadcasting": "トランザクションブロードキャスト",
@@ -908,12 +782,22 @@
     "withdraw": "撤回する",
     "fromNetwork": "ネットワークから",
     "toNetwork": "ネットワークに",
+    "from": "{network}から",
+    "to": "{network}へ",
     "max": "マックス",
+    "pendingApproval": "承認待ちの",
     "available": "利用可能",
+    "connectTo": "{network}に接続します",
     "transferWith": "転送",
     "transferTo": "転送先",
     "receiveAsset": "資産を受け取る",
-    "receiveAssetDescription": "特定の資産を預ける際に、Osmosis で受け取る資産のバージョンを選択できます。",
+    "transfer": "転送{denom}",
+    "changeNetworkInWallet": "ウォレットのネットワークを変更する",
+    "receive": "{denom}受け取る",
+    "selectDepositWallet": "{network}ウォレットを選択",
+    "selectWithdrawWallet": "{network}ウォレットを選択",
+    "depositAssetDescription": "特定の資産を預けるときに、Osmosis で受け取る資産のバージョンを選択できます。",
+    "withdrawAssetDescription": "特定の資産を引き出す場合、宛先ネットワークで受信する資産のバージョンを選択できます。",
     "estimatingTime": "時間の見積もり",
     "calculatingFees": "手数料の計算",
     "reviewDeposit": "預金の確認",
@@ -921,15 +805,133 @@
     "moreDepositOptions": "その他の入金オプション",
     "moreWithdrawOptions": "引き出しオプションの追加",
     "convertTo": "に変換",
+    "depositAs": "入金",
+    "withdrawAs": "撤退する",
     "recommended": "推奨",
+    "fee": "手数料",
+    "fees": "手数料",
+    "unknown": "未知",
+    "unknownFeeTooltip": "現在、 {networkName}のネットワーク手数料を計算できません。ネットワーク手数料は、トランザクションが承認されるとウォレットに表示されます。",
+    "free": "無料",
+    "cheapest": "最も安い",
+    "fastest": "最速",
+    "stepLabels": {
+      "asset": "資産",
+      "amount": "額",
+      "review": "レビュー",
+      "deposit": "デポジット"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "その他の入金オプション",
       "titleWithdraw": "引き出しオプションの追加",
-      "descriptionDeposit": "次の代替プロバイダーから選択して{asset}を{chain} 。",
-      "descriptionWithdraw": "次の代替プロバイダーから選択して{asset}を{chain} 。",
+      "depositDescriptionUnknown": "{denom}を入金するには、別のプロバイダーを使用してください。",
+      "withdrawDescriptionUnknown": "{denom}を取り消すには、別のプロバイダーを使用してください。",
+      "singleDescriptionDeposit": "{denom}を{networkA}から{networkB}に預けるには、 {service}を使用してください。",
+      "singleDescriptionWithdraw": "{denom}を{networkA}から{networkB}に撤回するには、 {service}を使用してください。",
+      "descriptionDeposit": "{denom} {networkA}から{networkB}に預けるには、次の代替プロバイダーのいずれかを使用してください。",
+      "descriptionWithdraw": "{denom}を{networkA}から{networkB}に引き出すには、次の代替プロバイダーのいずれかを使用してください。",
+      "chooseAnAlternativeProviderDeposit": "{asset} {fromChain}から{toChain}に預ける代替プロバイダーを選択してください",
+      "chooseAnAlternativeProviderWithdraw": "{asset} {fromChain}から{toChain}に引き出すには、別のプロバイダーを選択してください",
       "depositWith": "入金",
       "withdrawWith": "撤退する"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "預ける資産を選択してください",
+      "titleWithdraw": "引き出す資産を選択してください",
+      "searchAssets": "アセットを検索"
+    },
+    "bridgeNetworkSelect": {
+      "title": "ネットワークを選択",
+      "searchPlaceholder": "サポートされているネットワークを検索"
+    },
+    "pendingWithdraw": "撤退中",
+    "pendingDeposit": "入金処理中",
+    "amountToChain": "{amount}から{chain}",
+    "amountFromChain": "{amount}から{chain}",
+    "amountFailedToWithdraw": "{amount}引き出しに失敗しました",
+    "completedWithdraw": "引き出しが完了しました",
+    "completedDeposit": "入金完了",
+    "failedWithdraw": "引き出しに失敗しました",
+    "failedDeposit": "入金に失敗しました",
+    "connectionError": "接続エラー",
+    "transferDetails": "振込詳細",
+    "provider": "プロバイダー",
+    "estimatedTime": "予定時刻",
+    "providerFees": "プロバイダー料金",
+    "networkFee": "{networkName}ネットワーク料金",
+    "totalFees": "合計料金",
+    "estimatedAmountReceived": "受け取る推定金額",
+    "slippageWarning": "このトランザクションの予想出力は入力金額よりも大幅に低いため、予想とは異なる最終金額を受け取る可能性があります。",
+    "priceImpactWarning": "この取引の価格影響は{priceImpact}であり、最終的に受け取る金額に影響する可能性があります。",
+    "confirm": "確認する",
+    "cancel": "キャンセル",
+    "confirmDepositTo": "{chain}への入金を確認します",
+    "confirmWithdrawTo": "{chain}への撤退を確認します",
+    "reviewDepositP": "確認する前に入金の詳細を確認してください。入金後は取引を取り消すことはできません。",
+    "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。",
+    "lookingForBalances": "バランスを探す",
+    "dontForgetFees": "手数料を忘れないでください！",
+    "feesReserved": "合計{assetName}残高の少額{networkName}の手数料の支払い用に確保されています。",
+    "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",
+    "recipientAddress": "{chain}の受信者アドレス",
+    "enterAddress": "住所を入力してください",
+    "sendToAnotherAddress": "別のアドレスに送信",
+    "invalidAddress": "無効な{chain}アドレス",
+    "acknowledgement": "間違った受取人アドレスを提供したり、取引所に引き出しを試みたりした場合に資金が失われるリスクを認識し、受け入れます。",
+    "acknowledgementWithoutExchange": "受取人住所を間違えて入力した場合、資金が失われるリスクがあることを認識し、同意します。",
+    "done": "終わり",
+    "transferFrom": "{noun}からの転送",
+    "transferWithNoun": "{noun}で転送する",
+    "risks": "ブリッジングにはリスクが伴います。",
+    "learnMore": "もっと詳しく知る",
+    "openNoun": "{noun}を開く",
+    "accountNotFound": "アカウントが見つかりません",
+    "sendFundsToAccount": "{ {chain} {asset} chain\"} アカウントにガス トークンを送信してください。",
+    "insufficientFundsForFees": "手数料の資金が不足している",
+    "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
+    "assetsDepositsUnavailable": "{asset}の預金は利用できません",
+    "assetWithdrawalsUnavailable": "{asset}引き出しは利用できません",
+    "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
+    "noAvailableWithdrawals": "現在、利用可能なルートまたはプロバイダーが見つかりません。後でもう一度お試しいただくか、Osmosis から資金を送金するための別のアプリケーションを設定してください。",
+    "somethingIsntWorking": "何かがうまくいかない…",
+    "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。ページを更新してもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
+    "assetIsCurrentlyUnstable": "{asset}の転送は現在不安定です",
+    "transferWillLikelyTakeLonger": "転送には通常より時間がかかるか、完全に失敗する可能性があります。自己責任で進めてください。",
+    "sendFromWalletOrExchange": "ウォレットまたは取引所から送金する",
+    "scanWithMobileWallet": "モバイルウォレットでスキャン",
+    "or": "または",
+    "copied": "コピーしました",
+    "copyToClipboard": "クリップボードにコピー",
+    "showQrCode": "QRコードを表示",
+    "yourDepositAddress": "{denom}入金アドレス",
+    "copyAddressToClipboard": "アドレスをクリップボードにコピー",
+    "copyAddress": "アドレスをコピー",
+    "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
+    "minimumDeposit": "最低入金額",
+    "nomic": {
+      "estimatedTime": "約1時間",
+      "awaitingBtc": "BTCを待つ",
+      "transferringYourBtc": "BTCの送金",
+      "depositStatus": "預金状況",
+      "depositSuccess": "入金成功",
+      "pendingDeposit": "保留中の入金",
+      "estimatedAboutTime": "推定約{time}",
+      "from": "から",
+      "to": "に",
+      "asset": "資産",
+      "amountBtc": "金額 BTC",
+      "totalValue": "合計金額",
+      "transactionHash": "トランザクションハッシュ",
+      "viewOnExplorer": "エクスプローラーで見る",
+      "totalFees": "合計料金"
+    },
+    "doNotSendFundsToThisAddress": "このアドレスに資金を送金しないでください。",
+    "addressExpired": "このアドレスは有効期限が切れています。新しいアドレスをリクエストしてください。",
+    "addressAboutToExpire": "このアドレスは有効期限が近づいています。資金の損失を避けるために、新しいアドレスをリクエストしてください。",
+    "createNewDepositAddress": "新しい入金アドレスを作成する",
+    "transactionDetails": "取引の詳細",
+    "confirmAmount": "金額を確認",
+    "enterBitcoinAddress": "ビットコインアドレスを入力"
   },
   "unknownError": "不明なエラー",
   "viewExplorer": "エクスプローラーを表示する",
@@ -951,14 +953,6 @@
       "title": "Osmosis App Store",
       "description": "取引は最初のステップにすぎません。レバレッジやボールトなどを活用して資産を活用し、さらに多くのことを達成しましょう"
     },
-    "assets": {
-      "title": "浸透アセット",
-      "description": "主要な分散型 Cosmos 取引所である Osmosis で利用可能なすべてのアセットを参照してください"
-    },
-    "portfolio": {
-      "title": "浸透ポートフォリオ",
-      "description": "主要な分散型 Cosmos 取引所である Osmosis で資産を表示します"
-    },
     "disclaimer": {
       "title": "浸透に関する免責事項",
       "description": "主要な分散型コスモス取引所である Osmosis の免責事項とプライバシー ポリシーをお読みください。"
@@ -972,30 +966,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "{denom}で獲得",
     "explorePools": "プールを探索する",
-    "stakeYourDenomToEarn": "{denom}ステークして{apr} % APR を獲得しましょう",
-    "stakeYourDenomToEarnNoAPR": "{denom}賭けて報酬を獲得してください",
-    "provideLiquidity": "流動性を提供し、手数料とスワップで収益を得る",
     "yourBalance": "あなたのバランス",
+    "onOsmosis": "浸透について",
     "aboutDenom": "{name}について",
     "ariaView": "ビュー{name}",
     "ariaViewOn": "{name}で表示する",
     "collapse": "崩壊",
+    "info": {
+      "title": "情報",
+      "show": "見せる",
+      "collapse": "崩壊",
+      "moreStats": "詳しい統計"
+    },
     "followTheConversation": "会話に従ってください",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "全て"
+      "all": "全て",
+      "price": "価格",
+      "volume": "音量",
+      "advanced": "高度な",
+      "simple": "単純"
     },
     "watchlist": "ウォッチリスト",
     "marketCapRank": "時価総額ランク",
     "marketCap": "時価総額",
+    "fullyDilutedValuation": "完全希薄化後評価額",
+    "volume24h": "24時間総量",
+    "volumeOnOsmosis": "Osmosisの24時間ボリューム",
+    "liquidityOnOsmosis": "浸透による流動性",
     "circulatingSupply": "循環供給",
-    "buyToken": "{coinDenom}を購入する",
-    "staking": "ステーキング",
-    "liquidityInOSMOPools": "{number} {denom}プールの流動性",
+    "supplyOnOsmosis": "浸透圧供給",
     "underlyingAssets": {
       "title": "基礎資産",
       "description": "Osmosis の{name} ( {denom} ) は{count}種類の{name} 。",
@@ -1006,9 +1009,6 @@
     "osmosisUpdates": "浸透圧のアップデート！",
     "seeWhatsNew": "新機能を見る"
   },
-  "previewAssetsEnabled": "アセットのプレビューが有効になりました",
-  "previewAssetsDisabled": "アセットのプレビューが無効になっています",
-  "previewAssetsEnabledForSession": "このセッションで有効になっているアセットをプレビューします。無効にするには、新しいタブを開くか、「show_preview_assets=false」を追加します。",
   "earnPage": {
     "title": "得る",
     "positions": "ポジション",
@@ -1032,7 +1032,6 @@
     "resetFilters": "フィルターをリセットする",
     "saveFilters": "フィルターを保存する",
     "rewards": "報酬",
-    "estimatedInYearlyRewards": "年間報酬で見積もる",
     "availableToClaim": "請求可能",
     "claimAllRewards": "すべての報酬を受け取る",
     "join": "参加する",
@@ -1086,7 +1085,6 @@
       "veryHigh": "すごく高い"
     }
   },
-  "disclaimer": "免責事項",
   "remaining": "残り",
   "timeUnits": {
     "second": "2番",
@@ -1094,14 +1092,19 @@
     "minute": "分",
     "minutes": "分",
     "hour": "時間",
-    "hours": "時間"
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom}預金は不安定です",
-    "titleWithdraw": "{coinDenom}出金が不安定",
-    "description": "不確実な技術的問題により、Osmosis と{prettyChainName}間の転送で大幅な遅延やトランザクションの失敗が発生する可能性があります。ご自身の責任で進めてください。",
-    "buttonContinue": "とにかく続けます",
-    "buttonCancel": "キャンセル"
+  "timeUnitsShort": {
+    "second": "秒",
+    "seconds": "秒",
+    "minute": "分",
+    "minutes": "分",
+    "hour": "時間",
+    "hours": "時間",
+    "day": "日",
+    "days": "日"
   },
   "transactions": {
     "noRecent": "最近の送金はありません",
@@ -1122,9 +1125,25 @@
     "totalFees": "合計料金",
     "transactionHash": "トランザクションハッシュ",
     "viewOnExplorer": "エクスプローラーで見る",
-    "launchAlert": "現在は取引履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
-    "noPriceData": "価格データは利用できません",
-    "viewAll": "すべて表示"
+    "launchAlert": "現在、取引と送金の履歴のみが表示されます。他の取引タイプも近日中にサポートされる予定です。",
+    "history": "歴史",
+    "orders": "注文",
+    "historyTable": {
+      "pendingDeposit": "保留中の入金",
+      "pendingWithdraw": "保留中の撤回",
+      "successDeposit": "寄託",
+      "successWithdraw": "撤退",
+      "failDeposit": "入金に失敗しました",
+      "failWithdraw": "引き出しに失敗しました"
+    },
+    "transfer": {
+      "asset": "資産",
+      "amountAsset": "金額{asset}",
+      "totalValue": "合計金額",
+      "providerFee": "プロバイダー料金",
+      "provider": "プロバイダー",
+      "networkFee": "ネットワーク料金"
+    }
   },
   "date": {
     "earlierToday": "本日",
@@ -1134,5 +1153,168 @@
   "pagination": {
     "older": "古い",
     "newer": "新しい"
+  },
+  "limitOrders": {
+    "floatingBanner": {
+      "title": "価格を選択してください",
+      "tryLimitOrders": "指値注文を試す"
+    },
+    "historyTable": {
+      "columns": {
+        "order": "注文",
+        "amount": "額",
+        "price": "価格",
+        "orderPlaced": "注文済み",
+        "status": "状態"
+      },
+      "emptyState": {
+        "title": "最近の注文はありません",
+        "subtitle": "取引注文履歴がここに表示されます。",
+        "connectTitle": "ウォレットを接続すると注文履歴が表示されます",
+        "connectSubtitle": "Osmosis での過去の指値注文がここに表示されます。"
+      }
+    },
+    "aboveMarket": {
+      "title": "市場価格を上回る制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "belowMarket": {
+      "title": "市場価格以下の制限価格",
+      "description": "続行すると、注文は市場価格での成行注文として処理されます。"
+    },
+    "enterAnAmountTo": "金額を入力してください",
+    "toSell": "売る",
+    "toBuy": "購入する",
+    "sell": "売る",
+    "sold": "販売済み",
+    "percentFilled": "充填率",
+    "status": "状態",
+    "price": "価格",
+    "buy": "買う",
+    "pay": "支払う",
+    "open": "開ける",
+    "filled": "満たされた",
+    "claimable": "請求可能",
+    "claimAndClose": "請求して終了",
+    "close": "近い",
+    "claim": "請求",
+    "accept": "受け入れる",
+    "cancelled": "キャンセル",
+    "cancel": "キャンセル",
+    "daysAgo": "{days}日前",
+    "hoursAgo": "{hours}前",
+    "buyWith": "{coinA}または{coinB}で購入",
+    "orderHistory": "注文履歴",
+    "tradeAnotherAssetOr": "別の資産を{coinA}または{coinB}と交換する",
+    "tradeAnotherAsset": "別の資産を{coinDenom}と交換する",
+    "sellAnAsset": "資産を売る",
+    "swapAnAsset": "資産を交換する",
+    "of": "の",
+    "insufficientFunds": "残高不足",
+    "startTrading": "取引を始める",
+    "tradeFees": "取引手数料（注文成立時）",
+    "youNeed": "必要なのは",
+    "stablecoin": "ステーブルコイン",
+    "quoteUpdated": "引用を更新しました",
+    "fundsOsmosisToBuyAssets": "資産を購入するための資金をOsmosisに提供します。",
+    "chooseAnOption": "続行するにはオプションを選択してください。",
+    "lowerSlippageToleranceRecommended": "滑り許容値を低くすることをお勧めします。",
+    "tryHigherSlippage": "最大スリップ許容値を高く設定してみてください。",
+    "reviewTrade": "取引のレビュー",
+    "errors": {
+      "noAssetAvailable": "Osmosis には取引できる{coinName}資金がありません。続行するにはオプションを選択してください。",
+      "tradeMayResultInLossOfValue": "取引により価値が大幅に損なわれる可能性があります",
+      "tradeMayNotExecuted": "取引が実行されない可能性があります"
+    },
+    "transferFromAnotherNetwork": "別のネットワークまたはウォレットからの送金",
+    "whatIsOrderClaim": {
+      "title": "注文請求とは何ですか?",
+      "description": "ほとんどの場合、指値注文が約定すると、資金は自動的に残高に追加されます。ただし、まれに、約定した注文から資金を手動で請求する必要がある場合もあります。<inlang-LineFeed><inlang-LineFeed>この請求プロセスでは、未請求のすべての約定済み注文に対してウォレット内の単一のトランザクションを承認する必要があり、少額のネットワーク料金が発生します。"
+    },
+    "whatIsAStablecoin": {
+      "title": "ステーブルコインとは何ですか?",
+      "description": "ステーブルコインは、法定通貨や金などの別の資産に価値が固定され、安定した価格を維持する暗号通貨の一種です。Osmosis では、資産の売買に使用される主なステーブルコインは USDC と USDT です。"
+    },
+    "claimAll": "すべてを主張する",
+    "addFunds": "資金を追加",
+    "selectAnAssetTo": {
+      "buy": "購入する資産を選択",
+      "sell": "売却する資産を選択する"
+    },
+    "payWith": "お支払い方法",
+    "receive": "受け取る",
+    "swapFromAnotherAsset": "別の資産からのスワップ",
+    "connectYourWallet": "ウォレットを接続する",
+    "toSeeYourBalances": "残高を確認する",
+    "searchAssets": "アセットを検索",
+    "below": "下に",
+    "above": "その上",
+    "currentPrice": "現在の価格",
+    "whenDenomPriceIs": "{denom}価格が",
+    "orderType": "注文タイプ",
+    "confirm": "確認する",
+    "market": "市場",
+    "limit": "制限",
+    "trade": "貿易",
+    "swapToAnotherAsset": "別の資産に交換する",
+    "invalidPrice": "無効な価格",
+    "priceTooLow": "価格が低すぎる",
+    "priceTooHigh": "価格が高すぎる",
+    "unavailable": "{denom}では利用できません",
+    "orderHistoryHeaders": {
+      "past": "過去",
+      "pending": "保留中",
+      "filled": "請求する注文を完了"
+    },
+    "priceReaches": "{denom}価格が{price}に達した場合",
+    "belowMinimumAmount": "{amount}最小"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "価格影響とは何ですか?",
+      "content": "これは、市場の流動性が約定価格に与える影響です。取引規模が大きいほど、市場への影響も大きくなります。"
+    },
+    "expectedRate": {
+      "header": "予想レートはいくらですか？",
+      "content": "これは、受け取る予定の価格です。価格は頻繁に変更されるため、特定の価格で取引したい場合は、代わりに指値注文を試してください。"
+    },
+    "swapFees": {
+      "header": "スワップ手数料とは何ですか?",
+      "content": "これは、流動性プロバイダーに報酬を与え、ネットワークを維持するために Osmosis プロトコルによって請求される手数料です。"
+    },
+    "tradeRoute": {
+      "header": "貿易ルートとは何ですか?",
+      "contentTop": " 取引する資産間に直接的な市場がない場合、Osmosis は他の資産との一連の取引を行って、特定の時点での最良の価格を実現することで、取引を実現しようとします。",
+      "contentBottom": "利用可能な流動性に基づいて最適な効率性を実現するために、取引が異なる資産を持つ複数のルートに分割されることがあります。"
+    },
+    "outputDifference": {
+      "header": "出力の違いとは何ですか?",
+      "content": "これは、支払う金額と受け取る金額の差です。正の数値は購入する金額の方が価値が高いことを意味し、負の数値は販売する金額の方が価値が高いことを意味します。"
+    }
+  },
+  "tradeFee": "取引手数料",
+  "receiveAtLeast": "少なくとも受け取る",
+  "payAtMost": "最大で支払う",
+  "previewAssetsEnabled": "プレビューアセットが有効",
+  "previewAssetsDisabled": "プレビューアセットが無効になっています",
+  "previewAssetsEnabledForSession": "このセッションではプレビュー アセットが有効になっています。無効にするには、新しいタブを開くか、`show_preview_assets=false` を追加します。",
+  "alloyedAssets": {
+    "title": "検出された変異体",
+    "caption": "混乱を招くアセットバリアントとはお別れです。Osmosis のよりシームレスなエクスペリエンスをお楽しみください。",
+    "remindMeLater": "後で通知する",
+    "dismiss": "却下する",
+    "convert": "変換する"
+  },
+  "assetVariantsConversion": {
+    "title": "資産を標準化する",
+    "description": "柔軟性と互換性を高めるために、次のアセットを Osmosis の標準バージョンに変換します。",
+    "learnMore": "もっと詳しく知る",
+    "errorLoading": "アセットバリアントの読み込み中にエラーが発生しました。しばらくしてからもう一度お試しください。",
+    "tooltipTitle": "Osmosis の{coinName}",
+    "tooltipDescription": "Osmosis は{coinDenom}の多数のバリエーションを 1 つのシンプルなアセットに統合し、柔軟性と使いやすさを向上させます。",
+    "convert": "変換する",
+    "conversionFees": "変換手数料",
+    "free": "無料",
+    "unavailable": "現在ご利用いただけません。しばらくしてからもう一度お試しください。"
   }
 }

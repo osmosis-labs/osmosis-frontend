@@ -179,3 +179,27 @@ export interface Asset {
   /** Denom key of variant of asset this is grouped with. */
   variantGroupKey?: string;
 }
+
+export type MinimalAsset = {
+  coinDenom: string;
+  coinMinimalDenom: string;
+  coinDecimals: number;
+  coinImageUrl?: string;
+  /**
+   * This is used to fetch asset's fiat value from coingecko.
+   * You can get id from https://api.coingecko.com/api/v3/coins/list.
+   */
+  coinGeckoId: string | undefined;
+  coinName: string;
+  /** Transfers are allowed, but unstable. */
+  isUnstable: boolean;
+  /** Transfers are NOT allowed. */
+  areTransfersDisabled: boolean;
+  /** Is verified by community. */
+  isVerified: boolean;
+  /** Flag indicating if this asset is an alloyed asset. */
+  isAlloyed: boolean;
+  /** Contract address of alloyed asset CW pool. */
+  contract?: string;
+  variantGroupKey: string | undefined;
+};

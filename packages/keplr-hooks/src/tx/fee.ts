@@ -12,10 +12,10 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { Currency } from "@keplr-wallet/types";
 import { computedFn } from "mobx-utils";
-import { StdFee } from "@cosmjs/launchpad";
+import type { StdFee } from "@cosmjs/launchpad";
 import { useState } from "react";
 import { InsufficientFeeError, NotLoadedFeeError } from "./errors";
 

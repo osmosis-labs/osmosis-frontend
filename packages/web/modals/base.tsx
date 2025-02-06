@@ -1,6 +1,5 @@
 import classNames from "classnames";
-import React, { PropsWithChildren } from "react";
-import { ReactNode } from "react";
+import React, { PropsWithChildren, ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 import { useUnmount } from "react-use";
 
@@ -24,6 +23,7 @@ export interface ModalBaseProps {
   bodyOpenClassName?: string;
   overlayClassName?: string;
   hideCloseButton?: boolean;
+  hideDefaultBackButton?: boolean;
 }
 
 export const ModalBase = ({
@@ -37,10 +37,10 @@ export const ModalBase = ({
   bodyOpenClassName,
   overlayClassName,
   hideCloseButton,
+  hideDefaultBackButton,
   children,
 }: PropsWithChildren<ModalBaseProps>) => {
   const { isMobile } = useWindowSize();
-
   const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
   useUnmount(() => {
     document.body.classList.remove(bodyOpenClassNames);
@@ -59,7 +59,7 @@ export const ModalBase = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
+        "absolute mx-10 my-8 flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-850 p-8 outline-none sm:max-h-full sm:w-full sm:px-4",
         className
       )}
       closeTimeoutMS={150}
@@ -67,14 +67,22 @@ export const ModalBase = ({
     >
       <div className="flex place-content-between items-center">
         {onRequestBack && (
-          <IconButton
-            aria-label="Back"
-            className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7"
-            icon={
-              <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
-            }
-            onClick={onRequestBack}
-          />
+          <>
+            {!hideDefaultBackButton && (
+              <IconButton
+                aria-label="Back"
+                className="top-9.5 absolute left-8 z-50 cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7"
+                icon={
+                  <Icon
+                    id={backIcon ?? "chevron-left"}
+                    width={18}
+                    height={18}
+                  />
+                }
+                onClick={onRequestBack}
+              />
+            )}
+          </>
         )}
         {typeof title === "string" ? (
           <div className="relative mx-auto">
@@ -96,16 +104,15 @@ export const ModalCloseButton = ({
 }: {
   onClick: () => void;
   className?: string;
-}) => {
-  return (
-    <IconButton
-      aria-label="Close"
-      className={classNames(
-        "absolute right-8 top-[28px] z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:right-7 md:top-7 xs:right-4",
-        className
-      )}
-      icon={<Icon id="close" width={32} height={32} />}
-      onClick={onClick}
-    />
-  );
-};
+}) => (
+  <IconButton
+    aria-label="Close"
+    data-testid="close"
+    className={classNames(
+      "absolute right-8 top-[24px] z-50 !h-12 !w-12 cursor-pointer !py-0 text-wosmongton-200 hover:text-osmoverse-100 md:right-7 md:top-7 md:!h-8 md:!w-8 xs:right-4",
+      className
+    )}
+    icon={<Icon id="close" className="md:h-4 md:w-4" />}
+    onClick={onClick}
+  />
+);

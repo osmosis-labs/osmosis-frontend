@@ -7,6 +7,7 @@ import { useCallback, useState } from "react";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
@@ -17,11 +18,11 @@ export function useRemoveConcentratedLiquidityConfig(
   config: ObservableRemoveConcentratedLiquidityConfig;
   removeLiquidity: () => Promise<void>;
 } {
-  const { accountStore, queriesStore } = useStore();
+  const { accountStore } = useStore();
   const { logEvent } = useAmplitudeAnalytics();
+  const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const [config] = useState(
     () =>
@@ -75,15 +76,6 @@ export function useRemoveConcentratedLiquidityConfig(
                 if (tx.code) {
                   reject(tx.rawLog);
                 } else {
-                  // get latest liquidity depths for charts
-                  osmosisQueries.queryLiquiditiesPerTickRange
-                    .getForPoolId(poolId)
-                    .waitFreshResponse();
-                  // get latest price, if position removed
-                  osmosisQueries.queryPools
-                    .getPool(poolId)
-                    ?.waitFreshResponse();
-
                   logEvent([
                     EventName.ConcentratedLiquidity.removeLiquidityCompleted,
                     {
@@ -94,7 +86,10 @@ export function useRemoveConcentratedLiquidityConfig(
                     },
                   ]);
 
-                  resolve();
+                  // refresh tick data
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                    .invalidate({ poolId })
+                    .finally(() => resolve());
                 }
               }
             )
@@ -110,8 +105,7 @@ export function useRemoveConcentratedLiquidityConfig(
       logEvent,
       poolId,
       position.id,
-      osmosisQueries.queryLiquiditiesPerTickRange,
-      osmosisQueries.queryPools,
+      apiUtils,
     ]
   );
 

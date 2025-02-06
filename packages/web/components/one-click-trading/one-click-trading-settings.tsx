@@ -1,6 +1,6 @@
-import { PricePretty } from "@keplr-wallet/unit";
-import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/stores";
+import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import { noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
@@ -11,29 +11,31 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { useAsync } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
-import { NetworkFeeLimitScreen } from "~/components/one-click-trading/screens/network-fee-limit-screen";
 import {
   getSessionPeriodTranslationKey,
   SessionPeriodScreen,
 } from "~/components/one-click-trading/screens/session-period-screen";
 import { SpendLimitScreen } from "~/components/one-click-trading/screens/spend-limit-screen";
 import { Screen, ScreenManager } from "~/components/screen-manager";
-import { Button, buttonVariants, IconButton } from "~/components/ui/button";
+import { Button, buttonVariants, GoBackButton } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
+import { EventName } from "~/config";
 import {
+  OneClickTradingParamsChanges,
+  useAmplitudeAnalytics,
   useDisclosure,
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
+import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 type Classes = "root";
@@ -41,18 +43,16 @@ type Classes = "root";
 enum SettingsScreens {
   Main = "main",
   SpendLimit = "spendLimit",
-  NetworkFeeLimit = "networkFeeLimit",
   SessionPeriod = "sessionPeriod",
 }
 
-interface OneClickTradingSettingsProps {
+type BaseOneClickTradingSettingsProps = {
   classes?: Partial<Record<Classes, string>>;
   onGoBack: () => void;
   transaction1CTParams: OneClickTradingTransactionParams | undefined;
   setTransaction1CTParams: Dispatch<
     SetStateAction<OneClickTradingTransactionParams | undefined>
   >;
-  onStartTrading: () => void;
   onEndSession?: () => void;
   onClose: () => void;
   isLoading?: boolean;
@@ -60,7 +60,37 @@ interface OneClickTradingSettingsProps {
   isEndingSession?: boolean;
   hideBackButton?: boolean;
   hasExistingSession?: boolean;
-}
+};
+
+type StandaloneProps = BaseOneClickTradingSettingsProps & {
+  /**
+   * Whether component is in standalone mode.
+   * When true or undefined, the component acts as a full settings page with start/edit functionality
+   */
+  standalone?: true;
+  /** Required callback when user clicks start/edit trading button */
+  onStartTrading: () => void;
+  /** In standalone mode the changes are tracked internally. Initial changes are not accepted */
+  externalChanges?: undefined;
+  /** Not needed in standalone mode */
+  setExternalChanges?: Dispatch<SetStateAction<OneClickTradingParamsChanges>>;
+};
+
+type NonStandaloneProps = BaseOneClickTradingSettingsProps & {
+  /**
+   * Whether component is in standalone mode.
+   * When false, the component acts as a settings panel within another component
+   */
+  standalone: false;
+  /** Start trading callback is not allowed in non-standalone mode */
+  onStartTrading?: never;
+  /** Initial changes to be applied to the settings */
+  externalChanges: OneClickTradingParamsChanges;
+  /** Callback to set initial changes */
+  setExternalChanges: (value: OneClickTradingParamsChanges) => void;
+};
+
+type OneClickTradingSettingsProps = StandaloneProps | NonStandaloneProps;
 
 /**
  * Compares the changes between two sets of OneClickTradingTransactionParams.
@@ -70,35 +100,28 @@ export function compare1CTTransactionParams({
   prevParams,
   nextParams,
 }: {
-  prevParams: OneClickTradingTransactionParams;
-  nextParams: OneClickTradingTransactionParams;
-}): Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"> {
-  let changes = new Set<
-    "spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod"
-  >();
+  prevParams?: OneClickTradingTransactionParams;
+  nextParams?: OneClickTradingTransactionParams;
+}): OneClickTradingParamsChanges {
+  let changes: OneClickTradingParamsChanges = [];
 
   if (prevParams?.spendLimit.toString() !== nextParams?.spendLimit.toString()) {
-    changes.add("spendLimit");
-  }
-
-  if (
-    prevParams?.networkFeeLimit.toString() !==
-    nextParams?.networkFeeLimit.toString()
-  ) {
-    changes.add("networkFeeLimit");
+    changes.push("spendLimit");
   }
 
   if (prevParams?.sessionPeriod.end !== nextParams?.sessionPeriod.end) {
-    changes.add("sessionPeriod");
+    changes.push("sessionPeriod");
   }
 
-  return Array.from(changes);
-}
+  if (prevParams?.isOneClickEnabled !== nextParams?.isOneClickEnabled) {
+    changes.push("isEnabled");
+  }
 
-function formatSpendLimit(spendLimit: PricePretty | undefined) {
-  return `${spendLimit?.symbol}${trimPlaceholderZeros(
-    spendLimit?.toDec().toString(2) ?? ""
-  )}`;
+  if (prevParams?.networkFeeLimit !== nextParams?.networkFeeLimit) {
+    changes.push("networkFeeLimit");
+  }
+
+  return changes;
 }
 
 export const OneClickTradingSettings = ({
@@ -114,15 +137,21 @@ export const OneClickTradingSettings = ({
   hasExistingSession,
   onEndSession,
   onClose,
+  standalone = true,
+  externalChanges = [],
+  setExternalChanges,
 }: OneClickTradingSettingsProps) => {
   const { t } = useTranslation();
-  const [changes, setChanges] = useState<
-    Array<"spendLimit" | "networkFeeLimit" | "resetPeriod" | "sessionPeriod">
-  >([]);
+
+  const [changes, setChanges] = useState<OneClickTradingParamsChanges>([]);
+
+  const [initialChanges, setInitialChanges] =
+    useState<OneClickTradingParamsChanges>([]);
   const [initialTransaction1CTParams, setInitialTransaction1CTParams] =
     useState<OneClickTradingTransactionParams>();
 
   const { chainStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { isOneClickTradingEnabled, oneClickTradingInfo } =
     useOneClickTradingSession();
@@ -137,16 +166,17 @@ export const OneClickTradingSettings = ({
       }
     );
 
+  const { value: removeAuthenticatorMsg } = useAsync(async () => {
+    if (!oneClickTradingInfo) return;
+    return await makeRemoveAuthenticatorMsg({
+      id: BigInt(oneClickTradingInfo.authenticatorId),
+      sender: oneClickTradingInfo.userOsmoAddress,
+    });
+  }, [oneClickTradingInfo]);
+
   const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
     useEstimateTxFees({
-      messages: oneClickTradingInfo
-        ? [
-            makeRemoveAuthenticatorMsg({
-              id: BigInt(oneClickTradingInfo.authenticatorId),
-              sender: oneClickTradingInfo.userOsmoAddress,
-            }),
-          ]
-        : [],
+      messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
       chainId: chainStore.osmosis.chainId,
       enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
     });
@@ -154,7 +184,9 @@ export const OneClickTradingSettings = ({
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
     setInitialTransaction1CTParams(transaction1CTParams);
-  }, [initialTransaction1CTParams, transaction1CTParams]);
+    setChanges(externalChanges);
+    setInitialChanges(externalChanges);
+  }, [externalChanges, initialTransaction1CTParams, transaction1CTParams]);
 
   const {
     isOpen: isDiscardDialogOpen,
@@ -177,11 +209,30 @@ export const OneClickTradingSettings = ({
   ) => {
     setTransaction1CTParamsProp((prevParams) => {
       const nextParams = runIfFn(newParamsOrFn, prevParams);
+
+      if (!initialTransaction1CTParams || !nextParams) {
+        console.error("Transaction params are undefined");
+        return prevParams;
+      }
+
       setChanges(
-        compare1CTTransactionParams({
-          prevParams: initialTransaction1CTParams!,
-          nextParams: nextParams!,
-        })
+        Array.from(
+          new Set([
+            /**
+             * Spreading the changes and then merging with the new changes
+             * ensures that the changes from the previous modal open are not overwritten
+             *
+             * If I have already made a change, and returned to the review order modal,
+             * then I start editing again I expect my previous changes to be in the state
+             * and the previously changed parameters displayed the same way as current change
+             */
+            ...changes,
+            ...compare1CTTransactionParams({
+              prevParams: initialTransaction1CTParams!,
+              nextParams: nextParams!,
+            }),
+          ])
+        )
       );
 
       return nextParams;
@@ -200,6 +251,8 @@ export const OneClickTradingSettings = ({
         )} / ${formatSpendLimit(initialTransaction1CTParams.spendLimit)}`
       : undefined;
 
+  const changesWithoutIsEnabled = changes.filter((c) => c !== "isEnabled");
+
   return (
     <>
       <DiscardChangesConfirmationModal
@@ -215,34 +268,36 @@ export const OneClickTradingSettings = ({
         onCancel={closeCloseConfirmDialog}
         onDiscard={onClose!}
       />
+      {onClose && (
+        <ModalCloseButton
+          onClick={() => {
+            if (standalone) {
+              if (changesWithoutIsEnabled.length > 0) {
+                return openCloseConfirmDialog();
+              }
+            } else {
+              setTransaction1CTParams(initialTransaction1CTParams);
+              setExternalChanges?.(initialChanges);
+            }
+
+            onClose();
+          }}
+        />
+      )}
       <ScreenManager defaultScreen={SettingsScreens.Main}>
         {({ setCurrentScreen }) => (
           <>
             <Screen screenName="main">
-              {onClose && (
-                <ModalCloseButton
-                  onClick={() => {
-                    if (changes.length > 0) {
-                      return openCloseConfirmDialog();
-                    }
-
-                    onClose();
-                  }}
-                />
-              )}
-
               <div className={classNames("flex flex-col gap-6", classes?.root)}>
                 {!hideBackButton && (
-                  <IconButton
+                  <GoBackButton
+                    className="absolute left-7 top-7"
                     onClick={() => {
-                      if (changes.length > 0) {
+                      if (standalone && changesWithoutIsEnabled.length > 0) {
                         return onOpenDiscardDialog();
                       }
                       onGoBack();
                     }}
-                    className="absolute left-7 top-7 w-fit text-osmoverse-400 hover:text-osmoverse-100"
-                    icon={<Icon id="chevron-left" width={16} height={16} />}
-                    aria-label="Go Back"
                   />
                 )}
 
@@ -267,7 +322,9 @@ export const OneClickTradingSettings = ({
                           className:
                             "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
                         })}
-                        // TODO: Add link
+                        href="https://support.osmosis.zone/tutorials/1clicktrading"
+                        target="_blank"
+                        rel="noopener noreferrer"
                       >
                         {t("oneClickTrading.introduction.learnMore")} ↗️
                       </a>
@@ -276,38 +333,51 @@ export const OneClickTradingSettings = ({
                 </div>
 
                 <div className="flex flex-col gap-0">
-                  <SettingRow
-                    title={t("oneClickTrading.settings.enableTitle")}
-                    onClick={() => {
-                      if (hasExistingSession) onEndSession?.();
-                      setTransaction1CTParams((params) => {
-                        if (!params) throw new Error("1CT Params is undefined");
-                        return {
-                          ...params,
-                          isOneClickEnabled: !params.isOneClickEnabled,
-                        };
-                      });
-                    }}
-                    content={
-                      <div className="flex items-center gap-3">
-                        {hasExistingSession && isEndingSession && (
-                          <p className="text-wosmongton-200">
-                            {t("oneClickTrading.settings.endingSession")}
-                          </p>
-                        )}
-                        {(isLoading || isEndingSession) && (
-                          <Spinner className="text-wosmongton-200" />
-                        )}{" "}
-                        <Switch
-                          disabled={isSendingTx || isEndingSession || isLoading}
-                          checked={
-                            transaction1CTParams?.isOneClickEnabled ?? false
+                  {standalone && (
+                    <SettingRow
+                      title={t("oneClickTrading.settings.enableTitle")}
+                      onClick={() => {
+                        if (hasExistingSession) onEndSession?.();
+                        setTransaction1CTParams((params) => {
+                          if (!params)
+                            throw new Error("1CT Params is undefined");
+
+                          const nextValue = !params.isOneClickEnabled;
+                          if (nextValue) {
+                            logEvent([
+                              EventName.OneClickTrading.enableOneClickTrading,
+                            ]);
                           }
-                        />
-                      </div>
-                    }
-                    isDisabled={isSendingTx || isEndingSession}
-                  />
+
+                          return {
+                            ...params,
+                            isOneClickEnabled: nextValue,
+                          };
+                        });
+                      }}
+                      content={
+                        <div className="flex items-center gap-3">
+                          {hasExistingSession && isEndingSession && (
+                            <p className="text-wosmongton-200">
+                              {t("oneClickTrading.settings.endingSession")}
+                            </p>
+                          )}
+                          {(isLoading || isEndingSession) && (
+                            <Spinner className="text-wosmongton-200" />
+                          )}{" "}
+                          <Switch
+                            disabled={
+                              isSendingTx || isEndingSession || isLoading
+                            }
+                            checked={
+                              transaction1CTParams?.isOneClickEnabled ?? false
+                            }
+                          />
+                        </div>
+                      }
+                      isDisabled={isSendingTx || isEndingSession}
+                    />
+                  )}
                   <SettingRow
                     title={t("oneClickTrading.settings.spendLimitTitle")}
                     onClick={() => setCurrentScreen(SettingsScreens.SpendLimit)}
@@ -330,39 +400,6 @@ export const OneClickTradingSettings = ({
                                 transaction1CTParams?.spendLimit
                               )}{" "}
                           {transaction1CTParams?.spendLimit.fiatCurrency.currency.toUpperCase()}
-                        </p>
-                        <Icon
-                          id="chevron-right"
-                          width={18}
-                          height={18}
-                          className="text-osmoverse-500 group-hover:text-white-full"
-                        />
-                      </Button>
-                    }
-                    isDisabled={isDisabled}
-                  />
-                  <SettingRow
-                    title={t("oneClickTrading.settings.networkFeeLimitTitle")}
-                    onClick={() =>
-                      setCurrentScreen(SettingsScreens.NetworkFeeLimit)
-                    }
-                    content={
-                      <Button
-                        variant="link"
-                        size="sm"
-                        className={classNames(
-                          "flex items-center gap-2 px-0 !text-base text-wosmongton-200 transition-none hover:no-underline group-hover:text-white-full",
-                          changes.includes("networkFeeLimit") &&
-                            "text-bullish-400"
-                        )}
-                        disabled={isDisabled}
-                      >
-                        <p>
-                          {transaction1CTParams
-                            ? formatPretty(
-                                transaction1CTParams?.networkFeeLimit
-                              )
-                            : ""}
                         </p>
                         <Icon
                           id="chevron-right"
@@ -411,53 +448,63 @@ export const OneClickTradingSettings = ({
                   />
                 </div>
 
-                {hasExistingSession &&
-                  changes.length > 0 &&
+                {standalone &&
+                  hasExistingSession &&
+                  changes.filter((c) => c !== "isEnabled").length > 0 &&
                   (!isSendingTx || !isEndingSession) && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        loadingText={t(
-                          "oneClickTrading.settings.editSessionButton"
-                        )}
                       >
                         {t("oneClickTrading.settings.editSessionButton")}
                       </Button>
                     </div>
                   )}
 
-                {!hasExistingSession &&
+                {standalone &&
+                  !hasExistingSession &&
                   transaction1CTParams?.isOneClickEnabled && (
                     <div className="px-8">
                       <Button
-                        className="w-full"
+                        className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        loadingText={t("oneClickTrading.settings.startButton")}
                       >
                         {t("oneClickTrading.settings.startButton")}
                       </Button>
                     </div>
                   )}
 
-                {isOneClickTradingEnabled &&
+                {standalone &&
+                  isOneClickTradingEnabled &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
-                    <SkeletonLoader
-                      className="h-5 self-center"
-                      isLoaded={!isLoadingEstimateRemoveTx}
-                    >
-                      <p className="text-center text-caption font-caption text-osmoverse-300">
-                        {t("oneClickTrading.settings.feeToDisable")} ~
-                        {estimateRemoveTxData?.gasAmount.toString() ??
-                          "0.000000 OSMO"}{" "}
-                        (
-                        {estimateRemoveTxData?.gasUsdValueToPay.toString() ??
-                          "(< $0.00)"}
-                        )
-                      </p>
-                    </SkeletonLoader>
+                    <div className="flex flex-col gap-2">
+                      <SkeletonLoader
+                        className="h-5 self-center"
+                        isLoaded={!isLoadingEstimateRemoveTx}
+                      >
+                        <p className="text-center text-caption font-caption text-osmoverse-300">
+                          {t("oneClickTrading.settings.feeToDisable")} ~
+                          {estimateRemoveTxData?.gasAmount.toString() ??
+                            "0.000000 OSMO"}{" "}
+                          (
+                          {estimateRemoveTxData?.gasUsdValueToPay ? (
+                            <>
+                              {estimateRemoveTxData.gasUsdValueToPay
+                                .toDec()
+                                .lte(new Dec(0.001))
+                                ? `< ${estimateRemoveTxData.gasUsdValueToPay.symbol}0.001`
+                                : estimateRemoveTxData.gasUsdValueToPay.toString()}
+                            </>
+                          ) : (
+                            "(< $0.00)"
+                          )}
+                          )
+                        </p>
+                      </SkeletonLoader>
+                    </div>
                   )}
               </div>
             </Screen>
@@ -477,17 +524,6 @@ export const OneClickTradingSettings = ({
                       ? `${remainingSpendLimit} ${t("remaining")}`
                       : undefined
                   }
-                />
-              </div>
-            </Screen>
-
-            <Screen screenName={SettingsScreens.NetworkFeeLimit}>
-              <div
-                className={classNames("flex flex-col gap-12", classes?.root)}
-              >
-                <NetworkFeeLimitScreen
-                  transaction1CTParams={transaction1CTParams!}
-                  setTransaction1CTParams={setTransaction1CTParams}
                 />
               </div>
             </Screen>

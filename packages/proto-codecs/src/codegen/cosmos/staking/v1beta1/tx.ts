@@ -1,9 +1,9 @@
 //@ts-nocheck
 import { Pubkey } from "@cosmjs/amino";
-import { Decimal } from "@cosmjs/math";
 import { decodePubkey, encodePubkey } from "@cosmjs/proto-signing";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "../../../decimals";
 import {
   Any,
   AnyAmino,

@@ -1,27 +1,12 @@
 import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
+import { type OfflineAminoSigner } from "@cosmjs/amino";
+import type { StdFee } from "@cosmjs/launchpad";
 import {
-  AminoMsg,
-  encodeSecp256k1Pubkey,
-  encodeSecp256k1Signature,
-  OfflineAminoSigner,
-} from "@cosmjs/amino";
-import { fromBase64 } from "@cosmjs/encoding";
-import { StdFee } from "@cosmjs/launchpad";
-import { Int53 } from "@cosmjs/math";
-import {
-  EncodeObject,
-  encodePubkey,
-  makeAuthInfoBytes,
-  makeSignDoc,
-  OfflineDirectSigner,
-  Registry,
+  type EncodeObject,
+  type OfflineDirectSigner,
+  type Registry,
 } from "@cosmjs/proto-signing";
-import {
-  AminoTypes,
-  BroadcastTxError,
-  SignerData,
-  SigningStargateClient,
-} from "@cosmjs/stargate";
+import type { AminoTypes, SignerData } from "@cosmjs/stargate";
 import {
   MainWalletBase,
   WalletConnectOptions,
@@ -32,7 +17,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { Dec } from "@keplr-wallet/unit";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -41,14 +25,8 @@ import {
   Functionify,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import {
-  cosmosProtoRegistry,
-  cosmwasmProtoRegistry,
-  ibcProtoRegistry,
-  osmosis,
-  osmosisProtoRegistry,
-} from "@osmosis-labs/proto-codecs";
-import { TxExtension } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx";
+import type { osmosisAminoConverters } from "@osmosis-labs/proto-codecs";
+import { queryRPCStatus } from "@osmosis-labs/server";
 import {
   encodeAnyBase64,
   QuoteStdFee,
@@ -56,18 +34,19 @@ import {
   TxTracer,
 } from "@osmosis-labs/tx";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,
+  getChain,
   isNil,
+  OneClickTradingMaxGasLimit,
   unixNanoSecondsToSeconds,
 } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
-import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import type { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import dayjs from "dayjs";
-import Long from "long";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
@@ -75,7 +54,7 @@ import { Optional, UnionToIntersection } from "utility-types";
 import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
 import { InsufficientBalanceForFeeError } from "../ui-config";
-import { aminoConverters } from "./amino-converters";
+import { getAminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   CosmosRegistryWallet,
@@ -89,6 +68,7 @@ import {
   AccountStoreNoBroadcastErrorEvent,
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
+  getPublicKeyTypeUrl,
   getWalletEndpoints,
   HasUsedOneClickTradingLocalStorageKey,
   logger,
@@ -101,9 +81,6 @@ import {
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export const GasMultiplier = 1.5;
-
-// The value of zero represent that there is not timeout height set.
-const timeoutHeightDisabledStr = "0";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -146,13 +123,44 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     IPromiseBasedObservable<boolean>
   >();
 
-  private aminoTypes = new AminoTypes(aminoConverters);
-  private registry = new Registry([
-    ...cosmwasmProtoRegistry,
-    ...cosmosProtoRegistry,
-    ...ibcProtoRegistry,
-    ...osmosisProtoRegistry,
-  ]);
+  private _aminoTypes: AminoTypes | null = null;
+  private _registry: Registry | null = null;
+
+  private async getAminoTypes() {
+    if (!this._aminoTypes) {
+      const [{ AminoTypes }, aminoConverters] = await Promise.all([
+        import("@cosmjs/stargate"),
+        getAminoConverters(),
+      ]);
+      this._aminoTypes = new AminoTypes(aminoConverters);
+    }
+    return this._aminoTypes;
+  }
+
+  private async getRegistry() {
+    if (!this._registry) {
+      const [
+        {
+          cosmosProtoRegistry,
+          cosmwasmProtoRegistry,
+          ibcProtoRegistry,
+          osmosisProtoRegistry,
+        },
+        { Registry },
+      ] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+
+      this._registry = new Registry([
+        ...cosmwasmProtoRegistry,
+        ...cosmosProtoRegistry,
+        ...ibcProtoRegistry,
+        ...osmosisProtoRegistry,
+      ]);
+    }
+    return this._registry;
+  }
 
   /**
    * We make sure that the 'base' field always has as its value the native chain parameter
@@ -208,7 +216,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     makeObservable(this);
 
     autorun(async () => {
-      const isOneClickTradingEnabled = await this.getShouldUseOneClickTrading();
+      const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
       const oneClickTradingInfo = await this.getOneClickTradingInfo();
       const hasUsedOneClickTrading = await this.getHasUsedOneClickTrading();
       runInAction(() => {
@@ -222,21 +230,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.walletManagerAssets,
       wallets,
       logger,
       true,
       true,
-      false,
+      ["https://daodao.zone", "https://dao.daodao.zone"],
+      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
-      {
-        signingStargate: () => ({
-          aminoTypes: this.aminoTypes,
-          registry: this
-            .registry as unknown as SigningStargateClient["registry"],
-        }),
-      },
+      undefined,
       {
         endpoints: getWalletEndpoints(this.chains),
       },
@@ -497,13 +499,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    *   - `onBroadcasted`: Invoked when the transaction is successfully broadcasted.
    *   - `onFulfill`: Invoked when the transaction is successfully fulfilled.
    *
-   * @throws {Error} Throws an error if:
+   * @throws Throws an error if:
    *   - Wallet for the given chain is not provided or not connected.
    *   - There are no messages to send.
    *   - Wallet address is missing.
    *   - Broadcasting the transaction fails.
    *
-   * @returns {Promise<void>} Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
+   * @returns Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
    */
   async signAndBroadcast(
     chainNameOrId: string,
@@ -513,11 +515,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     fee?: StdFee,
     signOptions?: SignOptions,
     onTxEvents?:
-      | ((tx: DeliverTxResponse) => void)
+      | ((tx: DeliverTxResponse) => void | Promise<void>)
       | {
           onBroadcastFailed?: (e?: Error) => void;
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
+          onSign?: () => Promise<void> | void;
         }
   ) {
     runInAction(() => {
@@ -545,6 +548,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
       let onFulfill: ((tx: DeliverTxResponse) => void) | undefined;
+      let onSign: (() => Promise<void> | void) | undefined;
 
       if (onTxEvents) {
         if (typeof onTxEvents === "function") {
@@ -552,6 +556,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         } else {
           onBroadcasted = onTxEvents?.onBroadcasted;
           onFulfill = onTxEvents?.onFulfill;
+          onSign = onTxEvents?.onSign;
         }
       }
 
@@ -566,10 +571,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
-      let usedFee: StdFee;
+      // Estimate gas fee & token if not provided
       if (typeof fee === "undefined") {
         try {
-          usedFee = await this.estimateFee({
+          fee = await this.estimateFee({
             wallet,
             messages: msgs,
             signOptions: mergedSignOptions,
@@ -584,18 +589,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
           throw e;
         }
-      } else {
-        usedFee = fee;
       }
 
       const txRaw = await this.sign({
         wallet,
-        fee: usedFee,
+        fee,
         memo: memo || "",
         messages: msgs,
         signOptions: mergedSignOptions,
       });
+      const { TxRaw } = await import("cosmjs-types/cosmos/tx/v1beta1/tx");
       const encodedTx = TxRaw.encode(txRaw).finish();
+
+      if (this.options.preTxEvents?.onSign) {
+        await this.options.preTxEvents.onSign();
+      }
+
+      if (onSign) {
+        await onSign();
+      }
 
       const restEndpoint = getEndpointString(
         await wallet.getRestEndpoint(true)
@@ -632,6 +644,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       });
 
       if (broadcasted.code) {
+        const { BroadcastTxError } = await import("@cosmjs/stargate");
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
       }
 
@@ -687,7 +700,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Refetch balances.
        * After sending tx, the balances have probably changed due to the fee.
        */
-      for (const feeAmount of usedFee.amount) {
+      for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
         const queries = this.queriesStore.get(chainNameOrId);
@@ -707,7 +720,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       if (onFulfill) {
-        onFulfill(tx);
+        await onFulfill(tx);
       }
     } catch (e) {
       const error = e as Error | AccountStoreNoBroadcastErrorEvent;
@@ -774,11 +787,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     const isWithinNetworkFeeLimit =
-      oneClickTradingInfo &&
-      fee?.amount.length === 1 &&
-      fee?.amount[0].denom === "uosmo" &&
-      new Dec(fee.amount[0].amount).lte(
-        new Dec(oneClickTradingInfo.networkFeeLimit.amount)
+      !!oneClickTradingInfo &&
+      new Dec(fee.gas).lte(
+        new Dec(
+          typeof oneClickTradingInfo.networkFeeLimit !== "string"
+            ? OneClickTradingMaxGasLimit
+            : oneClickTradingInfo.networkFeeLimit
+        )
       );
 
     if (
@@ -822,15 +837,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      * If the message is an authenticator message, force the direct signing.
      * This is because the authenticator message should be signed with proto for now.
      */
-    const isAuthenticatorMsg = messages.some(
+
+    type TypeUrl = keyof typeof osmosisAminoConverters;
+    const getTypeUrl = (typeUrl: TypeUrl) => {
+      return typeUrl;
+    };
+
+    // @osmosis-labs/proto-codec has been updated for "/osmosis.concentratedliquidity.v1beta1.MsgWithdrawPosition"
+    // TODO: Copy what's been done there for this message below
+    const doesTxNeedDirectSigning = messages.some(
       (message) =>
         message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgAddAuthenticator.typeUrl ||
-        message.typeUrl ===
-          osmosis.smartaccount.v1beta1.MsgRemoveAuthenticator.typeUrl
+        getTypeUrl("/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference")
     );
 
-    const forceSignDirect = isAuthenticatorMsg;
+    const forceSignDirect = doesTxNeedDirectSigning;
 
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
       !forceSignDirect
@@ -885,11 +906,48 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("One click trading info is not available");
     }
 
+    if (memo === "") {
+      // If the memo is empty, set it to "1CT" so we know it originated from the frontend for
+      // QA purposes.
+      memo = "1CT";
+    } else {
+      // Otherwise, tack on "1CT" to the end of the memo.
+      memo += " \n1CT";
+    }
+
+    const [
+      { encodeSecp256k1Pubkey, encodeSecp256k1Signature },
+      { TxExtension },
+      { fromBase64 },
+      { Int53 },
+      { makeAuthInfoBytes, makeSignDoc, encodePubkey },
+      { TxRaw },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import(
+        "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
+      ),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
 
-    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encodeTxBody({
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
+
+    const registry = await this.getRegistry();
+    const txBodyBytes = registry.encodeTxBody({
       messages,
       memo,
       nonCriticalExtensionOptions: [
@@ -985,31 +1043,81 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (memo === "") {
-      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
       // QA purposes.
-      memo = "FE";
+      memo = "OsmosisFE";
     } else {
-      // Otherwise, tack on "FE" to the end of the memo.
-      memo += " \nFE";
+      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      memo += " \nOsmosisFE";
     }
+
+    const [
+      { encodeSecp256k1Pubkey },
+      { encodePubkey, makeAuthInfoBytes },
+      { fromBase64 },
+      { Int53 },
+      { TxRaw },
+      { SignMode },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import("@cosmjs/proto-signing"),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+      import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
+    ]);
 
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
 
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
+
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    const msgs = messages.map((msg) => {
-      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
+    const aminoTypes = await this.getAminoTypes();
+    const registry = await this.getRegistry();
+
+    /**
+     * Encode the messages to the proto format to normalize data types like Decimals.
+     * Then, convert the messages to their amino representations.
+     *
+     * This is necessary due to changes in Decimals in Osmosis v26.
+     * It will fix the following transactions:
+     * - Unbonding Weighted pool shares
+     * - Withdrawing concentrated liquidity positions
+     * - Creating all types of pools
+     */
+    const normalizedMessages = messages.map((msg) => {
+      const encodedMessage = registry.encode(msg);
+      const decodedMessage = registry.decode({
+        typeUrl: msg.typeUrl,
+        value: encodedMessage,
+      });
+      return {
+        value: decodedMessage,
+        typeUrl: msg.typeUrl,
+      } satisfies EncodeObject;
+    });
+
+    const msgs = normalizedMessages.map((msg) => {
+      const res = aminoTypes.toAmino(msg);
       // Include the 'memo' field again because the 'registry' omits it
       if (msg.value.memo) {
         res.value.memo = msg.value.memo;
       }
       return res;
-    }) as AminoMsg[];
+    });
 
     const timeoutHeight = await this.getTimeoutHeight(chainId);
 
-    const signDoc = makeSignDocAmino(
+    const signDoc = await makeSignDocAmino(
       msgs,
       fee,
       chainId,
@@ -1031,18 +1139,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           signDoc
         ));
 
-    const signedTxBodyBytes = this.registry?.encodeTxBody({
-      messages: signed.msgs.map((msg) => {
-        const res: any =
-          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
+    const signedTxBodyBytes = registry.encodeTxBody({
+      messages,
       memo: signed.memo,
-      timeoutHeight: BigInt(signDoc.timeout_height ?? timeoutHeightDisabledStr),
+      timeoutHeight: BigInt(signDoc.timeout_height ?? "0"),
     });
 
     const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
@@ -1067,24 +1167,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   // If for any reason we fail to get the latest block height, we disable the timeout height by returning
   // a string value of 0.
   private async getTimeoutHeight(chainId: string): Promise<bigint> {
-    // Get status query.
-    const queryRPCStatus = this.queriesStore.get(chainId).cosmos.queryRPCStatus;
-
-    // Wait for the response.
-    const result = await queryRPCStatus.waitFreshResponse();
-
-    // Retrieve the latest block height. If not present, set it to 0.
-    const latestBlockHeight = result
-      ? result.data.result.sync_info.latest_block_height
-      : timeoutHeightDisabledStr;
-
-    // If for any reason we fail to get the latest block height, we disable the timeout height.
-    if (latestBlockHeight == timeoutHeightDisabledStr) {
-      return BigInt(timeoutHeightDisabledStr);
-    }
-
-    // Otherwise we compute the timeout height as given by latest block height + offset.
-    return BigInt(latestBlockHeight) + NEXT_TX_TIMEOUT_HEIGHT_OFFSET;
+    const chain = getChain({ chainId, chainList: this.chains });
+    if (!chain) return BigInt("0");
+    const status = await queryRPCStatus({ restUrl: chain.apis.rpc[0].address });
+    return (
+      BigInt(status.result.sync_info.latest_block_height) +
+      NEXT_TX_TIMEOUT_HEIGHT_OFFSET
+    );
   }
 
   private async signDirect({
@@ -1121,17 +1210,43 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
+
+    const [
+      { encodeSecp256k1Pubkey },
+      { encodePubkey },
+      { fromBase64 },
+      { Int53 },
+      { makeAuthInfoBytes, makeSignDoc },
+      { TxRaw },
+    ] = await Promise.all([
+      import("@cosmjs/amino"),
+      import("@cosmjs/proto-signing"),
+      import("@cosmjs/encoding"),
+      import("@cosmjs/math"),
+      import("@cosmjs/proto-signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
+
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
 
+    const pubKeyTypeUrl = getPublicKeyTypeUrl({
+      chainId: wallet.chain.chain_id,
+      chainFeatures:
+        this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
+          ?.features ?? [],
+    });
+
+    pubkey.typeUrl = pubKeyTypeUrl;
+
     if (memo === "") {
-      // If the memo is empty, set it to "FE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
       // QA purposes.
-      memo = "FE";
+      memo = "OsmosisFE";
     } else {
-      // Otherwise, tack on "FE" to the end of the memo.
-      memo += " \nFE";
+      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      memo += " \nOsmosisFE";
     }
 
     const txBodyEncodeObject = {
@@ -1141,7 +1256,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         memo: memo,
       },
     };
-    const txBodyBytes = this.registry?.encode(txBodyEncodeObject) as Uint8Array;
+
+    const registry = await this.getRegistry();
+    const txBodyBytes = registry.encode(txBodyEncodeObject);
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
@@ -1161,10 +1278,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          {
-            ...signDoc,
-            accountNumber: Long.fromString(signDoc.accountNumber.toString()),
-          },
+          signDoc,
           signOptions
         )
       : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
@@ -1261,7 +1375,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
-      const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
+      const registry = await this.getRegistry();
+      const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
       // check for one click trading tx decoration
       const shouldBeSignedWithOneClickTrading =
@@ -1280,8 +1395,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           nonCriticalExtensionOptions:
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
-          onlyDefaultFeeDenom: signOptions.useOneClickTrading,
           gasMultiplier: GasMultiplier,
+        } satisfies {
+          chainId: string;
+          messages: { typeUrl: string; value: string }[];
+          nonCriticalExtensionOptions?: { typeUrl: string; value: string }[];
+          bech32Address: string;
+          onlyDefaultFeeDenom?: boolean;
+          gasMultiplier: number;
         },
       });
 
@@ -1295,7 +1416,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       }
 
-      // avoid returning isNeededForTx, a utility returned from the estimateGasFee function that is not used here
+      // avoid returning isSubtractiveFee, a utility returned from the estimateGasFee function that is not used here
       // Also, for now, only single-token fee payments are supported.
       return {
         gas: estimate.gas,
@@ -1350,7 +1471,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }: {
     messages: readonly EncodeObject[];
   }): Promise<boolean> {
-    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const isOneClickTradingEnabled = await this.isOneClickTradingEnabled();
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (!oneClickTradingInfo || !isOneClickTradingEnabled) {
@@ -1373,6 +1494,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     oneClickTradingInfo: OneClickTradingInfo | undefined;
   }) {
     if (!oneClickTradingInfo) return undefined;
+    const { TxExtension } = await import(
+      "@osmosis-labs/proto-codecs/build/codegen/osmosis/smartaccount/v1beta1/tx"
+    );
     return [
       {
         typeUrl: "/osmosis.smartaccount.v1beta1.TxExtension",
@@ -1410,7 +1534,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  async isOneCLickTradingEnabled(): Promise<boolean> {
+  async isOneClickTradingEnabled(): Promise<boolean> {
     const oneClickTradingInfo = await this.getOneClickTradingInfo();
 
     if (isNil(oneClickTradingInfo)) return false;

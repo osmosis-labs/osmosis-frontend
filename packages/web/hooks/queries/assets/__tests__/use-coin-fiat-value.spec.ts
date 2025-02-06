@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 
 import { mulPrice } from "../use-coin-fiat-value";
 

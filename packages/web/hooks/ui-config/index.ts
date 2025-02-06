@@ -8,4 +8,3 @@ export * from "./use-lock-token-config";
 export * from "./use-slippage-config";
 export * from "./use-staked-amount-config";
 export * from "./use-superfluid-pool";
-export * from "./use-transfer-config";

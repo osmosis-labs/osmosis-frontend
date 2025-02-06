@@ -31,6 +31,8 @@ const buttonVariants = cva(
         destructive: "bg-rust-700 shadow-sm hover:bg-rust-700/90",
         outline:
           "border-wosmongton-400 border-2 bg-transparent shadow-sm hover:bg-wosmongton-400 hover:text-white-full",
+        "secondary-outline":
+          "border-osmoverse-700 border-2 bg-transparent text-wosmongton-200 hover:bg-osmoverse-825 hover:text-white-full",
         secondary:
           "bg-osmoverse-825 text-wosmongton-200 shadow hover:bg-osmoverse-825/80",
         success:
@@ -41,8 +43,11 @@ const buttonVariants = cva(
       size: {
         default: "h-14 px-6 py-2 rounded-xl",
         sm: "h-6 py-1 px-1.5 rounded-md text-caption",
+        xsm: "h-8 px-3 py-1.5 rounded-full",
         md: "h-10 py-2 px-3 rounded-xl",
-        icon: "h-10 w-10 rounded-full",
+        "lg-full": "h-12 py-3 rounded-full",
+        "sm-icon": "h-8 w-8 rounded-full",
+        icon: "h-12 w-12 rounded-full",
       },
     },
     defaultVariants: {
@@ -57,7 +62,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
-  loadingText?: string;
+  loadingText?: ReactNode;
   classes?: Partial<Record<"spinnerContainer" | "spinner", string>>;
 }
 
@@ -91,7 +96,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             )}
           >
             <Spinner className={classes?.spinner} />
-            {loadingText && <span>{loadingText}</span>}
+            {typeof loadingText !== "undefined" ? (
+              <>
+                {typeof loadingText === "string" ? (
+                  <span>{loadingText}</span>
+                ) : (
+                  loadingText
+                )}
+              </>
+            ) : (
+              props.children
+            )}
           </div>
         ) : (
           props.children
@@ -165,48 +180,6 @@ const ArrowButton = forwardRef<
 
 ArrowButton.displayName = "ArrowButton";
 
-/**
- * Renders an icon within a button.
- */
-// TODO - migrated this from another component, ideally should be a button variant
-const LinkIconButton = forwardRef<
-  HTMLAnchorElement,
-  {
-    icon?: ReactNode;
-    "aria-label": string;
-  } & CustomClasses &
-    AnchorHTMLAttributes<HTMLAnchorElement>
->((props, ref) => {
-  const { icon, children, "aria-label": ariaLabel, className, ...rest } = props;
-
-  const element = icon || children;
-  const _children = isValidElement(element)
-    ? cloneElement(element as any, {
-        "aria-hidden": true,
-        focusable: false,
-      })
-    : null;
-
-  return (
-    <a
-      ref={ref}
-      aria-label={ariaLabel}
-      {...rest}
-      className="flex items-center justify-center"
-    >
-      <Button
-        size="icon"
-        variant="ghost"
-        className="bg-osmoverse-850 hover:bg-osmoverse-700"
-      >
-        {_children}
-      </Button>
-    </a>
-  );
-});
-
-LinkIconButton.displayName = "LinkIconButton";
-
 // TODO - migrated this from another component, ideally should be a button variant
 export const ChartButton: FunctionComponent<{
   alt?: string;
@@ -258,7 +231,7 @@ export const IconButton = forwardRef<
   const {
     icon,
     children,
-    variant = "ghost",
+    variant = "secondary",
     size = "icon",
     "aria-label": ariaLabel,
     ...rest
@@ -285,4 +258,20 @@ export const IconButton = forwardRef<
   );
 });
 
-export { ArrowButton, Button, buttonVariants, LinkIconButton, ShowMoreButton };
+const GoBackButton = forwardRef<
+  HTMLButtonElement,
+  ButtonHTMLAttributes<HTMLButtonElement>
+>((props, ref) => (
+  <IconButton
+    ref={ref}
+    {...props}
+    className={classNames(
+      "z-50 !h-12 !w-12 cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100 md:!h-8 md:!w-8",
+      props.className
+    )}
+    icon={<Icon id="arrow-left-thin" className="md:h-4 md:w-4" />}
+    aria-label="Go back"
+  />
+));
+
+export { ArrowButton, Button, buttonVariants, GoBackButton, ShowMoreButton };

@@ -307,7 +307,7 @@ export interface MsgDelegateBondedTokensAmino {
   lockID?: string;
 }
 export interface MsgDelegateBondedTokensAminoMsg {
-  type: "osmosis/valsetpref/delegate-bonded-tokens";
+  type: "osmosis/MsgDelegateBondedTokens";
   value: MsgDelegateBondedTokensAmino;
 }
 /**
@@ -1496,7 +1496,7 @@ export const MsgDelegateBondedTokens = {
     const obj: any = {};
     obj.delegator = message.delegator === "" ? undefined : message.delegator;
     obj.lockID =
-      message.lockID !== BigInt(0) ? message.lockID.toString() : undefined;
+      message.lockID !== BigInt(0) ? (message.lockID?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1508,7 +1508,7 @@ export const MsgDelegateBondedTokens = {
     message: MsgDelegateBondedTokens
   ): MsgDelegateBondedTokensAminoMsg {
     return {
-      type: "osmosis/valsetpref/delegate-bonded-tokens",
+      type: "osmosis/MsgDelegateBondedTokens",
       value: MsgDelegateBondedTokens.toAmino(message),
     };
   },

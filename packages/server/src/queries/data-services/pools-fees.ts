@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 export interface PoolFees {
   last_update_at: number;
@@ -15,6 +15,6 @@ export interface PoolFees {
 }
 
 export function queryPoolsFees(): Promise<PoolFees> {
-  const url = new URL("/fees/v1/pools", TIMESERIES_DATA_URL);
+  const url = new URL("/fees/v1/pools", HISTORICAL_DATA_URL);
   return apiClient<PoolFees>(url.toString());
 }

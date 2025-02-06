@@ -2,7 +2,6 @@ import {
   createSortSchema,
   CursorPaginationSchema,
   getCachedPoolIncentivesMap,
-  getCachedPoolMarketMetricsMap,
   getCachedTransmuterTotalPoolLiquidity,
   getPool,
   getPools,
@@ -12,8 +11,6 @@ import {
   getUserPools,
   getUserSharePools,
   IncentivePoolFilterSchema,
-  isIncentivePoolFiltered,
-  maybeCachePaginatedItems,
   PoolFilterSchema,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
@@ -22,17 +19,17 @@ import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "./api";
 import { UserOsmoAddressSchema } from "./parameter-types";
 
-const GetInfinitePoolsSchema = CursorPaginationSchema.and(PoolFilterSchema).and(
-  IncentivePoolFilterSchema
-);
+const GetInfinitePoolsSchema = CursorPaginationSchema.merge(
+  PoolFilterSchema
+).merge(IncentivePoolFilterSchema);
 
 const marketIncentivePoolsSortKeys = [
   "totalFiatValueLocked",
-  "feesSpent7dUsd",
-  "feesSpent24hUsd",
-  "volume7dUsd",
-  "volume24hUsd",
-  "aprBreakdown.total",
+  "market.feesSpent7dUsd",
+  "market.feesSpent24hUsd",
+  "market.volume7dUsd",
+  "market.volume24hUsd",
+  "incentives.aprBreakdown.total.upper",
 ] as const;
 export type MarketIncentivePoolSortKey =
   (typeof marketIncentivePoolsSortKeys)[number];
@@ -84,9 +81,9 @@ export const poolsRouter = createTRPCRouter({
         bech32Address: userOsmoAddress,
       })
     ),
-  getMarketIncentivePools: publicProcedure
+  getPools: publicProcedure
     .input(
-      GetInfinitePoolsSchema.and(
+      GetInfinitePoolsSchema.merge(
         z.object({
           sort: createSortSchema(marketIncentivePoolsSortKeys).default({
             keyPath: "totalFiatValueLocked",
@@ -100,6 +97,7 @@ export const poolsRouter = createTRPCRouter({
           search,
           minLiquidityUsd,
           sort: sortInput,
+          denoms,
           types,
           incentiveTypes,
           cursor,
@@ -107,73 +105,23 @@ export const poolsRouter = createTRPCRouter({
         },
         ctx,
       }) =>
-        maybeCachePaginatedItems({
-          getFreshItems: async () => {
-            const poolsPromise = getPools({
-              ...ctx,
-              search,
-              minLiquidityUsd,
-              types,
-            });
-            const incentivesPromise = getCachedPoolIncentivesMap();
-            const marketMetricsPromise = getCachedPoolMarketMetricsMap();
-
-            /** Get remote data via concurrent requests, if needed. */
-            const [pools, incentives, marketMetrics] = await Promise.all([
-              poolsPromise,
-              incentivesPromise,
-              marketMetricsPromise,
-            ]);
-
-            const marketIncentivePools = pools
-              .map((pool) => {
-                const incentivesForPool = incentives.get(pool.id);
-                const metricsForPool = marketMetrics.get(pool.id) ?? {};
-
-                const isIncentiveFiltered =
-                  incentivesForPool &&
-                  isIncentivePoolFiltered(incentivesForPool, {
-                    incentiveTypes,
-                  });
-
-                if (isIncentiveFiltered) return;
-
-                return {
-                  ...pool,
-                  ...incentivesForPool,
-                  ...metricsForPool,
-                };
-              })
-              .filter((pool): pool is NonNullable<typeof pool> => !!pool);
-
-            // won't sort if searching
-            if (search) return marketIncentivePools;
-            else
-              return sort(
-                marketIncentivePools,
-                sortInput.keyPath,
-                sortInput.direction
-              );
+        getPools({
+          ...ctx,
+          search,
+          minLiquidityUsd,
+          types,
+          incentives: incentiveTypes,
+          denoms,
+          pagination: {
+            cursor,
+            limit,
           },
-          cacheKey: JSON.stringify({
-            search,
-            sortInput,
-            minLiquidityUsd,
-            types,
-            incentiveTypes,
-          }),
-          cursor,
-          limit,
+          sort: sortInput,
         })
     ),
   getSuperfluidPoolIds: publicProcedure.query(({ ctx }) =>
     getSuperfluidPoolIds(ctx)
   ),
-  getPoolMarketMetrics: publicProcedure
-    .input(z.object({ poolId: z.string() }))
-    .query(({ input: { poolId } }) =>
-      getCachedPoolMarketMetricsMap().then((map) => map.get(poolId) ?? null)
-    ),
   getPoolIncentives: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ input: { poolId } }) =>

@@ -1,10 +1,15 @@
 import {
+  getAssets,
+  getLiquidityPerTickRange,
   getPositionHistoricalPerformance,
   mapGetUserPositionDetails,
   mapGetUserPositions,
+  queryClParams,
+  queryPoolmanagerParams,
   queryPositionById,
 } from "@osmosis-labs/server";
-import { sort } from "@osmosis-labs/utils";
+import { AppCurrency } from "@osmosis-labs/types";
+import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -98,4 +103,92 @@ export const concentratedLiquidityRouter = createTRPCRouter({
     .query(({ input: { position }, ctx }) =>
       getPositionHistoricalPerformance({ ...ctx, position })
     ),
+  getLiquidityPerTickRange: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ ctx, input }) => getLiquidityPerTickRange({ ...ctx, ...input })),
+  getBaseTokens: publicProcedure
+    .input(
+      z.object({
+        onlyVerified: z.boolean().default(false),
+        includePreview: z.boolean().default(false),
+      })
+    )
+    .query(({ ctx, input }) =>
+      getAssets({
+        assetLists: ctx.assetLists,
+        onlyVerified: input.onlyVerified,
+        includePreview: input.includePreview,
+      })
+        .map((asset) => {
+          const assetListAsset = getAssetFromAssetList({
+            assetLists: ctx.assetLists,
+            coinMinimalDenom: asset.coinMinimalDenom,
+          });
+
+          if (!assetListAsset) return;
+
+          return {
+            chainName: assetListAsset.rawAsset.chainName,
+            token: {
+              coinDenom: asset.coinDenom,
+              coinDecimals: asset.coinDecimals,
+              coinMinimalDenom: asset.coinMinimalDenom,
+              coinImageUrl: asset.coinImageUrl,
+            } satisfies AppCurrency,
+          };
+        })
+        .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
+    ),
+  getQuoteTokens: publicProcedure.query(async ({ ctx }) => {
+    const {
+      params: { authorized_quote_denoms: authorizedQuoteDenoms },
+    } = await queryPoolmanagerParams({
+      chainList: ctx.chainList,
+      chainId: ctx.chainList[0].chain_id,
+    });
+
+    return authorizedQuoteDenoms
+      .map((quoteMinimalDenom) => {
+        const asset = getAssetFromAssetList({
+          assetLists: ctx.assetLists,
+          coinMinimalDenom: quoteMinimalDenom,
+        });
+
+        if (!asset) return;
+
+        const {
+          symbol,
+          decimals,
+          coinMinimalDenom,
+          rawAsset: { logoURIs },
+        } = asset;
+        return {
+          token: {
+            coinDenom: symbol,
+            coinDecimals: decimals,
+            coinMinimalDenom,
+            coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
+          } satisfies AppCurrency,
+          chainName: asset.rawAsset.chainName,
+        };
+      })
+      .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset));
+  }),
+  getClParams: publicProcedure.query(({ ctx }) =>
+    queryClParams({ ...ctx, chainId: ctx.chainList[0].chain_id }).then(
+      (clParams) => ({
+        authorizedTickSpacing: clParams.params.authorized_tick_spacing,
+        authorizedSpreadFactors: clParams.params.authorized_spread_factors,
+        balancerSharesRewardDiscount:
+          clParams.params.balancer_shares_reward_discount,
+        authorizedQuoteDenoms: clParams.params.authorized_quote_denoms,
+        authorizedUptimes: clParams.params.authorized_uptimes,
+        isPermissionlessPoolCreationEnabled:
+          clParams.params.is_permissionless_pool_creation_enabled,
+        unrestrictedPoolCreatorWhitelist:
+          clParams.params.unrestricted_pool_creator_whitelist,
+        hookGasLimit: clParams.params.hook_gas_limit,
+      })
+    )
+  ),
 });

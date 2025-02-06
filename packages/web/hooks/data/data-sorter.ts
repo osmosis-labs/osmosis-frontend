@@ -1,9 +1,9 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec } from "@osmosis-labs/unit";
 
 import { DataProcessor } from "~/hooks/data/types";
 import { get } from "~/hooks/data/utils";
 
-export type SortingData = string | Dec | { toDec(): Dec } | undefined;
+type SortingData = string | Dec | { toDec(): Dec } | undefined;
 
 /** Sorts ascending a copy of an arbitrary list of objects via key paths. Key path example: `"attributes.color"` */
 export class DataSorter<TData> implements DataProcessor<TData[]> {

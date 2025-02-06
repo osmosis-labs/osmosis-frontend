@@ -271,7 +271,7 @@ export const GenesisState = {
     obj.params = message.params ? Params.toAmino(message.params) : undefined;
     obj.next_authenticator_id =
       message.nextAuthenticatorId !== BigInt(0)
-        ? message.nextAuthenticatorId.toString()
+        ? (message.nextAuthenticatorId?.toString)()
         : undefined;
     if (message.authenticatorData) {
       obj.authenticator_data = message.authenticatorData.map((e) =>

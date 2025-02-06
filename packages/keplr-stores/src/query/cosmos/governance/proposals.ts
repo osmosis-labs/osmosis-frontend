@@ -9,7 +9,7 @@ import {
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "../../../common";
 import { DeepReadonly } from "utility-types";
-import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import { computedFn } from "mobx-utils";
 import { ObservableQueryProposal } from "./proposal";
 import { ObservableQueryStakingPool } from "../staking";
@@ -125,9 +125,9 @@ export class ObservableQueryGovernance extends ObservableChainQuery<GovProposals
     return result.reverse();
   }
 
-  readonly getProposal = computedFn((id: string):
-    | DeepReadonly<ObservableQueryProposal>
-    | undefined => {
-    return this.proposals.find((proposal) => proposal.id === id);
-  });
+  readonly getProposal = computedFn(
+    (id: string): DeepReadonly<ObservableQueryProposal> | undefined => {
+      return this.proposals.find((proposal) => proposal.id === id);
+    }
+  );
 }

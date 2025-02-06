@@ -19,6 +19,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useMount } from "react-use";
 
 import { HighlightsCategories } from "~/components/assets/highlights-categories";
 import { AssetCell } from "~/components/table/cells/asset";
@@ -39,11 +40,11 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
+import { removeQueryParam } from "~/utils/url";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
 import { SubscriptDecimal } from "../chart";
-import { BalancesMoved } from "../funnels/balances-moved";
 import { NoSearchResultsSplash, SearchBox } from "../input";
 import { Spinner } from "../loaders/spinner";
 import { Button } from "../ui/button";
@@ -66,8 +67,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const router = useRouter();
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
-
-  // State
 
   // category
   const [selectedCategory, setCategory] = useState<string | undefined>();
@@ -97,6 +96,15 @@ export const AssetsInfoTable: FunctionComponent<{
         : undefined,
     [selectedCategory]
   );
+
+  useMount(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get("category");
+    if (category) {
+      setCategory(category);
+      removeQueryParam("category");
+    }
+  });
 
   // search
   const [searchQuery, setSearchQuery] = useState<Search | undefined>();
@@ -270,7 +278,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange1h && (
-            <PriceChange className="justify-end" priceChange={priceChange1h} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange1h}
+            />
           ),
       }),
       columnHelper.accessor((row) => row, {
@@ -291,7 +302,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange24h && (
-            <PriceChange className="justify-end" priceChange={priceChange24h} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange24h}
+            />
           ),
       }),
       columnHelper.accessor((row) => row, {
@@ -312,7 +326,10 @@ export const AssetsInfoTable: FunctionComponent<{
           },
         }) =>
           priceChange7d && (
-            <PriceChange className="justify-end" priceChange={priceChange7d} />
+            <PriceChange
+              className="h-fit justify-end"
+              priceChange={priceChange7d}
+            />
           ),
       }),
       columnHelper.accessor(
@@ -402,14 +419,9 @@ export const AssetsInfoTable: FunctionComponent<{
     useDimension<HTMLDivElement>();
   const [searchRef, { height: searchBoxHeight }] =
     useDimension<HTMLInputElement>();
-  const [bannerRef, { height: bannerHeight }] =
-    useDimension<HTMLAnchorElement>();
+
   const totalTopOffset =
-    highlightsHeight +
-    categoriesHeight +
-    searchBoxHeight +
-    bannerHeight +
-    tableTopPadding;
+    highlightsHeight + categoriesHeight + searchBoxHeight + tableTopPadding;
   const navBarOffset = Number(
     isMobile
       ? theme.extend.height["navbar-mobile"].replace("px", "")
@@ -487,7 +499,6 @@ export const AssetsInfoTable: FunctionComponent<{
         placeholder={t("assets.table.search")}
         debounce={500}
       />
-      <BalancesMoved ref={bannerRef} className="my-3" />
       <table
         className={classNames(
           "mt-3",
@@ -503,7 +514,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 <th
                   className={classNames(
                     // apply to all columns
-                    "sm:w-fit ",
+                    "sm:w-fit",
                     {
                       // defines column widths after first column
                       "w-28": index !== 0,
@@ -615,7 +626,7 @@ type AssetCellComponent<TProps = {}> = FunctionComponent<
   CellContext<AssetRow, AssetRow>["row"]["original"] & TProps
 >;
 
-export const AssetActionsCell: AssetCellComponent<{
+const AssetActionsCell: AssetCellComponent<{
   showUnverifiedAssetsSetting?: boolean;
   confirmUnverifiedAsset: (asset: {
     coinDenom: string;
@@ -623,6 +634,7 @@ export const AssetActionsCell: AssetCellComponent<{
   }) => void;
 }> = ({
   coinDenom,
+  coinMinimalDenom,
   coinImageUrl,
   isVerified,
   showUnverifiedAssetsSetting,
@@ -647,7 +659,10 @@ export const AssetActionsCell: AssetCellComponent<{
           {t("assets.table.activate")}
         </Button>
       ) : (
-        <HistoricalPriceSparkline coinDenom={coinDenom} timeFrame="1W" />
+        <HistoricalPriceSparkline
+          coinMinimalDenom={coinMinimalDenom}
+          timeFrame="1W"
+        />
       )}
     </div>
   );

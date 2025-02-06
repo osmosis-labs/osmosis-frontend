@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../decimals";
 import {
   Duration,
   DurationAmino,
@@ -771,7 +770,7 @@ export const Pool = {
   toAmino(message: Pool): PoolAmino {
     const obj: any = {};
     obj.address = message.address === "" ? undefined : message.address;
-    obj.id = message.id !== BigInt(0) ? message.id.toString() : undefined;
+    obj.id = message.id !== BigInt(0) ? (message.id?.toString)() : undefined;
     obj.pool_params = message.poolParams
       ? PoolParams.toAmino(message.poolParams)
       : undefined;

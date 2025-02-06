@@ -1,31 +1,48 @@
-import { RatePretty } from "@keplr-wallet/unit";
 import { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
+import { PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets/icon";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 
 import { Sparkline } from "../chart/sparkline";
 import { CustomClasses } from "../types";
 
+// 0.1%
+const THRESHOLD = 0.001;
+
 /** Colored price change text with up/down arrow. */
 export const PriceChange: FunctionComponent<
   {
     priceChange: RatePretty;
     overrideTextClasses?: string;
+    value?: PricePretty;
   } & CustomClasses
-> = ({ priceChange, overrideTextClasses = "body1", className }) => {
-  const isBullish = priceChange.toDec().isPositive();
-  const isBearish = priceChange.toDec().isNegative();
+> = ({ priceChange, overrideTextClasses = "body1", className, value }) => {
+  const isBullish = priceChange.toDec().gte(new Dec(THRESHOLD));
+  const isBearish = priceChange.toDec().lte(new Dec(-THRESHOLD));
   const isFlat = !isBullish && !isBearish;
 
   // remove negative symbol since we're using arrows
-  if (isBearish) priceChange = priceChange.mul(new RatePretty(-1));
+  if (isBearish) {
+    priceChange = priceChange.mul(new RatePretty(-1));
+    value = value?.mul(new RatePretty(-1));
+  }
+
+  const priceChangeDisplay = priceChange
+    .maxDecimals(1)
+    .inequalitySymbol(false)
+    .toString();
+
+  const formattedPriceChangeDisplay =
+    value !== undefined ? `(${priceChangeDisplay})` : priceChangeDisplay;
 
   return (
-    <div className={classNames("flex h-fit items-center gap-1", className)}>
+    <div className={classNames("flex items-center gap-1", className)}>
       {isBullish && (
         <Icon
           id="triangle-down"
@@ -52,9 +69,9 @@ export const PriceChange: FunctionComponent<
           overrideTextClasses
         )}
       >
-        {isFlat
-          ? "-"
-          : priceChange.maxDecimals(1).inequalitySymbol(false).toString()}
+        {value !== undefined ? value.toString() + " " : null}
+
+        {isFlat ? "0.0%" : formattedPriceChangeDisplay}
       </div>
     </div>
   );
@@ -62,19 +79,22 @@ export const PriceChange: FunctionComponent<
 
 /** Historical price sparkline. */
 export const HistoricalPriceSparkline: FunctionComponent<{
-  coinDenom: string;
+  coinMinimalDenom: string;
   timeFrame: CommonPriceChartTimeFrame;
   height?: number;
   width?: number;
-}> = ({ coinDenom, timeFrame, height, width }) => {
-  const { data: recentPrices } =
+}> = ({ coinMinimalDenom, timeFrame, height, width }) => {
+  const { t } = useTranslation();
+
+  const { data: recentPrices, isLoading } =
     api.edge.assets.getAssetHistoricalPrice.useQuery(
       {
-        coinDenom,
+        coinMinimalDenom,
         timeFrame,
       },
       {
         staleTime: 1000 * 30, // 30 secs
+        keepPreviousData: true,
       }
     );
 
@@ -111,7 +131,7 @@ export const HistoricalPriceSparkline: FunctionComponent<{
       data={recentPriceCloses}
       color={color}
     />
-  ) : (
+  ) : isLoading ? (
     // Placeholder div to take up space for missing data
     <div
       style={{
@@ -120,5 +140,18 @@ export const HistoricalPriceSparkline: FunctionComponent<{
       }}
       className={classNames({ "w-20": !width, "h-[3.125rem]": !height })}
     />
+  ) : (
+    <div
+      style={{
+        width,
+        height,
+      }}
+      className={classNames("body1 text-center text-osmoverse-500", {
+        "w-20": !width,
+        "h-[3.125rem]": !height,
+      })}
+    >
+      {t("errors.noData")}
+    </div>
   );
 };

@@ -1215,7 +1215,7 @@ export const InstantiateContractProposal = {
     obj.run_as = message.runAs === "" ? undefined : message.runAs;
     obj.admin = message.admin === "" ? undefined : message.admin;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.label = message.label === "" ? undefined : message.label;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     if (message.funds) {
@@ -1419,7 +1419,7 @@ export const InstantiateContract2Proposal = {
     obj.run_as = message.runAs === "" ? undefined : message.runAs;
     obj.admin = message.admin === "" ? undefined : message.admin;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.label = message.label === "" ? undefined : message.label;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     if (message.funds) {
@@ -1567,7 +1567,7 @@ export const MigrateContractProposal = {
       message.description === "" ? undefined : message.description;
     obj.contract = message.contract === "" ? undefined : message.contract;
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.msg = message.msg ? JSON.parse(fromUtf8(message.msg)) : undefined;
     return obj;
   },
@@ -2385,7 +2385,7 @@ export const AccessConfigUpdate = {
   toAmino(message: AccessConfigUpdate): AccessConfigUpdateAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.instantiate_permission = message.instantiatePermission
       ? AccessConfig.toAmino(message.instantiatePermission)
       : AccessConfig.toAmino(AccessConfig.fromPartial({}));

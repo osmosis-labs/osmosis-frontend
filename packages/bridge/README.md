@@ -65,11 +65,11 @@ class MyBridgeProvider implements BridgeProvider {
   providerName = "MyBridge";
   logoUrl = "url_to_logo";
 
-  async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
+  getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
     // Implement logic to get a quote for a cross-chain transfer
   }
 
-  async getTransferStatus(
+  getTransferStatus(
     params: GetTransferStatusParams
   ): Promise<BridgeTransferStatus | undefined> {
     // Implement logic to get the status of a transfer
@@ -79,6 +79,12 @@ class MyBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
     // Implement logic to get transaction data
+  }
+
+  getSupportedAssets(
+    params: GetBridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeAsset)[]> {
+    // Implement logic to get supported assets
   }
 
   getDepositAddress?(
@@ -121,6 +127,9 @@ export interface BridgeProvider {
   getTransactionData(
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest>;
+  getSupportedAssets(
+    params: GetBridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeAsset)[]>;
   getDepositAddress?(
     params: GetDepositAddressParams
   ): Promise<BridgeDepositAddress>;
@@ -158,14 +167,13 @@ export interface BridgeTransferStatus {
 
 ### BridgeAsset
 
-The BridgeAsset interface represents an asset that can be transferred across a bridge. It includes the denomination of the asset, the address of the asset, the number of decimal places for the asset, and the source minimum denom (e.g. uatom).
+The BridgeAsset interface represents an asset that can be transferred across a bridge. It includes the denomination of the asset, the address of the asset on a given chain, the number of decimal places for the asset.
 
 ```tsx
 export interface BridgeAsset {
   denom: string;
   address: string;
   decimals: number;
-  sourceDenom: string;
 }
 ```
 
@@ -177,7 +185,8 @@ The BridgeCoin type represents an asset with an amount, likely returned within a
 export type BridgeCoin = {
   denom: string;
   decimals: number;
-  sourceDenom: string;
+  /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
+  address: string;
   /** Amount without decimals. */
   amount: string;
 };

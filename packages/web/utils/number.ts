@@ -65,3 +65,22 @@ export function trimPlaceholderZeros(str: string) {
 
   return str.substring(0, i + 1);
 }
+
+export function addCommasToNumber(number: string | number): string {
+  if (!isNumeric(number)) return number as string;
+  const parts = number.toString().split(".");
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return parts.join(".");
+}
+
+export function removeCommasFromNumber(number: string): string {
+  return number.replace(/,/g, "");
+}
+
+export function countDecimals(value: string) {
+  const split = value.split(".");
+  if (split.length > 1) {
+    return split[1].length;
+  }
+  return 0;
+}

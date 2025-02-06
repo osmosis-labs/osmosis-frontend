@@ -36,7 +36,7 @@ export const RadioWithOptions = ({
         {
           "max-h-10": variant === "small",
           "max-h-13": variant === "large",
-          "opacity-50": disabled,
+          "pointer-events-none opacity-50": disabled,
         }
       )}
     >
@@ -46,10 +46,10 @@ export const RadioWithOptions = ({
           key={`${value} radio button`}
           className={({ checked }) =>
             classNames(
-              "inline-flex w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer",
+              "inline-flex w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-2.5 font-subtitle1 leading-5 hover:cursor-pointer",
               {
                 "opacity-100": checked,
-                "hover:bg-osmoverse-900/25": !checked,
+                "opacity-30 hover:bg-osmoverse-900/25": !checked,
                 "bg-wosmongton-700": mode === "primary" && checked,
                 "bg-osmoverse-700": mode === "secondary" && checked,
                 "h-13": variant === "large",

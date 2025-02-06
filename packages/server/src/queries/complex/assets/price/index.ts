@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Asset, AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -7,13 +7,12 @@ import { CoingeckoVsCurrencies } from "../../../../queries/coingecko";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
 import { captureErrorAndReturn } from "../../../../utils/error";
 import { getAsset } from "..";
+import { getCoingeckoPrice } from "./providers/coingecko";
 import { getPriceFromSidecar } from "./providers/sidecar";
 
 /** Provides a price (no caching) given a valid asset from asset list and a fiat currency code.
  *  @throws if there's an issue getting the price. */
 export type PriceProvider = (
-  assetLists: AssetList[],
-  chainList: Chain[],
   asset: Asset,
   currency?: CoingeckoVsCurrencies
 ) => Promise<Dec>;
@@ -24,7 +23,6 @@ const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
  *  @throws If the asset is not found in the asset list registry or the asset's price info is not found (missing in asset list or can't get price). */
 export async function getAssetPrice({
   assetLists,
-  chainList,
   asset,
   currency = "usd",
   priceProvider = getPriceFromSidecar,
@@ -33,14 +31,19 @@ export async function getAssetPrice({
   assetLists: AssetList[];
   asset: { coinDenom?: string } & (
     | { coinMinimalDenom: string }
-    | { sourceDenom: string }
+    | { chainId: number | string; address: string }
+    | { coinGeckoId: string }
   );
   currency?: CoingeckoVsCurrencies;
   priceProvider?: PriceProvider;
 }): Promise<Dec> {
   const coinMinimalDenom =
     "coinMinimalDenom" in asset ? asset.coinMinimalDenom : undefined;
-  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
+  const { chainId, address } =
+    "chainId" in asset && "address" in asset
+      ? asset
+      : { chainId: undefined, address: undefined };
+  const coinGeckoId = "coinGeckoId" in asset ? asset.coinGeckoId : undefined;
 
   const foundAsset = assetLists
     .map((assets) => assets.assets)
@@ -48,13 +51,27 @@ export async function getAssetPrice({
     .find(
       (asset) =>
         (coinMinimalDenom && asset.coinMinimalDenom === coinMinimalDenom) ||
-        (sourceDenom && asset.sourceDenom === sourceDenom)
+        (chainId &&
+          address &&
+          asset.counterparty.some(
+            (counterparty) =>
+              "chainId" in counterparty &&
+              "address" in counterparty &&
+              counterparty.chainId === chainId &&
+              counterparty.address.toLowerCase() === address.toLowerCase()
+          ))
     );
+
+  // Fall back to CoinGecko if asset list does not provide
+  // the Osmosis asset that can be used for prices from Osmosis.
+  if (!foundAsset && coinGeckoId) {
+    return getCoingeckoPrice({ coinGeckoId, currency });
+  }
 
   if (!foundAsset)
     throw new Error(
       `Asset ${
-        asset.coinDenom ?? coinMinimalDenom ?? sourceDenom
+        asset.coinDenom ?? coinMinimalDenom
       } not found in asset list registry.`
     );
 
@@ -62,8 +79,7 @@ export async function getAssetPrice({
     key: `asset-price-${foundAsset.coinMinimalDenom}`,
     cache: pricesCache,
     ttl: 1000 * 10, // 10 seconds
-    getFreshValue: () =>
-      priceProvider(assetLists, chainList, foundAsset, currency),
+    getFreshValue: () => priceProvider(foundAsset, currency),
   });
 }
 

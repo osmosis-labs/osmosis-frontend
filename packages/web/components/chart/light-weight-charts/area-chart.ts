@@ -42,6 +42,7 @@ export class AreaChartController<
 
     if (params.series && params.series.length > 0) {
       for (const [key, s] of params.series.entries()) {
+        this.series[key].applyOptions(s.options);
         this.series[key].setData(s.data);
       }
     }

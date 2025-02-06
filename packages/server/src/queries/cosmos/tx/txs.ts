@@ -81,5 +81,5 @@ export const queryTx = createNodeQuery<
     txHash: string;
   }
 >({
-  path: ({ txHash }) => `/cosmos/tx/v1beta1/tx/${txHash}`,
+  path: ({ txHash }) => `/cosmos/tx/v1beta1/txs/${txHash}`,
 });

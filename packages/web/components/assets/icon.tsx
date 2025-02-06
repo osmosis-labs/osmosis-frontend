@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { FunctionComponent, SVGAttributes } from "react";
 
 import { SpriteIconId } from "~/config";
@@ -14,10 +15,15 @@ export const Icon: FunctionComponent<
     className?: string;
   }
 > = (props) => {
-  const { id, label, ...rest } = props;
+  const { id, label, className, ...rest } = props;
   return (
     <>
-      <svg width="24" height="24" {...rest}>
+      <svg
+        width="24"
+        height="24"
+        className={classNames("fill-none", className)}
+        {...rest}
+      >
         <use href={`${spriteSVGURL}#${id}`} />
       </svg>
       {label && <span className="sr-only">{label}</span>}

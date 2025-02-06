@@ -450,12 +450,14 @@ export const BlockParams = {
   toAmino(message: BlockParams): BlockParamsAmino {
     const obj: any = {};
     obj.max_bytes =
-      message.maxBytes !== BigInt(0) ? message.maxBytes.toString() : undefined;
+      message.maxBytes !== BigInt(0)
+        ? (message.maxBytes?.toString)()
+        : undefined;
     obj.max_gas =
-      message.maxGas !== BigInt(0) ? message.maxGas.toString() : undefined;
+      message.maxGas !== BigInt(0) ? (message.maxGas?.toString)() : undefined;
     obj.time_iota_ms =
       message.timeIotaMs !== BigInt(0)
-        ? message.timeIotaMs.toString()
+        ? (message.timeIotaMs?.toString)()
         : undefined;
     return obj;
   },
@@ -565,13 +567,15 @@ export const EvidenceParams = {
     const obj: any = {};
     obj.max_age_num_blocks =
       message.maxAgeNumBlocks !== BigInt(0)
-        ? message.maxAgeNumBlocks.toString()
+        ? (message.maxAgeNumBlocks?.toString)()
         : undefined;
     obj.max_age_duration = message.maxAgeDuration
       ? Duration.toAmino(message.maxAgeDuration)
       : undefined;
     obj.max_bytes =
-      message.maxBytes !== BigInt(0) ? message.maxBytes.toString() : undefined;
+      message.maxBytes !== BigInt(0)
+        ? (message.maxBytes?.toString)()
+        : undefined;
     return obj;
   },
   fromAminoMsg(object: EvidenceParamsAminoMsg): EvidenceParams {
@@ -712,7 +716,7 @@ export const VersionParams = {
     const obj: any = {};
     obj.app_version =
       message.appVersion !== BigInt(0)
-        ? message.appVersion.toString()
+        ? (message.appVersion?.toString)()
         : undefined;
     return obj;
   },
@@ -802,11 +806,11 @@ export const HashedParams = {
     const obj: any = {};
     obj.block_max_bytes =
       message.blockMaxBytes !== BigInt(0)
-        ? message.blockMaxBytes.toString()
+        ? (message.blockMaxBytes?.toString)()
         : undefined;
     obj.block_max_gas =
       message.blockMaxGas !== BigInt(0)
-        ? message.blockMaxGas.toString()
+        ? (message.blockMaxGas?.toString)()
         : undefined;
     return obj;
   },

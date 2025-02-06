@@ -1,4 +1,4 @@
-import { Disclosure, Transition } from "@headlessui/react";
+import { Transition } from "@headlessui/react";
 import { runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import FocusTrap from "focus-trap-react";
@@ -100,9 +100,7 @@ export const DrawerContent = (
   );
 };
 
-export const DrawerOverlay: FunctionComponent<
-  HTMLProps<HTMLDivElement>
-> = () => {
+export const DrawerOverlay: FunctionComponent = () => {
   const { isOpen, onClose } = useDrawerProps();
   return (
     <Transition
@@ -124,7 +122,7 @@ export const DrawerOverlay: FunctionComponent<
 };
 
 export const DrawerPanel = (
-  props: PropsWithChildren<Parameters<typeof Disclosure.Panel>[0]>
+  props: PropsWithChildren<HTMLProps<HTMLDivElement>>
 ) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
   return (

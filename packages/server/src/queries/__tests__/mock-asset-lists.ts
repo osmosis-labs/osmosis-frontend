@@ -1447,7 +1447,7 @@ export const AssetLists: AssetList[] = [
         sourceDenom: "wmatic-wei",
         coinMinimalDenom:
           "ibc/AB589511ED0DD5FA56171A39978AFBF1371DB986EC1C3526CE138A16377E39BB",
-        symbol: "MATIC",
+        symbol: "POL",
         decimals: 18,
         logoURIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -1508,7 +1508,7 @@ export const AssetLists: AssetList[] = [
             chainType: "evm",
             chainId: 137,
             address: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
-            symbol: "MATIC",
+            symbol: "POL",
             decimals: 18,
             logoURIs: {
               png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
@@ -1516,14 +1516,14 @@ export const AssetLists: AssetList[] = [
             },
           },
         ],
-        variantGroupKey: "MATIC",
+        variantGroupKey: "POL",
         name: "Polygon",
         isAlloyed: false,
         verified: true,
         unstable: false,
         disabled: false,
         preview: false,
-        relative_image_url: "/tokens/generated/matic.png",
+        relative_image_url: "/tokens/generated/pol.png",
       },
       {
         chainName: "axelar",
@@ -23493,6 +23493,36 @@ export const AssetLists: AssetList[] = [
         preview: false,
         listingDate: "2024-05-03T13:00:00.000Z",
         relative_image_url: "/tokens/generated/seda.svg",
+      },
+      {
+        chainName: "osmosis",
+        sourceDenom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        coinMinimalDenom:
+          "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        symbol: "allETH",
+        decimals: 18,
+        logoURIs: {
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/allETH.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/allETH.svg",
+        },
+        coingeckoId: "allETH",
+        price: {
+          poolId: "1800",
+          denom:
+            "factory/osmo1k6c8jln7ejuqwtqmay3yvzrg3kueaczl96pk067ldg8u835w0yhsw27twm/alloyed/allETH",
+        },
+        categories: ["alloyed"],
+        transferMethods: [],
+        counterparty: [],
+        name: "allETH",
+        isAlloyed: true,
+        verified: true,
+        unstable: false,
+        disabled: false,
+        preview: false,
+        listingDate: "2024-06-01T10:00:00.000Z",
+        relative_image_url: "/tokens/generated/allETH.svg",
       },
     ],
   },

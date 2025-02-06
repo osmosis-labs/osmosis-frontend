@@ -1,11 +1,3 @@
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
 import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
@@ -31,6 +23,14 @@ import {
   OsmosisQueries,
   PriceConfig,
 } from "@osmosis-labs/stores";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { useCallback, useEffect, useState } from "react";
 
@@ -54,14 +54,14 @@ export function useAddConcentratedLiquidityConfig(
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
-  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
+  const apiUtils = api.useUtils();
 
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
 
   const { data: pool, isFetched: isPoolFetched } =
-    api.edge.pools.getPool.useQuery(
+    api.local.pools.getPool.useQuery(
       { poolId },
       {
         refetchInterval: 5_000, // 5 seconds
@@ -171,9 +171,9 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                osmosisQueries.queryLiquiditiesPerTickRange
-                  .getForPoolId(poolId)
-                  .waitFreshResponse()
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
                   .then(() => resolve());
 
                 logEvent([
@@ -192,7 +192,7 @@ export function useAddConcentratedLiquidityConfig(
     [
       poolId,
       account?.osmosis,
-      osmosisQueries.queryLiquiditiesPerTickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       config.baseDepositAmountIn.sendCurrency,
       config.baseDepositAmountIn.amount,
       config.quoteDepositAmountIn.sendCurrency,
@@ -235,15 +235,14 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                osmosisQueries.queryLiquiditiesPerTickRange
-                  .getForPoolId(poolId)
-                  .waitFreshResponse();
+                // refresh tick data
+                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
+                  .invalidate({ poolId })
+                  .then(() => resolve());
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
                 ]);
-
-                resolve();
               }
             }
           );
@@ -254,7 +253,7 @@ export function useAddConcentratedLiquidityConfig(
       }),
     [
       poolId,
-      osmosisQueries.queryLiquiditiesPerTickRange,
+      apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange,
       config.baseDepositAmountIn,
       config.quoteDepositAmountIn,
       config.baseDepositOnly,
@@ -267,8 +266,8 @@ export function useAddConcentratedLiquidityConfig(
   return { config, addLiquidity, increaseLiquidity };
 }
 
-export const MODERATE_STRATEGY_MULTIPLIER = 0.25;
-export const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
+const MODERATE_STRATEGY_MULTIPLIER = 0.25;
+const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -369,21 +368,15 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Current price adjusted with base and quote token decimals. */
   @computed
   get currentPriceWithDecimals(): Dec {
-    const queryPool = this.queriesStore
-      .get(this.chainId)
-      .osmosis!.queryPools.getPool(this.poolId);
-
-    return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+    return this.pool?.currentPrice ?? new Dec(0);
   }
 
   /** Current price, without currency decimals. */
   @computed
   get currentPrice(): Dec {
-    return (
-      this.pool?.currentSqrtPrice
-        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
-        .toDec() ?? new Dec(0)
-    );
+    const currentSqrtPrice = this.pool?.currentSqrtPrice;
+    if (!currentSqrtPrice) return new Dec(0);
+    return currentSqrtPrice.mul(currentSqrtPrice).toDec();
   }
 
   /** Moderate price range, without currency decimals. */

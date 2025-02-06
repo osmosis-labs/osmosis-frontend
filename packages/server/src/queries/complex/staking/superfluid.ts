@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, DecUtils } from "@osmosis-labs/unit";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -33,7 +33,7 @@ export async function calcOsmoSuperfluidEquivalent({
       // primary chain
       const chain = chainList[0];
 
-      const stakeDenom = chain.staking.staking_tokens[0].denom;
+      const stakeDenom = chain.staking!.staking_tokens[0].denom;
       const stakeAsset = getAsset({ assetLists, anyDenom: stakeDenom });
       const equivalentAsset = denom.startsWith("gamm")
         ? makeGammShareCurrency(getShareDenomPoolId(denom))

@@ -1,3 +1,4 @@
+import { trimZerosFromEnd } from "@osmosis-labs/stores";
 import {
   CoinPretty,
   Dec,
@@ -5,8 +6,7 @@ import {
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { trimZerosFromEnd } from "@osmosis-labs/stores";
+} from "@osmosis-labs/unit";
 
 import {
   getDecimalCount,
@@ -219,19 +219,6 @@ function hasIntlFormatOptions(opts: FormatOptions) {
   return Object.keys(copy).length > 0;
 }
 
-/** Formats a coin with given decimals depending on if coin amount is greater or less than one.
- *  Ex: `1.23` at 2 decimals or `0.000023` at 6 decimals. Default: above 2, below 6. */
-export function formatCoinMaxDecimalsByOne(
-  coin?: CoinPretty,
-  aboveOneMaxDecimals = 2,
-  belowOneMaxDecimals = 6
-) {
-  if (!coin) return "";
-  return coin.toDec().gt(new Dec(1))
-    ? coin.maxDecimals(aboveOneMaxDecimals).trim(true).toString()
-    : coin.maxDecimals(belowOneMaxDecimals).trim(true).toString();
-}
-
 /**
  * If a number is less then $100, we only show 4 significant digits, examples:
  *  OSMO: $1.612
@@ -354,3 +341,54 @@ export const compressZeros = (
     decimalDigits: otherDigits,
   };
 };
+
+/**
+ * Formats a fiat price using `getPriceExtendedFormatOptions` and displays `<0.01` if the price is less than $0.01.
+ * Rounds to the provided `maxDecimals` parameter.
+ */
+export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
+  if (price.toDec().isZero()) return "$0";
+
+  if (price.toDec().lt(new Dec(0.01))) {
+    return "<$0.01";
+  }
+
+  if (price.toDec().gte(new Dec(1000000000))) {
+    return ">$1B";
+  }
+
+  const splitDec = price.toDec().toString().split(".");
+  const maxDecimalStr = splitDec[0] + "." + splitDec[1].slice(0, maxDecimals);
+  const maxDecimalPrice = new PricePretty(
+    price.fiatCurrency,
+    new Dec(maxDecimalStr)
+  );
+
+  const splitPretty = formatPretty(maxDecimalPrice, {
+    ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
+  }).split(".");
+
+  return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
+}
+
+export function calcFontSize(numChars: number, isMobile: boolean): string {
+  const sizeMapping: { [key: number]: string } = isMobile
+    ? {
+        7: "30px",
+        12: "18px",
+        16: "16px",
+      }
+    : {
+        7: "48px",
+        12: "38px",
+        16: "28px",
+        33: "24px",
+      };
+  for (const [key, value] of Object.entries(sizeMapping)) {
+    if (numChars <= Number(key)) {
+      return value;
+    }
+  }
+
+  return "16px";
+}

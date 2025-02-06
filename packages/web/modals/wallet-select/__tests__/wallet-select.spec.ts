@@ -7,7 +7,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Connecting,
     });
@@ -19,18 +19,18 @@ describe("getModalView", () => {
       // @ts-expect-error
       qrState: "other", // Assuming other is a valid state
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Connecting,
     });
     expect(result).toBe("qrCode");
   });
 
-  it('should return "initializeOneClickTradingError" when walletStatus is Connected and hasOneClickTradingError is true', () => {
+  it('should return "initializeOneClickTradingError" when walletStatus is Connected and oneClickTradingError is not null', () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: true,
+      oneClickTradingError: new Error("Some error"),
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Connected,
     });
@@ -41,7 +41,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: true,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Connected,
     });
@@ -52,7 +52,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: true,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: true,
       walletStatus: WalletStatus.Connected,
     });
@@ -63,7 +63,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Connected,
     });
@@ -74,7 +74,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Error,
     });
@@ -86,7 +86,7 @@ describe("getModalView", () => {
       // @ts-expect-error
       qrState: "other", // Assuming "other" is a valid state
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Error,
     });
@@ -97,7 +97,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Rejected,
     });
@@ -108,7 +108,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.NotExist,
     });
@@ -119,7 +119,7 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: WalletStatus.Disconnected,
     });
@@ -130,10 +130,23 @@ describe("getModalView", () => {
     const result = getModalView({
       qrState: State.Init,
       isInitializingOneClickTrading: false,
-      hasOneClickTradingError: false,
+      oneClickTradingError: null,
       hasBroadcastedTx: false,
       walletStatus: undefined,
     });
     expect(result).toBe("list");
+  });
+
+  it('should return "initializeOneClickTradingErrorInsufficientFee" when walletStatus is Connected and oneClickTradingError is an insufficient fee error', () => {
+    const result = getModalView({
+      qrState: State.Init,
+      isInitializingOneClickTrading: false,
+      oneClickTradingError: new Error(
+        "account abcdefghijklmnopqrstuvwxyz1234567890abcdef not found"
+      ),
+      hasBroadcastedTx: false,
+      walletStatus: WalletStatus.Connected,
+    });
+    expect(result).toBe("initializeOneClickTradingErrorInsufficientFee");
   });
 });

@@ -8,7 +8,19 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        package: ["web", "utils", "server", "stores", "pools", "math", "bridge"]
+        package:
+          [
+            "web",
+            "utils",
+            "server",
+            "stores",
+            "pools",
+            "math",
+            "bridge",
+            "tx",
+            "proto-codecs",
+            "unit",
+          ]
 
     steps:
       - name: Checkout Repo
@@ -32,4 +44,4 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Run ${{ matrix.package }} tests
-        run: yarn test --filter=${{ matrix.package }}
+        run: yarn test --filter=@osmosis-labs/${{ matrix.package }}

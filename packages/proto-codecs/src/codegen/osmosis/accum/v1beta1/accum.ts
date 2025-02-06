@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../decimals";
 /**
  * AccumulatorContent is the state-entry for the global accumulator.
  * It contains the name of the global accumulator and the total value of

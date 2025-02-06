@@ -1,56 +1,75 @@
-import { StdFee } from "@cosmjs/amino";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import type { StdFee } from "@cosmjs/amino";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import type { Asset, RouterKey } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
-  makeSplitRoutesSwapExactAmountInMsg,
-  makeSwapExactAmountInMsg,
-  SignOptions,
-} from "@osmosis-labs/stores";
-import { Currency } from "@osmosis-labs/types";
+  getSwapMessages,
+  getSwapTxParameters,
+  QuoteDirection,
+  SwapTxRouteOutGivenIn,
+} from "@osmosis-labs/tx";
+import { Currency, MinimalAsset } from "@osmosis-labs/types";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+} from "@osmosis-labs/unit";
 import {
   getAssetFromAssetList,
   isNil,
   makeMinimalAsset,
+  sum,
 } from "@osmosis-labs/utils";
-import { sum } from "@osmosis-labs/utils";
-import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
-import { useRouter } from "next/router";
-import { useState } from "react";
-import { useMemo } from "react";
-import { useCallback } from "react";
-import { useEffect } from "react";
+import { createTRPCReact } from "@trpc/react-query";
+import { parseAsString, useQueryState } from "nuqs";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { isOverspendErrorMessage } from "~/components/alert/prettify";
+import {
+  getParametersFromOverspendErrorMessage,
+  isOverspendErrorMessage,
+} from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { DefaultSlippage } from "~/config/swap";
 import {
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
 } from "~/hooks/fiat-getters";
 import { useTranslation } from "~/hooks/language";
-import { useOneClickTradingSession } from "~/hooks/one-click-trading";
+import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";
+import { onEnd1CTSession } from "~/hooks/mutations/one-click-trading/use-remove-one-click-trading-session";
+import {
+  use1CTSwapReviewMessages,
+  useOneClickTradingSession,
+} from "~/hooks/one-click-trading";
+import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { AppRouter } from "~/server/api/root-router";
 import { useStore } from "~/stores";
-import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
+import { trimPlaceholderZeros } from "~/utils/number";
+import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
-import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
+export type SwapAsset = ReturnType<typeof useSwapAsset>["asset"];
 
 type SwapOptions = {
   /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
@@ -65,6 +84,7 @@ type SwapOptions = {
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
   maxSlippage: Dec | undefined;
+  quoteType?: QuoteDirection;
 };
 
 // Note: For computing spot price between token in and out, we use this multiplier
@@ -91,13 +111,15 @@ export function useSwap(
     useOtherCurrencies = true,
     forceSwapInPoolId,
     maxSlippage,
+    quoteType = "out-given-in",
   }: SwapOptions = { maxSlippage: undefined }
 ) {
+  const { logEvent } = useAmplitudeAnalytics();
+  const apiUtils = api.useUtils();
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const featureFlags = useFeatureFlags();
-  const { isOneClickTradingEnabled, oneClickTradingInfo } =
-    useOneClickTradingSession();
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
@@ -109,11 +131,27 @@ export function useSwap(
     poolId: forceSwapInPoolId,
   });
 
+  const reverseSwapAssets = useSwapAssets({
+    initialFromDenom,
+    initialToDenom,
+    useQueryParams,
+    useOtherCurrencies,
+    poolId: forceSwapInPoolId,
+    reverse: true,
+  });
+
   const inAmountInput = useSwapAmountInput({
     forceSwapInPoolId,
     maxSlippage,
     swapAssets,
   });
+
+  const outAmountInput = useSwapAmountInput({
+    forceSwapInPoolId,
+    maxSlippage,
+    swapAssets: reverseSwapAssets,
+  });
+
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
@@ -128,29 +166,108 @@ export function useSwap(
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading;
+    !isWalletLoading &&
+    quoteType === "out-given-in";
+
+  const inGivenOutQuoteEnabled =
+    isToFromAssets &&
+    Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+    outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      swapAssets.toAsset?.coinMinimalDenom &&
+    outAmountInput.amount?.currency.coinMinimalDenom ===
+      swapAssets.toAsset?.coinMinimalDenom &&
+    !account?.txTypeInProgress &&
+    !isWalletLoading &&
+    quoteType === "in-given-out";
+
   const {
-    data: quote,
+    data: outGivenInQuote,
     isLoading: isQuoteLoading_,
-    error: quoteError,
+    errorMsg: quoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
-      tokenIn: swapAssets.fromAsset!,
-      tokenOut: swapAssets.toAsset!,
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
     quoteQueryEnabled
   );
+
+  const {
+    data: inGivenOutQuote,
+    isLoading: isInGivenOutQuoteLoading_,
+    errorMsg: inGivenOutQuoteError,
+  } = useQueryRouterBestQuote(
+    {
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
+      tokenInAmount: outAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    },
+    inGivenOutQuoteEnabled,
+    "in-given-out"
+  );
+
+  const quote =
+    quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
+
+  useEffect(() => {
+    if (
+      quoteType === "in-given-out" &&
+      !isInGivenOutQuoteLoading_ &&
+      !outAmountInput.isTyping
+    ) {
+      inAmountInput.setAmount(
+        inGivenOutQuote && !inGivenOutQuoteError && !outAmountInput.isEmpty
+          ? trimPlaceholderZeros(inGivenOutQuote.amount.toDec().toString())
+          : ""
+      );
+    }
+
+    if (
+      quoteType === "out-given-in" &&
+      !isQuoteLoading_ &&
+      !inAmountInput.isTyping
+    ) {
+      outAmountInput.setAmount(
+        quote && !quoteErrorMsg && !inAmountInput.isEmpty
+          ? trimPlaceholderZeros(quote.amount.toDec().toString())
+          : ""
+      );
+    }
+
+    /**
+     * We disable dependencies here to stop an infinite loop
+     * from the inAmount/outAmount input states
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    quoteType,
+    inGivenOutQuote,
+    quote,
+    isQuoteLoading_,
+    isInGivenOutQuoteLoading_,
+    quoteErrorMsg,
+    inGivenOutQuoteError,
+    inAmountInput.isTyping,
+    outAmountInput.isTyping,
+    inAmountInput.isEmpty,
+    outAmountInput.isEmpty,
+  ]);
+
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading = isQuoteLoading_ && quoteQueryEnabled;
+  const isQuoteLoading =
+    (isQuoteLoading_ && quoteQueryEnabled) ||
+    (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
 
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
-    error: spotPriceQuoteError,
+    errorMsg: spotPriceQuoteErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -171,14 +288,15 @@ export function useSwap(
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
-    let error = quoteError;
+    let error =
+      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
       (quote && !quote.amount.toDec().isPositive() && !error) ||
-      (!quote && spotPriceQuoteError)
+      (!quote && spotPriceQuoteErrorMsg)
     )
-      error = spotPriceQuoteError;
+      error = spotPriceQuoteErrorMsg;
 
     const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
     if (errorFromTrpc) return errorFromTrpc;
@@ -187,18 +305,20 @@ export function useSwap(
     if (!inAmountInput.isEmpty && inAmountInput.error)
       return inAmountInput.error;
   }, [
-    quoteError,
+    quoteErrorMsg,
     quote,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     inAmountInput.error,
     inAmountInput.isEmpty,
+    inGivenOutQuoteError,
+    quoteType,
   ]);
 
   const networkFeeQueryEnabled =
     featureFlags.swapToolSimulateFee &&
-    !Boolean(precedentError) &&
+    !precedentError &&
     !isQuoteLoading &&
-    quoteQueryEnabled &&
+    (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
     Boolean(quote?.messages) &&
     Boolean(account?.address) &&
     inAmountInput.debouncedInAmount !== null &&
@@ -207,49 +327,47 @@ export function useSwap(
     inAmountInput.debouncedInAmount
       .toDec()
       .lte(inAmountInput.balance.toDec()) &&
-    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec());
+    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
+    outAmountInput.debouncedInAmount !== null &&
+    Boolean(outAmountInput.amount);
+
+  const { oneClickMessages, isLoadingOneClickMessages, shouldSend1CTTx } =
+    use1CTSwapReviewMessages();
+
+  /**
+   * Default isLedger to true, just in case the wallet does
+   * not return the correct value
+   */
+  const { value: isLedger } = useAsync(async () => {
+    const result = await account?.client?.getAccount?.(
+      accountStore.osmosisChainId
+    );
+    return result?.isNanoLedger ?? true;
+    // Disable deps to include account address in order to recompute the value as the others are memoized mobx values
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, account?.address, accountStore.osmosisChainId]);
+
+  const messages = useMemo(() => {
+    if (isLedger) {
+      return quote?.messages ?? [];
+    }
+    return [...(quote?.messages ?? []), ...(oneClickMessages?.msgs ?? [])];
+  }, [isLedger, quote?.messages, oneClickMessages?.msgs]);
+
   const {
     data: networkFee,
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quote?.messages,
-    enabled: networkFeeQueryEnabled,
+    messages,
+    enabled: true,
     signOptions: {
       useOneClickTrading: isOneClickTradingEnabled,
     },
   });
+
   const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
-
-  const hasExceededOneClickTradingGasLimit = useMemo(() => {
-    if (
-      !isOneClickTradingEnabled ||
-      !oneClickTradingInfo ||
-      inAmountInput.isEmpty
-    ) {
-      return false;
-    }
-
-    const networkFeeLimit = new CoinPretty(
-      oneClickTradingInfo.networkFeeLimit,
-      oneClickTradingInfo.networkFeeLimit.amount
-    );
-
-    if (
-      networkFee?.gasAmount.denom === networkFeeLimit.denom &&
-      networkFee?.gasAmount.toDec().gt(networkFeeLimit.toDec())
-    ) {
-      return true;
-    }
-
-    return false;
-  }, [
-    inAmountInput.isEmpty,
-    isOneClickTradingEnabled,
-    networkFee,
-    oneClickTradingInfo,
-  ]);
 
   const hasOverSpendLimitError = useMemo(() => {
     if (
@@ -270,6 +388,27 @@ export function useSwap(
     isOneClickTradingEnabled,
   ]);
 
+  const overspendErrorParams = useMemo(() => {
+    if (!hasOverSpendLimitError) return;
+    return getParametersFromOverspendErrorMessage(networkFeeError?.message);
+  }, [networkFeeError?.message, hasOverSpendLimitError]);
+
+  const isSlippageOverBalance = useMemo(() => {
+    if (
+      quoteType === "out-given-in" ||
+      !inAmountInput.balance ||
+      !inAmountInput.amount ||
+      !maxSlippage
+    )
+      return false;
+
+    const balance = inAmountInput.balance;
+    const amountWithSlippage = inAmountInput.amount
+      .toDec()
+      .mul(new Dec(1).add(maxSlippage));
+    return balance.toDec().lt(amountWithSlippage);
+  }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
+
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
     () =>
@@ -277,7 +416,7 @@ export function useSwap(
         async (resolve, reject) => {
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
-          if (!inAmountInput.amount)
+          if (!inAmountInput.amount || !outAmountInput.amount)
             return reject(new Error("Input amount is not specified."));
           if (!account)
             return reject(new Error("Account information is missing."));
@@ -289,11 +428,17 @@ export function useSwap(
           let txParams: ReturnType<typeof getSwapTxParameters>;
           try {
             txParams = getSwapTxParameters({
-              coinAmount: inAmountInput.amount.toCoin().amount,
-              maxSlippage,
-              fromAsset: swapAssets.fromAsset,
-              toAsset: swapAssets.toAsset,
+              coinAmount:
+                quoteType === "out-given-in"
+                  ? inAmountInput.amount.toCoin().amount
+                  : outAmountInput.amount.toCoin().amount,
+              maxSlippage: maxSlippage.toString(),
+              tokenInCoinMinimalDenom: swapAssets.fromAsset.coinMinimalDenom,
+              tokenOutCoinMinimalDenom: swapAssets.toAsset.coinMinimalDenom,
+              tokenOutCoinDecimals: swapAssets.toAsset.coinDecimals,
+              tokenInCoinDecimals: swapAssets.fromAsset.coinDecimals,
               quote,
+              quoteType,
             });
           } catch (e) {
             const error = e as Error;
@@ -302,44 +447,60 @@ export function useSwap(
             );
           }
 
-          const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-          const messageCanBeSignedWithOneClickTrading = !isNil(quote?.messages)
+          // Note about One-Click Trading (1CT) synchronization:
+          //
+          // When 1CT is enabled via the swap modal, there's a timing mismatch between
+          // the local state (isOneClickTradingEnabled) and the account store state.
+          //
+          // As a result:
+          // 1. The first swap after enabling 1CT will require manual signing
+          // 2. Subsequent swaps will use 1CT automatically
+          //
+          // This occurs because 1CT transactions require more gas, which makes
+          // our current quote's gas estimation incorrect and low. This results in out of gas error.
+          const messageCanBeSignedWithOneClickTrading = !isNil(messages)
             ? isOneClickTradingEnabled &&
               (await accountStore.shouldBeSignedWithOneClickTrading({
-                messages: quote.messages,
+                messages,
               }))
             : false;
 
-          const shouldBeSignedWithOneClickTrading =
+          let shouldBeSignedWithOneClickTrading =
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
             !networkFeeError;
 
           if (
             messageCanBeSignedWithOneClickTrading &&
             !hasOverSpendLimitError &&
-            !hasExceededOneClickTradingGasLimit &&
             networkFeeError
           ) {
             try {
-              const ONE_CLICK_UNAVAILABLE_TOAST_ID = "ONE_CLICK_UNAVAILABLE";
+              const TOAST_ID = networkFeeError
+                ? "ONE_CLICK_UNAVAILABLE"
+                : "ONE_CLICK_INSUFFICIENT_OSMO";
+              const titleTranslationKey = networkFeeError
+                ? "oneClickTrading.toast.currentlyUnavailable"
+                : "oneClickTrading.toast.insufficientFunds";
+              const buttonText = networkFeeError
+                ? "oneClickTrading.toast.approveManually"
+                : "oneClickTrading.toast.continueWithoutOneClickTrading";
+
               await new Promise((continueTx, reject) => {
                 displayToast(
                   {
-                    titleTranslationKey:
-                      "oneClickTrading.toast.currentlyUnavailable",
+                    titleTranslationKey,
                     captionElement: (
                       <Button
                         variant="link"
                         className="!h-auto self-start !px-0 !py-0  text-wosmongton-300"
                         onClick={() => {
-                          toast.dismiss(ONE_CLICK_UNAVAILABLE_TOAST_ID);
+                          toast.dismiss(TOAST_ID);
+                          shouldBeSignedWithOneClickTrading = false;
                           continueTx(void 0);
                         }}
                       >
-                        {t("oneClickTrading.toast.approveManually", {
+                        {t(buttonText, {
                           walletName: account.walletInfo?.prettyName ?? "",
                         })}
                       </Button>
@@ -347,7 +508,7 @@ export function useSwap(
                   },
                   ToastType.ONE_CLICK_TRADING,
                   {
-                    toastId: ONE_CLICK_UNAVAILABLE_TOAST_ID,
+                    toastId: TOAST_ID,
                     onClose: () => {
                       reject();
                     },
@@ -373,64 +534,207 @@ export function useSwap(
               : {}),
           };
 
+          const { routes } = txParams;
+          const typedRoutes = routes as SwapTxRouteOutGivenIn[];
+
           /**
-           * Send messages to account
+           * If it's ledger and we have one-click messages, we need to add a 1CT session
+           * before broadcasting the transaction as there is a payload limit on ledger
            */
-          if (routes.length === 1) {
-            const { pools } = routes[0];
-            account.osmosis
-              .sendSwapExactAmountInMsg(
-                pools,
-                tokenIn,
-                tokenOutMinAmount,
+          if (
+            isLedger &&
+            oneClickMessages &&
+            oneClickMessages.msgs &&
+            shouldSend1CTTx
+          ) {
+            await accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                "Add 1CT session",
+                oneClickMessages.msgs,
                 undefined,
-                signOptions,
-                ({ code }) => {
-                  if (code)
+                undefined,
+                undefined,
+                async (tx) => {
+                  const { code } = tx;
+                  if (code) {
                     reject(
                       new Error("Failed to send swap exact amount in message")
                     );
-                  else resolve(pools.length === 1 ? "exact-in" : "multihop");
+                  } else {
+                    if (
+                      oneClickMessages &&
+                      oneClickMessages.type === "create-1ct-session"
+                    ) {
+                      await onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        accountStore,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                        logEvent,
+                      });
+                    } else if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "remove-1ct-session"
+                    ) {
+                      await onEnd1CTSession({
+                        accountStore,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                        logEvent,
+                      });
+                    }
+                  }
                 }
               )
-              .catch(reject);
-          } else if (routes.length > 1) {
-            account.osmosis
-              .sendSplitRouteSwapExactAmountInMsg(
-                routes,
-                tokenIn,
-                tokenOutMinAmount,
+              .catch((e) => {
+                reject(e);
+                throw e;
+              });
+
+            await accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                quoteType === "out-given-in"
+                  ? routes.length === 1
+                    ? "swapExactAmountIn"
+                    : "splitRouteSwapExactAmountIn"
+                  : routes.length === 1
+                  ? "swapExactAmountOut"
+                  : "splitRouteSwapExactAmountOut",
+                messages,
                 undefined,
-                signOptions,
-                ({ code }) => {
-                  if (code)
+                undefined,
+                {
+                  ...signOptions,
+                  useOneClickTrading:
+                    await accountStore.shouldBeSignedWithOneClickTrading({
+                      messages,
+                    }),
+                },
+                (tx) => {
+                  const { code } = tx;
+                  if (code) {
                     reject(
-                      new Error(
-                        "Failed to send split route swap exact amount in message"
-                      )
+                      new Error("Failed to send swap exact amount in message")
                     );
-                  else resolve("multiroute");
+                  } else {
+                    resolve(
+                      routes.length === 1
+                        ? typedRoutes[0].pools.length === 1
+                          ? "exact-in"
+                          : "multihop"
+                        : "multiroute"
+                    );
+                  }
                 }
               )
               .catch(reject);
           } else {
-            // should not be possible because button should be disabled
-            reject(new Error("No routes given"));
+            accountStore
+              .signAndBroadcast(
+                chainStore.osmosis.chainId,
+                quoteType === "out-given-in"
+                  ? routes.length === 1
+                    ? "swapExactAmountIn"
+                    : "splitRouteSwapExactAmountIn"
+                  : routes.length === 1
+                  ? "swapExactAmountOut"
+                  : "splitRouteSwapExactAmountOut",
+                messages,
+                undefined,
+                signOptions?.fee,
+                signOptions,
+                (tx) => {
+                  const { code } = tx;
+                  if (code) {
+                    reject(
+                      new Error("Failed to send swap exact amount in message")
+                    );
+                  } else {
+                    if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "create-1ct-session"
+                    ) {
+                      onAdd1CTSession({
+                        privateKey: oneClickMessages.key,
+                        tx,
+                        userOsmoAddress: account?.address ?? "",
+                        fallbackGetAuthenticatorId:
+                          apiUtils.local.oneClickTrading.getSessionAuthenticator
+                            .fetch,
+                        accountStore,
+                        allowedMessages: oneClickMessages.allowedMessages,
+                        sessionPeriod: oneClickMessages.sessionPeriod,
+                        spendLimitTokenDecimals:
+                          oneClickMessages.spendLimitTokenDecimals,
+                        transaction1CTParams:
+                          oneClickMessages.transaction1CTParams,
+                        allowedAmount: oneClickMessages.allowedAmount,
+                        t,
+                        logEvent,
+                      });
+                    } else if (
+                      shouldSend1CTTx &&
+                      oneClickMessages &&
+                      oneClickMessages.type === "remove-1ct-session"
+                    ) {
+                      onEnd1CTSession({
+                        accountStore,
+                        authenticatorId: oneClickMessages.authenticatorId,
+                        logEvent,
+                      });
+                    }
+
+                    resolve(
+                      routes.length === 1
+                        ? typedRoutes[0].pools.length === 1
+                          ? "exact-in"
+                          : "multihop"
+                        : "multiroute"
+                    );
+                  }
+                }
+              )
+              .catch(reject);
           }
         }
-      ).finally(() => inAmountInput.reset()),
+      ).finally(() => {
+        inAmountInput.reset();
+        outAmountInput.reset();
+      }),
     [
-      maxSlippage,
-      inAmountInput,
       account,
-      quote,
-      isOneClickTradingEnabled,
       accountStore,
-      hasOverSpendLimitError,
-      hasExceededOneClickTradingGasLimit,
-      networkFeeError,
+      apiUtils.local.oneClickTrading.getSessionAuthenticator.fetch,
+      chainStore.osmosis.chainId,
       featureFlags.swapToolSimulateFee,
+      hasOverSpendLimitError,
+      inAmountInput,
+      isLedger,
+      isOneClickTradingEnabled,
+      logEvent,
+      maxSlippage,
+      messages,
       networkFee,
+      networkFeeError,
+      oneClickMessages,
+      outAmountInput,
+      quote,
+      quoteType,
+      shouldSend1CTTx,
       swapAssets.fromAsset,
       swapAssets.toAsset,
       t,
@@ -442,15 +746,20 @@ export function useSwap(
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteError &&
+        !quoteErrorMsg &&
         !inAmountInput.isEmpty,
-      [quote, quoteError, inAmountInput.isEmpty]
+      [quote, quoteErrorMsg, inAmountInput.isEmpty]
     )
   );
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
-    if (inAmountInput.amount && quote && swapAssets.toAsset) {
+    if (
+      inAmountInput.amount &&
+      quote &&
+      swapAssets.toAsset &&
+      quoteType === "out-given-in"
+    ) {
       return new CoinPretty(
         swapAssets.toAsset,
         quote.amount
@@ -460,9 +769,29 @@ export function useSwap(
             DecUtils.getTenExponentN(swapAssets.toAsset.coinDecimals)
           )
       );
+    } else if (
+      outAmountInput.amount &&
+      quote &&
+      swapAssets.toAsset &&
+      quoteType === "in-given-out"
+    ) {
+      return new CoinPretty(
+        swapAssets.toAsset,
+        outAmountInput.amount
+          .toDec()
+          .quo(quote.amount.toDec())
+          .mulTruncate(
+            DecUtils.getTenExponentN(swapAssets.toAsset.coinDecimals)
+          )
+      );
     }
-  }, [inAmountInput.amount, quote, swapAssets.toAsset]);
-
+  }, [
+    inAmountInput.amount,
+    quote,
+    swapAssets.toAsset,
+    outAmountInput.amount,
+    quoteType,
+  ]);
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
     return (
@@ -493,44 +822,62 @@ export function useSwap(
   // The price impact is computed directly from quote, ensuring most up-to-date state.
   // This guarantees consistency between token in and token out fiat values.
   const tokenOutFiatValue: PricePretty = useMemo(() => {
-    return getTokenOutFiatValue(
-      quote?.priceImpactTokenOut?.toDec(),
-      inAmountInput.fiatValue?.toDec()
-    ).sub(tokenInFeeAmountFiatValue);
+    if (quoteType === "out-given-in") {
+      return getTokenOutFiatValue(
+        quote?.priceImpactTokenOut?.toDec(),
+        inAmountInput.fiatValue?.toDec()
+      ).sub(tokenInFeeAmountFiatValue);
+    } else {
+      return (
+        outAmountInput.fiatValue ??
+        new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
+      );
+    }
   }, [
     inAmountInput.fiatValue,
     quote?.priceImpactTokenOut,
     tokenInFeeAmountFiatValue,
+    quoteType,
+    outAmountInput.fiatValue,
   ]);
+  const totalFee = useDeepMemo(
+    () =>
+      sum([
+        tokenInFeeAmountFiatValue,
+        networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
+      ]),
+    [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
+  );
 
   return {
     ...swapAssets,
     inAmountInput,
+    outAmountInput,
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
       isQuoteLoading || inAmountInput.isTyping
         ? positivePrevQuote
-        : !Boolean(quoteError)
+        : !quoteErrorMsg
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
-    totalFee: sum([
-      tokenInFeeAmountFiatValue,
-      networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
-    ]),
+    totalFee,
     networkFee,
     isLoadingNetworkFee:
       inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
+    isLoadingOneClickMessages,
     networkFeeError,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
-    spotPriceQuoteError,
+    spotPriceQuoteErrorMsg,
     isQuoteLoading,
     sendTradeTokenInTx,
     hasOverSpendLimitError,
-    hasExceededOneClickTradingGasLimit,
+    isSlippageOverBalance,
+    quoteType,
+    overspendErrorParams,
   };
 }
 
@@ -622,12 +969,14 @@ export function useSwapAssets({
   useQueryParams = true,
   useOtherCurrencies = true,
   poolId,
+  reverse = false,
 }: {
   initialFromDenom?: string;
   initialToDenom?: string;
   useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
   poolId?: string;
+  reverse?: boolean;
 } = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -639,7 +988,12 @@ export function useSwapAssets({
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
-  } = useToFromDenoms({ useQueryParams, initialFromDenom, initialToDenom });
+  } = useToFromDenoms({
+    useQueryParams,
+    initialFromDenom,
+    initialToDenom,
+    reverse,
+  });
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -661,7 +1015,7 @@ export function useSwapAssets({
     Boolean(fromAssetDenom) &&
     Boolean(toAssetDenom) &&
     useOtherCurrencies;
-  // use a separate query for search to maintain pagination in other infinite query
+
   const {
     data: selectableAssetPages,
     isLoading: isLoadingSelectAssets,
@@ -813,7 +1167,7 @@ function useSwapAmountInput({
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
-    error: quoteForCurrentBalanceError,
+    errorMsg: quoteForCurrentBalanceErrorMsg,
   } = useQueryRouterBestQuote(
     {
       tokenIn: swapAssets.fromAsset!,
@@ -827,6 +1181,10 @@ function useSwapAmountInput({
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
+  const { isOneClickTradingEnabled } = useOneClickTradingSession();
+
+  const { oneClickMessages } = use1CTSwapReviewMessages();
+
   const networkFeeQueryEnabled =
     !isQuoteForCurrentBalanceLoading &&
     balanceQuoteQueryEnabled &&
@@ -837,15 +1195,21 @@ function useSwapAmountInput({
     error: currentBalanceNetworkFeeError,
   } = useEstimateTxFees({
     chainId: chainStore.osmosis.chainId,
-    messages: quoteForCurrentBalance?.messages,
+    messages: [
+      ...(quoteForCurrentBalance?.messages ?? []),
+      ...(oneClickMessages?.msgs ?? []),
+    ],
     enabled: networkFeeQueryEnabled,
+    signOptions: {
+      useOneClickTrading: isOneClickTradingEnabled,
+    },
   });
   const isLoadingCurrentBalanceNetworkFee =
     networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
 
   const hasErrorWithCurrentBalanceQuote = useMemo(() => {
-    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceError;
-  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceError]);
+    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceErrorMsg;
+  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceErrorMsg]);
 
   const notEnoughBalanceForMax = useMemo(
     () =>
@@ -858,13 +1222,10 @@ function useSwapAmountInput({
       currentBalanceNetworkFeeError?.message.includes(
         "Insufficient alternative balance for transaction fees"
       ) ||
-      quoteForCurrentBalanceError?.message.includes(
+      quoteForCurrentBalanceErrorMsg?.includes(
         "Not enough quoted. Try increasing amount."
       ),
-    [
-      currentBalanceNetworkFeeError?.message,
-      quoteForCurrentBalanceError?.message,
-    ]
+    [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
   useEffect(() => {
@@ -875,12 +1236,21 @@ function useSwapAmountInput({
     );
   }, [currentBalanceNetworkFee?.gasAmount]);
 
-  return {
-    ...inAmountInput,
+  const returnValue = useDeepMemo(() => {
+    return {
+      ...inAmountInput,
+      isLoadingCurrentBalanceNetworkFee,
+      hasErrorWithCurrentBalanceQuote,
+      notEnoughBalanceForMax,
+    };
+  }, [
+    inAmountInput,
     isLoadingCurrentBalanceNetworkFee,
     hasErrorWithCurrentBalanceQuote,
     notEnoughBalanceForMax,
-  };
+  ]);
+
+  return returnValue;
 }
 
 /**
@@ -891,26 +1261,26 @@ function useToFromDenoms({
   useQueryParams,
   initialFromDenom,
   initialToDenom,
+  reverse = false,
 }: {
   useQueryParams: boolean;
   initialFromDenom?: string;
   initialToDenom?: string;
+  reverse?: boolean;
 }) {
-  const router = useRouter();
-
   /**
    * user query params as state source-of-truth
    * ignores initial denoms if there are query params
    */
-  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
+  const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    useQueryParams ? initialFromDenom : undefined
+    parseAsString.withDefault(initialFromDenom ?? "ATOM")
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
-  const [toAssetQueryParam, setToAssetQueryParam] = useQueryParamState(
+  const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    useQueryParams ? initialToDenom : undefined
+    parseAsString.withDefault(initialToDenom ?? "OSMO")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;
@@ -930,27 +1300,37 @@ function useToFromDenoms({
 
   // if using query params perform one push instead of two as the router
   // doesn't handle two immediate pushes well within `useQueryParamState` hooks
-  const switchAssets = () => {
+  const switchAssets = useCallback(() => {
     if (useQueryParams) {
-      const existingParams = router.query;
-      router.replace({
-        query: {
-          ...existingParams,
-          from: toDenomQueryParamStr,
-          to: fromDenomQueryParamStr,
-        },
-      });
+      const temp = fromDenomQueryParam;
+      setFromDenomQueryParam(toAssetQueryParam);
+      setToAssetQueryParam(temp);
       return;
     }
 
     const temp = fromAssetState;
     setFromAssetState(toAssetState);
     setToAssetState(temp);
-  };
+  }, [
+    useQueryParams,
+    fromDenomQueryParam,
+    toAssetQueryParam,
+    setFromDenomQueryParam,
+    setToAssetQueryParam,
+    fromAssetState,
+    toAssetState,
+    setFromAssetState,
+    setToAssetState,
+  ]);
+
+  const fromAssetDenom = useQueryParams
+    ? fromDenomQueryParamStr
+    : fromAssetState;
+  const toAssetDenom = useQueryParams ? toDenomQueryParamStr : toAssetState;
 
   return {
-    fromAssetDenom: useQueryParams ? fromDenomQueryParamStr : fromAssetState,
-    toAssetDenom: useQueryParams ? toDenomQueryParamStr : toAssetState,
+    fromAssetDenom: reverse ? toAssetDenom : fromAssetDenom,
+    toAssetDenom: reverse ? fromAssetDenom : toAssetDenom,
     setFromAssetDenom: useQueryParams
       ? setFromDenomQueryParam
       : setFromAssetState,
@@ -961,7 +1341,7 @@ function useToFromDenoms({
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset<TAsset extends Asset>({
+export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol,
   existingAssets = [],
 }: {
@@ -996,314 +1376,182 @@ function useSwapAsset<TAsset extends Asset>({
   };
 }
 
-function getSwapTxParameters({
-  coinAmount,
-  maxSlippage,
-  quote,
-  fromAsset,
-  toAsset,
-}: {
-  coinAmount: string;
-  maxSlippage: Dec;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
-  fromAsset: Asset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: Asset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-}) {
-  if (!quote) {
-    throw new Error(
-      "User input should be disabled if no route is found or is being generated"
-    );
-  }
-  if (!coinAmount) throw new Error("No input");
-  if (!fromAsset) throw new Error("No from asset");
-  if (!toAsset) throw new Error("No to asset");
-
-  /**
-   * Prepare swap data
-   */
-
-  type Pool = {
-    id: string;
-    tokenOutDenom: string;
-  };
-  type Route = {
-    pools: Pool[];
-    tokenInAmount: string;
-  };
-
-  const routes: Route[] = [];
-
-  for (const route of quote.split) {
-    const pools: Pool[] = [];
-
-    for (let i = 0; i < route.pools.length; i++) {
-      const pool = route.pools[i];
-
-      pools.push({
-        id: pool.id,
-        tokenOutDenom: route.tokenOutDenoms[i],
-      });
-    }
-
-    routes.push({
-      pools: pools,
-      tokenInAmount: route.initialAmount.toString(),
-    });
-  }
-
-  /** In amount converted to integer (remove decimals) */
-  const tokenIn = {
-    currency: fromAsset as Currency,
-    amount: coinAmount,
-  };
-
-  /** Out amount with slippage included */
-  const tokenOutMinAmount = quote.amount
-    .toDec()
-    .mul(DecUtils.getTenExponentNInPrecisionRange(toAsset.coinDecimals))
-    .mul(new Dec(1).sub(maxSlippage))
-    .truncate()
-    .toString();
-
-  return {
-    routes,
-    tokenIn,
-    tokenOutMinAmount,
-  };
-}
-
-function getSwapMessages({
-  coinAmount,
-  maxSlippage,
-  quote,
-  fromAsset,
-  toAsset,
-  userOsmoAddress,
-}: {
-  coinAmount: string;
-  maxSlippage: Dec | undefined;
-  quote:
-    | RouterOutputs["local"]["quoteRouter"]["routeTokenOutGivenIn"]
-    | undefined;
-  fromAsset: Asset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  toAsset: Asset &
-    Partial<{
-      amount: CoinPretty;
-      usdValue: PricePretty;
-    }>;
-  userOsmoAddress: string | undefined;
-}) {
-  if (!userOsmoAddress || !quote || !maxSlippage) return undefined;
-
-  let txParams: ReturnType<typeof getSwapTxParameters>;
-
-  try {
-    txParams = getSwapTxParameters({
-      coinAmount,
-      maxSlippage,
-      fromAsset,
-      toAsset,
-      quote,
-    });
-  } catch {
-    return undefined;
-  }
-
-  const { routes, tokenIn, tokenOutMinAmount } = txParams;
-
-  const { pools } = routes[0];
-
-  if (routes.length < 1) {
-    throw new Error("Routes are empty");
-  }
-
-  return [
-    routes.length === 1
-      ? makeSwapExactAmountInMsg({
-          pools,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        })
-      : makeSplitRoutesSwapExactAmountInMsg({
-          routes,
-          tokenIn,
-          tokenOutMinAmount,
-          userOsmoAddress,
-        }),
-  ];
-}
-
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
   input: Omit<
     RouterInputs["local"]["quoteRouter"]["routeTokenOutGivenIn"],
-    "preferredRouter" | "tokenInDenom" | "tokenOutDenom"
+    "preferredRouter" | "tokenInDenom" | "tokenOutDenom" | "maxSlippage"
   > & {
-    tokenIn: Asset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
-    tokenOut: Asset &
-      Partial<{
-        amount: CoinPretty;
-        usdValue: PricePretty;
-      }>;
+    tokenIn:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
+    tokenOut:
+      | (MinimalAsset &
+          Partial<{
+            amount: CoinPretty;
+            usdValue: PricePretty;
+          }>)
+      | undefined;
     maxSlippage: Dec | undefined;
   },
   enabled: boolean,
-  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+  quoteType: QuoteDirection = "out-given-in"
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const featureFlags = useFeatureFlags();
-
-  const availableRouterKeys: RouterKey[] = useMemo(
-    () =>
-      !featureFlags._isInitialized
-        ? []
-        : routerKeys.filter((key) => {
-            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
-            if (!featureFlags.legacyRouter && key === "legacy") return false;
-            // TFM doesn't support force swap through pool
-            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
-              return false;
-            return true;
-          }),
-    [
-      featureFlags._isInitialized,
-      featureFlags.sidecarRouter,
-      featureFlags.legacyRouter,
-      featureFlags.tfmRouter,
-      routerKeys,
-      input.forcePoolId,
-    ]
-  );
-
   const trpcReact = createTRPCReact<AppRouter>();
-  const routerResults = trpcReact.useQueries((t) =>
-    availableRouterKeys.map((key) =>
-      t.local.quoteRouter.routeTokenOutGivenIn(
-        {
-          tokenInAmount: input.tokenInAmount,
-          tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
-          tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
-          forcePoolId: input.forcePoolId,
-          preferredRouter: key,
-        },
-        {
-          enabled: enabled && Boolean(availableRouterKeys.length),
 
-          select: (quote) => {
-            return {
-              ...quote,
-              messages: getSwapMessages({
-                quote,
-                toAsset: input.tokenOut,
-                fromAsset: input.tokenIn,
-                maxSlippage: input.maxSlippage,
-                coinAmount: input.tokenInAmount,
-                userOsmoAddress: account?.address,
-              }),
-            };
-          },
+  const queryOptions = {
+    // quotes should not be considered fresh for long, otherwise
+    // the gas simulation will fail due to slippage and the user would see errors
+    staleTime: 5_000,
+    cacheTime: 5_000,
+    refetchInterval: 5_000,
 
-          // quotes should not be considered fresh for long, otherwise
-          // the gas simulation will fail due to slippage and the user would see errors
-          staleTime: 5_000,
-          cacheTime: 5_000,
-          refetchInterval: 5_000,
+    // Disable retries, as useQueries
+    // will block successfull quotes from being returned
+    // if failed quotes are being returned
+    // until retry starts returning false.
+    // This causes slow UX even though there's a
+    // quote that the user can use.
+    retry: false,
 
-          // Disable retries, as useQueries
-          // will block successfull quotes from being returned
-          // if failed quotes are being returned
-          // until retry starts returning false.
-          // This causes slow UX even though there's a
-          // quote that the user can use.
-          retry: false,
+    // prevent batching so that fast routers can
+    // return requests faster than the slowest router
+    trpc: {
+      context: {
+        skipBatch: true,
+      },
+    },
+  };
 
-          // prevent batching so that fast routers can
-          // return requests faster than the slowest router
-          trpc: {
-            context: {
-              skipBatch: true,
-            },
-          },
-        }
-      )
-    )
-  );
+  const inGivenOutQuote =
+    trpcReact.local.quoteRouter.routeTokenInGivenOut.useQuery(
+      {
+        tokenOutAmount: input.tokenInAmount ?? "",
+        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+        forcePoolId: input.forcePoolId,
+      },
+      {
+        ...queryOptions,
+        enabled: enabled && quoteType === "in-given-out",
 
-  // reduce the results' data to that with the highest out amount
-  const bestData = useMemo(() => {
-    return (
-      routerResults
-        // only those that have fetched
-        .filter((routerResults) => Boolean(routerResults.isFetched))
-        // only those that have returned a result without error
-        .map(({ data }) => data)
-        // only the best quote data
-        .reduce((best, cur) => {
-          if (!best) return cur;
-          if (cur && best.amount.toDec().lt(cur.amount.toDec())) return cur;
-          return best;
-        }, undefined)
+        // Longer refetch and cache times due to query inefficiencies. Can be removed once that is fixed.
+        staleTime: 10_000,
+        cacheTime: 10_000,
+        refetchInterval: 10_000,
+      }
     );
-  }, [routerResults]);
 
-  const numSucceeded = routerResults.filter(
-    ({ isSuccess }) => isSuccess
-  ).length;
-  const isOneSuccessful = Boolean(numSucceeded);
-  const numError = routerResults.filter(({ isError }) => isError).length;
-  const isOneErrored = Boolean(numError);
+  const outGivenInQuote =
+    trpcReact.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+      {
+        tokenInAmount: input.tokenInAmount,
+        tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
+        tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
+        forcePoolId: input.forcePoolId,
+      },
+      {
+        ...queryOptions,
+        enabled: enabled && quoteType === "out-given-in",
+      }
+    );
 
-  // if none have returned a resulting quote, find some error
-  const someError = useMemo(
-    () =>
-      !isOneSuccessful && isOneErrored
-        ? routerResults.find((routerResults) => Boolean(routerResults.error))
-            ?.error
-        : undefined,
-    [isOneSuccessful, isOneErrored, routerResults]
+  const {
+    data: quote,
+    isSuccess,
+    isError,
+    error,
+  } = useDeepMemo(() => {
+    return quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
+  }, [quoteType, outGivenInQuote, inGivenOutQuote]);
+
+  const acceptedQuote = useDeepMemo(() => {
+    if (
+      !quote ||
+      !input.tokenIn ||
+      !input.tokenOut ||
+      quote.amount.toDec().isZero()
+    )
+      return;
+    return {
+      ...quote,
+      amountIn:
+        quoteType === "out-given-in"
+          ? new CoinPretty(input.tokenIn, input.tokenInAmount)
+          : quote.amount,
+      amountOut:
+        quoteType === "out-given-in"
+          ? quote.amount
+          : new CoinPretty(input.tokenOut, input.tokenInAmount),
+    };
+  }, [quote, quoteType, input.tokenInAmount, input.tokenIn, input.tokenOut]);
+
+  const { value: messages } = useAsync(async () => {
+    const tokenOutCoinDecimals = input.tokenOut?.coinDecimals;
+    const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
+    const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
+    const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
+    const address = account?.address;
+    if (
+      !quote ||
+      typeof tokenOutCoinDecimals === "undefined" ||
+      !tokenInCoinMinimalDenom ||
+      !tokenOutCoinMinimalDenom ||
+      typeof tokenInCoinDecimals === "undefined" ||
+      !address
+    )
+      return undefined;
+    const messages = await getSwapMessages({
+      quote,
+      tokenOutCoinMinimalDenom,
+      tokenInCoinDecimals: tokenInCoinDecimals!,
+      tokenOutCoinDecimals: tokenOutCoinDecimals!,
+      tokenInCoinMinimalDenom,
+      maxSlippage: input.maxSlippage?.toString() ?? DefaultSlippage,
+      coinAmount: input.tokenInAmount,
+      userOsmoAddress: address,
+      quoteType,
+    });
+
+    return messages;
+  }, [
+    account?.address,
+    quote,
+    input.maxSlippage,
+    input.tokenIn?.coinMinimalDenom,
+    input.tokenInAmount,
+    input.tokenOut?.coinDecimals,
+    input.tokenOut?.coinMinimalDenom,
+    input.tokenIn?.coinDecimals,
+    quoteType,
+  ]);
+
+  const quoteData = useDeepMemo(
+    () => (acceptedQuote ? { ...acceptedQuote, messages } : undefined),
+    [acceptedQuote, messages]
   );
 
   return {
-    data: bestData,
-    isLoading: !isOneSuccessful,
-    error: someError,
-    numSucceeded,
-    numError,
-    numAvailableRouters: availableRouterKeys.length,
+    data: quoteData,
+    isLoading: !isSuccess,
+    errorMsg: error?.message,
+    numSucceeded: isSuccess ? 1 : 0,
+    numError: isError ? 1 : 0,
   };
 }
 
 /** Various router clients on server should reconcile their error messages
  *  into the following error messages or instances on the server.
  *  Then we can show the user a useful translated error message vs just "Error". */
-function makeRouterErrorFromTrpcError(
-  error:
-    | TRPCClientError<AppRouter["local"]["quoteRouter"]["routeTokenOutGivenIn"]>
-    | null
-    | undefined
-):
+function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   | {
       error:
         | NoRouteError
@@ -1313,28 +1561,27 @@ function makeRouterErrorFromTrpcError(
       isUnexpected: boolean;
     }
   | undefined {
-  if (isNil(error)) return;
-  const tprcShapeMsg = error?.message;
+  if (isNil(errorMsg)) return;
 
-  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+  if (errorMsg?.includes(NoRouteError.defaultMessage)) {
     return { error: new NoRouteError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
     return { error: new NotEnoughLiquidityError(), isUnexpected: false };
   }
-  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+  if (errorMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
     return { error: new NotEnoughQuotedError(), isUnexpected: false };
   }
-  if (error) {
+  if (errorMsg) {
     return {
-      error: new Error("Unexpected router error" + (tprcShapeMsg ?? "")),
+      error: new Error("Unexpected router error" + (errorMsg ?? "")),
       isUnexpected: true,
     };
   }
 }
 
 /** Gets recommended assets directly from asset list. */
-function useRecommendedAssets(
+export function useRecommendedAssets(
   fromCoinMinimalDenom?: string,
   toCoinMinimalDenom?: string
 ) {
@@ -1357,4 +1604,162 @@ function useRecommendedAssets(
         ),
     [fromCoinMinimalDenom, toCoinMinimalDenom]
   );
+}
+
+/**
+ * Calculates the input or output amount for a swap with slippage applied.
+ * For in-given-out this is the max input amount, for out-given-in this is the minimum output amount.
+ *
+ * @param swapState - The swap state object.
+ * @param slippageConfig - The slippage configuration object.
+ * @param quoteType - The type of quote to use.
+ * @returns The amount with slippage applied in both token and fiat values.
+ */
+export function useAmountWithSlippage({
+  swapState,
+  slippageConfig,
+  quoteType,
+}: {
+  swapState: SwapState;
+  slippageConfig: ObservableSlippageConfig;
+  quoteType: QuoteDirection;
+}) {
+  const { amountWithSlippage, fiatAmountWithSlippage } = useMemo(() => {
+    if (quoteType === "out-given-in") {
+      const oneMinusSlippage = new Dec(1).sub(slippageConfig.slippage.toDec());
+      const amountWithSlippage = swapState.quote
+        ? new IntPretty(swapState.quote.amount.toDec().mul(oneMinusSlippage))
+        : undefined;
+      const fiatAmountWithSlippage = swapState.tokenOutFiatValue
+        ? new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            swapState.tokenOutFiatValue?.toDec().mul(oneMinusSlippage)
+          )
+        : undefined;
+
+      return { amountWithSlippage, fiatAmountWithSlippage };
+    }
+
+    if (quoteType === "in-given-out") {
+      const onePlusSlippage = new Dec(1).add(slippageConfig.slippage.toDec());
+      const amountWithSlippage = swapState.quote
+        ? new IntPretty(swapState.quote.amount.toDec().mul(onePlusSlippage))
+        : new IntPretty(0);
+      const balance = new IntPretty(
+        swapState.inAmountInput.balance?.toDec() ?? new Dec(0)
+      );
+      // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
+      // which implies the user has enough balance.
+      const maxAmountWithSlippage =
+        amountWithSlippage > balance && !balance.toDec().isZero()
+          ? balance
+          : amountWithSlippage;
+
+      const fiatAmountWithSlippage = mulPrice(
+        new CoinPretty(
+          swapState.fromAsset as Currency,
+          maxAmountWithSlippage.mul(
+            DecUtils.getTenExponentN(swapState.fromAsset?.coinDecimals ?? 0)
+          )
+        ),
+        swapState.inAmountInput.price,
+        DEFAULT_VS_CURRENCY
+      );
+      return {
+        amountWithSlippage: maxAmountWithSlippage,
+        fiatAmountWithSlippage,
+      };
+    }
+
+    return {
+      amountWithSlippage: undefined,
+      fiatAmountWithSlippage: undefined,
+    };
+  }, [
+    slippageConfig.slippage,
+    swapState.quote,
+    swapState.tokenOutFiatValue,
+    quoteType,
+    swapState.fromAsset,
+    swapState.inAmountInput.price,
+    swapState.inAmountInput.balance,
+  ]);
+
+  return {
+    amountWithSlippage,
+    fiatAmountWithSlippage,
+  };
+}
+
+/** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
+export function useDynamicSlippageConfig({
+  slippageConfig,
+  feeError,
+  quoteType = "out-given-in",
+}: {
+  slippageConfig: ObservableSlippageConfig;
+  feeError?: Error | null;
+  quoteType: QuoteDirection;
+}) {
+  useEffect(() => {
+    if (feeError) {
+      if (
+        (feeError.message.includes("Swap requires") ||
+          feeError.message.includes("is greater than max amount")) &&
+        quoteType === "in-given-out"
+      ) {
+        const amounts = extractSwapRequiredErrorAmounts(feeError.message);
+
+        if (amounts) {
+          const [required, sent] = amounts;
+          const slippage = new Dec(1).add(slippageConfig.slippage.toDec());
+
+          if (!required || !sent) return;
+
+          const amountPreSlippage = new Dec(sent).quo(slippage);
+          const slippageRequired = new Dec(required).quo(amountPreSlippage);
+
+          if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
+            const [index, amount] = slippageConfig.getSmallestSlippage(
+              slippageRequired.sub(new Dec(1))
+            );
+
+            slippageConfig.select(index as number);
+            slippageConfig.setDefaultSlippage(
+              trimPlaceholderZeros(
+                (amount as Dec)
+                  .mul(DecUtils.getTenExponentNInPrecisionRange(2))
+                  .toString()
+              )
+            );
+          }
+        } else {
+          console.log("No amounts found");
+        }
+      }
+    }
+  }, [feeError, slippageConfig, quoteType]);
+}
+
+/** Extracts the numerical values from the swap required error
+ *
+ * e.g. Error: Fetch error. failed to execute message; message index: 0:
+ * Swap requires 498419192699272362737ibc/E47F4E97C534C95B942729E1B25DBDE111EA791411CFF100515050BEA0AC0C6B,
+ * which is greater than the amount 497246119581463551214: calculated amount is larger than max amount
+ *
+ * returns ["498419192699272362737", "497246119581463551214"]
+ */
+function extractSwapRequiredErrorAmounts(str: string) {
+  const regex = /^\d+/;
+  const split = str
+    .split(" ")
+    .map((s) => {
+      const stripped = s.replace("(", "").replace(")", "");
+      if (regex.test(stripped)) {
+        return stripped.match(regex)?.[0] ?? undefined;
+      }
+    })
+    .filter(Boolean);
+
+  return [split[1], split[2]];
 }

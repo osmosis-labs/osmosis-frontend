@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import {
   ColorType,
   DeepPartial,
@@ -10,6 +11,7 @@ import {
 import React, {
   memo,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -18,6 +20,7 @@ import React, {
 
 import {
   priceFormatter,
+  timepointToDate,
   timepointToString,
 } from "~/components/chart/light-weight-charts/utils";
 import { theme } from "~/tailwind.config";
@@ -36,48 +39,50 @@ function resizeSubscribe(callback: (this: Window, ev: UIEvent) => unknown) {
   };
 }
 
-export const defaultOptions: DeepPartial<TimeChartOptions> = {
+const defaultOptions: DeepPartial<TimeChartOptions> = {
   layout: {
-    fontFamily: theme.fontFamily.subtitle1.join(","),
+    fontFamily: theme.fontFamily.caption.join(","),
     background: {
       type: ColorType.Solid,
-      color: theme.colors.osmoverse[850],
+      color: "transparent",
     },
-    textColor: theme.colors.wosmongton[200],
-    fontSize: 14,
+    textColor: theme.colors.osmoverse[500],
+    fontSize: 12,
   },
   grid: { horzLines: { visible: false }, vertLines: { visible: false } },
   rightPriceScale: {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
-      bottom: 0,
+      bottom: 0.1,
     },
   },
   leftPriceScale: {
     autoScale: true,
     borderVisible: false,
     ticksVisible: false,
+    entireTextOnly: true,
     scaleMargins: {
       top: 0.25,
-      bottom: 0,
+      bottom: 0.1,
     },
   },
   crosshair: {
     horzLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.LargeDashed,
-      width: 2,
-      color: `${theme.colors.osmoverse[300]}33`,
+      style: LineStyle.Solid,
+      width: 1,
+      color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
     vertLine: {
       labelBackgroundColor: theme.colors.osmoverse[850],
-      style: LineStyle.LargeDashed,
-      width: 2,
-      color: `${theme.colors.osmoverse[300]}33`,
+      style: LineStyle.Solid,
+      width: 1,
+      color: `${theme.colors.osmoverse[300]}2b`,
       labelVisible: false,
     },
   },
@@ -114,14 +119,7 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
 
       switch (tickMarkType) {
         case TickMarkType.Year:
-          formatOptions.year = "numeric";
-          break;
-
         case TickMarkType.Month:
-          formatOptions.month = "short";
-          formatOptions.year = "numeric";
-          break;
-
         case TickMarkType.DayOfMonth:
           formatOptions.day = "numeric";
           formatOptions.month = "short";
@@ -145,14 +143,61 @@ export const defaultOptions: DeepPartial<TimeChartOptions> = {
   autoSize: true,
 };
 
-export interface ChartProps<T = TimeChartOptions, K = Time> {
+const defaultOptionsWithSeries = (
+  series?: Series[]
+): DeepPartial<TimeChartOptions> => ({
+  ...defaultOptions,
+  timeScale: {
+    ...defaultOptions.timeScale,
+    tickMarkFormatter: (timePoint: Time, tickMarkType: TickMarkType) => {
+      const formatOptions: Intl.DateTimeFormatOptions = {};
+
+      const isOneDay = series?.every((value) =>
+        value.data.every((data) => {
+          const date = dayjs(timepointToDate(data.time));
+          const diffDays = Math.abs(date.diff(Date.now(), "days"));
+          return diffDays <= 1 && diffDays >= 0;
+        })
+      );
+
+      if (isOneDay) {
+        formatOptions.hour = "numeric";
+        formatOptions.minute = "numeric";
+      } else {
+        switch (tickMarkType) {
+          case TickMarkType.Year:
+          case TickMarkType.Month:
+          case TickMarkType.DayOfMonth:
+            formatOptions.day = "numeric";
+            formatOptions.month = "short";
+            break;
+
+          case TickMarkType.Time:
+            formatOptions.hour = "numeric";
+            formatOptions.minute = "numeric";
+            break;
+
+          case TickMarkType.TimeWithSeconds:
+            formatOptions.hour = "numeric";
+            formatOptions.minute = "numeric";
+            formatOptions.second = "2-digit";
+            break;
+        }
+      }
+
+      return timepointToString(timePoint, formatOptions, "en-US");
+    },
+  },
+});
+
+interface ChartProps<T extends TimeChartOptions, K extends Time> {
   options?: DeepPartial<T>;
   series?: Series[];
-  Controller: new (params: ChartControllerParams<T, K>) => ChartController<
-    T,
-    K
-  >;
+  Controller: new (
+    params: ChartControllerParams<TimeChartOptions, K>
+  ) => ChartController<TimeChartOptions, K>;
   onCrosshairMove?: (params: MouseEventParams<K>) => void;
+  onDataPointHover?: (params: MouseEventParams<K>) => void;
 }
 
 export const Chart = memo(
@@ -164,10 +209,25 @@ export const Chart = memo(
       children,
       series,
       onCrosshairMove,
+      onDataPointHover,
       Controller,
     } = props;
     const [container, setContainer] = useState<HTMLDivElement | null>(null);
-    const chart = useRef<ChartController<T, K>>();
+    const chart = useRef<ChartController<TimeChartOptions, K>>();
+    const lastHoverDataPointLogicalIndex =
+      useRef<MouseEventParams<K>["logical"]>(undefined);
+
+    const onCrosshairMoveInternal = useCallback(
+      (params: MouseEventParams<K>) => {
+        onCrosshairMove?.(params);
+
+        if (lastHoverDataPointLogicalIndex.current !== params.logical) {
+          onDataPointHover?.(params);
+        }
+        lastHoverDataPointLogicalIndex.current = params.logical;
+      },
+      [onCrosshairMove, onDataPointHover]
+    );
 
     useSyncExternalStore(
       resizeSubscribe,
@@ -180,17 +240,23 @@ export const Chart = memo(
     if (container && chart.current === undefined) {
       chart.current = new Controller({
         options: {
-          ...defaultOptions,
+          ...defaultOptionsWithSeries(series),
           ...options,
         },
         series,
         container,
-        onCrosshairMove,
+        onCrosshairMove: onCrosshairMoveInternal,
       });
     }
 
     useEffect(() => {
-      chart.current?.applyOptions({ options, series });
+      chart.current?.applyOptions({
+        options: {
+          ...defaultOptionsWithSeries(series),
+          ...options,
+        },
+        series,
+      });
     }, [options, series]);
 
     useEffect(() => {

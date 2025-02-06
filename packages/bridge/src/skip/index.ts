@@ -1,10 +1,15 @@
-import { fromBech32, toBech32 } from "@cosmjs/encoding";
-import { Registry } from "@cosmjs/proto-signing";
-import { CoinPretty } from "@keplr-wallet/unit";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import type { Registry } from "@cosmjs/proto-signing";
+import {
+  estimateGasFee,
+  makeExecuteCosmwasmContractMsg,
+  makeIBCTransferMsg,
+} from "@osmosis-labs/tx";
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  EthereumChainInfo,
+  isNil,
+  NativeEVMTokenConstantAddress,
+} from "@osmosis-labs/utils";
 import cachified from "cachified";
 import {
   Address,
@@ -19,7 +24,6 @@ import {
 } from "viem";
 
 import { BridgeQuoteError } from "../errors";
-import { EthereumChainInfo, NativeEVMTokenConstantAddress } from "../ethereum";
 import {
   BridgeAsset,
   BridgeChain,
@@ -28,16 +32,16 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
+  BridgeSupportedAsset,
   BridgeTransactionRequest,
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
-import { BridgeAssetMap } from "../utils";
-import { SkipApiClient } from "./queries";
+import { BridgeAssetMap } from "../utils/asset";
+import { SkipApiClient } from "./client";
 import { SkipEvmTx, SkipMsg, SkipMultiChainMsg } from "./types";
 
 export class SkipBridgeProvider implements BridgeProvider {
@@ -45,7 +49,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   readonly providerName = SkipBridgeProvider.ID;
 
   readonly skipClient: SkipApiClient;
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.skipClient = new SkipApiClient(ctx.env);
@@ -76,11 +80,13 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
+      ttl: process.env.NODE_ENV === "test" ? -1 : 20 * 1000, // 20 seconds
       getFreshValue: async (): Promise<BridgeQuote> => {
         const sourceAsset = await this.getAsset(fromChain, fromAsset);
 
         if (!sourceAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${fromAsset.denom} on ${fromChain.chainName}`,
           });
@@ -90,18 +96,64 @@ export class SkipBridgeProvider implements BridgeProvider {
 
         if (!destinationAsset) {
           throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
             message: `Unsupported asset ${toAsset.denom} on ${toChain.chainName}`,
           });
         }
 
-        const route = await this.skipClient.route({
-          source_asset_denom: sourceAsset.denom,
-          source_asset_chain_id: fromChain.chainId.toString(),
-          dest_asset_denom: destinationAsset.denom,
-          dest_asset_chain_id: toChain.chainId.toString(),
-          amount_in: fromAmount,
-        });
+        const route = await this.skipClient
+          .route({
+            source_asset_denom: sourceAsset.denom,
+            source_asset_chain_id: fromChain.chainId.toString(),
+            dest_asset_denom: destinationAsset.denom,
+            dest_asset_chain_id: toChain.chainId.toString(),
+            amount_in: fromAmount,
+          })
+          .catch((e) => {
+            if (e instanceof Error) {
+              const msg = e.message;
+              if (
+                msg.includes(
+                  "Input amount is too low to cover"
+                  // Could be Axelar or CCTP
+                ) ||
+                msg.includes(
+                  "Difference in USD value of route input and output is too large"
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "InsufficientAmountError",
+                  message: msg,
+                });
+              }
+              if (
+                msg.includes(
+                  "cannot transfer across cctp after route demands swap"
+                )
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "NoQuotesError",
+                  message: msg,
+                });
+              }
+              if (
+                msg.includes(
+                  "no single-tx routes found, to enable multi-tx routes set allow_multi_tx to true"
+                ) ||
+                msg.includes("no routes found")
+              ) {
+                throw new BridgeQuoteError({
+                  bridgeId: SkipBridgeProvider.ID,
+                  errorType: "NoQuotesError",
+                  message: msg,
+                });
+              }
+            }
+            throw e;
+          });
 
         const addressList = await this.getAddressList(
           route.chain_ids,
@@ -111,42 +163,29 @@ export class SkipBridgeProvider implements BridgeProvider {
           toChain
         );
 
-        const amountOut = new CoinPretty(
-          {
-            coinDecimals: toAsset.decimals,
-            coinDenom: toAsset.denom,
-            coinMinimalDenom: toAsset.denom,
-          },
-          route.amount_out
-        );
-
-        let transferFee: BridgeCoin = {
+        let transferFee: BridgeCoin & { chainId: number | string } = {
+          ...fromAsset,
+          coinGeckoId: sourceAsset.coingecko_id,
           amount: "0",
-          denom: fromAsset.denom,
-          sourceDenom: fromAsset.sourceDenom,
-          decimals: fromAsset.decimals,
+          chainId: fromChain.chainId,
         };
 
         for (const operation of route.operations) {
           if ("axelar_transfer" in operation) {
-            const feeAmount = new CoinPretty(
-              {
-                coinDecimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
-                coinDenom:
-                  operation.axelar_transfer.fee_asset.symbol ??
-                  operation.axelar_transfer.fee_asset.denom,
-                coinMinimalDenom: operation.axelar_transfer.fee_asset.denom,
-              },
-              operation.axelar_transfer.fee_amount
-            );
+            const feeAsset = operation.axelar_transfer.fee_asset;
 
             transferFee = {
-              amount: feeAmount.toCoin().amount,
-              denom:
-                operation.axelar_transfer.fee_asset.symbol ??
-                operation.axelar_transfer.fee_asset.denom,
-              sourceDenom: operation.axelar_transfer.fee_asset.denom,
-              decimals: operation.axelar_transfer.fee_asset.decimals ?? 6,
+              amount: operation.axelar_transfer.fee_amount,
+              denom: feeAsset.symbol ?? feeAsset.denom,
+              chainId: feeAsset.is_evm
+                ? Number(feeAsset.chain_id)
+                : feeAsset.chain_id,
+              address:
+                feeAsset.is_evm && !Boolean(feeAsset.token_contract)
+                  ? NativeEVMTokenConstantAddress
+                  : feeAsset.token_contract!,
+              decimals: feeAsset.decimals ?? 6,
+              coinGeckoId: feeAsset.coingecko_id,
             };
           }
         }
@@ -172,46 +211,41 @@ export class SkipBridgeProvider implements BridgeProvider {
           throw new Error("Failed to create transaction");
         }
 
-        const sourceChainFinalityTime = this.getFinalityTimeForChain(
-          sourceAsset.chain_id
-        );
-        const destinationChainFinalityTime = this.getFinalityTimeForChain(
-          destinationAsset.chain_id
-        );
-
-        const estimatedTime =
-          sourceChainFinalityTime > destinationChainFinalityTime
-            ? sourceChainFinalityTime
-            : destinationChainFinalityTime;
-
-        const estimatedGasFee = await this.estimateGasCost(
+        const estimatedGasFee = await this.estimateGasFee(
           params,
           transactionRequest
         );
 
         return {
           input: {
+            coinGeckoId: sourceAsset.coingecko_id,
+            ...fromAsset,
             amount: fromAmount,
-            denom: fromAsset.denom,
-            sourceDenom: fromAsset.sourceDenom,
-            decimals: fromAsset.decimals,
           },
           expectedOutput: {
-            amount: amountOut.toCoin().amount,
-            denom: toAsset.denom,
-            sourceDenom: toAsset.sourceDenom,
-            decimals: toAsset.decimals,
+            amount: route.amount_out,
+            coinGeckoId: destinationAsset.coingecko_id,
+            ...toAsset,
             priceImpact: "0",
           },
           fromChain,
           toChain,
           transferFee,
-          estimatedTime,
-          transactionRequest,
+          estimatedTime: route.estimated_route_duration_seconds,
+          transactionRequest:
+            transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+              ? {
+                  ...transactionRequest,
+                  gasFee: {
+                    gas: estimatedGasFee.gas,
+                    denom: estimatedGasFee.address,
+                    amount: estimatedGasFee.amount,
+                  },
+                }
+              : transactionRequest,
           estimatedGasFee,
         };
       },
-      ttl: 20 * 1000, // 20 seconds,
     });
   }
 
@@ -224,7 +258,9 @@ export class SkipBridgeProvider implements BridgeProvider {
   async getSupportedAssets({
     chain,
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const chainAsset = await this.getAsset(chain, asset);
       if (!chainAsset) throw new Error("Asset not found: " + asset.address);
@@ -234,8 +270,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       // See original usage in `getAsset` method.
 
       // find variants
-      const assets = await this.getAssets();
-      const foundVariants = new BridgeAssetMap<BridgeChain & BridgeAsset>();
+      const [assets, skipChains] = await Promise.all([
+        this.getAssets(),
+        this.getChains(),
+      ]);
+      const foundVariants = new BridgeAssetMap<
+        BridgeChain & BridgeSupportedAsset
+      >();
 
       // asset list counterparties
       const assetListAsset = this.ctx.assetLists
@@ -245,54 +286,68 @@ export class SkipBridgeProvider implements BridgeProvider {
             a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
-      for (const counterparty of assetListAsset?.counterparty ?? []) {
+      const counterparties = assetListAsset?.counterparty ?? [];
+      // since skip supports cosmos swap, we can include other asset list
+      // counterparties of the same variant
+      if (assetListAsset) {
+        const variantAssets = this.ctx.assetLists.flatMap(({ assets }) =>
+          assets.filter(
+            (asset) => asset.variantGroupKey === assetListAsset.variantGroupKey
+          )
+        );
+        counterparties.push(
+          ...variantAssets.flatMap((asset) => asset.counterparty)
+        );
+      }
+
+      for (const counterparty of counterparties) {
         // check if supported by skip
         if (!("chainId" in counterparty)) continue;
-        if (
-          !assets[counterparty.chainId].assets.some(
-            (a) =>
-              a.denom.toLowerCase() === counterparty.sourceDenom.toLowerCase()
-          )
-        )
-          continue;
+        const address =
+          "address" in counterparty
+            ? counterparty.address
+            : counterparty.sourceDenom;
+        const skipCounterparty = assets[counterparty.chainId]?.assets.find(
+          (a) =>
+            counterparty.chainType === "evm" &&
+            address === NativeEVMTokenConstantAddress
+              ? /**
+                 * Skip labels native tokens as "native" and uses the symbol of the counterparty
+                 */
+                a.denom.toLowerCase() === address.toLowerCase() ||
+                (a.denom.includes("native") &&
+                  a.symbol?.toLowerCase() === counterparty.symbol.toLowerCase())
+              : a.denom.toLowerCase() === address.toLowerCase()
+        );
+
+        if (!skipCounterparty) continue;
 
         if (counterparty.chainType === "cosmos") {
           const c = counterparty as CosmosCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId, c.sourceDenom, {
-              chainId: c.chainId,
-              chainType: "cosmos",
-              address: c.sourceDenom,
-              denom: c.symbol,
-              decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
-            });
-          }
+          foundVariants.setAsset(c.chainId, address, {
+            transferTypes: ["quote"],
+            chainId: c.chainId,
+            chainType: "cosmos",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
+
         if (counterparty.chainType === "evm") {
           const c = counterparty as EVMCounterparty;
 
-          // check if supported by skip
-          if (
-            assets[c.chainId].assets.some(
-              (a) => a.denom.toLowerCase() === c.sourceDenom.toLowerCase()
-            )
-          ) {
-            foundVariants.setAsset(c.chainId.toString(), c.sourceDenom, {
-              chainId: c.chainId,
-              chainType: "evm",
-              address: c.sourceDenom,
-              denom: c.symbol,
-              decimals: c.decimals,
-              sourceDenom: c.sourceDenom,
-            });
-          }
+          foundVariants.setAsset(c.chainId.toString(), address, {
+            transferTypes: ["quote"],
+            chainId: c.chainId,
+            chainType: "evm",
+            address: address,
+            denom: c.symbol,
+            decimals: c.decimals,
+            coinGeckoId: skipCounterparty.coingecko_id,
+          });
         }
       }
 
@@ -300,13 +355,21 @@ export class SkipBridgeProvider implements BridgeProvider {
       const sharedOriginAssets = Object.keys(assets).flatMap((chainID) => {
         const chainAssets = assets[chainID].assets;
 
-        return chainAssets.filter(
-          (asset) =>
+        return chainAssets.filter((asset) => {
+          const skipChain = skipChains.find(
+            (c) => c.chain_id === asset.origin_chain_id
+          );
+
+          return (
+            // All shared origin assets require Packet Forward Middleware (PFM) to be enabled
+            // so assets can be forwarded to destination chain
+            skipChain?.pfm_enabled &&
             asset.origin_denom.toLowerCase() ===
               chainAsset.origin_denom.toLowerCase() &&
             asset.origin_chain_id === chainAsset.origin_chain_id &&
             asset.denom.toLowerCase() !== chainAsset.denom.toLowerCase()
-        );
+          );
+        });
       });
 
       for (const sharedOriginAsset of sharedOriginAssets) {
@@ -329,13 +392,15 @@ export class SkipBridgeProvider implements BridgeProvider {
           sharedOriginAsset.denom,
           {
             ...chainInfo,
+            transferTypes: ["quote"],
             address: sharedOriginAsset.denom,
             denom:
+              sharedOriginAsset.recommended_symbol ??
               sharedOriginAsset.symbol ??
               sharedOriginAsset.name ??
               sharedOriginAsset.denom,
             decimals: sharedOriginAsset.decimals ?? asset.decimals,
-            sourceDenom: sharedOriginAsset.origin_denom,
+            coinGeckoId: sharedOriginAsset.coingecko_id,
           }
         );
       }
@@ -347,11 +412,13 @@ export class SkipBridgeProvider implements BridgeProvider {
       return foundVariants.assets;
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(
-        SkipBridgeProvider.ID,
-        "failed to get supported assets:",
-        e
-      );
+      if (process.env.NODE_ENV !== "production") {
+        console.error(
+          SkipBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
@@ -360,18 +427,32 @@ export class SkipBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
     const quote = await this.getQuote(params);
-    return quote.transactionRequest!;
+    const transactionRequest = quote.transactionRequest!;
+    const estimatedGasFee = await this.estimateGasFee(
+      params,
+      transactionRequest
+    );
+    return transactionRequest.type === "cosmos" && estimatedGasFee?.gas
+      ? {
+          ...transactionRequest,
+          gasFee: {
+            gas: estimatedGasFee.gas,
+            denom: estimatedGasFee.address,
+            amount: estimatedGasFee.amount,
+          },
+        }
+      : transactionRequest;
   }
 
   async createTransaction(
-    chainID: string,
+    fromChainId: string,
     address: Address,
     messages: SkipMsg[]
   ) {
     for (const message of messages) {
       if ("evm_tx" in message) {
         return await this.createEvmTransaction(
-          chainID,
+          fromChainId,
           address,
           message.evm_tx
         );
@@ -385,33 +466,67 @@ export class SkipBridgeProvider implements BridgeProvider {
 
   async createCosmosTransaction(
     message: SkipMultiChainMsg
-  ): Promise<CosmosBridgeTransactionRequest> {
+  ): Promise<CosmosBridgeTransactionRequest & { fallbackGasLimit?: number }> {
     const messageData = JSON.parse(message.msg);
 
-    const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: messageData.receiver,
-    });
+    if ("contract" in messageData) {
+      // is a cosmwasm contract call
 
-    const { typeUrl, value } = cosmosMsgOpts.ibcTransfer.messageComposer({
-      sourcePort: messageData.source_port,
-      sourceChannel: messageData.source_channel,
-      token: {
-        denom: messageData.token.denom,
-        amount: messageData.token.amount,
-      },
-      sender: messageData.sender,
-      receiver: messageData.receiver,
-      // @ts-ignore
-      timeoutHeight,
-      timeoutTimestamp: "0" as any,
-      memo: messageData.memo,
-    });
+      const cosmwasmData = messageData as {
+        sender: string;
+        contract: string;
+        msg: object;
+        funds: {
+          denom: string;
+          amount: string;
+        }[];
+      };
 
-    return {
-      type: "cosmos",
-      msgTypeUrl: typeUrl,
-      msg: value,
-    };
+      const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
+        sender: cosmwasmData.sender,
+        contract: cosmwasmData.contract,
+        msg: cosmwasmData.msg,
+        funds: cosmwasmData.funds,
+      });
+
+      return {
+        type: "cosmos",
+        msgs: [{ typeUrl, value: msg }],
+        fallbackGasLimit: makeExecuteCosmwasmContractMsg.gas,
+      };
+    } else {
+      // is an ibc transfer
+
+      /**
+       * Always use the receiver address to get the timeout height.
+       * For chains with PFM enabled, the destination chain is not the same as
+       * the toChain. Therefore, we need to derive the immediate next hop height.
+       */
+      const timeoutHeight = await this.ctx.getTimeoutHeight({
+        destinationAddress: messageData.receiver,
+      });
+
+      const { typeUrl, value } = await makeIBCTransferMsg({
+        sourcePort: messageData.source_port,
+        sourceChannel: messageData.source_channel,
+        token: {
+          denom: messageData.token.denom,
+          amount: messageData.token.amount,
+        },
+        sender: messageData.sender,
+        receiver: messageData.receiver,
+        // @ts-ignore
+        timeoutHeight,
+        timeoutTimestamp: messageData?.timeout_timestamp ?? BigInt(0),
+        memo: messageData.memo,
+      });
+
+      return {
+        type: "cosmos",
+        msgs: [{ typeUrl, value }],
+        fallbackGasLimit: makeIBCTransferMsg.gas,
+      };
+    }
   }
 
   async createEvmTransaction(
@@ -440,7 +555,7 @@ export class SkipBridgeProvider implements BridgeProvider {
   }
 
   private getViemProvider(chainID: string) {
-    const evmChain = Object.values(EthereumChainInfo).find(
+    const evmChain = EthereumChainInfo.find(
       (chain) => chain.id.toString() === chainID
     );
 
@@ -552,7 +667,10 @@ export class SkipBridgeProvider implements BridgeProvider {
     fromChain: BridgeChain,
     toChain: BridgeChain
   ) {
-    const allSkipChains = await this.getChains();
+    const [{ fromBech32, toBech32 }, allSkipChains] = await Promise.all([
+      import("@cosmjs/encoding"),
+      this.getChains(),
+    ]);
 
     const sourceChain = allSkipChains.find((c) => c.chain_id === chainIDs[0]);
     if (!sourceChain) {
@@ -574,75 +692,76 @@ export class SkipBridgeProvider implements BridgeProvider {
         throw new Error(`Failed to find chain ${chainID}`);
       }
 
-      if (chain.chain_type === "evm" && fromChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "evm"
+      ) {
         addressList.push(fromAddress);
-        continue;
       }
 
-      if (chain.chain_type === "evm" && toChain.chainType === "evm") {
+      if (
+        chain.chain_type === "evm" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "evm"
+      ) {
         addressList.push(toAddress);
-        continue;
       }
 
-      if (chain.chain_type === "cosmos" && fromChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(fromChain.chainId) &&
+        fromChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
         );
         continue;
       }
 
-      if (chain.chain_type === "cosmos" && toChain.chainType === "cosmos") {
+      if (
+        chain.chain_type === "cosmos" &&
+        chain.chain_id === String(toChain.chainId) &&
+        toChain.chainType === "cosmos"
+      ) {
         addressList.push(
           toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
         );
         continue;
+      }
+
+      // This is likely a multi hop IBC, which means either
+      // to or from chain & respective addresses can include a cosmos
+      // bech32 address that can be used to derive the middle hop cosmos
+      // chain address.
+      if (chain.chain_type === "cosmos") {
+        let bech32Address: string | null = null;
+        if (fromChain.chainType === "cosmos") bech32Address = fromAddress;
+        if (toChain.chainType === "cosmos") bech32Address = toAddress;
+        if (!bech32Address) continue;
+
+        addressList.push(
+          toBech32(chain.bech32_prefix, fromBech32(bech32Address).data)
+        );
       }
     }
 
     return addressList;
   }
 
-  getFinalityTimeForChain(chainID: string) {
-    switch (chainID) {
-      case "1":
-        return 960;
-      case "43114":
-        return 3;
-      case "137":
-        return 300;
-      case "56":
-        return 46;
-      case "250":
-        return 3;
-      case "10":
-        return 1800;
-      case "59144":
-        return 4860;
-      case "314":
-        return 3120;
-      case "1284":
-        return 25;
-      case "42220":
-        return 12;
-      case "42161":
-        return 1140;
-      case "8453":
-        return 1440;
-      default:
-        return 1;
-    }
-  }
-
-  async estimateGasCost(
+  async estimateGasFee(
     params: GetBridgeQuoteParams,
-    txData: BridgeTransactionRequest
+    txData: BridgeTransactionRequest & { fallbackGasLimit?: number }
   ) {
     if (txData.type === "evm") {
-      const evmChain = Object.values(EthereumChainInfo).find(
+      const evmChain = EthereumChainInfo.find(
         ({ id: chainId }) => chainId === params.fromChain.chainId
       );
 
-      if (!evmChain) throw new Error("Could not find EVM chain");
+      if (!evmChain)
+        throw new Error(
+          "Could not find EVM chain: " + params.fromChain.chainId
+        );
 
       const provider = createPublicClient({
         chain: evmChain,
@@ -668,9 +787,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       return {
         amount: gasCost.toString(),
-        sourceDenom: evmChain.nativeCurrency.symbol,
-        decimals: evmChain.nativeCurrency.decimals,
         denom: evmChain.nativeCurrency.symbol,
+        decimals: evmChain.nativeCurrency.decimals,
+        address: NativeEVMTokenConstantAddress,
       };
     }
 
@@ -679,30 +798,59 @@ export class SkipBridgeProvider implements BridgeProvider {
         chainId: params.fromChain.chainId.toString(),
         chainList: this.ctx.chainList,
         body: {
-          messages: [
-            this.protoRegistry.encodeAsAny({
-              typeUrl: txData.msgTypeUrl,
-              value: txData.msg,
-            }),
-          ],
+          messages: await Promise.all(
+            txData.msgs.map(async (msg) =>
+              (await this.getProtoRegistry()).encodeAsAny(msg)
+            )
+          ),
         },
         bech32Address: params.fromAddress,
+        fallbackGasLimit: txData.fallbackGasLimit,
+      }).catch((e) => {
+        if (
+          e instanceof Error &&
+          e.message.includes(
+            "No fee tokens found with sufficient balance on account"
+          )
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "InsufficientAmountError",
+            message: e.message,
+          });
+        } else if (
+          e instanceof Error &&
+          e.message.includes("account") &&
+          e.message.includes("not found")
+        ) {
+          throw new BridgeQuoteError({
+            bridgeId: SkipBridgeProvider.ID,
+            errorType: "AccountNotFoundError",
+            message: e.message,
+          });
+        }
+
+        throw e;
       });
 
       const gasFee = txSimulation.amount[0];
-      const gasAsset = this.ctx.assetLists
-        .flatMap((list) => list.assets)
-        .find((asset) => asset.coinMinimalDenom === gasFee.denom);
+      const chainAssets = await this.getAssets();
+      const { assets } = chainAssets[params.fromChain.chainId.toString()];
+
+      const gasAsset = assets?.find((asset) => asset.denom === gasFee.denom);
 
       return {
+        gas: txSimulation.gas,
         amount: gasFee.amount,
         denom: gasAsset?.symbol ?? gasFee.denom,
         decimals: gasAsset?.decimals ?? 0,
-        sourceDenom: gasAsset?.coinMinimalDenom ?? gasFee.denom,
+        address: gasAsset?.denom ?? gasFee.denom,
+        coinGeckoId: gasAsset?.coingecko_id,
       };
     }
   }
 
+  /** @returns 0 gas if state overrides fail. */
   async estimateEvmGasWithStateOverrides(
     provider: ReturnType<typeof createPublicClient>,
     params: GetBridgeQuoteParams,
@@ -710,57 +858,74 @@ export class SkipBridgeProvider implements BridgeProvider {
   ) {
     try {
       if (!txData.approvalTransactionRequest) {
-        const estimatedGas = await provider.estimateGas({
-          account: params.fromAddress as Address,
-          to: txData.to,
-          data: txData.data,
-          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
-        });
-
-        return BigInt(estimatedGas);
+        return await provider
+          .estimateGas({
+            account: params.fromAddress as Address,
+            to: txData.to,
+            data: txData.data,
+            value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          })
+          .then((gas) => BigInt(gas));
       }
 
-      const slot = 10; // Allowance slot (differs from contract to contract but is usually 10)
+      // Adding a stateDiff override allows us to estimate the gas without the user having first approved the ERC20 transfer
+      // Otherwise, the estimate call would fail with an error indicating the user has not approved the transfer
 
-      const temp = keccak256(
+      /* Allowance slot (differs from contract to contract but is usually 10) */
+      const slot = 10;
+
+      const erc20Balance = keccak256(
         encodePacked(
           ["uint256", "uint256"],
           [BigInt(params.fromAddress), BigInt(slot)]
         )
       );
       const index = keccak256(
-        encodePacked(["uint256", "uint256"], [BigInt(txData.to), BigInt(temp)])
+        encodePacked(
+          ["uint256", "uint256"],
+          [BigInt(txData.to), BigInt(erc20Balance)]
+        )
       );
 
-      const callParams = [
-        {
-          from: params.fromAddress,
+      return await provider
+        .estimateGas({
+          account: params.fromAddress as Address,
           to: txData.to,
           data: txData.data,
-          value: txData.value,
-        },
-        "latest",
-      ];
-
-      const stateDiff = {
-        [txData.approvalTransactionRequest.to]: {
-          stateDiff: {
-            [index]: `0x${maxUint256.toString(16)}`,
-          },
-        },
-      };
-
-      // Call with no state overrides
-      const callResult = await provider.request({
-        method: "eth_estimateGas",
-        params: [...callParams, stateDiff],
-      });
-
-      return BigInt(callResult);
+          value: !isNil(txData.value) ? BigInt(txData.value) : undefined,
+          stateOverride: [
+            {
+              address: txData.approvalTransactionRequest.to as Address,
+              stateDiff: [
+                {
+                  slot: index,
+                  value: `0x${maxUint256.toString(16)}`,
+                },
+              ],
+            },
+          ],
+        })
+        .then((gas) => BigInt(gas));
     } catch (err) {
       console.error("failed to estimate gas:", err);
       return BigInt(0);
     }
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry, cosmwasmProtoRegistry }, { Registry }] =
+        await Promise.all([
+          import("@osmosis-labs/proto-codecs"),
+          import("@cosmjs/proto-signing"),
+        ]);
+      this.protoRegistry = new Registry([
+        ...ibcProtoRegistry,
+        ...cosmwasmProtoRegistry,
+      ]);
+    }
+
+    return this.protoRegistry;
   }
 
   async getExternalUrl({
@@ -771,14 +936,23 @@ export class SkipBridgeProvider implements BridgeProvider {
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     if (this.ctx.env === "testnet") return undefined;
 
-    const url = new URL("https://ibc.fun/");
-    url.searchParams.set("src_chain", String(fromChain.chainId));
-    url.searchParams.set("src_asset", fromAsset.address);
-    url.searchParams.set("dest_chain", String(toChain.chainId));
-    url.searchParams.set("dest_asset", toAsset.address);
+    const url = new URL("https://go.skip.build/");
+    if (fromChain?.chainId) {
+      url.searchParams.set("src_chain", String(fromChain.chainId));
+    }
+    if (fromAsset?.address) {
+      url.searchParams.set("src_asset", fromAsset.address.toLowerCase());
+    }
+    if (toChain?.chainId) {
+      url.searchParams.set("dest_chain", String(toChain.chainId));
+    }
+    if (toAsset?.address) {
+      url.searchParams.set("dest_asset", toAsset.address.toLowerCase());
+    }
 
-    return { urlProviderName: "IBC.fun", url };
+    return { urlProviderName: "Skip:Go", url };
   }
 }
 
+export * from "./client";
 export * from "./transfer-status";

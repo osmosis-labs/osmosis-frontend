@@ -21,162 +21,168 @@ interface StrategiesTableProps {
   refetch: () => void;
 }
 
-const _StrategiesTable = ({
-  showBalance,
-  strategies,
-  areStrategiesLoading,
-  isError,
-  holdenDenoms,
-  refetch,
-}: StrategiesTableProps) => {
-  const { tableConfig } = useStrategyTableConfig(strategies ?? [], showBalance);
-  const { filters } = useContext(FilterContext);
-  const table = useReactTable(tableConfig);
+export const StrategiesTable = observer(
+  ({
+    showBalance,
+    strategies,
+    areStrategiesLoading,
+    isError,
+    holdenDenoms,
+    refetch,
+  }: StrategiesTableProps) => {
+    const { tableConfig } = useStrategyTableConfig(
+      strategies ?? [],
+      showBalance
+    );
+    const { filters } = useContext(FilterContext);
+    const table = useReactTable(tableConfig);
 
-  const { rows } = table.getRowModel();
+    const { rows } = table.getRowModel();
 
-  const topOffset = Number(theme.extend.height.navbar.replace("px", ""));
+    const topOffset = Number(theme.extend.height.navbar.replace("px", ""));
 
-  const rowVirtualizer = useWindowVirtualizer({
-    count: rows.length,
-    estimateSize: () => 80,
-    overscan: 10,
-    paddingStart: topOffset,
-  });
+    const rowVirtualizer = useWindowVirtualizer({
+      count: rows.length,
+      estimateSize: () => 80,
+      overscan: 10,
+      paddingStart: topOffset,
+    });
 
-  const virtualRows = rowVirtualizer.getVirtualItems();
+    const virtualRows = rowVirtualizer.getVirtualItems();
 
-  const paddingTop = useMemo(
-    () => (virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0),
-    [virtualRows]
-  );
-  const paddingBottom = useMemo(
-    () =>
-      virtualRows.length > 0
-        ? rowVirtualizer.getTotalSize() -
-          (virtualRows?.[virtualRows.length - 1]?.end || 0)
-        : 0,
-    [rowVirtualizer, virtualRows]
-  );
-
-  if (areStrategiesLoading) {
-    return <LoadingStrategies />;
-  }
-
-  if (isError) {
-    return <StrategiesFetchingError refetch={refetch} />;
-  }
-
-  if (strategies && strategies.length === 0) return <NoResult />;
-
-  if (strategies && virtualRows.length === 0 && strategies.length > 0)
-    return (
-      <NoResult
-        isFilterError
-        isRelatedBalanceError={
-          holdenDenoms
-            ? holdenDenoms.length > 0 && filters?.tokenHolder === "my"
-            : false
-        }
-      />
+    const paddingTop = useMemo(
+      () => (virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0),
+      [virtualRows]
+    );
+    const paddingBottom = useMemo(
+      () =>
+        virtualRows.length > 0
+          ? rowVirtualizer.getTotalSize() -
+            (virtualRows?.[virtualRows.length - 1]?.end || 0)
+          : 0,
+      [rowVirtualizer, virtualRows]
     );
 
-  return (
-    <div
-      style={{
-        height: `${rowVirtualizer.getTotalSize()}px`,
-      }}
-      className="no-scrollbar mb-11 overflow-x-auto overflow-y-hidden"
-    >
-      <table className="mb-12 table-auto">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr
-              className="!static !border-b-0 bg-transparent"
-              key={headerGroup.id}
-            >
-              {headerGroup.headers.map((header) => (
-                <th
-                  className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-[88px] bg-osmoverse-850 !text-left md:static md:left-0":
-                      header.index === 1,
-                    "sticky left-0 z-30 bg-osmoverse-850 !pl-4 md:!text-left":
-                      header.index === 0,
-                    "!text-center": header.index === 6,
-                  })}
-                  key={header.id}
-                >
-                  {header.isPlaceholder ? null : (
-                    <div
-                      {...{
-                        className: classNames({
-                          "cursor-pointer inline-flex items-center select-none gap-1":
-                            header.column.getCanSort(),
-                        }),
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: <Icon id="sort-up" width={16} height={16} />,
-                        desc: <Icon id="sort-down" width={16} height={16} />,
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="bg-osmoverse-810">
-          {paddingTop > 0 && paddingTop - topOffset > 0 && (
-            <tr>
-              <td style={{ height: paddingTop - topOffset }} />
-            </tr>
-          )}
-          {virtualRows.map((virtualRow) => {
-            const row = rows[virtualRow.index];
+    if (areStrategiesLoading) {
+      return <LoadingStrategies />;
+    }
 
-            return (
+    if (isError) {
+      return <StrategiesFetchingError refetch={refetch} />;
+    }
+
+    if (strategies && strategies.length === 0) return <NoResult />;
+
+    if (strategies && virtualRows.length === 0 && strategies.length > 0)
+      return (
+        <NoResult
+          isFilterError
+          isRelatedBalanceError={
+            holdenDenoms
+              ? holdenDenoms.length > 0 && filters?.tokenHolder === "my"
+              : false
+          }
+        />
+      );
+
+    return (
+      <div
+        style={{
+          height: `${rowVirtualizer.getTotalSize()}px`,
+        }}
+        className="no-scrollbar mb-11 overflow-x-auto overflow-y-hidden"
+      >
+        <table className="mb-12 table-auto">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
               <tr
-                className={classNames(
-                  "group transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
-                )}
-                key={row.id}
+                className="!static !border-b-0 bg-transparent"
+                key={headerGroup.id}
               >
-                {row.getVisibleCells().map((cell, rowIndex) => (
-                  <td
-                    className={classNames(
-                      "!rounded-none bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
-                      {
-                        "sticky left-0 z-30": rowIndex === 0,
-                        "sticky left-[88px] z-30 md:static md:left-0":
-                          rowIndex === 1,
-                      }
-                    )}
-                    key={cell.id}
+                {headerGroup.headers.map((header) => (
+                  <th
+                    className={classNames("text-right first:bg-osmoverse-850", {
+                      "sticky left-[88px] bg-osmoverse-850 !text-left md:static md:left-0":
+                        header.index === 1,
+                      "sticky left-0 z-30 bg-osmoverse-850 !pl-4 md:!text-left":
+                        header.index === 0,
+                      "!text-center": header.index === 6,
+                    })}
+                    key={header.id}
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                    {header.isPlaceholder ? null : (
+                      <div
+                        {...{
+                          className: classNames({
+                            "cursor-pointer inline-flex items-center select-none gap-1":
+                              header.column.getCanSort(),
+                          }),
+                          onClick: header.column.getToggleSortingHandler(),
+                        }}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: <Icon id="sort-up" width={16} height={16} />,
+                          desc: <Icon id="sort-down" width={16} height={16} />,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
+                  </th>
                 ))}
               </tr>
-            );
-          })}
-          {paddingBottom > 0 && (
-            <tr>
-              <td style={{ height: paddingBottom - topOffset }} />
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
-  );
-};
+            ))}
+          </thead>
+          <tbody className="bg-osmoverse-810">
+            {paddingTop > 0 && paddingTop - topOffset > 0 && (
+              <tr>
+                <td style={{ height: paddingTop - topOffset }} />
+              </tr>
+            )}
+            {virtualRows.map((virtualRow) => {
+              const row = rows[virtualRow.index];
 
-export const StrategiesTable = observer(_StrategiesTable);
+              return (
+                <tr
+                  className={classNames(
+                    "group transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
+                  )}
+                  key={row.id}
+                >
+                  {row.getVisibleCells().map((cell, rowIndex) => (
+                    <td
+                      className={classNames(
+                        "!rounded-none bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
+                        {
+                          "sticky left-0 z-30": rowIndex === 0,
+                          "sticky left-[88px] z-30 md:static md:left-0":
+                            rowIndex === 1,
+                        }
+                      )}
+                      key={cell.id}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })}
+            {paddingBottom > 0 && (
+              <tr>
+                <td style={{ height: paddingBottom - topOffset }} />
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+);
 
 const LoadingStrategies = () => {
   const { t } = useTranslation();

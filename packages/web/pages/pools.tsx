@@ -1,4 +1,4 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -9,13 +9,12 @@ import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
+  useTranslation,
 } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -37,8 +36,6 @@ const Pools: NextPage = observer(function () {
 
   const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
-
-  const featureFlags = useFeatureFlags();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -124,7 +121,7 @@ const Pools: NextPage = observer(function () {
   }, [createPoolConfig, account]);
 
   return (
-    <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+    <main className="m-auto max-w-container px-8 md:px-3">
       <NextSeo
         title={t("seo.pools.title")}
         description={t("seo.pools.description")}
@@ -153,7 +150,7 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity && account?.address && (
+      {account?.address && (
         <section className="pb-[3.75rem]" ref={myPositionsRef}>
           <h5>{t("clPositions.yourPositions")}</h5>
           <MyPositionsSection />

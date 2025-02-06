@@ -1,7 +1,10 @@
-import { Registry } from "@cosmjs/proto-signing";
-import { Int } from "@keplr-wallet/unit";
-import { ibcProtoRegistry } from "@osmosis-labs/proto-codecs";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import type { EncodeObject, Registry } from "@cosmjs/proto-signing";
+import { queryRPCStatus } from "@osmosis-labs/server";
+import {
+  calcAverageBlockTimeMs,
+  estimateGasFee,
+  makeIBCTransferMsg,
+} from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 
 import { BridgeQuoteError } from "../errors";
@@ -12,18 +15,19 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeSupportedAssetsParams,
+  BridgeSupportedAsset,
   CosmosBridgeTransactionRequest,
   GetBridgeExternalUrlParams,
   GetBridgeQuoteParams,
+  GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { cosmosMsgOpts } from "../msg";
+import { getGasAsset } from "../utils/gas";
 
 export class IbcBridgeProvider implements BridgeProvider {
   static readonly ID = "IBC";
   readonly providerName = IbcBridgeProvider.ID;
 
-  protected protoRegistry = new Registry(ibcProtoRegistry);
+  protected protoRegistry: Registry | null = null;
 
   constructor(protected readonly ctx: BridgeProviderContext) {}
 
@@ -31,52 +35,28 @@ export class IbcBridgeProvider implements BridgeProvider {
     this.validate(params);
 
     const fromChainId = params.fromChain.chainId;
+    const toChainId = params.toChain.chainId;
 
     if (
       typeof fromChainId !== "string" ||
+      typeof toChainId !== "string" ||
       params.fromChain.chainType !== "cosmos" ||
       params.toChain.chainType !== "cosmos"
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge only supports cosmos chains",
       });
     }
 
-    const signDoc = await this.getTransactionData(params);
+    const [signDoc, estimatedTime] = await Promise.all([
+      this.getTransactionData(params),
+      this.estimateTransferTime(fromChainId, toChainId),
+    ]);
 
-    const txSimulation = await estimateGasFee({
-      chainId: fromChainId,
-      chainList: this.ctx.chainList,
-      body: {
-        messages: [
-          this.protoRegistry.encodeAsAny({
-            typeUrl: signDoc.msgTypeUrl,
-            value: signDoc.msg,
-          }),
-        ],
-      },
-      bech32Address: params.fromAddress,
-    });
-    const gasFee = txSimulation.amount[0];
-
-    const gasAsset = this.ctx.assetLists
-      .flatMap((list) => list.assets)
-      .find((asset) => asset.coinMinimalDenom === gasFee.denom);
-
-    /** If the sent tokens are needed for fees, account for that in expected output. */
-    const toAmount =
-      gasFee.isNeededForTx &&
-      gasFee.denom.toLowerCase() === params.fromAsset.address.toLowerCase()
-        ? new Int(params.fromAmount).sub(new Int(gasFee.amount)).toString()
-        : params.fromAmount;
-
-    if (new Int(toAmount).lte(new Int(0))) {
-      throw new BridgeQuoteError({
-        errorType: "InsufficientAmountError",
-        message: "Insufficient amount for fees",
-      });
-    }
+    const gasAsset = signDoc.gasAsset;
+    const gasFee = signDoc.gasFee;
 
     return {
       input: {
@@ -84,7 +64,7 @@ export class IbcBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: toAmount,
+        amount: params.fromAmount,
         ...params.toAsset,
         priceImpact: "0",
       },
@@ -93,30 +73,34 @@ export class IbcBridgeProvider implements BridgeProvider {
       // currently subsidized by relayers, but could be paid by user in future by charging the user the gas cost of
       transferFee: {
         ...params.fromAsset,
+        chainId: fromChainId,
         amount: "0",
       },
-      estimatedTime: 6,
-      estimatedGasFee: {
-        amount: gasFee.amount,
-        denom: gasFee.denom,
-        // should be same as denom since it's on the same chain
-        sourceDenom: gasFee.denom,
-        decimals: gasAsset?.decimals ?? 6,
-      },
+      estimatedTime,
+      estimatedGasFee: gasFee
+        ? {
+            address: gasAsset?.address ?? gasFee.denom,
+            denom: gasAsset?.denom ?? gasFee.denom,
+            decimals: gasAsset?.decimals ?? 0,
+            coinGeckoId: gasAsset?.coinGeckoId,
+            amount: gasFee.amount,
+          }
+        : undefined,
       transactionRequest: signDoc,
     };
   }
 
   async getSupportedAssets({
     asset,
-  }: BridgeSupportedAssetsParams): Promise<(BridgeChain & BridgeAsset)[]> {
+  }: GetBridgeSupportedAssetsParams): Promise<
+    (BridgeChain & BridgeSupportedAsset)[]
+  > {
     try {
       const assetListAsset = this.ctx.assetLists
         .flatMap((list) => list.assets)
         .find(
           (a) =>
-            a.coinMinimalDenom === asset.address ||
-            a.sourceDenom === asset.sourceDenom
+            a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
         );
 
       const ibcTransferMethod = assetListAsset?.transferMethods.find(
@@ -135,34 +119,34 @@ export class IbcBridgeProvider implements BridgeProvider {
           address: assetListAsset.sourceDenom,
           denom: assetListAsset.symbol,
           decimals: assetListAsset.decimals,
-          sourceDenom: ibcTransferMethod.counterparty.sourceDenom,
+          transferTypes: ["quote"],
         },
       ];
     } catch (e) {
       // Avoid returning options if there's an unexpected error, such as the provider being down
-      console.error(IbcBridgeProvider.ID, "failed to get supported assets:", e);
+      if (process.env.NODE_ENV !== "production") {
+        console.error(
+          IbcBridgeProvider.ID,
+          "failed to get supported assets:",
+          e
+        );
+      }
       return [];
     }
   }
 
-  /**
-   * Gets cosmos tx for for signing.
-   *
-   * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
-   */
-  async getTransactionData(
-    params: GetBridgeQuoteParams
-  ): Promise<CosmosBridgeTransactionRequest> {
+  async getTxMessages(
+    params: GetBridgeQuoteParams & { memo?: string }
+  ): Promise<EncodeObject[]> {
     this.validate(params);
 
-    const { sourceChannel, sourcePort, sourceDenom } =
-      this.getIbcSource(params);
+    const { sourceChannel, sourcePort, address } = this.getIbcSource(params);
 
     const timeoutHeight = await this.ctx.getTimeoutHeight({
-      destinationAddress: params.toAddress,
+      chainId: params.toChain.chainId.toString(),
     });
 
-    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
+    const { typeUrl, value: msg } = await makeIBCTransferMsg({
       receiver: params.toAddress,
       sender: params.fromAddress,
       sourceChannel,
@@ -172,14 +156,73 @@ export class IbcBridgeProvider implements BridgeProvider {
       timeoutHeight,
       token: {
         amount: params.fromAmount,
-        denom: sourceDenom,
+        denom: address,
       },
+      memo: params.memo ?? "",
+    });
+
+    return [{ typeUrl, value: msg }];
+  }
+
+  /**
+   * Gets cosmos tx for for signing.
+   *
+   * @throws `BridgeQuoteError` if an asset doesn't support IBC transfer.
+   */
+  async getTransactionData(
+    params: GetBridgeQuoteParams & { memo?: string }
+  ): Promise<CosmosBridgeTransactionRequest & { gasAsset?: BridgeAsset }> {
+    this.validate(params);
+
+    const txMessages = await this.getTxMessages(params);
+
+    const txSimulation = await estimateGasFee({
+      chainId: params.fromChain.chainId as string,
+      chainList: this.ctx.chainList,
+      body: {
+        messages: await Promise.all(
+          txMessages.map(async (msg) =>
+            (await this.getProtoRegistry()).encodeAsAny(msg)
+          )
+        ),
+      },
+      bech32Address: params.fromAddress,
+      fallbackGasLimit: makeIBCTransferMsg.gas,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: IbcBridgeProvider.ID,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
+    });
+
+    const gasFee = txSimulation.amount[0];
+    const gasAsset = await getGasAsset({
+      fromChainId: params.fromChain.chainId as string,
+      denom: gasFee.denom,
+      assetLists: this.ctx.assetLists,
+      chainList: this.ctx.chainList,
+      cache: this.ctx.cache,
     });
 
     return {
       type: "cosmos",
-      msgTypeUrl: typeUrl,
-      msg,
+      msgs: txMessages,
+      gasFee: {
+        gas: txSimulation.gas,
+        amount: gasFee.amount,
+        denom: gasFee.denom,
+      },
+      gasAsset,
     };
   }
 
@@ -191,20 +234,21 @@ export class IbcBridgeProvider implements BridgeProvider {
   protected getIbcSource({ fromAsset, toAsset }: GetBridgeQuoteParams): {
     sourceChannel: string;
     sourcePort: string;
-    sourceDenom: string;
+    address: string;
   } {
     const transferAsset = this.ctx.assetLists
       .flatMap((list) => list.assets)
       .find(
         (asset) =>
-          asset.coinMinimalDenom === toAsset.sourceDenom ||
-          asset.sourceDenom === toAsset.sourceDenom ||
-          asset.coinMinimalDenom === fromAsset.sourceDenom ||
-          asset.sourceDenom === fromAsset.sourceDenom
+          asset.coinMinimalDenom.toLowerCase() ===
+            toAsset.address.toLowerCase() ||
+          asset.coinMinimalDenom.toLowerCase() ===
+            fromAsset.address.toLowerCase()
       );
 
     if (!transferAsset)
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "CreateCosmosTxError",
         message: "IBC asset not found in asset list",
       });
@@ -215,6 +259,7 @@ export class IbcBridgeProvider implements BridgeProvider {
 
     if (!transferMethod)
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "CreateCosmosTxError",
         message: "IBC transfer method not found",
       });
@@ -225,7 +270,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       return {
         sourceChannel: channelId,
         sourcePort: port,
-        sourceDenom,
+        address: sourceDenom,
       };
     } else {
       // transfer from source
@@ -233,7 +278,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       return {
         sourceChannel: channelId,
         sourcePort: port,
-        sourceDenom: fromAsset.address,
+        address: fromAsset.address,
       };
     }
   }
@@ -245,6 +290,7 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.toAsset.address.startsWith("cw20")
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge doesn't support cw20 standard",
       });
@@ -255,10 +301,52 @@ export class IbcBridgeProvider implements BridgeProvider {
       params.toChain.chainType !== "cosmos"
     ) {
       throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
         message: "IBC Bridge only supports cosmos chains",
       });
     }
+  }
+
+  /**
+   * Estimates the transfer time for IBC transfers in seconds.
+   * Looks at the average block time of the two chains.
+   */
+  async estimateTransferTime(
+    fromChainId: string,
+    toChainId: string
+  ): Promise<number> {
+    const fromChain = this.ctx.chainList.find(
+      (c) => c.chain_id === fromChainId
+    );
+    const toChain = this.ctx.chainList.find((c) => c.chain_id === toChainId);
+
+    const fromRpc = fromChain?.apis.rpc[0]?.address;
+    const toRpc = toChain?.apis.rpc[0]?.address;
+
+    if (!fromChain || !toChain || !fromRpc || !toRpc) {
+      throw new BridgeQuoteError({
+        bridgeId: IbcBridgeProvider.ID,
+        errorType: "UnsupportedQuoteError",
+        message: "Chain not found",
+      });
+    }
+
+    const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
+      queryRPCStatus({ restUrl: fromRpc }).then(calcAverageBlockTimeMs),
+      queryRPCStatus({ restUrl: toRpc }).then(calcAverageBlockTimeMs),
+    ]);
+
+    // convert to seconds
+    return Math.floor(
+      // initiating tx
+      (fromBlockTimeMs +
+        // lockup tx
+        toBlockTimeMs +
+        // timeout ack tx
+        fromBlockTimeMs) /
+        1000
+    );
   }
 
   async getExternalUrl({
@@ -267,16 +355,37 @@ export class IbcBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain.chainType === "evm" || toChain.chainType === "evm") {
+    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "cosmos") {
       return undefined;
     }
 
-    const url = new URL("https://geo.tfm.com/");
-    url.searchParams.set("chainFrom", fromChain.chainId);
-    url.searchParams.set("token0", fromAsset.sourceDenom);
-    url.searchParams.set("chainTo", toChain.chainId);
-    url.searchParams.set("token1", toAsset.sourceDenom);
+    const url = new URL("https://app.tfm.com/");
+    if (fromChain) {
+      url.searchParams.set("chainFrom", fromChain.chainId);
+    }
+    if (fromAsset) {
+      url.searchParams.set("token0", fromAsset.address);
+    }
+    if (toChain) {
+      url.searchParams.set("chainTo", toChain.chainId);
+    }
+    if (toAsset) {
+      url.searchParams.set("token1", toAsset.address);
+    }
 
     return { urlProviderName: "TFM", url };
   }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry }, { Registry }] = await Promise.all([
+        import("@osmosis-labs/proto-codecs"),
+        import("@cosmjs/proto-signing"),
+      ]);
+      this.protoRegistry = new Registry(ibcProtoRegistry);
+    }
+    return this.protoRegistry;
+  }
 }
+
+export * from "./transfer-status";

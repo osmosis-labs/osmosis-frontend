@@ -1,4 +1,3 @@
-import { PricePretty } from "@keplr-wallet/unit";
 import {
   AssetFilterSchema,
   AvailableRangeValues,
@@ -8,25 +7,35 @@ import {
   CursorPaginationSchema,
   DEFAULT_VS_CURRENCY,
   getAsset,
+  getAssetCoingeckoCoin,
   getAssetHistoricalPrice,
   getAssetListingDate,
   getAssetMarketActivity,
   getAssetPrice,
   getAssets,
   getAssetWithUserBalance,
+  getAssetWithVariants,
   getBridgeAsset,
   getCoinGeckoCoinMarketChart,
   getMarketAsset,
   getPoolAssetPairHistoricalPrice,
   getUpcomingAssets,
   getUserAssetsTotal,
+  IS_TESTNET,
   mapGetAssetsWithUserBalances,
   mapGetMarketAssets,
   maybeCachePaginatedItems,
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
-import { compareCommon, sort } from "@osmosis-labs/utils";
+import { PricePretty } from "@osmosis-labs/unit";
+import {
+  compareCommon,
+  getAllBtcMinimalDenom,
+  getnBTCMinimalDenom,
+  isNil,
+  sort,
+} from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -105,6 +114,55 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
+
+  getBridgeAssetWithVariants: publicProcedure
+    .input(z.object({ findMinDenomOrSymbol: z.string() }))
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const canonicalAssetWithVariants = getAssetWithVariants({
+        ...ctx,
+        anyDenom: findMinDenomOrSymbol,
+      });
+
+      /**
+       * Manually include Nomic and BTC assets in the list.
+       * These assets are not variants of each other and cannot be automatically linked
+       * from our asset list. We do this to display them in the receive asset dropdown
+       * and enable conversion to alloy or native.
+       */
+      if (
+        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
+        getnBTCMinimalDenom({
+          env: IS_TESTNET ? "testnet" : "mainnet",
+        }).toLowerCase()
+      ) {
+        const allBtcAsset = getAsset({
+          ...ctx,
+          anyDenom:
+            getAllBtcMinimalDenom({
+              env: IS_TESTNET ? "testnet" : "mainnet",
+            }) ?? "",
+        });
+        if (allBtcAsset) canonicalAssetWithVariants.push(allBtcAsset);
+      }
+
+      if (
+        canonicalAssetWithVariants[0].coinMinimalDenom.toLowerCase() ===
+        (
+          getAllBtcMinimalDenom({ env: IS_TESTNET ? "testnet" : "mainnet" }) ??
+          ""
+        ).toLowerCase()
+      ) {
+        const nBTCAsset = getAsset({
+          ...ctx,
+          anyDenom: getnBTCMinimalDenom({
+            env: IS_TESTNET ? "testnet" : "mainnet",
+          }),
+        });
+        if (nBTCAsset) canonicalAssetWithVariants.push(nBTCAsset);
+      }
+
+      return canonicalAssetWithVariants;
+    }),
   getAssetPrice: publicProcedure
     .input(
       z.object({
@@ -137,6 +195,33 @@ export const assetsRouter = createTRPCRouter({
         currentPrice: new PricePretty(DEFAULT_VS_CURRENCY, price),
       };
     }),
+  getMarketAsset: publicProcedure
+    .input(
+      z.object({
+        findMinDenomOrSymbol: z.string(),
+      })
+    )
+    .query(async ({ input: { findMinDenomOrSymbol }, ctx }) => {
+      const asset = getAsset({
+        ...ctx,
+        anyDenom: findMinDenomOrSymbol,
+      });
+
+      const userAsset = await getAssetWithUserBalance({
+        ...ctx,
+        asset,
+      });
+      const userMarketAsset = await getMarketAsset({
+        ...ctx,
+        includeTotalSupply: true,
+        asset: userAsset,
+      });
+
+      return {
+        ...userAsset,
+        ...userMarketAsset,
+      };
+    }),
   getUserMarketAsset: publicProcedure
     .input(
       z
@@ -158,6 +243,7 @@ export const assetsRouter = createTRPCRouter({
           userOsmoAddress,
         });
         const userMarketAsset = await getMarketAsset({
+          ...ctx,
           asset: userAsset,
         });
 
@@ -247,6 +333,39 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
         })
+    ),
+  getCoingeckoCoin: publicProcedure
+    .input(
+      z.object({
+        coinGeckoId: z.string(),
+      })
+    )
+    .query(({ input: { coinGeckoId } }) =>
+      getAssetCoingeckoCoin({ coinGeckoId })
+    ),
+  getUserBridgeAsset: publicProcedure
+    .input(
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
+        })
+        .merge(UserOsmoAddressSchema)
+    )
+    .query(
+      async ({ input: { findMinDenomOrSymbol, userOsmoAddress }, ctx }) => {
+        const asset = getAsset({
+          ...ctx,
+          anyDenom: findMinDenomOrSymbol,
+        });
+
+        const bridgeAsset = getBridgeAsset(ctx.assetLists, asset);
+
+        return await getAssetWithUserBalance({
+          ...ctx,
+          asset: bridgeAsset,
+          userOsmoAddress,
+        });
+      }
     ),
   getUserBridgeAssets: publicProcedure
     .input(
@@ -342,7 +461,7 @@ export const assetsRouter = createTRPCRouter({
   getAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
-        coinDenom: z.string(),
+        coinMinimalDenom: z.string(),
         timeFrame: z.union([
           z.object({
             custom: z.object({
@@ -356,9 +475,9 @@ export const assetsRouter = createTRPCRouter({
         ]),
       })
     )
-    .query(({ input: { coinDenom, timeFrame } }) =>
+    .query(({ input: { coinMinimalDenom, timeFrame } }) =>
       getAssetHistoricalPrice({
-        coinDenom,
+        coinMinimalDenom,
         ...(typeof timeFrame === "string"
           ? { timeFrame }
           : (timeFrame.custom as {
@@ -497,5 +616,138 @@ export const assetsRouter = createTRPCRouter({
       getUpcomingAssets().then((upcomingAssets) =>
         upcomingAssets.slice(0, topN)
       )
+    ),
+  getImmersiveBridgeAssets: publicProcedure
+    .input(
+      GetInfiniteAssetsInputSchema.omit({
+        categories: true,
+        onlyVerified: true,
+      })
+        .merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            variantsNotToBeExcluded: z.array(z.string()),
+            prioritizedDenoms: z.array(z.string()),
+            deprioritizedDenoms: z.array(z.string()),
+            type: z.union([z.literal("deposit"), z.literal("withdraw")]),
+          })
+        )
+    )
+    .query(
+      ({
+        input: {
+          search,
+          userOsmoAddress,
+          limit,
+          cursor,
+          includePreview,
+          variantsNotToBeExcluded,
+          prioritizedDenoms,
+          deprioritizedDenoms,
+          type,
+        },
+        ctx,
+      }) =>
+        maybeCachePaginatedItems({
+          getFreshItems: async () => {
+            let assets = await mapGetAssetsWithUserBalances({
+              ...ctx,
+              search,
+              // Only get balances for withdraw
+              userOsmoAddress:
+                type === "withdraw" ? userOsmoAddress : undefined,
+              sortFiatValueDirection: "desc",
+              includePreview,
+            });
+
+            if (type === "withdraw") {
+              const hasBalance = assets.some((asset) =>
+                asset.amount?.toDec().isPositive()
+              );
+
+              assets = hasBalance
+                ? assets
+                    // Filter out all assets without amount
+                    .filter((asset) => !isNil(asset.amount))
+                : assets; // display all assets if no balance
+            } else {
+              // deposit
+
+              assets = assets
+                // Filter out all asset variants to encourage users to deposit and convert to the canonical asset
+                .filter((asset) => {
+                  if (
+                    !isNil(asset.variantGroupKey) &&
+                    !variantsNotToBeExcluded.includes(
+                      asset.coinDenom as (typeof variantsNotToBeExcluded)[number]
+                    )
+                  ) {
+                    return asset.variantGroupKey === asset.coinMinimalDenom;
+                  }
+
+                  return true;
+                });
+            }
+
+            let marketAssets = await Promise.all(
+              assets.map((asset) =>
+                getAssetMarketActivity(asset)
+                  .catch((e) => captureErrorAndReturn(e, undefined))
+                  .then((marketAsset) => ({
+                    ...asset,
+                    volume24h: marketAsset ? marketAsset.volume24h : 0,
+                  }))
+              )
+            );
+
+            // avoid sorting while searching
+            if (search) return assets;
+
+            // Sort by volume 24h desc
+            marketAssets = sort(marketAssets, "volume24h");
+
+            // Sort by prioritized denoms
+            return marketAssets
+              .sort((a, b) => {
+                const aIndex = prioritizedDenoms.indexOf(
+                  a.coinDenom as (typeof prioritizedDenoms)[number]
+                );
+                const bIndex = prioritizedDenoms.indexOf(
+                  b.coinDenom as (typeof prioritizedDenoms)[number]
+                );
+
+                if (aIndex === -1 && bIndex === -1) return 0; // Both not prioritized
+                if (aIndex === -1) return 1; // a is not prioritized, b is
+                if (bIndex === -1) return -1; // b is not prioritized, a is
+
+                return aIndex - bIndex; // Both are prioritized, sort by their index
+              })
+              .sort((a, b) => {
+                // Both not prioritized, check for deprioritized
+                const aDeprioritizedIndex = deprioritizedDenoms.indexOf(
+                  a.coinDenom as (typeof deprioritizedDenoms)[number]
+                );
+                const bDeprioritizedIndex = deprioritizedDenoms.indexOf(
+                  b.coinDenom as (typeof deprioritizedDenoms)[number]
+                );
+
+                if (aDeprioritizedIndex === -1 && bDeprioritizedIndex === -1)
+                  return 0; // Both not deprioritized
+                if (aDeprioritizedIndex === -1) return -1; // a is not deprioritized, b is
+                if (bDeprioritizedIndex === -1) return 1; // b is not deprioritized, a is
+
+                return aDeprioritizedIndex - bDeprioritizedIndex; // Both are deprioritized, sort by their index
+              }) as typeof assets;
+          },
+          cacheKey: JSON.stringify({
+            search,
+            userOsmoAddress,
+            includePreview,
+            variantsToBeExcluded: variantsNotToBeExcluded,
+            prioritizedDenoms,
+          }),
+          cursor,
+          limit,
+        })
     ),
 });

@@ -1,5 +1,5 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { Dec, IntPretty, PricePretty } from "@osmosis-labs/unit";
 import { aggregateRawCoinsByDenom, timeout } from "@osmosis-labs/utils";
 
 import {
@@ -66,14 +66,13 @@ export async function getUserPools(params: {
     .map(({ position: { pool_id } }) => pool_id)
     .forEach((poolId) => userUniquePoolIds.add(poolId));
 
-  const eventualPools = await timeout(
-    () => getPools({ ...params, poolIds: Array.from(userUniquePoolIds) }),
-    10_000, // 10 seconds
-    "getPools"
-  )();
+  const pools = await getPools({
+    ...params,
+    poolIds: Array.from(userUniquePoolIds),
+  });
 
   return await Promise.all(
-    eventualPools.map(async (pool) => {
+    pools.items?.map(async (pool) => {
       const { id, reserveCoins, totalFiatValueLocked, type } = pool;
       let userValue: PricePretty = new PricePretty(
         DEFAULT_VS_CURRENCY,
@@ -167,7 +166,7 @@ export async function getUserSharePools(params: {
   const userSharePools =
     specifiedPools ?? (await getPools({ ...params, poolIds: ownedPoolIds }));
 
-  const eventualUserSharePools = userSharePools.map(async (sharePool) => {
+  const eventualUserSharePools = userSharePools.items.map(async (sharePool) => {
     // get aggregate of raw shares of each variation
     const available = availableRaw.length
       ? aggregateRawCoinsByDenom(

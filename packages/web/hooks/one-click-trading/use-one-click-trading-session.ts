@@ -1,5 +1,5 @@
 import type { OneClickTradingInfo } from "@osmosis-labs/stores";
-import { unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
+import { safeTimeout, unixNanoSecondsToSeconds } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useAsync } from "react-use";
@@ -39,7 +39,7 @@ export const useOneClickTradingSession = ({
     }
 
     const info = await accountStore.getOneClickTradingInfo();
-    const isEnabled = await accountStore.isOneCLickTradingEnabled();
+    const isEnabled = await accountStore.isOneClickTradingEnabled();
     setIsExpired(await accountStore.isOneClickTradingExpired());
 
     if (info?.userOsmoAddress !== account?.address) {
@@ -48,6 +48,12 @@ export const useOneClickTradingSession = ({
     }
 
     return { info, isEnabled, isExpired };
+    /**
+     * accountStore.oneClickTradingInfo is a computed value from the mobx store
+     * and we need to include it as a dependency to retrigger session refresh
+     * when the oneClickTradingInfo changes
+     */
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     accountStore,
     isExpired,
@@ -62,16 +68,16 @@ export const useOneClickTradingSession = ({
     const sessionEndDate = dayjs.unix(
       unixNanoSecondsToSeconds(value.info.sessionPeriod.end)
     );
-    const timeRemaining = sessionEndDate.unix() - dayjs().unix();
+    const timeRemainingSeconds = sessionEndDate.unix() - dayjs().unix();
 
-    const timeoutId = setTimeout(() => {
+    const { clear } = safeTimeout(() => {
       if (!value?.info) return;
 
       setIsExpired(true);
       onExpire?.({ oneClickTradingInfo: value.info });
-    }, timeRemaining * 1000);
+    }, timeRemainingSeconds * 1000);
 
-    return () => clearTimeout(timeoutId);
+    return () => clear();
   }, [isExpired, t, value?.info, onExpire]);
 
   const getTimeRemaining = useCallback(() => {
@@ -97,7 +103,7 @@ export const useOneClickTradingSession = ({
   return {
     oneClickTradingInfo: featureFlags.oneClickTrading ? value?.info : undefined,
     isOneClickTradingEnabled: featureFlags.oneClickTrading
-      ? value?.isEnabled
+      ? value?.isEnabled ?? false
       : false,
     isOneClickTradingExpired: featureFlags.oneClickTrading ? isExpired : false,
     getTimeRemaining,

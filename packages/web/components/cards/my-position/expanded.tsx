@@ -1,9 +1,9 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import type {
   PositionHistoricalPerformance,
   UserPosition,
   UserPositionDetails,
 } from "@osmosis-labs/server";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import moment from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -22,6 +22,7 @@ import React, {
 import { FallbackImg } from "~/components/assets";
 import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { ChartButton } from "~/components/ui/button";
 import { ArrowButton, Button } from "~/components/ui/button";
@@ -61,6 +62,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   positionDetails: UserPositionDetails | undefined;
   positionPerformance: PositionHistoricalPerformance | undefined;
   showLinkToPool?: boolean;
+  isLoadingPositionDetails: boolean;
+  hasPositionDetailsError: boolean;
 }> = observer(
   ({
     poolId,
@@ -68,6 +71,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     showLinkToPool = false,
     positionDetails,
     positionPerformance,
+    isLoadingPositionDetails,
+    hasPositionDetailsError,
   }) => {
     const {
       chainStore: {
@@ -156,7 +161,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     return (
       <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
         <div className="flex w-full gap-1 xl:hidden">
-          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+          <div className="flex h-[20.1875rem] w-full flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             {chartConfig.isHistoricalDataLoading ? (
               <Spinner className="m-auto" />
             ) : !chartConfig.historicalChartUnavailable ? (
@@ -351,44 +356,58 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           >
             {t("clPositions.collectRewards")}
           </PositionButton>
-          <PositionButton
-            disabled={
-              !status ||
-              Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidData?.undelegationEndTime) ||
-              status === "unbonding" ||
-              !Boolean(account)
-            }
-            onClick={useCallback(() => {
-              if (superfluidData?.delegationLockId) {
-                account!.osmosis
-                  .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                    [
-                      {
-                        lockId: superfluidData.delegationLockId,
-                        isSynthetic: true,
-                      },
-                    ]
-                  )
-                  .catch(console.error);
-              } else setActiveModal("remove");
-            }, [account, superfluidData])}
+          <Tooltip
+            disabled={!hasPositionDetailsError}
+            className="cursor-default"
+            content={t("clPositions.errorFetchingPositions")}
           >
-            {Boolean(superfluidData?.delegationLockId)
-              ? t("clPositions.unstake")
-              : t("clPositions.removeLiquidity")}
-          </PositionButton>
-          <PositionButton
-            disabled={
-              !status ||
-              Boolean(account?.txTypeInProgress) ||
-              Boolean(superfluidData?.undelegationEndTime) ||
-              status === "unbonding"
-            }
-            onClick={useCallback(() => setActiveModal("increase"), [])}
+            <PositionButton
+              disabled={
+                !status ||
+                Boolean(account?.txTypeInProgress) ||
+                Boolean(superfluidData?.undelegationEndTime) ||
+                status === "unbonding" ||
+                !Boolean(account)
+              }
+              onClick={useCallback(() => {
+                if (superfluidData?.delegationLockId) {
+                  account!.osmosis
+                    .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+                      [
+                        {
+                          lockId: superfluidData.delegationLockId,
+                          isSynthetic: true,
+                        },
+                      ]
+                    )
+                    .catch(console.error);
+                } else setActiveModal("remove");
+              }, [account, superfluidData])}
+              isLoading={isLoadingPositionDetails}
+            >
+              {Boolean(superfluidData?.delegationLockId)
+                ? t("clPositions.unstake")
+                : t("clPositions.removeLiquidity")}
+            </PositionButton>
+          </Tooltip>
+          <Tooltip
+            disabled={!hasPositionDetailsError}
+            className="cursor-default"
+            content={t("clPositions.errorFetchingPositions")}
           >
-            {t("clPositions.increaseLiquidity")}
-          </PositionButton>
+            <PositionButton
+              disabled={
+                !status ||
+                Boolean(account?.txTypeInProgress) ||
+                Boolean(superfluidData?.undelegationEndTime) ||
+                status === "unbonding"
+              }
+              onClick={useCallback(() => setActiveModal("increase"), [])}
+              isLoading={isLoadingPositionDetails}
+            >
+              {t("clPositions.increaseLiquidity")}
+            </PositionButton>
+          </Tooltip>
 
           {activeModal === "increase" && !!status && (
             <IncreaseConcentratedLiquidityModal
@@ -425,7 +444,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
   );
 };
 
-const AssetsInfo: FunctionComponent<
+export const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
@@ -460,7 +479,7 @@ const AssetsInfo: FunctionComponent<
                     )}
                   </div>
                   <span className="whitespace-nowrap">
-                    {formatPretty(asset, { maxDecimals: 2 })}
+                    {formatPretty(asset, { maxDecimals: 6 })}
                   </span>
                 </div>
               ))}

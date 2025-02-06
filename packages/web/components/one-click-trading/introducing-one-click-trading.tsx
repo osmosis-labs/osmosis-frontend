@@ -36,7 +36,9 @@ export const IntroducingOneClick = ({
             className:
               "!inline w-auto !px-0 !text-body2 !font-body2 text-wosmongton-300",
           })}
-          // TODO: Add link
+          href="https://support.osmosis.zone/tutorials/1clicktrading"
+          target="_blank"
+          rel="noopener noreferrer"
         >
           {t("oneClickTrading.introduction.learnMore")} ↗️
         </a>

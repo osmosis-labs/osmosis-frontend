@@ -6,7 +6,7 @@ describe("maybeCursorPaginatedItems", () => {
   test("returns all items if no cursor and limit are provided", () => {
     const result = maybeCursorPaginatedItems(items, null, null);
     expect(result.items).toEqual(items);
-    expect(result.nextCursor).toEqual(null); // null since no next page
+    expect(result.nextCursor).toEqual(undefined); // null since no next page
   });
 
   test("returns first page of items with default limit", () => {
@@ -24,13 +24,13 @@ describe("maybeCursorPaginatedItems", () => {
   test("returns last items of page items based on provided cursor and limit", () => {
     const result = maybeCursorPaginatedItems(items, 90, 20);
     expect(result.items).toEqual(items.slice(90, 100));
-    expect(result.nextCursor).toEqual(null);
+    expect(result.nextCursor).toEqual(undefined);
   });
 
   test("returns elements that are less then a single page size", () => {
     const lessItems = [1, 2, 3];
     const result = maybeCursorPaginatedItems(lessItems, 0, 20);
     expect(result.items).toEqual(lessItems);
-    expect(result.nextCursor).toEqual(null);
+    expect(result.nextCursor).toEqual(undefined);
   });
 });

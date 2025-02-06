@@ -33,4 +33,4 @@ Various utils for working queries and tRPC. All utils are compatible with popula
 - Remote cache client for Vercel KV
 - Search
 - Pagination via tRPC & React Queries infinite query (cursor-based)
-- Error handling and reporting via Sentry
+- Error handling and reporting via Opentelemetry

@@ -1,6 +1,10 @@
 import { superjson } from "@osmosis-labs/server";
 import { makeIndexedKVStore } from "@osmosis-labs/stores";
-import { localLink, makeSkipBatchLink } from "@osmosis-labs/trpc";
+import {
+  createTRPCRouter,
+  localLink,
+  makeSkipBatchLink,
+} from "@osmosis-labs/trpc";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient } from "@tanstack/react-query";
 import { persistQueryClient } from "@tanstack/react-query-persist-client";
@@ -15,7 +19,9 @@ import type {
 
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { type AppRouter, appRouter } from "~/server/api/root-router";
+import { localRouter } from "~/server/api/local-router";
+import { type AppRouter } from "~/server/api/root-router";
+import { getOpentelemetryServiceName } from "~/utils/service-name";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
@@ -27,6 +33,14 @@ const getBaseUrl = () => {
   if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
+
+/**
+ * Create a minimal local router to avoid importing
+ * server packages in the client.
+ */
+const trpcLocalRouter = createTRPCRouter({
+  local: localRouter,
+});
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
@@ -60,6 +74,34 @@ export const api = createTRPCNext<AppRouter>({
     persistQueryClient({
       queryClient,
       persister: localStoragePersister,
+      dehydrateOptions: {
+        shouldDehydrateQuery: (query) => {
+          const [key] = query.queryKey as [string[]];
+          if (Array.isArray(key)) {
+            const trpcKey = key.join(".") as RouterKeys;
+            const excludedKeys: RouterKeys[] = [
+              "local.bridgeTransfer.getSupportedAssetsBalances",
+              "bridgeTransfer.getDepositAddress",
+            ];
+
+            /**
+             * If the key is in the excludedKeys, we don't want to persist it in the cache.
+             */
+            if (excludedKeys.includes(trpcKey)) {
+              return false;
+            }
+          }
+          return true;
+        },
+      },
+      // !! IMPORTANT !!
+      // If you change a data model,
+      // it's important to bump this buster value
+      // so that the cache is invalidated
+      // and data respecting the new model is fetched from the server.
+      // Otherwise, the old data will be served from cache
+      // and unexpected data structures will be run through the app.
+      buster: "v2",
     });
 
     return {
@@ -79,8 +121,9 @@ export const api = createTRPCNext<AppRouter>({
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
-            (opts.direction === "down" && opts.result instanceof Error),
+            process.env.NEXT_PUBLIC_TRPC_LOGS !== "off" &&
+            (process.env.NODE_ENV === "development" ||
+              (opts.direction === "down" && opts.result instanceof Error)),
         }),
         /**
          * Split calls to the node server and the edge server.
@@ -100,9 +143,10 @@ export const api = createTRPCNext<AppRouter>({
               `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
             )(runtime),
             local: localLink({
-              router: appRouter,
+              router: trpcLocalRouter,
               assetLists: AssetLists,
               chainList: ChainList,
+              opentelemetryServiceName: getOpentelemetryServiceName(),
             })(runtime),
 
             /**
@@ -205,4 +249,4 @@ export type RouterOutputs = inferRouterOutputs<AppRouter>;
  *
  * @example type HelloKey: RouterKeys = "local.quoteRouter.routeTokenOutGivenIn"
  */
-export type RouterKeys = inferRouterKeys<AppRouter>;
+type RouterKeys = inferRouterKeys<AppRouter>;

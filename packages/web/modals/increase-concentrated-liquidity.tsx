@@ -1,5 +1,5 @@
-import { Dec } from "@keplr-wallet/unit";
 import type { UserPosition, UserPositionDetails } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";

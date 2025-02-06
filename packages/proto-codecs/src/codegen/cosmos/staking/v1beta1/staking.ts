@@ -1,9 +1,9 @@
 //@ts-nocheck
 import { Pubkey } from "@cosmjs/amino";
-import { Decimal } from "@cosmjs/math";
 import { decodePubkey, encodePubkey } from "@cosmjs/proto-signing";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "../../../decimals";
 import {
   Any,
   AnyAmino,
@@ -1501,7 +1501,7 @@ export const Validator = {
       : undefined;
     obj.unbonding_height =
       message.unbondingHeight !== BigInt(0)
-        ? message.unbondingHeight.toString()
+        ? (message.unbondingHeight?.toString)()
         : undefined;
     obj.unbonding_time = message.unbondingTime
       ? Timestamp.toAmino(toTimestamp(message.unbondingTime))
@@ -2300,7 +2300,7 @@ export const UnbondingDelegationEntry = {
     const obj: any = {};
     obj.creation_height =
       message.creationHeight !== BigInt(0)
-        ? message.creationHeight.toString()
+        ? (message.creationHeight?.toString)()
         : undefined;
     obj.completion_time = message.completionTime
       ? Timestamp.toAmino(toTimestamp(message.completionTime))
@@ -2447,7 +2447,7 @@ export const RedelegationEntry = {
     const obj: any = {};
     obj.creation_height =
       message.creationHeight !== BigInt(0)
-        ? message.creationHeight.toString()
+        ? (message.creationHeight?.toString)()
         : undefined;
     obj.completion_time = message.completionTime
       ? Timestamp.toAmino(toTimestamp(message.completionTime))

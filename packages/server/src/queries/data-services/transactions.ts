@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { NUMIA_BASE_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 interface Route {
   pools: Pool[];
@@ -83,18 +83,23 @@ export async function queryTransactions({
   address,
   page,
   pageSize,
+  messageTypes,
 }: {
   address: string;
   page: string;
   pageSize: string;
+  messageTypes: string[];
 }): Promise<Transaction[]> {
-  const url = new URL(`/v2/txs/${address}`, NUMIA_BASE_URL);
+  const url = new URL(`/v2/txs/${address}`, HISTORICAL_DATA_URL);
 
   url.searchParams.append("page", page);
   url.searchParams.append("pageSize", pageSize);
+  if (messageTypes.length > 0) {
+    url.searchParams.append("messageTypes", messageTypes.join(","));
+  }
 
   const headers = {
-    Authorization: `Bearer ${process.env.NEXT_PUBLIC_NUMIA_API_KEY}`,
+    Authorization: `Bearer ${process.env.NUMIA_API_KEY}`,
   };
 
   return apiClient<Transaction[]>(url.toString(), { headers });

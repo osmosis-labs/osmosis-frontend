@@ -30,10 +30,6 @@ export type MainLayoutMenu = {
   showMore?: boolean;
 };
 
-export type MaybeRenderProp<P> =
-  | React.ReactNode
-  | ((props: P) => React.ReactNode);
-
 export const MainMenu: FunctionComponent<{
   menus: MainLayoutMenu[];
   secondaryMenuItems: MainLayoutMenu[];
@@ -84,6 +80,8 @@ export const MainMenu: FunctionComponent<{
     </ul>
   );
 };
+
+type MaybeRenderProp<P> = React.ReactNode | ((props: P) => React.ReactNode);
 
 const MenuLink: FunctionComponent<{
   href: string | any;

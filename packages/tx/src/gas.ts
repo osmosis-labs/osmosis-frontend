@@ -1,5 +1,6 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  BaseAccount,
+  BaseAccountTypeStr,
   DEFAULT_LRU_OPTIONS,
   queryBalances,
   queryBaseAccount,
@@ -8,19 +9,14 @@ import {
   queryFeeTokens,
   queryFeeTokenSpotPrice,
   sendTxSimulate,
+  VestingAccount,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
+import { Dec, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
-import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import type { TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
 
 import { getSumTotalSpenderCoinsSpent } from "./events";
@@ -45,9 +41,14 @@ export type QuoteStdFee = {
      * Indicates that the simulated transaction spends the account's balance required for the fee.
      * Likely, the input spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[];
 };
+
+// We have experienced instabilities with the base fee query. To avoid debugging its stability
+// for the sake of time, we have opted in to increase the base fee multiplier to 1.65 from the original
+// value of 1.5 which was equal to the gas multiplier. The update was applied on 2024-10-27.
+export const defaultBaseFeeMultiplier = 1.65;
 
 /** Tx body portions relevant for simulation */
 export type SimBody = Partial<
@@ -74,6 +75,7 @@ export async function estimateGasFee({
   bech32Address,
   gasMultiplier = 1.5,
   onlyDefaultFeeDenom,
+  fallbackGasLimit,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -85,6 +87,13 @@ export async function estimateGasFee({
    *  Default: `1.5` */
   gasMultiplier?: number;
 
+  /**
+   * If tx simulation fails for some reason, this can be provided as a fallback gas limit.
+   */
+  fallbackGasLimit?: number;
+
+  sendCoin?: { denom: string; amount: string };
+
   /** Force the use of fee token returned by default from `getGasPrice`. Overrides `excludedFeeDenoms` option. */
   onlyDefaultFeeDenom?: boolean;
 }): Promise<QuoteStdFee> {
@@ -93,6 +102,15 @@ export async function estimateGasFee({
     chainList,
     body,
     bech32Address,
+  }).catch((e) => {
+    if (fallbackGasLimit) {
+      console.warn(
+        "WARNING Using fallback gas limit:",
+        e instanceof Error ? e.message : e
+      );
+      return { gasUsed: fallbackGasLimit, coinsSpent: [] };
+    }
+    throw e;
   });
 
   const gasLimit = String(Math.round(gasUsed * gasMultiplier));
@@ -101,7 +119,7 @@ export async function estimateGasFee({
     const { feeDenom, gasPrice } = await getDefaultGasPrice({
       chainId,
       chainList,
-      gasMultiplier,
+      baseFeeMultiplier: defaultBaseFeeMultiplier,
     });
     return {
       gas: gasLimit,
@@ -131,13 +149,7 @@ export async function estimateGasFee({
 
 export class SimulateNotAvailableError extends Error {}
 
-/**
- * Attempts to estimate gas amount of the given messages in a tx via a POST to the
- * specified chain.
- *
- * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
- */
-export async function simulateCosmosTxBody({
+export async function generateCosmosUnsignedTx({
   chainId,
   chainList,
   body,
@@ -147,25 +159,26 @@ export async function simulateCosmosTxBody({
   chainList: ChainWithFeatures[];
   body: SimBody;
   bech32Address: string;
-}): Promise<{
-  gasUsed: number;
-  /** Coins that left the account at the given address.
-   *  Useful for subtracting from amount input if it gas tokens are included. */
-  coinsSpent: { denom: string; amount: string }[];
-}> {
+}) {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
 
   // get needed account and message data for a valid tx
-  const sequence = await queryBaseAccount({
+  const account = await queryBaseAccount({
     chainId,
     chainList,
     bech32Address,
-  }).then(({ account }) => Number(account.sequence));
-  if (isNaN(sequence)) throw new Error("Invalid sequence number: " + sequence);
+  });
+
+  const sequence: number = parseSequenceFromAccount(account);
+  const [{ SignMode }, { TxBody, TxRaw, AuthInfo, SignerInfo, Fee }] =
+    await Promise.all([
+      import("cosmjs-types/cosmos/tx/signing/v1beta1/signing"),
+      import("cosmjs-types/cosmos/tx/v1beta1/tx"),
+    ]);
 
   // create placeholder transaction document
-  const unsignedTx = TxRaw.encode({
+  const rawUnsignedTx = TxRaw.encode({
     bodyBytes: TxBody.encode(TxBody.fromPartial(body)).finish(),
     authInfoBytes: AuthInfo.encode({
       signerInfos: [
@@ -191,13 +204,82 @@ export async function simulateCosmosTxBody({
     signatures: [new Uint8Array(64)],
   }).finish();
 
+  return {
+    rawUnsignedTx,
+    unsignedTx: Buffer.from(rawUnsignedTx).toString("base64"),
+  };
+}
+
+// Parses the sequence number from the account object.
+// The structure of the account object is different for base and vesting accounts.
+// Therefore, we need to check the type of the account object to parse the sequence number.
+function parseSequenceFromAccount(account: any) {
+  let sequence: number = 0;
+  if (account.account["@type"] === BaseAccountTypeStr) {
+    const base_acc = account as BaseAccount;
+    sequence = Number(base_acc.account.sequence);
+  } else if ("base_account" in account.account) {
+    // some chains return a non-standard account object that includes a base_account object
+    // Example: injective
+    const baseAcc = account.account.base_account as {
+      address: string;
+      pub_key: string | null;
+      account_number: string;
+      sequence: string;
+    };
+    sequence = Number(baseAcc.sequence);
+  } else {
+    // We assume that if not a base account, it's a vesting account.
+    const vesting_acc = account as VestingAccount;
+    sequence = Number(
+      vesting_acc.account.base_vesting_account.base_account.sequence
+    );
+  }
+
+  if (Number.isNaN(sequence)) {
+    throw new Error(
+      "Invalid sequence number: " + sequence + " " + JSON.stringify(account)
+    );
+  }
+  return sequence;
+}
+
+/**
+ * Attempts to estimate gas amount of the given messages in a tx via a POST to the
+ * specified chain.
+ *
+ * @throws `SimulateNotAvailableError` if the chain does not support tx simulation. If so, it's recommended to use a registered fee amount.
+ */
+export async function simulateCosmosTxBody({
+  chainId,
+  chainList,
+  body,
+  bech32Address,
+}: {
+  chainId: string;
+  chainList: ChainWithFeatures[];
+  body: SimBody;
+  bech32Address: string;
+}): Promise<{
+  gasUsed: number;
+  /** Coins that left the account at the given address.
+   *  Useful for subtracting from amount input if it gas tokens are included. */
+  coinsSpent: { denom: string; amount: string }[];
+}> {
+  const { unsignedTx } = await generateCosmosUnsignedTx({
+    chainId,
+    chainList,
+    body,
+    bech32Address,
+  });
+
   // Include custom error handling to catch specific error scenarios.
   try {
     // Try to send simulate query to chain if available
     const simulation = await sendTxSimulate({
       chainId,
       chainList,
-      txBytes: Buffer.from(unsignedTx).toString("base64"),
+      txBytes: unsignedTx,
     });
     const gasUsed = Number(simulation.gas_info?.gas_used ?? NaN);
     if (isNaN(gasUsed)) throw new Error("Gas used is missing or NaN");
@@ -258,7 +340,7 @@ export async function getGasFeeAmount({
   gasLimit,
   bech32Address,
   gasMultiplier = 1.5,
-  coinsSpent,
+  coinsSpent = [],
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
@@ -276,7 +358,7 @@ export async function getGasFeeAmount({
      *  spent by the given spent coins list.
      *  Likely, the spent amount needs to be adjusted by subtracting this amount.
      */
-    isNeededForTx?: boolean;
+    isSubtractiveFee?: boolean;
   }[]
 > {
   const chain = chainList.find((chain) => chain.chain_id === chainId);
@@ -315,13 +397,21 @@ export async function getGasFeeAmount({
     );
   }
 
-  // first check unspent balances
-  const feeDenomsSpent = (coinsSpent ?? []).map(({ denom }) => denom);
-  const unspentFeeBalances = feeBalances.filter(
-    (balance) => !feeDenomsSpent.includes(balance.denom)
-  );
+  /**
+   * Coins that can be subtracted to cover fee.
+   */
+  let subtractiveFeeAmount: {
+    denom: string;
+    amount: string;
+    isSubtractiveFee: boolean;
+  }[] = [];
+  let alternativeFeeAmount: {
+    denom: string;
+    amount: string;
+    isSubtractiveFee: boolean;
+  }[] = [];
 
-  for (const { denom, amount } of unspentFeeBalances) {
+  for (const { amount, denom } of feeBalances) {
     const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
       chainId,
       chainList,
@@ -335,75 +425,66 @@ export async function getGasFeeAmount({
 
     // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
     if (
-      new Dec(feeAmount).gt(new Dec(amount)) ||
-      new Dec(feeAmount).lte(new Dec(0))
+      new Int(feeAmount).gt(new Int(amount)) ||
+      new Int(feeAmount).lte(new Int(1))
     )
       continue;
 
-    // found enough to pay the fee that is not spent
-    return [
+    const spentAmount =
+      coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
+    /**
+     * If the spent amount (input amount in case of swap) is greater than the balance minus fees
+     * then we are missing balance to pay for the transaction. In this case,
+     * we need to find an alternative token or subtract this amount from the input.
+     */
+    const isBalanceNeededForTx = new Int(spentAmount).gt(
+      new Int(amount).sub(new Int(feeAmount))
+    );
+
+    /**
+     * Following last comment, we now store a the subtractive coin that can be used in the transaction
+     * as long as it's subtracted from the input.
+     */
+    if (isBalanceNeededForTx) {
+      subtractiveFeeAmount = [
+        {
+          amount: feeAmount,
+          denom,
+          isSubtractiveFee: true,
+        },
+      ];
+      continue;
+    }
+
+    /**
+     * We will also store an alternative fee token.
+     *
+     * Useful to avoid leaving dust amounts for instances like a max amount swap.
+     */
+    alternativeFeeAmount = [
       {
         amount: feeAmount,
         denom,
+        isSubtractiveFee: false,
       },
     ];
+    break;
   }
 
-  // check spent balances last
-  if (!coinsSpent)
+  if (subtractiveFeeAmount.length === 0 && alternativeFeeAmount.length === 0) {
     throw new InsufficientFeeError(
       "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
         bech32Address
     );
-  const spentFeeBalances = feeBalances.filter((balance) =>
-    coinsSpent.some(({ denom }) => denom === balance.denom)
-  );
-
-  // get all fee amounts for spent balances so we can prioritize the smallest amounts
-  const spentFeesWithAmounts = await Promise.all(
-    spentFeeBalances.map((spentFeeBalance) =>
-      getGasPriceByFeeDenom({
-        chainId,
-        chainList,
-        feeDenom: spentFeeBalance.denom,
-        gasMultiplier,
-      }).then(({ gasPrice }) => ({
-        ...spentFeeBalance,
-        feeAmount: gasPrice.mul(new Dec(gasLimit)).truncate().toString(),
-      }))
-    )
-  );
-
-  // filter spent fees by those that are not enough to pay the fee and sort by smallest amounts
-  const spentFees = spentFeesWithAmounts
-    .filter((spentFee) =>
-      new Dec(spentFee.feeAmount).lte(new Dec(spentFee.amount))
-    )
-    .sort((a, b) => (new Int(a.feeAmount).lt(new Int(b.feeAmount)) ? -1 : 1));
-
-  for (const { amount, feeAmount, denom } of spentFees) {
-    // check for gas price conversion having too little precision
-    if (new Dec(feeAmount).lte(new Dec(0))) continue;
-
-    const spentAmount =
-      coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
-    const totalSpent = new Dec(spentAmount).add(new Dec(feeAmount));
-    const isBalanceNeededForTx = totalSpent.gte(new Dec(amount));
-
-    return [
-      {
-        amount: feeAmount,
-        denom,
-        isNeededForTx: isBalanceNeededForTx,
-      },
-    ];
-    // keep trying with other balances
   }
 
-  throw new InsufficientFeeError(
-    "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-      bech32Address
-  );
+  /**
+   * we'll always prefer the alternative fee token against the balance needed for tx amount as we want to avoid
+   * having to subtract the input amount. Rather, we use the alternative fee token to avoid dust amounts.
+   */
+  return alternativeFeeAmount.length > 0
+    ? alternativeFeeAmount
+    : subtractiveFeeAmount;
 }
 
 /**
@@ -417,7 +498,6 @@ export async function getGasPriceByFeeDenom({
   chainId,
   chainList,
   feeDenom,
-  gasMultiplier = 1.5,
   defaultGasPrice = 0.025,
 }: {
   chainId: string;
@@ -437,7 +517,7 @@ export async function getGasPriceByFeeDenom({
   const defaultFee = await getDefaultGasPrice({
     chainId,
     chainList,
-    gasMultiplier,
+    baseFeeMultiplier: defaultBaseFeeMultiplier,
   });
 
   if (defaultFee.feeDenom === feeDenom) {
@@ -465,7 +545,9 @@ export async function getGasPriceByFeeDenom({
   const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
-  return { gasPrice: new Dec(feeToken.average_gas_price ?? defaultGasPrice) };
+  // use high gas price to be on safe side that it will be enough
+  // to cover fees
+  return { gasPrice: new Dec(feeToken.high_gas_price ?? defaultGasPrice) };
 }
 
 /**
@@ -479,13 +561,13 @@ export async function getGasPriceByFeeDenom({
 export async function getDefaultGasPrice({
   chainId,
   chainList,
-  gasMultiplier = 1.5,
+  baseFeeMultiplier = defaultBaseFeeMultiplier,
   defaultGasPrice = 0.025,
 }: {
   chainId: string;
   chainList: ChainWithFeatures[];
-  gasMultiplier?: number;
   defaultGasPrice?: number;
+  baseFeeMultiplier?: number;
 }) {
   const chain = chainList.find(({ chain_id }) => chain_id === chainId);
   if (!chain) throw new Error("Chain not found: " + chainId);
@@ -508,13 +590,15 @@ export async function getDefaultGasPrice({
 
     feeDenom = baseDenom;
     // Add slippage multiplier to account for shifting gas prices in gas market
-    gasPrice = baseFeePrice.mul(new Dec(gasMultiplier));
+    gasPrice = baseFeePrice.mul(new Dec(baseFeeMultiplier));
   } else {
     // registry
 
     feeDenom = chain.fees.fee_tokens[0].denom;
+    // use high gas price to be on safe side that it will be enough
+    // to cover fees
     gasPrice = new Dec(
-      chain.fees.fee_tokens[0].average_gas_price || defaultGasPrice
+      chain.fees.fee_tokens[0].high_gas_price || defaultGasPrice
     );
   }
 

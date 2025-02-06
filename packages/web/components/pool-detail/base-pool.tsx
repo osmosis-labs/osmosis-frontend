@@ -1,16 +1,15 @@
-import { IntPretty } from "@keplr-wallet/unit";
 import type { Pool } from "@osmosis-labs/server";
+import { IntPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
-import { useState } from "react";
+import Link from "next/link";
+import { Fragment, FunctionComponent, useState } from "react";
 import { useMeasure } from "react-use";
 
+import { Icon, PoolAssetsIcon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { AssetBreakdownChart } from "~/components/chart";
 import { useTranslation } from "~/hooks";
-
-import { Icon, PoolAssetsIcon } from "../assets";
-import { Button } from "../buttons";
-import { AssetBreakdownChart } from "../chart";
 
 export const BasePoolDetails: FunctionComponent<{
   pool: Pool;
@@ -19,7 +18,13 @@ export const BasePoolDetails: FunctionComponent<{
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
 
-  const poolName = pool.reserveCoins.map((asset) => asset.denom).join(" / ");
+  const poolNameAssetLinks = pool.reserveCoins.map((poolAsset, index) => (
+    <Fragment key={poolAsset.denom}>
+      <Link href={`/assets/${poolAsset.denom}`}>{poolAsset.denom}</Link>
+      {index < pool.reserveCoins.length - 1 && " / "}
+    </Fragment>
+  ));
+
   const poolValue = pool.totalFiatValueLocked;
 
   const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
@@ -30,9 +35,9 @@ export const BasePoolDetails: FunctionComponent<{
     useMeasure<HTMLDivElement>();
 
   return (
-    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+    <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
       <section className="flex flex-col gap-4">
-        <div className="flex flex-col gap-4 rounded-4xl bg-osmoverse-1000 pb-4">
+        <div className="flex flex-col gap-4 rounded-4xl pb-4">
           <div
             ref={poolDetailsContainerRef}
             className={classNames(
@@ -61,7 +66,7 @@ export const BasePoolDetails: FunctionComponent<{
                     }))}
                     size="sm"
                   />
-                  <h5>{poolName}</h5>
+                  <h5>{poolNameAssetLinks}</h5>
                 </div>
               </div>
               <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
@@ -90,6 +95,7 @@ export const BasePoolDetails: FunctionComponent<{
                   amount: coin,
                 }))}
                 totalWeight={new IntPretty(pool.reserveCoins.length)}
+                hideWeights={pool.type === "concentrated"}
               />
             </div>
           </div>

@@ -1,6 +1,10 @@
 import { queryRPCStatus, QueryStatusResponse } from "@osmosis-labs/server";
 
-import { PollingStatusSubscription, StatusHandler } from "../index";
+import {
+  calcAverageBlockTimeMs,
+  PollingStatusSubscription,
+  StatusHandler,
+} from "../index";
 
 jest.useFakeTimers();
 
@@ -44,6 +48,9 @@ const baseMockStatusResult: QueryStatusResponse["result"] = {
     catching_up: false,
   },
 };
+
+// silence expected console errors
+jest.spyOn(console, "error").mockImplementation(() => {});
 
 jest.mock("@osmosis-labs/server", () => ({
   queryRPCStatus: jest.fn().mockResolvedValue({
@@ -171,21 +178,6 @@ describe("PollingStatusSubscription", () => {
   });
 
   describe("calcAverageBlockTimeMs", () => {
-    class TestPollingStatusSubscription extends PollingStatusSubscription {
-      public test(status: QueryStatusResponse): number {
-        return this.calcAverageBlockTimeMs(status);
-      }
-    }
-
-    let avgBlockTimeSub: TestPollingStatusSubscription;
-
-    beforeEach(() => {
-      avgBlockTimeSub = new TestPollingStatusSubscription(
-        mockRPC,
-        defaultBlockTimeMs
-      );
-    });
-
     it("should return default block time if catching up", () => {
       const mockStatus: QueryStatusResponse = {
         jsonrpc: "2.0",
@@ -199,7 +191,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       expect(blockTime).toBe(defaultBlockTimeMs);
     });
 
@@ -220,7 +212,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       expect(blockTime).toBe(defaultBlockTimeMs);
     });
 
@@ -241,7 +233,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       const expectedBlockTime =
         (new Date(mockStatus.result.sync_info.latest_block_time).getTime() -
           new Date(mockStatus.result.sync_info.earliest_block_time).getTime()) /
@@ -267,7 +259,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       expect(blockTime).toBe(defaultBlockTimeMs);
     });
 
@@ -288,7 +280,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       expect(blockTime).toBe(defaultBlockTimeMs);
     });
 
@@ -309,7 +301,7 @@ describe("PollingStatusSubscription", () => {
         },
       };
 
-      const blockTime = avgBlockTimeSub.test(mockStatus);
+      const blockTime = calcAverageBlockTimeMs(mockStatus);
       expect(blockTime).toBe(defaultBlockTimeMs);
     });
   });

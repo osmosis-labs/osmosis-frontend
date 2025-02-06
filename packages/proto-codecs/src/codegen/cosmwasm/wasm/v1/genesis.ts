@@ -346,7 +346,7 @@ export const Code = {
   toAmino(message: Code): CodeAmino {
     const obj: any = {};
     obj.code_id =
-      message.codeId !== BigInt(0) ? message.codeId.toString() : undefined;
+      message.codeId !== BigInt(0) ? (message.codeId?.toString)() : undefined;
     obj.code_info = message.codeInfo
       ? CodeInfo.toAmino(message.codeInfo)
       : CodeInfo.toAmino(CodeInfo.fromPartial({}));
@@ -581,7 +581,7 @@ export const Sequence = {
     const obj: any = {};
     obj.id_key = message.idKey ? base64FromBytes(message.idKey) : undefined;
     obj.value =
-      message.value !== BigInt(0) ? message.value.toString() : undefined;
+      message.value !== BigInt(0) ? (message.value?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(object: SequenceAminoMsg): Sequence {

@@ -13,7 +13,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { TxChainSetter } from "./chain";
 import { ChainGetter, MakeTxResponse } from "@osmosis-labs/keplr-stores";
-import { Coin, StdFee } from "@cosmjs/launchpad";
+import type { Coin, StdFee } from "@cosmjs/launchpad";
 import Axios, { AxiosResponse } from "axios";
 
 type TxSimulate = Pick<MakeTxResponse, "simulate">;

@@ -28,7 +28,7 @@ import { formatPretty } from "~/utils/formatter";
 
 const columnHelper = createColumnHelper<EarnStrategy>();
 
-export const ColumnCellHeader = ({
+const ColumnCellHeader = ({
   className,
   tKey,
   /**
@@ -187,7 +187,7 @@ export const tableColumns = [
     ),
     cell: RiskCell,
   }),
-  columnHelper.accessor("balance", {
+  columnHelper.accessor("totalBalance", {
     header: () => <ColumnCellHeader tKey={"assets.table.columns.balance"} />,
     cell: (item) => (
       <div className="flex flex-col">

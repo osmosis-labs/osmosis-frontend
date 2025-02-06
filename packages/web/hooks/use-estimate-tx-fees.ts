@@ -1,5 +1,4 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
 import {
   AccountStore,
@@ -9,8 +8,10 @@ import {
   InsufficientBalanceForFeeError,
   OsmosisAccount,
   SignOptions,
+  SwapRequiresError,
 } from "@osmosis-labs/stores";
 import { QuoteStdFee } from "@osmosis-labs/tx";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import cachified, { CacheEntry } from "cachified";
@@ -38,10 +39,6 @@ async function estimateTxFeesQueryFn({
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
-  sendToken?: {
-    balance: CoinPretty;
-    amount: CoinPretty;
-  };
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
   if (!messages.length) throw new Error("No messages");
@@ -94,7 +91,11 @@ export function useEstimateTxFees({
   const wallet = accountStore.getWallet(chainId);
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
-    queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
+    queryKey: [
+      "estimate-tx-fees",
+      superjson.stringify(messages),
+      superjson.stringify(signOptions),
+    ],
     queryFn: () => {
       if (!wallet) throw new Error(`No wallet found for chain ID: ${chainId}`);
       return estimateTxFeesQueryFn({
@@ -125,10 +126,20 @@ export function useEstimateTxFees({
       ) ||
         queryResult.error.message.includes(
           "Insufficient alternative balance for transaction fees"
-        ))
+        ) ||
+        queryResult.error.message.includes("insufficient funds"))
     ) {
       return new InsufficientBalanceForFeeError(queryResult.error.message);
     }
+
+    if (
+      queryResult.error instanceof Error &&
+      (queryResult.error.message.includes("Swap requires") ||
+        queryResult.error.message.includes("is greater than max amount"))
+    ) {
+      return new SwapRequiresError(queryResult.error.message);
+    }
+
     return queryResult.error;
   }, [queryResult.error]);
 

@@ -1,81 +1,118 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "../../../../env";
+import { EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS, IS_TESTNET } from "../../../../env";
+import {
+  PaginationType,
+  PoolProviderResponse,
+  SearchType,
+  SortType,
+} from "../../../../queries/complex/pools";
 import { PoolRawResponse } from "../../../../queries/osmosis";
 import { queryPools } from "../../../../queries/sidecar";
 import { DEFAULT_LRU_OPTIONS } from "../../../../utils/cache";
-import { calcSumCoinsValue, getAsset } from "../../assets";
+import { getAsset } from "../../assets";
 import { DEFAULT_VS_CURRENCY } from "../../assets/config";
 import { getCosmwasmPoolTypeFromCodeId } from "../env";
-import { Pool, PoolType } from "../index";
+import { Pool, PoolIncentiveType, PoolType } from "../index";
 
-type SidecarPool = Awaited<ReturnType<typeof queryPools>>[number];
+type SidecarPool = Awaited<ReturnType<typeof queryPools>>["data"][number];
 
 const poolsCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
+/**
+ * Pools that are excluded from showing external boost incentives APRs.
+ */
+const ExcludedExternalBoostPools: string[] =
+  (EXCLUDED_EXTERNAL_BOOSTS_POOL_IDS ?? []) as string[];
 
 /** Lightly cached pools from sidecar service. */
 export function getPoolsFromSidecar({
   assetLists,
-  chainList,
   poolIds,
+  notPoolIds,
+  types,
+  incentives,
+  denoms,
+  minLiquidityUsd,
+  withMarketIncentives = true,
+  pagination,
+  sort,
+  search,
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   poolIds?: string[];
-}): Promise<Pool[]> {
+  notPoolIds?: string[];
+  types?: PoolType[];
+  incentives?: string[];
+  denoms?: string[];
+  minLiquidityUsd?: number;
+  withMarketIncentives?: boolean;
+  search?: SearchType;
+  pagination?: PaginationType;
+  sort?: SortType;
+}): Promise<PoolProviderResponse> {
+  if (poolIds && !poolIds.length) {
+    return Promise.resolve({ data: [], total: 0, nextCursor: undefined });
+  }
+
   return cachified({
     cache: poolsCache,
-    key: poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools",
+    key:
+      (poolIds ? `sidecar-pools-${poolIds.join(",")}` : "sidecar-pools") +
+      (notPoolIds?.join(",") ?? "") +
+      (types?.join(",") ?? "") +
+      (incentives?.join(",") ?? "") +
+      (denoms?.join(",") ?? "") +
+      (minLiquidityUsd ?? "") +
+      withMarketIncentives.toString() +
+      (pagination ? JSON.stringify(pagination) : "") +
+      (sort ? JSON.stringify(sort) : "") +
+      (search ? JSON.stringify(search) : ""),
     ttl: 5_000, // 5 seconds
     getFreshValue: async () => {
       const sidecarPools = await timeout(
-        () => queryPools({ poolIds }),
+        () =>
+          queryPools({
+            poolIds,
+            notPoolIds,
+            types,
+            incentives,
+            denoms,
+            minLiquidityCap: minLiquidityUsd?.toString(),
+            withMarketIncentives,
+            search,
+            pagination,
+            sort,
+          }),
         9_000, // 9 seconds
         "sidecarQueryPools"
       )();
-      const reserveCoins = sidecarPools.map((sidecarPool) => {
+
+      const reserveCoins = sidecarPools.data.map((sidecarPool) => {
         try {
           return getListedReservesFromSidecarPool(assetLists, sidecarPool);
         } catch {
           // Do nothing since low liq pools often contain unlisted tokens
         }
       });
-      const totalFiatLockedValues: (PricePretty | undefined)[] =
-        await Promise.all(
-          reserveCoins.map((reserve) =>
-            reserve
-              ? timeout(
-                  () =>
-                    calcSumCoinsValue({
-                      assetLists,
-                      chainList,
-                      coins: reserve,
-                    }).then(
-                      (value) => new PricePretty(DEFAULT_VS_CURRENCY, value)
-                    ),
-                  15_000, // 15 seconds
-                  "getPoolsFromSidecar:calcSumCoinsValue"
-                )()
-              : Promise.resolve(undefined)
+
+      return {
+        data: sidecarPools.data
+          .map((sidecarPool, index) =>
+            makePoolFromSidecarPool({
+              sidecarPool,
+              reserveCoins: reserveCoins[index] ?? null,
+            })
           )
-        );
-
-      return sidecarPools
-        .map((sidecarPool, index) => {
-          if (reserveCoins[index] === undefined) return;
-          if (totalFiatLockedValues[index] === undefined) return;
-
-          return makePoolFromSidecarPool({
-            sidecarPool,
-            totalFiatValueLocked: totalFiatLockedValues[index] as PricePretty,
-            reserveCoins: reserveCoins[index] as CoinPretty[],
-          });
-        })
-        .filter(Boolean) as Pool[];
+          .filter(Boolean) as Pool[],
+        total: sidecarPools.meta.total_items,
+        nextCursor: sidecarPools.meta.next_cursor,
+      };
     },
   });
 }
@@ -84,16 +121,17 @@ export function getPoolsFromSidecar({
 function makePoolFromSidecarPool({
   sidecarPool,
   reserveCoins,
-  totalFiatValueLocked,
 }: {
   sidecarPool: SidecarPool;
   reserveCoins: CoinPretty[] | null;
-  totalFiatValueLocked: PricePretty | null;
 }): Pool | undefined {
   // contains unlisted or invalid assets
   // We avoid this check in testnet because we would like to show the pools even if we don't have accurate listing
   // to ease integrations.
-  if ((!reserveCoins || !totalFiatValueLocked) && !IS_TESTNET) return;
+  if (!reserveCoins && !IS_TESTNET) return;
+
+  const pool_id = getPoolIdFromChainPool(sidecarPool.chain_model);
+  const data = getMarketIncentivesData(pool_id, sidecarPool);
 
   return {
     id: getPoolIdFromChainPool(sidecarPool.chain_model),
@@ -103,10 +141,121 @@ function makePoolFromSidecarPool({
 
     // We expect the else case to occur only in testnet
     reserveCoins: reserveCoins ? reserveCoins : [],
-    totalFiatValueLocked: totalFiatValueLocked
-      ? totalFiatValueLocked
-      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    totalFiatValueLocked: new PricePretty(
+      DEFAULT_VS_CURRENCY,
+      sidecarPool.liquidity_cap
+    ),
+    ...data,
   };
+}
+
+// getMarketIncentivesData is a function that returns the incentives and market data for a pool
+// based on the pool_id and the apr_data and fees_data from the sidecar response
+function getMarketIncentivesData(
+  pool_id: string,
+  { apr_data: aprs, fees_data: fees }: SidecarPool
+) {
+  let totalUpper = maybeMakeRatePretty(aprs?.total_apr.upper ?? 0);
+  let totalLower = maybeMakeRatePretty(aprs?.total_apr.lower ?? 0);
+  const swapFeeUpper = maybeMakeRatePretty(aprs?.swap_fees.upper ?? 0);
+  const swapFeeLower = maybeMakeRatePretty(aprs?.swap_fees.lower ?? 0);
+  const superfluidUpper = maybeMakeRatePretty(aprs?.superfluid.upper ?? 0);
+  const superfluidLower = maybeMakeRatePretty(aprs?.superfluid.lower ?? 0);
+  const osmosisUpper = maybeMakeRatePretty(aprs?.osmosis.upper ?? 0);
+  const osmosisLower = maybeMakeRatePretty(aprs?.osmosis.lower ?? 0);
+  let boostUpper = maybeMakeRatePretty(aprs?.boost.upper ?? 0);
+  let boostLower = maybeMakeRatePretty(aprs?.boost.lower ?? 0);
+
+  // Temporarily exclude pools in this array from showing boost incentives given an issue on chain
+  if (
+    ExcludedExternalBoostPools.includes(pool_id) &&
+    totalUpper &&
+    totalLower &&
+    boostUpper &&
+    boostLower
+  ) {
+    totalUpper = new RatePretty(totalUpper.toDec().sub(totalUpper.toDec()));
+    totalLower = new RatePretty(totalLower.toDec().sub(totalLower.toDec()));
+    boostUpper = undefined;
+    boostLower = undefined;
+  }
+
+  // add list of incentives that are defined
+  const incentiveTypes: PoolIncentiveType[] = [];
+  if (superfluidUpper && superfluidLower) incentiveTypes.push("superfluid");
+  if (osmosisUpper && osmosisLower) incentiveTypes.push("osmosis");
+  if (boostUpper && osmosisLower) incentiveTypes.push("boost");
+  if (
+    !superfluidUpper &&
+    !superfluidLower &&
+    !osmosisUpper &&
+    !osmosisLower &&
+    !boostUpper &&
+    !boostLower
+  )
+    incentiveTypes.push("none");
+  const hasBreakdownData =
+    totalUpper ||
+    totalLower ||
+    swapFeeUpper ||
+    swapFeeLower ||
+    superfluidUpper ||
+    superfluidLower ||
+    osmosisUpper ||
+    osmosisLower ||
+    boostUpper ||
+    boostLower;
+
+  return {
+    incentives: {
+      aprBreakdown: hasBreakdownData
+        ? {
+            total: {
+              upper: totalUpper,
+              lower: totalLower,
+            },
+            swapFee: {
+              upper: swapFeeUpper,
+              lower: swapFeeLower,
+            },
+            superfluid: {
+              upper: superfluidUpper,
+              lower: superfluidLower,
+            },
+            osmosis: {
+              upper: osmosisUpper,
+              lower: osmosisLower,
+            },
+            boost: {
+              upper: boostUpper,
+              lower: boostLower,
+            },
+          }
+        : undefined,
+      incentiveTypes,
+    },
+    market: {
+      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_24h ?? 0),
+      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, fees?.volume_7d ?? 0),
+      feesSpent24hUsd: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        fees?.fees_spent_24h ?? 0
+      ),
+      feesSpent7dUsd: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        fees?.fees_spent_7d ?? 0
+      ),
+    },
+  };
+}
+
+/** Checks explicitly for 0 or null before creating rate display object. */
+function maybeMakeRatePretty(value: number): RatePretty | undefined {
+  if (value === 0 || value === null) {
+    return undefined;
+  }
+
+  return new RatePretty(new Dec(value).quo(new Dec(100)));
 }
 
 function getPoolIdFromChainPool(
@@ -172,6 +321,7 @@ function getPoolDenomsFromSidecarPool({ chain_model, balances }: SidecarPool) {
 function makePoolRawResponseFromChainPool(
   chainPool: SidecarPool["chain_model"]
 ): PoolRawResponse {
+  // CL pools
   if ("current_tick_liquidity" in chainPool) {
     return {
       ...chainPool,
@@ -182,6 +332,7 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
+  // Stable pools
   if ("scaling_factors" in chainPool) {
     return {
       ...chainPool,
@@ -192,13 +343,17 @@ function makePoolRawResponseFromChainPool(
     } as PoolRawResponse;
   }
 
-  if ("id" in chainPool) {
+  // Weighted pools
+  if ("total_weight" in chainPool) {
     return {
       ...chainPool,
       id: chainPool.id?.toString(),
+      // SQS diverges from the node model by returning total_weight as a string decimal instead of string integer
+      total_weight: chainPool.total_weight.split(".")[0],
     } as PoolRawResponse;
   }
 
+  // Cosmwasm pools
   return {
     ...chainPool,
     pool_id: chainPool.pool_id?.toString(),

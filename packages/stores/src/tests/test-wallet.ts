@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
-import { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
+import type { OfflineAminoSigner, StdSignDoc, StdTx } from "@cosmjs/amino";
+import type { Algo, OfflineDirectSigner } from "@cosmjs/proto-signing";
 import {
   BroadcastMode,
   ChainRecord,
@@ -13,6 +13,7 @@ import {
   WalletClient,
 } from "@cosmos-kit/core";
 import Axios from "axios";
+import Long from "long";
 
 import { MockChainList } from "./mock-data";
 import { MockKeplrWithFee } from "./mock-keplr-with-fee";
@@ -177,7 +178,10 @@ export class MockKeplrClient implements WalletClient {
     const response = await this.client.signDirect(
       chainId,
       signer,
-      signDoc as any,
+      {
+        ...signDoc,
+        accountNumber: Long.fromString(signDoc.accountNumber!.toString()),
+      },
       signOptions
     );
 

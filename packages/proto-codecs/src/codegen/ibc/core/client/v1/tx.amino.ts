@@ -1,8 +1,11 @@
 //@ts-nocheck
 import {
   MsgCreateClient,
+  MsgIBCSoftwareUpgrade,
+  MsgRecoverClient,
   MsgSubmitMisbehaviour,
   MsgUpdateClient,
+  MsgUpdateParams,
   MsgUpgradeClient,
 } from "./tx";
 export const AminoConverter = {
@@ -25,5 +28,20 @@ export const AminoConverter = {
     aminoType: "cosmos-sdk/MsgSubmitMisbehaviour",
     toAmino: MsgSubmitMisbehaviour.toAmino,
     fromAmino: MsgSubmitMisbehaviour.fromAmino,
+  },
+  "/ibc.core.client.v1.MsgRecoverClient": {
+    aminoType: "cosmos-sdk/MsgRecoverClient",
+    toAmino: MsgRecoverClient.toAmino,
+    fromAmino: MsgRecoverClient.fromAmino,
+  },
+  "/ibc.core.client.v1.MsgIBCSoftwareUpgrade": {
+    aminoType: "cosmos-sdk/MsgIBCSoftwareUpgrade",
+    toAmino: MsgIBCSoftwareUpgrade.toAmino,
+    fromAmino: MsgIBCSoftwareUpgrade.fromAmino,
+  },
+  "/ibc.core.client.v1.MsgUpdateParams": {
+    aminoType: "cosmos-sdk/MsgUpdateParams",
+    toAmino: MsgUpdateParams.toAmino,
+    fromAmino: MsgUpdateParams.fromAmino,
   },
 };

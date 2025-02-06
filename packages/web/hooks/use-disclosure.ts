@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-export interface UseDisclosureProps {
+interface UseDisclosureProps {
   isOpen?: boolean;
   defaultIsOpen?: boolean;
 }
@@ -22,7 +22,7 @@ export function useDisclosure(props: UseDisclosureProps = {}) {
 
   const onToggle = useCallback(() => {
     setIsOpen((prevIsOpen) => !prevIsOpen);
-  }, [isOpen, onOpen, onClose]);
+  }, []);
 
   return {
     isOpen,

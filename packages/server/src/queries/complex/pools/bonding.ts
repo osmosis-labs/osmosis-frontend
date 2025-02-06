@@ -1,5 +1,5 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList, Chain } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import type { Duration } from "dayjs/plugin/duration";
 
 import { dayjs } from "../../../utils/dayjs";
@@ -221,16 +221,16 @@ export async function getSharePoolBondDurations({
         const incentivesBreakdown: BondDuration["incentivesBreakdown"] = [];
         if (isLongestDuration) {
           // internal mint incentives
-          if (poolIncentives?.aprBreakdown?.osmosis) {
+          if (poolIncentives?.aprBreakdown?.osmosis?.upper) {
             incentivesBreakdown.push({
-              apr: poolIncentives?.aprBreakdown?.osmosis,
+              apr: poolIncentives?.aprBreakdown?.osmosis.upper,
               type: "osmosis",
             });
           }
           // external incentives
-          if (poolIncentives?.aprBreakdown?.boost) {
+          if (poolIncentives?.aprBreakdown?.boost?.upper) {
             incentivesBreakdown.push({
-              apr: poolIncentives?.aprBreakdown?.boost,
+              apr: poolIncentives?.aprBreakdown?.boost.upper,
               type: "boost",
             });
           }
@@ -240,7 +240,7 @@ export async function getSharePoolBondDurations({
           new RatePretty(0)
         );
         const swapFeeApr =
-          poolIncentives?.aprBreakdown?.swapFee ?? new RatePretty(0);
+          poolIncentives?.aprBreakdown?.swapFee?.upper ?? new RatePretty(0);
         aggregateApr = aggregateApr.add(swapFeeApr);
 
         // get superfluid info for this duration
@@ -248,7 +248,8 @@ export async function getSharePoolBondDurations({
         const userSyntheticLockIds: string[] = [];
         if (isSuperfluidDuration) {
           const superfluidApr =
-            poolIncentives?.aprBreakdown?.superfluid ?? new RatePretty(0);
+            poolIncentives?.aprBreakdown?.superfluid?.upper ??
+            new RatePretty(0);
           aggregateApr = aggregateApr.add(superfluidApr);
 
           const userDelegations = bech32Address

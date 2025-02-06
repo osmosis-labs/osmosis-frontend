@@ -1,15 +1,14 @@
-import { AminoMsg, StdFee } from "@cosmjs/amino";
+import type { AminoMsg, StdFee } from "@cosmjs/amino";
 import {
   ChainWalletBase,
   SignOptions as CosmoskitSignOptions,
   Wallet,
 } from "@cosmos-kit/core";
 import {
-  Currency,
   OneClickTradingHumanizedSessionPeriod,
   OneClickTradingTimeLimit,
 } from "@osmosis-labs/types";
-import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
+import type { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 import { UnionToIntersection } from "utility-types";
 
 import { WalletConnectionInProgressError } from "./wallet-errors";
@@ -88,9 +87,10 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
     };
 
 export interface TxEvents {
-  onBroadcastFailed?: (string: string, e?: Error) => void;
-  onBroadcasted?: (string: string, txHash: Uint8Array) => void;
-  onFulfill?: (string: string, tx: any) => void;
+  onSign?: () => Promise<void> | void;
+  onBroadcastFailed?: (chainNameOrId: string, e?: Error) => void;
+  onBroadcasted?: (chainNameOrId: string, txHash: Uint8Array) => void;
+  onFulfill?: (chainNameOrId: string, tx: any) => void;
   onExceeds1CTNetworkFeeLimit?: (params: {
     // Continue with a wallet like Keplr.
     continueTx: () => void;
@@ -105,9 +105,10 @@ export interface OneClickTradingInfo {
   readonly sessionKey: string;
   readonly userOsmoAddress: string;
 
-  networkFeeLimit: Currency & {
-    amount: string;
-  };
+  /**
+   * Max gas limit allowed for the transaction.
+   */
+  networkFeeLimit: string;
 
   spendLimit: {
     decimals: number;

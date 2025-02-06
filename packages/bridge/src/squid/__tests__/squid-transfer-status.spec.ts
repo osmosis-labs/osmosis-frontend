@@ -1,8 +1,13 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
+import { MockChains } from "../../__tests__/mock-chains";
 import { server } from "../../__tests__/msw";
-import { BridgeEnvironment, TransferStatusReceiver } from "../../interface";
+import {
+  BridgeEnvironment,
+  TransferStatusReceiver,
+  TxSnapshot,
+} from "../../interface";
 import { SquidTransferStatusProvider } from "../transfer-status";
 
 jest.mock("@osmosis-labs/utils", () => {
@@ -34,20 +39,54 @@ describe("SquidTransferStatusProvider", () => {
     receiveNewTxStatus: jest.fn(),
   };
 
+  const createTxSnapshot = (
+    overrides: Partial<TxSnapshot> = {}
+  ): TxSnapshot => ({
+    direction: "deposit",
+    createdAtUnix: Date.now(),
+    type: "bridge-transfer",
+    provider: "Squid",
+    fromAddress: "0xFromAddress",
+    toAddress: "0xToAddress",
+    osmoBech32Address: "osmo1address",
+    fromAsset: {
+      denom: "OSMO",
+      address: "uosmo",
+      decimals: 6,
+      amount: "1000",
+    },
+    toAsset: {
+      denom: "ATOM",
+      address: "uatom",
+      decimals: 6,
+      amount: "1000",
+    },
+    status: "pending",
+    sendTxHash: "testTxHash",
+    fromChain: {
+      chainId: 1,
+      prettyName: "Chain One",
+      chainType: "evm",
+    },
+    toChain: {
+      chainId: 2,
+      prettyName: "Chain Two",
+      chainType: "evm",
+    },
+    estimatedArrivalUnix: Date.now() + 600,
+    ...overrides,
+  });
+
   beforeEach(() => {
-    provider = new SquidTransferStatusProvider("mainnet" as BridgeEnvironment);
+    provider = new SquidTransferStatusProvider(
+      "mainnet" as BridgeEnvironment,
+      MockChains
+    );
     provider.statusReceiverDelegate = mockReceiver;
   });
 
   it("should initialize with correct URLs", () => {
     expect(provider.squidScanBaseUrl).toBe("https://axelarscan.io");
-  });
-
-  it("should generate correct explorer URL", () => {
-    const url = provider.makeExplorerUrl(
-      JSON.stringify({ sendTxHash: "testTxHash" })
-    );
-    expect(url).toBe("https://axelarscan.io/gmp/testTxHash");
   });
 
   it("should handle successful transfer status", async () => {
@@ -59,12 +98,12 @@ describe("SquidTransferStatusProvider", () => {
       })
     );
 
-    await provider.trackTxStatus(
-      JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })
-    );
+    const snapshot = createTxSnapshot();
+
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Squid${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      snapshot.sendTxHash,
       "success",
       undefined
     );
@@ -79,12 +118,12 @@ describe("SquidTransferStatusProvider", () => {
       })
     );
 
-    await provider.trackTxStatus(
-      JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })
-    );
+    const snapshot = createTxSnapshot();
+
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `Squid${JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })}`,
+      snapshot.sendTxHash,
       "failed",
       "insufficientFee"
     );
@@ -97,20 +136,60 @@ describe("SquidTransferStatusProvider", () => {
       })
     );
 
-    await provider.trackTxStatus(
-      JSON.stringify({ sendTxHash: "testTxHash", fromChainId: 1 })
-    );
+    const snapshot = createTxSnapshot();
+
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).not.toHaveBeenCalled();
   });
 
+  it("should generate correct explorer URL", () => {
+    const snapshot = createTxSnapshot({
+      sendTxHash: "testTxHash",
+      fromChain: { chainId: 1, prettyName: "Chain A", chainType: "evm" },
+      toChain: { chainId: 2, prettyName: "Chain B", chainType: "evm" },
+    });
+    const url = provider.makeExplorerUrl(snapshot);
+    expect(url).toBe("https://axelarscan.io/gmp/testTxHash");
+  });
+
   it("should generate correct explorer URL for testnet", () => {
     const testnetProvider = new SquidTransferStatusProvider(
-      "testnet" as BridgeEnvironment
+      "testnet" as BridgeEnvironment,
+      MockChains
     );
-    const url = testnetProvider.makeExplorerUrl(
-      JSON.stringify({ sendTxHash: "testTxHash" })
-    );
+    const snapshot = createTxSnapshot({
+      sendTxHash: "testTxHash",
+      fromChain: {
+        chainId: 1,
+        prettyName: "Chain A",
+        chainType: "evm",
+      },
+      toChain: { chainId: 2, prettyName: "Chain B", chainType: "evm" },
+    });
+    const url = testnetProvider.makeExplorerUrl(snapshot);
     expect(url).toBe("https://testnet.axelarscan.io/gmp/testTxHash");
+  });
+
+  it("should generate correct explorer URL for a cosmos chain", () => {
+    const cosmosProvider = new SquidTransferStatusProvider(
+      "mainnet" as BridgeEnvironment,
+      MockChains
+    );
+    const snapshot = createTxSnapshot({
+      sendTxHash: "cosmosTxHash",
+      fromChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+    });
+    const url = cosmosProvider.makeExplorerUrl(snapshot);
+    expect(url).toBe("https://www.mintscan.io/cosmos/txs/cosmosTxHash");
   });
 });

@@ -4,8 +4,14 @@ import {
   concentratedLiquidityRouter,
   createTRPCRouter,
   oneClickTradingRouter,
+  orderbookRouter,
+  paramsRouter,
+  poolsRouter,
+  portfolioRouter,
   swapRouter,
 } from "@osmosis-labs/trpc";
+
+import { localBridgeTransferRouter } from "~/server/api/routers/local-bridge-transfer";
 
 /**
  * This section includes tRPC functions that execute on the client-side.
@@ -16,4 +22,9 @@ export const localRouter = createTRPCRouter({
   concentratedLiquidity: concentratedLiquidityRouter,
   oneClickTrading: oneClickTradingRouter,
   cms: cmsRouter,
+  bridgeTransfer: localBridgeTransferRouter,
+  portfolio: portfolioRouter,
+  params: paramsRouter,
+  orderbooks: orderbookRouter,
+  pools: poolsRouter,
 });

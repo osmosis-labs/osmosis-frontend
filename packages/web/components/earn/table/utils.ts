@@ -1,5 +1,5 @@
-import { RatePretty } from "@keplr-wallet/unit";
 import { EarnStrategy, StrategyCMSData } from "@osmosis-labs/server";
+import { RatePretty } from "@osmosis-labs/unit";
 import { FilterFn, SortingFn } from "@tanstack/react-table";
 import dayjs from "dayjs";
 
@@ -132,7 +132,7 @@ export const sortDurationValues: SortingFn<EarnStrategy> = (
   return rowAConvertedValue < rowBConvertedValue ? -1 : 1;
 };
 
-export const _getKey = (k: keyof Filters) => {
+const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
       return "type";

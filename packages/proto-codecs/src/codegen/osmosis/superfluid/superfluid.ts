@@ -1,8 +1,7 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../decimals";
 import {
   SyntheticLock,
   SyntheticLockAmino,
@@ -467,7 +466,7 @@ export const SuperfluidIntermediaryAccount = {
     obj.denom = message.denom === "" ? undefined : message.denom;
     obj.val_addr = message.valAddr === "" ? undefined : message.valAddr;
     obj.gauge_id =
-      message.gaugeId !== BigInt(0) ? message.gaugeId.toString() : undefined;
+      message.gaugeId !== BigInt(0) ? (message.gaugeId?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -589,7 +588,7 @@ export const OsmoEquivalentMultiplierRecord = {
     const obj: any = {};
     obj.epoch_number =
       message.epochNumber !== BigInt(0)
-        ? message.epochNumber.toString()
+        ? (message.epochNumber?.toString)()
         : undefined;
     obj.denom = message.denom === "" ? undefined : message.denom;
     obj.multiplier = message.multiplier === "" ? undefined : message.multiplier;
@@ -856,7 +855,7 @@ export const LockIdIntermediaryAccountConnection = {
   ): LockIdIntermediaryAccountConnectionAmino {
     const obj: any = {};
     obj.lock_id =
-      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
+      message.lockId !== BigInt(0) ? (message.lockId?.toString)() : undefined;
     obj.intermediary_account =
       message.intermediaryAccount === ""
         ? undefined
@@ -1131,10 +1130,10 @@ export const ConcentratedPoolUserPositionRecord = {
       message.validatorAddress === "" ? undefined : message.validatorAddress;
     obj.position_id =
       message.positionId !== BigInt(0)
-        ? message.positionId.toString()
+        ? (message.positionId?.toString)()
         : undefined;
     obj.lock_id =
-      message.lockId !== BigInt(0) ? message.lockId.toString() : undefined;
+      message.lockId !== BigInt(0) ? (message.lockId?.toString)() : undefined;
     obj.synthetic_lock = message.syntheticLock
       ? SyntheticLock.toAmino(message.syntheticLock)
       : undefined;

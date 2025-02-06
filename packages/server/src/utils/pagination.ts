@@ -32,23 +32,24 @@ export function maybeCursorPaginatedItems<TItem>(
   limit: number | null | undefined
 ): {
   items: TItem[];
-  nextCursor: number | null;
+  nextCursor: number | undefined;
 } {
-  if (!cursor && !limit) return { items, nextCursor: null };
+  if (!cursor && !limit) return { items, nextCursor: undefined };
 
   cursor = cursor || 0;
   limit = limit || 50;
   const startIndex = cursor;
 
   // no more items if given an invalid cursor
-  if (startIndex > items.length - 1) return { items: [], nextCursor: null };
+  if (startIndex > items.length - 1)
+    return { items: [], nextCursor: undefined };
 
   // get the page
   const page = items.slice(startIndex, startIndex + limit);
 
   return {
     items: page,
-    nextCursor: cursor + limit > items.length - 1 ? null : cursor + limit,
+    nextCursor: cursor + limit > items.length - 1 ? undefined : cursor + limit,
   };
 }
 
@@ -73,11 +74,11 @@ export async function maybeCachePaginatedItems<TItem>({
   ttl = 30 * 1000, // 30 seconds
 }: CachedPaginationParams<TItem>): Promise<{
   items: TItem[];
-  nextCursor: number | null;
+  nextCursor: number | undefined;
 }> {
   // if pagination is not used, return items
   if (!cursor && !limit)
-    return { items: await getFreshItems(), nextCursor: null };
+    return { items: await getFreshItems(), nextCursor: undefined };
 
   // If cursor is 0, delete the cache entry for the given key
   if (cursor === 0) {

@@ -1,8 +1,12 @@
+import { EncodeObject } from "@cosmjs/proto-signing";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { RatePretty } from "@osmosis-labs/unit";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 import { Address, Hex } from "viem";
 import { z } from "zod";
+
+import { Bridge } from "./bridge-providers";
 
 export type BridgeEnvironment = "mainnet" | "testnet";
 
@@ -12,10 +16,13 @@ export interface BridgeProviderContext {
   assetLists: AssetList[];
   chainList: Chain[];
 
-  /** Provides current timeout height for a chain of the ID
-   *  parsed from the bech32 config of the given destinationAddress. */
-  getTimeoutHeight(params: { destinationAddress: string }): Promise<{
-    revisionNumber: string | undefined;
+  /** Provides current timeout height for a chain of given chainId.
+   *  If a destination address is provided, the bech32Prefix will be used to get the chain. */
+  getTimeoutHeight(params: {
+    chainId?: string;
+    destinationAddress?: string;
+  }): Promise<{
+    revisionNumber?: string;
     revisionHeight: string;
   }>;
 }
@@ -55,8 +62,8 @@ export interface BridgeProvider {
    * @returns A promise that resolves to an array of assets combined with each assets' chain info.
    */
   getSupportedAssets(
-    params: BridgeSupportedAssetsParams
-  ): Promise<(BridgeChain & BridgeAsset)[]>;
+    params: GetBridgeSupportedAssetsParams
+  ): Promise<(BridgeChain & BridgeSupportedAsset)[]>;
 
   /**
    * If the provider supports deposit address transfers:
@@ -88,9 +95,9 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a BridgeExternalUrl object containing the URL and the provider name,
    *          or undefined if the URL could not be generated.
    */
-  getExternalUrl: (
+  getExternalUrl(
     params: GetBridgeExternalUrlParams
-  ) => Promise<BridgeExternalUrl | undefined>;
+  ): Promise<BridgeExternalUrl | undefined>;
 }
 
 const cosmosChainSchema = z.object({
@@ -139,7 +146,59 @@ const evmChainSchema = z.object({
   chainType: z.literal("evm"),
 });
 
-const bridgeChainSchema = z.union([cosmosChainSchema, evmChainSchema]);
+const solanaChainSchema = z.object({
+  /**
+   * `solana`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("solana"),
+});
+
+const bitcoinChainSchema = z.object({
+  /**
+   * `bitcoin`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("bitcoin"),
+});
+
+const tronChainSchema = z.object({
+  /**
+   * 728126428
+   */
+  chainId: z.number(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("tron"),
+});
+
+const penumbraChainSchema = z.object({
+  chainId: z.string(),
+  chainName: z.string(),
+  chainType: z.literal("penumbra"),
+});
+
+export const bridgeChainSchema = z.discriminatedUnion("chainType", [
+  cosmosChainSchema,
+  evmChainSchema,
+  solanaChainSchema,
+  bitcoinChainSchema,
+  tronChainSchema,
+  penumbraChainSchema,
+]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
@@ -154,13 +213,13 @@ export interface BridgeStatus {
   maintenanceMessage?: string;
 }
 
-const bridgeAssetSchema = z.object({
+export const bridgeAssetSchema = z.object({
   /**
-   * The denomination of the asset.
+   * The displayable denomination of the asset.
    */
   denom: z.string(),
   /**
-   * The address of the asset, represented as an IBC denom or EVM contract address.
+   * The address of the asset, represented as an IBC denom, origin denom, or EVM contract address.
    */
   address: z.string(),
   /**
@@ -168,15 +227,24 @@ const bridgeAssetSchema = z.object({
    */
   decimals: z.number(),
 
-  /**
-   * Global identifier for denom on origin chain.
-   */
-  sourceDenom: z.string(),
+  /** CoinGecko ID for getting prices. */
+  coinGeckoId: z.string().optional(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
 
-const bridgeSupportedAssetsSchema = z.object({
+/**
+ * Specifies the types of transfers supported by the asset.
+ * This helps the frontend determine which assets can be quoted,
+ * used for deposit addresses, or have external URLs.
+ */
+export const bridgeSupportedAssetSchema = bridgeAssetSchema.extend({
+  transferTypes: z.array(z.enum(["quote", "deposit-address", "external-url"])),
+});
+
+export type BridgeSupportedAsset = z.infer<typeof bridgeSupportedAssetSchema>;
+
+export const getBridgeSupportedAssetsParams = z.object({
   /**
    * The originating chain information.
    */
@@ -185,37 +253,26 @@ const bridgeSupportedAssetsSchema = z.object({
    * The asset on the originating chain.
    */
   asset: bridgeAssetSchema,
+  /**
+   * The direction of the transfer.
+   */
+  direction: z.enum(["deposit", "withdraw"]),
 });
 
-export type BridgeSupportedAssetsParams = z.infer<
-  typeof bridgeSupportedAssetsSchema
+export type GetBridgeSupportedAssetsParams = z.infer<
+  typeof getBridgeSupportedAssetsParams
 >;
 
 export interface BridgeDepositAddress {
   depositAddress: string;
+  expirationTimeMs: number;
+  minimumDeposit: BridgeCoin;
+  networkFee: BridgeCoin;
+  providerFee: RatePretty;
+  estimatedTime: string;
 }
 
-export interface GetDepositAddressParams {
-  /**
-   * The originating chain information.
-   */
-  fromChain: BridgeChain;
-  /**
-   * The destination chain information.
-   */
-  toChain: BridgeChain;
-  /**
-   * The asset on the originating chain.
-   */
-  fromAsset: BridgeAsset;
-  /**
-   * The address on the destination chain where the assets are to be received.
-   */
-  toAddress: string;
-  autoUnwrapIntoNative?: boolean;
-}
-
-export const getBridgeExternalUrlSchema = z.object({
+export const getDepositAddressParamsSchema = z.object({
   /**
    * The originating chain information.
    */
@@ -236,6 +293,33 @@ export const getBridgeExternalUrlSchema = z.object({
    * The address on the destination chain where the assets are to be received.
    */
   toAddress: z.string(),
+});
+
+export type GetDepositAddressParams = z.infer<
+  typeof getDepositAddressParamsSchema
+>;
+
+export const getBridgeExternalUrlSchema = z.object({
+  /**
+   * The originating chain information.
+   */
+  fromChain: bridgeChainSchema.optional(),
+  /**
+   * The destination chain information.
+   */
+  toChain: bridgeChainSchema.optional(),
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: bridgeAssetSchema.optional(),
+  /**
+   * The asset on the destination chain.
+   */
+  toAsset: bridgeAssetSchema.optional(),
+  /**
+   * The address on the destination chain where the assets are to be received.
+   */
+  toAddress: z.string().optional(),
 });
 
 export type GetBridgeExternalUrlParams = z.infer<
@@ -260,7 +344,7 @@ export const getBridgeQuoteSchema = z.object({
    */
   toAsset: bridgeAssetSchema,
   /**
-   * The amount to be transferred from the originating chain, represented as a string.
+   * The amount to be transferred from the originating chain, represented as a string integer.
    */
   fromAmount: z.string(),
   /**
@@ -298,18 +382,17 @@ export interface EvmBridgeTransactionRequest {
 
 export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
-  msgTypeUrl: string;
-  msg: Record<string, any>;
-}
-
-interface QRCodeBridgeTransactionRequest {
-  type: "qrcode";
+  msgs: EncodeObject[];
+  gasFee?: {
+    gas: string;
+    denom: string;
+    amount: string;
+  };
 }
 
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest
-  | QRCodeBridgeTransactionRequest;
+  | CosmosBridgeTransactionRequest;
 
 /**
  * Bridge asset with raw base amount (without decimals).
@@ -317,14 +400,15 @@ export type BridgeTransactionRequest =
 export type BridgeCoin = {
   amount: string;
   denom: string;
-  /** Global identifier for denom on origin chain. */
-  sourceDenom: string;
+  /** The address of the asset, represented as an IBC denom, origin denom, or EVM contract address. */
+  address: string;
   decimals: number;
+  coinGeckoId?: string;
 };
 
 export interface BridgeQuote {
-  input: Required<BridgeCoin>;
-  expectedOutput: Required<BridgeCoin> & {
+  input: BridgeCoin;
+  expectedOutput: BridgeCoin & {
     /** Percentage represented as string. E.g. 10.0, 95.0 */
     priceImpact: string;
   };
@@ -333,7 +417,7 @@ export interface BridgeQuote {
   /**
    * The fee for the transfer.
    */
-  transferFee: BridgeCoin;
+  transferFee: BridgeCoin & { chainId: number | string };
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */
@@ -370,27 +454,78 @@ export interface BridgeTransferStatus {
 export interface TransferStatusReceiver {
   /** Key with prefix (`keyPrefix`) included. */
   receiveNewTxStatus(
-    prefixedKey: string,
+    sendTxHash: string,
     status: TransferStatus,
     displayReason?: string
   ): void;
 }
 
 /** A simplified transfer status. */
-export type TransferStatus =
-  | "success"
-  | "pending"
-  | "failed"
-  | "refunded"
-  | "connection-error";
+export const transferStatusSchema = z.enum([
+  "success",
+  "pending",
+  "failed",
+  "refunded",
+  "connection-error",
+]);
 
 /** A simplified reason for transfer failure. */
-export type TransferFailureReason = "insufficientFee";
+export const transferFailureReasonSchema = z.enum(["insufficientFee"]);
+export type TransferFailureReason = z.infer<typeof transferFailureReasonSchema>;
+
+export type TransferStatus = z.infer<typeof transferStatusSchema>;
+
+const txSnapshotSchema = z.object({
+  direction: z.enum(["deposit", "withdraw"]),
+  createdAtUnix: z.number(),
+  type: z.literal("bridge-transfer"),
+  reason: transferFailureReasonSchema.optional(),
+  provider: z.string().transform((val) => val as Bridge),
+  fromAddress: z.string(),
+  toAddress: z.string(),
+  osmoBech32Address: z.string(),
+  networkFee: bridgeAssetSchema
+    .extend({
+      amount: z.string(),
+      imageUrl: z.string().optional(),
+    })
+    .optional(),
+  providerFee: bridgeAssetSchema
+    .extend({
+      amount: z.string(),
+      imageUrl: z.string().optional(),
+    })
+    .optional(),
+  fromAsset: bridgeAssetSchema.extend({
+    amount: z.string(),
+    imageUrl: z.string().optional(),
+  }),
+  toAsset: bridgeAssetSchema.extend({
+    amount: z.string().optional(),
+    imageUrl: z.string().optional(),
+  }),
+  status: transferStatusSchema,
+  sendTxHash: z.string(),
+  fromChain: bridgeChainSchema.and(
+    z.object({
+      prettyName: z.string(),
+    })
+  ),
+  toChain: bridgeChainSchema.and(
+    z.object({
+      prettyName: z.string(),
+    })
+  ),
+  estimatedArrivalUnix: z.number(),
+  nomicCheckpointIndex: z.number().optional(),
+});
+
+export type TxSnapshot = z.infer<typeof txSnapshotSchema>;
 
 /** Plugin to fetch status of many transactions from a remote source. */
 export interface TransferStatusProvider {
   /** Example: axelar */
-  readonly keyPrefix: string;
+  readonly providerId: string;
   readonly sourceDisplayName?: string;
   /** Destination for updates to tracked transactions.  */
   statusReceiverDelegate?: TransferStatusReceiver;
@@ -399,8 +534,8 @@ export interface TransferStatusProvider {
    * Source instance should begin tracking a transaction identified by `key`.
    * @param key Example: Tx hash without prefix i.e. `0x...`
    */
-  trackTxStatus(key: string): void;
+  trackTxStatus(snapshot: TxSnapshot): void;
 
   /** Make url to this tx explorer. */
-  makeExplorerUrl(key: string): string;
+  makeExplorerUrl(snapshot: TxSnapshot): string;
 }

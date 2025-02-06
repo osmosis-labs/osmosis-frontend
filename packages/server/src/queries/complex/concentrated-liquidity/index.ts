@@ -1,3 +1,5 @@
+import { BigDec, maxTick, minTick, tickToPrice } from "@osmosis-labs/math";
+import { AssetList, Chain } from "@osmosis-labs/types";
 import {
   CoinPretty,
   Dec,
@@ -5,9 +7,7 @@ import {
   Int,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
-import { AssetList, Chain } from "@osmosis-labs/types";
+} from "@osmosis-labs/unit";
 import { aggregateCoinsByDenom, timeout } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -30,6 +30,7 @@ import {
   LiquidityPosition,
   queryAccountPositions,
   queryAccountUnbondingPositions,
+  queryLiquidityPerTickRange,
   queryPositionById,
 } from "../../../queries/osmosis/concentratedliquidity";
 import {
@@ -153,6 +154,22 @@ export function getPriceFromSqrtPrice({
   return price;
 }
 
+export function getDisplayPriceFromPrice({
+  price,
+  baseCoin,
+  quoteCoin,
+}: {
+  baseCoin: CoinPretty;
+  quoteCoin: CoinPretty;
+  price: Dec;
+}) {
+  const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+    baseCoin.currency.coinDecimals - quoteCoin.currency.coinDecimals
+  );
+  const displayPrice = price.mul(multiplicationQuoteOverBase);
+  return displayPrice;
+}
+
 export function getTickPrice({
   tick,
   baseCoin,
@@ -162,11 +179,11 @@ export function getTickPrice({
   baseCoin: CoinPretty;
   quoteCoin: CoinPretty;
 }) {
-  const sqrtPrice = tickToSqrtPrice(tick);
-  return getPriceFromSqrtPrice({
+  const price = tickToPrice(tick);
+  return getDisplayPriceFromPrice({
     baseCoin,
     quoteCoin,
-    sqrtPrice,
+    price,
   });
 }
 
@@ -273,7 +290,7 @@ export async function mapGetUserPositionDetails({
 
   const stakeCurrency = getAsset({
     ...params,
-    anyDenom: params.chainList[0].staking.staking_tokens[0].denom,
+    anyDenom: params.chainList[0].staking!.staking_tokens[0].denom,
   });
 
   const lockableDurations = getLockableDurations();
@@ -334,7 +351,7 @@ export async function mapGetUserPositionDetails({
         "getConcentratedRangePoolApr"
       )().catch(() => new RatePretty(0));
 
-      const pool = pools.find((pool) => pool.id === position.pool_id);
+      const pool = pools.items.find((pool) => pool.id === position.pool_id);
       if (!pool) {
         throw new Error(`Pool (${position.pool_id}) not found`);
       }
@@ -394,9 +411,12 @@ export async function mapGetUserPositionDetails({
         : undefined;
 
       const currentPrice = getPriceFromSqrtPrice({
-        sqrtPrice: new Dec(
+        // Given that we're only calculating for display purposes,
+        // and not for quoting or provision of liquidity,
+        // the loss of precision is acceptable.
+        sqrtPrice: new BigDec(
           (pool.raw as ConcentratedPoolRawResponse).current_sqrt_price
-        ),
+        ).toDec(),
         baseCoin,
         quoteCoin,
       });
@@ -416,7 +436,7 @@ export async function mapGetUserPositionDetails({
 
       const superfluidApr: RatePretty | undefined = (
         await getPoolIncentives(pool.id)
-      )?.aprBreakdown?.superfluid;
+      )?.aprBreakdown?.superfluid?.upper;
 
       /** User's current superfluid delegation or undelegation */
       let superfluidData:
@@ -709,4 +729,25 @@ export async function getPositionHistoricalPerformance({
     totalEarnedValue,
     roi,
   };
+}
+
+export type ActiveLiquidityPerTickRange = {
+  /** Price-correlated tick index. */
+  lowerTick: Int;
+  upperTick: Int;
+  /** Net liquidity, for calculating active liquidity. */
+  liquidityAmount: Dec;
+};
+
+export async function getLiquidityPerTickRange(params: {
+  poolId: string;
+  chainList: Chain[];
+}): Promise<ActiveLiquidityPerTickRange[]> {
+  return queryLiquidityPerTickRange(params).then(({ liquidity }) =>
+    liquidity.map(({ liquidity_amount, lower_tick, upper_tick }) => ({
+      lowerTick: new Int(lower_tick),
+      upperTick: new Int(upper_tick),
+      liquidityAmount: new Dec(liquidity_amount),
+    }))
+  );
 }

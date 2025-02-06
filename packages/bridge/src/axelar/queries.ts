@@ -97,7 +97,7 @@ interface AxelarChain {
   id: string;
   chain_id: number | string;
   chain_name: string;
-  maintainer_id: string;
+  maintainer_id?: string;
   endpoints: {
     rpc: string[];
     lcd: string[];
@@ -106,6 +106,7 @@ interface AxelarChain {
     symbol: string;
     name: string;
     decimals: number;
+    denom?: string;
   };
   name: string;
   short_name: string;

@@ -1,0 +1,252 @@
+import { AssetList, MinimalAsset } from "@osmosis-labs/types";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { sort } from "@osmosis-labs/utils";
+
+import { captureIfError } from "../../../utils";
+import { Categories, queryPortfolioAssets } from "../../sidecar";
+import { getAsset } from "../assets";
+import { DEFAULT_VS_CURRENCY } from "../assets/config";
+
+export interface Allocation {
+  key: string;
+  percentage: RatePretty;
+  fiatValue: PricePretty;
+  asset?: CoinPretty;
+}
+
+export interface AssetVariant {
+  name: string;
+  amount: CoinPretty;
+  fiatValue: PricePretty;
+  canonicalAsset: MinimalAsset;
+}
+
+export function getAllocations(categories: Categories): Allocation[] {
+  const userBalancesCap = new Dec(categories["user-balances"].capitalization);
+  const stakedCap = new Dec(categories["staked"].capitalization);
+  const unstakingCap = new Dec(categories["unstaking"].capitalization);
+  const unclaimedRewardsCap = new Dec(
+    categories["unclaimed-rewards"].capitalization
+  );
+  const pooledCap = new Dec(categories["pooled"].capitalization);
+
+  const totalCap = userBalancesCap
+    .add(stakedCap)
+    .add(unstakingCap)
+    .add(unclaimedRewardsCap)
+    .add(pooledCap);
+
+  const allocations: { key: string; fiatValue: Dec }[] = [
+    {
+      key: "available",
+      fiatValue: userBalancesCap,
+    },
+    {
+      key: "staked",
+      fiatValue: stakedCap,
+    },
+    {
+      key: "unstaking",
+      fiatValue: unstakingCap,
+    },
+    {
+      key: "unclaimedRewards",
+      fiatValue: unclaimedRewardsCap,
+    },
+    {
+      key: "pooled",
+      fiatValue: pooledCap,
+    },
+  ];
+
+  const sortedAllocation = sort(allocations, "fiatValue", "desc");
+
+  const formattedAllocations: Allocation[] = sortedAllocation.map(
+    (allocation) => ({
+      key: allocation.key,
+      percentage: totalCap.isZero()
+        ? new RatePretty(0)
+        : new RatePretty(allocation.fiatValue.quo(totalCap)),
+      fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, allocation.fiatValue),
+    })
+  );
+
+  return formattedAllocations;
+}
+
+export function calculatePercentAndFiatValues(
+  categories: Categories,
+  assetLists: AssetList[],
+  category: "total-assets" | "user-balances",
+  allocationLimit = 5
+) {
+  const totalAssets = categories[category];
+  const totalCap = new Dec(totalAssets.capitalization);
+
+  const account_coins_result = (totalAssets?.account_coins_result || []).map(
+    (asset) => ({
+      coin: asset.coin,
+      fiatValue: new Dec(asset.cap_value),
+    })
+  );
+
+  const sortedAccountCoinsResults = sort(
+    account_coins_result || [],
+    "fiatValue",
+    "desc"
+  );
+
+  const topCoinsResults = sortedAccountCoinsResults.slice(0, allocationLimit);
+
+  const assets: Allocation[] = topCoinsResults
+    .map((asset) => {
+      const assetFromAssetLists = captureIfError(() =>
+        getAsset({
+          assetLists,
+          anyDenom: asset.coin.denom,
+        })
+      );
+
+      if (!assetFromAssetLists) {
+        return null;
+      }
+
+      return {
+        key: assetFromAssetLists.coinDenom,
+        percentage: totalCap.isZero()
+          ? new RatePretty(0)
+          : new RatePretty(asset.fiatValue.quo(totalCap)),
+        fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, asset.fiatValue),
+        asset: new CoinPretty(assetFromAssetLists, asset.coin.amount),
+      };
+    })
+    .filter((asset): asset is NonNullable<typeof asset> => asset !== null);
+
+  const otherAssets = sortedAccountCoinsResults.slice(allocationLimit);
+
+  const otherAmount = otherAssets.reduce(
+    (sum: Dec, asset) => sum.add(asset.fiatValue),
+    new Dec(0)
+  );
+
+  const otherPercentage = totalCap.isZero()
+    ? new RatePretty(0)
+    : new RatePretty(otherAmount).quo(totalCap);
+
+  const other: Allocation = {
+    key: "Other",
+    percentage: otherPercentage,
+    fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, otherAmount),
+  };
+
+  return [...assets, other];
+}
+
+export type PortfolioAssets = {
+  all: Allocation[];
+  assets: Allocation[];
+  available: Allocation[];
+  totalCap: PricePretty;
+  assetVariants: AssetVariant[];
+};
+
+/**
+ * Gets portfolio assets for the given address
+ * and includes a breakdown of the assets by category.
+ */
+export async function getPortfolioAssets({
+  address,
+  assetLists,
+  allocationLimit = 5,
+}: {
+  address: string;
+  assetLists: AssetList[];
+  allocationLimit?: number;
+}): Promise<PortfolioAssets> {
+  const data = await queryPortfolioAssets({
+    address,
+  });
+
+  const categories = data.categories;
+
+  const allocations = getAllocations(categories);
+  const assets = calculatePercentAndFiatValues(
+    categories,
+    assetLists,
+    "total-assets",
+    allocationLimit
+  );
+
+  const available = calculatePercentAndFiatValues(
+    categories,
+    assetLists,
+    "user-balances",
+    allocationLimit
+  );
+
+  const totalCap = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(categories["total-assets"].capitalization)
+  );
+
+  // Update userBalanceDenoms to be a list of objects with denom and amount
+  const userBalanceDenoms =
+    categories["user-balances"]?.account_coins_result?.map((result) => ({
+      denom: result.coin.denom,
+      amount: result.coin.amount, // Assuming amount is stored in result.coin.amount
+      fiatValue: result.cap_value,
+    })) ?? [];
+
+  // check for asset variants, alloys and canonical assets such as USDC
+  const assetVariants = checkAssetVariants(userBalanceDenoms, assetLists);
+
+  return {
+    all: allocations,
+    assets,
+    available,
+    totalCap,
+    assetVariants,
+  };
+}
+
+export function checkAssetVariants(
+  userBalanceDenoms: { denom: string; amount: string; fiatValue: string }[],
+  assetLists: AssetList[]
+): AssetVariant[] {
+  const assetListAssets = assetLists.flatMap((list) => list.assets);
+
+  return userBalanceDenoms
+    .map(({ denom, amount, fiatValue }) => {
+      const asset = assetListAssets.find(
+        (asset) => asset.coinMinimalDenom === denom
+      );
+
+      // check if it's a variant
+      if (
+        asset &&
+        asset.variantGroupKey &&
+        asset.coinMinimalDenom !== asset.variantGroupKey
+      ) {
+        const canonicalAsset = getAsset({
+          assetLists,
+          anyDenom: asset.variantGroupKey,
+        });
+
+        const userAsset = getAsset({
+          assetLists,
+          anyDenom: denom,
+        });
+
+        return {
+          name: userAsset.coinName,
+          amount: new CoinPretty(userAsset, amount),
+          fiatValue: new PricePretty(DEFAULT_VS_CURRENCY, new Dec(fiatValue)),
+          canonicalAsset: canonicalAsset,
+        };
+      }
+
+      return null;
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
+}

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Mutable } from "utility-types";
 import { Connector } from "wagmi";
 
 import { AvailableCosmosWallets } from "~/config/generated/cosmos-kit-wallet-list";
@@ -6,7 +7,38 @@ import { CosmosWalletRegistry } from "~/config/wallet-registry";
 import { useConnectEvmWallet } from "~/hooks/evm-wallet";
 
 export const WagmiWalletConnectType = "walletConnect";
-export const WagmiMetamaskSdkType = "metaMask";
+const WagmiMetamaskSdkType = "metaMask";
+
+export function getDisplayableEvmConnector<T extends Connector>(wallet: T): T {
+  const newWallet = { ...wallet } as Mutable<T>;
+
+  if (wallet.name === "MetaMask") {
+    newWallet.icon = "/logos/metamask.svg";
+  }
+
+  if (wallet.type === WagmiMetamaskSdkType) {
+    newWallet.name = newWallet.name + " Mobile";
+  }
+
+  if (wallet.name === "WalletConnect") {
+    newWallet.icon = "/logos/walletconnect.svg";
+  }
+
+  if (wallet.name === "Coinbase Wallet") {
+    newWallet.icon = "/logos/coinbase.svg";
+
+    if (wallet.type === "injected") {
+      newWallet.name = "Coinbase Extension";
+    }
+  }
+
+  if (wallet.name === "Keplr") {
+    newWallet.name = "Keplr EVM";
+    newWallet.icon = "/wallets/keplr.svg";
+  }
+
+  return newWallet;
+}
 
 export const useSelectableWallets = ({
   isMobile,
@@ -24,24 +56,7 @@ export const useSelectableWallets = ({
       connectors
         .reduce((acc, wallet) => {
           const walletToAdd = { ...wallet, walletType: "evm" as const };
-
-          if (wallet.name === "MetaMask") {
-            walletToAdd.icon = "/logos/metamask.svg";
-          }
-
-          if (wallet.type === WagmiMetamaskSdkType) {
-            walletToAdd.name = walletToAdd.name + " (Mobile)";
-          }
-
-          if (wallet.name === "WalletConnect") {
-            walletToAdd.icon = "/logos/walletconnect.svg";
-          }
-
-          if (wallet.name === "Coinbase Wallet") {
-            walletToAdd.icon = "/logos/coinbase.svg";
-          }
-
-          return [...acc, walletToAdd];
+          return [...acc, getDisplayableEvmConnector(walletToAdd)];
         }, [] as (Connector & { walletType: "evm" })[])
         // type === "injected" should come first
         .sort((a, b) => {
@@ -75,6 +90,23 @@ export const useSelectableWallets = ({
              * the frontend from Leap's app in app browser. So, there is no need
              * to use wallet connect, as it resembles the extension's usage.
              */
+            if (
+              _window?.cdc_wallet?.cosmos &&
+              _window?.cdc_wallet?.cosmos.mode === mobileWebModeName
+            ) {
+              return array
+                .filter(
+                  (wallet) =>
+                    wallet.name === AvailableCosmosWallets.CryptocomWallet
+                )
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If on mobile and `leap` is in `window`, it means that the user enters
+             * the frontend from Leap's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
             if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
               return array
                 .filter((wallet) => wallet.name === AvailableCosmosWallets.Leap)
@@ -90,6 +122,23 @@ export const useSelectableWallets = ({
               return array
                 .filter(
                   (wallet) => wallet.name === AvailableCosmosWallets.Keplr
+                )
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If on mobile and `cosmostation` is in `window`, it means that the user enters
+             * the frontend from Cosmostation's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (
+              _window?.cosmostation &&
+              _window?.cosmostation?.mode === mobileWebModeName
+            ) {
+              return array
+                .filter(
+                  (wallet) =>
+                    wallet.name === AvailableCosmosWallets.Cosmostation
                 )
                 .map((wallet) => ({ ...wallet, mobileDisabled: false }));
             }

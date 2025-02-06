@@ -1,11 +1,11 @@
 import { logEvent } from "@amplitude/analytics-browser";
-import { Popover } from "@headlessui/react";
+import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
   formatICNSName,
   getDeepValue,
-  getShortAddress,
   noop,
+  shorten,
 } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 import classNames from "classnames";
@@ -27,21 +27,18 @@ import { IconButton } from "~/components/buttons/icon-button";
 import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
+import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-trading-toast";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { usePreviousConnectedCosmosAccount } from "~/hooks/use-previous-connected-cosmos-account";
 import { useWalletSelect } from "~/hooks/use-wallet-select";
-import {
-  NotifiContextProvider,
-  NotifiModal,
-  NotifiPopover,
-} from "~/integrations/notifi";
-import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+import { SettingsModal, useGlobalIs1CTIntroModalScreen } from "~/modals";
 import {
   ExternalLinkModal,
   handleExternalLink,
@@ -55,13 +52,19 @@ import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
   {
-    title: string;
+    title?: string;
     backElementClassNames?: string;
     menus: MainLayoutMenu[];
     secondaryMenuItems: MainLayoutMenu[];
   } & CustomClasses
 > = observer(
-  ({ title, className, backElementClassNames, menus, secondaryMenuItems }) => {
+  ({
+    title: titleProp,
+    className,
+    backElementClassNames,
+    menus,
+    secondaryMenuItems,
+  }) => {
     const {
       navBarStore,
       chainStore: {
@@ -78,18 +81,6 @@ export const NavBar: FunctionComponent<
       isOpen: isSettingsOpen,
       onClose: onCloseSettings,
       onOpen: onOpenSettings,
-    } = useDisclosure();
-
-    const {
-      isOpen: isFrontierMigrationOpen,
-      onClose: onCloseFrontierMigration,
-      onOpen: onOpenFrontierMigration,
-    } = useDisclosure();
-
-    const {
-      isOpen: isNotifiOpen,
-      onClose: onCloseNotifi,
-      onOpen: onOpenNotifi,
     } = useDisclosure();
 
     const {
@@ -128,17 +119,14 @@ export const NavBar: FunctionComponent<
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
       if (router.query[UnverifiedAssetsQueryKey] === "true") {
-        onOpenFrontierMigration();
         userSettings
           .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
           ?.setState({ showUnverifiedAssets: true });
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [onOpenFrontierMigration, onOpenSettings, router.query, userSettings]);
+    }, [router.query, userSettings]);
 
     const wallet = accountStore.getWallet(chainId);
-    const walletSupportsNotifications =
-      wallet?.walletInfo?.features?.includes("notifications");
 
     const { data: icnsQuery, isLoading: isLoadingICNSQuery } = useICNSName({
       address: wallet?.address ?? "",
@@ -173,11 +161,13 @@ export const NavBar: FunctionComponent<
       logEvent(EventName.Topnav.tradeClicked);
     };
 
+    const title = navBarStore.title || titleProp;
+
     return (
       <>
         <div
           className={classNames(
-            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+            "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-1000 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
             className
           )}
         >
@@ -197,23 +187,9 @@ export const NavBar: FunctionComponent<
                   icon: <Icon id="setting" className="h-6 w-6" />,
                 });
 
-                if (featureFlags.notifications && walletSupportsNotifications) {
-                  mobileMenus = mobileMenus.concat({
-                    label: t("menu.notifications"),
-                    link: (e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      if (!wallet) return;
-                      onOpenNotifi();
-                      closeMobileMainMenu();
-                    },
-                    icon: <Icon id="bell" className="h-6 w-6" />,
-                  });
-                }
-
                 return (
                   <>
-                    <Popover.Button as={Fragment}>
+                    <PopoverButton as={Fragment}>
                       <IconButton
                         mode="unstyled"
                         size="unstyled"
@@ -228,8 +204,8 @@ export const NavBar: FunctionComponent<
                           />
                         }
                       />
-                    </Popover.Button>
-                    <Popover.Panel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
+                    </PopoverButton>
+                    <PopoverPanel className="absolute top-full mt-4 flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-3 px-2">
                       <MainMenu
                         menus={mobileMenus}
                         secondaryMenuItems={secondaryMenuItems}
@@ -239,25 +215,23 @@ export const NavBar: FunctionComponent<
                           <WalletInfo onOpenProfile={onOpenProfile} />
                         </SkeletonLoader>
                       </ClientOnly>
-                    </Popover.Panel>
+                    </PopoverPanel>
                   </>
                 );
               }}
             </Popover>
           </div>
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-            <h4 className="md:text-h6 md:font-h6">
-              {navBarStore.title || title}
-            </h4>
+            {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
             <div className="flex items-center gap-3 lg:gap-1">
               {navBarStore.callToActionButtons.map(
                 ({ className, ...rest }, index) => (
                   <Button
                     size="md"
-                    className={`w-48 lg:w-fit ${className ?? ""}`}
+                    {...rest}
+                    className={classNames("w-48 1.5lg:w-fit", className)}
                     variant={index > 0 ? "outline" : "default"}
                     key={index}
-                    {...rest}
                   >
                     <span className="subtitle1 mx-auto">{rest.label}</span>
                   </Button>
@@ -288,16 +262,6 @@ export const NavBar: FunctionComponent<
               </div>
             )}
 
-            {featureFlags.notifications && walletSupportsNotifications && (
-              <NotifiContextProvider>
-                <NotifiPopover className="z-40 px-3 outline-none" />
-                <NotifiModal
-                  isOpen={isNotifiOpen}
-                  onRequestClose={onCloseNotifi}
-                  onOpenNotifi={onOpenNotifi}
-                />
-              </NotifiContextProvider>
-            )}
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}
@@ -328,7 +292,7 @@ export const NavBar: FunctionComponent<
         {/* Back-layer element to occupy space for the caller */}
         <div
           className={classNames(
-            "bg-osmoverse-900",
+            "bg-osmoverse-1000",
             showBanner ? "h-[124px]" : "h-navbar md:h-navbar-mobile",
             backElementClassNames
           )}
@@ -339,11 +303,6 @@ export const NavBar: FunctionComponent<
             bannerResponse={topAnnouncementBannerData}
           />
         )}
-        <FrontierMigrationModal
-          isOpen={isFrontierMigrationOpen}
-          onRequestClose={onCloseFrontierMigration}
-          onOpenSettings={onOpenSettings}
-        />
         <ProfileModal
           isOpen={isProfileOpen}
           onRequestClose={onCloseProfile}
@@ -357,22 +316,22 @@ export const NavBar: FunctionComponent<
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
 > = observer(({ className, onOpenProfile, icnsName }) => {
-  const {
-    chainStore: {
-      osmosis: { chainId },
-    },
-    accountStore,
-    profileStore,
-  } = useStore();
+  const { accountStore, profileStore } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const flags = useFeatureFlags();
+
+  const [isOneClickIntroModalOpen] = useGlobalIs1CTIntroModalScreen();
+  const [isOneClickProfileTooltipOpen, setIsOneClickProfileTooltipOpen] =
+    useOneClickProfileTooltip();
+  const { setPreviousConnectedCosmosAccount } =
+    usePreviousConnectedCosmosAccount();
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
-  const wallet = accountStore.getWallet(chainId);
+  const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const walletConnected = Boolean(wallet?.isWalletConnected);
 
   const { data: userOsmoAsset, isLoading: isLoadingUserOsmoAsset } =
@@ -387,6 +346,12 @@ const WalletInfo: FunctionComponent<
       }
     );
 
+  useEffect(() => {
+    if (walletConnected && wallet?.address) {
+      setPreviousConnectedCosmosAccount(wallet.address);
+    }
+  }, [setPreviousConnectedCosmosAccount, wallet?.address, walletConnected]);
+
   return (
     <div className={className}>
       {!walletConnected ? (
@@ -395,7 +360,9 @@ const WalletInfo: FunctionComponent<
           onClick={() => {
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect({
-              walletOptions: [{ walletType: "cosmos", chainId: chainId }],
+              walletOptions: [
+                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+              ],
             });
           }}
         >
@@ -403,68 +370,106 @@ const WalletInfo: FunctionComponent<
         </Button>
       ) : (
         <SkeletonLoader isLoaded={!isLoadingUserOsmoAsset}>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenProfile();
-            }}
-            className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
-          >
-            <div className="relative">
-              {isOneClickTradingEnabled && flags.oneClickTrading && (
-                <>
-                  <OneClickTradingRadialProgress />
-                  <div className="absolute -bottom-0.5 -right-1">
-                    <Image
-                      src="/images/1ct-small-icon.svg"
-                      alt="1-Click Trading Small Icon"
-                      width={16}
-                      height={16}
-                    />
-                  </div>
-                </>
-              )}
-
-              <div
-                className={classNames(
-                  " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
-                  isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
-                )}
-              >
-                {profileStore.currentAvatar === "ammelia" ? (
-                  <Image
-                    alt="Wosmongton profile"
-                    src="/images/profile-ammelia.png"
-                    height={32}
-                    width={32}
-                  />
-                ) : (
-                  <Image
-                    alt="Wosmongton profile"
-                    src="/images/profile-woz.png"
-                    height={32}
-                    width={32}
-                  />
-                )}
+          <Tooltip
+            visible={isOneClickProfileTooltipOpen && !isOneClickIntroModalOpen}
+            interactive
+            skipTrigger
+            content={
+              <div className="relative flex max-w-[240px] items-center gap-2">
+                <IconButton
+                  mode="unstyled"
+                  size="unstyled"
+                  aria-label="Close"
+                  className={classNames(
+                    "absolute -right-1 -top-1 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-osmoverse-100",
+                    className
+                  )}
+                  icon={<Icon id="close" width={18} height={18} />}
+                  onClick={() => {
+                    setIsOneClickProfileTooltipOpen(false);
+                  }}
+                />
+                <Image
+                  src="/images/1ct-small-icon.svg"
+                  alt="1-Click Trading icon"
+                  width={24}
+                  height={24}
+                />
+                <div className="flex flex-col gap-1">
+                  <h1 className="caption">
+                    {t("oneClickTrading.profile.tooltipHeader")}
+                  </h1>
+                  <p className="caption text-osmoverse-300">
+                    {t("oneClickTrading.profile.resetSession")}
+                  </p>
+                </div>
               </div>
-            </div>
+            }
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOneClickProfileTooltipOpen(false);
+                onOpenProfile();
+              }}
+              className="group flex place-content-between items-center gap-[13px] rounded-xl border border-osmoverse-700 px-1.5 py-1 hover:border-[1.3px] hover:border-wosmongton-300 hover:bg-osmoverse-800 md:w-full"
+            >
+              <div className="relative">
+                {isOneClickTradingEnabled && flags.oneClickTrading && (
+                  <>
+                    <OneClickTradingRadialProgress />
+                    <div className="absolute -bottom-0.5 -right-1">
+                      <Image
+                        src="/images/1ct-small-icon.svg"
+                        alt="1-Click Trading Small Icon"
+                        width={16}
+                        height={16}
+                      />
+                    </div>
+                  </>
+                )}
 
-            <div className="flex w-full  flex-col truncate text-right leading-tight">
-              <span className="body2 font-bold leading-4" title={icnsName}>
-                {Boolean(icnsName)
-                  ? formatICNSName(icnsName)
-                  : getShortAddress(wallet?.address!)}
-              </span>
-              <span className="caption font-medium tracking-wider text-osmoverse-200">
-                {userOsmoAsset?.amount
-                  ?.trim(true)
-                  .maxDecimals(2)
-                  .shrink(true)
-                  .upperCase(true)
-                  .toString()}
-              </span>
-            </div>
-          </button>
+                <div
+                  className={classNames(
+                    " h-8 w-8 shrink-0 overflow-hidden  bg-osmoverse-700 group-hover:bg-gradient-positive",
+                    isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
+                  )}
+                >
+                  {profileStore.currentAvatar === "ammelia" ? (
+                    <Image
+                      alt="Wosmongton profile"
+                      src="/images/profile-ammelia.svg"
+                      height={32}
+                      width={32}
+                    />
+                  ) : (
+                    <Image
+                      alt="Wosmongton profile"
+                      src="/images/profile-woz.svg"
+                      height={32}
+                      width={32}
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="flex w-full  flex-col truncate text-right leading-tight">
+                <span className="body2 font-bold leading-4" title={icnsName}>
+                  {Boolean(icnsName)
+                    ? formatICNSName(icnsName)
+                    : shorten(wallet?.address!)}
+                </span>
+                <span className="caption font-medium tracking-wider text-osmoverse-200">
+                  {userOsmoAsset?.amount
+                    ?.trim(true)
+                    .maxDecimals(2)
+                    .shrink(true)
+                    .upperCase(true)
+                    .toString()}
+                </span>
+              </div>
+            </button>
+          </Tooltip>
         </SkeletonLoader>
       )}
     </div>
@@ -662,71 +667,5 @@ const AnnouncementBanner: FunctionComponent<{
         />
       )}
     </div>
-  );
-};
-
-const FrontierMigrationModal: FunctionComponent<
-  ModalBaseProps & { onOpenSettings: () => void }
-> = (props) => {
-  const { t } = useTranslation();
-
-  return (
-    <ModalBase
-      {...props}
-      className="!max-w-lg bg-[#332133]"
-      title={t("frontierMigration.introducingUnverifiedAssets")}
-    >
-      <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
-        {t("frontierMigration.simplifiedExperience")}
-      </span>
-
-      <div className="mx-auto my-4 h-[235.55px] w-[200px]">
-        <Image
-          src="/images/osmosis-cowboy-woz.png"
-          alt="Cowboy Woz"
-          width={200}
-          height={235.55}
-        />
-      </div>
-
-      <div className="flex flex-col items-center">
-        <div className="body2 flex flex-col gap-3">
-          <p className="text-white-full">
-            {t("frontierMigration.frontierHasNowMerged")}{" "}
-            <span className="font-bold">app.osmosis.zone</span>.{" "}
-            {t("frontierMigration.thisMeansManaging")}
-          </p>
-          <p className="text-white-full">
-            {t("frontierMigration.commitmentToDecentralization")}
-            <span className="font-bold">
-              {" "}
-              {t("frontierMigration.settingIsNowEnabled")}
-            </span>{" "}
-            {t("frontierMigration.youMayDisable")}
-          </p>
-        </div>
-
-        <div className="mt-6 flex w-full items-center gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            className="border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
-            onClick={() => {
-              props.onOpenSettings();
-              props.onRequestClose?.();
-            }}
-          >
-            {t("frontierMigration.openSettings")}
-          </Button>
-          <Button
-            size="sm"
-            className="border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
-            onClick={props.onRequestClose}
-          >
-            {t("frontierMigration.proceed")}
-          </Button>
-        </div>
-      </div>
-    </ModalBase>
   );
 };

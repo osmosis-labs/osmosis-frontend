@@ -1,9 +1,11 @@
 /** # User Events Constants
  *  Logged to Amplitude at https://analytics.amplitude.com/osmosis-zone/
  */
+import { AllocationOptions } from "~/components/complex/portfolio/types";
 
-// Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
-// For maintainability - all event logs should be in high level component
+/** Max value of USD event to check against to prevent
+ *  outliers from corrupting dashboards. */
+export const OUTLIER_USD_VALUE_THRESHOLD = 1_500_000;
 
 export type AmountDefault = "half" | "max" | "input";
 
@@ -52,7 +54,7 @@ export type EventProperties = {
   completed: boolean;
   quoteTimeMilliseconds: number;
   amountDefault: AmountDefault;
-  amount: string;
+  amount: number;
   amountUSD: string | undefined;
   type: string;
   router: string;
@@ -61,6 +63,32 @@ export type EventProperties = {
   feeValueUsd: number;
   assetCategory: string;
   highlight: string;
+  source: string;
+  spendLimit: number;
+  sessionPeriod: string;
+  network: string;
+  bridgeProviderName: string;
+  hasMultipleVariants: boolean;
+  isRecommendedVariant: boolean;
+  walletName: string;
+  transferDirection: "deposit" | "withdraw";
+  swapSource: "market" | "swap";
+  coinDenom: string;
+  appName: string;
+  isFeatured: boolean;
+  isBanner: boolean;
+  position: number;
+  allocationType: AllocationOptions;
+  section: string;
+  tokenIn: string;
+  tokenOut: string;
+  token: string;
+  option: string;
+  numberOfValidators: number;
+  validatorNames: string[];
+  squadSize: number;
+  fromChainId: string;
+  toChainId: string;
 };
 
 export type UserProperties = {
@@ -87,6 +115,7 @@ export const EventName = {
     swapCompleted: "Swap: Swap completed",
     swapFailed: "Swap: Swap failed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",
+    checkTopGainers: "Swap: Check Top Gainers",
   },
   // Events in Sidebar UI
   Sidebar: {
@@ -109,22 +138,11 @@ export const EventName = {
   // Events in Pools page
   Pools: {
     pageViewed: "Pools: Page viewed",
-    createNewPoolClicked: "Pools: Create new pool clicked",
     myPoolsCardClicked: "Pools: My pools card clicked",
-    superfluidPoolsCardClicked: "Pools: Superfluid pools card clicked",
-    allPoolsListFiltered: "Pools: All pools list filtered",
-    allPoolsListSorted: "Pools: All pools list sorted",
-    incentivizedPoolsItemClicked: "Pools: Incentivized pools item clicked",
-    allPoolsItemClicked: "Pools: All pools item clicked",
-    externalIncentivePoolsListSorted:
-      "Pools: External incentive pools list sorted",
-    externalIncentivePoolsItemClicked:
-      "Pools: External incentive pools item clicked",
   },
   // Events in Pool detail page
   PoolDetail: {
     pageViewed: "Pool detail: Page viewed",
-    swapTokensClicked: "Pool detail: Swap tokens clicked",
     bondSharesClicked: "Pool detail: Bond Shares clicked",
     unbondAllStarted: "Pool detail: Unbond all started",
     unbondAllCompleted: "Pool detail: Unbond all completed",
@@ -139,7 +157,6 @@ export const EventName = {
     superfluidStakeStarted: "Liquidity bonding: Superfluid stake started",
     superfluidStakeCompleted: "Liquidity bonding: Superfluid stake completed",
     cardDetailsExpanded: "Pool detail: Card details expanded",
-    earnMoreByBondingClicked: "Pool detail: Earn more by bonding clicked",
     goSuperfluidClicked: "Pool detail: Go Superfluid clicked",
     unbondClicked: "Pool detail: Unbond clicked",
     showHidePoolDetails: "Pool detail: Show/Hide pool details",
@@ -176,19 +193,15 @@ export const EventName = {
   // Events in CL
   ConcentratedLiquidity: {
     strategyPicked: "CL Create a position: Strategy picked",
-    introClosed: "CL Intro modal: closed",
     claimAllRewardsClicked: "CL: Claim All Rewards clicked",
     claimAllRewardsCompleted: "CL: Claim All Rewards completed",
     collectRewardsClicked: "CL: Collect rewards clicked",
     collectRewardsCompleted: "CL: Collect rewards completed",
-    learnMoreCtaClicked: "CL: Learn more CTA clicked",
     addLiquidityCompleted: "CL Create a position: Add liquidity completed",
     addLiquidityStarted: "CL Create a position: Add liquidity started",
     addMoreLiquidityStarted: "CL : Add more liquidity started",
     addMoreLiquidityCompleted: "CL : Add more liquidity completed",
-    introModalViewed: "CL Intro modal: viewed",
     createPositionCtaClicked: "CL Tutorial: Create position CTA clicked",
-    learnMoreFinished: "CL: Learn more finished",
     positionDetailsExpanded: "CL: Position details expanded",
     removeLiquidityClicked: "CL: Remove liquidity clicked",
     removeLiquidityCompleted: "CL: Remove liquidity completed",
@@ -208,20 +221,8 @@ export const EventName = {
     collectAndReinvestStarted: "Stake: Collect and re-invest started",
     collectAndReinvestCompleted: "Stake: Collect and re-invest started",
   },
-  // Notifi Notifications:
-  Notifications: {
-    iconClicked: "Notifications: Icon clicked",
-    enableClicked: "Notifications: Enable clicked",
-    enableCompleted: "Notifications: Enable completed",
-    enableAlertClicked: "Notifications: Enable alert clicked",
-    disableAlertClicked: "Notifications: Disable alert clicked",
-    alertClicked: "Notifications: Alert clicked",
-    saveChangesClicked: "Notifications: Save changes clicked",
-  },
   TokenInfo: {
     pageViewed: "Token Info: Page view",
-    assetClicked: "Token Info: Asset clicked",
-    cardClicked: "Token Info: Card clicked",
     viewMoreClicked: "Token Info: View more clicked",
     socialPostClicked: "Token Info: Social post clicked",
   },
@@ -229,15 +230,59 @@ export const EventName = {
     pageViewed: "Earn Page: Page viewed",
     rewardsClaimStarted: "Earn Page: Rewards claim started",
     joinStrategyClicked: "Earn Page: Join strategy clicked",
-    joinStrategyCompleted: "Earn Page: Join strategy completed",
   },
   TransactionsPage: {
     pageViewed: "Transactions: Page viewed",
     swapClicked: "Transactions: Swap clicked",
+    transferClicked: "Transactions: Transfer clicked",
     taxReportsClicked: "Transactions: Tax reports clicked",
     explorerClicked: "Transactions: Explorer clicked",
   },
   Wormhole: {
     pageViewed: "Wormhole: Page viewed",
+  },
+  OneClickTrading: {
+    startSession: "1CT: Start session",
+    endSession: "1CT: End session",
+    enableOneClickTrading: "1CT: Enable 1-Click Trading",
+    accessed: "1CT: Accessed",
+  },
+  LimitOrder: {
+    buySelected: "Buy tab selected",
+    sellSelected: "Sell tab selected",
+    swapSelected: "Swap tab selected",
+    marketOrderSelected: "Market Order selected",
+    limitOrderSelected: "Limit Order selected",
+    placeOrderStarted: "Limit Order: Place order started",
+    placeOrderCompleted: "Limit Order: Place order completed",
+    placeOrderFailed: "Limit Order: Place order failed",
+    claimOrdersStarted: "Limit Order: Claim all orders started",
+    claimOrdersCompleted: "Limit Order: Claim all orders completed",
+    claimOrdersFailed: "Limit Order: Claim all orders failed",
+    pageViewed: "Limit Order: Order page viewed",
+    addFunds: "Limit Order: Add funds button clicked",
+    swapFromAnotherAsset: "Limit Order: Swap from another asset clicked",
+  },
+  DepositWithdraw: {
+    assetSelected: "DepositWithdraw: Asset selected",
+    networkSelected: "DepositWithdraw: Network selected",
+    providerSelected: "DepositWithdraw: Provider selected",
+    variantSelected: "DepositWithdraw: Variant selected",
+    started: "DepositWithdraw: Started",
+    walletSelected: "DepositWithdraw: Wallet selected",
+    addressCopied: "DepositWithdraw: Address copied",
+    qrOpened: "DepositWithdraw: QR opened",
+  },
+  Portfolio: {
+    pageViewed: "Portfolio: Page viewed",
+    chartInteraction: "Portfolio: Chart interaction",
+    tabClicked: "Portfolio: Open allocation clicked",
+    allocationClicked: "Portfolio: Allocation clicked",
+  },
+  ConvertVariants: {
+    startFlow: "Convert Variants: Start flow",
+    declineFlow: "Convert Variants: Decline flow",
+    completeFlow: "Convert Variants: Complete flow",
+    variantUnavailable: "Convert Variants: Variant swap unavailable",
   },
 };

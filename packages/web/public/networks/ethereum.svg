@@ -1,22 +1,23 @@
-<svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g filter="url(#filter0_d_394_65062)">
-<circle cx="15" cy="14" r="12" fill="#F6F6F6"/>
-<path d="M14.9991 6.28564L14.8929 6.63724V16.839L14.9991 16.9422L19.8541 14.1431L14.9991 6.28564Z" fill="#343434"/>
-<path d="M14.998 6.28564L10.1428 14.1431L14.998 16.9422V11.9906V6.28564Z" fill="#8C8C8C"/>
-<path d="M14.9991 17.8387L14.9393 17.9099V21.5439L14.9991 21.7142L19.8571 15.041L14.9991 17.8387Z" fill="#3C3C3B"/>
-<path d="M14.998 21.7142V17.8387L10.1428 15.041L14.998 21.7142Z" fill="#8C8C8C"/>
-<path d="M14.9973 16.9421L19.8523 14.143L14.9973 11.9905V16.9421Z" fill="#141414"/>
-<path d="M10.1428 14.143L14.998 16.9421V11.9905L10.1428 14.143Z" fill="#393939"/>
-</g>
-<defs>
-<filter id="filter0_d_394_65062" x="0" y="0" width="30" height="30" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
-<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-<feOffset dy="1"/>
-<feGaussianBlur stdDeviation="1.5"/>
-<feColorMatrix type="matrix" values="0 0 0 0 0.129412 0 0 0 0 0.105882 0 0 0 0 0.305882 0 0 0 0.15 0"/>
-<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_394_65062"/>
-<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_394_65062" result="shape"/>
-</filter>
-</defs>
+<svg viewBox="0 0 20 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M9.99929 -6.10352e-05L9.79294 0.683606V20.5203L9.99929 20.7211L19.4396 15.2783L9.99929 -6.10352e-05Z"
+    fill="#63688F"
+  />
+  <path
+    d="M9.99671 -3.05176e-05L0.556152 15.2783L9.99671 20.7211V11.0929V-3.05176e-05Z"
+    fill="#8A93B2"
+  />
+  <path
+    d="M9.99893 22.4644L9.88263 22.6027V29.6688L9.99893 30L19.445 17.0244L9.99893 22.4644Z"
+    fill="#63688F"
+  />
+  <path d="M9.99671 30V22.4644L0.556152 17.0244L9.99671 30Z" fill="#8A93B2" />
+  <path
+    d="M9.99484 20.7206L19.4352 15.2778L9.99484 11.0925V20.7206Z"
+    fill="#454973"
+  />
+  <path
+    d="M0.556152 15.2778L9.99671 20.7206V11.0925L0.556152 15.2778Z"
+    fill="#63688F"
+  />
 </svg>

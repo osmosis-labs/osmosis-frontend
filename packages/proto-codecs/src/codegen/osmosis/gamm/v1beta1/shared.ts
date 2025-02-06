@@ -242,10 +242,12 @@ export const BalancerToConcentratedPoolLink = {
     const obj: any = {};
     obj.balancer_pool_id =
       message.balancerPoolId !== BigInt(0)
-        ? message.balancerPoolId.toString()
+        ? (message.balancerPoolId?.toString)()
         : undefined;
     obj.cl_pool_id =
-      message.clPoolId !== BigInt(0) ? message.clPoolId.toString() : undefined;
+      message.clPoolId !== BigInt(0)
+        ? (message.clPoolId?.toString)()
+        : undefined;
     return obj;
   },
   fromAminoMsg(

@@ -18,6 +18,8 @@ import type {
   ChainList,
   IbcTransferMethod,
 } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
+import * as fs from "fs";
 
 import { generateTsFile } from "~/utils/codegen";
 
@@ -30,10 +32,12 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "./env";
 import {
+  codegenDir,
   getChainList,
   getImageRelativeFilePath,
   getOsmosisChainId,
   saveAssetImageToTokensDir,
+  writeCurrentAssetListHash,
 } from "./utils";
 
 interface ResponseAssetList {
@@ -42,7 +46,6 @@ interface ResponseAssetList {
 }
 
 const repo = "osmosis-labs/assetlists";
-const codegenDir = "config/generated";
 
 function getFilePath({
   chainId,
@@ -251,6 +254,32 @@ async function generateAssetListFile({
     .join(" | ")};
   `;
 
+  content += `    
+    export type ${
+      environment === "testnet"
+        ? "TestnetVariantGroupKeys"
+        : "MainnetVariantGroupKeys"
+    } = ${Array.from(
+    new Set(assetList.assets.map((asset) => asset.variantGroupKey))
+  )
+    .filter((groupKey, index, self) => {
+      if (isNil(groupKey)) {
+        return false;
+      }
+
+      // remove duplicates
+      return self.indexOf(groupKey) === index;
+    })
+    .map(
+      (groupKey) =>
+        `"${groupKey}" /** Symbols: ${assetList.assets
+          .filter((asset) => asset.variantGroupKey === groupKey)!
+          .map((asset) => asset.symbol)
+          .join(",")} */`
+    )
+    .join(" | ")};
+  `;
+
   const success = await generateTsFile(
     content,
     codegenDir,
@@ -276,15 +305,18 @@ async function generateAssetListFile({
 
 async function generateAssetImages({
   assetList,
+  commitHash,
 }: {
   assetList: ResponseAssetList;
+  commitHash: string;
 }) {
   console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
-    await saveAssetImageToTokensDir(
-      asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
-      asset
-    );
+    await saveAssetImageToTokensDir({
+      imageUrl: asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
+      asset,
+      currentAssetListHash: commitHash,
+    });
   }
   console.timeEnd("Successfully downloaded images");
 }
@@ -304,11 +336,19 @@ async function getLatestCommitHash() {
 }
 
 async function main() {
+  if (!fs.existsSync(codegenDir)) {
+    fs.mkdirSync(codegenDir);
+  }
+
   const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
   const testnetOsmosisChainId = getOsmosisChainId("testnet");
 
   const mainLatestCommitHash =
     ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
+
+  if (!mainLatestCommitHash) {
+    throw new Error("Failed to get latest commit hash");
+  }
 
   console.info(`Using hash '${mainLatestCommitHash}' to generate assets`);
 
@@ -354,7 +394,10 @@ async function main() {
 
   await generateAssetImages({
     assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
+    commitHash: mainLatestCommitHash,
   });
+
+  writeCurrentAssetListHash(mainLatestCommitHash);
 
   let mainnetAssetLists: AssetList[] | undefined;
   let testnetAssetLists: AssetList[] | undefined;

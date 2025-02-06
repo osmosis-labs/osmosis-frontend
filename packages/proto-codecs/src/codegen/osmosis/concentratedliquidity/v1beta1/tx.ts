@@ -1,12 +1,11 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
+import { Decimal } from "../../../decimals";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: bigint;
@@ -523,15 +522,15 @@ export const MsgCreatePosition = {
   toAmino(message: MsgCreatePosition): MsgCreatePositionAmino {
     const obj: any = {};
     obj.pool_id =
-      message.poolId !== BigInt(0) ? message.poolId.toString() : undefined;
+      message.poolId !== BigInt(0) ? (message.poolId?.toString)() : undefined;
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.lower_tick =
       message.lowerTick !== BigInt(0)
-        ? message.lowerTick.toString()
+        ? (message.lowerTick?.toString)()
         : undefined;
     obj.upper_tick =
       message.upperTick !== BigInt(0)
-        ? message.upperTick.toString()
+        ? (message.upperTick?.toString)()
         : undefined;
     if (message.tokensProvided) {
       obj.tokens_provided = message.tokensProvided.map((e) =>
@@ -695,7 +694,7 @@ export const MsgCreatePositionResponse = {
     const obj: any = {};
     obj.position_id =
       message.positionId !== BigInt(0)
-        ? message.positionId.toString()
+        ? (message.positionId?.toString)()
         : undefined;
     obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
     obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
@@ -703,11 +702,11 @@ export const MsgCreatePositionResponse = {
       message.liquidityCreated === "" ? undefined : message.liquidityCreated;
     obj.lower_tick =
       message.lowerTick !== BigInt(0)
-        ? message.lowerTick.toString()
+        ? (message.lowerTick?.toString)()
         : undefined;
     obj.upper_tick =
       message.upperTick !== BigInt(0)
-        ? message.upperTick.toString()
+        ? (message.upperTick?.toString)()
         : undefined;
     return obj;
   },
@@ -856,7 +855,7 @@ export const MsgAddToPosition = {
     const obj: any = {};
     obj.position_id =
       message.positionId !== BigInt(0)
-        ? message.positionId.toString()
+        ? (message.positionId?.toString)()
         : undefined;
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
@@ -969,7 +968,7 @@ export const MsgAddToPositionResponse = {
     const obj: any = {};
     obj.position_id =
       message.positionId !== BigInt(0)
-        ? message.positionId.toString()
+        ? (message.positionId?.toString)()
         : undefined;
     obj.amount0 = message.amount0 === "" ? undefined : message.amount0;
     obj.amount1 = message.amount1 === "" ? undefined : message.amount1;
@@ -1092,7 +1091,7 @@ export const MsgWithdrawPosition = {
     const obj: any = {};
     obj.position_id =
       message.positionId !== BigInt(0)
-        ? message.positionId.toString()
+        ? (message.positionId?.toString)()
         : undefined;
     obj.sender = message.sender === "" ? undefined : message.sender;
     obj.liquidity_amount =
@@ -1835,7 +1834,7 @@ export const MsgFungifyChargedPositionsResponse = {
     const obj: any = {};
     obj.new_position_id =
       message.newPositionId !== BigInt(0)
-        ? message.newPositionId.toString()
+        ? (message.newPositionId?.toString)()
         : undefined;
     return obj;
   },

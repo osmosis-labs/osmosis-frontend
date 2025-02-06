@@ -1,20 +1,20 @@
-import { queryTx, Tx } from "@osmosis-labs/server";
+import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
 import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { ChainIdHelper } from "@osmosis-labs/utils";
 
 import {
-  GetTransferStatusParams,
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
+  TxSnapshot,
 } from "../interface";
 import { IbcBridgeProvider } from ".";
 
 export type IbcTransferStatus = "pending" | "complete" | "timeout" | "refunded";
 
-export class IBCTransferStatusProvider implements TransferStatusProvider {
-  readonly keyPrefix = IbcBridgeProvider.ID;
+export class IbcTransferStatusProvider implements TransferStatusProvider {
+  readonly providerId = IbcBridgeProvider.ID;
   readonly sourceDisplayName = "IBC Transfer";
   public statusReceiverDelegate?: TransferStatusReceiver;
 
@@ -24,15 +24,24 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
 
   constructor(
     protected readonly chainList: Chain[],
-    protected readonly assetLists: AssetList[]
+    protected readonly assetLists: AssetList[],
+    /**
+     * The maximum time to wait for any known resolution from status and/or websocket connections.
+     * This is not related to the block height IBC timeout on chain, but rather is a catch all
+     * fallback to prevent indefinite waiting when there's some unforseen issue
+     * getting conclusive statuses from chain(s).
+     * Default: 3 minutes.
+     */
+    protected readonly connectionTimeoutMs = 60 * 1000 * 3
   ) {}
 
-  async trackTxStatus(serializedParamsOrHash: string): Promise<void> {
+  async trackTxStatus(snapshot: TxSnapshot): Promise<void> {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+      toChain: { chainId: toChainId },
+    } = snapshot;
     try {
-      const { sendTxHash, fromChainId, toChainId } = JSON.parse(
-        serializedParamsOrHash
-      ) as GetTransferStatusParams;
-
       if (typeof fromChainId === "number") {
         throw new Error(
           "Unexpected numerical chain ID for cosmos tx: " + fromChainId
@@ -53,13 +62,15 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       });
 
       if (tx_response.code) {
-        return this.pushNewStatus(serializedParamsOrHash, "failed");
+        console.error("IBC transfer status: initial tx failed:", sendTxHash);
+        return this.pushNewStatus(sendTxHash, "failed");
       }
 
       const msgEvents = parseMsgTransferEvents(tx_response);
 
       if (!msgEvents) {
-        return this.pushNewStatus(serializedParamsOrHash, "failed");
+        console.error("IBC transfer status: no IBC events found:", sendTxHash);
+        return this.pushNewStatus(sendTxHash, "failed");
       }
 
       await this.traceStatus({
@@ -69,11 +80,11 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
         destChannelId: msgEvents.destChannelId,
         destTimeoutHeight: msgEvents.timeoutHeight,
         sequence: msgEvents.sequence,
-        serializedParamsOrHash,
+        sendTxHash,
       });
     } catch (e) {
       console.error("Unexpected failure when tracing IBC transfer status", e);
-      this.pushNewStatus(serializedParamsOrHash, "connection-error");
+      this.pushNewStatus(sendTxHash, "connection-error");
     }
   }
 
@@ -90,7 +101,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     destChannelId,
     destTimeoutHeight,
     sequence,
-    serializedParamsOrHash,
+    sendTxHash,
   }: {
     sourceChainId: string;
     sourceChannelId: string;
@@ -98,10 +109,12 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
     destChannelId: string;
     destTimeoutHeight: string;
     sequence: string;
-    serializedParamsOrHash: string;
+    sendTxHash: string;
   }): Promise<void> {
     const destBlockSubscriber = this.getBlockSubscriber(destChainId);
-    const subscriptions: Promise<"timeout" | "received">[] = [];
+    const subscriptions: Promise<
+      "timeout" | "received" | "connection-error"
+    >[] = [];
     let timeoutUnsubscriber: (() => void) | undefined;
 
     // poll for timeout
@@ -135,6 +148,13 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
+    // assume unkonwn connection error, either to status or websocket endpoint(s), if a basic IBC transfer takes longer than 1 minute
+    subscriptions.push(
+      new Promise<"connection-error">((resolve) => {
+        setTimeout(() => resolve("connection-error"), this.connectionTimeoutMs);
+      })
+    );
+
     const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
     const receivedPromise = packetReceivedTracer
       .traceTx({
@@ -157,8 +177,11 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
 
     // If the TxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
     // But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
-    if (result === "received") {
-      return this.pushNewStatus(serializedParamsOrHash, "success");
+    switch (result) {
+      case "received":
+        return this.pushNewStatus(sendTxHash, "success");
+      case "connection-error":
+        return this.pushNewStatus(sendTxHash, "connection-error");
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
@@ -170,7 +193,7 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       })
       .finally(() => timeoutTracer.close());
 
-    this.pushNewStatus(serializedParamsOrHash, "refunded");
+    this.pushNewStatus(sendTxHash, "refunded");
   }
 
   /**
@@ -225,7 +248,6 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
       );
     }
 
-    // eslint-disable-next-line
     return this.blockSubscriberMap.get(chainId)!;
   }
 
@@ -245,20 +267,15 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
   }
 
   /** Sends a status to the receiver with prefix key prepended. */
-  protected pushNewStatus(
-    serializedParamsOrHash: string,
-    status: TransferStatus
-  ) {
-    return this.statusReceiverDelegate?.receiveNewTxStatus(
-      `${this.keyPrefix}${serializedParamsOrHash}`,
-      status
-    );
+  protected pushNewStatus(sendTxHash: string, status: TransferStatus) {
+    return this.statusReceiverDelegate?.receiveNewTxStatus(sendTxHash, status);
   }
 
-  makeExplorerUrl(serializedParamsOrKey: string): string {
-    const { fromChainId, sendTxHash } = JSON.parse(
-      serializedParamsOrKey
-    ) as GetTransferStatusParams;
+  makeExplorerUrl(snapshot: TxSnapshot): string {
+    const {
+      sendTxHash,
+      fromChain: { chainId: fromChainId },
+    } = snapshot;
 
     const chain = this.chainList.find(
       (chain) => chain.chain_id === fromChainId
@@ -276,7 +293,12 @@ export class IBCTransferStatusProvider implements TransferStatusProvider {
 
 /** Extract IBC-related events from the initial tx containing MsgTransfer message. */
 function parseMsgTransferEvents(tx: Tx["tx_response"]) {
-  for (const event of tx.events ?? []) {
+  // prefer raw log. If present, the tx.events are likely base64 encoded. If not present, tx.events are likely decoded.
+  const events =
+    tx.raw_log !== ""
+      ? (JSON.parse(tx.raw_log)[0].events as TxEvent[])
+      : tx.events;
+  for (const event of events) {
     if (event.type === "send_packet") {
       const attributes = event.attributes;
       const sourceChannelAttr = attributes.find(

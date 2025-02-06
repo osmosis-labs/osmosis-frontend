@@ -1,73 +1,41 @@
+import { AvailableFlags } from "@osmosis-labs/types";
 import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
-// NOTE: Please add a default value to any new flag you add to this list
-export type AvailableFlags =
-  | "concentratedLiquidity"
-  | "staking"
-  | "swapsAdBanner"
-  | "notifications"
-  | "mobileNotifications"
-  | "tokenInfo"
-  | "sidebarOsmoChangeAndChart"
-  | "multiBridgeProviders"
-  | "earnPage"
-  | "transactionsPage"
-  | "sidecarRouter"
-  | "legacyRouter"
-  | "tfmRouter"
-  | "osmosisUpdatesPopUp"
-  | "aprBreakdown"
-  | "topAnnouncementBanner"
-  | "tfmProTradingNavbarButton"
-  | "positionRoi"
-  | "swapToolSimulateFee"
-  | "portfolioPageAndNewAssetsPage"
-  | "displayDailyEarn"
-  | "newAssetsPage"
-  | "newDepositWithdrawFlow"
-  | "oneClickTrading";
-
-type ModifiedFlags =
-  | Exclude<AvailableFlags, "mobileNotifications">
-  | "_isInitialized"
-  | "_isClientIDPresent";
-
-const defaultFlags: Record<ModifiedFlags, boolean> = {
-  concentratedLiquidity: true,
+const defaultFlags: Record<AvailableFlags, boolean> = {
   staking: true,
   swapsAdBanner: true,
-  notifications: true,
   tokenInfo: true,
   sidebarOsmoChangeAndChart: true,
   multiBridgeProviders: true,
   earnPage: false,
-  transactionsPage: false,
-  sidecarRouter: true,
-  legacyRouter: true,
-  tfmRouter: true,
+  transactionsPage: true,
   osmosisUpdatesPopUp: false,
   aprBreakdown: true,
   topAnnouncementBanner: true,
-  tfmProTradingNavbarButton: true,
+  tfmProTradingNavbarButton: false,
   positionRoi: true,
-  swapToolSimulateFee: false,
-  portfolioPageAndNewAssetsPage: false,
-  newAssetsPage: false,
+  swapToolSimulateFee: true,
   displayDailyEarn: false,
-  newDepositWithdrawFlow: false,
-  oneClickTrading: false,
-  _isInitialized: false,
-  _isClientIDPresent: false,
+  newDepositWithdrawFlow: true,
+  oneClickTrading: true,
+  limitOrders: true,
+  advancedChart: false,
+  cypherCard: false,
+  inGivenOut: false,
+  sqsActiveOrders: false,
+  alloyedAssets: false,
+  bridgeDepositAddress: false,
+  nomicWithdrawAmount: false,
+  swapToolTopGainers: false,
 };
 
-export const useFeatureFlags = () => {
+export function useFeatureFlags() {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
-
   const client = useLDClient();
 
   useEffect(() => {
@@ -82,22 +50,15 @@ export const useFeatureFlags = () => {
   return {
     ...launchdarklyFlags,
     ...(isDevModeWithoutClientID ? defaultFlags : {}),
-    notifications: isMobile
-      ? launchdarklyFlags.mobileNotifications
-      : launchdarklyFlags.notifications,
-    portfolioPageAndNewAssetsPage:
-      // don't want to use either on mobile
-      // as this flag bundles the 2 pages,
-      // and the portfolio page not be mobile responsive yet
-      // (even thought the assets page is)
-      isMobile || !isInitialized
-        ? false
-        : launchdarklyFlags.portfolioPageAndNewAssetsPage,
-    oneClickTrading:
-      !isMobile &&
-      launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
-      launchdarklyFlags.oneClickTrading,
+    oneClickTrading: isDevModeWithoutClientID
+      ? defaultFlags.oneClickTrading
+      : !isMobile &&
+        launchdarklyFlags.swapToolSimulateFee && // 1-Click trading is dependent on the swap tool simulate fee flag
+        launchdarklyFlags.oneClickTrading,
     _isInitialized: isDevModeWithoutClientID ? true : isInitialized,
     _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
-  } as Record<ModifiedFlags, boolean>;
-};
+  } as Record<
+    AvailableFlags | "_isInitialized" | "_isClientIDPresent",
+    boolean
+  >;
+}

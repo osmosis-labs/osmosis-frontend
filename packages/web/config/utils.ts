@@ -30,22 +30,59 @@ export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
   return path.join(tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
-export function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
+function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
   const fileNameSplit = urlParts[urlParts.length - 1].split(".");
   const fileType = fileNameSplit[fileNameSplit.length - 1];
   return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
+export const codegenDir = "config/generated";
+
+// Path to the lock file
+const lockFilePath = path.join(path.resolve(), `${codegenDir}/asset-lock.json`);
+
+/**
+ * Read the stored asset list hash from the lock file.
+ * @returns The stored hash or null if the lock file doesn't exist.
+ */
+function readStoredAssetListHash(): string | null {
+  if (!fs.existsSync(lockFilePath)) {
+    return null;
+  }
+  const data = fs.readFileSync(lockFilePath, "utf-8");
+  try {
+    const parsed = JSON.parse(data);
+    return parsed.assetListHash || null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Write the current asset list hash to the lock file.
+ * @param hash The hash to store.
+ */
+export function writeCurrentAssetListHash(hash: string): void {
+  const data = { assetListHash: hash };
+  fs.writeFileSync(lockFilePath, JSON.stringify(data, null, 2), "utf-8");
+}
+
 /**
  * Download an image from the provided URL and save it to the local file system.
- * @param imageUrl The URL of the image to download.
- * @returns The filename of the saved image.
+ * Only saves images if the current asset list hash differs from the stored hash or the file doesn't exist.
+ * @param params An object containing the image URL, asset information, and current asset list hash.
+ * @returns The filename of the saved image or null if skipped.
  */
-export async function saveAssetImageToTokensDir(
-  imageUrl: string,
-  asset: Pick<Asset, "symbol">
-) {
+export async function saveAssetImageToTokensDir({
+  imageUrl,
+  asset,
+  currentAssetListHash,
+}: {
+  imageUrl: string;
+  asset: Pick<Asset, "symbol">;
+  currentAssetListHash: string;
+}) {
   // Ensure the tokens directory exists.
   if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
     fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
@@ -56,9 +93,15 @@ export async function saveAssetImageToTokensDir(
 
   if (process.env.NODE_ENV === "test") {
     console.info("Skipping image download for test environment");
+    return null;
   }
 
-  if (fs.existsSync(filePath)) {
+  const storedHash = readStoredAssetListHash();
+
+  /**
+   * Skip saving the image if the current asset list hash matches the stored hash.
+   */
+  if (storedHash === currentAssetListHash && fs.existsSync(filePath)) {
     return null;
   }
 
@@ -84,7 +127,7 @@ export async function saveAssetImageToTokensDir(
     ).pipe(fileStream)
   );
 
-  // verify the image has been added
+  // Verify the image has been added
   if (!fs.existsSync(filePath)) {
     throw new Error(`Failed to save image to ${filePath}`);
   }
@@ -94,7 +137,7 @@ export async function saveAssetImageToTokensDir(
 }
 
 /** Generate a chain config compatible with Keplr wallet. */
-export function getKeplrCompatibleChain({
+function getKeplrCompatibleChain({
   chain,
   assetLists,
   environment,
@@ -120,16 +163,10 @@ export function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom = chain.staking.staking_tokens[0].denom;
+  const stakingTokenSourceDenom = chain.staking?.staking_tokens[0].denom;
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
-
-  if (!stakeAsset) {
-    console.warn(
-      `Failed to find stake asset for ${stakingTokenSourceDenom} on ${chain.chain_name}. Proceeding to use minimalDenom as currency.`
-    );
-  }
 
   const stakeDisplayDecimals = stakeAsset?.decimals;
   const stakeSourceDenom = stakeAsset?.sourceDenom;
@@ -216,20 +253,36 @@ export function getKeplrCompatibleChain({
       },
       []
     ),
-    stakeCurrency: {
-      coinDecimals: stakeDisplayDecimals ?? 0,
-      coinDenom: stakeAsset?.symbol ?? stakingTokenSourceDenom,
-      coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom,
-      coinGeckoId: stakeAsset?.coingeckoId,
-      coinImageUrl:
-        stakeAsset?.logoURIs.svg || stakeAsset?.logoURIs.png
-          ? getImageRelativeFilePath(
-              stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
-              stakeAsset.symbol
-            )
-          : undefined,
-      base: stakeAsset?.coinMinimalDenom,
-    },
+    stakeCurrency:
+      // Note: this is a hacky fix since it's possible for chains to have no staking token (i.e. Noble)
+      // Newever versions of Keplr made this nullable, but our Keplr stores are from an old version of Keplr.
+      // I don't anticipate this being an issue since we don't really use staking tokens on other chain in our FE features.
+      // Further, most chains have staking tokens.
+      // So, I add a placeholder token to stay compatible with the ChainInfo types that we imported into the keplr-* packages in the monorepo.
+      // Long term, once we remove the keplr stores for good and delete that code, we can upgrade our Keplr chain type to use the newer
+      // type that tolerates missing staking tokens. Then, we can suggest chains to Keplr wallet with Staking tokens missing.
+      stakeAsset &&
+      stakeDisplayDecimals &&
+      (stakeSourceDenom || stakingTokenSourceDenom)
+        ? {
+            coinDecimals: stakeDisplayDecimals ?? 0,
+            coinDenom: stakeAsset.symbol ?? stakingTokenSourceDenom,
+            coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom!,
+            coinGeckoId: stakeAsset.coingeckoId,
+            coinImageUrl:
+              stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
+                ? getImageRelativeFilePath(
+                    stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
+                    stakeAsset.symbol
+                  )
+                : undefined,
+            base: stakeAsset.coinMinimalDenom,
+          }
+        : {
+            coinDecimals: 0,
+            coinDenom: "STAKE",
+            coinMinimalDenom: "tempStakePlaceholder",
+          },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
@@ -342,7 +395,7 @@ export function getChainList({
             : chain.chain_id,
           pretty_name: isOsmosis
             ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.pretty_name
-            : chain.chain_name,
+            : chain.pretty_name,
           apis: {
             rpc:
               isOsmosis && OSMOSIS_RPC_OVERWRITE

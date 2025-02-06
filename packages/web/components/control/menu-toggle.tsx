@@ -22,7 +22,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "flex h-fit flex-shrink-0 rounded-full bg-osmoverse-700 transition-opacity",
+      "flex h-fit flex-shrink-0 rounded-full bg-osmoverse-825 transition-opacity",
       {
         "opacity-50": disabled,
       },
@@ -36,7 +36,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
         className={classNames(
           "relative h-10 w-full cursor-pointer select-none px-4 py-2 text-center",
           {
-            "rounded-full bg-wosmongton-400": id === selectedOptionId,
+            "rounded-full bg-osmoverse-700": id === selectedOptionId,
           },
           classes?.toggleContainer
         )}
@@ -45,10 +45,10 @@ export const MenuToggle: FunctionComponent<Props> = ({
           id="menu-radio"
           type="radio"
           className={classNames(
-            "absolute z-20 h-full w-full cursor-pointer appearance-none",
+            "subtitle1 absolute z-20 h-full w-full cursor-pointer appearance-none text-osmoverse-100",
             "after:absolute after:h-full after:w-full",
             {
-              "text-osmoverse-300": id !== selectedOptionId,
+              "text-wosmongton-100": id !== selectedOptionId,
             }
           )}
           value={id}
@@ -58,9 +58,12 @@ export const MenuToggle: FunctionComponent<Props> = ({
           disabled={disabled}
         ></input>
         <span
-          className={classNames("subtitle2 relative z-10 whitespace-nowrap", {
-            "text-osmoverse-300": id !== selectedOptionId,
-          })}
+          className={classNames(
+            "subtitle1 relative z-10 whitespace-nowrap text-osmoverse-100",
+            {
+              "text-wosmongton-100": id !== selectedOptionId,
+            }
+          )}
         >
           {display}
         </span>

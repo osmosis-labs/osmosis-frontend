@@ -272,9 +272,9 @@ export const PageRequest = {
     const obj: any = {};
     obj.key = message.key ? base64FromBytes(message.key) : undefined;
     obj.offset =
-      message.offset !== BigInt(0) ? message.offset.toString() : undefined;
+      message.offset !== BigInt(0) ? (message.offset?.toString)() : undefined;
     obj.limit =
-      message.limit !== BigInt(0) ? message.limit.toString() : undefined;
+      message.limit !== BigInt(0) ? (message.limit?.toString)() : undefined;
     obj.count_total =
       message.countTotal === false ? undefined : message.countTotal;
     obj.reverse = message.reverse === false ? undefined : message.reverse;
@@ -368,7 +368,7 @@ export const PageResponse = {
       ? base64FromBytes(message.nextKey)
       : undefined;
     obj.total =
-      message.total !== BigInt(0) ? message.total.toString() : undefined;
+      message.total !== BigInt(0) ? (message.total?.toString)() : undefined;
     return obj;
   },
   fromAminoMsg(object: PageResponseAminoMsg): PageResponse {

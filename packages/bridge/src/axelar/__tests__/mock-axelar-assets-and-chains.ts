@@ -686,6 +686,33 @@ export const MockAxelarAssets = [
     coingecko_id: "axelar",
     id: "uaxl",
   },
+  {
+    denom: "avalanche-uusdc",
+    native_chain: "avalanche",
+    name: "Avalanche USDC",
+    symbol: "AvalancheUSDC",
+    decimals: 6,
+    image: "/logos/assets/usdc.svg",
+    addresses: {
+      avalanche: {
+        symbol: "AvalancheUSDC",
+        address: "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      },
+      axelarnet: { symbol: "AvalancheUSDC", ibc_denom: "avalanche-uusdc" },
+      osmosis: {
+        symbol: "AvalancheUSDC",
+        ibc_denom:
+          "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C",
+      },
+      sommelier: {
+        symbol: "AvalancheUSDC",
+        ibc_denom:
+          "ibc/4AF49824065A2EB5F05E5AD5823178E595577D26500592615E3E8746EBDA5652",
+      },
+    },
+    coingecko_id: "usd-coin",
+    id: "avalanche-uusdc",
+  },
 ];
 
 export const MockAxelarChains = [

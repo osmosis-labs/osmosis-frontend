@@ -41,16 +41,12 @@ export interface WalletSelectParams {
    * @default "full"
    */
   layout?: "list" | "full";
+  onConnect?: () => void;
 }
 
 export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
   observer(({ children }) => {
-    const {
-      accountStore,
-      chainStore: {
-        osmosis: { chainId },
-      },
-    } = useStore();
+    const { accountStore } = useStore();
 
     const [walletSelectParams, setWalletSelectParams] =
       useState<WalletSelectParams | null>(null);
@@ -60,7 +56,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
     const { setUserProperty } = useAmplitudeAnalytics();
 
     const setUserAmplitudeProperties = useCallback(() => {
-      const wallet = accountStore.getWallet(chainId);
+      const wallet = accountStore.getWallet(accountStore.osmosisChainId);
       if (wallet) {
         setUserProperty("isWalletConnected", true);
         setUserProperty(
@@ -68,7 +64,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
           wallet?.walletInfo?.name ?? "unknown"
         );
       }
-    }, [setUserProperty, accountStore, chainId]);
+    }, [accountStore, setUserProperty]);
 
     useEffect(() => {
       const installPrevSessionWallet = async () => {
@@ -141,6 +137,7 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
               walletOptions={walletSelectParams.walletOptions}
               onConnect={() => {
                 setUserAmplitudeProperties();
+                walletSelectParams.onConnect?.();
               }}
               isOpen={isWalletSelectOpen}
               onRequestClose={() => {

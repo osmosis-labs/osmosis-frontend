@@ -137,7 +137,10 @@ describe("Collect Cl Fees Txs", () => {
       account!.osmosis
         .sendSwapExactAmountInMsg(
           [{ id: poolId, tokenOutDenom: "uion" }],
-          { currency: osmoCurrency, amount: osmoSwapAmount },
+          {
+            coinMinimalDenom: osmoCurrency.coinMinimalDenom,
+            amount: osmoSwapAmount,
+          },
           "9",
           undefined,
           undefined,
@@ -154,7 +157,10 @@ describe("Collect Cl Fees Txs", () => {
       account!.osmosis
         .sendSwapExactAmountInMsg(
           [{ id: poolId, tokenOutDenom: "uion" }],
-          { currency: osmoCurrency, amount: osmoSwapAmount },
+          {
+            coinMinimalDenom: osmoCurrency.coinMinimalDenom,
+            amount: osmoSwapAmount,
+          },
           "9",
           undefined,
           undefined,

@@ -1,5 +1,5 @@
-import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { type EarnStrategy } from "@osmosis-labs/server";
+import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -260,7 +260,7 @@ export const ActionsCell = (item: CellContext<EarnStrategy, unknown>) => {
   }, [item]);
 
   const isBalanceVisible = useMemo(
-    () => item.table.getColumn("balance")?.getIsVisible(),
+    () => item.table.getColumn("totalBalance")?.getIsVisible(),
     [item.table]
   );
 

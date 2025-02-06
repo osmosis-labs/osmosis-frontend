@@ -2,7 +2,7 @@ import { useCallback } from "react";
 
 import { useControllableState } from "~/hooks/use-controllable-state";
 
-export interface UseStepsProps {
+interface UseStepsProps {
   index?: number;
   count: number;
 }

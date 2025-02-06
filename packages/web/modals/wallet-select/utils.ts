@@ -1,8 +1,8 @@
-import { ChainWalletBase, State, WalletStatus } from "@cosmos-kit/core";
-import { CosmosRegistryWallet } from "@osmosis-labs/stores";
-import { Connector } from "wagmi";
-
-import { EthereumChainIds } from "~/config/wagmi";
+import { State, WalletStatus } from "@cosmos-kit/core";
+import {
+  isAccountNotFoundError,
+  isInsufficientFeeError,
+} from "@osmosis-labs/tx";
 
 export type ModalView =
   | "list"
@@ -14,18 +14,19 @@ export type ModalView =
   | "rejected"
   | "initializingOneClickTrading"
   | "broadcastedOneClickTrading"
-  | "initializeOneClickTradingError";
+  | "initializeOneClickTradingError"
+  | "initializeOneClickTradingErrorInsufficientFee";
 
 export function getModalView({
   qrState,
   isInitializingOneClickTrading,
-  hasOneClickTradingError,
+  oneClickTradingError,
   hasBroadcastedTx,
   walletStatus,
 }: {
   qrState: State;
   isInitializingOneClickTrading: boolean;
-  hasOneClickTradingError: boolean;
+  oneClickTradingError: Error | null;
   hasBroadcastedTx: boolean;
   walletStatus?: WalletStatus;
 }): ModalView {
@@ -34,7 +35,15 @@ export function getModalView({
   }
 
   if (walletStatus === WalletStatus.Connected) {
-    if (hasOneClickTradingError) return "initializeOneClickTradingError";
+    if (!!oneClickTradingError) {
+      if (
+        isAccountNotFoundError(oneClickTradingError.message) ||
+        isInsufficientFeeError(oneClickTradingError.message)
+      ) {
+        return "initializeOneClickTradingErrorInsufficientFee";
+      }
+      return "initializeOneClickTradingError";
+    }
     if (isInitializingOneClickTrading) {
       return hasBroadcastedTx
         ? "broadcastedOneClickTrading"
@@ -57,16 +66,3 @@ export function getModalView({
 
   return "list";
 }
-
-export type OnConnectWallet = (
-  params:
-    | {
-        walletType: "cosmos";
-        wallet: CosmosRegistryWallet | ChainWalletBase | undefined;
-      }
-    | {
-        walletType: "evm";
-        wallet: Connector;
-        chainId?: EthereumChainIds;
-      }
-) => void;

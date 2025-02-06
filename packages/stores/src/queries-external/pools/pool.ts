@@ -1,14 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  IntPretty,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
-import {
   ChainGetter,
   ObservableQueryBalances,
   QueryResponse,
@@ -30,6 +22,14 @@ import {
   WEIGHTED_POOL_TYPE,
   WeightedPool,
 } from "@osmosis-labs/pools";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { action, computed, makeObservable, observable } from "mobx";

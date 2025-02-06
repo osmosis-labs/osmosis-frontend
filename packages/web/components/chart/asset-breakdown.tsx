@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, Int, IntPretty } from "@keplr-wallet/unit";
-import { truncateString } from "@osmosis-labs/utils";
+import { CoinPretty, Dec, Int, IntPretty } from "@osmosis-labs/unit";
+import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
@@ -19,7 +19,13 @@ export const AssetBreakdownChart: FunctionComponent<{
   }[];
   totalWeight: IntPretty;
   colorCycle?: typeof ColorCycle;
-}> = ({ assets, totalWeight, colorCycle = ColorCycle }) => {
+  hideWeights?: boolean;
+}> = ({
+  assets,
+  totalWeight,
+  colorCycle = ColorCycle,
+  hideWeights = false,
+}) => {
   const { isMobile, width } = useWindowSize();
 
   const assetPercentages = assets.map(({ weight }) =>
@@ -55,8 +61,8 @@ export const AssetBreakdownChart: FunctionComponent<{
                 className="subtitle1 md:body2 text-osmoverse-400"
                 title={amount.currency.coinDenom}
               >
-                {truncateString(amount.currency.coinDenom, isMobile ? 6 : 12)}:{" "}
-                {assetPercentages[index].toString()}%
+                {truncate(amount.currency.coinDenom, isMobile ? 6 : 12)}
+                {!hideWeights && <>: {assetPercentages[index].toString()}%</>}
               </span>
             </div>
             <h6 className="md:subtitle2 text-osmoverse-100">

@@ -1,11 +1,11 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { normalizeUrl, truncateString } from "@osmosis-labs/utils";
+import { CoinPretty, Dec, RatePretty } from "@osmosis-labs/unit";
+import { normalizeUrl, truncate } from "@osmosis-labs/utils";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -66,18 +66,7 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   return itemRank.passed;
 };
 
-export type Validator = {
-  validatorName: string | undefined;
-  myStake: Dec;
-  votingPower: Dec;
-  commissions: Dec;
-  website: string | undefined;
-  imageUrl: string;
-  operatorAddress: string;
-  isVotingPowerTooHigh: boolean;
-};
-
-export type FormattedValidator = {
+type FormattedValidator = {
   validatorName: string;
   formattedMyStake: string;
   formattedVotingPower: string;
@@ -203,7 +192,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       const getFormattedWebsite = useCallback((website: string) => {
         const displayUrl = normalizeUrl(website);
-        const truncatedDisplayUrl = truncateString(displayUrl, 30);
+        const truncatedDisplayUrl = truncate(displayUrl, 30);
         return truncatedDisplayUrl;
       }, []);
 
@@ -535,7 +524,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   .getHeaderGroups()
                   .slice(1)
                   .map((headerGroup) => (
-                    <tr className="top-0 bg-osmoverse-800" key={headerGroup.id}>
+                    <tr className="top-0 bg-osmoverse-850" key={headerGroup.id}>
                       {headerGroup.headers.map((header) => {
                         return (
                           <th key={header.id} colSpan={header.colSpan}>

@@ -9,7 +9,6 @@ import {
   ObservableQueryActiveGauges,
   ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolAprs,
-  ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
 } from "../queries-external";
 import {
@@ -32,7 +31,6 @@ export class DerivedDataStore {
       CosmosQueries & OsmosisQueries
     >,
     protected readonly externalQueries: {
-      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
       queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;

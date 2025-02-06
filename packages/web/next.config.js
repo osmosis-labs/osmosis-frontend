@@ -7,7 +7,33 @@ const path = require("path");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "app.osmosis.zone",
+      },
+      {
+        protocol: "https",
+        hostname: "raw.githubusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "pbs.twimg.com",
+      },
+    ],
+  },
+  async headers() {
+    return [
+      {
+        source: "/favicon.ico",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=864000", // Cache for 10 days
+          },
+        ],
+      },
+    ];
   },
   webpack(config) {
     /**
@@ -66,6 +92,17 @@ const config = {
 
     return config;
   },
+  experimental: {
+    instrumentationHook: true,
+  },
+};
+
+module.exports = {
+  ...module.exports,
+  mode: "production", // Ensure the mode is 'production' for tree shaking to work
+  optimization: {
+    usedExports: true, // This setting enables tree shaking
+  },
 };
 
 const withBundleAnalyzer = require("@next/bundle-analyzer")({
@@ -73,41 +110,3 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 module.exports = withBundleAnalyzer(config);
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-module.exports = withSentryConfig(
-  module.exports,
-  {
-    // For all available options, see:
-    // https://github.com/getsentry/sentry-webpack-plugin#options
-
-    // Suppresses source map uploading logs during build
-    silent: true,
-
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-
-    org: "osmosis-labs",
-    project: "osmosis-web",
-  },
-  {
-    // For all available options, see:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
-
-    // Upload a larger set of source maps for prettier stack traces (increases build time)
-    widenClientFileUpload: true,
-
-    transpileClientSDK: false,
-
-    // Routes browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers (increases server load)
-    tunnelRoute: "/monitoring",
-
-    // Hides source maps from generated client bundles
-    hideSourceMaps: true,
-
-    // Automatically tree-shake Sentry logger statements to reduce bundle size
-    disableLogger: true,
-  }
-);

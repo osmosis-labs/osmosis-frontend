@@ -1,8 +1,8 @@
-import {
-  AxelarTransferStatusProvider,
-  SkipTransferStatusProvider,
-  SquidTransferStatusProvider,
-} from "@osmosis-labs/bridge";
+import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
+import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
+import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
+import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
+import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
 import {
   CosmosQueries,
   CosmwasmQueries,
@@ -14,18 +14,14 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   DerivedDataStore,
-  IBCTransferHistoryStore,
   LPCurrencyRegistrar,
-  NonIbcBridgeHistoryStore,
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
-  TxEvents,
+  type TxEvents,
   UnsafeIbcCurrencyRegistrar,
-} from "@osmosis-labs/stores";
-import {
-  makeIndexedKVStore,
-  makeLocalStorageKVStore,
 } from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
@@ -36,16 +32,14 @@ import {
 } from "~/components/alert/tx-event-toast";
 import {
   BlacklistedPoolIds,
-  INDEXER_DATA_URL,
+  HISTORICAL_DATA_URL,
   IS_TESTNET,
-  TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { ObservableAssets } from "~/stores/assets";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -56,6 +50,11 @@ import {
   UnverifiedAssetsUserSetting,
   UserSettings,
 } from "~/stores/user-settings";
+
+import {
+  TRANSFER_HISTORY_STORE_KEY,
+  TransferHistoryStore,
+} from "./transfer-history";
 
 const assets = AssetLists.flatMap((list) => list.assets);
 
@@ -76,10 +75,7 @@ export class RootStore {
 
   public readonly derivedDataStore: DerivedDataStore;
 
-  public readonly ibcTransferHistoryStore: IBCTransferHistoryStore;
-  public readonly nonIbcBridgeHistoryStore: NonIbcBridgeHistoryStore;
-
-  public readonly assetsStore: ObservableAssets;
+  public readonly transferHistoryStore: TransferHistoryStore;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
@@ -162,8 +158,8 @@ export class RootStore {
         this.chainStore.osmosis.chainId
       ).osmosis!.queryIncentivizedPools,
       webApiBaseUrl,
-      TIMESERIES_DATA_URL,
-      INDEXER_DATA_URL
+      HISTORICAL_DATA_URL,
+      HISTORICAL_DATA_URL
     );
 
     this.accountStore = new AccountStore(
@@ -211,28 +207,8 @@ export class RootStore {
       }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
-        msgOptsCreator(chainId) {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.assetsStore = new ObservableAssets(
-      assets,
-      this.chainStore,
-      this.accountStore,
-      this.queriesStore,
-      this.priceStore,
-      this.chainStore.osmosis.chainId,
-      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -244,19 +220,61 @@ export class RootStore {
       this.chainStore
     );
 
-    this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
-      makeIndexedKVStore("ibc_transfer_history"),
-      this.chainStore
-    );
-    this.nonIbcBridgeHistoryStore = new NonIbcBridgeHistoryStore(
-      this.queriesStore,
-      this.chainStore.osmosis.chainId,
-      makeLocalStorageKVStore("nonibc_transfer_history"),
-      [
-        new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-        new SquidTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-        new SkipTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
-      ]
+    const transferStatusProviders = [
+      new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new SquidTransferStatusProvider(
+        IS_TESTNET ? "testnet" : "mainnet",
+        ChainList
+      ),
+      new SkipTransferStatusProvider(
+        IS_TESTNET ? "testnet" : "mainnet",
+        ChainList,
+        {
+          transactionStatus: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-tx-status?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to fetch transaction status: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+          trackTransaction: async ({ chainID, txHash, env }) => {
+            const response = await fetch(
+              `/api/skip-track-tx?chainID=${chainID}&txHash=${txHash}&env=${env}`
+            );
+            const responseJson = await response.json();
+            if (!response.ok) {
+              throw new Error(
+                "Failed to track transaction: " + responseJson.error
+              );
+            }
+            return responseJson;
+          },
+        }
+      ),
+      new IbcTransferStatusProvider(ChainList, AssetLists),
+      new NomicTransferStatusProvider(
+        ChainList,
+        IS_TESTNET ? "testnet" : "mainnet"
+      ),
+    ];
+
+    this.transferHistoryStore = new TransferHistoryStore(
+      (accountAddress) => {
+        this.queriesStore
+          .get(this.chainStore.osmosis.chainId)
+          .queryBalances.getQueryBech32Address(accountAddress)
+          .fetch();
+        // txEvents passed to root store is used to invalidate
+        // tRPC queries, the params are not used
+        txEvents?.onFulfill?.("", "");
+      },
+      makeIndexedKVStore(TRANSFER_HISTORY_STORE_KEY),
+      transferStatusProviders
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

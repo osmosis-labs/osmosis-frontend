@@ -1,4 +1,4 @@
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
 import { BigDec } from "../../big-dec";
 import { approxSqrt } from "../../utils";
@@ -20,6 +20,12 @@ const nine = new Dec(9);
     If tickIndex is zero, the function returns new Dec(1).
  */
 export function tickToSqrtPrice(tickIndex: Int): Dec {
+  const price = tickToPrice(tickIndex);
+
+  return approxSqrt(price);
+}
+
+export function tickToPrice(tickIndex: Int): Dec {
   if (tickIndex.isZero()) {
     return new Dec(1);
   }
@@ -63,7 +69,7 @@ export function tickToSqrtPrice(tickIndex: Int): Dec {
     );
   }
 
-  return approxSqrt(price);
+  return price;
 }
 
 /** PriceToTick takes a price and returns the corresponding tick index

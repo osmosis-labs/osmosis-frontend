@@ -10,6 +10,8 @@ import { Button } from "~/components/buttons/button";
 
 /**
  * Renders an icon within a button.
+ *
+ * @deprecated Use the iconButton within the ui folder
  */
 export const IconButton = forwardRef<
   HTMLButtonElement,

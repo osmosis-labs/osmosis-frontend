@@ -2,6 +2,7 @@
   "404": {
     "title": "Nu a fost gasit"
   },
+  "unknownTimeRemaining": "Timp rămas necunoscut",
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -53,7 +54,6 @@
       "5": "Pe piața liberă a LP-urilor toată lumea urmează strategii diferite. Lichiditatea este mai dinamică și mai bine optimizată pentru comercianți."
     }
   },
-  "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
   "clPositions": {
     "inRange": "ÎN GAME",
     "nearBounds": "Aproape de limite",
@@ -95,8 +95,10 @@
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
     "onePosition": "1 pozitie",
-    "goToPool": "Mergi la piscina #{poolId}"
+    "goToPool": "Mergi la piscina #{poolId}",
+    "errorFetchingPositions": "Nu s-au putut prelua detaliile despre poziție. Vă rugăm să încercați să reîmprospătați pagina. Dacă problema persistă, contactați asistența."
   },
+  "copied": "Copiat!",
   "app": {
     "banner": {
       "backToOsmosis": "Înapoi la Osmosis",
@@ -126,85 +128,18 @@
     "secondaryCta": "Învață în 30 de secunde"
   },
   "assets": {
-    "bondedAssets": "Blocate",
     "historyTable": {
       "colums": {
-        "amount": "Suma",
         "deposit": "Depozit",
-        "status": "Status",
-        "transactionHash": "Hash Tranzactie",
-        "type": "Tip",
         "withdraw": "Retragere"
-      },
-      "errors": {
-        "insufficientFee": "Taxa insuficienta"
-      },
-      "failed": "A eșuat",
-      "failedWithReason": "A eșuat: {reason}",
-      "pending": "In Asteptare",
-      "pendingRefunded": "Esuat: Ramburs in asteptare",
-      "refunded": "Rambursat",
-      "success": "Succes",
-      "title": "Istoric Transferuri",
-      "pendingDeposit": "Depunere în așteptare",
-      "pendingWithdraw": "Retragere în așteptare",
-      "successDeposit": "Depunere reușită",
-      "successWithdraw": "Retragere reușită",
-      "failDeposit": "Depunere nereușită",
-      "failWithdraw": "Retragere nereușită"
+      }
     },
-    "ibcTransfer": {
-      "buttonAdd": "Adăuga",
-      "buttonEdit": "Modifica",
-      "buttonEnter": "Intra",
-      "channelCongestedDeposit": "Depoziteaza (Channel congested)",
-      "channelCongestedWithdraw": "Retrage (Channel congested)",
-      "checkboxVerify": "Am verificat. Nu trimit catre o adresa a unui exchange.",
-      "estimatedTime": "Timp estimat",
-      "selectAmount": "Selecteaza suma",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "titleWithdraw": "Retrage {coinDenom}",
-      "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
-      "provider": "Furnizor"
-    },
-    "myPools": "Pool-urile Mele",
-    "poolCards": {
-      "APR": "APR",
-      "bonded": "Blocate",
-      "FeeAPY": "APY din taxe",
-      "liquidity": "Lichiditate pool"
-    },
-    "selectAssetSource": {
-      "installWallet": "Instaleaza {walletName}",
-      "next": "Urmatorul",
-      "titleDeposit": "Depoziteaza de la",
-      "titleWithdraw": "Retrage catre"
-    },
-    "stakedAssets": "Staked OSMO",
     "table": {
       "columns": {
-        "assetChain": "Active / Retea",
-        "balance": "Balanta",
-        "deposit": "Depozit",
-        "transfer": "Transfer",
-        "withdraw": "Retragere"
+        "balance": "Balanta"
       },
       "depositButton": "Depoziteaza",
-      "hideZero": "Ascunde balantele zero",
-      "hideBalances": "Balante mascate",
-      "preTransfer": {
-        "currentBal": "Balanta Curenta",
-        "deposit": "Depoziteaza",
-        "withdraw": "Retrage"
-      },
       "search": "Filtreaza dupa simbol",
-      "sort": {
-        "balance": "Balanta",
-        "network": "Retea",
-        "symbol": "Simbol"
-      },
-      "title": "Active",
       "withdrawButton": "Retrage",
       "activate": "Activati",
       "marketCap": "Capitalizarea pieței",
@@ -214,72 +149,18 @@
       "lastWeek": "Ultimele 7 zile",
       "asset": "Atu"
     },
-    "totalAssets": "Total",
     "totalBalance": "Sold total",
     "transfer": {
-      "availableMobile": "Disponibil",
-      "availableOn": "Disponibil pe {network}",
       "approving": "Se aprobă...",
-      "givePermission": "Acordați permisiunea de a folosi jetoane",
-      "enterAddress": "Adresa {network}",
+      "approveInWallet": "Aprobați în portofel",
       "errors": {
-        "insufficientBal": "Balanta Insuficienta",
-        "insufficientFee": "Taxa Insuficienta",
-        "reconnectWallet": "Reconecteaza {walletName}",
-        "wrongNetworkInWallet": "Retea gresita in {walletName}",
-        "seeRequest": "Vezi solicitarea în {walletName}",
-        "noQuotesAvailable": "Nu există oferte disponibile",
-        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
-        "invalidAddress": "Adresă invalidă",
-        "missingAddress": "Adresa lipsă"
+        "seeRequest": "Vezi solicitarea în {walletName}"
       },
-      "from": "De la",
       "loading": "Se incarca",
-      "titleDeposit": "Depoziteaza {coinDenom}",
-      "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
-      "transferFee": "Taxa transfer",
-      "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
-      "expectedOutput": "Rezultat așteptat",
-      "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
       "priceImpact": "Impactul prețului",
       "sending": "Se trimite...",
       "transferAnyway": "Transfer oricum"
-    },
-    "transferAssetSelect": {
-      "buttonNext": "Urmatorul",
-      "deposit": "Depozit",
-      "network": "Retea",
-      "withdraw": "Retragere"
-    },
-    "unbondedAssets": "Deblocate",
-    "nomic": {
-      "addresses": "adrese.",
-      "bitcoin": "Bitcoin (BTC)",
-      "bitcoinMinerFee": "Taxa Bitcoin Miner",
-      "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",
-      "bridgeFee": "Taxa Nomic Bridge",
-      "confirmations": "6 confirmări",
-      "enterBitcoinAddress": "Introduceți adresa Bitcoin",
-      "estimatedArrival": "Sosire estimată",
-      "estimatedTimeTag": "Timpul estimat",
-      "estimatedTime": "5 minute",
-      "expirationTime": "4 zile",
-      "learnMore": "Aflați mai multe la",
-      "lossOfFunds": "Utilizarea adresei după această oră va duce la pierderea fondurilor.",
-      "minDeposit": "Depozit minim",
-      "minWithdrawal": "Retragere minimă",
-      "nomicCapacityLimit": "Nomic are o limită de capacitate de",
-      "onlyUse": "Folosiți numai",
-      "pendingDeposits": "Depuneri în așteptare",
-      "poweredBy": "Cu sprijinul",
-      "proceed": "Continua",
-      "depositExpiration": "Această adresă de depozit expiră în",
-      "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
-      "warning": "AVERTIZARE:",
-      "loading": "Se încarcă..."
     },
     "activateUnverifiedAssetsModal": {
       "activate": "Activați activele neverificate",
@@ -311,30 +192,65 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    },
-    "balancesMovedTitle": "Îți cauți soldurile?",
-    "balancesMovedDescription": "Accesați pagina Portofoliu, noua casă pentru soldurile dvs. și multe altele."
+    }
+  },
+  "cypherCard": {
+    "cypherSpend": "Plată osmoză",
+    "cypherOrder": "Comanda cardul tau acum",
+    "cypherBeta": "Beta",
+    "acceptedEverywhere": "OSMO dvs., acum acceptat peste tot",
+    "newPill": "Nou"
   },
   "portfolio": {
     "buy": "Cumpără",
-    "yourAssets": "Activele tale",
+    "sell": "Vinde",
+    "yourBalances": "Soldurile tale",
     "yourPositions": "Pozițiile tale",
-    "recentTransfers": "Transferuri recente",
+    "searchBalances": "Căutați solduri",
     "yourSuperchargedPositions": "Pozițiile tale Supercharged",
     "yourLiquidityPools": "Fondurile dvs. de lichiditate",
     "connectWallet": "Conectați-vă portofelul pentru a începe să vă urmăriți soldurile și pozițiile pe Osmosis.",
     "noAssets": "Nu aveți solduri pe {osmosis}",
     "getStarted": "Depuneți active pentru a începe",
     "noPositions": "Nu ai posturi",
-    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate"
+    "unlockPotential": "Deblocați-vă întregul potențial de câștig și puneți-vă activele în funcțiune cu fonduri de lichiditate",
+    "allocation": "Alocare",
+    "available": "Disponibil",
+    "staked": "Mizat",
+    "unstaking": "Dezlegarea",
+    "unclaimedRewards": "Recompense nerevendicate",
+    "pooled": "Adunate",
+    "other": "Alte",
+    "all": "Toate",
+    "assets": "Active",
+    "recentActivity": "Activitate recentă",
+    "seeAll": "Vezi toate",
+    "showHidden": "Afișați ascunse ( {hiddenDustCount} )",
+    "hideSmallBalances": "Ascunde soldurile mici",
+    "openOrders": "Comenzi deschise",
+    "last24h": "Ultimele 24 de ore",
+    "last7d": "Ultimele 7 zile",
+    "last30d": "Ultimele 30 de zile",
+    "last1y": "Ultimul 1 an",
+    "allTime": "Tot timpul",
+    "trade": "Comerț",
+    "earn": "Câştiga",
+    "deposit": "Depozit",
+    "withdraw": "Retrage",
+    "convert": "Convertit"
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
+    "cryptoFiatInput": {
+      "insufficientFunds": "Fonduri insuficiente"
+    },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Alegeți rampa fiat",
+      "chooseOnramp": "Cumpărați cripto",
       "kadoSubtitle": "Acceptă OSMO, USDC",
+      "moonpaySubtitle": "Suporta OSMO, USDC",
       "transakSubtitle": "Acceptă OSMO",
-      "onrampMoneySubtitle": "Suporta OSMO, USDC"
+      "onrampMoneySubtitle": "Suporta OSMO, USDC",
+      "moonpayCountrySupport": "Peste 165 de țări"
     },
     "incentive": {
       "title": "Tipuri de stimulente"
@@ -352,11 +268,6 @@
     "show": {
       "less": "Vezi mai putin",
       "more": "Vezi mai mult"
-    },
-    "sort": {
-      "mobileMenu": "Sorteaza dupa",
-      "SORT": "Sorteaza dupa",
-      "SORTMobile": "Sorteaza"
     },
     "table": {
       "poolId": "Pool-ul #{id}",
@@ -406,17 +317,15 @@
     "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
     "invalidAmounts": "Sume nevalide",
     "txTimedOutError": "Tranzacția a expirat. Vă rugăm să reîncercați.",
-    "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua."
+    "insufficientFee": "Sold insuficient pentru taxele de tranzacție. Vă rugăm să adăugați fonduri pentru a continua.",
+    "noData": "Nu există date",
+    "noOrderbook": "Fără carnet de comandă pentru pereche",
+    "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
+    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
+    "startAgain": "Incepe din nou"
   },
+  "estimated": "Estimată",
   "frontierMigration": {
-    "introducingUnverifiedAssets": "Introducerea activelor neverificate",
-    "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
-    "frontierHasNowMerged": "Pagina Frontier a fuzionat acum cu",
-    "thisMeansManaging": "Acest lucru înseamnă că gestionarea token-urilor poate fi făcută convenabil într-un singur loc!",
-    "commitmentToDecentralization": "În linie cu angajamentul pentru descentralizare și accesibilitate, opțiunea de a gestiona token-uri neverificate este încă disponibilă.",
-    "settingIsNowEnabled": "Setarea este acum activată.",
-    "youMayDisable": "puteți dezactiva această setare oricând în modalul de setări.",
-    "openSettings": "Deschide setările",
     "proceed": "Continuați"
   },
   "lockToken": {
@@ -439,7 +348,6 @@
     "pools": "Pool-uri",
     "stake": "Actiuni",
     "store": "Aplicații",
-    "swap": "Schimba",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
     "trade": "Pro Trading",
@@ -449,56 +357,16 @@
     "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
     "new": "NOU",
-    "settings": "Setări",
-    "notifications": "Notificări"
-  },
-  "notifi": {
-    "saveChanges": "Salvează modificările",
-    "unsupportedHistoryTitle": "Notificare neacceptată",
-    "unsupportedHistoryMessage": "Ups! Ceva a mers prost. Vă rugăm să ne anunțați",
-    "getStartedHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "getStartedHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "getStartedHistoryTitle2": "Cum să începeți tranzacționarea",
-    "getStartedHistoryMessage2": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "getStartedHistoryTitle3": "Cum să depuneți fonduri",
-    "getStartedHistoryMessage3": "Aflați cum să depuneți fonduri pe Osmosis",
-    "signupDummyHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "signupDummyHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "signupDummyHistoryTitle2": "Cum se depozitează active",
-    "signupDummyHistoryMessage2": "Aflați cum să transferați fonduri pe Osmosis",
-    "signupDummyHistoryTitle3": "Cum să începeți tranzacționarea",
-    "signupDummyHistoryMessage3": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "outboundTransferHistoryTitle": "Transfer ieșire prin osmoză",
-    "outboundTransferHistoryMessage": "Cantitate",
-    "poolExitedHistoryTitle": "Bazin de osmoză a ieșit",
-    "poolExitedHistoryMessage": "ID-ul piscinei",
-    "poolJoinedHistoryTitle": "S-a alăturat piscinei cu osmoză",
-    "poolJoinedHistoryMessage": "Jeton",
-    "swapHistoryTitle": "Schimb de osmoză confirmat",
-    "swapHistoryMessage": "schimbat la",
-    "emptyHistoryTitle": "Fara titlu",
-    "emptyHistoryMessage": "Niciun mesaj",
-    "assetReceivedHistoryTitle": "Activ primit",
-    "assetReceivedHistoryMessage": "Cantitate",
-    "positionOutOfRangeHistoryTitle": "Poziție în afara intervalului",
-    "positionOutOfRangeHistoryMessage": "Poziția dvs. de LP este în afara intervalului",
-    "signupPageTitle": "Notificările sunt acum disponibile.",
-    "signupPageMessage": "Nu ratați niciodată o actualizare importantă din nou, de la noi listări de simboluri până la stări critice ale pozițiilor.",
-    "signupPageButton": "Activați notificările",
-    "loadMore": "Incarca mai mult",
-    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
-    "discardButton": "Renunțați la modificări",
-    "clearAllHistory": "Curata tot"
+    "settings": "Setări"
   },
   "oneClickTrading": {
     "toast": {
       "oneClickTradingActive": "1-Faceți clic pe Tranzacționare activă",
-      "oneClickTradingExpired": "Tranzacționarea cu 1 clic a expirat",
       "oneClickTradingDisabled": "1-Click Trading este dezactivat",
       "currentlyUnavailable": "1-Click Trading nu este disponibil momentan",
+      "insufficientFunds": "Fonduri OSMO insuficiente pentru tranzacționarea cu 1 clic",
+      "continueWithoutOneClickTrading": "Continuați fără tranzacționare cu 1 clic",
       "networkFeeTooHigh": "Taxa de rețea prea mare",
-      "enableOneClickTrading": "Activați tranzacționarea cu 1 clic",
-      "increaseFeeLimit": "Creșteți limita taxei de rețea",
       "approveManually": "Aprobați manual în {walletName}",
       "continueWithWallet": "Continuați cu portofelul",
       "sessionEnded": "Sesiunea s-a încheiat pe acest dispozitiv",
@@ -511,56 +379,52 @@
       "introducingSubtitle": "Efectuați tranzacții mai rapide și mai ușoare, fără bătaia de cap a aprobărilor multiple pentru portofel.",
       "learnMore": "Află mai multe",
       "startTradingButton": "Începeți tranzacționarea cu 1 clic",
-      "defaultParameters": "Tranzacționarea cu 1 clic va fi activă timp de 1 oră pe acest dispozitiv, cu o limită de cheltuieli de 5.000 USD",
-      "changeButton": "Schimbare"
-    },
-    "swapRotatingBanner": {
-      "tradeQuickerAndEasier": "Comerț mai rapid și mai ușor",
-      "startOneClickTradingNow": "Începeți acum tranzacționarea cu 1 clic",
-      "iconAlt": "1-Click Trading Small Logo"
+      "defaultParameters": "Setările implicite sunt setate la 1 oră cu o limită de protecție împotriva pierderilor de 5.000 USD.",
+      "changeButton": "Editeaza setarile"
     },
     "floatingBanner": {
-      "newPill": "Nou",
-      "title": "1-Click Trading",
-      "tradeFasterButton": "Comerț mai rapid"
+      "newPill": "Nou"
+    },
+    "reviewOrder": {
+      "recapRowTitle": "1-Faceți clic pe Limită de tranzacționare",
+      "enableTitle": "Începeți tranzacționarea cu 1 clic",
+      "enableDescription": "Tranzacționare mai rapidă și mai ușoară",
+      "paramsDescription": "Sesiune {sessionLength} {spendLimit}",
+      "defaultSpendLimit": "5.000 USD",
+      "change": "Schimba",
+      "edit": "Edita",
+      "exceeded": "Depășit",
+      "exceededTooltip": {
+        "title": "Depășește limita curentă de protecție împotriva pierderilor",
+        "body": "Va trebui să aprobați manual această tranzacție în portofel."
+      }
+    },
+    "sessionPeriods": {
+      "1hour": "1 oră",
+      "1day": "1 zi",
+      "7days": "7 zile",
+      "30days": "30 de zile"
     },
     "settings": {
       "header": "1-Click Trading",
       "description": "Tranzacționarea cu 1 clic vă permite să tranzacționați în siguranță pe acest dispozitiv, fără bătaia de cap de a semna fiecare tranzacție din portofel.",
       "enableTitle": "Activați tranzacționarea cu 1 clic",
-      "spendLimitTitle": "Limita de cheltuieli",
-      "networkFeeLimitTitle": "Limită taxă de rețea",
+      "spendLimitTitle": "Limită de protecție împotriva pierderilor",
       "sessionPeriodTitle": "Perioada de sesiune",
       "startButton": "Începeți tranzacționarea cu 1 clic",
       "editSessionButton": "Salvează modificările",
       "endingSession": "Încheierea sesiunii",
       "feeToDisable": "Taxă pentru dezactivarea tranzacționării cu 1 clic:",
       "spendLimitScreen": {
-        "spendLimitDescription": "Setați suma maximă pe care o puteți cheltui într-o perioadă de sesiune de tranzacționare cu 1 clic.",
+        "spendLimitDescription": "Comerț fără limite pentru activele de încredere (top 50 după capitalizarea pieței).",
+        "spendLimitSubDescription": "Pentru toate celelalte active, setați o limită pentru valoarea maximă tranzacționabilă înainte de a solicita aprobarea manuală a portofelului. Taxele de tranzacționare sunt, de asemenea, luate în considerare pentru această limită.",
         "fixedAmount": "Cantitate fixă",
         "shareOfBalance": "Ponderea soldului",
-        "shareOfBalanceDescription": "{shareOfBalance} din soldul total pe osmoză valorează în prezent",
-        "fluctuationNotice": "Rețineți că valoarea în USD a limitei dvs. de cheltuieli se bazează pe valoarea activelor dvs., care poate fluctua."
-      },
-      "networkFeeLimitScreen": {
-        "title": "Limită taxă de rețea",
-        "description": "Setați suma maximă pe care o puteți cheltui pentru taxele de rețea pentru orice tranzacție unică în timpul sesiunii de tranzacționare cu 1 clic.",
-        "info": "Dacă o taxă depășește această sumă, puteți continua prin semnarea manuală a tranzacțiilor în portofel.",
-        "low": "Scăzut",
-        "average": "In medie",
-        "high": "Înalt",
-        "recommended": "Recomandat"
+        "shareOfBalanceDescription": "{shareOfBalance} din soldul total pe osmoză valorează în prezent"
       },
       "sessionPeriodScreen": {
         "title": "Perioada de sesiune",
-        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv.",
-        "periods": {
-          "10min": "10 minute",
-          "30min": "30 minute",
-          "1hour": "1 oră",
-          "3hours": "3 ore",
-          "12hours": "12 ore"
-        }
+        "description": "Setați o durată pentru a permite tranzacționarea cu 1 clic pe acest dispozitiv."
       },
       "discardChanges": {
         "title": "Renunțați la modificări?",
@@ -571,6 +435,7 @@
     },
     "welcomeBack": {
       "title": "Bine ai revenit",
+      "subtitle": "Conectați-vă portofelul pentru a continua explorarea Osmosis.",
       "description": "După ce vă conectați portofelul, vi se va solicita să aprobați o tranzacție pentru a începe sesiunea de tranzacționare cu 1 clic.",
       "toggleLabel": "1-Click Trading",
       "editParamsAriaLabel": "Modificați parametrii 1CT"
@@ -581,7 +446,10 @@
       "description": "Sesiunea dvs. de tranzacționare cu 1 clic va începe atunci când aprobați tranzacția în portofelul ales."
     },
     "profile": {
-      "sessionExpired": "Sesiunea a expirat"
+      "sessionExpired": "Setări",
+      "restart": "Repornire",
+      "tooltipHeader": "1-Faceți clic pe Setări de tranzacționare",
+      "resetSession": "Reporniți sau editați sesiunile de tranzacționare cu 1 clic din profilul dvs."
     }
   },
   "pool": {
@@ -669,8 +537,16 @@
       "undersandCost": "Inteleg ca adaugarea unui nou pool costa {POOL_CREATION_FEE}.",
       "weightedPool": "pool ponderat"
     },
-    "externalIncentivized": {
-      "TVL": "TVL"
+    "createSupercharged": {
+      "createNew": "Creați un nou bazin supraalimentat",
+      "addInitialLiquidity": "Adăugați lichiditate inițială la pool-ul # {poolNumber}",
+      "buttonAddToken": "Adăugați un nou token",
+      "base": "Baza",
+      "quote": "Citat",
+      "swapFee": "Setați taxa de schimb",
+      "undersandCost": "Înțeleg că crearea unui pool nou va costa {poolCreationFee} .",
+      "buttonCreate": "Creați pool",
+      "buttonCreating": "Crearea"
     },
     "TVL": "TVL",
     "myLiquidity": "Lichiditatea mea",
@@ -686,9 +562,7 @@
       "total": "DAE totală",
       "explainer": {
         "title": "Cum se calculează APR-urile?",
-        "p1": "Toate APR sunt estimări. Acestea sunt calculate luând DAE medie pentru lichiditatea din pool.",
-        "p2": "În piscinele supraalimentate, majoritatea utilizatorilor vor primi recompense mai mici. Acest lucru se datorează pozițiilor mai concentrate, care captează mai multe stimulente.",
-        "p3": "Pentru a menține estimările conservatoare, toate APR sunt împărțite cu un factor de 3."
+        "subtitle": "Toate APR sunt estimări bazate pe ultimele 7 zile. Pe măsură ce volumul comerțului și prețul fluctuează, DAE se va modifica în consecință. Intervalul afișat se bazează pe următoarele.<inlang-LineFeed>\nPentru piscinele supraalimentate, limita inferioară se referă la poziții conservatoare, de gamă completă. Acest lucru poate duce la o DAE extrem de scăzută, deoarece lichiditatea este răspândită în toate tranzacțiile. Limita superioară este calculată pentru o poziție cu o concentrație de 30% în jurul prețului spot. Rețineți că o poziție nu va mai câștiga dacă iese din interval."
       }
     }
   },
@@ -718,7 +592,9 @@
   },
   "search": {
     "noResultsFor": "Niciun rezultat pentru \" {query} \"",
-    "adjust": "Încercați să ajustați interogarea de căutare"
+    "adjust": "Încercați să ajustați interogarea de căutare",
+    "noPools": "Fara piscine",
+    "poolsEmpty": "În prezent, nu există pool-uri pentru {denom} pe osmoză"
   },
   "stake": {
     "available": "Disponibil",
@@ -821,39 +697,30 @@
   },
   "swap": {
     "autoRouter": "Traseu",
-    "autoRouterToggle": {
-      "hide": "Ascunde",
-      "show": "Arata"
-    },
-    "maxButtonErrorNoBalance": "Sold insuficient pentru a calcula suma maximă.",
-    "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
-    "expectedOutput": "Rezultat asteptat",
-    "fee": "Taxa schimb ({fee})",
-    "networkFee": "Taxa de retea",
-    "totalFee": "Taxa totală",
     "HALF": "JUMATATE",
-    "MAX": "MAXIM",
-    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
     "pool": "Pool #{id}",
-    "priceImpact": "Impact pret",
     "routerTooltipFee": "Taxa",
     "routerTooltipSpreadFactor": "Factorul de răspândire",
-    "continueAnyway": "Continua oricum",
-    "warning": {
-      "exceedsSpendLimit": "Acest schimb depășește limita de cheltuieli rămasă pentru tranzacționarea cu 1 clic.",
-      "exceedsNetworkFeeLimit": "Acest schimb depășește limita taxei de rețea pentru tranzacționarea cu 1 clic.",
-      "increaseSpendLimit": "Creșteți limita de cheltuieli",
-      "increaseNetworkFeeLimit": "Creșteți limita taxei de rețea"
-    },
+    "showDetails": "Arata detaliile",
+    "hideDetails": "Ascunde",
     "settings": {
-      "slippage": "Toleranta modificare pret",
-      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent.",
-      "title": "Setari tranzactie"
+      "slippage": "Toleranta modificare pret"
     },
     "title": "Schimb",
-    "dynamicSpreadFactor": "Dinamic"
+    "dynamicSpreadFactor": "Dinamic",
+    "gas": {
+      "oneClickTradingError": "Taxa de rețea nu poate fi estimată în acest moment. Dacă taxa depășește limita taxei de rețea de tranzacționare cu 1 clic, veți putea continua cu aprobarea manuală în portofel.",
+      "error": "Taxa de rețea nu poate fi estimată în acest moment. Verificați taxele de rețea în portofel înainte de a aproba tranzacția.",
+      "gasEstimationError": "Taxa de rețea nu poate fi estimată",
+      "unknown": "Necunoscut",
+      "additionalNetworkFee": "Taxă suplimentară de rețea"
+    },
+    "noRoutes": "Nu au fost găsite rute",
+    "route": "traseu",
+    "routes": "trasee",
+    "slippageOverBalance": "Fonduri insuficiente pentru a acoperi derapajul"
   },
   "walletSelect": {
     "gettingStarted": "Noțiuni de bază",
@@ -872,6 +739,7 @@
     "approveOneClickTradingSession": "Aprobați tranzacționarea cu 1 clic în {walletName} .",
     "errorInitializingOneClickTradingSession": "Tranzacționarea cu 1 clic nu a putut fi activată.",
     "retryInWalletOrContinue": "Încercați din nou în {walletName} sau continuați fără tranzacționarea cu un singur clic.",
+    "retryInWalletOrContinueNoFunds": "Nu sunt suficiente fonduri pentru a începe sesiunea. Depuneți mai mult și încercați din nou în {walletName} sau continuați fără tranzacționarea cu un singur clic.",
     "continueWithoutOneClickTrading": "Continuați fără tranzacționare cu 1 clic",
     "retry": "Reîncercați",
     "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
@@ -890,6 +758,7 @@
     "mobileWallets": "Portofele Mobile",
     "installedWallets": "Portofele Instalate",
     "otherWallets": "Alte Portofele",
+    "searchWallets": "Căutați portofele",
     "step1Title": "Ce sunt portofelele?",
     "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
     "step2Title": "Fără conturi. Fără parole.",
@@ -897,7 +766,12 @@
     "step3Title": "Cheile dvs., fondurile dvs.",
     "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
     "step4Title": "Creați un portofel pentru a începe",
-    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
+    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active.",
+    "yourConnectedWallets": "Portofelele dvs. conectate",
+    "primaryWallet": "Portofelul principal",
+    "done": "Terminat",
+    "manage": "Administra",
+    "disconnect": "Deconectat"
   },
   "swapFailed": "Schimbarea a eșuat. Este posibil ca lichiditatea să nu fie suficientă. Încercați să reglați alunecarea permisă.",
   "transactionBroadcasting": "Transmitere tranzactie",
@@ -908,12 +782,22 @@
     "withdraw": "Retrage",
     "fromNetwork": "Din rețea",
     "toNetwork": "La rețea",
+    "from": "De la",
+    "to": "Către",
     "max": "Max",
+    "pendingApproval": "Aprobare in asteptare",
     "available": "disponibil",
+    "connectTo": "Conectați-vă la {network}",
     "transferWith": "Transfer cu",
     "transferTo": "Transfer către",
     "receiveAsset": "Primiți activ",
-    "receiveAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "transfer": "Transferați {denom}",
+    "changeNetworkInWallet": "Schimbați rețeaua în portofel",
+    "receive": "Primiți {denom}",
+    "selectDepositWallet": "Selectați portofelul {network}",
+    "selectWithdrawWallet": "Selectați portofelul {network}",
+    "depositAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
+    "withdrawAssetDescription": "Când retrageți anumite active, puteți alege ce versiune a activului doriți să primiți în rețeaua de destinație.",
     "estimatingTime": "Estimarea timpului",
     "calculatingFees": "Calcularea taxelor",
     "reviewDeposit": "Verificați depozitul",
@@ -921,15 +805,133 @@
     "moreDepositOptions": "Mai multe opțiuni de depunere",
     "moreWithdrawOptions": "Mai multe opțiuni de retragere",
     "convertTo": "Schimba in",
+    "depositAs": "Depozit ca",
+    "withdrawAs": "Retrage ca",
     "recommended": "Recomandat",
+    "fee": "taxa",
+    "fees": "taxe",
+    "unknown": "Necunoscut",
+    "unknownFeeTooltip": "În prezent, taxele de rețea pentru {networkName} nu pot fi calculate. Taxele de rețea ar trebui să fie afișate în portofel după aprobarea tranzacției.",
+    "free": "Gratuit",
+    "cheapest": "Cele mai ieftine",
+    "fastest": "Cel mai rapid",
+    "stepLabels": {
+      "asset": "Atu",
+      "amount": "Cantitate",
+      "review": "Revizuire",
+      "deposit": "Depozit"
+    },
     "moreBridgeOptions": {
       "titleDeposit": "Mai multe opțiuni de depunere",
       "titleWithdraw": "Mai multe opțiuni de retragere",
-      "descriptionDeposit": "Alegeți dintre următorii furnizori alternativi pentru a vă depune {asset} la {chain} .",
-      "descriptionWithdraw": "Alegeți dintre următorii furnizori alternativi pentru a vă retrage {asset} la {chain} .",
+      "depositDescriptionUnknown": "Pentru a depune {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "withdrawDescriptionUnknown": "Pentru a retrage {denom} , vă rugăm să utilizați un furnizor alternativ.",
+      "singleDescriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "singleDescriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați {service} .",
+      "descriptionDeposit": "Pentru a depune {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "descriptionWithdraw": "Pentru a retrage {denom} din {networkA} în {networkB} , vă rugăm să utilizați unul dintre următorii furnizori alternativi.",
+      "chooseAnAlternativeProviderDeposit": "Alegeți un furnizor alternativ pentru a depune {asset} de la {fromChain} la {toChain}",
+      "chooseAnAlternativeProviderWithdraw": "Alegeți un furnizor alternativ pentru a retrage {asset} de la {fromChain} la {toChain}",
       "depositWith": "Depozit cu",
       "withdrawWith": "Retrage cu"
-    }
+    },
+    "assetSelectScreen": {
+      "titleDeposit": "Selectați un activ de depus",
+      "titleWithdraw": "Selectați un activ de retras",
+      "searchAssets": "Căutați active"
+    },
+    "bridgeNetworkSelect": {
+      "title": "Selecteaza reteaua",
+      "searchPlaceholder": "Căutați rețele acceptate"
+    },
+    "pendingWithdraw": "Retragere în curs",
+    "pendingDeposit": "Depozit în curs",
+    "amountToChain": "{amount} la {chain}",
+    "amountFromChain": "{amount} din { {chain}",
+    "amountFailedToWithdraw": "{amount} Retragere eșuată",
+    "completedWithdraw": "Retragere finalizată",
+    "completedDeposit": "Depozit finalizat",
+    "failedWithdraw": "Retragerea a eșuat",
+    "failedDeposit": "Depunerea nu a reușit",
+    "connectionError": "Eroare de conexiune",
+    "transferDetails": "Detalii transfer",
+    "provider": "Furnizor",
+    "estimatedTime": "Timpul estimat",
+    "providerFees": "Taxe de furnizor",
+    "networkFee": "Taxa de rețea {networkName}",
+    "totalFees": "Taxele totale",
+    "estimatedAmountReceived": "Suma estimată primită",
+    "slippageWarning": "Ieșirea așteptată pentru această tranzacție este semnificativ mai mică decât suma de intrare, ceea ce poate duce la primirea unei alte sume finale decât cele așteptate.",
+    "priceImpactWarning": "Impactul asupra prețului acestei tranzacții este {priceImpact} , care poate influența suma finală primită.",
+    "confirm": "A confirma",
+    "cancel": "Anulare",
+    "confirmDepositTo": "Confirmați depunerea către {chain}",
+    "confirmWithdrawTo": "Confirmați retragerea la {chain}",
+    "reviewDepositP": "Verificați detaliile depunerii înainte de a confirma. Odată depusă, tranzacția dvs. este ireversibilă.",
+    "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă.",
+    "lookingForBalances": "Caut echilibre",
+    "dontForgetFees": "Nu uita de taxe!",
+    "feesReserved": "O mică parte din soldul dvs. total {assetName} a fost rezervată pentru a plăti taxe pentru {networkName} .",
+    "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",
+    "recipientAddress": "Adresa destinatarului pe {chain}",
+    "enterAddress": "Introduceți o adresă",
+    "sendToAnotherAddress": "Trimite la o altă adresă",
+    "invalidAddress": "Adresă {chain} nevalidă",
+    "acknowledgement": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului sau încerc să mă retrag la un schimb.",
+    "acknowledgementWithoutExchange": "Recunosc și accept riscurile de pierdere a fondurilor dacă furnizez o adresă incorectă a destinatarului.",
+    "done": "Terminat",
+    "transferFrom": "Transfer de la {noun}",
+    "transferWithNoun": "Transferați cu {noun}",
+    "risks": "Conducerea vine cu riscuri.",
+    "learnMore": "Află mai multe",
+    "openNoun": "Deschideți {noun}",
+    "accountNotFound": "Contul nu a fost găsit",
+    "sendFundsToAccount": "Vă rugăm să trimiteți un indicativ de gaz în contul dvs. {chain} înainte de a transfera {asset} .",
+    "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
+    "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
+    "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
+    "assetWithdrawalsUnavailable": "Retragerile {asset} nu sunt disponibile",
+    "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
+    "noAvailableWithdrawals": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să setați o aplicație alternativă pentru a vă transfera fondurile de la Osmosis.",
+    "somethingIsntWorking": "Ceva nu merge…",
+    "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să reîmprospătați pagina și să încercați din nou sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
+    "assetIsCurrentlyUnstable": "Transferurile {asset} sunt momentan instabile",
+    "transferWillLikelyTakeLonger": "Transferurile vor dura probabil mai mult decât de obicei sau pot eșua complet. Procedați pe propriul risc.",
+    "sendFromWalletOrExchange": "Trimiteți din portofel sau schimb",
+    "scanWithMobileWallet": "Scanați cu portofelul mobil",
+    "or": "sau",
+    "copied": "Copiat",
+    "copyToClipboard": "Copiați în clipboard",
+    "showQrCode": "Afișați codul QR",
+    "yourDepositAddress": "Adresa dvs. de depunere {denom}",
+    "copyAddressToClipboard": "Copiați adresa în clipboard",
+    "copyAddress": "Copiați adresa",
+    "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
+    "minimumDeposit": "Depozit minim",
+    "nomic": {
+      "estimatedTime": "Aproximativ 1 oră",
+      "awaitingBtc": "În așteptarea BTC",
+      "transferringYourBtc": "Transferul dvs. BTC",
+      "depositStatus": "Starea depozitului",
+      "depositSuccess": "Depozit cu succes",
+      "pendingDeposit": "Depunerea în așteptare",
+      "estimatedAboutTime": "Estimată aproximativ {time}",
+      "from": "Din",
+      "to": "La",
+      "asset": "Atu",
+      "amountBtc": "Suma BTC",
+      "totalValue": "Valoarea totală",
+      "transactionHash": "Hash de tranzacție",
+      "viewOnExplorer": "Vizualizare pe explorer",
+      "totalFees": "Taxele totale"
+    },
+    "doNotSendFundsToThisAddress": "Nu trimiteți fonduri la această adresă.",
+    "addressExpired": "Această adresă a expirat. Vă rugăm să solicitați unul nou.",
+    "addressAboutToExpire": "Această adresă este pe cale să expire. Vă rugăm să solicitați o nouă adresă pentru a evita pierderea fondurilor.",
+    "createNewDepositAddress": "Creați o nouă adresă de depozit",
+    "transactionDetails": "Detalii tranzacție",
+    "confirmAmount": "Confirmați suma",
+    "enterBitcoinAddress": "Introdu adresa Bitcoin"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
@@ -951,14 +953,6 @@
       "title": "Magazin de aplicații Osmosis",
       "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
     },
-    "assets": {
-      "title": "Active de osmoză",
-      "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "portfolio": {
-      "title": "Portofoliu de osmoză",
-      "description": "Vizualizați-vă activele pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -972,30 +966,39 @@
     }
   },
   "tokenInfos": {
-    "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
-    "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
-    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
-    "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
+    "onOsmosis": "pe osmoză",
     "aboutDenom": "Despre {name}",
     "ariaView": "Vedeți {name}",
     "ariaViewOn": "Vedeți pe {name}",
     "collapse": "Colaps",
+    "info": {
+      "title": "Info",
+      "show": "Spectacol",
+      "collapse": "Colaps",
+      "moreStats": "Mai multe statistici"
+    },
     "followTheConversation": "Urmăriți conversația",
     "chart": {
       "xHour": "{h} H",
       "xDay": "{d} D",
       "xYear": "{y} Y",
-      "all": "TOATE"
+      "all": "TOATE",
+      "price": "Preț",
+      "volume": "Volum",
+      "advanced": "Avansat",
+      "simple": "Simplu"
     },
     "watchlist": "Lista de urmărire",
     "marketCapRank": "Poziția de capitalizare a pieței",
     "marketCap": "Capitalizarea pieței",
+    "fullyDilutedValuation": "Evaluare complet diluată",
+    "volume24h": "Volum total 24 de ore",
+    "volumeOnOsmosis": "Volum 24h pe osmoză",
+    "liquidityOnOsmosis": "Lichiditate pe osmoză",
     "circulatingSupply": "Aprovizionare în circulație",
-    "buyToken": "Cumpărați {coinDenom}",
-    "staking": "Miza",
-    "liquidityInOSMOPools": "Lichiditate în pool {number} {denom}",
+    "supplyOnOsmosis": "Alimentare pe osmoză",
     "underlyingAssets": {
       "title": "Activele suport",
       "description": "{name} ( {denom} ) pe osmoză este format din {count} tipuri diferite de {name} .",
@@ -1006,9 +1009,6 @@
     "osmosisUpdates": "Actualizări pentru osmoză!",
     "seeWhatsNew": "Vezi ce este nou"
   },
-  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
-  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
-  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
   "earnPage": {
     "title": "Câştiga",
     "positions": "Poziții",
@@ -1032,7 +1032,6 @@
     "resetFilters": "Resetați filtrele",
     "saveFilters": "Salvați filtrele",
     "rewards": "Recompense",
-    "estimatedInYearlyRewards": "Estimat în recompense anuale",
     "availableToClaim": "disponibil pentru revendicare",
     "claimAllRewards": "Revendicați toate recompensele",
     "join": "A te alatura",
@@ -1086,7 +1085,6 @@
       "veryHigh": "Foarte inalt"
     }
   },
-  "disclaimer": "Disclaimer",
   "remaining": "rămas",
   "timeUnits": {
     "second": "al doilea",
@@ -1094,14 +1092,19 @@
     "minute": "minut",
     "minutes": "minute",
     "hour": "ora",
-    "hours": "ore"
+    "hours": "ore",
+    "day": "zi",
+    "days": "zile"
   },
-  "unstableAssetsWarning": {
-    "titleDeposit": "{coinDenom} depozite instabile",
-    "titleWithdraw": "{coinDenom} retrageri instabile",
-    "description": "Din cauza unor probleme tehnice incerte, transferurile între Osmosis și {prettyChainName} pot întâmpina întârzieri semnificative sau eșecuri ale tranzacției. Procedați pe propriul risc.",
-    "buttonContinue": "Continua oricum",
-    "buttonCancel": "Anulare"
+  "timeUnitsShort": {
+    "second": "sec",
+    "seconds": "sec",
+    "minute": "min",
+    "minutes": "min",
+    "hour": "hr",
+    "hours": "hr",
+    "day": "zi",
+    "days": "zile"
   },
   "transactions": {
     "noRecent": "Fără transferuri recente",
@@ -1122,9 +1125,25 @@
     "totalFees": "Taxe totale",
     "transactionHash": "Hash de tranzacție",
     "viewOnExplorer": "Vizualizare pe explorer",
-    "launchAlert": "Momentan este afișat doar istoricul comerțului. Asistență pentru mai multe tipuri de tranzacții în curând.",
-    "noPriceData": "Datele de preț nu sunt disponibile",
-    "viewAll": "A vedea tot"
+    "launchAlert": "Momentan este afișat doar istoricul tranzacțiilor și transferurilor. Asistență pentru mai multe tipuri de tranzacții în curând.",
+    "history": "Istorie",
+    "orders": "Comenzi",
+    "historyTable": {
+      "pendingDeposit": "Depunerea în așteptare",
+      "pendingWithdraw": "În așteptarea retragerii",
+      "successDeposit": "Depus",
+      "successWithdraw": "S-a retras",
+      "failDeposit": "Depunerea nu a reușit",
+      "failWithdraw": "Retragerea a eșuat"
+    },
+    "transfer": {
+      "asset": "Atu",
+      "amountAsset": "Suma {asset}",
+      "totalValue": "Valoarea totală",
+      "providerFee": "Taxa de furnizor",
+      "provider": "Furnizor",
+      "networkFee": "Taxa de retea"
+    }
   },
   "date": {
     "earlierToday": "Mai devreme astazi",
@@ -1134,5 +1153,168 @@
   "pagination": {
     "older": "Mai batran",
     "newer": "Mai nou"
+  },
+  "limitOrders": {
+    "floatingBanner": {
+      "title": "Alege-ți prețul",
+      "tryLimitOrders": "Încercați comenzi limită"
+    },
+    "historyTable": {
+      "columns": {
+        "order": "Ordin",
+        "amount": "Cantitate",
+        "price": "Preț",
+        "orderPlaced": "Comandă plasată",
+        "status": "stare"
+      },
+      "emptyState": {
+        "title": "Fără comenzi recente",
+        "subtitle": "Istoricul comenzilor dvs. comerciale va apărea aici.",
+        "connectTitle": "Conectați-vă portofelul pentru a vedea istoricul comenzilor",
+        "connectSubtitle": "Comenzile dumneavoastră limită anterioare pentru Osmosis vor apărea aici."
+      }
+    },
+    "aboveMarket": {
+      "title": "Preț limită peste prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "belowMarket": {
+      "title": "Preț limită sub prețul pieței",
+      "description": "Dacă continuați, comanda dumneavoastră va fi procesată ca un ordin de piață la prețul pieței."
+    },
+    "enterAnAmountTo": "Introduceți o sumă la",
+    "toSell": "a vinde",
+    "toBuy": "să cumpere",
+    "sell": "Vinde",
+    "sold": "Vândut",
+    "percentFilled": "Procent umplut",
+    "status": "Stare",
+    "price": "Preţ",
+    "buy": "Cumpără",
+    "pay": "A plati",
+    "open": "Deschis",
+    "filled": "Umplut",
+    "claimable": "Revendicabil",
+    "claimAndClose": "Revendicați și închideți",
+    "close": "Aproape",
+    "claim": "Revendicare",
+    "accept": "Accept",
+    "cancelled": "Anulat",
+    "cancel": "Anulare",
+    "daysAgo": "{days} zi în urmă",
+    "hoursAgo": "{hours} h în urmă",
+    "buyWith": "Cumpărați cu {coinA} sau {coinB}",
+    "orderHistory": "Istoric comenzi",
+    "tradeAnotherAssetOr": "Schimbă alt activ pentru {coinA} sau {coinB}",
+    "tradeAnotherAsset": "Schimbă alt activ pentru {coinDenom}",
+    "sellAnAsset": "Vinde un activ",
+    "swapAnAsset": "Schimbați un activ",
+    "of": "de",
+    "insufficientFunds": "Fonduri insuficiente",
+    "startTrading": "Începeți să tranzacționați",
+    "tradeFees": "Taxe de tranzacționare (când comanda este completată)",
+    "youNeed": "Ai nevoie",
+    "stablecoin": "stablecoin",
+    "quoteUpdated": "Citat actualizat",
+    "fundsOsmosisToBuyAssets": "fonduri pe Osmosis pentru a cumpăra active.",
+    "chooseAnOption": "Alegeți o opțiune pentru a continua.",
+    "lowerSlippageToleranceRecommended": "Se recomandă o toleranță mai mică la alunecare.",
+    "tryHigherSlippage": "Încercați o toleranță maximă la alunecare mai mare.",
+    "reviewTrade": "Examinați comerțul",
+    "errors": {
+      "noAssetAvailable": "Nu aveți fonduri {coinName} pe Osmosis cu care să tranzacționați. Alegeți o opțiune pentru a continua.",
+      "tradeMayResultInLossOfValue": "Tranzacția dvs. poate duce la pierderi semnificative de valoare",
+      "tradeMayNotExecuted": "Este posibil ca tranzacția dvs. să nu fie executată"
+    },
+    "transferFromAnotherNetwork": "Transfer din altă rețea sau portofel",
+    "whatIsOrderClaim": {
+      "title": "Ce este revendicarea ordinului?",
+      "description": "În majoritatea cazurilor, atunci când un ordin limită este completat, fondurile sunt adăugate automat la soldul dvs. Cu toate acestea, în unele cazuri rare, fondurile trebuie solicitate manual din comanda completată.<inlang-LineFeed>\nAcest proces de revendicare implică aprobarea unei singure tranzacții în portofel pentru toate comenzile completate nerevendicate care implică o taxă de rețea nominală."
+    },
+    "whatIsAStablecoin": {
+      "title": "Ce este o monedă stabilă?",
+      "description": "Monedele stabile sunt un tip de criptomonedă a cărui valoare este legată de un alt activ, cum ar fi o monedă fiat sau aurul, pentru a menține un preț stabil. Pe Osmosis, principalele monede stabile pentru cumpărarea și vânzarea de active sunt USDC și USDT."
+    },
+    "claimAll": "Revendica totul",
+    "addFunds": "Adăuga fonduri",
+    "selectAnAssetTo": {
+      "buy": "Selectați un activ de cumpărat",
+      "sell": "Selectați un activ pentru a vinde"
+    },
+    "payWith": "Plateste cu",
+    "receive": "A primi",
+    "swapFromAnotherAsset": "Schimbați de la un alt activ",
+    "connectYourWallet": "Conectați-vă portofelul",
+    "toSeeYourBalances": "pentru a vă vedea soldurile",
+    "searchAssets": "Căutați active",
+    "below": "de mai jos",
+    "above": "de mai sus",
+    "currentPrice": "pretul curent",
+    "whenDenomPriceIs": "Când prețul {denom} este",
+    "orderType": "Tip de comandă",
+    "confirm": "A confirma",
+    "market": "Piaţă",
+    "limit": "Limită",
+    "trade": "Comerț",
+    "swapToAnotherAsset": "Schimbați cu un alt activ",
+    "invalidPrice": "Preț nevalid",
+    "priceTooLow": "Pret prea mic",
+    "priceTooHigh": "Pret prea mare",
+    "unavailable": "Indisponibil pentru {denom}",
+    "orderHistoryHeaders": {
+      "past": "Trecut",
+      "pending": "In asteptarea",
+      "filled": "Comenzi completate pentru revendicare"
+    },
+    "priceReaches": "Dacă prețul {denom} atinge {price}",
+    "belowMinimumAmount": "{amount} minim"
+  },
+  "tradeDetails": {
+    "priceImpact": {
+      "header": "Ce este impactul prețului?",
+      "content": "Acesta este impactul pe care lichiditatea pieței îl are asupra prețului de execuție. Tranzacțiile mai mari tind să aibă un impact mai mare pe piață."
+    },
+    "expectedRate": {
+      "header": "Care este rata așteptată?",
+      "content": "Acesta este prețul pe care vă așteptați să îl primiți. Prețurile se schimbă frecvent, așa că dacă doriți să tranzacționați la un anumit preț, încercați în schimb un ordin limită."
+    },
+    "swapFees": {
+      "header": "Ce sunt comisioanele de swap?",
+      "content": "Acesta este comisionul perceput de protocolul Osmosis pentru a recompensa furnizorii de lichidități și a menține rețeaua."
+    },
+    "tradeRoute": {
+      "header": "Ce este o rută comercială?",
+      "contentTop": " Dacă nu există o piață directă între activele pe care le tranzacționați, Osmosis va încerca să facă tranzacția efectuând o serie de tranzacții cu alte active pentru a obține cel mai bun preț la un moment dat.",
+      "contentBottom": "Pentru o eficiență optimă pe baza lichidității disponibile, uneori tranzacțiile vor fi împărțite în mai multe rute cu active diferite."
+    },
+    "outputDifference": {
+      "header": "Care este diferența de ieșire?",
+      "content": "Aceasta este diferența de valoare dintre ceea ce plătești și ceea ce primești. Cifrele pozitive înseamnă că suma pe care o cumpărați valorează mai mult, în timp ce cifrele negative înseamnă că suma pe care o vindeți valorează mai mult."
+    }
+  },
+  "tradeFee": "Comision comercială",
+  "receiveAtLeast": "Primește cel puțin",
+  "payAtMost": "Plătește cel mult",
+  "previewAssetsEnabled": "Previzualizarea materialelor este activată",
+  "previewAssetsDisabled": "Previzualizarea materialelor a fost dezactivată",
+  "previewAssetsEnabledForSession": "Previzualizează materialele activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_preview_assets=false`.",
+  "alloyedAssets": {
+    "title": "Variante detectate",
+    "caption": "Spune-ți adio tuturor acelor variante de active confuze. Salutați-vă la o experiență mai simplă pe Osmoză.",
+    "remindMeLater": "Amintește-mi mai târziu",
+    "dismiss": "Respingeți",
+    "convert": "Convertit"
+  },
+  "assetVariantsConversion": {
+    "title": "Standardizați activele",
+    "description": "Convertiți următoarele elemente în versiunea lor standardizată pe Osmosis pentru mai multă flexibilitate și compatibilitate sporită.",
+    "learnMore": "Află mai multe",
+    "errorLoading": "Eroare la încărcarea variantelor de material, încercați din nou mai târziu.",
+    "tooltipTitle": "{coinName} pe osmoză",
+    "tooltipDescription": "Osmoza consolidează numeroase variante de {coinDenom} într-un singur activ pentru mai multă flexibilitate și ușurință în utilizare.",
+    "convert": "Convertit",
+    "conversionFees": "Taxe de conversie",
+    "free": "Gratuit",
+    "unavailable": "Momentan indisponibil. Încercați din nou mai târziu."
   }
 }

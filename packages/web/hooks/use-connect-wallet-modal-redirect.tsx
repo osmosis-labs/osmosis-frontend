@@ -22,14 +22,17 @@ import { useStore } from "~/stores";
  */
 export function useConnectWalletModalRedirect(
   actionButtonProps: ComponentProps<typeof Button>,
-  _onRequestClose: () => void,
-  connectWalletMessage = t("connectWallet")
+  _onRequestClose?: () => void,
+  connectWalletMessage = t("connectWallet"),
+  onConnect?: () => void
 ) {
-  const { accountStore, chainStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getWallet(chainId);
+  const { accountStore } = useStore();
+  const osmosisAccount = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { onOpenWalletSelect } = useWalletSelect();
+  const { onOpenWalletSelect, isLoading: isWalletLoading_ } = useWalletSelect();
+  const isWalletLoading =
+    isWalletLoading_ ||
+    osmosisAccount?.walletStatus === WalletStatus.Connecting;
 
   const [walletInitiallyConnected, setWalletInitiallyConnected] = useState(
     () => osmosisAccount?.walletStatus === WalletStatus.Connected
@@ -52,26 +55,36 @@ export function useConnectWalletModalRedirect(
     );
   }, [osmosisAccount?.walletStatus]);
 
+  const defaultChildren = (
+    <h6 className="flex items-center gap-3">
+      <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
+      {connectWalletMessage}
+    </h6>
+  );
+
   return {
     showModalBase: showSelf,
     accountActionButton:
+      isWalletLoading ||
       osmosisAccount?.walletStatus === WalletStatus.Connected ? (
-        <Button {...actionButtonProps}>{actionButtonProps.children}</Button>
+        <Button {...actionButtonProps}>
+          {actionButtonProps?.children ?? defaultChildren}
+        </Button>
       ) : (
         <Button
           {...actionButtonProps}
           disabled={false}
           onClick={() => {
             onOpenWalletSelect({
-              walletOptions: [{ walletType: "cosmos", chainId }],
+              walletOptions: [
+                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+              ],
+              onConnect,
             }); // show select connect modal
             setShowSelf(false);
           }}
         >
-          <h6 className="flex items-center gap-3">
-            <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
-            {connectWalletMessage}
-          </h6>
+          {defaultChildren}
         </Button>
       ),
     walletConnected: osmosisAccount?.walletStatus === WalletStatus.Connected,

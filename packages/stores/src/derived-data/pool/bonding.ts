@@ -1,15 +1,15 @@
 import {
+  ChainGetter,
+  HasMapStore,
+  IQueriesStore,
+} from "@osmosis-labs/keplr-stores";
+import {
   CoinPretty,
   Dec,
   IntPretty,
   PricePretty,
   RatePretty,
-} from "@keplr-wallet/unit";
-import {
-  ChainGetter,
-  HasMapStore,
-  IQueriesStore,
-} from "@osmosis-labs/keplr-stores";
+} from "@osmosis-labs/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
@@ -22,7 +22,6 @@ import { ObservableQueryGauge } from "../../queries/incentives";
 import {
   ObservableQueryActiveGauges,
   ObservableQueryPoolAprs,
-  ObservableQueryPoolFeesMetrics,
 } from "../../queries-external";
 import { ObservableSharePoolDetails } from "./share-pool-details";
 import { ObservableSuperfluidPoolDetails } from "./superfluid";
@@ -38,7 +37,6 @@ export class ObservableSharePoolBonding {
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
-      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPoolAprs: ObservableQueryPoolAprs;
     },
@@ -334,7 +332,6 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
     protected readonly externalQueries: {
-      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPoolAprs: ObservableQueryPoolAprs;
     },

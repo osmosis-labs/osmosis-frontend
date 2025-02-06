@@ -3,8 +3,8 @@ import { TxTracer } from "@osmosis-labs/tx";
 
 import { MockAssetLists } from "../../__tests__/mock-asset-lists";
 import { MockChains } from "../../__tests__/mock-chains";
-import { TransferStatusReceiver } from "../../interface";
-import { IBCTransferStatusProvider } from "../transfer-status";
+import { TransferStatusReceiver, TxSnapshot } from "../../interface";
+import { IbcTransferStatusProvider } from "../transfer-status";
 
 const makeRpcStatusResponse = (
   timeoutHeight: string,
@@ -67,18 +67,55 @@ jest.mock("@osmosis-labs/tx", () => ({
   })),
 }));
 
-describe("IBCTransferStatusProvider", () => {
-  let provider: IBCTransferStatusProvider;
+describe("IbcTransferStatusProvider", () => {
+  let provider: IbcTransferStatusProvider;
   let mockReceiver: jest.Mocked<TransferStatusReceiver>;
   let consoleSpy: jest.SpyInstance;
+
+  const createTxSnapshot = (
+    overrides: Partial<TxSnapshot> = {}
+  ): TxSnapshot => ({
+    direction: "deposit",
+    createdAtUnix: Date.now(),
+    type: "bridge-transfer",
+    provider: "IBC",
+    fromAddress: "osmo1fromaddress",
+    toAddress: "cosmos1toaddress",
+    osmoBech32Address: "osmo1osmoaddress",
+    fromAsset: {
+      denom: "OSMO",
+      address: "uosmo",
+      amount: "1000",
+      decimals: 6,
+    },
+    toAsset: {
+      denom: "ATOM",
+      address: "uatom",
+      amount: "500",
+      decimals: 6,
+    },
+    status: "pending",
+    sendTxHash: "ABC123",
+    fromChain: {
+      chainId: "osmosis-1",
+      prettyName: "Osmosis",
+      chainType: "cosmos",
+    },
+    toChain: {
+      chainId: "cosmoshub-4",
+      prettyName: "Cosmos Hub",
+      chainType: "cosmos",
+    },
+    estimatedArrivalUnix: Date.now() + 600,
+    ...overrides,
+  });
 
   beforeEach(() => {
     mockReceiver = {
       receiveNewTxStatus: jest.fn(),
     };
-    provider = new IBCTransferStatusProvider(MockChains, MockAssetLists);
+    provider = new IbcTransferStatusProvider(MockChains, MockAssetLists);
     provider.statusReceiverDelegate = mockReceiver;
-    // silences console errors and serves as a spy to test for calls
     consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   });
 
@@ -89,53 +126,61 @@ describe("IBCTransferStatusProvider", () => {
   });
 
   it("should handle numerical chain IDs - from chain ID", async () => {
-    const params = JSON.stringify({
-      sendTxHash: "ABC123",
-      fromChainId: 1,
-      toChainId: "osmosis-1",
+    const snapshot: TxSnapshot = createTxSnapshot({
+      fromChain: {
+        chainId: 1,
+        prettyName: "MockChain",
+        chainType: "evm",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
       new Error("Unexpected numerical chain ID for cosmos tx: 1")
     );
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "connection-error"
     );
   });
 
   it("should handle numerical chain IDs - to chain ID", async () => {
-    const params = JSON.stringify({
-      sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: 123,
+    const snapshot: TxSnapshot = createTxSnapshot({
+      toChain: {
+        chainId: 123,
+        prettyName: "MockChain",
+        chainType: "evm",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
       new Error("Unexpected numerical chain ID for cosmos tx: 123")
     );
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "connection-error"
     );
   });
 
   it("should handle invalid destTimeoutHeight", async () => {
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "cosmoshub-4",
+      toChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
     });
 
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -150,53 +195,68 @@ describe("IBCTransferStatusProvider", () => {
       },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
       new Error("Invalid destination timeout height: 123-0")
     );
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "connection-error"
     );
   });
 
   it("should handle failed transactions", async () => {
     (queryTx as jest.Mock).mockResolvedValue({
-      // positive error code = failed tx on chain
       tx_response: { code: 1 },
     });
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "osmosis-1",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "failed"
     );
   });
 
   it("should handle missing events", async () => {
     (queryTx as jest.Mock).mockResolvedValue({
-      tx_response: { code: 0, events: [] },
+      tx_response: { code: 0, raw_log: "", events: [] },
     });
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "osmosis-1",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "failed"
     );
   });
@@ -205,6 +265,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -219,20 +280,27 @@ describe("IBCTransferStatusProvider", () => {
       },
     });
     (queryRPCStatus as jest.Mock).mockResolvedValue(
-      // not timed out, but this is irrelevant since the traceTx promise resolves immediately
       makeRpcStatusResponse("90")
     );
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "cosmoshub-4",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "success"
     );
   });
@@ -241,6 +309,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -255,20 +324,27 @@ describe("IBCTransferStatusProvider", () => {
       },
     });
     (queryRPCStatus as jest.Mock).mockResolvedValue(
-      // not timed out, but this is irrelevant since the traceTx promise resolves immediately
       makeRpcStatusResponse("90", "osmosis-2")
     );
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "cosmoshub-4",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "success"
     );
   });
@@ -277,6 +353,7 @@ describe("IBCTransferStatusProvider", () => {
     (queryTx as jest.Mock).mockResolvedValue({
       tx_response: {
         code: 0,
+        raw_log: "",
         events: [
           {
             type: "send_packet",
@@ -291,32 +368,36 @@ describe("IBCTransferStatusProvider", () => {
       },
     });
     (queryRPCStatus as jest.Mock).mockResolvedValueOnce(
-      // times out since this response block time is greater than the timeout height (100)
       makeRpcStatusResponse("110")
     );
-    // cause a delay in the IBC ack tx trace to allow the timeout timeout to resolve first
     (TxTracer as jest.Mock).mockImplementation(() => ({
       traceTx: jest
         .fn()
         .mockReturnValueOnce(
-          // the mock returned block time should be about 900 ms, so 1500 ms
-          // should be enough to ensure the timeout trace resolves first in a stable way (timing in JS is not guaranteed)
           new Promise((resolve) => setTimeout(resolve, 1500))
         )
         .mockResolvedValueOnce(undefined),
       close: jest.fn(),
     }));
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "cosmoshub-4",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "cosmoshub-4",
+        prettyName: "Cosmos Hub",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "refunded"
     );
     expect(TxTracer).toHaveBeenCalledTimes(2);
@@ -325,32 +406,38 @@ describe("IBCTransferStatusProvider", () => {
   it("should handle unexpected errors", async () => {
     (queryTx as jest.Mock).mockRejectedValue(new Error("Network error"));
 
-    const params = JSON.stringify({
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "osmosis-1",
+      fromChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
+      toChain: {
+        chainId: "osmosis-1",
+        prettyName: "Osmosis",
+        chainType: "cosmos",
+      },
     });
 
-    await provider.trackTxStatus(params);
+    await provider.trackTxStatus(snapshot);
 
     expect(consoleSpy).toHaveBeenCalledWith(
       "Unexpected failure when tracing IBC transfer status",
       new Error("Network error")
     );
     expect(mockReceiver.receiveNewTxStatus).toHaveBeenCalledWith(
-      `IBC${params}`,
+      snapshot.sendTxHash,
       "connection-error"
     );
   });
 
-  it("should generate correct explorer url", async () => {
-    const params = JSON.stringify({
+  it("should generate correct explorer url", () => {
+    const snapshot: TxSnapshot = createTxSnapshot({
       sendTxHash: "ABC123",
-      fromChainId: "osmosis-1",
-      toChainId: "osmosis-1",
     });
 
-    const url = provider.makeExplorerUrl(params);
+    const url = provider.makeExplorerUrl(snapshot);
 
     expect(url).toBe(`https://www.mintscan.io/osmosis/txs/ABC123`);
   });

@@ -1,6 +1,6 @@
 import { apiClient } from "@osmosis-labs/utils";
 
-import { TIMESERIES_DATA_URL } from "../../env";
+import { HISTORICAL_DATA_URL } from "../../env";
 
 /**
  * Time frame represents the amount of minutes per bar, basically price every
@@ -39,7 +39,7 @@ export interface TokenHistoricalPrice {
 }
 
 export async function queryTokenHistoricalChart({
-  coinDenom,
+  coinMinimalDenom,
   timeFrameMinutes,
 }: {
   /**
@@ -47,16 +47,16 @@ export async function queryTokenHistoricalChart({
    *
    * Note: this can be both a symbol or a denom (coinMinimalDenom)
    * */
-  coinDenom: string;
+  coinMinimalDenom: string;
   /** Number of minutes per bar. So 60 refers to price every 60 minutes. */
   timeFrameMinutes: TimeFrame;
 }): Promise<TokenHistoricalPrice[]> {
   // collect params
   const url = new URL(
     `/tokens/v2/historical/${encodeURIComponent(
-      coinDenom
+      coinMinimalDenom
     )}/chart?tf=${timeFrameMinutes}`,
-    TIMESERIES_DATA_URL
+    HISTORICAL_DATA_URL
   );
   try {
     const response = await apiClient<
@@ -72,7 +72,7 @@ export async function queryTokenHistoricalChart({
     return response as TokenHistoricalPrice[];
   } catch (e) {
     throw new Error(
-      `Unexpected error while fetching historical price for token ${coinDenom}: ${e}`
+      `Unexpected error while fetching historical price for token ${coinMinimalDenom}: ${e}`
     );
   }
 }

@@ -1,5 +1,5 @@
-import { Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
+import { Dec, Int } from "@osmosis-labs/unit";
 
 import { PoolType } from "../types";
 
@@ -28,6 +28,22 @@ export interface Route {
 
 /** Represents a route through pools, with the initial amount in. */
 export interface RouteWithInAmount extends Route {
+  initialAmount: Int;
+}
+
+/** Single route through pools. */
+export interface OutRoute {
+  pools: ResultPool[];
+  // tokenOutDenoms means the token to come out from each pool.
+  // This should the same length with the pools.
+  // Route consists of token in -> pool -> token out -> pool -> token out...
+  // But, currently, only 1 intermediate can be supported.
+  tokenInDenoms: string[];
+  tokenOutDenom: string;
+}
+
+/** Represents a route through pools, with the initial amount in. */
+export interface RouteWithOutAmount extends OutRoute {
   initialAmount: Int;
 }
 
