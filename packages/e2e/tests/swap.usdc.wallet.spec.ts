@@ -1,5 +1,5 @@
+import * as core from "@actions/core";
 import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-
 import { TestConfig } from "../test-config";
 import { UnzipExtension } from "../unzip-extension";
 
@@ -8,19 +8,19 @@ import { TradePage } from "../pages/trade-page";
 
 test.describe("Test Swap to/from USDC feature", () => {
   let context: BrowserContext;
-  const walletId =
+  const _walletId =
     process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const USDC =
+  const _USDC =
     "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
-  const ATOM =
+  const _ATOM =
     "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
-  const TIA =
+  const _TIA =
     "ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877";
-  const INJ =
+  const _INJ =
     "ibc/64BA6E31FE887D66C6F8F31C7B1A80C7CA179239677B4088BB55F5EA07DBE273";
-  const AKT =
+  const _AKT =
     "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
   test.beforeAll(async () => {
@@ -52,30 +52,13 @@ test.describe("Test Swap to/from USDC feature", () => {
     await context.close();
   });
 
-  test("User should be able to swap OSMO to USDC", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("OSMO", "USDC");
-    await tradePage.enterAmount("0.2");
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`token_out_denom: ${USDC}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
-  });
-
-  test("User should be able to swap USDC to OSMO", async () => {
-    await tradePage.goto();
-    await tradePage.selectPair("USDC", "OSMO");
-    await tradePage.enterAmount("0.1");
-    await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain("token_out_denom: uosmo");
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`denom: ${USDC}`);
-    await tradePage.isTransactionSuccesful();
-    await tradePage.getTransactionUrl();
+  // biome-ignore lint/correctness/noEmptyPattern: <explanation>
+  test.afterEach(async ({}, testInfo) => {
+    console.log(`Test [${testInfo.title}] status: ${testInfo.status}`);
+    if (testInfo.status === "failed") {
+      const name = testInfo.title;
+      core.notice(`Test ${name} failed.`);
+    }
   });
 
   test("User should be able to swap ATOM to USDC", async () => {

@@ -245,10 +245,12 @@
       "insufficientFunds": "Недостаточно средств"
     },
     "fiatOnrampSelection": {
-      "chooseOnramp": "Выбирайте Фиат Онрамп",
+      "chooseOnramp": "Купить криптовалюту",
       "kadoSubtitle": "Поддерживает OSMO, USDC",
+      "moonpaySubtitle": "Поддерживает OSMO, USDC",
       "transakSubtitle": "Поддерживает ОСМО",
-      "onrampMoneySubtitle": "Поддерживает OSMO, USDC"
+      "onrampMoneySubtitle": "Поддерживает OSMO, USDC",
+      "moonpayCountrySupport": "165+ стран"
     },
     "incentive": {
       "title": "Типы стимулов"
