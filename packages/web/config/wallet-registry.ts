@@ -354,8 +354,55 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
 
       if (!galaxyStationWallet) return true;
 
-      const chainInfos = await galaxyStationWallet.getChainInfosWithoutEndpoints();
+      const chainInfos =
+        await galaxyStationWallet.getChainInfosWithoutEndpoints();
       return chainInfos.some((info) => info.chainId === chainId);
+    },
+    stakeUrl: "https://station.hexxagon.io/stake",
+    governanceUrl: "https://station.hexxagon.io/gov",
+    features: [],
+  },
+  {
+    ...CosmosKitWalletList["galaxy-station-mobile"],
+    logo: "/wallets/galaxy-station.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/galaxy-station-mobile").then(
+        (m) => m.GalaxyStationMobileWallet
+      ),
+    supportsChain: async (chainId) => {
+      const galaxyStationMobileAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "secret-4",
+        "regen-1",
+        "juno-1",
+        "stargaze-1",
+        "core-1", // Persistence,
+        "axelar-dojo-1",
+        "sommelier-3",
+        "umee-1",
+        "agoric-3",
+        "gravity-bridge-3",
+        "evmos_9001-2",
+        "crypto-org-chain-mainnet-1",
+        "stride-1",
+        "injective-1",
+        "mars-1",
+        "columbus-5", // Terra Classic
+        "quasar-1",
+        "quicksilver-2",
+        "omniflixhub-1",
+        "kyve-1",
+        "neutron-1",
+        "gitopia",
+        "likecoin-mainnet-2",
+        "akashnet-2",
+        "phoenix-1",
+      ];
+
+      return galaxyStationMobileAvailableChains.includes(
+        chainId as MainnetChainIds
+      );
     },
     stakeUrl: "https://station.hexxagon.io/stake",
     governanceUrl: "https://station.hexxagon.io/gov",

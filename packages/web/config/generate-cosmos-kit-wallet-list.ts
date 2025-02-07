@@ -6,6 +6,7 @@ import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { galaxyStationExtensionInfo } from "@cosmos-kit/galaxy-station-extension";
+import { GalaxyStationMobileInfo as galaxyStationMobileInfo } from "@cosmos-kit/galaxy-station-mobile";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
@@ -40,6 +41,7 @@ const CosmosKitWalletList: Wallet[] = [
   stationExtensionInfo,
   cdcwalletExtensionInfo,
   galaxyStationExtensionInfo,
+  galaxyStationMobileInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {
@@ -97,6 +99,19 @@ async function generateCosmosKitWalletList() {
     acc[w.name] = w;
     return acc;
   }, {} as Record<string, Wallet>);
+
+  // Override formatNativeUrl for specific wallets
+  if (registryObject["galaxy-station-mobile"]) {
+    registryObject["galaxy-station-mobile"].walletconnect!.formatNativeUrl = (
+      _appUrl,
+      wcUri,
+      _os,
+      _name
+    ) => {
+      const encodedWcUrl = encodeURIComponent(wcUri);
+      return `https://station.hexxagon.io/wcV2?${encodedWcUrl}`;
+    };
+  }
 
   const content = `
       import {Wallet} from "@cosmos-kit/core"
