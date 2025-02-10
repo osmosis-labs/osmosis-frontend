@@ -5,6 +5,7 @@ import { IconButton } from "~/components/ui/button";
 import { FiatRampKey } from "~/integrations";
 import { Kado } from "~/integrations/kado";
 import { Layerswap } from "~/integrations/layerswap";
+import { Moonpay } from "~/integrations/moonpay";
 import { OnrampMoney } from "~/integrations/onrampmoney";
 import { useTransakModal } from "~/integrations/transak";
 import { ModalBase, ModalBaseProps } from "~/modals";
@@ -70,7 +71,7 @@ export const FiatRampsModal: FunctionComponent<
           case "kado":
             return <Kado {...props} />;
           case "moonpay":
-            return null;
+            return <Moonpay {...props} />;
           case "onrampmoney":
             return <OnrampMoney {...props} />;
           case "layerswapcoinbase":
