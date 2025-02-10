@@ -459,7 +459,10 @@ const WalletInfo: FunctionComponent<
                     ? formatICNSName(icnsName)
                     : shorten(wallet?.address!)}
                 </span>
-                <span className="caption font-medium tracking-wider text-osmoverse-200">
+                <span
+                  data-testid="wallet-ballance"
+                  className="caption font-medium tracking-wider text-osmoverse-200"
+                >
                   {userOsmoAsset?.amount
                     ?.trim(true)
                     .maxDecimals(2)
