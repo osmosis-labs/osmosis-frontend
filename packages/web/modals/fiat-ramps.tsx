@@ -2,6 +2,7 @@ import { FunctionComponent, useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
+import { useFeatureFlags } from "~/hooks";
 import { FiatRampKey } from "~/integrations";
 import { Kado } from "~/integrations/kado";
 import { Layerswap } from "~/integrations/layerswap";
@@ -25,6 +26,7 @@ export const FiatRampsModal: FunctionComponent<
     transakModalProps?: Parameters<typeof useTransakModal>[0];
   } & ModalBaseProps
 > = (props) => {
+  const flags = useFeatureFlags();
   const { fiatRampKey, isOpen } = props;
 
   const { setModal } = useTransakModal({
@@ -69,13 +71,13 @@ export const FiatRampsModal: FunctionComponent<
       {(() => {
         switch (fiatRampKey) {
           case "kado":
-            return <Kado {...props} />;
+            if (flags.kado) return <Kado {...props} />;
           case "moonpay":
-            return <Moonpay {...props} />;
+            if (flags.moonpay) return <Moonpay {...props} />;
           case "onrampmoney":
-            return <OnrampMoney {...props} />;
+            if (flags.onrampmoney) return <OnrampMoney {...props} />;
           case "layerswapcoinbase":
-            return <Layerswap {...props} />;
+            if (flags.layerswapcoinbase) return <Layerswap {...props} />;
           default:
             return null;
         }

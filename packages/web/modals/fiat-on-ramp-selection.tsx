@@ -4,7 +4,7 @@ import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/ui/button";
-import { MultiLanguageT, useTranslation } from "~/hooks";
+import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -43,6 +43,7 @@ const Options = (
 export const FiatOnrampSelectionModal: FunctionComponent<
   { onSelectRamp?: (ramp: FiatRampKey) => void } & ModalBaseProps
 > = observer(({ onSelectRamp, ...modalProps }) => {
+  const flags = useFeatureFlags();
   const toggleFiatRamp = useBridgeStore((state) => state.toggleFiatRamp);
   const { t } = useTranslation();
 
@@ -55,54 +56,63 @@ export const FiatOnrampSelectionModal: FunctionComponent<
     >
       <div className="flex flex-col gap-5 pt-8">
         {Options(t).map(
-          ({ rampKey, displayName, initialAsset, logoId, subtitle }) => (
-            <Button
-              key={rampKey}
-              className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 px-5 py-5 transition-colors hover:!bg-osmoverse-700"
-              onClick={() => {
-                onSelectRamp?.(rampKey);
-                toggleFiatRamp({
-                  fiatRampKey: rampKey,
-                  assetKey: initialAsset,
-                });
-                modalProps.onRequestClose();
-              }}
-            >
-              <Icon id={logoId!} className="h-16 w-16" />
-              {rampKey === "moonpay" ? (
-                <div className="ml-5 flex flex-col text-left gap-1">
-                  <div className="flex items-center gap-2">
+          ({ rampKey, displayName, initialAsset, logoId, subtitle }) => {
+            if (rampKey === "layerswapcoinbase" && !flags.layerswapcoinbase)
+              return null;
+            if (rampKey === "moonpay" && !flags.moonpay) return null;
+            if (rampKey === "kado" && !flags.kado) return null;
+            if (rampKey === "transak" && !flags.transak) return null;
+            if (rampKey === "onrampmoney" && !flags.onrampmoney) return null;
+
+            return (
+              <Button
+                key={rampKey}
+                className="flex h-28 items-center !justify-start gap-2 !bg-osmoverse-900 px-5 py-5 transition-colors hover:!bg-osmoverse-700"
+                onClick={() => {
+                  onSelectRamp?.(rampKey);
+                  toggleFiatRamp({
+                    fiatRampKey: rampKey,
+                    assetKey: initialAsset,
+                  });
+                  modalProps.onRequestClose();
+                }}
+              >
+                <Icon id={logoId!} className="h-16 w-16" />
+                {rampKey === "moonpay" ? (
+                  <div className="ml-5 flex flex-col text-left gap-1">
+                    <div className="flex items-center gap-2">
+                      <h6>{displayName}</h6>
+                      <span className="text-xs text-white-mid">
+                        🌎{" "}
+                        {t(
+                          "components.fiatOnrampSelection.moonpayCountrySupport"
+                        )}
+                      </span>
+                    </div>
+                    <div className="flex w-full relative">
+                      {MOONPAY_SUPPORTED_PROVIDERS.map(({ icon, id }, i) => (
+                        <Image
+                          key={id}
+                          src={icon}
+                          alt={id}
+                          width={32}
+                          height={20}
+                          style={{
+                            transform: `translateX(-${i * 4}px)`,
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="ml-5 flex flex-col text-left">
                     <h6>{displayName}</h6>
-                    <span className="text-xs text-white-mid">
-                      🌎{" "}
-                      {t(
-                        "components.fiatOnrampSelection.moonpayCountrySupport"
-                      )}
-                    </span>
+                    <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
                   </div>
-                  <div className="flex w-full relative">
-                    {MOONPAY_SUPPORTED_PROVIDERS.map(({ icon, id }, i) => (
-                      <Image
-                        key={id}
-                        src={icon}
-                        alt={id}
-                        width={32}
-                        height={20}
-                        style={{
-                          transform: `translateX(-${i * 4}px)`,
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="ml-5 flex flex-col text-left">
-                  <h6>{displayName}</h6>
-                  <p className="body2 mt-1 text-osmoverse-400">{subtitle}</p>
-                </div>
-              )}
-            </Button>
-          )
+                )}
+              </Button>
+            );
+          }
         )}
       </div>
     </ModalBase>
