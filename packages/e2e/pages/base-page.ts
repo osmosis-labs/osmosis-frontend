@@ -6,6 +6,7 @@ export class BasePage {
   readonly kepltWalletBtn: Locator
   readonly portfolioLink: Locator
   readonly poolsLink: Locator
+  readonly walletBalance: Locator
 
   constructor(page: Page) {
     this.page = page
@@ -15,6 +16,7 @@ export class BasePage {
     this.kepltWalletBtn = page.locator('button').filter({ hasText: /^Keplr$/ })
     this.portfolioLink = page.getByText('Portfolio')
     this.poolsLink = page.getByText('Pools')
+    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]')
   }
 
   async connectWallet() {
@@ -32,11 +34,11 @@ export class BasePage {
     // PopUp page is auto-closed
     // Handle Pop-up page <-
     const wallet = this.page.locator('//button/div/span[@title]')
-    await this.page.waitForTimeout(4000)
-    // Verify that wallet modal loaded correctly
-    const isWalletVisible = await wallet.isVisible({ timeout: 5000 })
-    expect(isWalletVisible).toBeTruthy()
+    await expect(wallet, 'Wallet should be connected.').toBeVisible({
+      timeout: 5000,
+    })
     console.log('Wallet is connected.')
+    await this.getWalletBalance()
   }
 
   async gotoPortfolio() {
@@ -53,5 +55,26 @@ export class BasePage {
   async printUrl() {
     const currentUrl = this.page.url()
     console.log(`FE opened at: ${currentUrl}`)
+  }
+
+  async getWalletBalance() {
+    await expect(this.walletBalance, 'Wallet should be connected.').toBeVisible(
+      { timeout: 4000 },
+    )
+    const balance = await this.walletBalance.textContent({ timeout: 2000 })
+    console.log(`Wallet balance: ${balance}`)
+    return balance
+  }
+
+  async logOut() {
+    // open the wallet menu
+    await expect(this.walletBalance, 'Wallet should be connected.').toBeVisible(
+      { timeout: 4000 },
+    )
+    await this.walletBalance.click({ timeout: 2000 })
+    const logoutBtn = this.page.locator('//button[@title="Log Out"]')
+    await logoutBtn.click({ timeout: 2000 })
+    await this.page.waitForTimeout(2000)
+    await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
   }
 }

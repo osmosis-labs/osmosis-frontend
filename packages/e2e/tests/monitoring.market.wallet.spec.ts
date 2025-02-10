@@ -38,6 +38,7 @@ test.describe('Test Market Buy/Sell Order feature', () => {
   })
 
   test.afterAll(async () => {
+    await tradePage.logOut()
     await context.close()
   })
 
