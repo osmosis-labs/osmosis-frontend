@@ -42,6 +42,7 @@ test.describe('Test Trade feature', () => {
   })
 
   test.afterAll(async () => {
+    await tradePage.logOut()
     await context.close()
   })
 

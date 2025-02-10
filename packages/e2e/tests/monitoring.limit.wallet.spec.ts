@@ -36,6 +36,7 @@ test.describe('Test Filled Limit Order feature', () => {
   })
 
   test.afterAll(async () => {
+    await tradePage.logOut()
     await context.close()
   })
 
