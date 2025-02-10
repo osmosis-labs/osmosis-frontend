@@ -6,6 +6,7 @@ export class BasePage {
   readonly kepltWalletBtn: Locator;
   readonly portfolioLink: Locator;
   readonly poolsLink: Locator;
+  readonly walletBalance: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -15,6 +16,7 @@ export class BasePage {
     this.kepltWalletBtn = page.locator("button").filter({ hasText: /^Keplr$/ });
     this.portfolioLink = page.getByText("Portfolio");
     this.poolsLink = page.getByText("Pools");
+    this.walletBalance = page.locator('//span[@data-testid="wallet-balance"]');
   }
 
   async connectWallet() {
@@ -56,18 +58,22 @@ export class BasePage {
   }
 
   async getWalletBalance() {
-    const walletBalance = this.page.locator(
-      '//span[@data-testid="wallet-ballance"]'
+    await expect(this.walletBalance, "Wallet should be connected.").toBeVisible(
+      { timeout: 4000 }
     );
-    await walletBalance.waitFor({ state: "visible" });
-    const balance = await walletBalance.textContent();
+    const balance = await this.walletBalance.textContent({ timeout: 2000 });
     console.log(`Wallet balance: ${balance}`);
     return balance;
   }
 
   async logOut() {
+    // open the wallet menu
+    await expect(this.walletBalance, "Wallet should be connected.").toBeVisible(
+      { timeout: 4000 }
+    );
+    await this.walletBalance.click({ timeout: 2000 });
     const logoutBtn = this.page.locator('//button[@title="Log Out"]');
-    await logoutBtn.click();
+    await logoutBtn.click({ timeout: 2000 });
     await this.page.waitForTimeout(2000);
     await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 });
   }

@@ -460,7 +460,7 @@ const WalletInfo: FunctionComponent<
                     : shorten(wallet?.address!)}
                 </span>
                 <span
-                  data-testid="wallet-ballance"
+                  data-testid="wallet-balance"
                   className="caption font-medium tracking-wider text-osmoverse-200"
                 >
                   {userOsmoAsset?.amount
