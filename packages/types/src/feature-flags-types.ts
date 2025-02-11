@@ -23,4 +23,9 @@ export type AvailableFlags =
   | "alloyedAssets"
   | "bridgeDepositAddress"
   | "nomicWithdrawAmount"
-  | "swapToolTopGainers";
+  | "swapToolTopGainers"
+  | "moonpay"
+  | "layerswapcoinbase"
+  | "kado"
+  | "onrampmoney"
+  | "transak";

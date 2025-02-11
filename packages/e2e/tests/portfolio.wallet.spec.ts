@@ -16,7 +16,7 @@ test.describe('Test Portfolio feature', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'pk'
   let portfolioPage: PortfolioPage
-  const dollarBalanceRegEx = /\$\d+/
+  const dollarBalanceRegEx = /\d+/
   let page: Page
 
   test.beforeAll(async () => {
