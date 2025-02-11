@@ -10,10 +10,9 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, mulPrice } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";

@@ -1,13 +1,13 @@
 import { apiClient } from "@osmosis-labs/utils";
 import { Redis } from "@upstash/redis";
-import { Cache, CacheEntry, cachified } from "cachified";
+import { Cache, cachified } from "cachified";
 
+import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "../../env";
 import {
-  KV_STORE_REST_API_TOKEN,
-  KV_STORE_REST_API_URL,
-  TWITTER_API_ACCESS_TOKEN,
-  TWITTER_API_URL,
-} from "../../env";
+  getRedisClient,
+  REDIS_DEFAULT_TTL,
+  redisKvStoreAdapter,
+} from "../../utils";
 
 interface RawUser {
   id: string;
@@ -48,23 +48,6 @@ export interface RichTweet {
   previewImage: string | null;
 }
 
-const DEFAULT_TTL = 1000 * 60 * 60 * 24 * 7;
-
-const kvStoreAdapter = (store: Redis): Cache => ({
-  set: <T>(key: string, value: CacheEntry<T>) => {
-    value.metadata.ttl;
-    return store.set(key, value, {
-      px: value.metadata.ttl ?? DEFAULT_TTL,
-    });
-  },
-  get: <T>(key: string) => {
-    return store.get<T>(key);
-  },
-  delete: (key) => {
-    return store.del(key);
-  },
-});
-
 export class Twitter {
   /**
    * Expire time in milliseconds.
@@ -83,13 +66,10 @@ export class Twitter {
    *
    * It should be enought if we wanna get tweets from 35 tokens every 7 days.
    */
-  constructor(cacheExpireTime: number = DEFAULT_TTL) {
+  constructor(cacheExpireTime: number = REDIS_DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
-    this.kvStore = new Redis({
-      url: KV_STORE_REST_API_URL!,
-      token: KV_STORE_REST_API_TOKEN!,
-    });
-    this.cache = kvStoreAdapter(this.kvStore);
+    this.kvStore = getRedisClient();
+    this.cache = redisKvStoreAdapter(this.kvStore);
   }
 
   /**

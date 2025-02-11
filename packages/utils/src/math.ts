@@ -1,4 +1,5 @@
-import { Dec } from "@osmosis-labs/unit";
+import { FiatCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 
 export function normalize(
   val: number,
@@ -32,4 +33,20 @@ export function sum(arr: (number | string | Dec | { toDec(): Dec })[]): Dec {
 
     return acc;
   }, new Dec(0));
+}
+
+// mulPrice multiplies the amount of a coin by its price to get the final value.
+// It returns the final value as a PricePretty object.
+// Returns undefined if either the amount or price is undefined.
+export function mulPrice(
+  amount: CoinPretty | undefined,
+  price: PricePretty | undefined,
+  vsCurrency: FiatCurrency
+) {
+  if (!amount || !price) {
+    return undefined;
+  }
+
+  const value = amount.toDec().mul(price.toDec());
+  return new PricePretty(vsCurrency, value);
 }

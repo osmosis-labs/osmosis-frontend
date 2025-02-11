@@ -14,3 +14,4 @@ export * from "./portfolio";
 export * from "./staking";
 export * from "./swap";
 export * from "./transactions";
+export * from "./web-rtc";

@@ -7,6 +7,7 @@ import {
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import { Coin, Int } from "@osmosis-labs/unit";
 import { when } from "mobx";
 import WebSocket from "ws";
@@ -19,7 +20,6 @@ import {
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
-import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
 import { MockAssetList, MockChainList, TestOsmosisChainId } from "./mock-data";
 import { TestWallet, testWalletInfo } from "./test-wallet";

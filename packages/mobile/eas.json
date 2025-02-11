@@ -1,0 +1,26 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "node": "20.11.1"
+    },
+    "ios-simulator": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "node": "20.11.1"
+    },
+    "production": {
+      "node": "20.11.1",
+      "env": {
+        "EXPO_PUBLIC_HISTORICAL_DATA_URL": "https://data.app.osmosis.zone",
+        "EXPO_PUBLIC_OSMOSIS_BE_BASE_URL": "https://osmosis-frontend-git-jose-mobile-osmo-labs.vercel.app"
+      }
+    }
+  }
+}

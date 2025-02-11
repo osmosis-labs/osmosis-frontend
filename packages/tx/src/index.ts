@@ -4,4 +4,7 @@ export * from "./events";
 export * from "./gas";
 export * from "./message-composers";
 export * from "./poll-status";
+export * from "./registry";
+export * from "./sequence";
+export * from "./sign-and-broadcast";
 export * from "./tracer";
