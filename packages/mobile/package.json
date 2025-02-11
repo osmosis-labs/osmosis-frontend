@@ -12,7 +12,7 @@
     "lint": "expo lint",
     "prebuild:ios": "expo prebuild --platform ios",
     "build:local:ios": "eas build --platform ios --profile ios-simulator --local",
-    "eas-build-post-install": "if [ \"$CI\" = \"true\" ]; then tsx scripts/post-install.ts; fi"
+    "eas-build-post-install": "if [ \"$CI\" = \"1\" ]; then tsx scripts/post-install.ts; fi"
   },
   "jest": {
     "preset": "jest-expo"
