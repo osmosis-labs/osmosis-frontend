@@ -191,6 +191,19 @@ const penumbraChainSchema = z.object({
   chainType: z.literal("penumbra"),
 });
 
+const dogecoinChainSchema = z.object({
+  /**
+   * `dogecoin`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("dogecoin"),
+});
+
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   cosmosChainSchema,
   evmChainSchema,
@@ -198,6 +211,7 @@ export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   bitcoinChainSchema,
   tronChainSchema,
   penumbraChainSchema,
+  dogecoinChainSchema,
 ]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
@@ -392,7 +406,8 @@ export interface CosmosBridgeTransactionRequest {
 
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest;
+  | CosmosBridgeTransactionRequest
+  // | UTXOBridgeTransactionRequest;
 
 /**
  * Bridge asset with raw base amount (without decimals).
