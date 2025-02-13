@@ -406,9 +406,7 @@ export interface CosmosBridgeTransactionRequest {
 
 export type BridgeTransactionRequest =
   | EvmBridgeTransactionRequest
-  | CosmosBridgeTransactionRequest
-  // | UTXOBridgeTransactionRequest;
-
+  | CosmosBridgeTransactionRequest;
 /**
  * Bridge asset with raw base amount (without decimals).
  */
