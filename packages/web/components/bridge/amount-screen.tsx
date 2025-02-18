@@ -434,6 +434,14 @@ export const AmountScreen = observer(
               { chainType: "penumbra" }
             >[],
           };
+        case "dogecoin":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "dogecoin" }
+            >[],
+          };
         default:
           return {
             type: fromChain.chainType,
@@ -827,6 +835,18 @@ export const AmountScreen = observer(
         />
       );
     }
+
+    console.log({
+      isLoading,
+      hasSupportedChains,
+      areAssetTransfersDisabled,
+      fromChain,
+      fromAsset,
+      toChain,
+      toAsset,
+      hasBalanceError,
+      quoteEnabled: quote.enabled,
+    });
 
     /**
      * This condition will be met if:
