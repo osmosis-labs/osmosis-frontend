@@ -836,18 +836,6 @@ export const AmountScreen = observer(
       );
     }
 
-    console.log({
-      isLoading,
-      hasSupportedChains,
-      areAssetTransfersDisabled,
-      fromChain,
-      fromAsset,
-      toChain,
-      toAsset,
-      hasBalanceError,
-      quoteEnabled: quote.enabled,
-    });
-
     /**
      * This condition will be met if:
      * - An asset is disabled, effectively its FF is turned off for whatever reason
