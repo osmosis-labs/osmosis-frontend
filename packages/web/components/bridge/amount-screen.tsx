@@ -218,6 +218,10 @@ export const AmountScreen = observer(
         return !isNil(manualToAddress);
       }
 
+      if (chainThatNeedsWalletConnection.chainType === "doge") {
+        return true;
+      }
+
       return !!cosmosAccountRequiringConnection?.address;
     }, [
       cosmosAccountRequiringConnection?.address,
@@ -434,12 +438,12 @@ export const AmountScreen = observer(
               { chainType: "penumbra" }
             >[],
           };
-        case "dogecoin":
+        case "doge":
           return {
             type: fromChain.chainType,
             assets: assets as Extract<
               SupportedAsset,
-              { chainType: "dogecoin" }
+              { chainType: "doge" }
             >[],
           };
         default:

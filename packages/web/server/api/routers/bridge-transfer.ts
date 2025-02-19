@@ -47,7 +47,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "penumbra" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
   | Extract<BridgeChain, { chainType: "tron" }>
-  | Extract<BridgeChain, { chainType: "dogecoin" }>
+  | Extract<BridgeChain, { chainType: "doge" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -431,7 +431,7 @@ export const bridgeTransferRouter = createTRPCRouter({
               chainType,
               logoUri: "/networks/penumbra.svg",
             };
-          } else if (chainType === "dogecoin") {
+          } else if (chainType === "doge") {
             return {
               ...DogecoinChainInfo,
               chainType,

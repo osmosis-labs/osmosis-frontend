@@ -201,7 +201,7 @@ const dogecoinChainSchema = z.object({
    */
   chainName: z.string().optional(),
 
-  chainType: z.literal("dogecoin"),
+  chainType: z.literal("doge"),
 });
 
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [

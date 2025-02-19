@@ -175,19 +175,23 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     toChain,
     fromAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "dogecoin") {
+    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "doge") {
       return undefined;
     }
 
     const url = new URL(this.ctx.env === "mainnet" ? "https://int3face.zone/bridge/" : "https://testnet.app.int3face.zone/bridge/");
+    // Note: currently supports only osmosis -> dogecoin
     if (fromChain) {
-      url.searchParams.set("fromChain", fromChain.chainId);
+      // url.searchParams.set("fromChain", fromChain.chainName as string);
+      url.searchParams.set("fromChain", 'osmosis');
     }
     if (fromAsset) {
-      url.searchParams.set("fromToken", fromAsset.address);
+      // url.searchParams.set("fromToken", fromAsset.denom);
+      url.searchParams.set("fromToken", 'DOGE.int3');
     }
     if (toChain) {
-      url.searchParams.set("toChain", toChain.chainId);
+      // url.searchParams.set("toChain", toChain.chainId);
+      url.searchParams.set("toChain", 'dogecoin');
     }
 
     return { urlProviderName: "Int3face", url };
@@ -220,9 +224,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
+    direction
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
+    if (direction === 'deposit') {
+      return []
+    }
+
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
       .find(
@@ -238,18 +247,15 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.int3DOGEMinimalDenom.toLowerCase();
 
-      // Todo: check if we need dogecoinCounterparty or not
       if (dogecoinCounterparty || isInt3Doge) {
         return [
           {
             transferTypes: ["quote"],
             chainId: "dogecoin",
             chainName: "Dogecoin",
-            // Todo: check chainType
-            chainType: "dogecoin",
+            chainType: "doge",
             denom: "DOGE",
-            // Todo: check address: "sat" is from nomic
-            address: "sat",
+            address: "koinu",
             decimals: 8,
           },
         ];
