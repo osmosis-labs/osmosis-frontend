@@ -69,8 +69,9 @@ jobs:
           cd packages/e2e
           npx playwright test swap.osmo.wallet
       - name: set-output
+        if: failure() || success()
         id: set-output
-        run: echo "::set-output name=unexpected::$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)"
+        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload Swap test results
         if: failure() || success()
         id: swap-test-results
