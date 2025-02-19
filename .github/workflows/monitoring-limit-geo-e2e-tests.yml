@@ -138,6 +138,8 @@ jobs:
     needs: fe-swap-eu
     name: prod-fe-trade-eu
     runs-on: macos-latest
+    outputs:
+      unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -169,6 +171,9 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 180000
+      - name: set-output
+        id: set-output
+        run: echo "::set-output name=unexpected::$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)"
       - name: upload monitoring test results
         if: failure()
         id: monitoring-test-results
