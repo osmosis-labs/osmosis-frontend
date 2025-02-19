@@ -115,7 +115,7 @@ jobs:
           cd packages/e2e
           npx playwright test swap.usdc.wallet
       - name: upload Swap test results
-        if: failure()
+        if: failure() || success()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
