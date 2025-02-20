@@ -5,6 +5,10 @@ on:
     branches-ignore:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   wait-for-deployment:
     runs-on: ubuntu-latest
@@ -30,6 +34,8 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-latest
     needs: wait-for-deployment
+    outputs:
+      unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -66,8 +72,12 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
+      - name: set-output
+        if: failure() || success()
+        id: set-output
+        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload Swap test results
-        if: failure()
+        if: failure() || success()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
