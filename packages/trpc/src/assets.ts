@@ -473,19 +473,25 @@ export const assetsRouter = createTRPCRouter({
           }),
           z.enum(["1H", "1D", "1W", "1M"]),
         ]),
+        realtime: z.boolean().optional(),
       })
     )
-    .query(({ input: { coinMinimalDenom, timeFrame } }) =>
-      getAssetHistoricalPrice({
-        coinMinimalDenom,
-        ...(typeof timeFrame === "string"
-          ? { timeFrame }
-          : (timeFrame.custom as {
-              timeFrame: TimeFrame;
-              numRecentFrames?: number;
-            })),
-      }).catch((e) => captureErrorAndReturn(e, []))
-    ),
+    .query(({ input: { coinMinimalDenom, timeFrame, realtime } }) => {
+      if (typeof timeFrame === "string") {
+        return getAssetHistoricalPrice({
+          coinMinimalDenom,
+          timeFrame,
+          realtime,
+        }).catch((e) => captureErrorAndReturn(e, []));
+      } else {
+        return getAssetHistoricalPrice({
+          coinMinimalDenom,
+          timeFrame: timeFrame.custom.timeFrame as TimeFrame,
+          numRecentFrames: timeFrame.custom.numRecentFrames,
+          realtime,
+        }).catch((e) => captureErrorAndReturn(e, []));
+      }
+    }),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
