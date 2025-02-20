@@ -79,7 +79,7 @@ jobs:
                   "type": "header",
                   "text": {
                     "type": "plain_text",
-                    "text": "🚨 Synthetic Prod Swap Monitoring Tests Failure Alert 🚨"
+                    "text": "🚨 Synthetic Prod Quote Monitoring Tests Failure Alert 🚨"
                   }
                 },
                 {

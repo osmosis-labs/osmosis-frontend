@@ -41,6 +41,7 @@ export interface TokenHistoricalPrice {
 export async function queryTokenHistoricalChart({
   coinMinimalDenom,
   timeFrameMinutes,
+  realtime = false,
 }: {
   /**
    * Major (symbol) denom to fetch historical price data for.
@@ -50,14 +51,16 @@ export async function queryTokenHistoricalChart({
   coinMinimalDenom: string;
   /** Number of minutes per bar. So 60 refers to price every 60 minutes. */
   timeFrameMinutes: TimeFrame;
+  /** Whether to fetch real-time data */
+  realtime?: boolean;
 }): Promise<TokenHistoricalPrice[]> {
-  // collect params
   const url = new URL(
-    `/tokens/v2/historical/${encodeURIComponent(
-      coinMinimalDenom
-    )}/chart?tf=${timeFrameMinutes}`,
+    `/tokens/v2/historical/${encodeURIComponent(coinMinimalDenom)}/chart`,
     HISTORICAL_DATA_URL
   );
+  url.searchParams.set("tf", timeFrameMinutes.toString());
+  url.searchParams.set("realtime", realtime.toString());
+
   try {
     const response = await apiClient<
       TokenHistoricalPrice[] | { message: string }

@@ -86,7 +86,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const assetInfoConfig = useAssetInfoConfig(
       asset.coinDenom,
       asset.coinMinimalDenom,
-      coinGeckoId
+      coinGeckoId,
+      true
     );
 
     const swapToolProps: SwapToolProps = useMemo(

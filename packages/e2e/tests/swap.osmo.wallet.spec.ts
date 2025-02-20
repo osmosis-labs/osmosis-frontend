@@ -41,6 +41,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test.afterAll(async () => {
+    await tradePage.logOut()
     await context.close()
   })
 

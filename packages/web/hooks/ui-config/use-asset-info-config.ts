@@ -14,7 +14,8 @@ import { api } from "~/utils/trpc";
 export const useAssetInfoConfig = (
   denom: string,
   coinMinimalDenom?: string,
-  coingeckoId?: string
+  coingeckoId?: string,
+  realtime?: boolean
 ) => {
   const config = useMemo(
     () => new ObservableAssetInfoConfig(denom, coinMinimalDenom),
@@ -76,11 +77,12 @@ export const useAssetInfoConfig = (
       timeFrame: {
         custom: customTimeFrame,
       },
+      realtime,
     },
     {
       enabled: Boolean(coinMinimalDenom ?? denom),
-      staleTime: 1000 * 60 * 3, // 3 minutes
-      cacheTime: 1000 * 60 * 6, // 6 minutes
+      staleTime: realtime ? 3000 : 1000 * 60 * 3,
+      cacheTime: realtime ? 3000 : 1000 * 60 * 6,
       trpc: {
         context: {
           skipBatch: true,
