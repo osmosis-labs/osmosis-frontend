@@ -159,7 +159,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         type: "cosmos",
         msgs: ibcTxMessages,
         gasFee: {
-          gas: "200000",
+          gas: "300000",
           amount: "1000",
           denom: "uosmo",
         },
