@@ -9,14 +9,18 @@ import { BridgeQuoteError } from "../errors";
 import { IbcBridgeProvider } from "../ibc";
 import {
   BridgeAsset,
-  BridgeChain, BridgeExternalUrl,
+  BridgeChain,
+  BridgeExternalUrl,
   BridgeProvider,
   BridgeProviderContext,
-  BridgeQuote, BridgeSupportedAsset,
-  BridgeTransactionRequest, GetBridgeExternalUrlParams, GetBridgeQuoteParams,
+  BridgeQuote,
+  BridgeSupportedAsset,
+  BridgeTransactionRequest,
+  GetBridgeExternalUrlParams,
+  GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import {Int3faceProviderId} from "./utils";
+import { Int3faceProviderId } from "./utils";
 
 export class Int3faceBridgeProvider implements BridgeProvider {
   static readonly ID = Int3faceProviderId;
@@ -27,9 +31,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   // protected readonly apiURL: string;
   protected readonly observerApiURL: string;
 
-  constructor(
-    protected readonly ctx: BridgeProviderContext
-  ) {
+  constructor(protected readonly ctx: BridgeProviderContext) {
     // this.apiURL =
     //   ctx.env === "mainnet"
     //     ? "https://api.mainnet.int3face.zone/int3face/bridge/v1beta1"
@@ -45,11 +47,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const {
-      fromAddress,
-      toChain,
-      toAddress
-    } = params;
+    const { fromAddress, toChain, toAddress } = params;
 
     if (toChain.chainId !== "dogecoin") {
       throw new BridgeQuoteError({
@@ -59,12 +57,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       });
     }
 
-    const destMemo = `{"dest-address": "${toAddress}", "dest-chain-id": "dogecoin"}`
+    const destMemo = `{"dest-address": "${toAddress}", "dest-chain-id": "dogecoin"}`;
 
     const int3Doge = this.ctx.assetLists
-      .flatMap(({assets}) => assets)
+      .flatMap(({ assets }) => assets)
       .find(
-        ({coinMinimalDenom}) => coinMinimalDenom === this.int3DOGEMinimalDenom
+        ({ coinMinimalDenom }) => coinMinimalDenom === this.int3DOGEMinimalDenom
       );
 
     if (!int3Doge) {
@@ -88,7 +86,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     }
 
     const int3faceChain = this.ctx.chainList.find(
-      ({chain_name}) => chain_name === transferMethod.counterparty.chainName
+      ({ chain_name }) => chain_name === transferMethod.counterparty.chainName
     );
 
     if (!int3faceChain) {
@@ -123,17 +121,16 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       }),
     };
 
-    const [ibcTxMessages, ibcEstimatedTimeSeconds] =
-      await Promise.all([
-        ibcProvider.getTxMessages({
-          ...transactionDataParams,
-          memo: destMemo,
-        }),
-        ibcProvider.estimateTransferTime(
-          transactionDataParams.fromChain.chainId.toString(),
-          transactionDataParams.toChain.chainId.toString()
-        ),
-      ]);
+    const [ibcTxMessages, ibcEstimatedTimeSeconds] = await Promise.all([
+      ibcProvider.getTxMessages({
+        ...transactionDataParams,
+        memo: destMemo,
+      }),
+      ibcProvider.estimateTransferTime(
+        transactionDataParams.fromChain.chainId.toString(),
+        transactionDataParams.toChain.chainId.toString()
+      ),
+    ]);
 
     // 10 minutes
     const int3faceEstimatedTimeSeconds = 10 * 60;
@@ -179,19 +176,23 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       return undefined;
     }
 
-    const url = new URL(this.ctx.env === "mainnet" ? "https://int3face.zone/bridge/" : "https://testnet.app.int3face.zone/bridge/");
+    const url = new URL(
+      this.ctx.env === "mainnet"
+        ? "https://int3face.zone/bridge/"
+        : "https://testnet.app.int3face.zone/bridge/"
+    );
     // Note: currently supports only osmosis -> dogecoin
     if (fromChain) {
       // url.searchParams.set("fromChain", fromChain.chainName as string);
-      url.searchParams.set("fromChain", 'osmosis');
+      url.searchParams.set("fromChain", "osmosis");
     }
     if (fromAsset) {
       // url.searchParams.set("fromToken", fromAsset.denom);
-      url.searchParams.set("fromToken", 'DOGE.int3');
+      url.searchParams.set("fromToken", "DOGE.int3");
     }
     if (toChain) {
       // url.searchParams.set("toChain", toChain.chainId);
-      url.searchParams.set("toChain", 'dogecoin');
+      url.searchParams.set("toChain", "dogecoin");
     }
 
     return { urlProviderName: "Int3face", url };
@@ -224,12 +225,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
   async getSupportedAssets({
     asset,
-    direction
+    direction,
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    if (direction === 'deposit') {
-      return []
+    if (direction === "deposit") {
+      return [];
     }
 
     const assetListAsset = this.ctx.assetLists

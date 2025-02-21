@@ -931,7 +931,7 @@
     "createNewDepositAddress": "Creați o nouă adresă de depozit",
     "transactionDetails": "Detalii tranzacție",
     "confirmAmount": "Confirmați suma",
-    "enterBitcoinAddress": "Introdu adresa Bitcoin"
+    "enterChainAddress": "Introduceți adresa {chain}"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",

@@ -931,7 +931,7 @@
     "createNewDepositAddress": "创建新的存款地址",
     "transactionDetails": "交易详情",
     "confirmAmount": "确认金额",
-    "enterBitcoinAddress": "输入比特币地址"
+    "enterChainAddress": "输入{chain}地址"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",

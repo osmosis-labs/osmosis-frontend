@@ -931,7 +931,7 @@
     "createNewDepositAddress": "建立新的儲值地址",
     "transactionDetails": "交易詳情",
     "confirmAmount": "確認金額",
-    "enterBitcoinAddress": "輸入比特幣地址"
+    "enterChainAddress": "輸入{chain}地址"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",

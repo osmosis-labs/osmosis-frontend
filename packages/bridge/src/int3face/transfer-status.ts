@@ -27,24 +27,32 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
 
     await poll({
       fn: async () => {
-        const data = await getTransferStatus(sendTxHash, this.env)
+        const data = await getTransferStatus(sendTxHash, this.env);
         let status;
 
         if (!data) {
-          status = 'connection-error'
-        } else if ([Int3faceTransferStatus.TRANSACTION_STATUS_FAILED, Int3faceTransferStatus.TRANSACTION_STATUS_UNSPECIFIED].includes(data.status)) {
-          status = 'failed'
-        } else if (data.status === Int3faceTransferStatus.TRANSACTION_STATUS_PENDING) {
-          status = 'pending'
-        } else if (data.status === Int3faceTransferStatus.TRANSACTION_STATUS_FINALIZED) {
-          status = 'success'
+          status = "connection-error";
+        } else if (
+          [
+            Int3faceTransferStatus.TRANSACTION_STATUS_FAILED,
+            Int3faceTransferStatus.TRANSACTION_STATUS_UNSPECIFIED,
+          ].includes(data.status)
+        ) {
+          status = "failed";
+        } else if (
+          data.status === Int3faceTransferStatus.TRANSACTION_STATUS_PENDING
+        ) {
+          status = "pending";
+        } else if (
+          data.status === Int3faceTransferStatus.TRANSACTION_STATUS_FINALIZED
+        ) {
+          status = "success";
         }
 
         return {
           id: snapshot.sendTxHash,
           status,
         } as BridgeTransferStatus;
-
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
