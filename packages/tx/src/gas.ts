@@ -418,10 +418,12 @@ export async function getGasFeeAmount({
       feeDenom: denom,
       gasMultiplier,
     });
-    const feeAmount = feeDenomGasPrice
-      .mul(new Dec(gasLimit))
-      .truncate()
-      .toString();
+    const feeAmount = new Int(
+      Math.max(
+        1,
+        Number(feeDenomGasPrice.mul(new Dec(gasLimit)).truncate().toString())
+      )
+    ).toString();
 
     // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
     if (
