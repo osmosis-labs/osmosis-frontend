@@ -931,7 +931,7 @@
     "createNewDepositAddress": "آدرس سپرده جدید ایجاد کنید",
     "transactionDetails": "جزئیات معامله",
     "confirmAmount": "مبلغ را تأیید کنید",
-    "enterBitcoinAddress": "آدرس بیت کوین را وارد کنید"
+    "enterChainAddress": "آدرس {chain} وارد کنید"
   },
   "unknownError": "خطای نا شناس",
   "viewExplorer": "مشاهده جزئیات تراکنش",

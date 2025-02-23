@@ -931,7 +931,7 @@
     "createNewDepositAddress": "Создать новый адрес депозита",
     "transactionDetails": "Подробности транзакции",
     "confirmAmount": "Подтвердите сумму",
-    "enterBitcoinAddress": "Введите адрес Bitcoin"
+    "enterChainAddress": "Введите адрес {chain}"
   },
   "unknownError": "Неизвестная ошибка",
   "viewExplorer": "Посмотреть проводник",

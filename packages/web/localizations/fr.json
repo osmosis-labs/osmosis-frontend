@@ -931,7 +931,7 @@
     "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
     "transactionDetails": "Détails de la transaction",
     "confirmAmount": "Confirmer le montant",
-    "enterBitcoinAddress": "Entrez l'adresse Bitcoin"
+    "enterChainAddress": "Entrez l'adresse {chain}"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
