@@ -428,7 +428,7 @@ export async function getGasFeeAmount({
     // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
     if (
       new Int(feeAmount).gt(new Int(amount)) ||
-      new Int(feeAmount).lte(new Int(1))
+      new Int(feeAmount).lt(new Int(1))
     )
       continue;
 
