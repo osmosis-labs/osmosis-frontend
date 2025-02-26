@@ -10,7 +10,7 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useRef, useState } from "react";
 import { useMemo } from "react";
 import { useLocalStorage } from "react-use";
 import { useShallow } from "zustand/react/shallow";
@@ -130,6 +130,20 @@ const getLocalizedPortfolioOverTimeData = (
   }));
 };
 
+function getLastDataPoint(data: ChartPortfolioOverTimeResponse[] | undefined) {
+  if (!data) {
+    return {
+      time: dayjs().unix() as Time,
+      value: undefined,
+    };
+  }
+  const lastDataPoint = data[data.length - 1];
+  return {
+    time: timeToLocal(lastDataPoint.time) as Time,
+    value: lastDataPoint.value,
+  };
+}
+
 export const AssetsOverview: FunctionComponent<
   {
     totalValue?: PricePretty;
@@ -159,6 +173,12 @@ export const AssetsOverview: FunctionComponent<
 
   const [range, setRange] = useState<Range>("7d");
 
+  // Create refs to always have access to latest values
+  const portfolioDataRef = useRef<ChartPortfolioOverTimeResponse[] | undefined>(
+    undefined
+  );
+  const totalValueRef = useRef<PricePretty | undefined>(undefined);
+
   const {
     data: portfolioOverTimeData,
     isFetched: isPortfolioOverTimeDataIsFetched,
@@ -170,17 +190,28 @@ export const AssetsOverview: FunctionComponent<
     },
     {
       enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
-      onSuccess: (data) => {
-        if (data && data.length > 0) {
-          const lastDataPoint = data[data.length - 1];
-          setDataPoint({
-            time: timeToLocal(lastDataPoint.time) as Time,
-            value: lastDataPoint.value,
-          });
+      select: (data) => {
+        if (totalValue) {
+          data[data.length - 1].value = +totalValue.toDec().toString();
         }
+        return data;
       },
     }
   );
+
+  useEffect(() => {
+    // Set the data point to the last data point of the portfolio over time data
+    if (portfolioOverTimeData && portfolioOverTimeData.length > 0) {
+      setDataPoint(getLastDataPoint(portfolioOverTimeData));
+    }
+
+    // Update refs whenever data changes
+    portfolioDataRef.current = portfolioOverTimeData;
+  }, [portfolioOverTimeData]);
+
+  useEffect(() => {
+    totalValueRef.current = totalValue;
+  }, [totalValue]);
 
   const { selectedDifferencePricePretty, selectedPercentageRatePretty } =
     calculatePortfolioPerformance(portfolioOverTimeData, dataPoint);
@@ -380,13 +411,24 @@ export const AssetsOverview: FunctionComponent<
           error={error}
           setShowDate={setShowDate}
           resetDataPoint={() => {
-            if (totalValue) {
+            // Use current ref values to ensure we have the latest data
+            const currentPortfolioData = portfolioDataRef.current;
+            const currentTotalValue = totalValueRef.current;
+
+            if (currentPortfolioData) {
+              setDataPoint(getLastDataPoint(currentPortfolioData));
+            } else if (currentTotalValue) {
               setDataPoint({
                 time: dayjs().unix() as Time,
-                value: +totalValue?.toDec()?.toString(),
+                value: +currentTotalValue.toDec().toString(),
               });
-              setShowDate(false);
+            } else {
+              setDataPoint({
+                time: dayjs().unix() as Time,
+                value: undefined,
+              });
             }
+            setShowDate(false);
           }}
         />
       </Transition>

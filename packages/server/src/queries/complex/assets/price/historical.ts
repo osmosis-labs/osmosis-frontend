@@ -32,6 +32,7 @@ export function getAssetHistoricalPrice({
   coinMinimalDenom,
   timeFrame,
   numRecentFrames,
+  realtime = false,
 }: {
   /**
    * Major (symbol) denom to fetch historical price data for.
@@ -42,8 +43,11 @@ export function getAssetHistoricalPrice({
   /** Number of minutes per bar. So 60 refers to price every hour. */
   timeFrame: TimeFrame | CommonPriceChartTimeFrame;
   /** How many recent price values to splice with.
-   *  For example, with `timeFrameMinutes` set to every hour (60) and `numRecentFrames` set to 24, you get the last day's worth of hourly prices. */
+   *  For example, with `timeFrameMinutes` set to every hour (60) and
+   * `numRecentFrames` set to 24, you get the last day's worth of hourly prices. */
   numRecentFrames?: number;
+  /** Whether to fetch real-time data with 3 seconds caching */
+  realtime?: boolean;
 }): Promise<TokenHistoricalPrice[]> {
   if (typeof timeFrame === "string") {
     if (timeFrame === "1H") {
@@ -67,12 +71,13 @@ export function getAssetHistoricalPrice({
     cache: tokenHistoricalPriceCache,
     key: `token-historical-price-${coinMinimalDenom}-${timeFrame}-${
       numRecentFrames ?? "all"
-    }`,
-    ttl: 1000 * 60 * 3, // 3 minutes
+    }-${realtime}`,
+    ttl: realtime ? 1000 * 3 : 1000 * 60 * 3, // 3 seconds for realtime, 3 minutes for non-realtime
     getFreshValue: () =>
       queryTokenHistoricalChart({
         coinMinimalDenom,
         timeFrameMinutes: timeFrame as TimeFrame,
+        realtime,
       }).then((prices) =>
         numRecentFrames ? prices.slice(-numRecentFrames) : prices
       ),
