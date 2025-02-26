@@ -19,7 +19,7 @@
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "bitcoinjs-lib": "^7.0.0-rc.0",
     "sha.js": "^2.4.11",
-    "viem": "^2.21.19"
+    "viem": "^2.23.5"
   },
   "devDependencies": {
     "@types/jest-in-case": "^1.0.6",
