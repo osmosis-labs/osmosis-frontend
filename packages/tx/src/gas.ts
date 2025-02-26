@@ -418,19 +418,20 @@ export async function getGasFeeAmount({
       feeDenom: denom,
       gasMultiplier,
     });
-    const feeAmount = new Int(
-      Math.max(
-        1,
-        Number(feeDenomGasPrice.mul(new Dec(gasLimit)).truncate().toString())
-      )
-    ).toString();
 
-    // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
+    // Calculate the raw fee amount first before applying Math.max
+    const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).truncate();
+
+    // Skip if the raw fee amount is less than 1 (not enough precision) or greater than balance
     if (
-      new Int(feeAmount).gt(new Int(amount)) ||
-      new Int(feeAmount).lt(new Int(1))
-    )
+      new Int(rawFeeAmount.toString()).lt(new Int(1)) ||
+      new Int(rawFeeAmount.toString()).gt(new Int(amount))
+    ) {
       continue;
+    }
+
+    // Now apply Math.max to ensure minimum of 1
+    const feeAmount = Math.max(1, Number(rawFeeAmount.toString())).toString();
 
     const spentAmount =
       coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
