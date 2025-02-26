@@ -30,6 +30,7 @@ export function refetchUserQueries(apiUtils: ReturnType<typeof api.useUtils>) {
   apiUtils.edge.assets.getImmersiveBridgeAssets.invalidate();
   apiUtils.local.orderbooks.getAllOrdersSQS.invalidate();
   apiUtils.local.portfolio.getPortfolioAssets.invalidate();
+  apiUtils.local.portfolio.getPortfolioOverTime.invalidate();
   // Add delay before invalidating transactions since it can take a few seconds
   // for transactions to be indexed in the backend after broadcast
   setTimeout(() => {
