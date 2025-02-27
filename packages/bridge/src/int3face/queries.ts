@@ -17,12 +17,12 @@ interface TransferStatusResponse {
   destAddr: string;
   destChainId: string;
   srcChainId: string;
-  assetId: string;
+  asset: {
+    denom: string;
+    sourceChain: string;
+  };
   amount: string;
   status: Int3faceTransferStatus;
-  crosschain: {
-    indexedAt: string;
-  };
 }
 
 export async function getTransferStatus(

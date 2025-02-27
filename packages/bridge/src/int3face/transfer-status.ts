@@ -43,12 +43,12 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
           return {
             id: snapshot.sendTxHash,
             status: "connection-error",
-          };
+          } as BridgeTransferStatus;
         } else if (typeof ibcDetails === "string") {
           return {
             id: snapshot.sendTxHash,
             status: "failed",
-          };
+          } as BridgeTransferStatus;
         }
 
         const { sourceChannelId, destChannelId, sequence } = ibcDetails;
@@ -78,7 +78,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         return {
           id: snapshot.sendTxHash,
           status,
-        };
+        } as BridgeTransferStatus;
       },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
@@ -98,6 +98,12 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
     fromChainId: string | number;
   }) {
     try {
+      if (typeof fromChainId === "number") {
+        throw new Error(
+          "Unexpected numerical chain ID for cosmos tx: " + fromChainId
+        );
+      }
+
       // Get initiating IBC tx
       const { tx_response } = await queryTx({
         chainId: fromChainId,
