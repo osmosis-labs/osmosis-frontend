@@ -235,15 +235,11 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       );
 
     if (assetListAsset) {
-      const dogecoinCounterparty = assetListAsset.counterparty.some(
-        (c) => c.chainName === "dogecoin"
-      );
-
       const isInt3Doge =
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.int3DOGEMinimalDenom.toLowerCase();
 
-      if (dogecoinCounterparty || isInt3Doge) {
+      if (isInt3Doge) {
         return [
           {
             transferTypes: ["quote"],
