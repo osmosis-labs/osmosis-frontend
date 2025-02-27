@@ -185,6 +185,7 @@ jobs:
 
   fe-limit-eu:
     timeout-minutes: 15
+    if: failure() || success()
     name: prod-fe-limit-eu
     needs: fe-trade-eu
     runs-on: macos-latest
@@ -332,6 +333,7 @@ jobs:
 
   fe-limit-us:
     timeout-minutes: 15
+    if: failure() || success()
     needs: fe-trade-us
     name: prod-fe-limit-us
     runs-on: macos-latest
