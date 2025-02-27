@@ -28,14 +28,9 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   readonly int3DOGEMinimalDenom: string;
   protected protoRegistry: Registry | null = null;
 
-  // protected readonly apiURL: string;
   protected readonly observerApiURL: string;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
-    // this.apiURL =
-    //   ctx.env === "mainnet"
-    //     ? "https://api.mainnet.int3face.zone/int3face/bridge/v1beta1"
-    //     : "https://api.testnet.int3face.zone/int3face/bridge/v1beta1";
     this.observerApiURL =
       ctx.env === "mainnet"
         ? "https://observer.mainnet.int3face.zone/v1"
