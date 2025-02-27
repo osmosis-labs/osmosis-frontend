@@ -5,6 +5,7 @@ import { poll } from "@osmosis-labs/utils";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
+  TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
   TxSnapshot,
@@ -31,7 +32,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
 
     await poll({
       fn: async () => {
-        let status;
+        let status: TransferStatus | undefined;
 
         const ibcDetails = await this.getIbcTransferDetails({
           sendTxHash,
