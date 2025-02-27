@@ -75,7 +75,9 @@ jobs:
       - name: set-output
         if: failure() || success()
         id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
+        run: |
+          echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)"
+          echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload Swap test results
         if: failure() || success()
         id: swap-test-results
