@@ -1,3 +1,5 @@
+import { apiClient } from "@osmosis-labs/utils";
+
 export enum Int3faceTransferStatus {
   TRANSACTION_STATUS_UNSPECIFIED = "TRANSACTION_STATUS_UNSPECIFIED",
   TRANSACTION_STATUS_PENDING = "TRANSACTION_STATUS_PENDING",
@@ -25,22 +27,19 @@ interface TransferStatusResponse {
 
 export async function getTransferStatus(
   sendTxHash: string,
-  env: "testnet" | "mainnet"
+  env: "testnet" | "mainnet",
+  transferId: string
 ): Promise<TransferStatusResponse | null> {
   try {
-    // Todo: check origin
     const origin =
       env === "testnet"
-        ? "https://api.testnet.int3face.zone/int3face/bridge"
-        : "https://api.mainnet.int3face.zone/int3face/bridge";
+        ? "https://cachehub.int3face.zone"
+        : "https://cachehub.testnet.int3face.zone";
 
-    // Todo: update url when BE is ready
-    const url = new URL("/be-in-progress", origin);
-    url.searchParams.set("external_id", sendTxHash);
+    const url = new URL("/v1/transaction", origin);
+    url.searchParams.set("external_id", transferId);
 
-    // return apiClient<TransferStatusResponse>(url.toString());
-
-    return null;
+    return apiClient<TransferStatusResponse>(url.toString());
   } catch {
     console.error("Failed to fetch transfer status for tx hash: ", sendTxHash);
     return null;
