@@ -7164,6 +7164,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bs58check@^2.1.2":
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/@types/bs58check/-/bs58check-2.1.2.tgz#ca6264599cd9c0bdfeb839a0927f13a9cb77ba0f"
+  integrity sha512-xpXaQlOIY1KoXlA/ytHGHpEIU87PJt+g9SH7nC6HdCgaBwT2IEZIwBMHbjuX6BpnfbiUMlmwqurdLDwXpcdmSA==
+  dependencies:
+    "@types/node" "*"
+
 "@types/btoa-lite@^1.0.0":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@types/btoa-lite/-/btoa-lite-1.0.2.tgz#82bb6aab00abf7cff3ca2825abe010c0cd536ae5"

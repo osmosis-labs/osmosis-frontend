@@ -8,6 +8,7 @@ import {
   camelToKebabCase,
   deriveCosmosAddress,
   isBitcoinAddressValid,
+  isDogecoinAddressValid,
   shorten,
 } from "../string";
 
@@ -174,5 +175,35 @@ describe("camelToKebabCase", () => {
   it("should handle strings with numbers", () => {
     expect(camelToKebabCase("camel2Case3")).toBe("camel2-case3");
     expect(camelToKebabCase("123camelCase")).toBe("123camel-case");
+  });
+});
+
+describe("isDogecoinAddressValid", () => {
+  it("should return true for valid Dogecoin addresses", () => {
+    const validAddresses = [
+      "DBgHW1Shjyk91fusm9hm3HcryNBwaFwZbQ",
+      "A8tdnDg3oxGkic8AT7b1RULni2bTV7hYQB",
+      "DLXQGqcnNtZ5sK1eLhAvHMZDvhpFEdKnCg",
+    ];
+    validAddresses.forEach((address) => {
+      expect(isDogecoinAddressValid({ address })).toBe(true);
+    });
+  });
+
+  it("should return false for invalid Dogecoin addresses", () => {
+    const invalidAddress = "DInvalidAddress123";
+    expect(isDogecoinAddressValid({ address: invalidAddress })).toBe(false);
+  });
+
+  it("should return false for Bitcoin addresses", () => {
+    const bitcoinAddress = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+    expect(isDogecoinAddressValid({ address: bitcoinAddress })).toBe(false);
+  });
+
+  it("should return false for addresses with invalid checksum", () => {
+    const invalidChecksumAddress = "D8gB2kJ8v5mQw1bQ6eW6zX5qX9pX1rY2sU";
+    expect(isDogecoinAddressValid({ address: invalidChecksumAddress })).toBe(
+      false
+    );
   });
 });
