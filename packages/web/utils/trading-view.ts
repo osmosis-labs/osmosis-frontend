@@ -133,6 +133,7 @@ export const historicalDatafeed: ({
         timeFrame: {
           custom: customTimeFrame,
         },
+        realtime: true,
       });
 
       if (bars.length === 0 || bars.length < countBack) {

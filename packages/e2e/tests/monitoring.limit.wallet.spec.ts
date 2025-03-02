@@ -31,13 +31,19 @@ test.describe("Test Filled Limit Order feature", () => {
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
+  });
+
+  test.afterAll(async () => {
+    await context.close();
+  });
+
+  test.beforeEach(async () => {
     await tradePage.connectWallet();
     expect(await tradePage.isError(), "Swap is not available!").toBeFalsy();
   });
 
-  test.afterAll(async () => {
+  test.afterEach(async () => {
     await tradePage.logOut();
-    await context.close();
   });
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>
