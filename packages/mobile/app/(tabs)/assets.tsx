@@ -12,7 +12,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SvgUri } from "react-native-svg";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -26,6 +25,7 @@ import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown";
+import { SvgUri } from "~/components/ui/svg-uri";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { mmkvStorage } from "~/utils/mmkv";
@@ -95,6 +95,12 @@ export default function TabTwoScreen() {
   const selectedDisplayOption = useMemo(() => {
     return displayOptions.find((item) => item.key === displayOption);
   }, [displayOption]);
+
+  const handleEndReached = () => {
+    if (!isFetchingNextPage) {
+      fetchNextPage();
+    }
+  };
 
   return (
     <SafeAreaView
@@ -166,13 +172,16 @@ export default function TabTwoScreen() {
             onRefresh={() => {
               refetch();
             }}
-            onEndReached={fetchNextPage}
+            onEndReached={handleEndReached}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={
+              isFetchingNextPage ? (
+                <View style={{ paddingVertical: 20 }}>
+                  <ActivityIndicator />
+                </View>
+              ) : null
+            }
           />
-        )}
-        {isFetchingNextPage && (
-          <View style={{ paddingHorizontal: 24 }}>
-            <ActivityIndicator />
-          </View>
         )}
       </View>
     </SafeAreaView>
@@ -289,8 +298,6 @@ const AssetItem = ({
               {asset.marketCap?.toString() ?? "-"}
             </Text>
           )}
-
-          {displayOption === "favorite" && <Text>Favorite</Text>}
         </View>
       </TouchableOpacity>
     </Link>

@@ -262,21 +262,89 @@ const NumberPad = memo(function NumberPad({
 }) {
   return (
     <View style={styles.numberPad}>
-      {[1, 2, 3, 4, 5, 6, 7, 8, 9, ".", 0].map((num) => (
+      <View style={styles.numberRow}>
         <TouchableOpacity
-          key={num}
           style={styles.numberButton}
-          onPress={() => onNumberClick(num.toString())}
+          onPress={() => onNumberClick("1")}
         >
-          <Text style={styles.numberButtonText}>{num}</Text>
+          <Text style={styles.numberButtonText}>1</Text>
         </TouchableOpacity>
-      ))}
-      <TouchableOpacity
-        style={[styles.numberButton, { paddingTop: 8 }]}
-        onPress={onDelete}
-      >
-        <ArrowLeftIcon width={32} height={32} />
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("2")}
+        >
+          <Text style={styles.numberButtonText}>2</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("3")}
+        >
+          <Text style={styles.numberButtonText}>3</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.numberRow}>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("4")}
+        >
+          <Text style={styles.numberButtonText}>4</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("5")}
+        >
+          <Text style={styles.numberButtonText}>5</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("6")}
+        >
+          <Text style={styles.numberButtonText}>6</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.numberRow}>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("7")}
+        >
+          <Text style={styles.numberButtonText}>7</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("8")}
+        >
+          <Text style={styles.numberButtonText}>8</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("9")}
+        >
+          <Text style={styles.numberButtonText}>9</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.numberRow}>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick(".")}
+        >
+          <Text style={styles.numberButtonText}>.</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.numberButton}
+          onPress={() => onNumberClick("0")}
+        >
+          <Text style={styles.numberButtonText}>0</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.numberButton, styles.deleteButton]}
+          onPress={onDelete}
+        >
+          <ArrowLeftIcon width={28} height={28} fill="#fff" />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 });
@@ -321,15 +389,25 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   numberPad: {
+    flexDirection: "column",
+    width: "100%",
+    marginTop: 16,
+  },
+  numberRow: {
     flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 16,
+    justifyContent: "space-between",
+    marginBottom: 16,
+    width: "100%",
   },
   numberButton: {
     width: "30%",
     aspectRatio: 1.3,
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 8,
+    backgroundColor: Colors["osmoverse"][900],
+    borderColor: Colors["osmoverse"][800],
+    borderWidth: 1,
   },
   numberButtonText: {
     color: "white",
@@ -351,5 +429,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 15,
     width: "80%",
+  },
+  deleteButton: {
+    backgroundColor: Colors["wosmongton"][700],
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    borderColor: Colors["wosmongton"][500],
+    borderWidth: 1,
   },
 });
