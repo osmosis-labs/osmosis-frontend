@@ -1,6 +1,7 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React, { memo, useCallback, useRef } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -113,6 +114,7 @@ export function TradeInterface({
     Boolean(networkFeeError);
 
   const inset = useSafeAreaInsets();
+  const bottomTabBarHeight = useBottomTabBarHeight();
 
   let buttonText: string;
   if (error) {
@@ -151,8 +153,14 @@ export function TradeInterface({
       <ScrollView
         style={[
           styles.container,
-          { paddingBottom: PREVIEW_BUTTON_HEIGHT - inset.bottom },
+          {
+            paddingBottom:
+              PREVIEW_BUTTON_HEIGHT - inset.bottom + bottomTabBarHeight,
+          },
         ]}
+        contentContainerStyle={{
+          paddingBottom: bottomTabBarHeight,
+        }}
       >
         <View>
           <Text
@@ -240,7 +248,12 @@ export function TradeInterface({
         )}
       </ScrollView>
       {showGlobalSubmitButton && (
-        <View style={styles.previewButtonContainer}>
+        <View
+          style={[
+            styles.previewButtonContainer,
+            { paddingBottom: inset.bottom + bottomTabBarHeight },
+          ]}
+        >
           <Button
             title="Preview Trade"
             onPress={onReviewTrade}

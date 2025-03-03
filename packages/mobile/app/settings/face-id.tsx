@@ -4,6 +4,7 @@ import { ScrollView, StyleSheet, Switch, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
+import { useBiometricsText } from "~/components/icons/biometrics";
 import { RouteHeader } from "~/components/route-header";
 import { SettingsItem } from "~/components/settings/settings-item";
 import { Text } from "~/components/ui/text";
@@ -16,6 +17,7 @@ import { useSettingsStore } from "~/stores/settings";
 
 export default function FaceIDScreen() {
   const { isBiometricEnabled } = useOsBiometricAuthEnabled();
+  const biometricsText = useBiometricsText();
 
   const {
     biometricForAppAccess,
@@ -46,7 +48,7 @@ export default function FaceIDScreen() {
   const routeHeader = (
     <View style={styles.headerContainer}>
       <RouteHeader>
-        <Text style={styles.headerText}>Face ID</Text>
+        <Text style={styles.headerText}>{biometricsText}</Text>
       </RouteHeader>
     </View>
   );
@@ -62,7 +64,7 @@ export default function FaceIDScreen() {
         {routeHeader}
         <View style={styles.messageContainer}>
           <Text style={styles.disabledText}>
-            Face ID is not available on this device
+            {biometricsText} is not available on this device
           </Text>
         </View>
       </SafeAreaView>
@@ -82,7 +84,7 @@ export default function FaceIDScreen() {
       <ScrollView style={styles.scrollView}>
         <SettingsItem
           title="App access"
-          subtitle="Require Face ID to open app"
+          subtitle={`Require ${biometricsText} to open app`}
           rightElement={
             <Switch
               value={biometricForAppAccess}
@@ -95,7 +97,7 @@ export default function FaceIDScreen() {
         />
         <SettingsItem
           title="Transactions"
-          subtitle="Require Face ID to transact"
+          subtitle={`Require ${biometricsText} to transact`}
           rightElement={
             <Switch
               value={biometricForTransactions}

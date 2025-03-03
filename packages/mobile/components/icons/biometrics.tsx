@@ -16,3 +16,18 @@ export function BiometricsIcon(): JSX.Element | null {
 
   return null;
 }
+
+export function useBiometricsText(): string {
+  const { touchId: isTouchIdSupported, faceId: isFaceIdSupported } =
+    useDeviceSupportsBiometricAuth();
+
+  if (isTouchIdSupported) {
+    return "Touch ID";
+  }
+
+  if (isFaceIdSupported) {
+    return "Face ID";
+  }
+
+  return "";
+}

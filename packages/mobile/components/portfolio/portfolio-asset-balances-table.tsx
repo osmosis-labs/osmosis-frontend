@@ -107,6 +107,16 @@ const AssetItem = ({
 
   const isUnverified = !asset.isVerified;
 
+  const CoinName = (
+    <Text
+      numberOfLines={1}
+      ellipsizeMode="tail"
+      style={[styles.assetName, styles.assetNameWidth]}
+    >
+      {asset.coinName}
+    </Text>
+  );
+
   if (isUnverified && !showUnverifiedAssets) {
     return (
       <View style={styles.assetItem}>
@@ -115,7 +125,7 @@ const AssetItem = ({
             <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
           )}
           <View>
-            <Text style={styles.assetName}>{asset.coinName}</Text>
+            {CoinName}
             {asset.amount && (
               <Text type="caption" style={styles.assetAmount}>
                 {formatPretty(asset.amount, { maxDecimals: 8 })}
@@ -163,13 +173,7 @@ const AssetItem = ({
             <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
           )}
           <View>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
-              style={[styles.assetName, styles.assetNameWidth]}
-            >
-              {asset.coinName}
-            </Text>
+            {CoinName}
             {asset.amount && (
               <Text type="caption" style={styles.assetAmount}>
                 {formatPretty(asset.amount, { maxDecimals: 8 })}

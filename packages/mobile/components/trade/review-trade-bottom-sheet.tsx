@@ -91,7 +91,6 @@ export const ReviewTradeBottomSheet = React.forwardRef<
       <BottomSheetModal
         ref={ref}
         index={0}
-        enableDynamicSizing={false}
         snapPoints={useMemo(() => ["80%"], [])}
         backdropComponent={renderBackdrop}
         enableDismissOnClose={!isSendingTrade}

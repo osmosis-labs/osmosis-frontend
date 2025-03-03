@@ -6,7 +6,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
 import { AlertTriangle } from "~/components/icons/alert-triangle";
-import { BiometricsIcon } from "~/components/icons/biometrics";
+import {
+  BiometricsIcon,
+  useBiometricsText,
+} from "~/components/icons/biometrics";
 import { RouteHeader } from "~/components/route-header";
 import { SettingsGroup } from "~/components/settings/settings-group";
 import { SettingsItem } from "~/components/settings/settings-item";
@@ -15,6 +18,8 @@ import { Colors } from "~/constants/theme-colors";
 import { useSettingsStore } from "~/stores/settings";
 
 export default function SettingsScreen() {
+  const biometricsText = useBiometricsText();
+
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <Stack.Screen
@@ -89,7 +94,7 @@ export default function SettingsScreen() {
 
         <SettingsGroup title="Security">
           <SettingsItem
-            title="Face ID"
+            title={biometricsText}
             icon={<BiometricsIcon />}
             onPress={() => router.push("/settings/face-id")}
           />
