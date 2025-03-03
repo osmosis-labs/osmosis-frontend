@@ -4,6 +4,7 @@ import { FlashList } from "@shopify/flash-list";
 import { debounce } from "debounce";
 import React, { memo, useState } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView as ScrollViewGestureHandler } from "react-native-gesture-handler";
 
 import { SearchInput } from "~/components/search-input";
 import { Text } from "~/components/ui/text";
@@ -92,6 +93,7 @@ export const TradeBottomSheetContent = memo(
                   onClick={() => onSelectAsset(asset)}
                 />
               )}
+              renderScrollComponent={ScrollViewGestureHandler}
             />
             {isFetchingNextPage && <ActivityIndicator />}
           </>

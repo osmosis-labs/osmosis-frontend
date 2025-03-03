@@ -105,7 +105,8 @@ export default function RootLayout() {
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === "development" ||
+            (process.env.NODE_ENV === "development" &&
+              process.env.EXPO_PUBLIC_TRPC_LOGS === "true") ||
             (opts.direction === "down" && opts.result instanceof Error),
         }),
         (runtime) => {

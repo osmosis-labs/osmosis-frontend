@@ -48,7 +48,13 @@ export const TradeBottomSheetAssetItem = ({
             <AssetImage uri={asset.coinImageUrl} style={styles.assetImage} />
           )}
           <View>
-            <Text style={styles.assetName}>{asset.coinName}</Text>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.assetName, styles.assetNameWidth]}
+            >
+              {asset.coinName}
+            </Text>
             <Text type="caption" style={styles.assetDenom}>
               {asset.coinDenom}
             </Text>
@@ -109,6 +115,9 @@ const styles = StyleSheet.create({
   assetName: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  assetNameWidth: {
+    width: 160,
   },
   assetBalance: {
     fontSize: 16,
