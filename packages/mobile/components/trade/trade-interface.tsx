@@ -53,6 +53,8 @@ export function TradeInterface({
     tokenOutFiatValue,
     networkFee,
     sendTradeTokenInTx,
+    assetsQueryInput,
+    setAssetsQueryInput,
   } = useSwap({
     initialFromDenom: initialFromDenom ?? "ATOM",
     initialToDenom: initialToDenom ?? "OSMO",
@@ -174,6 +176,8 @@ export function TradeInterface({
               isLoadingSelectAssets={isLoadingSelectAssets}
               onPressMax={onPressMax}
               isSwapToolLoading={isSwapToolLoading}
+              searchValue={assetsQueryInput}
+              onSearch={setAssetsQueryInput}
             />
 
             <View style={styles.swapButtonContainer}>
@@ -200,6 +204,8 @@ export function TradeInterface({
               isLoadingSelectAssets={isLoadingSelectAssets}
               disabled
               isSwapToolLoading={isSwapToolLoading}
+              searchValue={assetsQueryInput}
+              onSearch={setAssetsQueryInput}
             />
           </View>
 
@@ -210,6 +216,8 @@ export function TradeInterface({
               onPress={onReviewTrade}
             />
           )}
+
+          {error && <Text style={styles.errorMessage}>{error?.message}</Text>}
         </View>
 
         {/* Scrollable number pad section */}
@@ -417,6 +425,11 @@ const styles = StyleSheet.create({
     backgroundColor: Colors["osmoverse"][900],
     borderColor: Colors["osmoverse"][800],
     borderWidth: 1,
+  },
+  errorMessage: {
+    color: "#ff4444",
+    fontSize: 14,
+    textAlign: "center",
   },
   numberButtonText: {
     color: "white",

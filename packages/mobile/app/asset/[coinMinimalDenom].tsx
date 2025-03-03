@@ -32,29 +32,31 @@ const AssetRoute = () => {
   const inset = useSafeAreaInsets();
 
   return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        { paddingBottom: TRADE_BUTTON_HEIGHT - inset.bottom },
-      ]}
-    >
-      <Stack.Screen
-        options={{
-          headerShown: false,
-        }}
-      />
+    <>
+      <SafeAreaView
+        style={[
+          styles.container,
+          { paddingBottom: TRADE_BUTTON_HEIGHT + inset.bottom },
+        ]}
+        edges={["top", "bottom"]}
+      >
+        <Stack.Screen
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      <View style={styles.headerContainer}>
-        <RouteHeader>
-          <View style={styles.assetInfo}>
-            <Image source={{ uri: coinImageUrl }} style={styles.assetImage} />
-            <Text style={styles.assetDenom}>{coinDenom}</Text>
-          </View>
-        </RouteHeader>
-      </View>
+        <View style={styles.headerContainer}>
+          <RouteHeader>
+            <View style={styles.assetInfo}>
+              <Image source={{ uri: coinImageUrl }} style={styles.assetImage} />
+              <Text style={styles.assetDenom}>{coinDenom}</Text>
+            </View>
+          </RouteHeader>
+        </View>
 
-      <AssetContent coinMinimalDenom={coinMinimalDenom} />
-
+        <AssetContent coinMinimalDenom={coinMinimalDenom} />
+      </SafeAreaView>
       <View style={styles.tradeButtonContainer}>
         <Button
           title="Trade"
@@ -69,7 +71,7 @@ const AssetRoute = () => {
           buttonStyle={styles.tradeButton}
         />
       </View>
-    </SafeAreaView>
+    </>
   );
 };
 
@@ -144,7 +146,8 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   assetContent: {
-    padding: 24,
+    paddingHorizontal: 24,
+    marginTop: 24,
     flex: 1,
   },
   balanceContainer: {
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
     height: TRADE_BUTTON_HEIGHT,
     bottom: 0,
     width: "100%",
-    paddingTop: 10,
+    justifyContent: "center",
     borderTopWidth: 1,
     alignItems: "center",
     borderTopColor: "rgba(255, 255, 255, 0.2)",

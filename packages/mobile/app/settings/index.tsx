@@ -96,7 +96,7 @@ export default function SettingsScreen() {
           <SettingsItem
             title={biometricsText}
             icon={<BiometricsIcon />}
-            onPress={() => router.push("/settings/face-id")}
+            onPress={() => router.push("/settings/biometric")}
           />
           {/* <SettingsItem title="Recovery phrase" onPress={() => {}} />
           <SettingsItem title="iCloud backup" onPress={() => {}} /> */}

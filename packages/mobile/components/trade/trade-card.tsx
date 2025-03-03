@@ -43,6 +43,8 @@ type TradeCardProps = {
   onPressMax?: () => void;
   disabled?: boolean;
   isSwapToolLoading: boolean;
+  searchValue?: string;
+  onSearch?: (query: string) => void;
 };
 
 export const TradeCard = memo(
@@ -61,6 +63,8 @@ export const TradeCard = memo(
     onPressMax,
     disabled,
     isSwapToolLoading,
+    searchValue,
+    onSearch,
   }: TradeCardProps) => {
     const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -117,6 +121,9 @@ export const TradeCard = memo(
           backgroundStyle={{
             backgroundColor: Colors["osmoverse"][900],
           }}
+          onDismiss={() => {
+            onSearch?.("");
+          }}
         >
           <TradeBottomSheetContent
             onSelectAsset={(asset) => {
@@ -129,6 +136,8 @@ export const TradeCard = memo(
             isFetchingNextPage={isFetchingNextPage}
             isLoadingSelectAssets={isLoadingSelectAssets}
             recommendedAssets={recommendedAssets}
+            searchValue={searchValue}
+            onSearch={onSearch}
           />
         </BottomSheetModal>
       </>

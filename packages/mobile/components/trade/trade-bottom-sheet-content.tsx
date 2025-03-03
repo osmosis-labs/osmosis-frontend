@@ -1,8 +1,7 @@
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { FlashList } from "@shopify/flash-list";
-import { debounce } from "debounce";
-import React, { memo, useState } from "react";
+import React, { memo } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { ScrollView as ScrollViewGestureHandler } from "react-native-gesture-handler";
 
@@ -23,6 +22,8 @@ interface TradeBottomSheetContentProps {
   isFetchingNextPage: boolean;
   isLoadingSelectAssets: boolean;
   recommendedAssets: MinimalAsset[] | undefined;
+  searchValue?: string;
+  onSearch?: (query: string) => void;
 }
 
 export const TradeBottomSheetContent = memo(
@@ -34,19 +35,16 @@ export const TradeBottomSheetContent = memo(
     isFetchingNextPage,
     isLoadingSelectAssets,
     recommendedAssets,
+    searchValue = "",
+    onSearch,
   }: TradeBottomSheetContentProps) => {
-    const [queryInput, setQueryInput] = useState("");
-
-    const onSearch = debounce((query: string) => {
-      setQueryInput(query);
-    }, 200);
-
     return (
       <BottomSheetView style={styles.bottomSheetView}>
         <View style={styles.searchInputContainer}>
           <SearchInput
-            onSearch={onSearch}
+            onSearch={onSearch || (() => {})}
             activeColor={Colors["osmoverse"][500]}
+            initialValue={searchValue}
           />
         </View>
         <View>
@@ -73,7 +71,7 @@ export const TradeBottomSheetContent = memo(
         ) : selectableAssets.length === 0 ? (
           <View style={styles.centeredView}>
             <Text type="subtitle">
-              No results {queryInput && `for "${queryInput}"`}
+              No results {searchValue && `for "${searchValue}"`}
             </Text>
             <Text style={styles.adjustSearchText}>
               Try adjusting your search query

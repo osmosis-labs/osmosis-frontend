@@ -6,7 +6,7 @@ import {
 import { CoinPretty } from "@osmosis-labs/unit";
 import { PricePretty } from "@osmosis-labs/unit";
 import { formatPretty } from "@osmosis-labs/utils";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
 
@@ -91,7 +91,6 @@ export const ReviewTradeBottomSheet = React.forwardRef<
       <BottomSheetModal
         ref={ref}
         index={0}
-        snapPoints={useMemo(() => ["80%"], [])}
         backdropComponent={renderBackdrop}
         enableDismissOnClose={!isSendingTrade}
         handleIndicatorStyle={{

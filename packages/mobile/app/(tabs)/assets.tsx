@@ -6,7 +6,6 @@ import { Link } from "expo-router";
 import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
-  Image,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -18,6 +17,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { ChevronDownIcon } from "~/components/icons/chevron-down";
 import { SearchInput } from "~/components/search-input";
 import { SubscriptDecimal } from "~/components/subscript-decimal";
+import { AssetImage } from "~/components/ui/asset-image";
 import {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -25,7 +25,6 @@ import {
   DropdownMenuRoot,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown";
-import { SvgUri } from "~/components/ui/svg-uri";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { mmkvStorage } from "~/utils/mmkv";
@@ -210,19 +209,7 @@ const AssetItem = ({
     >
       <TouchableOpacity style={styles.assetItem}>
         <View style={styles.assetLeft}>
-          {asset.coinImageUrl?.endsWith(".svg") ? (
-            <SvgUri
-              uri={asset.coinImageUrl}
-              width={40}
-              height={40}
-              style={styles.assetIcon}
-            />
-          ) : (
-            <Image
-              source={{ uri: asset.coinImageUrl }}
-              style={styles.assetIcon}
-            />
-          )}
+          <AssetImage uri={asset.coinImageUrl ?? ""} style={styles.assetIcon} />
           <View>
             <Text style={styles.assetName}>{asset.coinDenom}</Text>
           </View>

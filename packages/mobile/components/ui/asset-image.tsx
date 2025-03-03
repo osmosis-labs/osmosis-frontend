@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, ImageStyle, StyleSheet, ViewStyle } from "react-native";
-import { SvgUri } from "react-native-svg";
+
+import { SvgUri } from "~/components/ui/svg-uri";
 
 interface AssetImageProps {
   uri: string;

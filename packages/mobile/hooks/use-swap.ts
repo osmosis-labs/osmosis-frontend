@@ -27,7 +27,7 @@ import {
   sum,
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAsync from "react-use/lib/useAsync";
 
 import { useAmountInput } from "~/hooks/use-amount-input";
@@ -73,6 +73,7 @@ type SwapOptions = {
 // spot price to be very off when swapping 1 unit of token in.
 // This is a temporary hack to bypass the issue with high-value tokens.
 // Long-term, we should allow custom quotes in SQS /tokens/prices query.
+// Memoize this value to prevent recreation on each render
 const spotPriceQuoteMultiplier = new Dec(10);
 
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
@@ -99,74 +100,146 @@ export function useSwap(
   const signAndBroadcast = useSignAndBroadcast();
   const { isTransactionInProgress } = useIsTransactionInProgress();
 
-  const swapAssets = useSwapAssets({
-    initialFromDenom,
-    initialToDenom,
-    useQueryParams,
-    useOtherCurrencies,
-    poolId: forceSwapInPoolId,
-  });
+  // Memoize options to prevent unnecessary re-renders of child hooks
+  const swapAssetsOptions = useMemo(
+    () => ({
+      initialFromDenom,
+      initialToDenom,
+      useQueryParams,
+      useOtherCurrencies,
+      poolId: forceSwapInPoolId,
+    }),
+    [
+      initialFromDenom,
+      initialToDenom,
+      useQueryParams,
+      useOtherCurrencies,
+      forceSwapInPoolId,
+    ]
+  );
 
-  const reverseSwapAssets = useSwapAssets({
-    initialFromDenom,
-    initialToDenom,
-    useQueryParams,
-    useOtherCurrencies,
-    poolId: forceSwapInPoolId,
-    reverse: true,
-  });
+  const reverseSwapAssetsOptions = useMemo(
+    () => ({
+      ...swapAssetsOptions,
+      reverse: true,
+    }),
+    [swapAssetsOptions]
+  );
 
-  const inAmountInput = useSwapAmountInput({
-    forceSwapInPoolId,
-    maxSlippage,
-    swapAssets,
-  });
+  const swapAssets = useSwapAssets(swapAssetsOptions);
+  const reverseSwapAssets = useSwapAssets(reverseSwapAssetsOptions);
 
-  const outAmountInput = useSwapAmountInput({
-    forceSwapInPoolId,
-    maxSlippage,
-    swapAssets: reverseSwapAssets,
-  });
+  const swapAmountInputOptions = useMemo(
+    () => ({
+      forceSwapInPoolId,
+      maxSlippage,
+      swapAssets,
+    }),
+    [forceSwapInPoolId, maxSlippage, swapAssets]
+  );
+
+  const reverseSwapAmountInputOptions = useMemo(
+    () => ({
+      forceSwapInPoolId,
+      maxSlippage,
+      swapAssets: reverseSwapAssets,
+    }),
+    [forceSwapInPoolId, maxSlippage, reverseSwapAssets]
+  );
+
+  const inAmountInput = useSwapAmountInput(swapAmountInputOptions);
+  const outAmountInput = useSwapAmountInput(reverseSwapAmountInputOptions);
 
   // load flags
-  const isToFromAssets =
-    Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
+  const isToFromAssets = useMemo(
+    () => Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset),
+    [swapAssets.fromAsset, swapAssets.toAsset]
+  );
 
-  const quoteQueryEnabled =
-    isToFromAssets &&
-    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
-    // since input is debounced there could be the wrong asset associated
-    // with the input amount when switching assets
-    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset?.coinMinimalDenom &&
-    inAmountInput.amount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset?.coinMinimalDenom &&
-    !isTransactionInProgress &&
-    quoteType === "out-given-in";
+  const quoteQueryEnabled = useMemo(
+    () =>
+      isToFromAssets &&
+      Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+      // since input is debounced there could be the wrong asset associated
+      // with the input amount when switching assets
+      inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+        swapAssets.fromAsset?.coinMinimalDenom &&
+      inAmountInput.amount?.currency.coinMinimalDenom ===
+        swapAssets.fromAsset?.coinMinimalDenom &&
+      !isTransactionInProgress &&
+      quoteType === "out-given-in",
+    [
+      isToFromAssets,
+      inAmountInput.debouncedInAmount,
+      inAmountInput.amount,
+      swapAssets.fromAsset,
+      isTransactionInProgress,
+      quoteType,
+    ]
+  );
 
-  const inGivenOutQuoteEnabled =
-    isToFromAssets &&
-    Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
-    outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
-      swapAssets.toAsset?.coinMinimalDenom &&
-    outAmountInput.amount?.currency.coinMinimalDenom ===
-      swapAssets.toAsset?.coinMinimalDenom &&
-    !isTransactionInProgress &&
-    quoteType === "in-given-out";
+  const inGivenOutQuoteEnabled = useMemo(
+    () =>
+      isToFromAssets &&
+      Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+      outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+        swapAssets.toAsset?.coinMinimalDenom &&
+      outAmountInput.amount?.currency.coinMinimalDenom ===
+        swapAssets.toAsset?.coinMinimalDenom &&
+      !isTransactionInProgress &&
+      quoteType === "in-given-out",
+    [
+      isToFromAssets,
+      outAmountInput.debouncedInAmount,
+      outAmountInput.amount,
+      swapAssets.toAsset,
+      isTransactionInProgress,
+      quoteType,
+    ]
+  );
+
+  const outGivenInQuoteParams = useMemo(
+    () => ({
+      tokenIn: swapAssets.fromAsset,
+      tokenOut: swapAssets.toAsset,
+      tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    }),
+    [
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      inAmountInput.debouncedInAmount,
+      forceSwapInPoolId,
+      maxSlippage,
+    ]
+  );
+
+  const inGivenOutQuoteParams = useMemo(
+    () => ({
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
+      tokenInAmount: outAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    }),
+    [
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      outAmountInput.debouncedInAmount,
+      forceSwapInPoolId,
+      maxSlippage,
+    ]
+  );
 
   const {
     data: outGivenInQuote,
     isLoading: isQuoteLoading_,
     errorMsg: quoteErrorMsg,
   } = useQueryRouterBestQuote(
-    {
-      tokenIn: swapAssets.fromAsset,
-      tokenOut: swapAssets.toAsset,
-      tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
-      forcePoolId: forceSwapInPoolId,
-      maxSlippage,
-    },
-    quoteQueryEnabled
+    outGivenInQuoteParams,
+    quoteQueryEnabled,
+    "out-given-in"
   );
 
   const {
@@ -174,21 +247,65 @@ export function useSwap(
     isLoading: isInGivenOutQuoteLoading_,
     errorMsg: inGivenOutQuoteError,
   } = useQueryRouterBestQuote(
-    {
-      tokenIn: swapAssets.fromAsset!,
-      tokenOut: swapAssets.toAsset!,
-      tokenInAmount: outAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
-      forcePoolId: forceSwapInPoolId,
-      maxSlippage,
-    },
+    inGivenOutQuoteParams,
     inGivenOutQuoteEnabled,
     "in-given-out"
   );
 
-  const quote =
-    quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
+  const quote = useMemo(
+    () => (quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote),
+    [quoteType, inGivenOutQuote, outGivenInQuote]
+  );
+
+  // Use a ref to track the last update to prevent infinite loops
+  const lastUpdateRef = useRef<{
+    quoteType: QuoteDirection;
+    isQuoteLoading: boolean;
+    isInGivenOutQuoteLoading: boolean;
+    quoteErrorMsg?: string;
+    inGivenOutQuoteError?: string;
+    inAmountInputIsTyping: boolean;
+    inAmountInputIsEmpty: boolean;
+    outAmountInputIsTyping: boolean;
+    outAmountInputIsEmpty: boolean;
+  } | null>(null);
 
   useEffect(() => {
+    // Create a snapshot of current state
+    const currentState = {
+      quoteType,
+      isQuoteLoading: isQuoteLoading_,
+      isInGivenOutQuoteLoading: isInGivenOutQuoteLoading_,
+      quoteErrorMsg,
+      inGivenOutQuoteError,
+      inAmountInputIsTyping: inAmountInput.isTyping,
+      inAmountInputIsEmpty: inAmountInput.isEmpty,
+      outAmountInputIsTyping: outAmountInput.isTyping,
+      outAmountInputIsEmpty: outAmountInput.isEmpty,
+    };
+
+    // Compare with last state to prevent unnecessary updates
+    const lastState = lastUpdateRef.current;
+    if (
+      lastState &&
+      lastState.quoteType === currentState.quoteType &&
+      lastState.isQuoteLoading === currentState.isQuoteLoading &&
+      lastState.isInGivenOutQuoteLoading ===
+        currentState.isInGivenOutQuoteLoading &&
+      lastState.quoteErrorMsg === currentState.quoteErrorMsg &&
+      lastState.inGivenOutQuoteError === currentState.inGivenOutQuoteError &&
+      lastState.inAmountInputIsTyping === currentState.inAmountInputIsTyping &&
+      lastState.inAmountInputIsEmpty === currentState.inAmountInputIsEmpty &&
+      lastState.outAmountInputIsTyping ===
+        currentState.outAmountInputIsTyping &&
+      lastState.outAmountInputIsEmpty === currentState.outAmountInputIsEmpty
+    ) {
+      return;
+    }
+
+    // Update ref with current state
+    lastUpdateRef.current = currentState;
+
     if (
       quoteType === "in-given-out" &&
       !isInGivenOutQuoteLoading_ &&
@@ -212,12 +329,6 @@ export function useSwap(
           : ""
       );
     }
-
-    /**
-     * We disable dependencies here to stop an infinite loop
-     * from the inAmount/outAmount input states
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     quoteType,
     inGivenOutQuote,
@@ -226,37 +337,50 @@ export function useSwap(
     isInGivenOutQuoteLoading_,
     quoteErrorMsg,
     inGivenOutQuoteError,
-    inAmountInput.isTyping,
-    outAmountInput.isTyping,
-    inAmountInput.isEmpty,
-    outAmountInput.isEmpty,
+    inAmountInput,
+    outAmountInput,
   ]);
 
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
-  const isQuoteLoading =
-    (isQuoteLoading_ && quoteQueryEnabled) ||
-    (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled);
+  const isQuoteLoading = useMemo(
+    () =>
+      (isQuoteLoading_ && quoteQueryEnabled) ||
+      (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled),
+    [
+      isQuoteLoading_,
+      quoteQueryEnabled,
+      isInGivenOutQuoteLoading_,
+      inGivenOutQuoteEnabled,
+    ]
+  );
+
+  const spotPriceQuoteParams = useMemo(() => {
+    const tokenInDecimals = swapAssets.fromAsset?.coinDecimals ?? 0;
+    const tokenInAmount = DecUtils.getTenExponentN(tokenInDecimals)
+      .quoRoundUp(spotPriceQuoteMultiplier)
+      .truncate()
+      .toString();
+
+    return {
+      tokenIn: swapAssets.fromAsset!,
+      tokenOut: swapAssets.toAsset!,
+      tokenInAmount,
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    };
+  }, [
+    swapAssets.fromAsset,
+    swapAssets.toAsset,
+    forceSwapInPoolId,
+    maxSlippage,
+  ]);
 
   const {
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
     errorMsg: spotPriceQuoteErrorMsg,
-  } = useQueryRouterBestQuote(
-    {
-      tokenIn: swapAssets.fromAsset!,
-      tokenOut: swapAssets.toAsset!,
-      tokenInAmount: DecUtils.getTenExponentN(
-        swapAssets.fromAsset?.coinDecimals ?? 0
-      )
-        .quoRoundUp(spotPriceQuoteMultiplier)
-        .truncate()
-        .toString(),
-      forcePoolId: forceSwapInPoolId,
-      maxSlippage,
-    },
-    isToFromAssets
-  );
+  } = useQueryRouterBestQuote(spotPriceQuoteParams, isToFromAssets);
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
@@ -288,32 +412,58 @@ export function useSwap(
     quoteType,
   ]);
 
-  const networkFeeQueryEnabled =
-    !precedentError &&
-    !isQuoteLoading &&
-    (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
-    Boolean(quote?.messages) &&
-    Boolean(currentWallet?.address) &&
-    inAmountInput.debouncedInAmount !== null &&
-    inAmountInput.balance &&
-    inAmountInput.amount &&
-    inAmountInput.debouncedInAmount
-      .toDec()
-      .lte(inAmountInput.balance.toDec()) &&
-    inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
-    outAmountInput.debouncedInAmount !== null &&
-    Boolean(outAmountInput.amount);
+  const networkFeeQueryEnabled = useMemo(
+    () =>
+      !precedentError &&
+      !isQuoteLoading &&
+      (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
+      Boolean(quote?.messages) &&
+      Boolean(currentWallet?.address) &&
+      inAmountInput.debouncedInAmount !== null &&
+      inAmountInput.balance &&
+      inAmountInput.amount &&
+      inAmountInput.debouncedInAmount
+        .toDec()
+        .lte(inAmountInput.balance.toDec()) &&
+      inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
+      outAmountInput.debouncedInAmount !== null &&
+      Boolean(outAmountInput.amount),
+    [
+      precedentError,
+      isQuoteLoading,
+      quoteQueryEnabled,
+      inGivenOutQuoteEnabled,
+      quote?.messages,
+      currentWallet?.address,
+      inAmountInput.debouncedInAmount,
+      inAmountInput.balance,
+      inAmountInput.amount,
+      outAmountInput.debouncedInAmount,
+      outAmountInput.amount,
+    ]
+  );
+
+  const networkFeeParams = useMemo(
+    () => ({
+      chainId: osmosisChain.chain_id,
+      messages: quote?.messages ?? [],
+    }),
+    [osmosisChain.chain_id, quote?.messages]
+  );
 
   const {
     data: networkFee,
     error: networkFeeError,
     isLoading: isLoadingNetworkFee_,
   } = useEstimateTxFees({
-    chainId: osmosisChain.chain_id,
-    messages: quote?.messages ?? [],
+    ...networkFeeParams,
+    enabled: networkFeeQueryEnabled,
   });
 
-  const isLoadingNetworkFee = isLoadingNetworkFee_ && networkFeeQueryEnabled;
+  const isLoadingNetworkFee = useMemo(
+    () => isLoadingNetworkFee_ && networkFeeQueryEnabled,
+    [isLoadingNetworkFee_, networkFeeQueryEnabled]
+  );
 
   const isSlippageOverBalance = useMemo(() => {
     if (
@@ -427,16 +577,15 @@ export function useSwap(
     ]
   );
 
-  const positivePrevQuote = usePreviousWhen(
-    quote,
-    useCallback(
-      () =>
-        Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
-    )
+  const shouldKeepPrevQuote = useCallback(
+    () =>
+      Boolean(quote?.amount.toDec().isPositive()) &&
+      !quoteErrorMsg &&
+      !inAmountInput.isEmpty,
+    [quote, quoteErrorMsg, inAmountInput.isEmpty]
   );
+
+  const positivePrevQuote = usePreviousWhen(quote, shouldKeepPrevQuote);
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
@@ -478,6 +627,7 @@ export function useSwap(
     outAmountInput.amount,
     quoteType,
   ]);
+
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
     return (
@@ -490,7 +640,7 @@ export function useSwap(
   // queried above from the same source.
   // By inversally using the token in price, we ensure that the token in fee amount fiat value is consistent
   // relative to the token in and token out fiat value
-  const tokenInFeeAmountFiatValue: PricePretty = useMemo(
+  const tokenInFeeAmountFiatValue = useMemo(
     () =>
       getTokenInFeeAmountFiatValue(
         swapAssets.fromAsset,
@@ -507,7 +657,7 @@ export function useSwap(
   //
   // The price impact is computed directly from quote, ensuring most up-to-date state.
   // This guarantees consistency between token in and token out fiat values.
-  const tokenOutFiatValue: PricePretty = useMemo(() => {
+  const tokenOutFiatValue = useMemo(() => {
     if (quoteType === "out-given-in") {
       return getTokenOutFiatValue(
         quote?.priceImpactTokenOut?.toDec(),
@@ -526,6 +676,7 @@ export function useSwap(
     quoteType,
     outAmountInput.fiatValue,
   ]);
+
   const totalFee = useDeepMemo(
     () =>
       sum([
@@ -535,33 +686,59 @@ export function useSwap(
     [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
   );
 
-  return {
-    ...swapAssets,
-    inAmountInput,
-    outAmountInput,
-    tokenOutFiatValue,
-    tokenInFeeAmountFiatValue,
-    quote:
-      isQuoteLoading || inAmountInput.isTyping
-        ? positivePrevQuote
-        : !quoteErrorMsg
-        ? quote
-        : undefined,
-    inBaseOutQuoteSpotPrice,
-    totalFee,
-    networkFee,
-    isLoadingNetworkFee:
-      inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
-    networkFeeError,
-    error: precedentError,
-    spotPriceQuote,
-    isSpotPriceQuoteLoading,
-    spotPriceQuoteErrorMsg,
-    isQuoteLoading,
-    sendTradeTokenInTx,
-    isSlippageOverBalance,
-    quoteType,
-  };
+  // Memoize the final return value to prevent unnecessary re-renders
+  return useMemo(
+    () => ({
+      ...swapAssets,
+      inAmountInput,
+      outAmountInput,
+      tokenOutFiatValue,
+      tokenInFeeAmountFiatValue,
+      quote:
+        isQuoteLoading || inAmountInput.isTyping
+          ? positivePrevQuote
+          : !quoteErrorMsg
+          ? quote
+          : undefined,
+      inBaseOutQuoteSpotPrice,
+      totalFee,
+      networkFee,
+      isLoadingNetworkFee:
+        inAmountInput.isLoadingCurrentBalanceNetworkFee || isLoadingNetworkFee,
+      networkFeeError,
+      error: precedentError,
+      spotPriceQuote,
+      isSpotPriceQuoteLoading,
+      spotPriceQuoteErrorMsg,
+      isQuoteLoading,
+      sendTradeTokenInTx,
+      isSlippageOverBalance,
+      quoteType,
+    }),
+    [
+      swapAssets,
+      inAmountInput,
+      outAmountInput,
+      tokenOutFiatValue,
+      tokenInFeeAmountFiatValue,
+      isQuoteLoading,
+      positivePrevQuote,
+      quoteErrorMsg,
+      quote,
+      inBaseOutQuoteSpotPrice,
+      totalFee,
+      networkFee,
+      isLoadingNetworkFee,
+      networkFeeError,
+      precedentError,
+      spotPriceQuote,
+      isSpotPriceQuoteLoading,
+      spotPriceQuoteErrorMsg,
+      sendTradeTokenInTx,
+      isSlippageOverBalance,
+      quoteType,
+    ]
+  );
 }
 
 const DefaultDenoms = ["ATOM", "OSMO"];
@@ -680,6 +857,7 @@ export function useSwapAssets({
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
   const [debouncedSearchInput, setDebouncedSearchInput] =
     useDebouncedState<string>("", 500);
+
   useEffect(() => {
     setDebouncedSearchInput(assetsQueryInput);
   }, [setDebouncedSearchInput, assetsQueryInput]);
@@ -689,25 +867,26 @@ export function useSwapAssets({
     [debouncedSearchInput]
   );
 
-  const canLoadAssets =
-    Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies;
+  const canLoadAssets = useMemo(
+    () =>
+      Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies,
+    [fromAssetDenom, toAssetDenom, useOtherCurrencies]
+  );
 
-  const {
-    data: selectableAssetPages,
-    isLoading: isLoadingSelectAssets,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = api.local.assets.getUserAssets.useInfiniteQuery(
-    {
+  const queryParams = useMemo(
+    () => ({
       poolId,
       search: queryInput,
       userOsmoAddress: currentWallet?.address,
       limit: 50, // items per page
-    },
-    {
+    }),
+    [poolId, queryInput, currentWallet?.address]
+  );
+
+  const queryOptions = useMemo(
+    () => ({
       enabled: canLoadAssets,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      getNextPageParam: (lastPage: any) => lastPage.nextCursor,
       initialCursor: 0,
 
       // avoid blocking
@@ -716,7 +895,19 @@ export function useSwapAssets({
           skipBatch: true,
         },
       },
-    }
+    }),
+    [canLoadAssets]
+  );
+
+  const {
+    data: selectableAssetPages,
+    isLoading: isLoadingSelectAssets,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = api.local.assets.getUserAssets.useInfiniteQuery(
+    queryParams,
+    queryOptions
   );
 
   const selectableAssets = useMemo(
@@ -727,15 +918,24 @@ export function useSwapAssets({
     [selectableAssetPages?.pages, useOtherCurrencies]
   );
 
-  const { asset: fromAsset } = useSwapAsset({
-    minDenomOrSymbol: fromAssetDenom,
-    existingAssets: selectableAssets,
-  });
+  const swapAssetParams = useMemo(
+    () => ({
+      minDenomOrSymbol: fromAssetDenom,
+      existingAssets: selectableAssets,
+    }),
+    [fromAssetDenom, selectableAssets]
+  );
 
-  const { asset: toAsset } = useSwapAsset({
-    minDenomOrSymbol: toAssetDenom,
-    existingAssets: selectableAssets,
-  });
+  const toSwapAssetParams = useMemo(
+    () => ({
+      minDenomOrSymbol: toAssetDenom,
+      existingAssets: selectableAssets,
+    }),
+    [toAssetDenom, selectableAssets]
+  );
+
+  const { asset: fromAsset } = useSwapAsset(swapAssetParams);
+  const { asset: toAsset } = useSwapAsset(toSwapAssetParams);
 
   /**
    * This effect handles the scenario where the selected asset denoms do not correspond to any available
@@ -779,27 +979,51 @@ export function useSwapAssets({
     toAssetDenom,
   ]);
 
-  const recommendedAssets = useRecommendedAssets(
-    fromAsset?.coinMinimalDenom,
-    toAsset?.coinMinimalDenom
+  const recommendedAssetsParams = useMemo(
+    () => ({
+      fromCoinMinimalDenom: fromAsset?.coinMinimalDenom,
+      toCoinMinimalDenom: toAsset?.coinMinimalDenom,
+    }),
+    [fromAsset?.coinMinimalDenom, toAsset?.coinMinimalDenom]
   );
 
-  return {
-    fromAsset,
-    toAsset,
-    assetsQueryInput,
-    selectableAssets,
-    isLoadingSelectAssets,
-    hasNextPageAssets: hasNextPage,
-    isFetchingNextPageAssets: isFetchingNextPage,
-    /** Recommended assets, with to and from tokens filtered. */
-    recommendedAssets,
-    setAssetsQueryInput,
-    setFromAssetDenom,
-    setToAssetDenom,
-    switchAssets,
-    fetchNextPageAssets: fetchNextPage,
-  };
+  const recommendedAssets = useRecommendedAssets(
+    recommendedAssetsParams.fromCoinMinimalDenom,
+    recommendedAssetsParams.toCoinMinimalDenom
+  );
+
+  return useMemo(
+    () => ({
+      fromAsset,
+      toAsset,
+      assetsQueryInput,
+      selectableAssets,
+      isLoadingSelectAssets,
+      hasNextPageAssets: hasNextPage,
+      isFetchingNextPageAssets: isFetchingNextPage,
+      /** Recommended assets, with to and from tokens filtered. */
+      recommendedAssets,
+      setAssetsQueryInput,
+      setFromAssetDenom,
+      setToAssetDenom,
+      switchAssets,
+      fetchNextPageAssets: fetchNextPage,
+    }),
+    [
+      fromAsset,
+      toAsset,
+      assetsQueryInput,
+      selectableAssets,
+      isLoadingSelectAssets,
+      hasNextPage,
+      isFetchingNextPage,
+      recommendedAssets,
+      setFromAssetDenom,
+      setToAssetDenom,
+      switchAssets,
+      fetchNextPage,
+    ]
+  );
 }
 
 export type UseSwapAmountInputReturn = ReturnType<typeof useSwapAmountInput>;
@@ -822,55 +1046,98 @@ function useSwapAmountInput({
     gasAmount: gasAmount,
   });
 
-  const balanceQuoteQueryEnabled =
-    !isTransactionInProgress &&
-    Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset) &&
-    // since the in amount is debounced, the asset could be wrong when switching assets
-    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset!.coinMinimalDenom &&
-    inAmountInput.amount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset!.coinMinimalDenom &&
-    !!inAmountInput.balance &&
-    !inAmountInput.balance.toDec().isZero() &&
-    inAmountInput.balance.currency.coinMinimalDenom ===
-      swapAssets.fromAsset?.coinMinimalDenom;
-  const {
-    data: quoteForCurrentBalance,
-    isLoading: isQuoteForCurrentBalanceLoading_,
-    errorMsg: quoteForCurrentBalanceErrorMsg,
-  } = useQueryRouterBestQuote(
-    {
+  const balanceQuoteQueryEnabled = useMemo(
+    () =>
+      !isTransactionInProgress &&
+      Boolean(swapAssets.fromAsset) &&
+      Boolean(swapAssets.toAsset) &&
+      // since the in amount is debounced, the asset could be wrong when switching assets
+      inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+        swapAssets.fromAsset!.coinMinimalDenom &&
+      inAmountInput.amount?.currency.coinMinimalDenom ===
+        swapAssets.fromAsset!.coinMinimalDenom &&
+      !!inAmountInput.balance &&
+      !inAmountInput.balance.toDec().isZero() &&
+      inAmountInput.balance.currency.coinMinimalDenom ===
+        swapAssets.fromAsset?.coinMinimalDenom,
+    [
+      isTransactionInProgress,
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      inAmountInput.debouncedInAmount,
+      inAmountInput.amount,
+      inAmountInput.balance,
+    ]
+  );
+
+  const balanceQuoteParams = useMemo(
+    () => ({
       tokenIn: swapAssets.fromAsset!,
       tokenOut: swapAssets.toAsset!,
       tokenInAmount: inAmountInput.balance?.toCoin().amount ?? "",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
-    },
-    balanceQuoteQueryEnabled
+    }),
+    [
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      inAmountInput.balance,
+      forceSwapInPoolId,
+      maxSlippage,
+    ]
   );
-  const isQuoteForCurrentBalanceLoading =
-    isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 
-  const networkFeeQueryEnabled =
-    !isQuoteForCurrentBalanceLoading &&
-    balanceQuoteQueryEnabled &&
-    Boolean(quoteForCurrentBalance);
+  const {
+    data: quoteForCurrentBalance,
+    isLoading: isQuoteForCurrentBalanceLoading_,
+    errorMsg: quoteForCurrentBalanceErrorMsg,
+  } = useQueryRouterBestQuote(balanceQuoteParams, balanceQuoteQueryEnabled);
+
+  const isQuoteForCurrentBalanceLoading = useMemo(
+    () => isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled,
+    [isQuoteForCurrentBalanceLoading_, balanceQuoteQueryEnabled]
+  );
+
+  const networkFeeQueryEnabled = useMemo(
+    () =>
+      !isQuoteForCurrentBalanceLoading &&
+      balanceQuoteQueryEnabled &&
+      Boolean(quoteForCurrentBalance),
+    [
+      isQuoteForCurrentBalanceLoading,
+      balanceQuoteQueryEnabled,
+      quoteForCurrentBalance,
+    ]
+  );
+
+  const networkFeeParams = useMemo(
+    () => ({
+      chainId: osmosisChain.chain_id,
+      messages: quoteForCurrentBalance?.messages ?? [],
+      enabled: networkFeeQueryEnabled,
+    }),
+    [
+      osmosisChain.chain_id,
+      quoteForCurrentBalance?.messages,
+      networkFeeQueryEnabled,
+    ]
+  );
+
   const {
     data: currentBalanceNetworkFee,
     isLoading: isLoadingCurrentBalanceNetworkFee_,
     error: currentBalanceNetworkFeeError,
-  } = useEstimateTxFees({
-    chainId: osmosisChain.chain_id,
-    messages: quoteForCurrentBalance?.messages ?? [],
-    enabled: networkFeeQueryEnabled,
-  });
-  const isLoadingCurrentBalanceNetworkFee =
-    networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_;
+  } = useEstimateTxFees(networkFeeParams);
 
-  const hasErrorWithCurrentBalanceQuote = useMemo(() => {
-    return !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceErrorMsg;
-  }, [currentBalanceNetworkFeeError, quoteForCurrentBalanceErrorMsg]);
+  const isLoadingCurrentBalanceNetworkFee = useMemo(
+    () => networkFeeQueryEnabled && isLoadingCurrentBalanceNetworkFee_,
+    [networkFeeQueryEnabled, isLoadingCurrentBalanceNetworkFee_]
+  );
+
+  const hasErrorWithCurrentBalanceQuote = useMemo(
+    () => !!currentBalanceNetworkFeeError || !!quoteForCurrentBalanceErrorMsg,
+    [currentBalanceNetworkFeeError, quoteForCurrentBalanceErrorMsg]
+  );
 
   const notEnoughBalanceForMax = useMemo(
     () =>
@@ -889,29 +1156,42 @@ function useSwapAmountInput({
     [currentBalanceNetworkFeeError?.message, quoteForCurrentBalanceErrorMsg]
   );
 
+  // Use a ref to track the last gas amount to prevent unnecessary updates
+  const lastGasAmountRef = useRef<CoinPretty | undefined>();
+
   useEffect(() => {
     if (isNil(currentBalanceNetworkFee?.gasAmount)) return;
 
-    setGasAmount(
-      currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)) // Add 2% buffer
-    );
+    const newGasAmount = currentBalanceNetworkFee.gasAmount.mul(new Dec(1.02)); // Add 2% buffer
+
+    // Only update if the gas amount has changed significantly
+    if (
+      !lastGasAmountRef.current ||
+      !lastGasAmountRef.current.toDec().equals(newGasAmount.toDec())
+    ) {
+      lastGasAmountRef.current = newGasAmount;
+      setGasAmount(newGasAmount);
+    }
   }, [currentBalanceNetworkFee?.gasAmount]);
 
-  const returnValue = useDeepMemo(() => {
-    return {
+  // Create the final result object with all the properties
+  const result = useMemo(
+    () => ({
       ...inAmountInput,
       isLoadingCurrentBalanceNetworkFee,
       hasErrorWithCurrentBalanceQuote,
       notEnoughBalanceForMax,
-    };
-  }, [
-    inAmountInput,
-    isLoadingCurrentBalanceNetworkFee,
-    hasErrorWithCurrentBalanceQuote,
-    notEnoughBalanceForMax,
-  ]);
+    }),
+    [
+      inAmountInput,
+      isLoadingCurrentBalanceNetworkFee,
+      hasErrorWithCurrentBalanceQuote,
+      notEnoughBalanceForMax,
+    ]
+  );
 
-  return returnValue;
+  // Use deep memo to prevent unnecessary re-renders
+  return useDeepMemo(() => result, [result]);
 }
 
 /**
@@ -934,24 +1214,29 @@ function useToFromDenoms({
     initialToDenom
   );
 
+  // Update state when initial values change
   useEffect(() => {
     setToAssetState(initialToDenom);
     setFromAssetState(initialFromDenom);
   }, [initialFromDenom, initialToDenom]);
 
+  // Memoize the switch assets function to prevent unnecessary re-renders
   const switchAssets = useCallback(() => {
-    const temp = fromAssetState;
-    setFromAssetState(toAssetState);
-    setToAssetState(temp);
+    setFromAssetState((current) => toAssetState);
+    setToAssetState((current) => fromAssetState);
   }, [fromAssetState, toAssetState]);
 
-  return {
-    fromAssetDenom: reverse ? toAssetState : fromAssetState,
-    toAssetDenom: reverse ? fromAssetState : toAssetState,
-    setFromAssetDenom: setFromAssetState,
-    setToAssetDenom: setToAssetState,
-    switchAssets,
-  };
+  // Memoize the return value to prevent unnecessary re-renders
+  return useMemo(
+    () => ({
+      fromAssetDenom: reverse ? toAssetState : fromAssetState,
+      toAssetDenom: reverse ? fromAssetState : toAssetState,
+      setFromAssetDenom: setFromAssetState,
+      setToAssetDenom: setToAssetState,
+      switchAssets,
+    }),
+    [fromAssetState, toAssetState, reverse, switchAssets]
+  );
 }
 
 /** Gets recommended assets directly from asset list. */
@@ -961,12 +1246,15 @@ export function useRecommendedAssets(
 ) {
   const { data: recommendedAssets } =
     api.local.assets.getSwapRecommendedAssets.useQuery(undefined, {
-      select: (data) =>
-        data.filter(
-          (asset) =>
-            asset.coinMinimalDenom !== fromCoinMinimalDenom &&
-            asset.coinMinimalDenom !== toCoinMinimalDenom
-        ),
+      select: useCallback(
+        (data: MinimalAsset[]) =>
+          data.filter(
+            (asset: MinimalAsset) =>
+              asset.coinMinimalDenom !== fromCoinMinimalDenom &&
+              asset.coinMinimalDenom !== toCoinMinimalDenom
+          ),
+        [fromCoinMinimalDenom, toCoinMinimalDenom]
+      ),
     });
   return recommendedAssets;
 }
@@ -983,10 +1271,19 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
-  const existingAsset = existingAssets.find(
-    (asset) =>
-      asset.coinDenom === minDenomOrSymbol ||
-      asset.coinMinimalDenom === minDenomOrSymbol
+  const existingAsset = useMemo(
+    () =>
+      existingAssets.find(
+        (asset) =>
+          asset.coinDenom === minDenomOrSymbol ||
+          asset.coinMinimalDenom === minDenomOrSymbol
+      ),
+    [existingAssets, minDenomOrSymbol]
+  );
+
+  const queryEnabled = useMemo(
+    () => !!minDenomOrSymbol && !existingAsset,
+    [minDenomOrSymbol, existingAsset]
   );
 
   const { data: asset } = api.local.assets.getUserAsset.useQuery(
@@ -994,13 +1291,18 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
       findMinDenomOrSymbol: minDenomOrSymbol!,
     },
     {
-      enabled: !!minDenomOrSymbol,
+      enabled: queryEnabled,
     }
   );
 
-  return {
-    asset: existingAsset ?? (asset as TAsset | undefined),
-  };
+  const result = useMemo(
+    () => ({
+      asset: existingAsset ?? (asset as TAsset | undefined),
+    }),
+    [existingAsset, asset]
+  );
+
+  return result;
 }
 
 /** Iterates over available and identical routers and sends input to each one individually.
@@ -1031,32 +1333,48 @@ function useQueryRouterBestQuote(
   quoteType: QuoteDirection = "out-given-in"
 ) {
   const { currentWallet } = useWallets();
-  const queryOptions = {
-    // Disable retries, as useQueries
-    // will block successfull quotes from being returned
-    // if failed quotes are being returned
-    // until retry starts returning false.
-    // This causes slow UX even though there's a
-    // quote that the user can use.
-    retry: false,
 
-    // prevent batching so that fast routers can
-    // return requests faster than the slowest router
-    trpc: {
-      context: {
-        skipBatch: true,
+  // Memoize query options to prevent unnecessary re-renders
+  const queryOptions = useMemo(
+    () => ({
+      // Disable retries, as useQueries
+      // will block successfull quotes from being returned
+      // if failed quotes are being returned
+      // until retry starts returning false.
+      // This causes slow UX even though there's a
+      // quote that the user can use.
+      retry: false,
+
+      // prevent batching so that fast routers can
+      // return requests faster than the slowest router
+      trpc: {
+        context: {
+          skipBatch: true,
+        },
       },
-    },
-  };
+    }),
+    []
+  );
 
-  const inGivenOutQuote = api.local.quoteRouter.routeTokenInGivenOut.useQuery(
-    {
+  // Memoize in-given-out query parameters
+  const inGivenOutParams = useMemo(
+    () => ({
       tokenOutAmount: input.tokenInAmount ?? "",
       tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
       tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
       forcePoolId: input.forcePoolId,
-    },
-    {
+    }),
+    [
+      input.tokenInAmount,
+      input.tokenOut?.coinMinimalDenom,
+      input.tokenIn?.coinMinimalDenom,
+      input.forcePoolId,
+    ]
+  );
+
+  // Memoize in-given-out query options
+  const inGivenOutOptions = useMemo(
+    () => ({
       ...queryOptions,
       enabled: enabled && quoteType === "in-given-out",
 
@@ -1064,22 +1382,46 @@ function useQueryRouterBestQuote(
       staleTime: 10_000,
       cacheTime: 10_000,
       refetchInterval: 10_000,
-    }
+    }),
+    [queryOptions, enabled, quoteType]
   );
 
-  const outGivenInQuote = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
-    {
+  const inGivenOutQuote = api.local.quoteRouter.routeTokenInGivenOut.useQuery(
+    inGivenOutParams,
+    inGivenOutOptions
+  );
+
+  // Memoize out-given-in query parameters
+  const outGivenInParams = useMemo(
+    () => ({
       tokenInAmount: input.tokenInAmount,
       tokenInDenom: input.tokenIn?.coinMinimalDenom ?? "",
       tokenOutDenom: input.tokenOut?.coinMinimalDenom ?? "",
       forcePoolId: input.forcePoolId,
-    },
-    {
-      ...queryOptions,
-      enabled: enabled && quoteType === "out-given-in",
-    }
+    }),
+    [
+      input.tokenInAmount,
+      input.tokenIn?.coinMinimalDenom,
+      input.tokenOut?.coinMinimalDenom,
+      input.forcePoolId,
+    ]
   );
 
+  // Memoize out-given-in query options
+  const outGivenInOptions = useMemo(
+    () => ({
+      ...queryOptions,
+      enabled: enabled && quoteType === "out-given-in",
+    }),
+    [queryOptions, enabled, quoteType]
+  );
+
+  const outGivenInQuote = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+    outGivenInParams,
+    outGivenInOptions
+  );
+
+  // Select the appropriate quote based on quote type
   const {
     data: quote,
     isSuccess,
@@ -1089,6 +1431,7 @@ function useQueryRouterBestQuote(
     return quoteType === "out-given-in" ? outGivenInQuote : inGivenOutQuote;
   }, [quoteType, outGivenInQuote, inGivenOutQuote]);
 
+  // Process the accepted quote
   const acceptedQuote = useDeepMemo(() => {
     if (
       !quote ||
@@ -1110,12 +1453,46 @@ function useQueryRouterBestQuote(
     };
   }, [quote, quoteType, input.tokenInAmount, input.tokenIn, input.tokenOut]);
 
+  // Memoize the async parameters to prevent unnecessary recalculations
+  const asyncParams = useMemo(
+    () => ({
+      tokenOutCoinDecimals: input.tokenOut?.coinDecimals,
+      tokenInCoinMinimalDenom: input.tokenIn?.coinMinimalDenom,
+      tokenInCoinDecimals: input.tokenIn?.coinDecimals,
+      tokenOutCoinMinimalDenom: input.tokenOut?.coinMinimalDenom,
+      address: currentWallet?.address,
+      quote,
+      maxSlippage: input.maxSlippage?.toString() ?? DefaultSlippage,
+      coinAmount: input.tokenInAmount,
+      quoteType,
+    }),
+    [
+      input.tokenOut?.coinDecimals,
+      input.tokenIn?.coinMinimalDenom,
+      input.tokenIn?.coinDecimals,
+      input.tokenOut?.coinMinimalDenom,
+      currentWallet?.address,
+      quote,
+      input.maxSlippage,
+      input.tokenInAmount,
+      quoteType,
+    ]
+  );
+
+  // Get swap messages
   const { value: messages } = useAsync(async () => {
-    const tokenOutCoinDecimals = input.tokenOut?.coinDecimals;
-    const tokenInCoinMinimalDenom = input.tokenIn?.coinMinimalDenom;
-    const tokenInCoinDecimals = input.tokenIn?.coinDecimals;
-    const tokenOutCoinMinimalDenom = input.tokenOut?.coinMinimalDenom;
-    const address = currentWallet?.address;
+    const {
+      tokenOutCoinDecimals,
+      tokenInCoinMinimalDenom,
+      tokenInCoinDecimals,
+      tokenOutCoinMinimalDenom,
+      address,
+      quote,
+      maxSlippage,
+      coinAmount,
+      quoteType,
+    } = asyncParams;
+
     if (
       !quote ||
       typeof tokenOutCoinDecimals === "undefined" ||
@@ -1125,43 +1502,39 @@ function useQueryRouterBestQuote(
       !address
     )
       return undefined;
+
     const messages = await getSwapMessages({
       quote,
       tokenOutCoinMinimalDenom,
       tokenInCoinDecimals: tokenInCoinDecimals!,
       tokenOutCoinDecimals: tokenOutCoinDecimals!,
       tokenInCoinMinimalDenom,
-      maxSlippage: input.maxSlippage?.toString() ?? DefaultSlippage,
-      coinAmount: input.tokenInAmount,
+      maxSlippage,
+      coinAmount,
       userOsmoAddress: address,
       quoteType,
     });
 
     return messages;
-  }, [
-    currentWallet?.address,
-    quote,
-    input.maxSlippage,
-    input.tokenIn?.coinMinimalDenom,
-    input.tokenInAmount,
-    input.tokenOut?.coinDecimals,
-    input.tokenOut?.coinMinimalDenom,
-    input.tokenIn?.coinDecimals,
-    quoteType,
-  ]);
+  }, [asyncParams]);
 
+  // Combine quote data with messages
   const quoteData = useDeepMemo(
     () => (acceptedQuote ? { ...acceptedQuote, messages } : undefined),
     [acceptedQuote, messages]
   );
 
-  return {
-    data: quoteData,
-    isLoading: !isSuccess,
-    errorMsg: error?.message,
-    numSucceeded: isSuccess ? 1 : 0,
-    numError: isError ? 1 : 0,
-  };
+  // Return the final result
+  return useMemo(
+    () => ({
+      data: quoteData,
+      isLoading: !isSuccess,
+      errorMsg: error?.message,
+      numSucceeded: isSuccess ? 1 : 0,
+      numError: isError ? 1 : 0,
+    }),
+    [quoteData, isSuccess, error?.message, isError]
+  );
 }
 
 /** Various router clients on server should reconcile their error messages
@@ -1275,10 +1648,13 @@ export function useAmountWithSlippage({
     swapState.inAmountInput.balance,
   ]);
 
-  return {
-    amountWithSlippage,
-    fiatAmountWithSlippage,
-  };
+  return useMemo(
+    () => ({
+      amountWithSlippage,
+      fiatAmountWithSlippage,
+    }),
+    [amountWithSlippage, fiatAmountWithSlippage]
+  );
 }
 
 /** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
@@ -1291,44 +1667,47 @@ export function useDynamicSlippageConfig({
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
-  useEffect(() => {
-    if (feeError) {
-      if (
-        (feeError.message.includes("Swap requires") ||
-          feeError.message.includes("is greater than max amount")) &&
-        quoteType === "in-given-out"
-      ) {
-        const amounts = extractSwapRequiredErrorAmounts(feeError.message);
+  // Cache the error message to prevent unnecessary re-renders
+  const errorMessage = useMemo(() => feeError?.message, [feeError?.message]);
 
-        if (amounts) {
-          const [required, sent] = amounts;
-          const slippage = new Dec(1).add(slippageConfig.slippage.toDec());
-
-          if (!required || !sent) return;
-
-          const amountPreSlippage = new Dec(sent).quo(slippage);
-          const slippageRequired = new Dec(required).quo(amountPreSlippage);
-
-          if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
-            const [index, amount] = slippageConfig.getSmallestSlippage(
-              slippageRequired.sub(new Dec(1))
-            );
-
-            slippageConfig.select(index as number);
-            slippageConfig.setDefaultSlippage(
-              trimPlaceholderZeros(
-                (amount as Dec)
-                  .mul(DecUtils.getTenExponentNInPrecisionRange(2))
-                  .toString()
-              )
-            );
-          }
-        } else {
-          console.log("No amounts found");
-        }
-      }
+  // Extract amounts from error message only when needed
+  const errorAmounts = useMemo(() => {
+    if (
+      errorMessage &&
+      (errorMessage.includes("Swap requires") ||
+        errorMessage.includes("is greater than max amount")) &&
+      quoteType === "in-given-out"
+    ) {
+      return extractSwapRequiredErrorAmounts(errorMessage);
     }
-  }, [feeError, slippageConfig, quoteType]);
+    return null;
+  }, [errorMessage, quoteType]);
+
+  useEffect(() => {
+    if (!errorAmounts) return;
+
+    const [required, sent] = errorAmounts;
+    if (!required || !sent) return;
+
+    const slippage = new Dec(1).add(slippageConfig.slippage.toDec());
+    const amountPreSlippage = new Dec(sent).quo(slippage);
+    const slippageRequired = new Dec(required).quo(amountPreSlippage);
+
+    if (slippageRequired.gt(slippage) && slippage.lt(new Dec(1.05))) {
+      const [index, amount] = slippageConfig.getSmallestSlippage(
+        slippageRequired.sub(new Dec(1))
+      );
+
+      slippageConfig.select(index as number);
+      slippageConfig.setDefaultSlippage(
+        trimPlaceholderZeros(
+          (amount as Dec)
+            .mul(DecUtils.getTenExponentNInPrecisionRange(2))
+            .toString()
+        )
+      );
+    }
+  }, [errorAmounts, slippageConfig]);
 }
 
 /** Extracts the numerical values from the swap required error

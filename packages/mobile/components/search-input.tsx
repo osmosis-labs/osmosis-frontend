@@ -7,11 +7,13 @@ import { Colors } from "~/constants/theme-colors";
 interface SearchInputProps {
   onSearch: (query: string) => void;
   activeColor?: string;
+  initialValue?: string;
 }
 
 export const SearchInput: React.FC<SearchInputProps> = ({
   onSearch,
   activeColor = Colors["osmoverse"][800],
+  initialValue = "",
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -30,6 +32,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
         onChangeText={onSearch}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
+        defaultValue={initialValue}
       />
     </View>
   );
