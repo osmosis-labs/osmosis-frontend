@@ -32,32 +32,29 @@ const AssetRoute = () => {
   const inset = useSafeAreaInsets();
 
   return (
-    <>
-      <SafeAreaView
-        style={[
-          styles.container,
-          { paddingBottom: TRADE_BUTTON_HEIGHT + inset.bottom },
-        ]}
-        edges={["top", "bottom"]}
+    <SafeAreaView
+      style={[styles.container, { paddingBottom: TRADE_BUTTON_HEIGHT }]}
+      edges={["top"]}
+    >
+      <Stack.Screen
+        options={{
+          headerShown: false,
+        }}
+      />
+
+      <View style={styles.headerContainer}>
+        <RouteHeader>
+          <View style={styles.assetInfo}>
+            <Image source={{ uri: coinImageUrl }} style={styles.assetImage} />
+            <Text style={styles.assetDenom}>{coinDenom}</Text>
+          </View>
+        </RouteHeader>
+      </View>
+
+      <AssetContent coinMinimalDenom={coinMinimalDenom} />
+      <View
+        style={[styles.tradeButtonContainer, { paddingBottom: inset.bottom }]}
       >
-        <Stack.Screen
-          options={{
-            headerShown: false,
-          }}
-        />
-
-        <View style={styles.headerContainer}>
-          <RouteHeader>
-            <View style={styles.assetInfo}>
-              <Image source={{ uri: coinImageUrl }} style={styles.assetImage} />
-              <Text style={styles.assetDenom}>{coinDenom}</Text>
-            </View>
-          </RouteHeader>
-        </View>
-
-        <AssetContent coinMinimalDenom={coinMinimalDenom} />
-      </SafeAreaView>
-      <View style={styles.tradeButtonContainer}>
         <Button
           title="Trade"
           onPress={() => {
@@ -71,7 +68,7 @@ const AssetRoute = () => {
           buttonStyle={styles.tradeButton}
         />
       </View>
-    </>
+    </SafeAreaView>
   );
 };
 

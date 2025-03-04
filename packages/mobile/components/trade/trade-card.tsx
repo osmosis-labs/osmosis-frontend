@@ -256,7 +256,8 @@ const styles = StyleSheet.create({
   tradeCard: {
     backgroundColor: Colors["osmoverse"][825],
     borderRadius: 12,
-    padding: 24,
+    paddingHorizontal: 24,
+    paddingVertical: 12,
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
@@ -281,7 +282,7 @@ const styles = StyleSheet.create({
   },
   amountContainer: {
     flex: 1,
-    gap: 4,
+    gap: 2,
   },
   amountInput: {
     fontSize: 36,

@@ -217,7 +217,7 @@ export function TradeInterface({
             />
           )}
 
-          {error && <Text style={styles.errorMessage}>{error?.message}</Text>}
+          <Text style={styles.errorMessage}>{error?.message}</Text>
         </View>
 
         {/* Scrollable number pad section */}
@@ -408,7 +408,6 @@ const styles = StyleSheet.create({
   numberPad: {
     flexDirection: "column",
     width: "100%",
-    marginTop: 16,
   },
   numberRow: {
     flexDirection: "row",
@@ -418,18 +417,19 @@ const styles = StyleSheet.create({
   },
   numberButton: {
     width: "30%",
-    aspectRatio: 1.3,
+    aspectRatio: 1.8,
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: Colors["osmoverse"][900],
     borderColor: Colors["osmoverse"][800],
     borderWidth: 1,
   },
   errorMessage: {
-    color: "#ff4444",
+    color: Colors["rust"][500],
     fontSize: 14,
     textAlign: "center",
+    marginTop: 4,
   },
   numberButtonText: {
     color: "white",
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: Colors["wosmongton"][700],
-    borderRadius: 24,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
     borderColor: Colors["wosmongton"][500],

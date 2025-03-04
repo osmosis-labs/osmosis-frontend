@@ -70,6 +70,8 @@ export const PortfolioAssetBalancesTable = () => {
         <View style={styles.loadingContainer}>
           <ActivityIndicator />
         </View>
+      ) : assetsData.length === 0 ? (
+        <EmptyState onRefresh={refetch} />
       ) : (
         <FlashList
           data={assetsData}
@@ -210,6 +212,23 @@ const AssetItem = ({
   );
 };
 
+const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => {
+  return (
+    <View style={styles.emptyStateContainer}>
+      <Text style={styles.emptyStateTitle}>No Assets Found</Text>
+      <Text style={styles.emptyStateDescription}>
+        You don't have any assets in your portfolio yet.
+      </Text>
+      <Button
+        title="Refresh"
+        variant="primary"
+        buttonStyle={styles.emptyStateButton}
+        onPress={onRefresh}
+      />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   contentContainer: {
     backgroundColor: Colors.osmoverse[900],
@@ -257,5 +276,26 @@ const styles = StyleSheet.create({
   },
   assetNameWidth: {
     width: 160,
+  },
+  emptyStateContainer: {
+    flex: 1,
+    alignItems: "center",
+    padding: 24,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: "600",
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  emptyStateDescription: {
+    fontSize: 16,
+    color: Colors.osmoverse[400],
+    textAlign: "center",
+    marginBottom: 24,
+  },
+  emptyStateButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
   },
 });
