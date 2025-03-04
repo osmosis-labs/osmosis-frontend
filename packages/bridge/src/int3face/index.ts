@@ -1,4 +1,5 @@
 import type { Registry } from "@cosmjs/proto-signing";
+import { estimateGasFee } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import {
   deriveCosmosAddress,
@@ -20,6 +21,7 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
+import { getGasAsset } from "../utils/gas";
 import { Int3faceProviderId } from "./utils";
 
 export class Int3faceBridgeProvider implements BridgeProvider {
@@ -130,6 +132,46 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     // 10 minutes
     const int3faceEstimatedTimeSeconds = 10 * 60;
 
+    const msgs = [...ibcTxMessages];
+
+    // Estimated Gas
+    const txSimulation = await estimateGasFee({
+      chainId: params.fromChain.chainId as string,
+      chainList: this.ctx.chainList,
+      body: {
+        messages: await Promise.all(
+          msgs.map(async (msg) =>
+            (await this.getProtoRegistry()).encodeAsAny(msg)
+          )
+        ),
+      },
+      bech32Address: params.fromAddress,
+    }).catch((e) => {
+      if (
+        e instanceof Error &&
+        e.message.includes(
+          "No fee tokens found with sufficient balance on account"
+        )
+      ) {
+        throw new BridgeQuoteError({
+          bridgeId: Int3faceProviderId,
+          errorType: "InsufficientAmountError",
+          message: e.message,
+        });
+      }
+
+      throw e;
+    });
+
+    const gasFee = txSimulation.amount[0];
+    const gasAsset = await getGasAsset({
+      fromChainId: params.fromChain.chainId as string,
+      denom: gasFee.denom,
+      assetLists: this.ctx.assetLists,
+      chainList: this.ctx.chainList,
+      cache: this.ctx.cache,
+    });
+
     return {
       input: {
         amount: params.fromAmount,
@@ -150,13 +192,22 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         amount: "0",
       },
       estimatedTime: ibcEstimatedTimeSeconds + int3faceEstimatedTimeSeconds,
+      estimatedGasFee: gasFee
+        ? {
+          address: gasAsset?.address ?? gasFee.denom,
+          denom: gasAsset?.denom ?? gasFee.denom,
+          decimals: gasAsset?.decimals ?? 0,
+          coinGeckoId: gasAsset?.coinGeckoId,
+          amount: gasFee.amount,
+        }
+        : undefined,
       transactionRequest: {
         type: "cosmos",
-        msgs: ibcTxMessages,
+        msgs,
         gasFee: {
-          gas: "300000",
-          amount: "1000",
-          denom: "uosmo",
+          gas: txSimulation.gas,
+          amount: gasFee.amount,
+          denom: gasFee.denom,
         },
       },
     };
@@ -255,5 +306,20 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     }
 
     return [];
+  }
+
+  async getProtoRegistry() {
+    if (!this.protoRegistry) {
+      const [{ ibcProtoRegistry, osmosisProtoRegistry }, { Registry }] =
+        await Promise.all([
+          import("@osmosis-labs/proto-codecs"),
+          import("@cosmjs/proto-signing"),
+        ]);
+      this.protoRegistry = new Registry([
+        ...ibcProtoRegistry,
+        ...osmosisProtoRegistry,
+      ]);
+    }
+    return this.protoRegistry;
   }
 }
