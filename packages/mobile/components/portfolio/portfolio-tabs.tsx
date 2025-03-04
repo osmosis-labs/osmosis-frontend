@@ -7,12 +7,13 @@ import {
 } from "react-native";
 
 import { Allocation } from "~/components/portfolio/allocation";
+import { PortfolioActivity } from "~/components/portfolio/portfolio-activity";
 import { PortfolioAssetBalancesTable } from "~/components/portfolio/portfolio-asset-balances-table";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { RouterOutputs } from "~/utils/trpc";
 
-type PortfolioTab = "assets" | "allocation";
+type PortfolioTab = "assets" | "allocation" | "activity";
 
 interface PortfolioTabsProps {
   allocation?: RouterOutputs["local"]["portfolio"]["getPortfolioAssets"];
@@ -54,6 +55,19 @@ export const PortfolioTabs: FunctionComponent<PortfolioTabsProps> = ({
             Allocation
           </Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.tab}
+          onPress={() => setActiveTab("activity")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "activity" ? styles.activeTabText : null,
+            ]}
+          >
+            Activity
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.contentContainer}>
@@ -71,6 +85,7 @@ export const PortfolioTabs: FunctionComponent<PortfolioTabsProps> = ({
             )}
           </>
         )}
+        {activeTab === "activity" && <PortfolioActivity />}
       </View>
     </View>
   );
