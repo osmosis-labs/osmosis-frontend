@@ -4,7 +4,6 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
   getSwapMessages,
@@ -21,9 +20,11 @@ import {
   PricePretty,
 } from "@osmosis-labs/unit";
 import {
+  DEFAULT_VS_CURRENCY,
   getAssetFromAssetList,
   isNil,
   makeMinimalAsset,
+  mulPrice,
   sum,
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
@@ -52,7 +53,6 @@ import {
   use1CTSwapReviewMessages,
   useOneClickTradingSession,
 } from "~/hooks/one-click-trading";
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";

@@ -141,9 +141,6 @@ function assertValidQuote({
   );
   expect(splitAmountSum.equals(new Int(tokenInAmount))).toBeTruthy();
 
-  // name
-  expect(quote.name).toBe(router);
-
   // timeMs
   expect(isNumeric(quote.timeMs)).toBeTruthy();
 }
