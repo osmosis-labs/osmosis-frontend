@@ -217,7 +217,11 @@ export function TradeInterface({
             />
           )}
 
-          <Text style={styles.errorMessage}>{error?.message}</Text>
+          <Text style={styles.errorMessage}>
+            {error?.message && error.message.length > 50
+              ? `${error.message.substring(0, 50)}...`
+              : error?.message}
+          </Text>
         </View>
 
         {/* Scrollable number pad section */}
