@@ -931,7 +931,7 @@
     "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
     "transactionDetails": "İşlem detayları",
     "confirmAmount": "Tutarı Onayla",
-    "enterBitcoinAddress": "Bitcoin adresini girin"
+    "enterChainAddress": "{chain} adresini girin"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",

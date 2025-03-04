@@ -1,5 +1,6 @@
 import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
+import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
 import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
 import { SkipTransferStatusProvider } from "@osmosis-labs/bridge/build/skip/transfer-status";
 import { SquidTransferStatusProvider } from "@osmosis-labs/bridge/build/squid/transfer-status";
@@ -258,6 +259,10 @@ export class RootStore {
       ),
       new IbcTransferStatusProvider(ChainList, AssetLists),
       new NomicTransferStatusProvider(
+        ChainList,
+        IS_TESTNET ? "testnet" : "mainnet"
+      ),
+      new Int3faceTransferStatusProvider(
         ChainList,
         IS_TESTNET ? "testnet" : "mainnet"
       ),
