@@ -11,7 +11,7 @@ import { CopyIcon } from "~/components/icons/copy";
 import { ProfileWoz } from "~/components/icons/profile-woz";
 import { SettingsIcon } from "~/components/icons/settings";
 import { ManageWalletBottomSheet } from "~/components/portfolio/manage-wallet-bottom-sheet";
-import { PortfolioAssetBalancesTable } from "~/components/portfolio/portfolio-asset-balances-table";
+import { PortfolioTabs } from "~/components/portfolio/portfolio-tabs";
 import { PortfolioValue } from "~/components/portfolio/portfolio-value";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
@@ -93,7 +93,11 @@ export default function PortfolioScreen() {
           isLoadingAllocation={isLoadingAllocation}
         />
       </View>
-      <PortfolioAssetBalancesTable />
+
+      <PortfolioTabs
+        allocation={allocation}
+        isLoadingAllocation={isLoadingAllocation}
+      />
 
       <ManageWalletBottomSheet ref={bottomSheetModalRef} />
     </SafeAreaView>

@@ -231,10 +231,7 @@ const EmptyState = ({ onRefresh }: { onRefresh: () => void }) => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    backgroundColor: Colors.osmoverse[900],
     flex: 1,
-    borderTopEndRadius: 32,
-    borderTopStartRadius: 32,
     paddingTop: 6,
   },
   assetItem: {
