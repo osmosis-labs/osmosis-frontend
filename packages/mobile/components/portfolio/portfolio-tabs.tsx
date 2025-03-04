@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   tabsContainer: {
     flexDirection: "row",
     paddingHorizontal: 24,
-    paddingVertical: 16,
+    paddingBottom: 16,
     justifyContent: "flex-start",
   },
   tab: {
@@ -97,7 +97,6 @@ const styles = StyleSheet.create({
   },
   activeTabText: {
     color: Colors.white.full,
-    fontWeight: "600",
   },
   contentContainer: {
     flex: 1,
