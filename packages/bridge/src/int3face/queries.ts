@@ -36,8 +36,7 @@ export async function getTransferStatus(
         ? "https://cachehub.testnet.int3face.zone"
         : "https://cachehub.int3face.zone";
 
-    const url = new URL("/v1/transaction", origin);
-    url.searchParams.set("external_id", transferId);
+    const url = new URL(`/v1/transfers/crosschain/${transferId}`, origin);
 
     return apiClient<TransferStatusResponse>(url.toString());
   } catch {
