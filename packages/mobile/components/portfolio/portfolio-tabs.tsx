@@ -75,11 +75,7 @@ export const PortfolioTabs: FunctionComponent<PortfolioTabsProps> = ({
         {activeTab === "allocation" && (
           <>
             {isLoadingAllocation ? (
-              <ActivityIndicator
-                color={Colors.wosmongton[500]}
-                size="large"
-                style={styles.loader}
-              />
+              <ActivityIndicator size="large" style={styles.loader} />
             ) : (
               allocation && <Allocation assets={allocation} />
             )}
