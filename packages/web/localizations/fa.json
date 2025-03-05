@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "جلسات موجود",
+    "createSession": "ایجاد جلسه"
+  },
   "profile": {
     "balance": "موجودی",
     "modalTitle": "پروفایل",

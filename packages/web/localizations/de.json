@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Vorhandene Sitzungen",
+    "createSession": "Sitzung erstellen"
+  },
   "profile": {
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",

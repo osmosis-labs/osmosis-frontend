@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "기존 세션",
+    "createSession": "세션 생성"
+  },
   "profile": {
     "balance": "잔액",
     "modalTitle": "프로필",

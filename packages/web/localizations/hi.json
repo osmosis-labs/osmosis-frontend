@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "मौजूदा सत्र",
+    "createSession": "सत्र बनाएं"
+  },
   "profile": {
     "balance": "संतुलन",
     "modalTitle": "प्रोफ़ाइल",

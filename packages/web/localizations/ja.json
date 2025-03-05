@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "既存のセッション",
+    "createSession": "セッションを作成"
+  },
   "profile": {
     "balance": "バランス",
     "modalTitle": "プロフィール",

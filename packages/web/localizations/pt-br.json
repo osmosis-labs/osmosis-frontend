@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Sessões existentes",
+    "createSession": "Criar Sessão"
+  },
   "profile": {
     "balance": "Saldo",
     "modalTitle": "Perfil",

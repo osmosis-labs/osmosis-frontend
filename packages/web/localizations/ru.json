@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Существующие сеансы",
+    "createSession": "Создать сессию"
+  },
   "profile": {
     "balance": "Баланс",
     "modalTitle": "Профиль",

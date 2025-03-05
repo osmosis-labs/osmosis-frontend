@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Sesiuni existente",
+    "createSession": "Creați sesiune"
+  },
   "profile": {
     "balance": "Balanta",
     "modalTitle": "Profil",

@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "现有会话",
+    "createSession": "创建会话"
+  },
   "profile": {
     "balance": "结余",
     "modalTitle": "轮廓",

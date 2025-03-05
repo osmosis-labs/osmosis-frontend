@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Mevcut Oturumlar",
+    "createSession": "Oturum Oluştur"
+  },
   "profile": {
     "balance": "denklemek",
     "modalTitle": "Profil",

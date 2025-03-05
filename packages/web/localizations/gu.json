@@ -566,6 +566,10 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "હાલના સત્રો",
+    "createSession": "સત્ર બનાવો"
+  },
   "profile": {
     "balance": "સંતુલન",
     "modalTitle": "પ્રોફાઇલ",
