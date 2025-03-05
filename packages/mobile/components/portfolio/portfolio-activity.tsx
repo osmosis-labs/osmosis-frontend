@@ -1,8 +1,8 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import React, { FunctionComponent, useRef } from "react";
+import { FlashList } from "@shopify/flash-list";
+import React, { FunctionComponent, useCallback, useRef } from "react";
 import {
   ActivityIndicator,
-  FlatList,
   StyleSheet,
   TouchableOpacity,
   View,
@@ -15,8 +15,23 @@ import { Colors } from "~/constants/theme-colors";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
 import { HistorySwapTransaction } from "~/hooks/use-transaction-history";
 
+const ITEM_HEIGHT = 114;
+
 export const PortfolioActivity: FunctionComponent = () => {
-  const { transactions, isLoading } = useTransactionHistory();
+  const {
+    transactions,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
+  } = useTransactionHistory({
+    limit: 20,
+  });
+
+  console.log(hasNextPage);
+
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<HistorySwapTransaction | null>(null);
@@ -31,10 +46,16 @@ export const PortfolioActivity: FunctionComponent = () => {
     bottomSheetRef.current?.present();
   };
 
+  const handleEndReached = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator color={Colors.wosmongton[500]} size="large" />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -49,7 +70,7 @@ export const PortfolioActivity: FunctionComponent = () => {
 
   return (
     <View style={styles.container}>
-      <FlatList
+      <FlashList
         data={swapTransactions}
         keyExtractor={(item) => item.hash}
         renderItem={({ item }) => (
@@ -57,8 +78,20 @@ export const PortfolioActivity: FunctionComponent = () => {
             <TransactionActivityItem transaction={item} />
           </TouchableOpacity>
         )}
+        estimatedItemSize={ITEM_HEIGHT}
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.listContent}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.5}
+        refreshing={isRefetching}
+        onRefresh={refetch}
+        ListFooterComponent={
+          isFetchingNextPage ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator color={Colors.wosmongton[500]} size="small" />
+            </View>
+          ) : null
+        }
       />
 
       <TransactionDetailsBottomSheet
@@ -76,7 +109,6 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   emptyContainer: {
     flex: 1,
@@ -92,5 +124,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  footerLoader: {
+    paddingVertical: 16,
+    alignItems: "center",
   },
 });

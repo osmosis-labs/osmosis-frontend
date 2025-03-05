@@ -4,6 +4,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
+import { Dec } from "@osmosis-labs/unit";
 import { formatFiatPrice } from "@osmosis-labs/utils";
 import { formatPretty } from "@osmosis-labs/utils";
 import React, {
@@ -29,27 +30,22 @@ interface TransactionDetailsBottomSheetProps {
   transaction: HistorySwapTransaction | null;
 }
 
-export const TransactionDetailsBottomSheet = forwardRef<
-  BottomSheetModal,
-  TransactionDetailsBottomSheetProps
->(({ transaction }, ref) => {
+interface TransactionDetailsContentProps {
+  transaction: HistorySwapTransaction;
+}
+
+const TransactionDetailsContent: React.FC<TransactionDetailsContentProps> = ({
+  transaction,
+}) => {
   const { onCopy: copyHash, hasCopied: hashCopied } = useClipboard(
     transaction?.hash || ""
   );
-
-  if (!transaction) {
-    return null;
-  }
 
   const status = transaction.code === 0 ? "success" : "failed";
 
   const tokenIn = transaction.metadata[0].value[0].txInfo.tokenIn;
   const tokenOut = transaction.metadata[0].value[0].txInfo.tokenOut;
   const txFee = transaction.metadata[0].value[0].txFee[0];
-
-  if (!tokenIn || !tokenOut) {
-    return null;
-  }
 
   // Format date
   const date = new Date(transaction.blockTimestamp);
@@ -124,6 +120,165 @@ export const TransactionDetailsBottomSheet = forwardRef<
   };
 
   return (
+    <BottomSheetView style={styles.contentContainer}>
+      <View style={styles.swapIconContainer}>
+        <SwapIcon width={24} height={24} style={styles.swapIcon} />
+      </View>
+      <Text style={styles.title}>
+        {status === "success" ? "Swapped" : "Swap Failed"}
+      </Text>
+      <Text style={styles.date}>{formattedDate}</Text>
+
+      <View style={styles.swapContainer}>
+        {/* Sold Token */}
+        <View style={styles.tokenRow}>
+          <View style={styles.tokenInfo}>
+            <AssetImage
+              uri={tokenIn.token?.currency.coinImageUrl || ""}
+              style={styles.tokenImage}
+            />
+            <View>
+              <Text style={styles.tokenAction}>Sold</Text>
+              <Text style={styles.tokenSymbol}>
+                {tokenIn.token?.currency.coinDenom || ""}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.tokenValueContainer}>
+            <Text style={styles.tokenAmount}>
+              {tokenIn.token &&
+                formatPretty(tokenIn.token, { maxDecimals: 10 })}
+            </Text>
+            <Text style={styles.fiatValue}>
+              {tokenIn.usd
+                ? `${
+                    tokenIn.usd.toDec().lt(new Dec("0.01"))
+                      ? "<$0.01"
+                      : formatFiatPrice(tokenIn.usd, 2)
+                  }`
+                : ""}
+            </Text>
+          </View>
+        </View>
+
+        {/* Down Arrow */}
+        <View style={styles.arrowContainer}>
+          <Text style={styles.arrow}>↓</Text>
+        </View>
+
+        {/* Bought Token */}
+        <View style={styles.tokenRow}>
+          <View style={styles.tokenInfo}>
+            <AssetImage
+              uri={tokenOut.token?.currency.coinImageUrl || ""}
+              style={styles.tokenImage}
+            />
+            <View>
+              <Text style={styles.tokenAction}>Bought</Text>
+              <Text style={styles.tokenSymbol}>
+                {tokenOut.token?.currency.coinDenom || ""}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.tokenValueContainer}>
+            <Text style={styles.tokenAmount}>
+              {tokenOut.token &&
+                formatPretty(tokenOut.token, { maxDecimals: 10 })}
+            </Text>
+            <Text style={styles.fiatValue}>
+              {tokenOut.usd
+                ? `${
+                    tokenOut.usd.toDec().lt(new Dec("0.01"))
+                      ? "<$0.01"
+                      : formatFiatPrice(tokenOut.usd, 2)
+                  }`
+                : ""}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Transaction Details */}
+      <View style={styles.detailsContainer}>
+        {/* Execution Price */}
+        <View style={styles.detailRow}>
+          <TouchableOpacity
+            style={styles.detailLabelContainer}
+            onPress={toggleConversion}
+          >
+            <Text style={styles.detailLabel}>Execution Price</Text>
+            <Text style={styles.swapIconText}>↔</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.copyButton}
+            onPress={handleCopyExecutionPrice}
+          >
+            <Text style={styles.detailCopyValue}>{conversionText}</Text>
+            {executionPriceCopied ? (
+              <CheckIcon
+                width={16}
+                height={16}
+                stroke={Colors.wosmongton[300]}
+              />
+            ) : (
+              <CopyIcon
+                width={16}
+                height={16}
+                stroke={Colors.wosmongton[300]}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* Total Fees */}
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Total Fees</Text>
+          <Text style={styles.detailValue}>
+            {formatPretty(txFee.token, {
+              maxDecimals: 2,
+            })?.toString()}
+          </Text>
+        </View>
+
+        {/* Transaction Hash */}
+        <View style={styles.detailRow}>
+          <Text style={styles.detailLabel}>Transaction Hash</Text>
+          <TouchableOpacity style={styles.copyButton} onPress={handleCopyHash}>
+            <Text style={styles.detailCopyValue}>{displayHash}</Text>
+            {hashCopied ? (
+              <CheckIcon
+                width={16}
+                height={16}
+                stroke={Colors.wosmongton[300]}
+              />
+            ) : (
+              <CopyIcon
+                width={16}
+                height={16}
+                stroke={Colors.wosmongton[300]}
+              />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Button
+          title="View in Explorer"
+          onPress={handleViewInExplorer}
+          variant="secondary"
+          buttonStyle={styles.button}
+        />
+      </View>
+    </BottomSheetView>
+  );
+};
+
+export const TransactionDetailsBottomSheet = forwardRef<
+  BottomSheetModal,
+  TransactionDetailsBottomSheetProps
+>(({ transaction }, ref) => {
+  return (
     <BottomSheetModal
       ref={ref}
       enablePanDownToClose
@@ -140,160 +295,7 @@ export const TransactionDetailsBottomSheet = forwardRef<
       backgroundStyle={styles.bottomSheetBackground}
       handleIndicatorStyle={styles.indicator}
     >
-      <BottomSheetView style={styles.contentContainer}>
-        <View style={styles.swapIconContainer}>
-          <SwapIcon width={24} height={24} style={styles.swapIcon} />
-        </View>
-        <Text style={styles.title}>
-          {status === "success" ? "Swapped" : "Swap Failed"}
-        </Text>
-        <Text style={styles.date}>{formattedDate}</Text>
-
-        <View style={styles.swapContainer}>
-          {/* Sold Token */}
-          <View style={styles.tokenRow}>
-            <View style={styles.tokenInfo}>
-              <AssetImage
-                uri={tokenIn.token?.currency.coinImageUrl || ""}
-                style={styles.tokenImage}
-              />
-              <View>
-                <Text style={styles.tokenAction}>Sold</Text>
-                <Text style={styles.tokenSymbol}>
-                  {tokenIn.token?.currency.coinDenom || ""}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.tokenValueContainer}>
-              <Text style={styles.tokenAmount}>
-                {tokenIn.token &&
-                  formatPretty(tokenIn.token, { maxDecimals: 10 })}
-              </Text>
-              <Text style={styles.fiatValue}>
-                {tokenIn.usd
-                  ? `${
-                      tokenIn.usd < 0.01
-                        ? "<$0.01"
-                        : formatFiatPrice(tokenIn.usd, 2)
-                    }`
-                  : ""}
-              </Text>
-            </View>
-          </View>
-
-          {/* Down Arrow */}
-          <View style={styles.arrowContainer}>
-            <Text style={styles.arrow}>↓</Text>
-          </View>
-
-          {/* Bought Token */}
-          <View style={styles.tokenRow}>
-            <View style={styles.tokenInfo}>
-              <AssetImage
-                uri={tokenOut.token?.currency.coinImageUrl || ""}
-                style={styles.tokenImage}
-              />
-              <View>
-                <Text style={styles.tokenAction}>Bought</Text>
-                <Text style={styles.tokenSymbol}>
-                  {tokenOut.token?.currency.coinDenom || ""}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.tokenValueContainer}>
-              <Text style={styles.tokenAmount}>
-                {tokenOut.token &&
-                  formatPretty(tokenOut.token, { maxDecimals: 10 })}
-              </Text>
-              <Text style={styles.fiatValue}>
-                {tokenOut.usd
-                  ? `${
-                      tokenOut.usd < 0.01
-                        ? "<$0.01"
-                        : formatFiatPrice(tokenOut.usd, 2)
-                    }`
-                  : ""}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Transaction Details */}
-        <View style={styles.detailsContainer}>
-          {/* Execution Price */}
-          <View style={styles.detailRow}>
-            <TouchableOpacity
-              style={styles.detailLabelContainer}
-              onPress={toggleConversion}
-            >
-              <Text style={styles.detailLabel}>Execution Price</Text>
-              <Text style={styles.swapIconText}>↔</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.copyButton}
-              onPress={handleCopyExecutionPrice}
-            >
-              <Text style={styles.detailCopyValue}>{conversionText}</Text>
-              {executionPriceCopied ? (
-                <CheckIcon
-                  width={16}
-                  height={16}
-                  stroke={Colors.wosmongton[300]}
-                />
-              ) : (
-                <CopyIcon
-                  width={16}
-                  height={16}
-                  stroke={Colors.wosmongton[300]}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-
-          {/* Total Fees */}
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Total Fees</Text>
-            <Text style={styles.detailValue}>
-              {formatPretty(txFee.token, {
-                maxDecimals: 2,
-              })?.toString()}
-            </Text>
-          </View>
-
-          {/* Transaction Hash */}
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Transaction Hash</Text>
-            <TouchableOpacity
-              style={styles.copyButton}
-              onPress={handleCopyHash}
-            >
-              <Text style={styles.detailCopyValue}>{displayHash}</Text>
-              {hashCopied ? (
-                <CheckIcon
-                  width={16}
-                  height={16}
-                  stroke={Colors.wosmongton[300]}
-                />
-              ) : (
-                <CopyIcon
-                  width={16}
-                  height={16}
-                  stroke={Colors.wosmongton[300]}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <Button
-            title="View in Explorer"
-            onPress={handleViewInExplorer}
-            variant="secondary"
-            buttonStyle={styles.button}
-          />
-        </View>
-      </BottomSheetView>
+      {transaction && <TransactionDetailsContent transaction={transaction} />}
     </BottomSheetModal>
   );
 });

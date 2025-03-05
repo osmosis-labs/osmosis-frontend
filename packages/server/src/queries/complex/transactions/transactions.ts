@@ -131,7 +131,7 @@ export async function getTransactions({
 }): Promise<GetTransactionsResponse> {
   return await cachified({
     cache: transactionsCache,
-    ttl: 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
+    ttl: 0 ?? 1000 * 60 * 0.25, // 15 seconds since a user can transact quickly
     key: `transactions-${address}-page-${page}-pageSize-${pageSize}`,
     getFreshValue: async () => {
       // TODO - remove this once testing is complete

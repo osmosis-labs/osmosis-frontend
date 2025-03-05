@@ -13,44 +13,46 @@ export type HistorySwapTransaction = Extract<
 >;
 
 export const useTransactionHistory = ({
-  pageSize = "100",
-  pageNumber = "0",
+  limit = 20,
 }: {
-  pageNumber?: string;
-  pageSize?: string;
+  limit?: number;
 } = {}) => {
   const { currentWallet } = useWallets();
 
-  const { data: transactionsData, isLoading } =
-    api.local.transactions.getTransactions.useQuery(
-      {
-        address: currentWallet?.address || "",
-        page: pageNumber,
-        pageSize,
-      },
-      {
-        enabled: Boolean(currentWallet?.address),
-      }
-    );
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
+  } = api.local.transactions.getTransactionsInfinite.useInfiniteQuery(
+    {
+      address: currentWallet?.address || "",
+      limit,
+    },
+    {
+      enabled: Boolean(currentWallet?.address),
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+    }
+  );
 
-  const { transactions, hasNextPage } = useMemo(
-    () =>
-      transactionsData ?? {
-        transactions: [],
-        hasNextPage: false,
-      },
-    [transactionsData]
+  // Flatten all pages of transactions into a single array
+  const allTransactions = useMemo(
+    () => data?.pages.flatMap((page) => page.items) || [],
+    [data]
   );
 
   const mergedActivity = useMemo(
     () => [
-      ...transactions.map((tx: any) => ({
+      ...allTransactions.map((tx) => ({
         ...tx,
         __type: "transaction" as const,
         compareDate: new Date(tx.blockTimestamp),
       })),
     ],
-    [transactions]
+    [allTransactions]
   );
 
   const sortedActivity = useMemo(
@@ -63,7 +65,11 @@ export const useTransactionHistory = ({
 
   return {
     transactions: sortedActivity,
-    hasNextPage,
+    hasNextPage: Boolean(hasNextPage),
     isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    refetch,
+    isRefetching,
   };
 };

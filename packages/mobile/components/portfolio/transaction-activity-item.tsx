@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: Colors.osmoverse[800],
     marginBottom: 8,
+    gap: 12,
   },
   leftContent: {
     flex: 1,
