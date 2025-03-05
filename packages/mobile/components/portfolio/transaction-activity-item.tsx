@@ -1,4 +1,4 @@
-import { formatPretty } from "@osmosis-labs/utils";
+import { formatFiatPrice } from "@osmosis-labs/utils";
 import React, { FunctionComponent } from "react";
 import { StyleSheet, View } from "react-native";
 
@@ -38,8 +38,8 @@ export const TransactionActivityItem: FunctionComponent<
           {status === "success" ? "Swapped" : "Swap Failed"}
         </Text>
         <Text style={styles.subtitle}>
-          {tokenIn.token && formatPretty(tokenIn.token, { maxDecimals: 6 })} →{" "}
-          {tokenOut.token && formatPretty(tokenOut.token, { maxDecimals: 6 })}
+          {tokenIn.token && formatFiatPrice(tokenIn.usd)} →{" "}
+          {tokenOut.token.currency.coinDenom}
         </Text>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
