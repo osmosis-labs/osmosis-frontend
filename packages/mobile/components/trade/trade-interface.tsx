@@ -24,6 +24,8 @@ interface TradeInterfaceProps {
 }
 
 const maxSlippage = new Dec(0.05);
+const atomMinimalDenom =
+  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
 export function TradeInterface({
   showGlobalSubmitButton = false,
@@ -56,8 +58,14 @@ export function TradeInterface({
     assetsQueryInput,
     setAssetsQueryInput,
   } = useSwap({
-    initialFromDenom: initialFromDenom ?? "ATOM",
-    initialToDenom: initialToDenom ?? "OSMO",
+    initialFromDenom:
+      initialFromDenom?.toLowerCase() === atomMinimalDenom.toLowerCase()
+        ? "OSMO"
+        : initialFromDenom ?? "ATOM",
+    initialToDenom:
+      initialToDenom?.toLowerCase() === atomMinimalDenom.toLowerCase()
+        ? "OSMO"
+        : initialToDenom ?? "OSMO",
     maxSlippage,
   });
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
