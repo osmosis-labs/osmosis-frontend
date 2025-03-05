@@ -41,7 +41,6 @@ export const useKeyringStore = create<WalletKeyring>()(
       keys: [],
 
       addKey: async (keyInfo: Omit<KeyInfo, "version">) => {
-        console.log("addKey", keyInfo);
         set((state) => ({
           keys: [...state.keys, { ...keyInfo, version } as KeyInfo],
         }));

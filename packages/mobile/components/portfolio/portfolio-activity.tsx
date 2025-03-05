@@ -30,8 +30,6 @@ export const PortfolioActivity: FunctionComponent = () => {
     limit: 20,
   });
 
-  console.log(hasNextPage);
-
   const bottomSheetRef = useRef<BottomSheetModal>(null);
   const [selectedTransaction, setSelectedTransaction] =
     React.useState<HistorySwapTransaction | null>(null);

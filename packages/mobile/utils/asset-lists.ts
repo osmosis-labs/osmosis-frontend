@@ -134,7 +134,6 @@ export async function getMobileAssetListAndChains({
   environment: "testnet" | "mainnet";
 }) {
   const repo = "osmosis-labs/assetlists";
-  console.log("aa");
   const [rawAssetList, rawChainList] = await Promise.all([
     queryGithubFile<GitHubResponseAssetList>({
       repo,
