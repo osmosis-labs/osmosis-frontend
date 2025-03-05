@@ -59,13 +59,10 @@ export function TradeInterface({
     setAssetsQueryInput,
   } = useSwap({
     initialFromDenom:
-      initialFromDenom?.toLowerCase() === atomMinimalDenom.toLowerCase()
-        ? "OSMO"
-        : initialFromDenom ?? "ATOM",
-    initialToDenom:
       initialToDenom?.toLowerCase() === atomMinimalDenom.toLowerCase()
         ? "OSMO"
-        : initialToDenom ?? "OSMO",
+        : initialFromDenom ?? "ATOM",
+    initialToDenom: initialToDenom ?? "OSMO",
     maxSlippage,
   });
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
