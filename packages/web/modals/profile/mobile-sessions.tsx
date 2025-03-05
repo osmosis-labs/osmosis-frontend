@@ -37,6 +37,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
           if (!data.authenticators) {
             return { authenticators: [] };
           }
+          console.log(data.authenticators);
           return {
             authenticators: data.authenticators
               .filter((authenticator) =>
@@ -50,13 +51,12 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
     );
 
   return (
-    <div className="flex flex-col gap-4 items-center w-full pt-6">
+    <div className="flex flex-col gap-6 items-center w-full pt-6 max-w-md mx-auto">
       <GoBackButton
-        onClick={() => {
-          onClose();
-        }}
-        className="absolute top-7 left-8"
+        onClick={onClose}
+        className="absolute top-7 left-8 hover:bg-osmoverse-800 transition-colors"
       />
+
       <MenuToggle
         options={
           [
@@ -73,31 +73,38 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
         selectedOptionId={currentScreen}
         onSelect={(optionId) => setCurrentScreen(optionId as ViewIds)}
         classes={{
-          root: "max-w-xs w-full",
+          root: "max-w-xs w-full shadow-sm",
+          toggleContainer: "font-medium",
         }}
       />
 
-      <ScreenManager currentScreen={currentScreen}>
-        <Screen screenName="existing-sessions">
-          <div className="max-h-[300px] min-h-[30px] overflow-auto w-full flex flex-col gap-3">
-            {isLoading ? (
-              <div className="h-6 w-6 self-center">
-                <Spinner />
-              </div>
-            ) : (
-              data?.authenticators.map((authenticator) => (
-                <AuthenticatorItem
-                  key={authenticator.id}
-                  id={authenticator.id}
-                />
-              ))
-            )}
-          </div>
-        </Screen>
-        <Screen screenName="create-session">
-          <CreateMobileSession />
-        </Screen>
-      </ScreenManager>
+      <div className="w-full rounded-xl p-6 shadow-md">
+        <ScreenManager currentScreen={currentScreen}>
+          <Screen screenName="existing-sessions">
+            <div className="max-h-[300px] min-h-[30px] overflow-auto w-full flex flex-col gap-4">
+              {isLoading ? (
+                <div className="h-10 w-full flex items-center justify-center">
+                  <Spinner className="h-6 w-6" />
+                </div>
+              ) : data?.authenticators.length === 0 ? (
+                <div className="text-center py-4 text-osmoverse-300">
+                  No connected devices found
+                </div>
+              ) : (
+                data?.authenticators.map((authenticator) => (
+                  <AuthenticatorItem
+                    key={authenticator.id}
+                    id={authenticator.id}
+                  />
+                ))
+              )}
+            </div>
+          </Screen>
+          <Screen screenName="create-session">
+            <CreateMobileSession />
+          </Screen>
+        </ScreenManager>
+      </div>
     </div>
   );
 }
@@ -124,17 +131,27 @@ export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
   };
 
   return (
-    <div className="flex justify-between items-center">
-      <h1 className="body1">Connected Device {id}</h1>
+    <div className="flex justify-between items-center p-3 bg-osmoverse-825 rounded-lg hover:bg-osmoverse-800 transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="bg-osmoverse-700 p-2 rounded-full">
+          <Icon id="smartphone" className="h-5 w-5 text-wosmongton-100" />
+        </div>
+        <div>
+          <h3 className="body1 font-medium text-white-full">Mobile Device</h3>
+          <p className="text-xs text-osmoverse-300">ID: {id}</p>
+        </div>
+      </div>
       <IconButton
         aria-label="End Session"
         onClick={() => onDisconnect(id)}
         disabled={removeMobileSession.isLoading}
+        variant="ghost"
+        className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
       >
         {removeMobileSession.isLoading ? (
           <Spinner className="h-4 w-4" />
         ) : (
-          <Icon id="trash" />
+          <Icon id="trash" className="h-5 w-5" />
         )}
       </IconButton>
     </div>

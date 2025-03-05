@@ -375,13 +375,15 @@ export const ProfileModal: FunctionComponent<
                     </div>
 
                     <div className="flex items-center gap-3">
-                      <ActionButton
-                        title="Mobile Sessions"
-                        className="group"
-                        onClick={() => setIsMobileSessionOpen(true)}
-                      >
-                        <MobileSessionIcon isAnimated />
-                      </ActionButton>
+                      {featureFlags.mobileSessions && (
+                        <ActionButton
+                          title="Mobile Sessions"
+                          className="group"
+                          onClick={() => setIsMobileSessionOpen(true)}
+                        >
+                          <MobileSessionIcon isAnimated />
+                        </ActionButton>
+                      )}
 
                       <ActionButton
                         title="Mintscan"

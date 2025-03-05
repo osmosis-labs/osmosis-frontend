@@ -1,17 +1,12 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { DeliverTxResponse } from "@osmosis-labs/tx";
-import {
-  makeAddAuthenticatorMsg,
-  makeRemoveAuthenticatorMsg,
-} from "@osmosis-labs/tx";
+import { makeAddAuthenticatorMsg } from "@osmosis-labs/tx";
 import {
   AuthenticatorType,
   AvailableOneClickTradingMessages,
   ParsedAuthenticator,
 } from "@osmosis-labs/types";
-import { Dec } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { getAuthenticatorIdFromTx } from "~/hooks/mutations/one-click-trading";
@@ -85,23 +80,9 @@ export function getMobileSessionAuthenticator({
 
 export async function makeCreateMobileSessionMessage({
   userOsmoAddress,
-  apiUtils,
 }: {
   userOsmoAddress: string;
-  apiUtils: ReturnType<typeof api.useUtils>;
 }) {
-  let authenticators: ParsedAuthenticator[];
-  try {
-    ({ authenticators } =
-      await apiUtils.local.oneClickTrading.getAuthenticators.fetch({
-        userOsmoAddress,
-      }));
-  } catch (error) {
-    throw new CreateMobileSessionError(
-      "Failed to fetch account public key and authenticators."
-    );
-  }
-
   const key = PrivKeySecp256k1.generateRandomKey();
   const allowedMessages: AvailableOneClickTradingMessages[] = [
     "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
@@ -115,39 +96,14 @@ export async function makeCreateMobileSessionMessage({
     allowedMessages,
   });
 
-  const authenticatorToRemoveId =
-    authenticators.length === 15
-      ? authenticators
-          .filter((authenticator) =>
-            isAuthenticatorMobileSession({ authenticator })
-          )
-          .reduce((min, authenticator) => {
-            if (isNil(min)) return authenticator.id;
-            return new Dec(authenticator.id).lt(new Dec(min))
-              ? authenticator.id
-              : min;
-          }, null as string | null)
-      : undefined;
-
-  const authenticatorsToRemove = authenticatorToRemoveId
-    ? [BigInt(authenticatorToRemoveId)]
-    : [];
-
   const addAuthenticatorMsg = makeAddAuthenticatorMsg({
     authenticatorType: mobileSessionAuthenticator.authenticatorType,
     data: mobileSessionAuthenticator.data,
     sender: userOsmoAddress,
   });
 
-  const removeAuthenticatorMsgs = authenticatorsToRemove.map((id) =>
-    makeRemoveAuthenticatorMsg({
-      id,
-      sender: userOsmoAddress,
-    })
-  );
-
   return {
-    msgs: await Promise.all([...removeAuthenticatorMsgs, addAuthenticatorMsg]),
+    msgs: [await addAuthenticatorMsg],
     allowedMessages,
     key,
   };
@@ -191,7 +147,6 @@ export const useCreateMobileSession = ({
     const { msgs, key, allowedMessages } = await makeCreateMobileSessionMessage(
       {
         userOsmoAddress,
-        apiUtils,
       }
     );
 

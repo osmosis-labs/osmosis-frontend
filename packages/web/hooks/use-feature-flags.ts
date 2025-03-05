@@ -35,6 +35,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   kado: true,
   onrampmoney: true,
   transak: true,
+  mobileSessions: true,
 };
 
 export function useFeatureFlags() {

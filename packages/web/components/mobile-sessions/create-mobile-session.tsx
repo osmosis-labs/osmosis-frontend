@@ -276,47 +276,81 @@ export function CreateMobileSession() {
   }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer, isConnected]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-6">
       {!isReady && (
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-center text-osmoverse-100">
+        <div className="flex flex-col items-center gap-4 p-6 rounded-lg w-full">
+          <p className="text-center text-osmoverse-100 font-medium">
             Generating QR Code...
           </p>
           <Skeleton className="w-[240px] h-[240px] rounded-lg" />
         </div>
       )}
       {isReady && !isConnected && (
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-center text-osmoverse-100">
-            Download the Osmosis app on your mobile device,
-            <br />
-            and scan this QR Code.
-          </p>
-          <div className="bg-white-full w-fit rounded-lg p-2">
-            <QRCode value={qrValue} size={240} />
+        <div className="flex flex-col items-center gap-5 w-full">
+          <div className="rounded-lg w-full">
+            <p className="text-center text-osmoverse-100 mb-4 leading-relaxed">
+              Download the Osmosis app on your mobile device
+              <br />
+              and scan this QR Code to connect.
+            </p>
+            <div className="bg-white-full w-fit rounded-lg p-3 mx-auto shadow-lg">
+              <QRCode value={qrValue} size={240} />
+            </div>
+          </div>
+          <div className="text-sm text-osmoverse-300 max-w-xs text-center">
+            Scanning this QR code will establish a secure connection between
+            your mobile device and this browser.
           </div>
         </div>
       )}
       {isConnected &&
         !verificationState.verified &&
         !createMobileSessionMutation.isLoading && (
-          <div className="flex flex-col items-center gap-4">
-            <p>Enter the 6-digit code shown on your mobile device:</p>
+          <div className="flex flex-col items-center gap-5 bg-osmoverse-825 p-6 rounded-lg w-full">
+            <p className="text-center font-medium">
+              Enter the 6-digit code shown on your mobile device:
+            </p>
             <InputPin onComplete={handleVerificationCode} />
             {verificationState.error && (
-              <p className="text-missionError">
+              <p className="text-rust-300 text-sm font-medium">
                 Invalid code. Please try again.
               </p>
             )}
           </div>
         )}
       {createMobileSessionMutation.isLoading && (
-        <p className="text-success">Signing mobile creation transaction...</p>
+        <div className="flex flex-col items-center gap-3 p-6 rounded-lg w-full">
+          <p className="text-bullish-400 font-medium">
+            Signing mobile creation transaction...
+          </p>
+          <Skeleton className="w-32 h-6 rounded-md" />
+        </div>
       )}
       {verificationState.verified && (
-        <p className="text-success">
-          Connected and verified with mobile device!
-        </p>
+        <div className="flex flex-col items-center gap-3 p-6 rounded-lg w-full">
+          <div className="bg-bullish-400/20 p-3 rounded-full">
+            <svg
+              className="h-8 w-8 text-bullish-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <p className="text-bullish-400 font-medium text-center">
+            Connected and verified with mobile device!
+          </p>
+          <p className="text-sm text-osmoverse-300 text-center">
+            You can now use your mobile device to approve transactions.
+          </p>
+        </div>
       )}
     </div>
   );
@@ -335,17 +369,36 @@ const InputPin = ({ onComplete }: { onComplete: (pin: string) => void }) => {
           onComplete(value);
         }
       }}
+      className="gap-2"
     >
-      <InputOTPGroup>
-        <InputOTPSlot index={0} />
-        <InputOTPSlot index={1} />
-        <InputOTPSlot index={2} />
+      <InputOTPGroup className="gap-2">
+        <InputOTPSlot
+          index={0}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
+        <InputOTPSlot
+          index={1}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
+        <InputOTPSlot
+          index={2}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
       </InputOTPGroup>
       <InputOTPSeparator />
-      <InputOTPGroup>
-        <InputOTPSlot index={3} />
-        <InputOTPSlot index={4} />
-        <InputOTPSlot index={5} />
+      <InputOTPGroup className="gap-2">
+        <InputOTPSlot
+          index={3}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
+        <InputOTPSlot
+          index={4}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
+        <InputOTPSlot
+          index={5}
+          className="h-12 w-12 rounded-md border-osmoverse-700 bg-osmoverse-900 text-white-full"
+        />
       </InputOTPGroup>
     </InputOTP>
   );
