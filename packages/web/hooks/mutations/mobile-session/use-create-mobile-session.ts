@@ -5,10 +5,12 @@ import { makeAddAuthenticatorMsg } from "@osmosis-labs/tx";
 import {
   AuthenticatorType,
   AvailableOneClickTradingMessages,
+  OneClickTradingResetPeriods,
   ParsedAuthenticator,
 } from "@osmosis-labs/types";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
+import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
 import { getAuthenticatorIdFromTx } from "~/hooks/mutations/one-click-trading";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -32,21 +34,26 @@ export function isAuthenticatorMobileSession({
     ) &&
     authenticator.subAuthenticators.some(
       (sub) =>
+        sub.type === "CosmwasmAuthenticatorV1" &&
+        sub.contract === SPEND_LIMIT_CONTRACT_ADDRESS &&
+        !sub.params.time_limit // time_limit is undefined for mobile sessions
+    ) &&
+    authenticator.subAuthenticators.some(
+      (sub) =>
         sub.type === "AnyOf" &&
         sub.subAuthenticators.every((sub) => sub.type === "MessageFilter")
-    ) &&
-    !authenticator.subAuthenticators.some(
-      (sub) => sub.type === "CosmwasmAuthenticatorV1"
-    ) // Should not contain a spend limit authenticator. This is the main difference between 1CT and mobile session authenticators.
+    )
   );
 }
 
 export function getMobileSessionAuthenticator({
   key,
   allowedMessages,
+  allowedAmount,
 }: {
   key: PrivKeySecp256k1;
   allowedMessages: AvailableOneClickTradingMessages[];
+  allowedAmount: string;
 }): {
   authenticatorType: AuthenticatorType;
   data: Uint8Array;
@@ -66,7 +73,32 @@ export function getMobileSessionAuthenticator({
     config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
   };
 
-  const compositeAuthData = [signatureVerification, messageFilterAnyOf];
+  // Create spend limit authenticator
+  const spendLimitParams = toBase64(
+    Buffer.from(
+      JSON.stringify({
+        limit: allowedAmount,
+        reset_period: "day" as OneClickTradingResetPeriods,
+        // time_limit is undefined for mobile sessions
+        time_limit: undefined,
+      })
+    )
+  );
+
+  const spendLimit = {
+    type: "CosmwasmAuthenticatorV1",
+    config: toBase64(
+      Buffer.from(
+        `{"contract": "${SPEND_LIMIT_CONTRACT_ADDRESS}", "params": "${spendLimitParams}"}`
+      )
+    ),
+  };
+
+  const compositeAuthData = [
+    signatureVerification,
+    spendLimit,
+    messageFilterAnyOf,
+  ];
 
   // We return the message structure we want to broadcase here,
   // not the structure of the authenticator returned from the chain.
@@ -80,8 +112,10 @@ export function getMobileSessionAuthenticator({
 
 export async function makeCreateMobileSessionMessage({
   userOsmoAddress,
+  allowedAmount,
 }: {
   userOsmoAddress: string;
+  allowedAmount: string;
 }) {
   const key = PrivKeySecp256k1.generateRandomKey();
   const allowedMessages: AvailableOneClickTradingMessages[] = [
@@ -94,6 +128,7 @@ export async function makeCreateMobileSessionMessage({
   const mobileSessionAuthenticator = getMobileSessionAuthenticator({
     key,
     allowedMessages,
+    allowedAmount,
   });
 
   const addAuthenticatorMsg = makeAddAuthenticatorMsg({
@@ -114,13 +149,18 @@ export const useCreateMobileSession = ({
   queryOptions,
 }: {
   onBroadcasted?: () => void;
-  queryOptions?: UseMutationOptions<unknown, unknown, void, unknown>;
+  queryOptions?: UseMutationOptions<
+    unknown,
+    unknown,
+    { allowedAmount: string },
+    unknown
+  >;
 } = {}) => {
   const { accountStore } = useStore();
 
   const apiUtils = api.useUtils();
 
-  return useMutation(async () => {
+  return useMutation(async ({ allowedAmount }) => {
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
     const userOsmoAddress = wallet?.address;
 
@@ -147,6 +187,7 @@ export const useCreateMobileSession = ({
     const { msgs, key, allowedMessages } = await makeCreateMobileSessionMessage(
       {
         userOsmoAddress,
+        allowedAmount,
       }
     );
 

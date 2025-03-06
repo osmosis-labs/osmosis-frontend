@@ -5,7 +5,7 @@ import { MenuToggle } from "~/components/control";
 import { Spinner } from "~/components/loaders";
 import { CreateMobileSession } from "~/components/mobile-sessions/create-mobile-session";
 import { Screen, ScreenManager } from "~/components/screen-manager";
-import { GoBackButton, IconButton } from "~/components/ui/button";
+import { Button, GoBackButton, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks/language";
 import { isAuthenticatorMobileSession } from "~/hooks/mutations/mobile-session/use-create-mobile-session";
 import { useRemoveMobileSession } from "~/hooks/mutations/mobile-session/use-remove-mobile-session";
@@ -25,6 +25,8 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
   )?.address;
   const { t } = useTranslation();
   const [currentScreen, setCurrentScreen] = useState<ViewIds>("create-session");
+  const removeMobileSession = useRemoveMobileSession();
+  const apiUtils = api.useUtils();
 
   const { data, isLoading } =
     api.local.oneClickTrading.getAuthenticators.useQuery(
@@ -49,6 +51,26 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
         },
       }
     );
+
+  const handleClearAllSessions = () => {
+    if (!data || !data.authenticators || data.authenticators.length === 0)
+      return;
+
+    const authenticatorIds = data.authenticators.map(
+      (authenticator) => authenticator.id
+    );
+
+    removeMobileSession.mutate(
+      {
+        authenticatorIds,
+      },
+      {
+        onSuccess: () => {
+          apiUtils.local.oneClickTrading.getAuthenticators.invalidate();
+        },
+      }
+    );
+  };
 
   return (
     <div className="flex flex-col gap-6 items-center w-full pt-6 max-w-md mx-auto">
@@ -81,23 +103,44 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
       <div className="w-full rounded-xl p-6 shadow-md">
         <ScreenManager currentScreen={currentScreen}>
           <Screen screenName="existing-sessions">
-            <div className="max-h-[300px] min-h-[30px] overflow-auto w-full flex flex-col gap-4">
-              {isLoading ? (
-                <div className="h-10 w-full flex items-center justify-center">
-                  <Spinner className="h-6 w-6" />
-                </div>
-              ) : data?.authenticators.length === 0 ? (
-                <div className="text-center py-4 text-osmoverse-300">
-                  No connected devices found
-                </div>
-              ) : (
-                data?.authenticators.map((authenticator) => (
-                  <AuthenticatorItem
-                    key={authenticator.id}
-                    id={authenticator.id}
-                  />
-                ))
-              )}
+            <div className="flex flex-col gap-4 w-full">
+              <div className="max-h-[300px] min-h-[30px] overflow-auto w-full flex flex-col gap-4">
+                {isLoading ? (
+                  <div className="h-10 w-full flex items-center justify-center">
+                    <Spinner className="h-6 w-6" />
+                  </div>
+                ) : data?.authenticators.length === 0 ? (
+                  <div className="text-center py-4 text-osmoverse-300">
+                    No connected devices found
+                  </div>
+                ) : (
+                  data?.authenticators.map((authenticator) => (
+                    <AuthenticatorItem
+                      key={authenticator.id}
+                      id={authenticator.id}
+                      disabled={removeMobileSession.isLoading}
+                    />
+                  ))
+                )}
+              </div>
+
+              {data &&
+                data.authenticators &&
+                data.authenticators.length > 1 && (
+                  <Button
+                    variant="secondary"
+                    className="mt-4 w-full"
+                    onClick={handleClearAllSessions}
+                    disabled={removeMobileSession.isLoading}
+                  >
+                    {removeMobileSession.isLoading ? (
+                      <Spinner className="h-4 w-4 mr-2" />
+                    ) : (
+                      <Icon id="trash" className="h-5 w-5 mr-2" />
+                    )}
+                    Clear All Sessions
+                  </Button>
+                )}
             </div>
           </Screen>
           <Screen screenName="create-session">
@@ -111,9 +154,10 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
 
 interface AuthenticatorItemProps {
   id: string;
+  disabled?: boolean;
 }
 
-export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
+export function AuthenticatorItem({ id, disabled }: AuthenticatorItemProps) {
   const removeMobileSession = useRemoveMobileSession();
   const apiUtils = api.useUtils();
   const { accountStore } = useStore();
@@ -137,7 +181,7 @@ export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
   const onDisconnect = async (authenticatorId: string) => {
     removeMobileSession.mutate(
       {
-        authenticatorId,
+        authenticatorIds: [authenticatorId],
       },
       {
         onSuccess: () => {
@@ -173,49 +217,41 @@ export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
   };
 
   return (
-    <div className="flex flex-col bg-osmoverse-825 rounded-lg hover:bg-osmoverse-800 transition-colors overflow-hidden">
-      <div className="flex justify-between items-center p-3">
-        <div className="flex items-center gap-3">
-          <div className="bg-osmoverse-700 p-2 rounded-full">
-            <Icon id="smartphone" className="h-5 w-5 text-wosmongton-100" />
-          </div>
-          <div>
-            <h3 className="body1 font-medium text-white-full">
-              {getDeviceDisplayName()}
-            </h3>
-            <div className="flex flex-col gap-1">
-              <p className="text-xs text-osmoverse-300">ID: {id}</p>
-              {isMetadataLoading ? (
-                <p className="text-xs text-osmoverse-300">
-                  Loading metadata...
-                </p>
-              ) : metadataData?.metadata?.createdAt ? (
-                <p className="text-xs text-osmoverse-300">
-                  Created: {formatDate(metadataData.metadata.createdAt)}
-                </p>
-              ) : null}
-            </div>
-          </div>
+    <div className="flex justify-between items-center p-3 bg-osmoverse-825 rounded-lg hover:bg-osmoverse-800 transition-colors">
+      <div className="flex items-center gap-3">
+        <div className="bg-osmoverse-700 p-2 rounded-full">
+          <Icon id="smartphone" className="h-5 w-5 text-wosmongton-100" />
         </div>
-        <div className="flex items-center">
-          <IconButton
-            aria-label="End Session"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDisconnect(id);
-            }}
-            disabled={removeMobileSession.isLoading}
-            variant="ghost"
-            className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
-          >
-            {removeMobileSession.isLoading ? (
-              <Spinner className="h-4 w-4" />
-            ) : (
-              <Icon id="trash" className="h-5 w-5" />
-            )}
-          </IconButton>
+
+        <div>
+          <h3 className="body1 font-medium text-white-full">
+            {getDeviceDisplayName()}
+          </h3>
+          <div className="flex flex-col gap-1">
+            <p className="text-xs text-osmoverse-300">ID: {id}</p>
+            {isMetadataLoading ? (
+              <p className="text-xs text-osmoverse-300">Loading metadata...</p>
+            ) : metadataData?.metadata?.createdAt ? (
+              <p className="text-xs text-osmoverse-300">
+                Created: {formatDate(metadataData.metadata.createdAt)}
+              </p>
+            ) : null}
+          </div>
         </div>
       </div>
+      <IconButton
+        aria-label="End Session"
+        onClick={() => onDisconnect(id)}
+        disabled={removeMobileSession.isLoading}
+        variant="ghost"
+        className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
+      >
+        {removeMobileSession.isLoading ? (
+          <Spinner className="h-4 w-4" />
+        ) : (
+          <Icon id="trash" className="h-5 w-5" />
+        )}
+      </IconButton>
     </div>
   );
 }

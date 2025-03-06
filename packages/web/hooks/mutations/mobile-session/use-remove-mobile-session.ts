@@ -7,7 +7,7 @@ import { useStore } from "~/stores";
 type UseRemoveMobileSessionMutationOptions = UseMutationOptions<
   void,
   unknown,
-  { authenticatorId: string },
+  { authenticatorIds: string[] },
   unknown
 >;
 
@@ -18,7 +18,7 @@ export const useRemoveMobileSession = ({
 } = {}) => {
   const { accountStore } = useStore();
 
-  return useMutation(async ({ authenticatorId }) => {
+  return useMutation(async ({ authenticatorIds }) => {
     const userOsmoAddress = accountStore.getWallet(
       accountStore.osmosisChainId
     )?.address;
@@ -27,17 +27,21 @@ export const useRemoveMobileSession = ({
       throw new Error("User Osmo address not found");
     }
 
-    const msg = await makeRemoveAuthenticatorMsg({
-      id: BigInt(authenticatorId),
-      sender: userOsmoAddress,
-    });
+    const msgs = await Promise.all(
+      authenticatorIds.map((id) =>
+        makeRemoveAuthenticatorMsg({
+          id: BigInt(id),
+          sender: userOsmoAddress,
+        })
+      )
+    );
 
     await new Promise<DeliverTxResponse>((resolve, reject) => {
       accountStore
         .signAndBroadcast(
           accountStore.osmosisChainId,
           "addOrRemoveAuthenticators",
-          [msg],
+          msgs,
           "",
           undefined,
           { preferNoSetFee: true },
