@@ -116,6 +116,23 @@ interface AuthenticatorItemProps {
 export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
   const removeMobileSession = useRemoveMobileSession();
   const apiUtils = api.useUtils();
+  const { accountStore } = useStore();
+  const accountAddress = accountStore.getWallet(
+    accountStore.osmosisChainId
+  )?.address;
+
+  // Fetch metadata for this authenticator
+  const { data: metadataData, isLoading: isMetadataLoading } =
+    api.edge.mobileSession.fetchMetadata.useQuery(
+      {
+        accountAddress: accountAddress || "",
+        authenticatorId: id,
+      },
+      {
+        enabled: !!accountAddress,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+      }
+    );
 
   const onDisconnect = async (authenticatorId: string) => {
     removeMobileSession.mutate(
@@ -130,30 +147,75 @@ export function AuthenticatorItem({ id }: AuthenticatorItemProps) {
     );
   };
 
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
+  // Get device display name from brand and model
+  const getDeviceDisplayName = () => {
+    if (!metadataData?.metadata) return "Mobile Device";
+
+    const { deviceBrand, deviceModel } = metadataData.metadata;
+    if (deviceBrand && deviceModel) {
+      return `${deviceBrand} ${deviceModel}`;
+    } else if (deviceBrand) {
+      return deviceBrand;
+    } else if (deviceModel) {
+      return deviceModel;
+    }
+    return "Mobile Device";
+  };
+
   return (
-    <div className="flex justify-between items-center p-3 bg-osmoverse-825 rounded-lg hover:bg-osmoverse-800 transition-colors">
-      <div className="flex items-center gap-3">
-        <div className="bg-osmoverse-700 p-2 rounded-full">
-          <Icon id="smartphone" className="h-5 w-5 text-wosmongton-100" />
+    <div className="flex flex-col bg-osmoverse-825 rounded-lg hover:bg-osmoverse-800 transition-colors overflow-hidden">
+      <div className="flex justify-between items-center p-3">
+        <div className="flex items-center gap-3">
+          <div className="bg-osmoverse-700 p-2 rounded-full">
+            <Icon id="smartphone" className="h-5 w-5 text-wosmongton-100" />
+          </div>
+          <div>
+            <h3 className="body1 font-medium text-white-full">
+              {getDeviceDisplayName()}
+            </h3>
+            <div className="flex flex-col gap-1">
+              <p className="text-xs text-osmoverse-300">ID: {id}</p>
+              {isMetadataLoading ? (
+                <p className="text-xs text-osmoverse-300">
+                  Loading metadata...
+                </p>
+              ) : metadataData?.metadata?.createdAt ? (
+                <p className="text-xs text-osmoverse-300">
+                  Created: {formatDate(metadataData.metadata.createdAt)}
+                </p>
+              ) : null}
+            </div>
+          </div>
         </div>
-        <div>
-          <h3 className="body1 font-medium text-white-full">Mobile Device</h3>
-          <p className="text-xs text-osmoverse-300">ID: {id}</p>
+        <div className="flex items-center">
+          <IconButton
+            aria-label="End Session"
+            onClick={(e) => {
+              e.stopPropagation();
+              onDisconnect(id);
+            }}
+            disabled={removeMobileSession.isLoading}
+            variant="ghost"
+            className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
+          >
+            {removeMobileSession.isLoading ? (
+              <Spinner className="h-4 w-4" />
+            ) : (
+              <Icon id="trash" className="h-5 w-5" />
+            )}
+          </IconButton>
         </div>
       </div>
-      <IconButton
-        aria-label="End Session"
-        onClick={() => onDisconnect(id)}
-        disabled={removeMobileSession.isLoading}
-        variant="ghost"
-        className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
-      >
-        {removeMobileSession.isLoading ? (
-          <Spinner className="h-4 w-4" />
-        ) : (
-          <Icon id="trash" className="h-5 w-5" />
-        )}
-      </IconButton>
     </div>
   );
 }

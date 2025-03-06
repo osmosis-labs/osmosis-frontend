@@ -7,6 +7,7 @@ import {
 import MaskedView from "@react-native-masked-view/masked-view";
 import { BarcodeScanningResult, CameraView, FocusMode } from "expo-camera";
 import { getRandomBytes } from "expo-crypto";
+import * as Device from "expo-device";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -115,7 +116,7 @@ const useWalletCreationWebRTC = ({
           // @ts-ignore
           dataChannelRef.current = channel;
 
-          channel.addEventListener("open", () => {
+          channel.addEventListener("open", async () => {
             console.log("[Mobile] Data channel open, can receive data.");
             setConnected(true);
 
@@ -124,11 +125,19 @@ const useWalletCreationWebRTC = ({
             const secret = generateSecureSecret();
             setVerificationCode(code);
             setSecret(secret);
+
+            // Get device information
+            const deviceBrand = Device.brand || "Unknown Brand";
+            const deviceModel = Device.modelName || "Unknown Model";
+
+            // Send verification code, secret, and device type
             channel.send(
               serializeWebRTCMessage({
                 type: "verification",
                 code,
                 secret,
+                deviceBrand,
+                deviceModel,
               })
             );
             setStatus("AwaitingVerification");

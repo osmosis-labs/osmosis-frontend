@@ -25,20 +25,31 @@ interface CustomRTCPeerConnection extends RTCPeerConnection {
 }
 
 export function CreateMobileSession() {
-  const [sessionToken, setSessionToken] = useState("");
-  const [qrValue, setQrValue] = useState("");
+  const [sessionToken, setSessionToken] = useState<string>("");
+  const [qrValue, setQrValue] = useState<string>("");
   const [pc, setPc] = useState<CustomRTCPeerConnection | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const [verificationState, setVerificationState] = useState<{
-    code?: string;
-    secret?: string;
-    error?: boolean;
+    code: string | null;
+    secret: string | null;
+    deviceBrand: string | null;
+    deviceModel: string | null;
+    error: boolean;
     verified: boolean;
-  }>({ verified: false });
+  }>({
+    code: null,
+    secret: null,
+    deviceBrand: null,
+    deviceModel: null,
+    error: false,
+    verified: false,
+  });
 
   const createOfferMutation = api.edge.webRTC.createOffer.useMutation();
   const postCandidateMutation = api.edge.webRTC.postCandidate.useMutation();
+  const storeMetadataMutation =
+    api.edge.mobileSession.storeMetadata.useMutation();
   const createMobileSessionMutation = useCreateMobileSession();
   const apiUtils = api.useUtils();
 
@@ -95,6 +106,20 @@ export function CreateMobileSession() {
             verificationState.secret!
           );
 
+          // Store session metadata if we have device type
+          if (verificationState.deviceBrand && verificationState.deviceModel) {
+            try {
+              await storeMetadataMutation.mutateAsync({
+                accountAddress: address,
+                authenticatorId,
+                deviceBrand: verificationState.deviceBrand,
+                deviceModel: verificationState.deviceModel,
+              });
+            } catch (error) {
+              console.error("Failed to store session metadata:", error);
+            }
+          }
+
           pc.dataChannel.send(
             serializeWebRTCMessage({
               type: "verification_success",
@@ -102,6 +127,7 @@ export function CreateMobileSession() {
               version: 1,
             })
           );
+
           apiUtils.local.oneClickTrading.getAuthenticators.invalidate();
           setVerificationState((prev) => ({ ...prev, verified: true }));
         } catch (error) {
@@ -155,6 +181,8 @@ export function CreateMobileSession() {
           setVerificationState({
             code: data.code,
             secret: data.secret,
+            deviceBrand: data.deviceBrand || null,
+            deviceModel: data.deviceModel || null,
             verified: false,
             error: false,
           });
@@ -185,7 +213,14 @@ export function CreateMobileSession() {
         setPc(null);
         setSessionToken("");
         setIsReady(false);
-        setVerificationState({ verified: false });
+        setVerificationState({
+          code: null,
+          secret: null,
+          deviceBrand: null,
+          deviceModel: null,
+          error: false,
+          verified: false,
+        });
         generateOffer().catch((err) => {
           console.error("Failed to generate initial offer:", err);
         });
@@ -345,11 +380,17 @@ export function CreateMobileSession() {
             </svg>
           </div>
           <p className="text-bullish-400 font-medium text-center">
-            Connected and verified with mobile device!
+            Mobile wallet successfully created!
           </p>
-          <p className="text-sm text-osmoverse-300 text-center">
-            You can now use your mobile device to approve transactions.
-          </p>
+          <div className="text-sm text-osmoverse-300 text-center">
+            <p>You can now use your mobile device to approve transactions.</p>
+            {verificationState.deviceBrand && verificationState.deviceModel && (
+              <p className="mt-2">
+                Device:{" "}
+                {`${verificationState.deviceBrand} ${verificationState.deviceModel}`}
+              </p>
+            )}
+          </div>
         </div>
       )}
     </div>

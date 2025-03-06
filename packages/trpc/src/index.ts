@@ -5,6 +5,7 @@ export * from "./chains";
 export * from "./cms";
 export * from "./concentrated-liquidity";
 export * from "./earn";
+export * from "./mobile-session";
 export * from "./one-click-trading";
 export * from "./orderbook-router";
 export * from "./parameter-types";

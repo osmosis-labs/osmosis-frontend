@@ -20,6 +20,8 @@ export const VerificationMessageSchema = BaseMessageSchema.extend({
   type: z.literal("verification"),
   code: z.string().length(6),
   secret: z.string(),
+  deviceBrand: z.string().optional(),
+  deviceModel: z.string().optional(),
 });
 
 export const StartingVerificationMessageSchema = BaseMessageSchema.extend({
@@ -74,20 +76,13 @@ export type WebRTCMessageParams =
   | StartingVerificationMessage
   | VerificationFailedMessage;
 
-// Unified message creation function
-export const createWebRTCMessage = (
-  params: WebRTCMessageParams
-): WebRTCMessage => {
-  return WebRTCMessageSchema.parse(params);
-};
-
 /**
  * Serializes a WebRTC message for sending through a data channel
  */
 export const serializeWebRTCMessage = (
   message: WebRTCMessageParams
 ): string => {
-  const validatedMessage = createWebRTCMessage(message);
+  const validatedMessage = WebRTCMessageSchema.parse(message);
   return JSON.stringify(validatedMessage);
 };
 

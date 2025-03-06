@@ -3,6 +3,7 @@ import {
   chainsRouter,
   createTRPCRouter,
   earnRouter,
+  mobileSessionRouter,
   orderbookRouter,
   poolsRouter,
   stakingRouter,
@@ -20,4 +21,5 @@ export const edgeRouter = createTRPCRouter({
   orderbooks: orderbookRouter,
   chains: chainsRouter,
   webRTC: webRTCRouter,
+  mobileSession: mobileSessionRouter,
 });
