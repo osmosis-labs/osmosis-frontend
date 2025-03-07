@@ -1,13 +1,22 @@
 import { toBase64 } from "@cosmjs/encoding";
 import {
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+} from "@headlessui/react";
+import { Dec } from "@osmosis-labs/unit";
+import {
   deserializeWebRTCMessage,
   MobileSessionEncryptedDataSchema,
   serializeWebRTCMessage,
   STUN_SERVER,
 } from "@osmosis-labs/utils";
+import { isNumeric } from "@osmosis-labs/utils";
+import classNames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+import { InputBox } from "~/components/input";
 import { QRCode } from "~/components/qrcode";
 import {
   InputOTP,
@@ -17,7 +26,9 @@ import {
 } from "~/components/ui/input-otp";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useCreateMobileSession } from "~/hooks/mutations/mobile-session/use-create-mobile-session";
+import { useStore } from "~/stores";
 import { encryptAES } from "~/utils/encryption";
+import { addCommasToNumber, removeCommasFromNumber } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 interface CustomRTCPeerConnection extends RTCPeerConnection {
@@ -30,6 +41,7 @@ export function CreateMobileSession() {
   const [pc, setPc] = useState<CustomRTCPeerConnection | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
+  const [lossProtectionAmount, setLossProtectionAmount] = useState("0");
   const [verificationState, setVerificationState] = useState<{
     code: string | null;
     secret: string | null;
@@ -45,6 +57,24 @@ export function CreateMobileSession() {
     error: false,
     verified: false,
   });
+
+  const { accountStore, chainStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+  const { data: userAssetsTotal, isLoading: isLoadingUserAssetsTotal } =
+    api.edge.assets.getUserAssetsTotal.useQuery(
+      {
+        userOsmoAddress: account?.address as string,
+      },
+      {
+        enabled: Boolean(account) && Boolean(account?.address),
+        trpc: {
+          context: {
+            skipBatch: true,
+          },
+        },
+      }
+    );
 
   const createOfferMutation = api.edge.webRTC.createOffer.useMutation();
   const postCandidateMutation = api.edge.webRTC.postCandidate.useMutation();
@@ -88,7 +118,10 @@ export function CreateMobileSession() {
             authenticatorId,
             accountOwnerPublicKey,
             publicKey,
-          } = await createMobileSessionMutation.mutateAsync();
+          } = await createMobileSessionMutation.mutateAsync({
+            allowedAmount:
+              lossProtectionAmount !== "" ? lossProtectionAmount : "0",
+          });
 
           // Encrypt the sensitive data using the secret from mobile
           const validatedData = MobileSessionEncryptedDataSchema.parse({
@@ -310,6 +343,16 @@ export function CreateMobileSession() {
     };
   }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer, isConnected]);
 
+  const handleShareOfBalanceClick = (percentage: number) => {
+    if (!userAssetsTotal) return;
+
+    const amount = userAssetsTotal.value
+      .mul(new Dec(percentage).quo(new Dec(100)))
+      .toString();
+
+    setLossProtectionAmount(amount.split(" ")[0].replace("$", ""));
+  };
+
   return (
     <div className="flex flex-col items-center gap-6">
       {!isReady && (
@@ -332,10 +375,121 @@ export function CreateMobileSession() {
               <QRCode value={qrValue} size={240} />
             </div>
           </div>
+
           <div className="text-sm text-osmoverse-300 max-w-xs text-center">
             Scanning this QR code will establish a secure connection between
             your mobile device and this browser.
           </div>
+
+          <Disclosure>
+            {({ open }) => (
+              <div className="w-full max-w-md">
+                <DisclosureButton className="flex w-full justify-between rounded-lg bg-osmoverse-800 px-4 py-2 text-left text-sm font-medium text-osmoverse-100 hover:bg-osmoverse-700 focus:outline-none focus-visible:ring focus-visible:ring-wosmongton-500 focus-visible:ring-opacity-75">
+                  <span>Loss Protection Settings</span>
+                  <svg
+                    className={`${
+                      open ? "rotate-180 transform" : ""
+                    } h-5 w-5 text-osmoverse-300`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </DisclosureButton>
+                <DisclosurePanel className="px-4 pt-4 pb-2 text-sm text-osmoverse-300">
+                  <div className="flex flex-col gap-4">
+                    <p className="text-osmoverse-200">
+                      Set a maximum amount that can be lost in a transaction.
+                      This helps protect your assets from significant losses.
+                    </p>
+                    <div className="flex flex-col gap-2">
+                      <label className="text-osmoverse-100 font-medium">
+                        Maximum Loss Amount (USD)
+                      </label>
+                      <InputBox
+                        rightEntry
+                        currentValue={`$${addCommasToNumber(
+                          lossProtectionAmount
+                        )}`}
+                        onInput={(nextValue) => {
+                          const parsedValue = removeCommasFromNumber(
+                            nextValue
+                          ).replace("$", "");
+                          if (!isNumeric(parsedValue) && parsedValue !== "")
+                            return;
+                          setLossProtectionAmount(parsedValue);
+                        }}
+                        onBlur={() => {
+                          if (lossProtectionAmount === "") {
+                            setLossProtectionAmount("0");
+                          }
+                        }}
+                        trailingSymbol={
+                          <span className="ml-2 text-body1 font-body1 text-osmoverse-300">
+                            USD
+                          </span>
+                        }
+                      />
+
+                      <div className="mt-2">
+                        <p className="mb-2 text-osmoverse-200">
+                          Share of balance:
+                        </p>
+                        <ul className="flex w-full gap-x-2">
+                          {[5, 10, 20].map((percentage) => (
+                            <li
+                              key={percentage}
+                              className={classNames(
+                                "flex h-8 w-full cursor-pointer items-center justify-center rounded-lg bg-osmoverse-700 hover:bg-osmoverse-600",
+                                {
+                                  "border-2 border-wosmongton-200":
+                                    userAssetsTotal &&
+                                    lossProtectionAmount ===
+                                      userAssetsTotal.value
+                                        .mul(
+                                          new Dec(percentage).quo(new Dec(100))
+                                        )
+                                        .toString()
+                                        .split(" ")[0]
+                                        .replace("$", ""),
+                                }
+                              )}
+                              onClick={() =>
+                                handleShareOfBalanceClick(percentage)
+                              }
+                            >
+                              <button>{`${percentage}%`}</button>
+                            </li>
+                          ))}
+                        </ul>
+
+                        {userAssetsTotal && (
+                          <p className="mt-2 text-xs text-osmoverse-400">
+                            Your total balance:{" "}
+                            {userAssetsTotal.value.toString()}
+                          </p>
+                        )}
+                        {isLoadingUserAssetsTotal && (
+                          <Skeleton className="mt-2 h-4 w-32" />
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-osmoverse-400">
+                      Setting this to 0 means no loss protection will be
+                      applied.
+                    </p>
+                  </div>
+                </DisclosurePanel>
+              </div>
+            )}
+          </Disclosure>
         </div>
       )}
       {isConnected &&
