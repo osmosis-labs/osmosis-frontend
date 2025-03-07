@@ -8,6 +8,7 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
+import { oktoExtensionInfo } from "@cosmos-kit/okto-extension";
 import { LeapMobileInfo as leapMobileInfo } from "@cosmos-kit/leap-mobile";
 import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
@@ -31,6 +32,7 @@ const CosmosKitWalletList: Wallet[] = [
   keplrExtensionInfo,
   keplrMobileInfo,
   leapExtensionInfo,
+  oktoExtensionInfo,
   leapMobileInfo,
   okxWalletExtensionInfo,
   trustExtensionInfo,
