@@ -1317,6 +1317,5 @@
     "conversionFees": "変換手数料",
     "free": "無料",
     "unavailable": "現在ご利用いただけません。しばらくしてからもう一度お試しください。"
-  },
-  "unknownTimeRemaining": "残り時間不明"
+  }
 }

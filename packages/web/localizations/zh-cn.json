@@ -1317,6 +1317,5 @@
     "conversionFees": "转换费",
     "free": "自由的",
     "unavailable": "目前不可用。请稍后重试。"
-  },
-  "unknownTimeRemaining": "剩余时间未知"
+  }
 }
