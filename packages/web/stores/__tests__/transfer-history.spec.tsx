@@ -21,8 +21,11 @@ describe("PendingTransferCaption", () => {
     if (key === "timeUnits.hours") {
       return "hours";
     }
-    if (key === "unknownTimeRemaining") {
-      return "Unknown time remaining";
+    if (key === "transfer.depositTakingLonger") {
+      return "Deposit taking longer than expected";
+    }
+    if (key === "transfer.withdrawalTakingLonger") {
+      return "Withdrawal taking longer than expected";
     }
     if (key === "transfer.amountToChain") {
       return `Transfer ${options.amount} to ${options.chain}`;
