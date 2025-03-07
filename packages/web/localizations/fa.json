@@ -2,7 +2,6 @@
   "404": {
     "title": "پیدا نشد"
   },
-  "unknownTimeRemaining": "زمان نامعلوم باقی مانده است",
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -796,6 +795,8 @@
     "receive": "دریافت {denom}",
     "selectDepositWallet": "کیف پول {network} انتخاب کنید",
     "selectWithdrawWallet": "کیف پول {network} انتخاب کنید",
+    "depositTakingLonger": "سپرده گذاری بیش از حد انتظار طول می کشد",
+    "withdrawalTakingLonger": "برداشت بیش از حد انتظار طول می کشد",
     "depositAssetDescription": "هنگامی که دارایی های خاصی را واریز می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در اسموز دریافت کنید.",
     "withdrawAssetDescription": "هنگامی که دارایی های خاصی را برداشت می کنید، می توانید انتخاب کنید که کدام نسخه از دارایی را می خواهید در شبکه مقصد دریافت کنید.",
     "estimatingTime": "تخمین زمان",
