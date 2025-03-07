@@ -76,7 +76,7 @@ describe("PendingTransferCaption", () => {
     ).toBeInTheDocument();
   });
 
-  it("updates the time remaining text", () => {
+  it("updates the time remaining text for withdraw", () => {
     const estimatedArrivalUnix = dayjs().add(5, "minutes").unix();
 
     render(
@@ -90,7 +90,28 @@ describe("PendingTransferCaption", () => {
 
     jest.advanceTimersByTime(300000); // Advance time by 5 minutes
 
-    expect(screen.getByText(/Unknown time remaining/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Withdrawal taking longer than expected/)
+    ).toBeInTheDocument();
+  });
+
+  it("updates the time remaining text for deposit", () => {
+    const estimatedArrivalUnix = dayjs().add(5, "minutes").unix();
+
+    render(
+      <PendingTransferCaption
+        isWithdraw={false}
+        amount="10 OSMO"
+        chainPrettyName="Osmosis"
+        estimatedArrivalUnix={estimatedArrivalUnix}
+      />
+    );
+
+    jest.advanceTimersByTime(300000); // Advance time by 5 minutes
+
+    expect(
+      screen.getByText(/Deposit taking longer than expected/)
+    ).toBeInTheDocument();
   });
 
   it("displays the hours and minutes", () => {

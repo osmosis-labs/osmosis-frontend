@@ -426,10 +426,14 @@ export const PendingTransferCaption: FunctionComponent<{
       const date = dayjs.unix(estimatedArrivalUnix);
       const humanizedTime = humanizeTime(date);
       if (progressRef.current) {
+        const transferTakingLonger = isWithdraw
+          ? t("transfer.withdrawalTakingLonger")
+          : t("transfer.depositTakingLonger");
+
         // DANGER: We update the HTML directly because react-toastify is having issues while handling react state changes
         progressRef.current.textContent =
           date.diff(dayjs(), "seconds") < 1
-            ? t("unknownTimeRemaining")
+            ? transferTakingLonger
             : `${t("estimated")} ${displayHumanizedTime({
                 humanizedTime,
                 t,
@@ -442,7 +446,7 @@ export const PendingTransferCaption: FunctionComponent<{
     const intervalId = setInterval(updateTime, 1000); // Update every second
 
     return () => clearInterval(intervalId);
-  }, [estimatedArrivalUnix, t]);
+  }, [estimatedArrivalUnix, isWithdraw, t]);
 
   return (
     <div>

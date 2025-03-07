@@ -2,7 +2,6 @@
   "404": {
     "title": "未找到"
   },
-  "unknownTimeRemaining": "剩余时间未知",
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -796,6 +795,8 @@
     "receive": "接收{denom}",
     "selectDepositWallet": "选择{network}钱包",
     "selectWithdrawWallet": "选择{network}钱包",
+    "depositTakingLonger": "存款时间比预期的要长",
+    "withdrawalTakingLonger": "提款时间比预期的要长",
     "depositAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
     "withdrawAssetDescription": "当你提取某些资产时，你可以选择要在目标网络上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
@@ -1316,5 +1317,6 @@
     "conversionFees": "转换费",
     "free": "自由的",
     "unavailable": "目前不可用。请稍后重试。"
-  }
+  },
+  "unknownTimeRemaining": "剩余时间未知"
 }

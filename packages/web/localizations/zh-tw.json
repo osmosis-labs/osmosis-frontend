@@ -2,7 +2,6 @@
   "404": {
     "title": "找不到這頁面"
   },
-  "unknownTimeRemaining": "剩餘時間未知",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -796,6 +795,8 @@
     "receive": "接收{denom}",
     "selectDepositWallet": "選擇{network}錢包",
     "selectWithdrawWallet": "選擇{network}錢包",
+    "depositTakingLonger": "存款時間比預期的要長",
+    "withdrawalTakingLonger": "提款時間比預期的要長",
     "depositAssetDescription": "當您存入某些資產時，您可以選擇想要在 Osmosis 上接收的資產版本。",
     "withdrawAssetDescription": "當您提取某些資產時，您可以選擇您想要在目標網路上接收哪個版本的資產。",
     "estimatingTime": "預計時間",
@@ -1316,5 +1317,6 @@
     "conversionFees": "轉換費",
     "free": "自由的",
     "unavailable": "目前不可用。稍後再試。"
-  }
+  },
+  "unknownTimeRemaining": "剩餘時間未知"
 }

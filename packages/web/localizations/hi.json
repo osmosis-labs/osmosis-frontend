@@ -2,7 +2,6 @@
   "404": {
     "title": "नहीं मिला"
   },
-  "unknownTimeRemaining": "शेष समय अज्ञात",
   "addLiquidity": {
     "allAssets": "सारी संपत्ति",
     "autoswapCaption": "एकल परिसंपत्ति में तरलता जोड़ने के लिए ऑटोस्वैप का उपयोग करें।",
@@ -796,6 +795,8 @@
     "receive": "{denom} प्राप्त करें",
     "selectDepositWallet": "{network} वॉलेट चुनें",
     "selectWithdrawWallet": "{network} वॉलेट चुनें",
+    "depositTakingLonger": "जमा करने में अपेक्षा से अधिक समय लग रहा है",
+    "withdrawalTakingLonger": "निकासी में अपेक्षा से अधिक समय लग रहा है",
     "depositAssetDescription": "जब आप कुछ परिसंपत्तियां जमा करते हैं, तो आप चुन सकते हैं कि आप ओस्मोसिस पर परिसंपत्ति का कौन सा संस्करण प्राप्त करना चाहते हैं।",
     "withdrawAssetDescription": "जब आप कुछ परिसंपत्तियाँ निकालते हैं, तो आप चुन सकते हैं कि गंतव्य नेटवर्क पर आप परिसंपत्ति का कौन सा संस्करण प्राप्त करना चाहते हैं।",
     "estimatingTime": "समय का अनुमान लगाना",
@@ -1316,5 +1317,6 @@
     "conversionFees": "रूपांतरण शुल्क",
     "free": "मुक्त",
     "unavailable": "वर्तमान में अनुपलब्ध। बाद में पुनः प्रयास करें।"
-  }
+  },
+  "unknownTimeRemaining": "शेष समय अज्ञात"
 }
