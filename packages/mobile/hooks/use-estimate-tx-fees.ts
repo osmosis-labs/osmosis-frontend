@@ -41,7 +41,6 @@ async function estimateTxFeesQueryFn({
   address: string | undefined;
   authenticatorId: string | undefined;
 }): Promise<QueryResult> {
-  console.log(address);
   if (!messages.length) throw new Error("No messages");
   if (!address) throw new Error("No address");
 

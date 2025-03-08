@@ -12,7 +12,6 @@ export function decryptAES(encryptedData: string, key: string): string {
   if (!encryptedData || !key) {
     throw new Error("Invalid input");
   }
-  console.log("decryptAES", encryptedData, key);
   const bytes = CryptoJS.AES.decrypt(encryptedData, key);
   const decryptedData = bytes.toString(CryptoJS.enc.Utf8);
   return decryptedData;

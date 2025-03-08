@@ -171,9 +171,12 @@ export function TradeInterface({
               subtitle="Choose Asset"
               recommendedAssets={recommendedAssets}
               asset={fromAsset}
-              onSelectAsset={(asset) =>
-                setFromAssetDenom(asset.coinMinimalDenom)
-              }
+              onSelectAsset={(asset) => {
+                if (asset.coinMinimalDenom === toAsset?.coinMinimalDenom) {
+                  switchAssets();
+                }
+                setFromAssetDenom(asset.coinMinimalDenom);
+              }}
               selectableAssets={selectableAssets}
               fetchNextPage={fetchNextPageAssets}
               hasNextPage={hasNextPageAssets ?? false}
@@ -201,7 +204,12 @@ export function TradeInterface({
               subtitle="Choose Asset"
               recommendedAssets={recommendedAssets}
               asset={toAsset}
-              onSelectAsset={(asset) => setToAssetDenom(asset.coinMinimalDenom)}
+              onSelectAsset={(asset) => {
+                if (asset.coinMinimalDenom === fromAsset?.coinMinimalDenom) {
+                  switchAssets();
+                }
+                setToAssetDenom(asset.coinMinimalDenom);
+              }}
               selectableAssets={selectableAssets}
               fetchNextPage={fetchNextPageAssets}
               hasNextPage={hasNextPageAssets ?? false}

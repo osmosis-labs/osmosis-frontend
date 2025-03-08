@@ -86,7 +86,7 @@ export const PortfolioActivity: FunctionComponent = () => {
         ListFooterComponent={
           isFetchingNextPage ? (
             <View style={styles.footerLoader}>
-              <ActivityIndicator color={Colors.wosmongton[500]} size="small" />
+              <ActivityIndicator size="small" />
             </View>
           ) : null
         }

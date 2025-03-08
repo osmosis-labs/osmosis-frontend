@@ -7,11 +7,11 @@ import {
 import { Dec } from "@osmosis-labs/unit";
 import {
   deserializeWebRTCMessage,
+  isNumeric,
   MobileSessionEncryptedDataSchema,
   serializeWebRTCMessage,
   STUN_SERVER,
 } from "@osmosis-labs/utils";
-import { isNumeric } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import React, { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -41,7 +41,7 @@ export function CreateMobileSession() {
   const [pc, setPc] = useState<CustomRTCPeerConnection | null>(null);
   const [isReady, setIsReady] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
-  const [lossProtectionAmount, setLossProtectionAmount] = useState("0");
+  const [lossProtectionAmount, setLossProtectionAmount] = useState("5000");
   const [verificationState, setVerificationState] = useState<{
     code: string | null;
     secret: string | null;
@@ -120,7 +120,9 @@ export function CreateMobileSession() {
             publicKey,
           } = await createMobileSessionMutation.mutateAsync({
             allowedAmount:
-              lossProtectionAmount !== "" ? lossProtectionAmount : "0",
+              lossProtectionAmount !== "" && Number(lossProtectionAmount) >= 1
+                ? lossProtectionAmount
+                : "1",
           });
 
           // Encrypt the sensitive data using the secret from mobile
@@ -164,15 +166,34 @@ export function CreateMobileSession() {
           apiUtils.local.oneClickTrading.getAuthenticators.invalidate();
           setVerificationState((prev) => ({ ...prev, verified: true }));
         } catch (error) {
+          console.error("Failed to create mobile session:", error);
           pc.dataChannel.send(
             serializeWebRTCMessage({
               type: "verification_failed",
             })
           );
-          setVerificationState((prev) => ({ ...prev, error: true }));
-          setTimeout(() => {
-            setVerificationState((prev) => ({ ...prev, error: false }));
-          }, 2000);
+          setVerificationState({
+            code: null,
+            secret: null,
+            deviceBrand: null,
+            deviceModel: null,
+            error: true,
+            verified: false,
+          });
+
+          if (pc) {
+            pc.close();
+            setPc(null);
+          }
+
+          setIsConnected(false);
+          setSessionToken("");
+          setIsReady(false);
+
+          // Generate a new offer
+          generateOffer().catch((err) => {
+            console.error("Failed to generate new offer after error:", err);
+          });
         }
       }
     } else {
@@ -239,8 +260,12 @@ export function CreateMobileSession() {
     peer.onconnectionstatechange = () => {
       if (peer.connectionState === "connected") {
         console.log("[Desktop] Connection established.");
+        setVerificationState((prev) => ({ ...prev, error: false }));
         setIsConnected(true);
-      } else if (peer.connectionState === "disconnected") {
+      } else if (
+        peer.connectionState === "disconnected" &&
+        !verificationState.verified
+      ) {
         console.log("[Desktop] Connection lost.");
         setIsConnected(false);
         setPc(null);
@@ -275,7 +300,7 @@ export function CreateMobileSession() {
     setQrValue(JSON.stringify(payload));
     setIsReady(true);
     setPc(peer);
-  }, [createOfferMutation, postCandidateMutation]);
+  }, [createOfferMutation, postCandidateMutation, verificationState.verified]);
 
   /**
    * On mount, generate the initial offer.
@@ -320,7 +345,7 @@ export function CreateMobileSession() {
    */
   useEffect(() => {
     // Skip timer if connected or no session token
-    if (!sessionToken || isConnected) return;
+    if (!sessionToken || isConnected || verificationState.verified) return;
 
     const timerId = setTimeout(async () => {
       // If we still have no answer at this point, regenerate
@@ -341,7 +366,14 @@ export function CreateMobileSession() {
     return () => {
       clearTimeout(timerId);
     };
-  }, [sessionToken, fetchAnswerQuery.data, pc, generateOffer, isConnected]);
+  }, [
+    sessionToken,
+    fetchAnswerQuery.data,
+    pc,
+    generateOffer,
+    isConnected,
+    verificationState.verified,
+  ]);
 
   const handleShareOfBalanceClick = (percentage: number) => {
     if (!userAssetsTotal) return;
@@ -365,11 +397,18 @@ export function CreateMobileSession() {
       )}
       {isReady && !isConnected && (
         <div className="flex flex-col items-center gap-5 w-full">
+          {verificationState.error && (
+            <p className="text-rust-300 text-sm font-medium">
+              Failed to create mobile session. Please try again.
+            </p>
+          )}
+
           <div className="rounded-lg w-full">
             <p className="text-center text-osmoverse-100 mb-4 leading-relaxed">
               Download the Osmosis app on your mobile device
               <br />
-              and scan this QR Code to connect.
+              and scan this QR Code to create a session with a daily limit of $
+              {addCommasToNumber(lossProtectionAmount)} USD.
             </p>
             <div className="bg-white-full w-fit rounded-lg p-3 mx-auto shadow-lg">
               <QRCode value={qrValue} size={240} />
@@ -404,15 +443,16 @@ export function CreateMobileSession() {
                   </svg>
                 </DisclosureButton>
                 <DisclosurePanel className="px-4 pt-4 pb-2 text-sm text-osmoverse-300">
-                  <div className="flex flex-col gap-4">
+                  <div className="flex flex-col gap-4 text-center">
                     <p className="text-osmoverse-200">
-                      Set a maximum amount that can be lost in a transaction.
-                      This helps protect your assets from significant losses.
+                      Trade without limits on trusted assets (top 50 by market
+                      cap).
+                    </p>
+                    <p className="text-osmoverse-200">
+                      For all other assets, set a limit on the maximum tradable
+                      value per day. Trading fees also count towards this limit.
                     </p>
                     <div className="flex flex-col gap-2">
-                      <label className="text-osmoverse-100 font-medium">
-                        Maximum Loss Amount (USD)
-                      </label>
                       <InputBox
                         rightEntry
                         currentValue={`$${addCommasToNumber(
@@ -427,8 +467,14 @@ export function CreateMobileSession() {
                           setLossProtectionAmount(parsedValue);
                         }}
                         onBlur={() => {
-                          if (lossProtectionAmount === "") {
-                            setLossProtectionAmount("0");
+                          /**
+                           * Value cannot be less than or equal to 0
+                           */
+                          if (
+                            lossProtectionAmount === "" ||
+                            Number(lossProtectionAmount) < 1
+                          ) {
+                            setLossProtectionAmount("1");
                           }
                         }}
                         trailingSymbol={
@@ -438,10 +484,7 @@ export function CreateMobileSession() {
                         }
                       />
 
-                      <div className="mt-2">
-                        <p className="mb-2 text-osmoverse-200">
-                          Share of balance:
-                        </p>
+                      <div className="mt-2 text-left">
                         <ul className="flex w-full gap-x-2">
                           {[5, 10, 20].map((percentage) => (
                             <li
@@ -481,10 +524,6 @@ export function CreateMobileSession() {
                         )}
                       </div>
                     </div>
-                    <p className="text-xs text-osmoverse-400">
-                      Setting this to 0 means no loss protection will be
-                      applied.
-                    </p>
                   </div>
                 </DisclosurePanel>
               </div>
@@ -494,8 +533,9 @@ export function CreateMobileSession() {
       )}
       {isConnected &&
         !verificationState.verified &&
-        !createMobileSessionMutation.isLoading && (
-          <div className="flex flex-col items-center gap-5 bg-osmoverse-825 p-6 rounded-lg w-full">
+        !createMobileSessionMutation.isLoading &&
+        !storeMetadataMutation.isLoading && (
+          <div className="flex flex-col items-center gap-5 p-6 rounded-lg w-full">
             <p className="text-center font-medium">
               Enter the 6-digit code shown on your mobile device:
             </p>
@@ -507,12 +547,12 @@ export function CreateMobileSession() {
             )}
           </div>
         )}
-      {createMobileSessionMutation.isLoading && (
-        <div className="flex flex-col items-center gap-3 p-6 rounded-lg w-full">
+      {(createMobileSessionMutation.isLoading ||
+        storeMetadataMutation.isLoading) && (
+        <div className="flex flex-col justify-center items-center gap-3 p-6 rounded-lg w-full">
           <p className="text-bullish-400 font-medium">
             Signing mobile creation transaction...
           </p>
-          <Skeleton className="w-32 h-6 rounded-md" />
         </div>
       )}
       {verificationState.verified && (
@@ -558,7 +598,7 @@ const InputPin = ({ onComplete }: { onComplete: (pin: string) => void }) => {
       maxLength={6}
       autoFocus
       value={pin}
-      onChange={(value) => {
+      onChange={(value: string) => {
         setPin(value);
         if (value.length === 6) {
           onComplete(value);

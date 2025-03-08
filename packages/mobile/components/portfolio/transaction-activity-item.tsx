@@ -16,7 +16,6 @@ export const TransactionActivityItem: FunctionComponent<
 > = ({ transaction }) => {
   const status = transaction.code === 0 ? "success" : "failed";
 
-  // Extract token information
   const tokenIn = transaction?.metadata?.[0]?.value?.[0]?.txInfo?.tokenIn;
   const tokenOut = transaction?.metadata?.[0]?.value?.[0]?.txInfo?.tokenOut;
 
@@ -24,7 +23,6 @@ export const TransactionActivityItem: FunctionComponent<
     return null;
   }
 
-  // Format date
   const date = new Date(transaction.blockTimestamp);
   const formattedDate = date.toLocaleDateString(undefined, {
     month: "short",
@@ -71,7 +69,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     borderRadius: 12,
-    backgroundColor: Colors.osmoverse[800],
+    backgroundColor: Colors.osmoverse[850],
     marginBottom: 8,
     gap: 12,
   },
@@ -86,12 +84,12 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 15,
     color: Colors.osmoverse[300],
     marginBottom: 2,
   },
   date: {
-    fontSize: 12,
+    fontSize: 13,
     color: Colors.osmoverse[400],
   },
   rightContent: {
@@ -102,10 +100,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   tokenImage: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: Colors.osmoverse[700],
+    width: 30,
+    height: 30,
   },
   arrowContainer: {
     marginHorizontal: 4,

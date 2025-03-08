@@ -1222,8 +1222,9 @@ function useToFromDenoms({
 
   // Memoize the switch assets function to prevent unnecessary re-renders
   const switchAssets = useCallback(() => {
-    setFromAssetState((current) => toAssetState);
-    setToAssetState((current) => fromAssetState);
+    const temp = fromAssetState;
+    setFromAssetState(toAssetState);
+    setToAssetState(temp);
   }, [fromAssetState, toAssetState]);
 
   // Memoize the return value to prevent unnecessary re-renders

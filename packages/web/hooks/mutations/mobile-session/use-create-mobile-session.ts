@@ -8,6 +8,7 @@ import {
   OneClickTradingResetPeriods,
   ParsedAuthenticator,
 } from "@osmosis-labs/types";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { useMutation, UseMutationOptions } from "@tanstack/react-query";
 
 import { SPEND_LIMIT_CONTRACT_ADDRESS } from "~/config";
@@ -20,6 +21,27 @@ export class CreateMobileSessionError extends Error {
     super(message);
     this.name = "WalletSelectMobileError";
   }
+}
+
+export function isAuthenticatorLegacyMobileSession({
+  authenticator,
+}: {
+  authenticator: ParsedAuthenticator;
+}) {
+  return (
+    authenticator.type === "AllOf" &&
+    authenticator.subAuthenticators.some(
+      (sub) => sub.type === "SignatureVerification"
+    ) &&
+    authenticator.subAuthenticators.some(
+      (sub) =>
+        sub.type === "AnyOf" &&
+        sub.subAuthenticators.every((sub) => sub.type === "MessageFilter")
+    ) &&
+    !authenticator.subAuthenticators.some(
+      (sub) => sub.type === "CosmwasmAuthenticatorV1"
+    ) // Should not contain a spend limit authenticator. This is the main difference between 1CT and mobile session authenticators.
+  );
 }
 
 export function isAuthenticatorMobileSession({
@@ -184,10 +206,17 @@ export const useCreateMobileSession = ({
       throw new Error("Failed to retrieve account from signer");
     }
 
+    const { spendLimitTokenDecimals } =
+      await apiUtils.local.oneClickTrading.getParameters.ensureData();
+
     const { msgs, key, allowedMessages } = await makeCreateMobileSessionMessage(
       {
         userOsmoAddress,
-        allowedAmount,
+        // Allowed amount is in the spend limit token's decimals
+        allowedAmount: new Dec(allowedAmount)
+          .mul(DecUtils.getTenExponentN(spendLimitTokenDecimals))
+          .truncate()
+          .toString(),
       }
     );
 

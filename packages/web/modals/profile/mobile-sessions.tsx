@@ -7,7 +7,10 @@ import { CreateMobileSession } from "~/components/mobile-sessions/create-mobile-
 import { Screen, ScreenManager } from "~/components/screen-manager";
 import { Button, GoBackButton, IconButton } from "~/components/ui/button";
 import { useTranslation } from "~/hooks/language";
-import { isAuthenticatorMobileSession } from "~/hooks/mutations/mobile-session/use-create-mobile-session";
+import {
+  isAuthenticatorLegacyMobileSession,
+  isAuthenticatorMobileSession,
+} from "~/hooks/mutations/mobile-session/use-create-mobile-session";
 import { useRemoveMobileSession } from "~/hooks/mutations/mobile-session/use-remove-mobile-session";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
@@ -39,11 +42,12 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
           if (!data.authenticators) {
             return { authenticators: [] };
           }
-          console.log(data.authenticators);
           return {
             authenticators: data.authenticators
-              .filter((authenticator) =>
-                isAuthenticatorMobileSession({ authenticator })
+              .filter(
+                (authenticator) =>
+                  isAuthenticatorMobileSession({ authenticator }) ||
+                  isAuthenticatorLegacyMobileSession({ authenticator })
               )
               // Sort by createdAt in descending order
               .reverse(),
@@ -100,7 +104,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
         }}
       />
 
-      <div className="w-full rounded-xl p-6 shadow-md">
+      <div className="w-full rounded-xl p-2">
         <ScreenManager currentScreen={currentScreen}>
           <Screen screenName="existing-sessions">
             <div className="flex flex-col gap-4 w-full">
@@ -119,6 +123,9 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
                       key={authenticator.id}
                       id={authenticator.id}
                       disabled={removeMobileSession.isLoading}
+                      isLegacy={isAuthenticatorLegacyMobileSession({
+                        authenticator,
+                      })}
                     />
                   ))
                 )}
@@ -155,9 +162,14 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
 interface AuthenticatorItemProps {
   id: string;
   disabled?: boolean;
+  isLegacy?: boolean;
 }
 
-export function AuthenticatorItem({ id, disabled }: AuthenticatorItemProps) {
+export function AuthenticatorItem({
+  id,
+  disabled,
+  isLegacy,
+}: AuthenticatorItemProps) {
   const removeMobileSession = useRemoveMobileSession();
   const apiUtils = api.useUtils();
   const { accountStore } = useStore();
@@ -226,6 +238,11 @@ export function AuthenticatorItem({ id, disabled }: AuthenticatorItemProps) {
         <div>
           <h3 className="body1 font-medium text-white-full">
             {getDeviceDisplayName()}
+            {isLegacy && (
+              <span className="ml-2 text-xs bg-osmoverse-600 text-osmoverse-200 px-2 py-0.5 rounded-full">
+                Legacy
+              </span>
+            )}
           </h3>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-osmoverse-300">ID: {id}</p>
@@ -242,7 +259,7 @@ export function AuthenticatorItem({ id, disabled }: AuthenticatorItemProps) {
       <IconButton
         aria-label="End Session"
         onClick={() => onDisconnect(id)}
-        disabled={removeMobileSession.isLoading}
+        disabled={removeMobileSession.isLoading || disabled}
         variant="ghost"
         className="hover:bg-rust-700/30 hover:text-rust-200 transition-colors"
       >
