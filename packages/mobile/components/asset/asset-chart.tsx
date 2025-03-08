@@ -58,8 +58,8 @@ type AssetChartDataType = (typeof AssetChartAvailableDataTypes)[number];
 interface SelectedPointState {
   selectedPoint: TLineChartPoint | null;
   setSelectedPoint: (point: TLineChartPoint | null) => void;
-  timeFrame: string;
-  setTimeFrame: (frame: string) => void;
+  timeFrame: keyof typeof AvailablePriceRanges;
+  setTimeFrame: (frame: keyof typeof AvailablePriceRanges) => void;
   priceChangeOverride: RatePretty | undefined;
   setPriceChangeOverride: (priceChange: RatePretty | undefined) => void;
 }
@@ -68,7 +68,7 @@ export const useAssetChartSelectedPointStore = create<SelectedPointState>(
   (set) => ({
     selectedPoint: null,
     setSelectedPoint: (point) => set({ selectedPoint: point }),
-    timeFrame: "7d",
+    timeFrame: "1d",
     setTimeFrame: (frame) => set({ timeFrame: frame }),
     priceChangeOverride: undefined,
     setPriceChangeOverride: (priceChange) =>
