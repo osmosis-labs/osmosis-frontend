@@ -29,6 +29,8 @@ import {
 } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useAsync from "react-use/lib/useAsync";
+import { create } from "zustand";
+import { useShallow } from "zustand/react/shallow";
 
 import { useAmountInput } from "~/hooks/use-amount-input";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
@@ -1194,6 +1196,26 @@ function useSwapAmountInput({
   return useDeepMemo(() => result, [result]);
 }
 
+interface SwapDenomsState {
+  fromAssetDenom?: string;
+  toAssetDenom?: string;
+  setFromAssetDenom: (denom?: string) => void;
+  setToAssetDenom: (denom?: string) => void;
+  switchAssets: () => void;
+}
+
+const useSwapDenomsStore = create<SwapDenomsState>((set) => ({
+  fromAssetDenom: undefined,
+  toAssetDenom: undefined,
+  setFromAssetDenom: (denom) => set({ fromAssetDenom: denom }),
+  setToAssetDenom: (denom) => set({ toAssetDenom: denom }),
+  switchAssets: () =>
+    set((state) => ({
+      fromAssetDenom: state.toAssetDenom,
+      toAssetDenom: state.fromAssetDenom,
+    })),
+}));
+
 /**
  * Switches between using query parameters or React state to store 'from' and 'to' asset denominations.
  * If the user has set preferences via query parameters, the initial denominations will be ignored.
@@ -1207,36 +1229,44 @@ function useToFromDenoms({
   initialToDenom?: string;
   reverse?: boolean;
 }) {
-  const [fromAssetState, setFromAssetState] = useState<string | undefined>(
-    initialFromDenom
-  );
-  const [toAssetState, setToAssetState] = useState<string | undefined>(
-    initialToDenom
+  const {
+    fromAssetDenom,
+    toAssetDenom,
+    setFromAssetDenom,
+    setToAssetDenom,
+    switchAssets,
+  } = useSwapDenomsStore(
+    useShallow((state) => ({
+      fromAssetDenom: state.fromAssetDenom,
+      toAssetDenom: state.toAssetDenom,
+      setFromAssetDenom: state.setFromAssetDenom,
+      setToAssetDenom: state.setToAssetDenom,
+      switchAssets: state.switchAssets,
+    }))
   );
 
   // Update state when initial values change
   useEffect(() => {
-    setToAssetState(initialToDenom);
-    setFromAssetState(initialFromDenom);
-  }, [initialFromDenom, initialToDenom]);
+    setFromAssetDenom(initialToDenom);
+    setToAssetDenom(initialFromDenom);
+  }, [initialFromDenom, initialToDenom, setFromAssetDenom, setToAssetDenom]);
 
-  // Memoize the switch assets function to prevent unnecessary re-renders
-  const switchAssets = useCallback(() => {
-    const temp = fromAssetState;
-    setFromAssetState(toAssetState);
-    setToAssetState(temp);
-  }, [fromAssetState, toAssetState]);
-
-  // Memoize the return value to prevent unnecessary re-renders
   return useMemo(
     () => ({
-      fromAssetDenom: reverse ? toAssetState : fromAssetState,
-      toAssetDenom: reverse ? fromAssetState : toAssetState,
-      setFromAssetDenom: setFromAssetState,
-      setToAssetDenom: setToAssetState,
+      fromAssetDenom: reverse ? toAssetDenom : fromAssetDenom,
+      toAssetDenom: reverse ? fromAssetDenom : toAssetDenom,
+      setFromAssetDenom,
+      setToAssetDenom,
       switchAssets,
     }),
-    [fromAssetState, toAssetState, reverse, switchAssets]
+    [
+      fromAssetDenom,
+      toAssetDenom,
+      reverse,
+      setFromAssetDenom,
+      setToAssetDenom,
+      switchAssets,
+    ]
   );
 }
 

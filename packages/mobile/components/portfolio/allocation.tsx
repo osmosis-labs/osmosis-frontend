@@ -1,8 +1,7 @@
 import { Dec } from "@osmosis-labs/unit";
-import React, { FunctionComponent, useMemo, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import React, { FunctionComponent } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 
-import { AllocationTabs } from "~/components/portfolio/allocation-tabs";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { RouterOutputs } from "~/utils/trpc";
@@ -48,29 +47,21 @@ const getTranslation = (key: string): string => {
   return translationMap[key] || key;
 };
 
-export const Allocation: FunctionComponent<{
-  assets?: RouterOutputs["local"]["portfolio"]["getPortfolioAssets"];
-}> = ({ assets }) => {
-  const [selectedOption, setSelectedOption] =
-    useState<AllocationOptions>("all");
-
-  const selectedList = useMemo(
-    () => assets?.[selectedOption] ?? [],
-    [assets, selectedOption]
-  );
-
-  if (!assets) return null;
+// Component to render a single allocation section
+const AllocationSection: FunctionComponent<{
+  title: string;
+  allocationList: RouterOutputs["local"]["portfolio"]["getPortfolioAssets"][AllocationOptions];
+  colors: string[];
+}> = ({ title, allocationList, colors }) => {
+  if (allocationList.length === 0) return null;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.tabsContainer}>
-        <AllocationTabs setTab={setSelectedOption} activeTab={selectedOption} />
-      </View>
+    <View style={styles.sectionContainer}>
+      <Text style={styles.sectionTitle}>{title}</Text>
 
       <View style={styles.barContainer}>
-        {selectedList.map(({ key, percentage }, index) => {
-          const color =
-            COLORS[selectedOption][index % COLORS[selectedOption].length];
+        {allocationList.map(({ key, percentage }, index) => {
+          const color = colors[index % colors.length];
           const isNegligiblePercent = percentage.toDec().lt(new Dec(0.01));
           const width = isNegligiblePercent
             ? 1
@@ -89,9 +80,8 @@ export const Allocation: FunctionComponent<{
       </View>
 
       <View style={styles.legendContainer}>
-        {selectedList.map(({ key, percentage, fiatValue }, index) => {
-          const color =
-            COLORS[selectedOption][index % COLORS[selectedOption].length];
+        {allocationList.map(({ key, percentage, fiatValue }, index) => {
+          const color = colors[index % colors.length];
 
           return (
             <View key={key} style={styles.legendItem}>
@@ -113,15 +103,42 @@ export const Allocation: FunctionComponent<{
   );
 };
 
+export const Allocation: FunctionComponent<{
+  assets?: RouterOutputs["local"]["portfolio"]["getPortfolioAssets"];
+}> = ({ assets }) => {
+  if (!assets) return null;
+
+  const sections = [
+    { key: "all" as AllocationOptions, title: "All" },
+    { key: "assets" as AllocationOptions, title: "Assets" },
+    { key: "available" as AllocationOptions, title: "Available" },
+  ];
+
+  return (
+    <ScrollView style={styles.container}>
+      {sections.map((section) => (
+        <AllocationSection
+          key={section.key}
+          title={section.title}
+          allocationList={assets[section.key] ?? []}
+          colors={COLORS[section.key]}
+        />
+      ))}
+    </ScrollView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
     flex: 1,
   },
-  title: {
+  sectionContainer: {
+    padding: 16,
     marginBottom: 16,
   },
-  tabsContainer: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
     marginBottom: 16,
   },
   barContainer: {
