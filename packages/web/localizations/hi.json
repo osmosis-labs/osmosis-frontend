@@ -932,7 +932,7 @@
     "createNewDepositAddress": "नया जमा पता बनाएं",
     "transactionDetails": "लेन-देन विवरण",
     "confirmAmount": "राशि की पुष्टि करें",
-    "enterBitcoinAddress": "बिटकॉइन पता दर्ज करें"
+    "enterChainAddress": "{chain} पता दर्ज करें"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",

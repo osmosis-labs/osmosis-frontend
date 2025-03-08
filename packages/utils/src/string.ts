@@ -1,7 +1,7 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
 import * as bitcoin from "bitcoinjs-lib";
+import bs58check from "bs58check";
 import * as viem from "viem";
-
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
 export function truncate(str: string, num = 8) {
   if (str.length <= num) {
@@ -148,4 +148,35 @@ export function camelToKebabCase(str: string): string {
   return str
     .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
     .replace(/^-/, "");
+}
+
+/**
+ * Verifies if a given string is a valid Dogecoin address.
+ * @param address The Dogecoin address to validate
+ * @returns boolean True if valid, false otherwise
+ */
+export function isDogecoinAddressValid({ address }: { address: string }) {
+  try {
+    // Decode base58-check; this throws if the checksum or format is invalid.
+    const payload = bs58check.decode(address);
+
+    // payload is 21 bytes: 1 version byte + 20 data bytes
+    // The 4-byte checksum is verified and removed internally by bs58check.
+    if (payload.length !== 21) {
+      return false;
+    }
+
+    // The first byte is the "version". For Dogecoin mainnet:
+    // - 0x1E (30 decimal) for P2PKH (commonly looks like a 'D' address)
+    // - 0x16 (22 decimal) for P2SH (often starts with '9', 'A', etc.)
+    const version = payload[0];
+
+    // Return true if it matches Dogecoin mainnet prefixes
+    // Disable prettier for the next line as it's changing the hex value of 0x1E to 0x1e.
+    // prettier-ignore prettier
+    return version === 0x1e || version === 0x16;
+  } catch (error) {
+    // If decoding fails (invalid checksum/base58), it's not valid
+    return false;
+  }
 }

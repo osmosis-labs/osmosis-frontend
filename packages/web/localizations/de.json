@@ -932,7 +932,7 @@
     "createNewDepositAddress": "Neue Einzahlungsadresse erstellen",
     "transactionDetails": "Details der Transaktion",
     "confirmAmount": "Betrag bestätigen",
-    "enterBitcoinAddress": "Bitcoin-Adresse eingeben"
+    "enterChainAddress": "Geben Sie die Adresse {chain} ein"
   },
   "unknownError": "Unbekannter Fehler",
   "viewExplorer": "Explorer anzeigen",

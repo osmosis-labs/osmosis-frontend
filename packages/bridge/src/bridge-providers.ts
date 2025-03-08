@@ -1,5 +1,6 @@
 import { AxelarBridgeProvider } from "./axelar";
 import { IbcBridgeProvider } from "./ibc";
+import { Int3faceBridgeProvider } from "./int3face";
 import { BridgeProviderContext } from "./interface";
 import { NitroBridgeProvider } from "./nitro";
 import { NomicBridgeProvider } from "./nomic";
@@ -23,6 +24,7 @@ export class BridgeProviders {
     [NitroBridgeProvider.ID]: NitroBridgeProvider;
     [PicassoBridgeProvider.ID]: PicassoBridgeProvider;
     [PenumbraBridgeProvider.ID]: PenumbraBridgeProvider;
+    [Int3faceBridgeProvider.ID]: Int3faceBridgeProvider;
   };
 
   constructor(integratorId: string, commonContext: BridgeProviderContext) {
@@ -43,6 +45,7 @@ export class BridgeProviders {
       [NitroBridgeProvider.ID]: new NitroBridgeProvider(commonContext),
       [PicassoBridgeProvider.ID]: new PicassoBridgeProvider(commonContext),
       [PenumbraBridgeProvider.ID]: new PenumbraBridgeProvider(commonContext),
+      [Int3faceBridgeProvider.ID]: new Int3faceBridgeProvider(commonContext),
     };
   }
 }

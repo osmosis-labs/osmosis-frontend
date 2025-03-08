@@ -9,6 +9,7 @@ export * from "./coin";
 export * from "./common-utils";
 export * from "./compare";
 export * from "./date";
+export * from "./dogecoin";
 export * from "./ethereum";
 export * from "./function";
 export * from "./gas-utils";
