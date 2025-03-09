@@ -10,12 +10,7 @@ interface AssetImageProps {
 
 export const AssetImage = ({ uri, style }: AssetImageProps) => {
   return uri.endsWith(".svg") ? (
-    <SvgUri
-      uri={uri}
-      width={40}
-      height={40}
-      style={[styles.assetIcon, style]}
-    />
+    <SvgUri uri={uri} style={[styles.assetIcon, style]} />
   ) : (
     <Image source={{ uri }} style={[styles.assetIcon, style as ImageStyle]} />
   );

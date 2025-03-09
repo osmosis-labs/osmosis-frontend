@@ -5,7 +5,7 @@ import {
 } from "@gorhom/bottom-sheet";
 import { CoinPretty } from "@osmosis-labs/unit";
 import { PricePretty } from "@osmosis-labs/unit";
-import { formatPretty } from "@osmosis-labs/utils";
+import { formatPretty, formatSpendLimit } from "@osmosis-labs/utils";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
@@ -15,7 +15,9 @@ import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useRemainingSpendLimit } from "~/hooks/use-remaining-spend-limit";
 import { SendTradeTokenInTx, UseSwapAssetsReturn } from "~/hooks/use-swap";
+import { useWallets } from "~/hooks/use-wallets";
 
 interface ReviewTradeBottomSheetProps {
   fromAsset: NonNullable<UseSwapAssetsReturn["fromAsset"]>;
@@ -55,6 +57,16 @@ export const ReviewTradeBottomSheet = React.forwardRef<
     ref
   ) => {
     const [isSendingTrade, setIsSendingTrade] = useState(false);
+    const { currentWallet } = useWallets();
+
+    const data = useRemainingSpendLimit({
+      authenticatorId:
+        currentWallet?.type === "smart-account"
+          ? currentWallet.authenticatorId
+          : "",
+      walletAddress: currentWallet?.address ?? "",
+      enabled: currentWallet?.type === "smart-account",
+    });
 
     // Renders the custom backdrop
     const renderBackdrop = useCallback(
@@ -158,6 +170,21 @@ export const ReviewTradeBottomSheet = React.forwardRef<
               </View>
             </View>
 
+            {currentWallet?.type === "smart-account" && (
+              <View style={styles.detailRow}>
+                <Text type="subtitle" style={styles.detailLabel}>
+                  Loss protection limit
+                </Text>
+                <Text style={styles.value}>
+                  {data.remainingSpendLimit
+                    ? `${formatSpendLimit(
+                        data.remainingSpendLimit
+                      )} / ${formatSpendLimit(data.totalSpendLimit)}`
+                    : "Unknown"}
+                </Text>
+              </View>
+            )}
+
             {/* Section: exchange rate */}
             <View style={styles.detailRow}>
               <Text type="subtitle" style={styles.detailLabel}>
@@ -166,12 +193,13 @@ export const ReviewTradeBottomSheet = React.forwardRef<
               <View style={styles.detailValue}>
                 <Text style={styles.value}>
                   1 {fromAsset.coinDenom} ≈{" "}
-                  {formatPretty(expectedOutput.quo(inAmount), {
+                  {formatPretty(expectedOutput.quo(inAmount).toDec(), {
                     minimumSignificantDigits: 6,
                     maximumSignificantDigits: 6,
                     maxDecimals: 8,
                     notation: "standard",
-                  })}
+                  })}{" "}
+                  {toAsset.coinDenom}
                 </Text>
               </View>
             </View>

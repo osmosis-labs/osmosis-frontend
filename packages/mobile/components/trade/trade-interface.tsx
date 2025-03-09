@@ -1,7 +1,7 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
-import React, { memo, useCallback, useRef } from "react";
+import React, { memo, useCallback, useMemo, useRef } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -29,9 +29,16 @@ const atomMinimalDenom =
 
 export function TradeInterface({
   showGlobalSubmitButton = false,
-  initialFromDenom,
-  initialToDenom,
+  initialFromDenom: initialFromDenomProp,
+  initialToDenom: initialToDenomProp,
 }: TradeInterfaceProps) {
+  const initialFromDenom = useMemo( () =>
+    initialToDenomProp?.toLowerCase() === atomMinimalDenom.toLowerCase()
+      ? "OSMO"
+      : initialFromDenomProp ?? "ATOM"
+  , [initialFromDenomProp, initialToDenomProp]);
+  const initialToDenom = useMemo(() => initialToDenomProp ?? "OSMO", [initialToDenomProp]);
+
   const {
     inAmountInput,
     outAmountInput,
@@ -58,11 +65,8 @@ export function TradeInterface({
     assetsQueryInput,
     setAssetsQueryInput,
   } = useSwap({
-    initialFromDenom:
-      initialToDenom?.toLowerCase() === atomMinimalDenom.toLowerCase()
-        ? "OSMO"
-        : initialFromDenom ?? "ATOM",
-    initialToDenom: initialToDenom ?? "OSMO",
+    initialFromDenom,
+    initialToDenom,
     maxSlippage,
   });
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);

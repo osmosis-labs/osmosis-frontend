@@ -19,7 +19,8 @@
       "node": "20.11.1",
       "env": {
         "EXPO_PUBLIC_HISTORICAL_DATA_URL": "https://data.app.osmosis.zone",
-        "EXPO_PUBLIC_OSMOSIS_BE_BASE_URL": "https://osmosis-frontend-git-jose-mobile-osmo-labs.vercel.app"
+        "EXPO_PUBLIC_OSMOSIS_BE_BASE_URL": "https://osmosis-frontend-git-jose-mobile-osmo-labs.vercel.app",
+        "EXPO_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS": "osmo10xqv8rlpkflywm92k5wdmplzy7khtasl9c2c08psmvlu543k724sy94k74"
       }
     }
   }

@@ -11,6 +11,7 @@ import {
   getDecimalCount,
   getNumberMagnitude,
   toScientificNotation,
+  trimPlaceholderZeros,
   trimZerosFromEnd,
 } from "./number";
 
@@ -391,4 +392,10 @@ export function calcFontSize(numChars: number, isMobile: boolean): string {
   }
 
   return "16px";
+}
+
+export function formatSpendLimit(price: PricePretty | undefined) {
+  return `${price?.symbol}${trimPlaceholderZeros(
+    price?.toDec().toString(2) ?? ""
+  )}`;
 }

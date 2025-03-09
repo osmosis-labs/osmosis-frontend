@@ -1299,6 +1299,17 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
   minDenomOrSymbol?: string;
   existingAssets: TAsset[] | undefined;
 }) {
+  const { currentWallet } = useWallets();
+  const { data: asset } = api.local.assets.getUserAsset.useQuery(
+    {
+      findMinDenomOrSymbol: minDenomOrSymbol!,
+      userOsmoAddress: currentWallet?.address,
+    },
+    {
+      enabled: !!minDenomOrSymbol,
+    }
+  );
+
   /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
    *  can fall back to the getAssets query which will perform
    *  a more comprehensive search. */
@@ -1310,20 +1321,6 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
           asset.coinMinimalDenom === minDenomOrSymbol
       ),
     [existingAssets, minDenomOrSymbol]
-  );
-
-  const queryEnabled = useMemo(
-    () => !!minDenomOrSymbol && !existingAsset,
-    [minDenomOrSymbol, existingAsset]
-  );
-
-  const { data: asset } = api.local.assets.getUserAsset.useQuery(
-    {
-      findMinDenomOrSymbol: minDenomOrSymbol!,
-    },
-    {
-      enabled: queryEnabled,
-    }
   );
 
   const result = useMemo(

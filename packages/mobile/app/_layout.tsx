@@ -1,6 +1,8 @@
 process.env = {
   ...process.env,
   EXPO_PUBLIC_HISTORICAL_DATA_URL: process.env.EXPO_PUBLIC_HISTORICAL_DATA_URL,
+  EXPO_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS:
+    process.env.EXPO_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS,
 };
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";

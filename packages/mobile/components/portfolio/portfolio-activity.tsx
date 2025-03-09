@@ -36,7 +36,7 @@ export const PortfolioActivity: FunctionComponent = () => {
 
   // Filter out bridge transfers for now
   const swapTransactions = transactions.filter(
-    (tx: any): tx is HistorySwapTransaction => tx.__type === "transaction"
+    (tx): tx is HistorySwapTransaction => tx.__type === "transaction"
   );
 
   const handleTransactionPress = (transaction: HistorySwapTransaction) => {

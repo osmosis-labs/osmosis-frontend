@@ -1,3 +1,5 @@
+import { PricePretty } from "@osmosis-labs/unit";
+import { formatSpendLimit } from "@osmosis-labs/utils";
 import { Stack } from "expo-router";
 import { router } from "expo-router";
 import React from "react";
@@ -15,10 +17,24 @@ import { SettingsGroup } from "~/components/settings/settings-group";
 import { SettingsItem } from "~/components/settings/settings-item";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { useRemainingSpendLimit } from "~/hooks/use-remaining-spend-limit";
+import { useWallets } from "~/hooks/use-wallets";
 import { useSettingsStore } from "~/stores/settings";
 
 export default function SettingsScreen() {
   const biometricsText = useBiometricsText();
+  const { currentWallet } = useWallets();
+
+  const data = useRemainingSpendLimit({
+    authenticatorId:
+      currentWallet?.type === "smart-account"
+        ? currentWallet.authenticatorId
+        : "",
+    walletAddress: currentWallet?.address ?? "",
+    enabled: currentWallet?.type === "smart-account",
+  });
+
+  console.log(data.amountSpent?.toString());
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
@@ -42,51 +58,14 @@ export default function SettingsScreen() {
       </View>
 
       <ScrollView style={{ flex: 1, padding: 24 }}>
-        {/* <SettingsGroup title="Preferences">
-          <SettingsItem
-            title="Appearance"
-            value="Device settings"
-            onPress={() => {}}
-          />
-          <SettingsItem title="Local currency" value="USD" onPress={() => {}} />
-          <SettingsItem title="Language" value="English" onPress={() => {}} />
-          <SettingsItem
-            title="Hide small balances"
-            rightElement={
-              <Switch
-                value={true}
-                onValueChange={() => {}}
-                trackColor={{ true: Colors.wosmongton["500"] }}
-              />
-            }
-          />
-          
-          <SettingsItem
-            title="Hide unknown tokens"
-            rightElement={
-              <Switch
-                value={true}
-                onValueChange={() => {}}
-                trackColor={{ true: Colors.wosmongton["500"] }}
-              />
-            }
-          />
-          <SettingsItem
-            title="Haptic touch"
-            rightElement={
-              <Switch
-                value={true}
-                onValueChange={() => {}}
-                trackColor={{ true: Colors.wosmongton["500"] }}
-              />
-            }
-          />
-          <SettingsItem title="Privacy" onPress={() => {}} />
-          <SettingsItem
-            title="Testnet mode"
-            rightElement={<Switch value={false} onValueChange={() => {}} />}
-          />
-        </SettingsGroup> */}
+        {currentWallet?.type === "smart-account" && (
+          <SettingsGroup title="Loss protection limit">
+            <SpendLimitDisplay
+              remainingSpendLimit={data.remainingSpendLimit}
+              totalSpendLimit={data.totalSpendLimit}
+            />
+          </SettingsGroup>
+        )}
 
         <SettingsGroup title="Preferences">
           <PreviewAssetsToggle />
@@ -125,6 +104,25 @@ const PreviewAssetsToggle: React.FC = () => {
           trackColor={{ true: Colors.wosmongton["500"] }}
         />
       }
+    />
+  );
+};
+
+interface SpendLimitDisplayProps {
+  remainingSpendLimit?: PricePretty;
+  totalSpendLimit?: PricePretty;
+}
+
+const SpendLimitDisplay: React.FC<SpendLimitDisplayProps> = ({
+  remainingSpendLimit,
+  totalSpendLimit,
+}) => {
+  return (
+    <SettingsItem
+      title="Remaining limit"
+      value={`${formatSpendLimit(remainingSpendLimit)} / ${formatSpendLimit(
+        totalSpendLimit
+      )}`}
     />
   );
 };

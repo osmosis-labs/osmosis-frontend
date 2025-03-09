@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RTCIceCandidate, RTCPeerConnection } from "react-native-webrtc";
 
 import { ConnectionProgressModal } from "~/components/connection-progress-modal";
+import { MobileSessionIcon } from "~/components/icons/mobile-session";
 import { RouteHeader } from "~/components/route-header";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
@@ -469,11 +470,30 @@ export default function Welcome() {
         }}
       >
         <Text style={styles.scanText}>Scan your QR Code</Text>
-        <Text style={styles.instructionText}>
-          With your wallet connected, navigate{"\n"}
-          to &apos;Profile&apos; &gt; &apos;Link mobile device&apos; on{"\n"}
-          Osmosis web app.
-        </Text>
+        <View style={{ alignItems: "center" }}>
+          <Text style={styles.instructionText}>
+            With your wallet connected, navigate
+          </Text>
+
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Text style={styles.instructionText}>
+              to &apos;Profile&apos; &gt;
+            </Text>
+            <MobileSessionIcon
+              width={16}
+              height={16}
+              style={{ marginLeft: 6 }}
+            />
+            <Text style={styles.instructionText}> on</Text>
+          </View>
+          <Text style={styles.instructionText}>Osmosis web app.</Text>
+        </View>
       </View>
     </View>
   );

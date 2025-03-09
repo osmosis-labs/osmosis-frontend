@@ -172,7 +172,7 @@ const SelectedAssetCard = memo(
       if (!disabled) {
         inputRef.current?.focus();
       }
-    }, [amountInput.amount, disabled]);
+    }, [amountInput.amount, disabled, amountInput.inputAmount]);
 
     return (
       <View style={styles.tradeCard}>
@@ -191,7 +191,6 @@ const SelectedAssetCard = memo(
                   ).replace(/,/g, "")
                 : amountInput.inputAmount
             }
-            onChangeText={amountInput.setAmount}
             keyboardType="decimal-pad"
             placeholder="0"
             placeholderTextColor={Colors["osmoverse"][400]}
@@ -203,7 +202,6 @@ const SelectedAssetCard = memo(
             ]}
             editable={!disabled}
             contextMenuHidden={true}
-            caretHidden={true}
           />
           <Text style={styles.fiatValue}>
             {formatPretty(
@@ -257,7 +255,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors["osmoverse"][825],
     borderRadius: 12,
     paddingHorizontal: 24,
-    paddingVertical: 12,
+    paddingVertical: 16,
     flexDirection: "row",
     alignItems: "center",
     gap: 16,

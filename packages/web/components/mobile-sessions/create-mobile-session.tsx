@@ -574,10 +574,13 @@ export function CreateMobileSession() {
             </svg>
           </div>
           <p className="text-bullish-400 font-medium text-center">
-            Mobile wallet successfully created!
+            Pairing successful!
           </p>
           <div className="text-sm text-osmoverse-300 text-center">
-            <p>You can now use your mobile device to approve transactions.</p>
+            <p>
+              You can now use your mobile device to trade on Osmosis with a
+              daily limit of ${addCommasToNumber(lossProtectionAmount)} USD.
+            </p>
             {verificationState.deviceBrand && verificationState.deviceModel && (
               <p className="mt-2">
                 Device:{" "}

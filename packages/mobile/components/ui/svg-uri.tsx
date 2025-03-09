@@ -77,11 +77,5 @@ export const SvgUri = ({ uri, ...props }: { uri: string } & SvgProps) => {
     fetchAndProcessSvg();
   }, [uri]);
 
-  return (
-    <>
-      {svgXml ? (
-        <SvgXml xml={svgXml} width="100%" height="100%" {...props} />
-      ) : null}
-    </>
-  );
+  return <>{svgXml ? <SvgXml xml={svgXml} {...props} /> : null}</>;
 };

@@ -4,6 +4,7 @@ import {
   getAuthenticators,
   getSessionAuthenticator,
   queryAuthenticatorSpendLimit,
+  SPEND_LIMIT_CONTRACT_ADDRESS,
 } from "@osmosis-labs/server";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
@@ -77,16 +78,52 @@ export const oneClickTradingRouter = createTRPCRouter({
       )
     )
     .query(async ({ input: { userOsmoAddress, authenticatorId }, ctx }) => {
-      const [spendLimit, usdcAsset] = await Promise.all([
+      const [spendLimit, usdcAsset, sessionAuthenticator] = await Promise.all([
         queryAuthenticatorSpendLimit({
           address: userOsmoAddress,
           authenticatorId,
           chainList: ctx.chainList,
         }),
         getAsset({ anyDenom: "usdc", assetLists: ctx.assetLists }),
+        getSessionAuthenticator({
+          userOsmoAddress,
+          authenticatorId,
+          chainList: ctx.chainList,
+        }),
       ]);
 
+      // Get the limit value from the session authenticator
+      let limitValue: PricePretty | undefined;
+      if (sessionAuthenticator?.type === "AllOf") {
+        const spendLimitAuthenticator =
+          sessionAuthenticator.subAuthenticators.find(
+            (sub) =>
+              sub.type === "CosmwasmAuthenticatorV1" &&
+              sub.contract === SPEND_LIMIT_CONTRACT_ADDRESS
+          );
+
+        if (
+          spendLimitAuthenticator?.type === "CosmwasmAuthenticatorV1" &&
+          spendLimitAuthenticator.params.limit
+        ) {
+          limitValue = new PricePretty(
+            DEFAULT_VS_CURRENCY,
+            new Dec(spendLimitAuthenticator.params.limit).quo(
+              DecUtils.getTenExponentN(usdcAsset.coinDecimals)
+            )
+          );
+        }
+      }
+
+      if (!limitValue) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Spend limit not found",
+        });
+      }
+
       return {
+        totalLimit: limitValue,
         amountSpent: new PricePretty(
           DEFAULT_VS_CURRENCY,
           new Dec(spendLimit.data.spending.value_spent_in_period).quo(
