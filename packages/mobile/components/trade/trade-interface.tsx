@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { ArrowLeftIcon } from "~/components/icons/arrow-left";
+import { LimitExceededBottomSheet } from "~/components/trade/limit-exceeded-bottom-sheet";
 import { ReviewTradeBottomSheet } from "~/components/trade/review-trade-bottom-sheet";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
@@ -32,12 +33,17 @@ export function TradeInterface({
   initialFromDenom: initialFromDenomProp,
   initialToDenom: initialToDenomProp,
 }: TradeInterfaceProps) {
-  const initialFromDenom = useMemo( () =>
-    initialToDenomProp?.toLowerCase() === atomMinimalDenom.toLowerCase()
-      ? "OSMO"
-      : initialFromDenomProp ?? "ATOM"
-  , [initialFromDenomProp, initialToDenomProp]);
-  const initialToDenom = useMemo(() => initialToDenomProp ?? "OSMO", [initialToDenomProp]);
+  const initialFromDenom = useMemo(
+    () =>
+      initialToDenomProp?.toLowerCase() === atomMinimalDenom.toLowerCase()
+        ? "OSMO"
+        : initialFromDenomProp ?? "ATOM",
+    [initialFromDenomProp, initialToDenomProp]
+  );
+  const initialToDenom = useMemo(
+    () => initialToDenomProp ?? "OSMO",
+    [initialToDenomProp]
+  );
 
   const {
     inAmountInput,
@@ -64,12 +70,15 @@ export function TradeInterface({
     sendTradeTokenInTx,
     assetsQueryInput,
     setAssetsQueryInput,
+    hasOverSpendLimitError,
+    overspendErrorParams,
   } = useSwap({
     initialFromDenom,
     initialToDenom,
     maxSlippage,
   });
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
 
@@ -117,17 +126,27 @@ export function TradeInterface({
   }, [inAmountInput, outAmountInput]);
 
   const isSwapButtonDisabled =
-    inAmountInput.isEmpty ||
-    !Boolean(quote) ||
-    isSwapToolLoading ||
-    Boolean(error) ||
-    Boolean(networkFeeError);
+    /**
+     * We will show a bottom sheet letting the user know that they have overspent their spend limit
+     * so they know they have to wait for the spend limit to be reset in a day.
+     */
+    !hasOverSpendLimitError &&
+    (inAmountInput.isEmpty ||
+      !Boolean(quote) ||
+      isSwapToolLoading ||
+      Boolean(error) ||
+      Boolean(networkFeeError));
 
   const inset = useSafeAreaInsets();
 
+  const highPriceImpact =
+    quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ?? false;
+
   let buttonText: string;
-  if (quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ?? false) {
+  if (highPriceImpact) {
     buttonText = "Swap anyway";
+  } else if (hasOverSpendLimitError) {
+    buttonText = "Limit exceeded";
   } else if (
     !!networkFeeError &&
     isSlippageOverBalance &&
@@ -138,6 +157,8 @@ export function TradeInterface({
     buttonText = "Preview Trade";
   }
 
+  const showDangerButton = hasOverSpendLimitError || highPriceImpact;
+
   const onSuccess = useCallback(() => {
     reviewTradeBottomSheetRef.current?.dismiss();
     inAmountInput.reset();
@@ -145,8 +166,12 @@ export function TradeInterface({
   }, [inAmountInput, outAmountInput]);
 
   const onReviewTrade = useCallback(() => {
-    reviewTradeBottomSheetRef.current?.present();
-  }, []);
+    if (hasOverSpendLimitError) {
+      limitExceededBottomSheetRef.current?.present();
+    } else {
+      reviewTradeBottomSheetRef.current?.present();
+    }
+  }, [hasOverSpendLimitError]);
 
   const onPressMax = useCallback(() => {
     inAmountInput.toggleMax();
@@ -230,6 +255,7 @@ export function TradeInterface({
             <Button
               title={buttonText}
               disabled={isSwapButtonDisabled}
+              variant={showDangerButton ? "danger" : "primary"}
               onPress={onReviewTrade}
             />
           )}
@@ -285,9 +311,16 @@ export function TradeInterface({
             onPress={onReviewTrade}
             buttonStyle={styles.previewButton}
             disabled={isSwapButtonDisabled}
+            variant={showDangerButton ? "danger" : "primary"}
           />
         </View>
       )}
+
+      <LimitExceededBottomSheet
+        ref={limitExceededBottomSheetRef}
+        wouldSpendTotal={overspendErrorParams?.wouldSpendTotal}
+        limit={overspendErrorParams?.limit}
+      />
     </>
   );
 }

@@ -223,7 +223,12 @@ const SelectedAssetCard = memo(
             activeOpacity={0.8}
           >
             {asset.coinImageUrl && (
-              <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
+              <AssetImage
+                uri={asset.coinImageUrl}
+                width={28}
+                height={28}
+                style={styles.assetIcon}
+              />
             )}
             <View>
               <Text style={styles.assetDenom}>{asset.coinDenom}</Text>

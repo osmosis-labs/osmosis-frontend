@@ -9,6 +9,7 @@ export * from "./coin";
 export * from "./common-utils";
 export * from "./compare";
 export * from "./date";
+export * from "./error-utils";
 export * from "./ethereum";
 export * from "./fiat-getters";
 export * from "./formatter";

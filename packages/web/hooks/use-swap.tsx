@@ -22,7 +22,9 @@ import {
 import {
   DEFAULT_VS_CURRENCY,
   getAssetFromAssetList,
+  getParametersFromOverspendErrorMessage,
   isNil,
+  isOverspendErrorMessage,
   makeMinimalAsset,
   mulPrice,
   sum,
@@ -34,10 +36,6 @@ import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import {
-  getParametersFromOverspendErrorMessage,
-  isOverspendErrorMessage,
-} from "~/components/alert/prettify";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";

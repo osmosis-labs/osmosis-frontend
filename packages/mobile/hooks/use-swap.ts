@@ -20,9 +20,11 @@ import {
   PricePretty,
 } from "@osmosis-labs/unit";
 import {
+  getParametersFromOverspendErrorMessage,
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
   isNil,
+  isOverspendErrorMessage,
   mulPrice,
   sum,
   trimPlaceholderZeros,
@@ -688,6 +690,30 @@ export function useSwap(
     [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
   );
 
+  const hasOverSpendLimitError = useMemo(() => {
+    if (
+      currentWallet?.type !== "smart-account" ||
+      !networkFeeError?.message ||
+      inAmountInput.isEmpty ||
+      inAmountInput.inputAmount == "0" ||
+      !isOverspendErrorMessage({ message: networkFeeError?.message })
+    ) {
+      return false;
+    }
+
+    return true;
+  }, [
+    currentWallet?.type,
+    networkFeeError?.message,
+    inAmountInput.isEmpty,
+    inAmountInput.inputAmount,
+  ]);
+
+  const overspendErrorParams = useMemo(() => {
+    if (!hasOverSpendLimitError) return;
+    return getParametersFromOverspendErrorMessage(networkFeeError?.message);
+  }, [networkFeeError?.message, hasOverSpendLimitError]);
+
   // Memoize the final return value to prevent unnecessary re-renders
   return useMemo(
     () => ({
@@ -716,6 +742,8 @@ export function useSwap(
       sendTradeTokenInTx,
       isSlippageOverBalance,
       quoteType,
+      hasOverSpendLimitError,
+      overspendErrorParams,
     }),
     [
       swapAssets,
@@ -739,6 +767,8 @@ export function useSwap(
       sendTradeTokenInTx,
       isSlippageOverBalance,
       quoteType,
+      hasOverSpendLimitError,
+      overspendErrorParams,
     ]
   );
 }

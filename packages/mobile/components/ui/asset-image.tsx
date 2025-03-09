@@ -5,12 +5,24 @@ import { SvgUri } from "~/components/ui/svg-uri";
 
 interface AssetImageProps {
   uri: string;
+  width?: number;
+  height?: number;
   style?: ViewStyle | ViewStyle[];
 }
 
-export const AssetImage = ({ uri, style }: AssetImageProps) => {
+export const AssetImage = ({
+  uri,
+  width = 40,
+  height = 40,
+  style,
+}: AssetImageProps) => {
   return uri.endsWith(".svg") ? (
-    <SvgUri uri={uri} style={[styles.assetIcon, style]} />
+    <SvgUri
+      uri={uri}
+      width={width}
+      height={height}
+      style={[styles.assetIcon, style]}
+    />
   ) : (
     <Image source={{ uri }} style={[styles.assetIcon, style as ImageStyle]} />
   );

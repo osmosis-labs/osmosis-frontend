@@ -6,6 +6,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
   isNil,
+  isOverspendErrorMessage,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -20,7 +21,6 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
-import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
   AssetFieldset,

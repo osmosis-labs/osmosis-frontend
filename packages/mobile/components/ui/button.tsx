@@ -13,7 +13,7 @@ import { Colors } from "~/constants/theme-colors";
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "outline";
+  variant?: "primary" | "secondary" | "outline" | "danger";
   buttonStyle?: ViewStyle;
   textStyle?: TextStyle;
   disabled?: boolean;
@@ -37,6 +37,8 @@ export const Button: React.FC<ButtonProps> = ({
     variantStyles = styles.outline;
   } else if (variant === "secondary") {
     variantStyles = styles.secondary;
+  } else if (variant === "danger") {
+    variantStyles = styles.danger;
   } else {
     variantStyles = styles.primary;
   }
@@ -81,6 +83,9 @@ const styles = StyleSheet.create({
     backgroundColor: "transparent",
     borderWidth: 1,
     borderColor: Colors["osmoverse"][500],
+  },
+  danger: {
+    backgroundColor: Colors["rust"][700],
   },
   disabled: {
     opacity: 0.5,
