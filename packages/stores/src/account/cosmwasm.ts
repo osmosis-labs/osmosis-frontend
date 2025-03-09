@@ -5,15 +5,13 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { makeExecuteCosmwasmContractMsg } from "@osmosis-labs/tx";
+import {
+  DeliverTxResponse,
+  makeExecuteCosmwasmContractMsg,
+} from "@osmosis-labs/tx";
 import { Optional } from "utility-types";
 
-import {
-  AccountStore,
-  CosmosAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
+import { AccountStore, CosmosAccount, OsmosisAccount } from "../account";
 import { OsmosisQueries } from "../queries";
 
 export interface CosmwasmAccount {

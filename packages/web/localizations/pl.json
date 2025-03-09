@@ -565,13 +565,18 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Istniejące sesje",
+    "createSession": "Utwórz sesję"
+  },
   "profile": {
     "balance": "Balansować",
     "modalTitle": "Profil",
     "viewAllAssets": "Ver todos os recursos",
     "wallet": "Portfel",
     "transactions": "Transakcje",
-    "oneClickTrading": "Handel jednym kliknięciem"
+    "oneClickTrading": "Handel jednym kliknięciem",
+    "mobileSessions": "Przenośny"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",

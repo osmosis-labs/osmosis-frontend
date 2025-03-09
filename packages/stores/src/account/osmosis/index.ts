@@ -9,6 +9,7 @@ import {
 import * as OsmosisMath from "@osmosis-labs/math";
 import { maxTick, minTick } from "@osmosis-labs/math";
 import {
+  DeliverTxResponse,
   makeAddToConcentratedLiquiditySuperfluidPositionMsg,
   makeAddToPositionMsg,
   makeBeginUnlockingMsg,
@@ -45,7 +46,7 @@ import Long from "long";
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
-import { DeliverTxResponse, SignOptions } from "../types";
+import { SignOptions } from "../types";
 import { findNewClPositionId } from "./tx-response";
 
 const DEFAULT_SLIPPAGE = "2.5";

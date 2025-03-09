@@ -565,13 +565,18 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "기존 세션",
+    "createSession": "세션 생성"
+  },
   "profile": {
     "balance": "잔액",
     "modalTitle": "프로필",
     "viewAllAssets": "모든 자산 보기",
     "wallet": "지갑",
     "transactions": "업무",
-    "oneClickTrading": "1-클릭 거래"
+    "oneClickTrading": "1-클릭 거래",
+    "mobileSessions": "이동하는"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",

@@ -1,5 +1,10 @@
 import { SpanStatusCode, trace } from "@opentelemetry/api";
-import { superjson } from "@osmosis-labs/server";
+import {
+  getRedisClient,
+  KV_STORE_REST_API_TOKEN,
+  KV_STORE_REST_API_URL,
+  superjson,
+} from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { timeout } from "@osmosis-labs/utils";
 import {
@@ -10,8 +15,9 @@ import {
   TRPCClientError,
   TRPCLink,
 } from "@trpc/client";
-import { type AnyRouter, initTRPC } from "@trpc/server";
+import { type AnyRouter, initTRPC, TRPCError } from "@trpc/server";
 import { observable } from "@trpc/server/observable";
+import { Ratelimit } from "@upstash/ratelimit";
 import { ZodError } from "zod";
 
 /**
@@ -21,6 +27,7 @@ type CreateContextOptions = {
   assetLists: AssetList[];
   chainList: Chain[];
   opentelemetryServiceName: string | undefined;
+  req?: Request;
 };
 
 /**
@@ -130,6 +137,62 @@ export const publicProcedure = t.procedure
     return result;
   });
 
+let rateLimiter: Ratelimit | undefined;
+
+const getRateLimiter = () => {
+  if (!rateLimiter && KV_STORE_REST_API_URL && KV_STORE_REST_API_TOKEN) {
+    rateLimiter = new Ratelimit({
+      redis: getRedisClient(),
+      limiter: Ratelimit.slidingWindow(50, "10 s"),
+      analytics: true,
+    });
+  }
+  return rateLimiter;
+};
+
+/**
+ * Our middleware that uses the request's IP address
+ * as the unique identifier for rate limiting.
+ */
+export const rateLimitedProcedure = publicProcedure.use(
+  async ({ ctx, next }) => {
+    // Extract IP from ctx.
+    // "x-forwarded-for" often contains a comma-separated list
+    // of IPs if there are multiple proxies.
+    // For example, "x-forwarded-for: clientIP, proxyIP, ...".
+    // You might adjust logic or parse for a real client IP.
+    const ip = ctx.req?.headers.get("x-forwarded-for");
+
+    const rateLimiter = getRateLimiter();
+
+    if (!ip) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "IP address not found",
+      });
+    }
+
+    if (!rateLimiter) {
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Rate limiter not configured",
+      });
+    }
+
+    // Rate limit on IP address
+    const { success } = await rateLimiter.limit(ip);
+
+    if (!success) {
+      throw new TRPCError({
+        code: "TOO_MANY_REQUESTS",
+        message: "Too many requests",
+      });
+    }
+
+    return next();
+  }
+);
+
 export const createCallerFactory = t.createCallerFactory;
 
 /**
@@ -139,13 +202,11 @@ export const createCallerFactory = t.createCallerFactory;
  */
 export function localLink<TRouter extends AnyRouter>({
   router,
-  assetLists,
-  chainList,
+  getLists,
   opentelemetryServiceName,
 }: {
   router: TRouter;
-  assetLists: AssetList[];
-  chainList: Chain[];
+  getLists: () => Promise<{ assetLists: AssetList[]; chainList: Chain[] }>;
   opentelemetryServiceName: string | undefined;
 }): TRPCLink<TRouter> {
   return () =>
@@ -153,13 +214,17 @@ export function localLink<TRouter extends AnyRouter>({
       observable<OperationResultEnvelope<unknown>, TRPCClientError<TRouter>>(
         (observer) => {
           async function execute() {
-            const createCaller = t.createCallerFactory(router);
-            const caller = createCaller({
-              assetLists,
-              chainList,
-              opentelemetryServiceName,
-            });
             try {
+              // Fetch assetLists and chainList using the provided async method getLists
+              const { assetLists, chainList } = await getLists();
+
+              const createCaller = t.createCallerFactory(router);
+              const caller = createCaller({
+                assetLists,
+                chainList,
+                opentelemetryServiceName,
+              });
+
               // Attempt to execute the operation using the router's caller.
               const data = await (
                 caller[op.path] as (input: unknown) => unknown

@@ -3,9 +3,13 @@ import type {
   ChartPortfolioOverTimeResponse,
   Range,
 } from "@osmosis-labs/server";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import {
+  calculatePortfolioPerformance,
+  DEFAULT_VS_CURRENCY,
+} from "@osmosis-labs/server";
 import { PricePretty } from "@osmosis-labs/unit";
-import { Dec, RatePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
+import { timeToLocal } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { AreaData, Time } from "lightweight-charts";
@@ -37,70 +41,6 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 const CHART_CONTAINER_HEIGHT = 468;
-
-const calculatePortfolioPerformance = (
-  data: ChartPortfolioOverTimeResponse[] | undefined,
-  dataPoint: DataPoint
-): {
-  selectedPercentageRatePretty: RatePretty;
-  selectedDifferencePricePretty: PricePretty;
-  totalPriceChange: number;
-} => {
-  // Check if all values are 0, for instance if a user created a new wallet and has no transactions
-  const hasAllZeroValues = data?.every((point) => point.value === 0);
-  if (
-    hasAllZeroValues &&
-    (dataPoint?.value === 0 || dataPoint?.value === undefined)
-  ) {
-    return {
-      selectedPercentageRatePretty: new RatePretty(new Dec(0)),
-      selectedDifferencePricePretty: new PricePretty(
-        DEFAULT_VS_CURRENCY,
-        new Dec(0)
-      ),
-      totalPriceChange: 0,
-    };
-  }
-
-  const openingPrice = data?.[0]?.value;
-  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
-  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
-  const selectedPercentage = selectedDifference / openingPriceWithFallback;
-  const selectedPercentageRatePretty = new RatePretty(
-    new Dec(selectedPercentage)
-  );
-
-  const selectedDifferencePricePretty = new PricePretty(
-    DEFAULT_VS_CURRENCY,
-    new Dec(selectedDifference)
-  );
-
-  const closingPrice = data?.[data.length - 1]?.value;
-  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
-
-  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
-
-  return {
-    selectedPercentageRatePretty,
-    selectedDifferencePricePretty,
-    totalPriceChange,
-  };
-};
-
-const timeToLocal = (originalTime: number) => {
-  const d = new Date(originalTime * 1000);
-  return (
-    Date.UTC(
-      d.getFullYear(),
-      d.getMonth(),
-      d.getDate(),
-      d.getHours(),
-      d.getMinutes(),
-      d.getSeconds(),
-      d.getMilliseconds()
-    ) / 1000
-  );
-};
 
 const getLocalizedPortfolioOverTimeData = (
   portfolioOverTimeData: ChartPortfolioOverTimeResponse[] | undefined

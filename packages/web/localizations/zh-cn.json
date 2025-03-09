@@ -565,13 +565,18 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "现有会话",
+    "createSession": "创建会话"
+  },
   "profile": {
     "balance": "结余",
     "modalTitle": "轮廓",
     "viewAllAssets": "查看所有资产",
     "wallet": "钱包",
     "transactions": "交易",
-    "oneClickTrading": "一键交易"
+    "oneClickTrading": "一键交易",
+    "mobileSessions": "移动的"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} 份额",

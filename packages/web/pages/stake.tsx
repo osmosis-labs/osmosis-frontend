@@ -1,5 +1,5 @@
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import { makeDelegateToValidatorSetMsg } from "@osmosis-labs/tx";
 import { BondStatus } from "@osmosis-labs/types";
 import { CoinPretty, Dec } from "@osmosis-labs/unit";

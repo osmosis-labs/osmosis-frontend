@@ -6,15 +6,10 @@ import {
   IQueriesStore,
   txEventsWithPreOnFulfill,
 } from "@osmosis-labs/keplr-stores";
-import { makeIBCTransferMsg } from "@osmosis-labs/tx";
+import { DeliverTxResponse, makeIBCTransferMsg } from "@osmosis-labs/tx";
 import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 
-import {
-  AccountStore,
-  CosmwasmAccount,
-  DeliverTxResponse,
-  OsmosisAccount,
-} from "../account";
+import { AccountStore, CosmwasmAccount, OsmosisAccount } from "../account";
 import { OsmosisQueries } from "../queries";
 
 export interface CosmosAccount {
