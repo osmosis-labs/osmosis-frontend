@@ -12,6 +12,7 @@ import {
   BiometricsIcon,
   useBiometricsText,
 } from "~/components/icons/biometrics";
+import { MobileSessionIcon } from "~/components/icons/mobile-session";
 import { RouteHeader } from "~/components/route-header";
 import { SettingsGroup } from "~/components/settings/settings-group";
 import { SettingsItem } from "~/components/settings/settings-item";
@@ -33,8 +34,6 @@ export default function SettingsScreen() {
     walletAddress: currentWallet?.address ?? "",
     enabled: currentWallet?.type === "smart-account",
   });
-
-  console.log(data.amountSpent?.toString());
 
   return (
     <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
@@ -77,6 +76,13 @@ export default function SettingsScreen() {
             icon={<BiometricsIcon />}
             onPress={() => router.push("/settings/biometric")}
           />
+          {currentWallet?.type === "smart-account" && (
+            <SettingsItem
+              title="End session"
+              icon={<MobileSessionIcon width={24} height={24} />}
+              onPress={() => router.push("/settings/end-session")}
+            />
+          )}
           {/* <SettingsItem title="Recovery phrase" onPress={() => {}} />
           <SettingsItem title="iCloud backup" onPress={() => {}} /> */}
         </SettingsGroup>

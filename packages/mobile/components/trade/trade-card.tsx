@@ -103,7 +103,7 @@ export const TradeCard = memo(
           ref={selectAssetBottomSheetRef}
           enablePanDownToClose
           index={0}
-          snapPoints={["60%", "93%"]}
+          snapPoints={["65%", "93%"]}
           enableDynamicSizing={false}
           backdropComponent={useCallback(
             (props: BottomSheetBackdropProps) => (

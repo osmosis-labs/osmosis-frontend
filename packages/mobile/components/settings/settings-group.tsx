@@ -18,7 +18,7 @@ export const SettingsGroup: React.FC<SettingsGroupProps> = ({
       <Text type="subtitle" style={styles.title}>
         {title}
       </Text>
-      {children}
+      <View style={{ gap: 5 }}>{children}</View>
     </View>
   );
 };
