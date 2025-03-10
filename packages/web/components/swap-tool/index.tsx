@@ -2,7 +2,12 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import {
+  formatPretty,
+  getPriceExtendedFormatOptions,
+  isNil,
+  isOverspendErrorMessage,
+} from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsBoolean, useQueryState } from "nuqs";
@@ -16,7 +21,6 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
-import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
   AssetFieldset,
@@ -52,7 +56,6 @@ import { AddFundsModal } from "~/modals/add-funds";
 import { ReviewOrder } from "~/modals/review-order";
 import { TokenSelectModalLimit } from "~/modals/token-select-modal-limit";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 export interface SwapToolProps {

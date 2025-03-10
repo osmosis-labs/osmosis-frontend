@@ -565,13 +565,18 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "હાલના સત્રો",
+    "createSession": "સત્ર બનાવો"
+  },
   "profile": {
     "balance": "સંતુલન",
     "modalTitle": "પ્રોફાઇલ",
     "viewAllAssets": "બધી સંપત્તિઓ જુઓ",
     "wallet": "વૉલેટ",
     "transactions": "વ્યવહારો",
-    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ"
+    "oneClickTrading": "1-ક્લિક કરો ટ્રેડિંગ",
+    "mobileSessions": "મોબાઈલ"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} શેર",

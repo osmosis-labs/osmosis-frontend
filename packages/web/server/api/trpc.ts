@@ -16,10 +16,11 @@ export const createNextTrpcContext = (_opts: CreateNextContextOptions) => {
 };
 
 /** tRPC context for Next.js endpoints running on Vercel's edge runtime. */
-export const createEdgeTrpcContext = (_opts: FetchCreateContextFnOptions) => {
+export const createEdgeTrpcContext = (opts: FetchCreateContextFnOptions) => {
   return createInnerTRPCContext({
     assetLists: AssetLists,
     chainList: ChainList,
     opentelemetryServiceName: getOpentelemetryServiceName(),
+    req: opts.req,
   });
 };

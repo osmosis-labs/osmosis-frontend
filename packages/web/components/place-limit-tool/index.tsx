@@ -1,7 +1,7 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import { isValidNumericalRawInput, mulPrice } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { parseAsString, parseAsStringLiteral, useQueryStates } from "nuqs";
@@ -40,7 +40,6 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { MIN_ORDER_VALUE, usePlaceLimit } from "~/hooks/limit-orders";
-import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
 import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,

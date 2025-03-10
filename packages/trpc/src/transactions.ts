@@ -21,4 +21,26 @@ export const transactionsRouter = createTRPCRouter({
       });
       return res;
     }),
+
+  getTransactionsInfinite: publicProcedure
+    .input(
+      z.object({
+        address: z.string(),
+        cursor: z.number().nullish(), // cursor for infinite query
+        limit: z.number().optional(), // limit per page
+      })
+    )
+    .query(async ({ input: { address, cursor, limit }, ctx }) => {
+      const res = await getTransactions({
+        address,
+        pageSize: limit ? String(limit) : "50",
+        assetLists: ctx.assetLists,
+        page: cursor ? String(cursor) : "0",
+      });
+
+      return {
+        items: res.transactions,
+        nextCursor: res.hasNextPage ? (cursor ?? 0) + 1 : undefined,
+      };
+    }),
 });

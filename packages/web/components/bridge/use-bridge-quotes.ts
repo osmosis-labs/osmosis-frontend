@@ -6,7 +6,7 @@ import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
