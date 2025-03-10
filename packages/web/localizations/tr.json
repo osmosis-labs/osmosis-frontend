@@ -2,7 +2,6 @@
   "404": {
     "title": "Bulunamadı"
   },
-  "unknownTimeRemaining": "Bilinmeyen kalan süre",
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -796,6 +795,8 @@
     "receive": "{denom}",
     "selectDepositWallet": "{network} cüzdanını seçin",
     "selectWithdrawWallet": "{network} cüzdanını seçin",
+    "depositTakingLonger": "Para yatırma işlemi beklenenden daha uzun sürüyor",
+    "withdrawalTakingLonger": "Geri çekilmenin beklenenden daha uzun sürmesi",
     "depositAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "withdrawAssetDescription": "Belirli varlıkları çekerken, hedef ağda varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",

@@ -422,15 +422,14 @@ export async function getGasFeeAmount({
     // Calculate the raw fee amount first before applying Math.max
     const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).truncate();
 
-    // Skip if the raw fee amount is less than 1 (not enough precision) or greater than balance
-    if (
-      new Int(rawFeeAmount.toString()).lt(new Int(1)) ||
-      new Int(rawFeeAmount.toString()).gt(new Int(amount))
-    ) {
+    // Only skip if the fee amount is greater than balance
+    if (new Int(rawFeeAmount.toString()).gt(new Int(amount))) {
       continue;
     }
 
-    // Now apply Math.max to ensure minimum of 1
+    // Ensure a minimum of 1.
+    // This covers cases where the fee amount precision is too small to be represented in the balance.
+    // This is common for WBTC and similar tokens.
     const feeAmount = Math.max(1, Number(rawFeeAmount.toString())).toString();
 
     const spentAmount =
