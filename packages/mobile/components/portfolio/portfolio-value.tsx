@@ -20,7 +20,7 @@ export const PortfolioValue = ({
   isLoadingAllocation: boolean;
 }) => {
   const { currentWallet } = useWallets();
-  const [range, setRange] =
+  const [range] =
     useState<
       RouterInputs["local"]["portfolio"]["getPortfolioOverTime"]["range"]
     >("1d");

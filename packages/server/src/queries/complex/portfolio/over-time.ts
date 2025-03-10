@@ -75,6 +75,17 @@ export const calculatePortfolioPerformance = (
   selectedDifferencePricePretty: PricePretty;
   totalPriceChange: number;
 } => {
+  if (!data) {
+    return {
+      selectedPercentageRatePretty: new RatePretty(new Dec(0)),
+      selectedDifferencePricePretty: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        new Dec(0)
+      ),
+      totalPriceChange: 0,
+    };
+  }
+
   // Check if all values are 0, for instance if a user created a new wallet and has no transactions
   const hasAllZeroValues = data?.every((point) => point.value === 0);
   if (

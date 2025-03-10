@@ -4,6 +4,7 @@ import { Image, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useShallow } from "zustand/react/shallow";
 
+import { useBiometricsText } from "~/components/icons/biometrics";
 import { RouteHeader } from "~/components/route-header";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
@@ -17,6 +18,7 @@ import { Button } from "../../components/ui/button";
 
 export default function Security() {
   const router = useRouter();
+  const biometricsText = useBiometricsText();
   const { faceId, touchId, isCheckingBiometricAvailability } =
     useDeviceSupportsBiometricAuth();
   const [isAuthenticating, setIsAuthenticating] = useState(false);
@@ -76,7 +78,7 @@ export default function Security() {
         </Text>
         <Text style={styles.subtitle}>
           To ensure your funds are only accessible by you, secure this device
-          with {faceId ? "FaceID" : "TouchID"}.
+          with {biometricsText}.
         </Text>
 
         <View style={styles.buttonContainer}>
@@ -91,7 +93,7 @@ export default function Security() {
                 setIsAuthenticating(false);
               }
             }}
-            title={faceId ? "Use FaceID" : "Use TouchID"}
+            title={biometricsText}
             disabled={isCheckingBiometricAvailability}
           />
           <Button
