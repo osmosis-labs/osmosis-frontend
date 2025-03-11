@@ -1,14 +1,18 @@
 import { BottomSheetView } from "@gorhom/bottom-sheet";
-import { MinimalAsset } from "@osmosis-labs/types";
 import { FlashList } from "@shopify/flash-list";
 import React, { memo } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
 import { ScrollView as ScrollViewGestureHandler } from "react-native-gesture-handler";
+import { useShallow } from "zustand/react/shallow";
 
 import { SearchInput } from "~/components/search-input";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { UseSwapAssetsReturn } from "~/hooks/use-swap";
+import {
+  useSwapAssets,
+  UseSwapAssetsReturn,
+} from "~/hooks/swap/use-swap-assets";
+import { useSwapStore } from "~/stores/swap";
 
 import { TradeBottomSheetAssetItem } from "./trade-bottom-sheet-asset-item";
 
@@ -16,35 +20,38 @@ interface TradeBottomSheetContentProps {
   onSelectAsset: (
     asset: UseSwapAssetsReturn["selectableAssets"][number]
   ) => void;
-  selectableAssets: UseSwapAssetsReturn["selectableAssets"];
-  fetchNextPage: () => void;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-  isLoadingSelectAssets: boolean;
-  recommendedAssets: MinimalAsset[] | undefined;
-  searchValue?: string;
-  onSearch?: (query: string) => void;
 }
 
 export const TradeBottomSheetContent = memo(
-  ({
-    onSelectAsset,
-    selectableAssets,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoadingSelectAssets,
-    recommendedAssets,
-    searchValue = "",
-    onSearch,
-  }: TradeBottomSheetContentProps) => {
+  ({ onSelectAsset }: TradeBottomSheetContentProps) => {
+    const { initialFromDenom, initialToDenom } = useSwapStore(
+      useShallow((state) => ({
+        initialFromDenom: state.initialFromDenom,
+        initialToDenom: state.initialToDenom,
+      }))
+    );
+    const {
+      selectableAssets,
+      recommendedAssets,
+      isLoadingSelectAssets,
+      fetchNextPageAssets: fetchNextPage,
+      hasNextPageAssets: hasNextPage,
+      isFetchingNextPageAssets: isFetchingNextPage,
+    } = useSwapAssets({
+      initialFromDenom: initialFromDenom,
+      initialToDenom: initialToDenom,
+    });
+    const [assetSearchInput, setAssetSearchInput] = useSwapStore(
+      useShallow((state) => [state.assetSearchInput, state.setAssetSearchInput])
+    );
+
     return (
       <BottomSheetView style={styles.bottomSheetView}>
         <View style={styles.searchInputContainer}>
           <SearchInput
-            onSearch={onSearch || (() => {})}
+            onSearch={setAssetSearchInput}
             activeColor={Colors["osmoverse"][500]}
-            initialValue={searchValue}
+            initialValue={assetSearchInput}
           />
         </View>
         <View>
@@ -71,7 +78,7 @@ export const TradeBottomSheetContent = memo(
         ) : selectableAssets.length === 0 ? (
           <View style={styles.centeredView}>
             <Text type="subtitle">
-              No results {searchValue && `for "${searchValue}"`}
+              No results {assetSearchInput && `for "${assetSearchInput}"`}
             </Text>
             <Text style={styles.adjustSearchText}>
               Try adjusting your search query

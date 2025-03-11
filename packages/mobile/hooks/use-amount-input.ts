@@ -5,6 +5,7 @@ import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
 import { isNil, mulPrice } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
+import { useControllableState } from "~/hooks/use-controllable-state";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { usePrice } from "~/hooks/use-price";
 import { useWallets } from "~/hooks/use-wallets";
@@ -19,10 +20,12 @@ export function useAmountInput({
   currency,
   inputDebounceMs = 200,
   gasAmount,
+  onChange,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
+  onChange?: (amount: string) => void;
 }) {
   const { currentWallet } = useWallets();
   const { data: balances, isFetched: isBalancesFetched } =
@@ -37,7 +40,11 @@ export function useAmountInput({
   )?.amount;
   // manage amounts, with ability to set fraction of the amount
   // `inputAmount` is the raw string input that includes decimals
-  const [inputAmount, setAmount_] = useState("");
+  const [inputAmount, setAmount_] = useControllableState({
+    value: "",
+    defaultValue: "",
+    onChange,
+  });
   const [fraction, setFraction] = useState<number | null>(null);
 
   const setAmount = useCallback(
@@ -56,7 +63,7 @@ export function useAmountInput({
 
       setAmount_(updatedAmount);
     },
-    [fraction]
+    [fraction, setAmount_]
   );
 
   // clear fraction when user changes currency

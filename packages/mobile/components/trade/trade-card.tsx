@@ -3,7 +3,6 @@ import {
   BottomSheetBackdropProps,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import { MinimalAsset } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
 import { PricePretty } from "@osmosis-labs/unit";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@osmosis-labs/utils";
 import React, { memo, useCallback, useEffect, useRef } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { PlusIcon } from "~/components/icons/plus-icon";
 import { TradeBottomSheetContent } from "~/components/trade/trade-bottom-sheet-content";
@@ -21,52 +21,46 @@ import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import {
-  UseSwapAmountInputReturn,
-  UseSwapAssetsReturn,
-} from "~/hooks/use-swap";
+import { UseSwapAmountInputReturn } from "~/hooks/swap/use-swap-amount-input";
+import { UseSwapAssetsReturn } from "~/hooks/swap/use-swap-assets";
+import { useSwapStore } from "~/stores/swap";
 
 type TradeCardProps = {
   title: string;
   subtitle: string;
-  asset: UseSwapAssetsReturn["fromAsset"] | undefined;
-  onSelectAsset: (
-    asset: UseSwapAssetsReturn["selectableAssets"][number]
-  ) => void;
-  selectableAssets: UseSwapAssetsReturn["selectableAssets"];
-  fetchNextPage: () => void;
-  hasNextPage: boolean;
-  isFetchingNextPage: boolean;
-  isLoadingSelectAssets: boolean;
-  recommendedAssets: MinimalAsset[] | undefined;
-  amountInput: UseSwapAmountInputReturn;
-  onPressMax?: () => void;
   disabled?: boolean;
   isSwapToolLoading: boolean;
-  searchValue?: string;
-  onSearch?: (query: string) => void;
+  direction: "in" | "out";
+  amountInput: UseSwapAmountInputReturn;
 };
 
 export const TradeCard = memo(
   ({
     title,
     subtitle,
-    asset,
-    onSelectAsset,
-    selectableAssets,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoadingSelectAssets,
-    recommendedAssets,
-    amountInput,
-    onPressMax,
     disabled,
     isSwapToolLoading,
-    searchValue,
-    onSearch,
+    direction,
+    amountInput,
   }: TradeCardProps) => {
     const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
+    const setAssetSearchInput = useSwapStore(
+      (state) => state.setAssetSearchInput
+    );
+
+    const { fromAsset, toAsset, switchAssets } = useSwapStore(
+      useShallow((state) => ({
+        fromAsset: state.fromAsset,
+        toAsset: state.toAsset,
+        switchAssets: state.switchAssets,
+      }))
+    );
+
+    const asset = direction === "in" ? fromAsset : toAsset;
+
+    const onPressMax = useCallback(() => {
+      amountInput.toggleMax();
+    }, [amountInput]);
 
     return (
       <>
@@ -122,22 +116,29 @@ export const TradeCard = memo(
             backgroundColor: Colors["osmoverse"][900],
           }}
           onDismiss={() => {
-            onSearch?.("");
+            setAssetSearchInput("");
           }}
         >
           <TradeBottomSheetContent
             onSelectAsset={(asset) => {
-              onSelectAsset(asset);
+              const setAsset = () =>
+                direction === "in"
+                  ? useSwapStore.setState({ fromAsset: asset })
+                  : useSwapStore.setState({ toAsset: asset });
+
+              const oppositeSelectedAsset =
+                direction === "in" ? toAsset : fromAsset;
+              if (
+                asset.coinMinimalDenom ===
+                oppositeSelectedAsset?.coinMinimalDenom
+              ) {
+                switchAssets();
+              } else {
+                setAsset();
+              }
+
               selectAssetBottomSheetRef.current?.dismiss();
             }}
-            selectableAssets={selectableAssets}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-            isLoadingSelectAssets={isLoadingSelectAssets}
-            recommendedAssets={recommendedAssets}
-            searchValue={searchValue}
-            onSearch={onSearch}
           />
         </BottomSheetModal>
       </>
@@ -163,10 +164,7 @@ const SelectedAssetCard = memo(
   }) => {
     const inputRef = useRef<TextInput>(null);
 
-    const loadingMaxButton =
-      !amountInput.hasErrorWithCurrentBalanceQuote &&
-      !amountInput?.balance?.toDec().isZero() &&
-      amountInput.isLoadingCurrentBalanceNetworkFee;
+    const loadingMaxButton = !amountInput?.balance?.toDec().isZero();
 
     useEffect(() => {
       if (!disabled) {

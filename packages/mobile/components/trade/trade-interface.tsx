@@ -12,7 +12,9 @@ import { ReviewTradeBottomSheet } from "~/components/trade/review-trade-bottom-s
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { useSwap } from "~/hooks/use-swap";
+import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
+import { useSwapQuote } from "~/hooks/swap/use-swap-quote";
+import { useSwapStore } from "~/stores/swap";
 
 import { TradeCard } from "./trade-card";
 
@@ -45,38 +47,19 @@ export function TradeInterface({
     [initialToDenomProp]
   );
 
-  const {
-    inAmountInput,
-    outAmountInput,
-    setToAssetDenom,
-    setFromAssetDenom,
-    fromAsset,
-    toAsset,
-    selectableAssets,
-    fetchNextPageAssets,
-    hasNextPageAssets,
-    isFetchingNextPageAssets,
-    isLoadingSelectAssets,
-    recommendedAssets,
-    switchAssets,
-    error,
-    isQuoteLoading,
-    isLoadingNetworkFee,
-    isSlippageOverBalance,
-    networkFeeError,
-    quote,
-    tokenOutFiatValue,
-    networkFee,
-    sendTradeTokenInTx,
-    assetsQueryInput,
-    setAssetsQueryInput,
-    hasOverSpendLimitError,
-    overspendErrorParams,
-  } = useSwap({
+  useSwapStore.setState({
     initialFromDenom,
     initialToDenom,
-    maxSlippage,
   });
+
+  const inAmountInput = useSwapAmountInput({
+    direction: "in",
+  });
+  const { isQuoteLoading, isLoadingNetworkFee } = useSwapQuote({
+    maxSlippage,
+    amountInput: inAmountInput,
+  });
+
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
   const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
 
@@ -173,10 +156,6 @@ export function TradeInterface({
     }
   }, [hasOverSpendLimitError]);
 
-  const onPressMax = useCallback(() => {
-    inAmountInput.toggleMax();
-  }, [inAmountInput]);
-
   return (
     <>
       <View style={styles.container}>
@@ -195,26 +174,11 @@ export function TradeInterface({
 
           <View style={styles.tradeCardsContainer}>
             <TradeCard
-              amountInput={inAmountInput}
               title="Pay"
               subtitle="Choose Asset"
-              recommendedAssets={recommendedAssets}
-              asset={fromAsset}
-              onSelectAsset={(asset) => {
-                if (asset.coinMinimalDenom === toAsset?.coinMinimalDenom) {
-                  switchAssets();
-                }
-                setFromAssetDenom(asset.coinMinimalDenom);
-              }}
-              selectableAssets={selectableAssets}
-              fetchNextPage={fetchNextPageAssets}
-              hasNextPage={hasNextPageAssets ?? false}
-              isFetchingNextPage={isFetchingNextPageAssets}
-              isLoadingSelectAssets={isLoadingSelectAssets}
-              onPressMax={onPressMax}
+              amountInput={inAmountInput}
               isSwapToolLoading={isSwapToolLoading}
-              searchValue={assetsQueryInput}
-              onSearch={setAssetsQueryInput}
+              direction="in"
             />
 
             <View style={styles.swapButtonContainer}>
@@ -231,23 +195,9 @@ export function TradeInterface({
               amountInput={outAmountInput}
               title="Receive"
               subtitle="Choose Asset"
-              recommendedAssets={recommendedAssets}
-              asset={toAsset}
-              onSelectAsset={(asset) => {
-                if (asset.coinMinimalDenom === fromAsset?.coinMinimalDenom) {
-                  switchAssets();
-                }
-                setToAssetDenom(asset.coinMinimalDenom);
-              }}
-              selectableAssets={selectableAssets}
-              fetchNextPage={fetchNextPageAssets}
-              hasNextPage={hasNextPageAssets ?? false}
-              isFetchingNextPage={isFetchingNextPageAssets}
-              isLoadingSelectAssets={isLoadingSelectAssets}
+              direction="out"
               disabled
               isSwapToolLoading={isSwapToolLoading}
-              searchValue={assetsQueryInput}
-              onSearch={setAssetsQueryInput}
             />
           </View>
 
