@@ -11,7 +11,14 @@ import {
   getPriceExtendedFormatOptions,
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
-import React, { memo, useCallback, useEffect, useRef } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
@@ -21,7 +28,7 @@ import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { UseSwapAmountInputReturn } from "~/hooks/swap/use-swap-amount-input";
+import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
 import {
   useSwapAssets,
   UseSwapAssetsReturn,
@@ -32,21 +39,70 @@ type TradeCardProps = {
   title: string;
   subtitle: string;
   disabled?: boolean;
-  isSwapToolLoading: boolean;
   direction: "in" | "out";
-  amountInput: UseSwapAmountInputReturn;
 };
 
 export const TradeCard = memo(
-  ({
-    title,
-    subtitle,
-    disabled,
-    isSwapToolLoading,
-    direction,
-    amountInput,
-  }: TradeCardProps) => {
+  ({ title, subtitle, disabled, direction }: TradeCardProps) => {
     const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
+
+    const { fromAsset, toAsset } = useSwapStore(
+      useShallow((state) => ({
+        fromAsset: state.fromAsset,
+        toAsset: state.toAsset,
+      }))
+    );
+
+    const asset = useMemo(() => {
+      return direction === "in" ? fromAsset : toAsset;
+    }, [direction, fromAsset, toAsset]);
+
+    return (
+      <>
+        {asset ? (
+          <SelectedAssetCard
+            asset={asset}
+            direction={direction}
+            onPressAsset={() => {
+              selectAssetBottomSheetRef.current?.present();
+            }}
+            disabled={disabled}
+          />
+        ) : (
+          <TouchableOpacity
+            style={styles.tradeCard}
+            activeOpacity={0.8}
+            onPress={() => {
+              selectAssetBottomSheetRef.current?.present();
+            }}
+          >
+            <View style={styles.addButton}>
+              <PlusIcon width={24} height={24} />
+            </View>
+            <View>
+              <Text style={styles.tradeCardTitle}>{title}</Text>
+              <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+
+        <BottomSheetSelectAsset
+          selectAssetBottomSheetRef={selectAssetBottomSheetRef}
+          direction={direction}
+        />
+      </>
+    );
+  }
+);
+
+const BottomSheetSelectAsset = memo(
+  ({
+    selectAssetBottomSheetRef,
+    direction,
+  }: {
+    selectAssetBottomSheetRef: React.RefObject<BottomSheetModal>;
+    direction: "in" | "out";
+  }): JSX.Element => {
     const setAssetSearchInput = useSwapStore(
       (state) => state.setAssetSearchInput
     );
@@ -71,8 +127,6 @@ export const TradeCard = memo(
       }))
     );
 
-    const asset = direction === "in" ? fromAsset : toAsset;
-
     const {
       selectableAssets,
       recommendedAssets,
@@ -84,95 +138,58 @@ export const TradeCard = memo(
       initialFromDenom: initialFromDenom,
       initialToDenom: initialToDenom,
     });
-
-    const onPressMax = useCallback(() => {
-      amountInput.toggleMax();
-    }, [amountInput]);
-
     return (
-      <>
-        {asset ? (
-          <SelectedAssetCard
-            asset={asset}
-            amountInput={amountInput}
-            onPressAsset={() => {
-              selectAssetBottomSheetRef.current?.present();
-            }}
-            onPressMax={disabled ? undefined : onPressMax}
-            disabled={disabled}
-            isSwapToolLoading={isSwapToolLoading}
-          />
-        ) : (
-          <TouchableOpacity
-            style={styles.tradeCard}
-            activeOpacity={0.8}
-            onPress={() => {
-              selectAssetBottomSheetRef.current?.present();
-            }}
-          >
-            <View style={styles.addButton}>
-              <PlusIcon width={24} height={24} />
-            </View>
-            <View>
-              <Text style={styles.tradeCardTitle}>{title}</Text>
-              <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
-            </View>
-          </TouchableOpacity>
+      <BottomSheetModal
+        ref={selectAssetBottomSheetRef}
+        enablePanDownToClose
+        index={0}
+        snapPoints={["65%", "93%"]}
+        enableDynamicSizing={false}
+        backdropComponent={useCallback(
+          (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={0}
+              disappearsOnIndex={-1}
+            />
+          ),
+          []
         )}
+        handleIndicatorStyle={{
+          backgroundColor: Colors["osmoverse"][400],
+        }}
+        backgroundStyle={{
+          backgroundColor: Colors["osmoverse"][900],
+        }}
+        onDismiss={() => {
+          setAssetSearchInput("");
+        }}
+      >
+        <TradeBottomSheetContent
+          onSelectAsset={(asset) => {
+            const setAsset = () =>
+              direction === "in" ? setFromAsset(asset) : setToAsset(asset);
 
-        <BottomSheetModal
-          ref={selectAssetBottomSheetRef}
-          enablePanDownToClose
-          index={0}
-          snapPoints={["65%", "93%"]}
-          enableDynamicSizing={false}
-          backdropComponent={useCallback(
-            (props: BottomSheetBackdropProps) => (
-              <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={0}
-                disappearsOnIndex={-1}
-              />
-            ),
-            []
-          )}
-          handleIndicatorStyle={{
-            backgroundColor: Colors["osmoverse"][400],
-          }}
-          backgroundStyle={{
-            backgroundColor: Colors["osmoverse"][900],
-          }}
-          onDismiss={() => {
-            setAssetSearchInput("");
-          }}
-        >
-          <TradeBottomSheetContent
-            onSelectAsset={(asset) => {
-              const setAsset = () =>
-                direction === "in" ? setFromAsset(asset) : setToAsset(asset);
+            const oppositeSelectedAsset =
+              direction === "in" ? toAsset : fromAsset;
+            if (
+              asset.coinMinimalDenom === oppositeSelectedAsset?.coinMinimalDenom
+            ) {
+              switchAssets();
+            } else {
+              setAsset();
+            }
 
-              const oppositeSelectedAsset =
-                direction === "in" ? toAsset : fromAsset;
-              if (
-                asset.coinMinimalDenom ===
-                oppositeSelectedAsset?.coinMinimalDenom
-              ) {
-                switchAssets();
-              } else {
-                setAsset();
-              }
-
-              selectAssetBottomSheetRef.current?.dismiss();
-            }}
-            selectableAssets={selectableAssets}
-            recommendedAssets={recommendedAssets}
-            isLoadingSelectAssets={isLoadingSelectAssets}
-            fetchNextPage={fetchNextPage}
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-          />
-        </BottomSheetModal>
-      </>
+            selectAssetBottomSheetRef.current?.dismiss();
+          }}
+          selectableAssets={selectableAssets}
+          recommendedAssets={recommendedAssets}
+          isLoadingSelectAssets={isLoadingSelectAssets}
+          fetchNextPage={fetchNextPage}
+          hasNextPage={hasNextPage}
+          isFetchingNextPage={isFetchingNextPage}
+        />
+      </BottomSheetModal>
     );
   }
 );
@@ -180,22 +197,38 @@ export const TradeCard = memo(
 const SelectedAssetCard = memo(
   ({
     asset,
-    amountInput,
     onPressAsset,
-    onPressMax,
     disabled,
-    isSwapToolLoading,
+    direction,
   }: {
     asset: NonNullable<UseSwapAssetsReturn["fromAsset"]>;
-    amountInput: UseSwapAmountInputReturn;
     onPressAsset: () => void;
-    onPressMax?: () => void;
     disabled?: boolean;
-    isSwapToolLoading: boolean;
+    direction: "in" | "out";
   }) => {
     const inputRef = useRef<TextInput>(null);
 
+    const isSwapToolLoading = useSwapStore((state) => state.isSwapToolLoading);
+    const amountInput = useSwapAmountInput({
+      direction,
+    });
     const loadingMaxButton = amountInput?.balance?.toDec().isZero();
+
+    const onPressMax = useCallback(() => {
+      amountInput.toggleMax();
+    }, [amountInput]);
+
+    useLayoutEffect(() => {
+      if (direction === "in") {
+        useSwapStore.setState({
+          inAmountInput: amountInput,
+        });
+      } else {
+        useSwapStore.setState({
+          outAmountInput: amountInput,
+        });
+      }
+    }, [amountInput, direction]);
 
     useEffect(() => {
       if (!disabled) {
@@ -263,7 +296,7 @@ const SelectedAssetCard = memo(
               <Text style={styles.assetDenom}>{asset.coinDenom}</Text>
             </View>
           </TouchableOpacity>
-          {onPressMax && asset.amount && (
+          {!disabled && asset.amount && (
             <View style={styles.maxContainer}>
               <Text style={styles.balanceText}>
                 {formatPretty(asset.amount)}

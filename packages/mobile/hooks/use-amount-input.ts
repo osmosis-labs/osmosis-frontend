@@ -6,6 +6,7 @@ import { isNil, mulPrice } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useDebouncedState } from "~/hooks/use-debounced-state";
+import { useDeepMemo } from "~/hooks/use-deep-memo";
 import { usePrice } from "~/hooks/use-price";
 import { useWallets } from "~/hooks/use-wallets";
 import { api } from "~/utils/trpc";
@@ -32,9 +33,13 @@ export function useAmountInput({
       },
       { enabled: Boolean(currentWallet?.address) }
     );
-  const rawCurrencyBalance = balances?.find(
-    (bal) => bal.denom === currency?.coinMinimalDenom
-  )?.amount;
+
+  const rawCurrencyBalance = useMemo(
+    () =>
+      balances?.find((bal) => bal.denom === currency?.coinMinimalDenom)?.amount,
+    [balances, currency?.coinMinimalDenom]
+  );
+
   // manage amounts, with ability to set fraction of the amount
   // `inputAmount` is the raw string input that includes decimals
   const [inputAmount, setAmount_] = useState("");
@@ -42,13 +47,7 @@ export function useAmountInput({
 
   const setAmount = useCallback(
     (amount: string) => {
-      let updatedAmount = amount.trim();
-      if (updatedAmount.startsWith(".")) {
-        updatedAmount = "0" + updatedAmount;
-      }
-
-      // check validity of raw input
-      if (!isValidNumericalRawInput(updatedAmount)) return;
+      const updatedAmount = amount.trim();
 
       if (fraction != null) {
         setFraction(null);
@@ -96,7 +95,7 @@ export function useAmountInput({
   }, [balance, gasAmount, currency]);
 
   /** Amount derived from user input or from a fraction of the user’s balance. */
-  const amount = useMemo(() => {
+  const amount = useDeepMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
       let amountInt =
         inputAmount === ""
@@ -120,16 +119,6 @@ export function useAmountInput({
     }
   }, [currency, inputAmount, fraction, rawCurrencyBalance, maxAmountWithGas]);
 
-  const isHalfValue = useMemo(
-    () =>
-      fraction === 0.5 ||
-      (rawCurrencyBalance && amount
-        ? new Dec(amount.toCoin().amount).equals(
-            new Dec(rawCurrencyBalance).mul(new Dec(0.5))
-          )
-        : false),
-    [amount, fraction, rawCurrencyBalance]
-  );
   const isMaxValue = useMemo(
     () =>
       fraction === 1 ||
@@ -189,31 +178,51 @@ export function useAmountInput({
     setFraction(null);
   }, [setAmount]);
 
-  return {
-    inputAmount: inputAmountWithFraction,
-    debouncedInAmount,
-    isTyping: debouncedInAmount?.toString() !== amount?.toString(),
-    amount,
-    balance,
-    fiatValue,
-    price,
-    fraction,
-    isEmpty: inputAmountWithFraction === "",
-    error,
-    isHalfValue,
-    isMaxValue,
-    setAmount,
-    reset,
-    setFraction,
-    toggleMax: useCallback(
-      () => setFraction(fraction === 1 ? null : 1),
-      [fraction]
-    ),
-    toggleHalf: useCallback(
-      () => setFraction(fraction === 0.5 ? null : 0.5),
-      [fraction]
-    ),
-  };
+  const toggleMax = useCallback(
+    () => setFraction(fraction === 1 ? null : 1),
+    [fraction]
+  );
+
+  const toggleHalf = useCallback(
+    () => setFraction(fraction === 0.5 ? null : 0.5),
+    [fraction]
+  );
+
+  return useMemo(
+    () => ({
+      inputAmount: inputAmountWithFraction,
+      debouncedInAmount,
+      isTyping: debouncedInAmount?.toString() !== amount?.toString(),
+      amount,
+      balance,
+      fiatValue,
+      price,
+      fraction,
+      isEmpty: inputAmountWithFraction === "",
+      error,
+      isMaxValue,
+      setAmount,
+      reset,
+      setFraction,
+      toggleMax,
+      toggleHalf,
+    }),
+    [
+      inputAmountWithFraction,
+      debouncedInAmount,
+      amount,
+      balance,
+      fiatValue,
+      price,
+      fraction,
+      error,
+      isMaxValue,
+      setAmount,
+      reset,
+      toggleMax,
+      toggleHalf,
+    ]
+  );
 }
 
 export function isValidNumericalRawInput(input: string) {

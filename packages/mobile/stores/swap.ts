@@ -1,14 +1,20 @@
-import { CoinPretty, Dec } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
+import { useAmountInput } from "~/hooks/use-amount-input";
 import { RouterOutputs } from "~/utils/trpc";
 
 export const useSwapStore = create(
   combine(
     {
       // Input
-      swapAmount: undefined as CoinPretty | undefined,
+      inAmountInput: undefined as ReturnType<typeof useAmountInput> | undefined,
+      outAmountInput: undefined as
+        | ReturnType<typeof useAmountInput>
+        | undefined,
+      isSwapToolLoading: false,
+
       quoteType: "out-given-in" as "out-given-in" | "in-given-out",
 
       // Assets

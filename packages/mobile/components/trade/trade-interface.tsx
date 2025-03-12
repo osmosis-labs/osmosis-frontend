@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useShallow } from "zustand/react/shallow";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { ArrowLeftIcon } from "~/components/icons/arrow-left";
@@ -18,10 +19,6 @@ import { ReviewTradeBottomSheet } from "~/components/trade/review-trade-bottom-s
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import {
-  useSwapAmountInput,
-  UseSwapAmountInputReturn,
-} from "~/hooks/swap/use-swap-amount-input";
 import { useSwapQuote } from "~/hooks/swap/use-swap-quote";
 import { useSwapStore } from "~/stores/swap";
 
@@ -62,59 +59,6 @@ export function TradeInterface({
     setInitialDenoms(initialFromDenom, initialToDenom);
   }, [initialFromDenom, initialToDenom, setInitialDenoms]);
 
-  const inAmountInput = useSwapAmountInput({
-    direction: "in",
-  });
-  const outAmountInput = useSwapAmountInput({
-    direction: "out",
-  });
-
-  // const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
-  const isSwapToolLoading = false;
-
-  const handleNumberClick = useCallback(
-    (num: string) => {
-      const currentText = inAmountInput.inputAmount || "";
-
-      // If attempting to add another '.', skip
-      if (num === "." && currentText.includes(".")) {
-        return;
-      }
-
-      // If text is empty and user types '.', prepend with '0.'
-      const actuallyTyped =
-        num === "." && currentText.length === 0 ? "0." : num;
-
-      const newText = currentText + actuallyTyped;
-
-      // Basic leading zero check: if new text starts with "0" but not "0.", trim the leading zero.
-      // e.g., "0" + "2" => "2" instead of "02"
-      const sanitizedText =
-        newText.length > 1 && newText.startsWith("0") && newText[1] !== "."
-          ? newText.substring(1)
-          : newText;
-
-      inAmountInput.setAmount(sanitizedText);
-
-      if (sanitizedText.length === 0) {
-        outAmountInput.setAmount("");
-      }
-    },
-    [inAmountInput, outAmountInput]
-  );
-
-  const handleDelete = useCallback(() => {
-    const currentText = inAmountInput.inputAmount || "";
-    // Delete the last character
-    const newText = currentText.slice(0, -1);
-    inAmountInput.setAmount(newText);
-
-    // Clear outAmount if there's no input left
-    if (newText.length === 0) {
-      outAmountInput.setAmount("");
-    }
-  }, [inAmountInput, outAmountInput]);
-
   return (
     <>
       <View style={styles.container}>
@@ -132,13 +76,7 @@ export function TradeInterface({
           </View>
 
           <View style={styles.tradeCardsContainer}>
-            <TradeCard
-              title="Pay"
-              subtitle="Choose Asset"
-              amountInput={inAmountInput}
-              isSwapToolLoading={isSwapToolLoading}
-              direction="in"
-            />
+            <TradeCard title="Pay" subtitle="Choose Asset" direction="in" />
 
             <View style={styles.swapButtonContainer}>
               <TouchableOpacity
@@ -151,22 +89,15 @@ export function TradeInterface({
             </View>
 
             <TradeCard
-              amountInput={outAmountInput}
               title="Receive"
               subtitle="Choose Asset"
               direction="out"
               disabled
-              isSwapToolLoading={isSwapToolLoading}
             />
           </View>
 
           {!showGlobalSubmitButton && (
-            <SubmitButton
-              inAmountInput={inAmountInput}
-              outAmountInput={outAmountInput}
-              isSwapToolLoading={isSwapToolLoading}
-              showGlobalSubmitButton={showGlobalSubmitButton}
-            />
+            <SubmitButton showGlobalSubmitButton={showGlobalSubmitButton} />
           )}
         </View>
 
@@ -177,31 +108,64 @@ export function TradeInterface({
             paddingBottom: showGlobalSubmitButton ? PREVIEW_BUTTON_HEIGHT : 0,
           }}
         >
-          <NumberPad
-            onNumberClick={handleNumberClick}
-            onDelete={handleDelete}
-          />
+          <NumberPad />
         </ScrollView>
       </View>
       {showGlobalSubmitButton && (
-        <SubmitButton
-          inAmountInput={inAmountInput}
-          outAmountInput={outAmountInput}
-          isSwapToolLoading={isSwapToolLoading}
-          showGlobalSubmitButton={showGlobalSubmitButton}
-        />
+        <SubmitButton showGlobalSubmitButton={showGlobalSubmitButton} />
       )}
     </>
   );
 }
 
-const NumberPad = memo(function NumberPad({
-  onNumberClick,
-  onDelete,
-}: {
-  onNumberClick: (numStr: string) => void;
-  onDelete: () => void;
-}) {
+const NumberPad = memo(function NumberPad() {
+  const onNumberClick = (num: string) => {
+    const { inAmountInput, outAmountInput } = useSwapStore.getState();
+
+    if (!inAmountInput || !outAmountInput) return;
+
+    const currentText = inAmountInput.inputAmount || "";
+
+    // If attempting to add another '.', skip
+    if (num === "." && currentText.includes(".")) {
+      return;
+    }
+
+    // If text is empty and user types '.', prepend with '0.'
+    const actuallyTyped = num === "." && currentText.length === 0 ? "0." : num;
+
+    const newText = currentText + actuallyTyped;
+
+    // Basic leading zero check: if new text starts with "0" but not "0.", trim the leading zero.
+    // e.g., "0" + "2" => "2" instead of "02"
+    const sanitizedText =
+      newText.length > 1 && newText.startsWith("0") && newText[1] !== "."
+        ? newText.substring(1)
+        : newText;
+
+    inAmountInput.setAmount(sanitizedText);
+
+    if (sanitizedText.length === 0) {
+      outAmountInput.setAmount("");
+    }
+  };
+
+  const onDelete = () => {
+    const { inAmountInput, outAmountInput } = useSwapStore.getState();
+
+    if (!inAmountInput || !outAmountInput) return;
+
+    const currentText = inAmountInput.inputAmount || "";
+    // Delete the last character
+    const newText = currentText.slice(0, -1);
+    inAmountInput.setAmount(newText);
+
+    // Clear outAmount if there's no input left
+    if (newText.length === 0) {
+      outAmountInput.setAmount("");
+    }
+  };
+
   return (
     <View style={styles.numberPad}>
       <View style={styles.numberRow}>
@@ -292,18 +256,16 @@ const NumberPad = memo(function NumberPad({
 });
 
 const SubmitButton = ({
-  inAmountInput,
-  outAmountInput,
-  isSwapToolLoading,
-
   showGlobalSubmitButton,
 }: {
-  inAmountInput: UseSwapAmountInputReturn;
-  outAmountInput: UseSwapAmountInputReturn;
-  isSwapToolLoading: boolean;
-
   showGlobalSubmitButton: boolean;
 }) => {
+  const { inAmountInput, outAmountInput } = useSwapStore(
+    useShallow((state) => ({
+      inAmountInput: state.inAmountInput,
+      outAmountInput: state.outAmountInput,
+    }))
+  );
   const {
     isQuoteLoading,
     isLoadingNetworkFee,
@@ -316,13 +278,21 @@ const SubmitButton = ({
     quote,
     tokenOutFiatValue,
     networkFee,
-  } = useSwapQuote({
-    inAmountInput,
-    outAmountInput,
-  });
+  } = useSwapQuote();
 
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
   const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const isSwapToolLoading = useMemo(
+    () => isQuoteLoading || !!isLoadingNetworkFee,
+    [isLoadingNetworkFee, isQuoteLoading]
+  );
+
+  useLayoutEffect(() => {
+    useSwapStore.setState({
+      isSwapToolLoading,
+    });
+  }, [isSwapToolLoading]);
 
   const isSwapButtonDisabled =
     /**
@@ -330,7 +300,7 @@ const SubmitButton = ({
      * so they know they have to wait for the spend limit to be reset in a day.
      */
     !hasOverSpendLimitError &&
-    (inAmountInput.isEmpty ||
+    (inAmountInput?.isEmpty ||
       !Boolean(quote) ||
       isSwapToolLoading ||
       Boolean(error) ||
@@ -358,8 +328,8 @@ const SubmitButton = ({
 
   const onSuccess = useCallback(() => {
     reviewTradeBottomSheetRef.current?.dismiss();
-    inAmountInput.reset();
-    outAmountInput.reset();
+    inAmountInput?.reset();
+    outAmountInput?.reset();
   }, [inAmountInput, outAmountInput, reviewTradeBottomSheetRef]);
 
   const onReviewTrade = useCallback(() => {
@@ -410,7 +380,7 @@ const SubmitButton = ({
         </View>
       )}
 
-      {quote && inAmountInput.amount && (
+      {quote && inAmountInput?.amount && (
         <ReviewTradeBottomSheet
           ref={reviewTradeBottomSheetRef}
           inAmount={inAmountInput.amount}
