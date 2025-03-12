@@ -32,9 +32,10 @@ export function useSwapAmountInput({ direction }: { direction: "in" | "out" }) {
     [direction, fromAsset, toAsset]
   );
 
-  const inAmountInput = useAmountInput({
+  const amountInput = useAmountInput({
     currency: asset,
     gasAmount: gasAmount,
+    inputDebounceMs: 500,
   });
 
   const balanceQuoteQueryEnabled = useMemo(
@@ -43,21 +44,21 @@ export function useSwapAmountInput({ direction }: { direction: "in" | "out" }) {
       Boolean(fromAsset) &&
       Boolean(toAsset) &&
       // since the in amount is debounced, the asset could be wrong when switching assets
-      inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      amountInput.debouncedInAmount?.currency.coinMinimalDenom ===
         fromAsset!.coinMinimalDenom &&
-      inAmountInput.amount?.currency.coinMinimalDenom ===
+      amountInput.amount?.currency.coinMinimalDenom ===
         fromAsset!.coinMinimalDenom &&
-      !!inAmountInput.balance &&
-      !inAmountInput.balance.toDec().isZero() &&
-      inAmountInput.balance.currency.coinMinimalDenom ===
+      !!amountInput.balance &&
+      !amountInput.balance.toDec().isZero() &&
+      amountInput.balance.currency.coinMinimalDenom ===
         fromAsset?.coinMinimalDenom,
     [
       isTransactionInProgress,
       fromAsset,
       toAsset,
-      inAmountInput.debouncedInAmount,
-      inAmountInput.amount,
-      inAmountInput.balance,
+      amountInput.debouncedInAmount,
+      amountInput.amount,
+      amountInput.balance,
     ]
   );
 
@@ -65,10 +66,10 @@ export function useSwapAmountInput({ direction }: { direction: "in" | "out" }) {
     () => ({
       tokenIn: fromAsset!,
       tokenOut: toAsset!,
-      tokenInAmount: inAmountInput.balance?.toCoin().amount ?? "",
+      tokenInAmount: amountInput.balance?.toCoin().amount ?? "",
       maxSlippage,
     }),
-    [fromAsset, toAsset, inAmountInput.balance, maxSlippage]
+    [fromAsset, toAsset, amountInput.balance, maxSlippage]
   );
 
   const {
@@ -160,13 +161,13 @@ export function useSwapAmountInput({ direction }: { direction: "in" | "out" }) {
 
   const returnValue = useDeepMemo(() => {
     return {
-      ...inAmountInput,
+      ...amountInput,
       isLoadingCurrentBalanceNetworkFee,
       hasErrorWithCurrentBalanceQuote,
       notEnoughBalanceForMax,
     };
   }, [
-    inAmountInput,
+    amountInput,
     isLoadingCurrentBalanceNetworkFee,
     hasErrorWithCurrentBalanceQuote,
     notEnoughBalanceForMax,

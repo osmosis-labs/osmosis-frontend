@@ -18,7 +18,10 @@ import { ReviewTradeBottomSheet } from "~/components/trade/review-trade-bottom-s
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
+import {
+  useSwapAmountInput,
+  UseSwapAmountInputReturn,
+} from "~/hooks/swap/use-swap-amount-input";
 import { useSwapQuote } from "~/hooks/swap/use-swap-quote";
 import { useSwapStore } from "~/stores/swap";
 
@@ -65,27 +68,9 @@ export function TradeInterface({
   const outAmountInput = useSwapAmountInput({
     direction: "out",
   });
-  const {
-    isQuoteLoading,
-    isLoadingNetworkFee,
-    hasOverSpendLimitError,
-    error,
-    networkFeeError,
-    isSlippageOverBalance,
-    overspendErrorParams,
-    sendTradeTokenInTx,
-    quote,
-    tokenOutFiatValue,
-    networkFee,
-  } = useSwapQuote({
-    inAmountInput,
-    outAmountInput,
-  });
 
-  const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
-  const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
-
-  const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
+  // const isSwapToolLoading = isQuoteLoading || !!isLoadingNetworkFee;
+  const isSwapToolLoading = false;
 
   const handleNumberClick = useCallback(
     (num: string) => {
@@ -129,54 +114,6 @@ export function TradeInterface({
       outAmountInput.setAmount("");
     }
   }, [inAmountInput, outAmountInput]);
-
-  const isSwapButtonDisabled =
-    /**
-     * We will show a bottom sheet letting the user know that they have overspent their spend limit
-     * so they know they have to wait for the spend limit to be reset in a day.
-     */
-    !hasOverSpendLimitError &&
-    (inAmountInput.isEmpty ||
-      !Boolean(quote) ||
-      isSwapToolLoading ||
-      Boolean(error) ||
-      Boolean(networkFeeError));
-
-  const inset = useSafeAreaInsets();
-
-  const highPriceImpact =
-    quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ?? false;
-
-  let buttonText: string;
-  if (highPriceImpact) {
-    buttonText = "Swap anyway";
-  } else if (hasOverSpendLimitError) {
-    buttonText = "Limit exceeded";
-  } else if (
-    !!networkFeeError &&
-    isSlippageOverBalance &&
-    networkFeeError.message.includes("insufficient funds")
-  ) {
-    buttonText = "Insufficient funds to cover slippage";
-  } else {
-    buttonText = "Preview Trade";
-  }
-
-  const showDangerButton = hasOverSpendLimitError || highPriceImpact;
-
-  const onSuccess = useCallback(() => {
-    reviewTradeBottomSheetRef.current?.dismiss();
-    inAmountInput.reset();
-    outAmountInput.reset();
-  }, [inAmountInput, outAmountInput]);
-
-  const onReviewTrade = useCallback(() => {
-    if (hasOverSpendLimitError) {
-      limitExceededBottomSheetRef.current?.present();
-    } else {
-      reviewTradeBottomSheetRef.current?.present();
-    }
-  }, [hasOverSpendLimitError]);
 
   return (
     <>
@@ -224,19 +161,13 @@ export function TradeInterface({
           </View>
 
           {!showGlobalSubmitButton && (
-            <Button
-              title={buttonText}
-              disabled={isSwapButtonDisabled}
-              variant={showDangerButton ? "danger" : "primary"}
-              onPress={onReviewTrade}
+            <SubmitButton
+              inAmountInput={inAmountInput}
+              outAmountInput={outAmountInput}
+              isSwapToolLoading={isSwapToolLoading}
+              showGlobalSubmitButton={showGlobalSubmitButton}
             />
           )}
-
-          <Text style={styles.errorMessage}>
-            {error?.message && error.message.length > 50
-              ? `${error.message.substring(0, 50)}...`
-              : error?.message}
-          </Text>
         </View>
 
         {/* Scrollable number pad section */}
@@ -251,46 +182,15 @@ export function TradeInterface({
             onDelete={handleDelete}
           />
         </ScrollView>
-
-        {quote && inAmountInput.amount && (
-          <ReviewTradeBottomSheet
-            ref={reviewTradeBottomSheetRef}
-            inAmount={inAmountInput.amount}
-            inAmountFiat={
-              inAmountInput.fiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
-            }
-            expectedOutput={quote.amountOut}
-            expectedOutputFiat={
-              tokenOutFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
-            }
-            networkFee={networkFee?.gasUsdValueToPay}
-            sendTradeTokenInTx={sendTradeTokenInTx}
-            onSuccess={onSuccess}
-          />
-        )}
       </View>
       {showGlobalSubmitButton && (
-        <View
-          style={[
-            styles.previewButtonContainer,
-            { paddingBottom: inset.bottom },
-          ]}
-        >
-          <Button
-            title="Preview Trade"
-            onPress={onReviewTrade}
-            buttonStyle={styles.previewButton}
-            disabled={isSwapButtonDisabled}
-            variant={showDangerButton ? "danger" : "primary"}
-          />
-        </View>
+        <SubmitButton
+          inAmountInput={inAmountInput}
+          outAmountInput={outAmountInput}
+          isSwapToolLoading={isSwapToolLoading}
+          showGlobalSubmitButton={showGlobalSubmitButton}
+        />
       )}
-
-      <LimitExceededBottomSheet
-        ref={limitExceededBottomSheetRef}
-        wouldSpendTotal={overspendErrorParams?.wouldSpendTotal}
-        limit={overspendErrorParams?.limit}
-      />
     </>
   );
 }
@@ -390,6 +290,151 @@ const NumberPad = memo(function NumberPad({
     </View>
   );
 });
+
+const SubmitButton = ({
+  inAmountInput,
+  outAmountInput,
+  isSwapToolLoading,
+
+  showGlobalSubmitButton,
+}: {
+  inAmountInput: UseSwapAmountInputReturn;
+  outAmountInput: UseSwapAmountInputReturn;
+  isSwapToolLoading: boolean;
+
+  showGlobalSubmitButton: boolean;
+}) => {
+  const {
+    isQuoteLoading,
+    isLoadingNetworkFee,
+    hasOverSpendLimitError,
+    error,
+    networkFeeError,
+    isSlippageOverBalance,
+    overspendErrorParams,
+    sendTradeTokenInTx,
+    quote,
+    tokenOutFiatValue,
+    networkFee,
+  } = useSwapQuote({
+    inAmountInput,
+    outAmountInput,
+  });
+
+  const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
+  const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
+
+  const isSwapButtonDisabled =
+    /**
+     * We will show a bottom sheet letting the user know that they have overspent their spend limit
+     * so they know they have to wait for the spend limit to be reset in a day.
+     */
+    !hasOverSpendLimitError &&
+    (inAmountInput.isEmpty ||
+      !Boolean(quote) ||
+      isSwapToolLoading ||
+      Boolean(error) ||
+      Boolean(networkFeeError));
+
+  const highPriceImpact =
+    quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ?? false;
+
+  let buttonText: string;
+  if (highPriceImpact) {
+    buttonText = "Swap anyway";
+  } else if (hasOverSpendLimitError) {
+    buttonText = "Limit exceeded";
+  } else if (
+    !!networkFeeError &&
+    isSlippageOverBalance &&
+    networkFeeError.message.includes("insufficient funds")
+  ) {
+    buttonText = "Insufficient funds to cover slippage";
+  } else {
+    buttonText = "Preview Trade";
+  }
+
+  const showDangerButton = hasOverSpendLimitError || highPriceImpact;
+
+  const onSuccess = useCallback(() => {
+    reviewTradeBottomSheetRef.current?.dismiss();
+    inAmountInput.reset();
+    outAmountInput.reset();
+  }, [inAmountInput, outAmountInput, reviewTradeBottomSheetRef]);
+
+  const onReviewTrade = useCallback(() => {
+    if (hasOverSpendLimitError) {
+      limitExceededBottomSheetRef.current?.present();
+    } else {
+      reviewTradeBottomSheetRef.current?.present();
+    }
+  }, [
+    hasOverSpendLimitError,
+    limitExceededBottomSheetRef,
+    reviewTradeBottomSheetRef,
+  ]);
+
+  const inset = useSafeAreaInsets();
+
+  return (
+    <>
+      {!showGlobalSubmitButton ? (
+        <>
+          <Button
+            title={buttonText}
+            disabled={isSwapButtonDisabled}
+            variant={showDangerButton ? "danger" : "primary"}
+            onPress={onReviewTrade}
+          />
+
+          <Text style={styles.errorMessage}>
+            {error?.message && error.message.length > 50
+              ? `${error.message.substring(0, 50)}...`
+              : error?.message}
+          </Text>
+        </>
+      ) : (
+        <View
+          style={[
+            styles.previewButtonContainer,
+            { paddingBottom: inset.bottom },
+          ]}
+        >
+          <Button
+            title="Preview Trade"
+            onPress={onReviewTrade}
+            buttonStyle={styles.previewButton}
+            disabled={isSwapButtonDisabled}
+            variant={showDangerButton ? "danger" : "primary"}
+          />
+        </View>
+      )}
+
+      {quote && inAmountInput.amount && (
+        <ReviewTradeBottomSheet
+          ref={reviewTradeBottomSheetRef}
+          inAmount={inAmountInput.amount}
+          inAmountFiat={
+            inAmountInput.fiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
+          }
+          expectedOutput={quote.amountOut}
+          expectedOutputFiat={
+            tokenOutFiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)
+          }
+          networkFee={networkFee?.gasUsdValueToPay}
+          sendTradeTokenInTx={sendTradeTokenInTx}
+          onSuccess={onSuccess}
+        />
+      )}
+
+      <LimitExceededBottomSheet
+        ref={limitExceededBottomSheetRef}
+        wouldSpendTotal={overspendErrorParams?.wouldSpendTotal}
+        limit={overspendErrorParams?.limit}
+      />
+    </>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
