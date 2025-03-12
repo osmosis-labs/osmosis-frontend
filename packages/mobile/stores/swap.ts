@@ -33,6 +33,8 @@ export const useSwapStore = create(
 
       assetSearchInput: "",
       maxSlippage: new Dec(0.05),
+
+      error: undefined as Error | undefined,
     },
     (set) => ({
       setFromAssetDenom: (denom: string | undefined) =>

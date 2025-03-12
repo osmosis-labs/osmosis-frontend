@@ -2,7 +2,7 @@
   "expo": {
     "name": "Osmosis",
     "slug": "osmosis-mobile",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "osmosis-mobile",
@@ -22,7 +22,7 @@
         "android.permission.USE_FINGERPRINT"
       ],
       "package": "com.osmosis.mobile",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "bundler": "metro",

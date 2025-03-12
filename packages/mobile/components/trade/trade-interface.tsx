@@ -4,6 +4,7 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
 import React, {
   memo,
   useCallback,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -99,6 +100,7 @@ export function TradeInterface({
           {!showGlobalSubmitButton && (
             <SubmitButton showGlobalSubmitButton={showGlobalSubmitButton} />
           )}
+          <ErrorMessage />
         </View>
 
         {/* Scrollable number pad section */}
@@ -255,6 +257,17 @@ const NumberPad = memo(function NumberPad() {
   );
 });
 
+const ErrorMessage = () => {
+  const error = useSwapStore((state) => state.error);
+  return (
+    <Text style={styles.errorMessage}>
+      {error?.message && error.message.length > 50
+        ? `${error.message.substring(0, 50)}...`
+        : error?.message}
+    </Text>
+  );
+};
+
 const SubmitButton = ({
   showGlobalSubmitButton,
 }: {
@@ -293,6 +306,12 @@ const SubmitButton = ({
       isSwapToolLoading,
     });
   }, [isSwapToolLoading]);
+
+  useEffect(() => {
+    useSwapStore.setState({
+      error,
+    });
+  }, [error]);
 
   const isSwapButtonDisabled =
     /**
@@ -349,20 +368,12 @@ const SubmitButton = ({
   return (
     <>
       {!showGlobalSubmitButton ? (
-        <>
-          <Button
-            title={buttonText}
-            disabled={isSwapButtonDisabled}
-            variant={showDangerButton ? "danger" : "primary"}
-            onPress={onReviewTrade}
-          />
-
-          <Text style={styles.errorMessage}>
-            {error?.message && error.message.length > 50
-              ? `${error.message.substring(0, 50)}...`
-              : error?.message}
-          </Text>
-        </>
+        <Button
+          title={buttonText}
+          disabled={isSwapButtonDisabled}
+          variant={showDangerButton ? "danger" : "primary"}
+          onPress={onReviewTrade}
+        />
       ) : (
         <View
           style={[
