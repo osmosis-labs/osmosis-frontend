@@ -22,7 +22,10 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { UseSwapAmountInputReturn } from "~/hooks/swap/use-swap-amount-input";
-import { UseSwapAssetsReturn } from "~/hooks/swap/use-swap-assets";
+import {
+  useSwapAssets,
+  UseSwapAssetsReturn,
+} from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
 
 type TradeCardProps = {
@@ -48,15 +51,39 @@ export const TradeCard = memo(
       (state) => state.setAssetSearchInput
     );
 
-    const { fromAsset, toAsset, switchAssets } = useSwapStore(
+    const {
+      fromAsset,
+      toAsset,
+      switchAssets,
+      initialFromDenom,
+      initialToDenom,
+      setFromAsset,
+      setToAsset,
+    } = useSwapStore(
       useShallow((state) => ({
         fromAsset: state.fromAsset,
         toAsset: state.toAsset,
         switchAssets: state.switchAssets,
+        initialFromDenom: state.initialFromDenom,
+        initialToDenom: state.initialToDenom,
+        setFromAsset: state.setFromAsset,
+        setToAsset: state.setToAsset,
       }))
     );
 
     const asset = direction === "in" ? fromAsset : toAsset;
+
+    const {
+      selectableAssets,
+      recommendedAssets,
+      isLoadingSelectAssets,
+      fetchNextPageAssets: fetchNextPage,
+      hasNextPageAssets: hasNextPage,
+      isFetchingNextPageAssets: isFetchingNextPage,
+    } = useSwapAssets({
+      initialFromDenom: initialFromDenom,
+      initialToDenom: initialToDenom,
+    });
 
     const onPressMax = useCallback(() => {
       amountInput.toggleMax();
@@ -71,7 +98,7 @@ export const TradeCard = memo(
             onPressAsset={() => {
               selectAssetBottomSheetRef.current?.present();
             }}
-            onPressMax={onPressMax}
+            onPressMax={disabled ? undefined : onPressMax}
             disabled={disabled}
             isSwapToolLoading={isSwapToolLoading}
           />
@@ -122,9 +149,7 @@ export const TradeCard = memo(
           <TradeBottomSheetContent
             onSelectAsset={(asset) => {
               const setAsset = () =>
-                direction === "in"
-                  ? useSwapStore.setState({ fromAsset: asset })
-                  : useSwapStore.setState({ toAsset: asset });
+                direction === "in" ? setFromAsset(asset) : setToAsset(asset);
 
               const oppositeSelectedAsset =
                 direction === "in" ? toAsset : fromAsset;
@@ -139,6 +164,12 @@ export const TradeCard = memo(
 
               selectAssetBottomSheetRef.current?.dismiss();
             }}
+            selectableAssets={selectableAssets}
+            recommendedAssets={recommendedAssets}
+            isLoadingSelectAssets={isLoadingSelectAssets}
+            fetchNextPage={fetchNextPage}
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
           />
         </BottomSheetModal>
       </>
@@ -164,7 +195,7 @@ const SelectedAssetCard = memo(
   }) => {
     const inputRef = useRef<TextInput>(null);
 
-    const loadingMaxButton = !amountInput?.balance?.toDec().isZero();
+    const loadingMaxButton = amountInput?.balance?.toDec().isZero();
 
     useEffect(() => {
       if (!disabled) {

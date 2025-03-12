@@ -8,10 +8,7 @@ import { useShallow } from "zustand/react/shallow";
 import { SearchInput } from "~/components/search-input";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import {
-  useSwapAssets,
-  UseSwapAssetsReturn,
-} from "~/hooks/swap/use-swap-assets";
+import { UseSwapAssetsReturn } from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
 
 import { TradeBottomSheetAssetItem } from "./trade-bottom-sheet-asset-item";
@@ -20,27 +17,24 @@ interface TradeBottomSheetContentProps {
   onSelectAsset: (
     asset: UseSwapAssetsReturn["selectableAssets"][number]
   ) => void;
+  selectableAssets: UseSwapAssetsReturn["selectableAssets"];
+  recommendedAssets: UseSwapAssetsReturn["recommendedAssets"];
+  isLoadingSelectAssets: UseSwapAssetsReturn["isLoadingSelectAssets"];
+  fetchNextPage: UseSwapAssetsReturn["fetchNextPageAssets"];
+  hasNextPage: UseSwapAssetsReturn["hasNextPageAssets"];
+  isFetchingNextPage: UseSwapAssetsReturn["isFetchingNextPageAssets"];
 }
 
 export const TradeBottomSheetContent = memo(
-  ({ onSelectAsset }: TradeBottomSheetContentProps) => {
-    const { initialFromDenom, initialToDenom } = useSwapStore(
-      useShallow((state) => ({
-        initialFromDenom: state.initialFromDenom,
-        initialToDenom: state.initialToDenom,
-      }))
-    );
-    const {
-      selectableAssets,
-      recommendedAssets,
-      isLoadingSelectAssets,
-      fetchNextPageAssets: fetchNextPage,
-      hasNextPageAssets: hasNextPage,
-      isFetchingNextPageAssets: isFetchingNextPage,
-    } = useSwapAssets({
-      initialFromDenom: initialFromDenom,
-      initialToDenom: initialToDenom,
-    });
+  ({
+    onSelectAsset,
+    selectableAssets,
+    recommendedAssets,
+    isLoadingSelectAssets,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  }: TradeBottomSheetContentProps) => {
     const [assetSearchInput, setAssetSearchInput] = useSwapStore(
       useShallow((state) => [state.assetSearchInput, state.setAssetSearchInput])
     );

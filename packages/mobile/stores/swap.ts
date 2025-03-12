@@ -1,4 +1,4 @@
-import { CoinPretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec } from "@osmosis-labs/unit";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -8,11 +8,8 @@ export const useSwapStore = create(
   combine(
     {
       // Input
-      inAmount: "",
-      outAmount: "",
-      isMaxAmount: false,
+      swapAmount: undefined as CoinPretty | undefined,
       quoteType: "out-given-in" as "out-given-in" | "in-given-out",
-      gasAmount: undefined as CoinPretty | undefined,
 
       // Assets
       fromAsset: undefined as
@@ -29,6 +26,7 @@ export const useSwapStore = create(
       initialToDenom: undefined as string | undefined,
 
       assetSearchInput: "",
+      maxSlippage: new Dec(0.05),
     },
     (set) => ({
       setFromAssetDenom: (denom: string | undefined) =>
@@ -41,6 +39,14 @@ export const useSwapStore = create(
           toAssetDenom: state.fromAssetDenom,
         })),
       setAssetSearchInput: (input: string) => set({ assetSearchInput: input }),
+      setFromAsset: (
+        asset: RouterOutputs["local"]["assets"]["getUserAsset"] | undefined
+      ) => set({ fromAsset: asset, fromAssetDenom: asset?.coinMinimalDenom }),
+      setToAsset: (
+        asset: RouterOutputs["local"]["assets"]["getUserAsset"] | undefined
+      ) => set({ toAsset: asset, toAssetDenom: asset?.coinMinimalDenom }),
+      setInitialDenoms: (fromDenom: string, toDenom: string) =>
+        set({ initialFromDenom: fromDenom, initialToDenom: toDenom }),
     })
   )
 );

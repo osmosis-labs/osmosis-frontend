@@ -46,8 +46,8 @@ type SwapOptions = {
   /** Set to the pool ID that the user must swap in. `initialFromDenom` and `initialToDenom`
    *  must be set to the pool's tokens or the quote queries will fail. */
   forceSwapInPoolId?: string;
-  maxSlippage: Dec | undefined;
-  amountInput: ReturnType<typeof useSwapAmountInput>;
+  inAmountInput: ReturnType<typeof useSwapAmountInput>;
+  outAmountInput: ReturnType<typeof useSwapAmountInput>;
 };
 
 // Note: For computing spot price between    token in and out, we use this multiplier
@@ -69,18 +69,19 @@ const spotPriceQuoteMultiplier = new Dec(10);
  *  * Debounced quote fetching from user input */
 export function useSwapQuote({
   forceSwapInPoolId,
-  maxSlippage = undefined,
-  amountInput,
+  inAmountInput,
+  outAmountInput,
 }: SwapOptions) {
   const { currentWallet } = useWallets();
   const osmosisChain = useOsmosisChain();
   const signAndBroadcast = useSignAndBroadcast();
   const { isTransactionInProgress } = useIsTransactionInProgress();
-  const quoteType = useSwapStore((state) => state.quoteType);
-  const { fromAsset, toAsset } = useSwapStore(
+  const { fromAsset, toAsset, maxSlippage, quoteType } = useSwapStore(
     useShallow((state) => ({
       fromAsset: state.fromAsset,
       toAsset: state.toAsset,
+      maxSlippage: state.maxSlippage,
+      quoteType: state.quoteType,
     }))
   );
 
@@ -93,53 +94,115 @@ export function useSwapQuote({
   const quoteQueryEnabled = useMemo(
     () =>
       isToFromAssets &&
-      Boolean(amountInput.debouncedInAmount?.toDec().isPositive()) &&
+      Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
       // since input is debounced there could be the wrong asset associated
       // with the input amount when switching assets
-      amountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+      inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
         fromAsset?.coinMinimalDenom &&
-      amountInput.amount?.currency.coinMinimalDenom ===
+      inAmountInput.amount?.currency.coinMinimalDenom ===
         fromAsset?.coinMinimalDenom &&
-      !isTransactionInProgress,
+      !isTransactionInProgress &&
+      quoteType === "out-given-in",
     [
       isToFromAssets,
-      amountInput.debouncedInAmount,
-      amountInput.amount,
+      inAmountInput.debouncedInAmount,
+      inAmountInput.amount,
       fromAsset,
       isTransactionInProgress,
+      quoteType,
     ]
   );
 
-  const quoteParams = useMemo(
+  const inGivenOutQuoteEnabled = useMemo(
+    () =>
+      isToFromAssets &&
+      Boolean(outAmountInput.debouncedInAmount?.toDec().isPositive()) &&
+      outAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
+        toAsset?.coinMinimalDenom &&
+      outAmountInput.amount?.currency.coinMinimalDenom ===
+        toAsset?.coinMinimalDenom &&
+      !isTransactionInProgress &&
+      quoteType === "in-given-out",
+    [
+      isToFromAssets,
+      outAmountInput.debouncedInAmount,
+      outAmountInput.amount,
+      toAsset,
+      isTransactionInProgress,
+      quoteType,
+    ]
+  );
+
+  const outGivenInQuoteParams = useMemo(
     () => ({
       tokenIn: fromAsset,
       tokenOut: toAsset,
-      tokenInAmount: amountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     }),
     [
       fromAsset,
       toAsset,
-      amountInput.debouncedInAmount,
+      inAmountInput.debouncedInAmount,
+      forceSwapInPoolId,
+      maxSlippage,
+    ]
+  );
+
+  const inGivenOutQuoteParams = useMemo(
+    () => ({
+      tokenIn: fromAsset!,
+      tokenOut: toAsset!,
+      tokenInAmount: outAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
+      forcePoolId: forceSwapInPoolId,
+      maxSlippage,
+    }),
+    [
+      fromAsset,
+      toAsset,
+      outAmountInput.debouncedInAmount,
       forceSwapInPoolId,
       maxSlippage,
     ]
   );
 
   const {
-    data: quote,
+    data: outGivenInQuote,
     isLoading: isQuoteLoading_,
     errorMsg: quoteErrorMsg,
-  } = useQueryRouterBestQuote(quoteParams, quoteQueryEnabled, quoteType);
+  } = useQueryRouterBestQuote(
+    outGivenInQuoteParams,
+    quoteQueryEnabled,
+    "out-given-in"
+  );
+
+  const {
+    data: inGivenOutQuote,
+    isLoading: isInGivenOutQuoteLoading_,
+    errorMsg: inGivenOutQuoteError,
+  } = useQueryRouterBestQuote(
+    inGivenOutQuoteParams,
+    inGivenOutQuoteEnabled,
+    "in-given-out"
+  );
+
+  const quote = useMemo(
+    () => (quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote),
+    [quoteType, inGivenOutQuote, outGivenInQuote]
+  );
 
   // Use a ref to track the last update to prevent infinite loops
   const lastUpdateRef = useRef<{
     quoteType: QuoteDirection;
     isQuoteLoading: boolean;
+    isInGivenOutQuoteLoading: boolean;
     quoteErrorMsg?: string;
-    amountInputIsTyping: boolean;
-    amountInputIsEmpty: boolean;
+    inGivenOutQuoteError?: string;
+    inAmountInputIsTyping: boolean;
+    inAmountInputIsEmpty: boolean;
+    outAmountInputIsTyping: boolean;
+    outAmountInputIsEmpty: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -147,9 +210,13 @@ export function useSwapQuote({
     const currentState = {
       quoteType,
       isQuoteLoading: isQuoteLoading_,
+      isInGivenOutQuoteLoading: isInGivenOutQuoteLoading_,
       quoteErrorMsg,
-      amountInputIsTyping: amountInput.isTyping,
-      amountInputIsEmpty: amountInput.isEmpty,
+      inGivenOutQuoteError,
+      inAmountInputIsTyping: inAmountInput.isTyping,
+      inAmountInputIsEmpty: inAmountInput.isEmpty,
+      outAmountInputIsTyping: outAmountInput.isTyping,
+      outAmountInputIsEmpty: outAmountInput.isEmpty,
     };
 
     // Compare with last state to prevent unnecessary updates
@@ -158,9 +225,15 @@ export function useSwapQuote({
       lastState &&
       lastState.quoteType === currentState.quoteType &&
       lastState.isQuoteLoading === currentState.isQuoteLoading &&
+      lastState.isInGivenOutQuoteLoading ===
+        currentState.isInGivenOutQuoteLoading &&
       lastState.quoteErrorMsg === currentState.quoteErrorMsg &&
-      lastState.amountInputIsTyping === currentState.amountInputIsTyping &&
-      lastState.amountInputIsEmpty === currentState.amountInputIsEmpty
+      lastState.inGivenOutQuoteError === currentState.inGivenOutQuoteError &&
+      lastState.inAmountInputIsTyping === currentState.inAmountInputIsTyping &&
+      lastState.inAmountInputIsEmpty === currentState.inAmountInputIsEmpty &&
+      lastState.outAmountInputIsTyping ===
+        currentState.outAmountInputIsTyping &&
+      lastState.outAmountInputIsEmpty === currentState.outAmountInputIsEmpty
     ) {
       return;
     }
@@ -170,12 +243,12 @@ export function useSwapQuote({
 
     if (
       quoteType === "in-given-out" &&
-      !isQuoteLoading_ &&
-      !amountInput.isTyping
+      !isInGivenOutQuoteLoading_ &&
+      !outAmountInput.isTyping
     ) {
-      amountInput.setAmount(
-        quote && !quoteErrorMsg && !amountInput.isEmpty
-          ? trimPlaceholderZeros(quote.amount.toDec().toString())
+      inAmountInput.setAmount(
+        inGivenOutQuote && !inGivenOutQuoteError && !outAmountInput.isEmpty
+          ? trimPlaceholderZeros(inGivenOutQuote.amount.toDec().toString())
           : ""
       );
     }
@@ -183,21 +256,38 @@ export function useSwapQuote({
     if (
       quoteType === "out-given-in" &&
       !isQuoteLoading_ &&
-      !amountInput.isTyping
+      !inAmountInput.isTyping
     ) {
-      amountInput.setAmount(
-        quote && !quoteErrorMsg && !amountInput.isEmpty
+      outAmountInput.setAmount(
+        quote && !quoteErrorMsg && !inAmountInput.isEmpty
           ? trimPlaceholderZeros(quote.amount.toDec().toString())
           : ""
       );
     }
-  }, [quoteType, quote, isQuoteLoading_, quoteErrorMsg, amountInput]);
+  }, [
+    quoteType,
+    inGivenOutQuote,
+    quote,
+    isQuoteLoading_,
+    isInGivenOutQuoteLoading_,
+    quoteErrorMsg,
+    inGivenOutQuoteError,
+    inAmountInput,
+    outAmountInput,
+  ]);
 
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = useMemo(
-    () => isQuoteLoading_ && quoteQueryEnabled,
-    [isQuoteLoading_, quoteQueryEnabled]
+    () =>
+      (isQuoteLoading_ && quoteQueryEnabled) ||
+      (isInGivenOutQuoteLoading_ && inGivenOutQuoteEnabled),
+    [
+      isQuoteLoading_,
+      quoteQueryEnabled,
+      isInGivenOutQuoteLoading_,
+      inGivenOutQuoteEnabled,
+    ]
   );
 
   const spotPriceQuoteParams = useMemo(() => {
@@ -225,8 +315,9 @@ export function useSwapQuote({
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
   const precedentError:
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
-    | typeof amountInput.error = useMemo(() => {
-    let error = quoteErrorMsg;
+    | typeof inAmountInput.error = useMemo(() => {
+    let error =
+      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
@@ -239,38 +330,46 @@ export function useSwapQuote({
     if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
-    if (!amountInput.isEmpty && amountInput.error) return amountInput.error;
+    if (!inAmountInput.isEmpty && inAmountInput.error)
+      return inAmountInput.error;
   }, [
     quoteErrorMsg,
     quote,
     spotPriceQuoteErrorMsg,
-    amountInput.error,
-    amountInput.isEmpty,
+    inAmountInput.error,
+    inAmountInput.isEmpty,
+    inGivenOutQuoteError,
+    quoteType,
   ]);
 
   const networkFeeQueryEnabled = useMemo(
     () =>
       !precedentError &&
       !isQuoteLoading &&
-      quoteQueryEnabled &&
+      (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
       Boolean(quote?.messages) &&
       Boolean(currentWallet?.address) &&
-      amountInput.debouncedInAmount !== null &&
-      amountInput.balance &&
-      amountInput.amount &&
-      amountInput.debouncedInAmount.toDec().lte(amountInput.balance.toDec()) &&
-      amountInput.amount.toDec().lte(amountInput.balance.toDec()) &&
-      amountInput.debouncedInAmount !== null &&
-      Boolean(amountInput.amount),
+      inAmountInput.debouncedInAmount !== null &&
+      inAmountInput.balance &&
+      inAmountInput.amount &&
+      inAmountInput.debouncedInAmount
+        .toDec()
+        .lte(inAmountInput.balance.toDec()) &&
+      inAmountInput.amount.toDec().lte(inAmountInput.balance.toDec()) &&
+      outAmountInput.debouncedInAmount !== null &&
+      Boolean(outAmountInput.amount),
     [
       precedentError,
       isQuoteLoading,
       quoteQueryEnabled,
+      inGivenOutQuoteEnabled,
       quote?.messages,
       currentWallet?.address,
-      amountInput.debouncedInAmount,
-      amountInput.balance,
-      amountInput.amount,
+      inAmountInput.debouncedInAmount,
+      inAmountInput.balance,
+      inAmountInput.amount,
+      outAmountInput.debouncedInAmount,
+      outAmountInput.amount,
     ]
   );
 
@@ -291,12 +390,6 @@ export function useSwapQuote({
     enabled: networkFeeQueryEnabled,
   });
 
-  useEffect(() => {
-    useSwapStore.setState({
-      gasAmount: networkFee?.gasAmount,
-    });
-  }, [networkFee]);
-
   const isLoadingNetworkFee = useMemo(
     () => isLoadingNetworkFee_ && networkFeeQueryEnabled,
     [isLoadingNetworkFee_, networkFeeQueryEnabled]
@@ -305,18 +398,18 @@ export function useSwapQuote({
   const isSlippageOverBalance = useMemo(() => {
     if (
       quoteType === "out-given-in" ||
-      !amountInput.balance ||
-      !amountInput.amount ||
+      !inAmountInput.balance ||
+      !inAmountInput.amount ||
       !maxSlippage
     )
       return false;
 
-    const balance = amountInput.balance;
-    const amountWithSlippage = amountInput.amount
+    const balance = inAmountInput.balance;
+    const amountWithSlippage = inAmountInput.amount
       .toDec()
       .mul(new Dec(1).add(maxSlippage));
     return balance.toDec().lt(amountWithSlippage);
-  }, [amountInput.balance, amountInput.amount, maxSlippage, quoteType]);
+  }, [inAmountInput.balance, inAmountInput.amount, maxSlippage, quoteType]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -327,7 +420,7 @@ export function useSwapQuote({
             return reject(new Error("Quote is not specified."));
           if (!maxSlippage)
             return reject(new Error("Max slippage is not defined."));
-          if (!amountInput.amount)
+          if (!inAmountInput.amount || !outAmountInput.amount)
             return reject(new Error("Input amount is not specified."));
           if (!currentWallet)
             return reject(new Error("Account information is missing."));
@@ -338,7 +431,10 @@ export function useSwapQuote({
           let txParams: ReturnType<typeof getSwapTxParameters>;
           try {
             txParams = getSwapTxParameters({
-              coinAmount: amountInput.amount.toCoin().amount,
+              coinAmount:
+                quoteType === "out-given-in"
+                  ? inAmountInput.amount.toCoin().amount
+                  : outAmountInput.amount.toCoin().amount,
               maxSlippage: maxSlippage.toString(),
               tokenInCoinMinimalDenom: fromAsset.coinMinimalDenom,
               tokenOutCoinMinimalDenom: toAsset.coinMinimalDenom,
@@ -397,10 +493,11 @@ export function useSwapQuote({
       ),
     [
       currentWallet,
-      amountInput,
+      inAmountInput,
       maxSlippage,
       networkFee,
       osmosisChain.chain_id,
+      outAmountInput,
       quote,
       quoteType,
       signAndBroadcast,
@@ -413,8 +510,8 @@ export function useSwapQuote({
     () =>
       Boolean(quote?.amount.toDec().isPositive()) &&
       !quoteErrorMsg &&
-      !amountInput.isEmpty,
-    [quote, quoteErrorMsg, amountInput.isEmpty]
+      !inAmountInput.isEmpty,
+    [quote, quoteErrorMsg, inAmountInput.isEmpty]
   );
 
   const positivePrevQuote = usePreviousWhen(quote, shouldKeepPrevQuote);
@@ -422,7 +519,7 @@ export function useSwapQuote({
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
     if (
-      amountInput.amount &&
+      inAmountInput.amount &&
       quote &&
       toAsset &&
       quoteType === "out-given-in"
@@ -431,24 +528,24 @@ export function useSwapQuote({
         toAsset,
         quote.amount
           .toDec()
-          .quo(amountInput.amount.toDec())
+          .quo(inAmountInput.amount.toDec())
           .mulTruncate(DecUtils.getTenExponentN(toAsset.coinDecimals))
       );
     } else if (
-      amountInput.amount &&
+      outAmountInput.amount &&
       quote &&
       toAsset &&
       quoteType === "in-given-out"
     ) {
       return new CoinPretty(
         toAsset,
-        amountInput.amount
+        outAmountInput.amount
           .toDec()
           .quo(quote.amount.toDec())
           .mulTruncate(DecUtils.getTenExponentN(toAsset.coinDecimals))
       );
     }
-  }, [amountInput.amount, quote, toAsset, quoteType]);
+  }, [inAmountInput.amount, quote, toAsset, outAmountInput.amount, quoteType]);
 
   /** Spot price, current or effective, of the currently selected tokens. */
   const inBaseOutQuoteSpotPrice = useMemo(() => {
@@ -467,9 +564,9 @@ export function useSwapQuote({
       getTokenInFeeAmountFiatValue(
         fromAsset,
         quote?.tokenInFeeAmount,
-        amountInput.price
+        inAmountInput.price
       ),
-    [amountInput.price, quote?.tokenInFeeAmount, fromAsset]
+    [inAmountInput.price, quote?.tokenInFeeAmount, fromAsset]
   );
 
   // Calculate token out fiat value from price impact and token in fiat value.
@@ -483,19 +580,20 @@ export function useSwapQuote({
     if (quoteType === "out-given-in") {
       return getTokenOutFiatValue(
         quote?.priceImpactTokenOut?.toDec(),
-        amountInput.fiatValue?.toDec()
+        inAmountInput.fiatValue?.toDec()
       ).sub(tokenInFeeAmountFiatValue);
     } else {
       return (
-        amountInput.fiatValue ??
+        outAmountInput.fiatValue ??
         new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0))
       );
     }
   }, [
-    amountInput.fiatValue,
+    inAmountInput.fiatValue,
     quote?.priceImpactTokenOut,
     tokenInFeeAmountFiatValue,
     quoteType,
+    outAmountInput.fiatValue,
   ]);
 
   const totalFee = useDeepMemo(
@@ -511,8 +609,8 @@ export function useSwapQuote({
     if (
       currentWallet?.type !== "smart-account" ||
       !networkFeeError?.message ||
-      amountInput.isEmpty ||
-      amountInput.inputAmount == "0" ||
+      inAmountInput.isEmpty ||
+      inAmountInput.inputAmount == "0" ||
       !isOverspendErrorMessage({ message: networkFeeError?.message })
     ) {
       return false;
@@ -522,8 +620,8 @@ export function useSwapQuote({
   }, [
     currentWallet?.type,
     networkFeeError?.message,
-    amountInput.isEmpty,
-    amountInput.inputAmount,
+    inAmountInput.isEmpty,
+    inAmountInput.inputAmount,
   ]);
 
   const overspendErrorParams = useMemo(() => {
@@ -534,13 +632,12 @@ export function useSwapQuote({
   // Memoize the final return value to prevent unnecessary re-renders
   return useMemo(
     () => ({
-      fromAsset,
-      toAsset,
-      amountInput,
+      inAmountInput,
+      outAmountInput,
       tokenOutFiatValue,
       tokenInFeeAmountFiatValue,
       quote:
-        isQuoteLoading || amountInput.isTyping
+        isQuoteLoading || inAmountInput.isTyping
           ? positivePrevQuote
           : !quoteErrorMsg
           ? quote
@@ -556,15 +653,14 @@ export function useSwapQuote({
       spotPriceQuoteErrorMsg,
       isQuoteLoading,
       sendTradeTokenInTx,
+      hasOverSpendLimitError,
       isSlippageOverBalance,
       quoteType,
-      hasOverSpendLimitError,
       overspendErrorParams,
     }),
     [
-      fromAsset,
-      toAsset,
-      amountInput,
+      inAmountInput,
+      outAmountInput,
       tokenOutFiatValue,
       tokenInFeeAmountFiatValue,
       isQuoteLoading,
@@ -581,9 +677,9 @@ export function useSwapQuote({
       isSpotPriceQuoteLoading,
       spotPriceQuoteErrorMsg,
       sendTradeTokenInTx,
+      hasOverSpendLimitError,
       isSlippageOverBalance,
       quoteType,
-      hasOverSpendLimitError,
       overspendErrorParams,
     ]
   );

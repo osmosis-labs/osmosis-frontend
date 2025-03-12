@@ -1,7 +1,13 @@
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
-import React, { memo, useCallback, useMemo, useRef } from "react";
+import React, {
+  memo,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -26,7 +32,6 @@ interface TradeInterfaceProps {
   initialToDenom?: string;
 }
 
-const maxSlippage = new Dec(0.05);
 const atomMinimalDenom =
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
@@ -47,17 +52,34 @@ export function TradeInterface({
     [initialToDenomProp]
   );
 
-  useSwapStore.setState({
-    initialFromDenom,
-    initialToDenom,
-  });
+  const setInitialDenoms = useSwapStore((state) => state.setInitialDenoms);
+  const switchAssets = useSwapStore((state) => state.switchAssets);
+
+  useLayoutEffect(() => {
+    setInitialDenoms(initialFromDenom, initialToDenom);
+  }, [initialFromDenom, initialToDenom, setInitialDenoms]);
 
   const inAmountInput = useSwapAmountInput({
     direction: "in",
   });
-  const { isQuoteLoading, isLoadingNetworkFee } = useSwapQuote({
-    maxSlippage,
-    amountInput: inAmountInput,
+  const outAmountInput = useSwapAmountInput({
+    direction: "out",
+  });
+  const {
+    isQuoteLoading,
+    isLoadingNetworkFee,
+    hasOverSpendLimitError,
+    error,
+    networkFeeError,
+    isSlippageOverBalance,
+    overspendErrorParams,
+    sendTradeTokenInTx,
+    quote,
+    tokenOutFiatValue,
+    networkFee,
+  } = useSwapQuote({
+    inAmountInput,
+    outAmountInput,
   });
 
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
@@ -230,11 +252,9 @@ export function TradeInterface({
           />
         </ScrollView>
 
-        {fromAsset && toAsset && quote && inAmountInput.amount && (
+        {quote && inAmountInput.amount && (
           <ReviewTradeBottomSheet
             ref={reviewTradeBottomSheetRef}
-            fromAsset={fromAsset}
-            toAsset={toAsset}
             inAmount={inAmountInput.amount}
             inAmountFiat={
               inAmountInput.fiatValue ?? new PricePretty(DEFAULT_VS_CURRENCY, 0)

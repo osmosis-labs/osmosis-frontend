@@ -9,19 +9,19 @@ import { formatPretty, formatSpendLimit } from "@osmosis-labs/utils";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
+import { useShallow } from "zustand/react/shallow";
 
 import { ArrowDownIcon } from "~/components/icons/arrow-down";
 import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
+import { SendTradeTokenInTx } from "~/hooks/swap/use-swap-quote";
 import { useRemainingSpendLimit } from "~/hooks/use-remaining-spend-limit";
-import { SendTradeTokenInTx, UseSwapAssetsReturn } from "~/hooks/use-swap";
 import { useWallets } from "~/hooks/use-wallets";
+import { useSwapStore } from "~/stores/swap";
 
 interface ReviewTradeBottomSheetProps {
-  fromAsset: NonNullable<UseSwapAssetsReturn["fromAsset"]>;
-  toAsset: NonNullable<UseSwapAssetsReturn["toAsset"]>;
   inAmount: CoinPretty;
   inAmountFiat: PricePretty;
   expectedOutput: CoinPretty;
@@ -44,8 +44,6 @@ export const ReviewTradeBottomSheet = React.forwardRef<
 >(
   (
     {
-      fromAsset,
-      toAsset,
       inAmount,
       inAmountFiat,
       expectedOutput,
@@ -58,6 +56,12 @@ export const ReviewTradeBottomSheet = React.forwardRef<
   ) => {
     const [isSendingTrade, setIsSendingTrade] = useState(false);
     const { currentWallet } = useWallets();
+    const { fromAsset, toAsset } = useSwapStore(
+      useShallow((state) => ({
+        fromAsset: state.fromAsset,
+        toAsset: state.toAsset,
+      }))
+    );
 
     const data = useRemainingSpendLimit({
       authenticatorId:
@@ -98,6 +102,10 @@ export const ReviewTradeBottomSheet = React.forwardRef<
         setIsSendingTrade(false);
       }
     }, [sendTradeTokenInTx, inAmount, expectedOutput, onSuccess]);
+
+    if (!fromAsset || !toAsset) {
+      return null;
+    }
 
     return (
       <BottomSheetModal

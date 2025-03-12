@@ -4,7 +4,6 @@ import { useShallow } from "zustand/react/shallow";
 
 import { useRecommendedAssets } from "~/hooks/swap/use-recommended-assets";
 import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
-import { useToFromDenoms } from "~/hooks/swap/use-to-from-denoms";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useWallets } from "~/hooks/use-wallets";
 import { useSwapStore } from "~/stores/swap";
@@ -34,23 +33,35 @@ export function useSwapAssets({
   poolId?: string;
 } = {}) {
   const { currentWallet } = useWallets();
-  const { fromAsset: storeFromAsset, toAsset: storeToAsset } = useSwapStore(
-    useShallow((state) => ({
-      fromAsset: state.fromAsset,
-      toAsset: state.toAsset,
-    }))
-  );
-
   const {
+    fromAsset: storeFromAsset,
+    toAsset: storeToAsset,
+    setFromAsset,
+    setToAsset,
     fromAssetDenom,
     toAssetDenom,
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
-  } = useToFromDenoms({
-    initialFromDenom,
-    initialToDenom,
-  });
+  } = useSwapStore(
+    useShallow((state) => ({
+      fromAsset: state.fromAsset,
+      toAsset: state.toAsset,
+      setFromAsset: state.setFromAsset,
+      setToAsset: state.setToAsset,
+      fromAssetDenom: state.fromAssetDenom,
+      toAssetDenom: state.toAssetDenom,
+      setFromAssetDenom: state.setFromAssetDenom,
+      setToAssetDenom: state.setToAssetDenom,
+      switchAssets: state.switchAssets,
+    }))
+  );
+
+  // Update state when initial values change
+  useEffect(() => {
+    setFromAssetDenom(initialToDenom);
+    setToAssetDenom(initialFromDenom);
+  }, [initialFromDenom, initialToDenom, setFromAssetDenom, setToAssetDenom]);
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -136,13 +147,24 @@ export function useSwapAssets({
   const { asset: fromAsset } = useSwapAsset(swapAssetParams);
   const { asset: toAsset } = useSwapAsset(toSwapAssetParams);
 
-  if (fromAsset?.coinMinimalDenom !== storeFromAsset?.coinMinimalDenom) {
-    useSwapStore.setState({ fromAsset });
-  }
+  // Update the store when assets change
+  useEffect(() => {
+    // Only update if the assets have changed
+    if (fromAsset?.coinMinimalDenom !== storeFromAsset?.coinMinimalDenom) {
+      setFromAsset(fromAsset);
+    }
 
-  if (toAsset?.coinMinimalDenom !== storeToAsset?.coinMinimalDenom) {
-    useSwapStore.setState({ toAsset });
-  }
+    if (toAsset?.coinMinimalDenom !== storeToAsset?.coinMinimalDenom) {
+      setToAsset(toAsset);
+    }
+  }, [
+    fromAsset,
+    toAsset,
+    storeFromAsset,
+    storeToAsset,
+    setFromAsset,
+    setToAsset,
+  ]);
 
   /**
    * This effect handles the scenario where the selected asset denoms do not correspond to any available
