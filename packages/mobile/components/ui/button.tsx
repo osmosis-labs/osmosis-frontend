@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -21,50 +21,59 @@ interface ButtonProps {
   icon?: React.ReactNode;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  title,
-  onPress,
-  variant = "primary",
-  buttonStyle,
-  textStyle,
-  disabled,
-  loading,
-  icon,
-}) => {
-  let variantStyles = {};
+export const Button = forwardRef<
+  React.ElementRef<typeof TouchableOpacity>,
+  ButtonProps
+>(
+  (
+    {
+      title,
+      onPress,
+      variant = "primary",
+      buttonStyle,
+      textStyle,
+      disabled,
+      loading,
+      icon,
+    },
+    ref
+  ) => {
+    let variantStyles = {};
 
-  if (variant === "outline") {
-    variantStyles = styles.outline;
-  } else if (variant === "secondary") {
-    variantStyles = styles.secondary;
-  } else if (variant === "danger") {
-    variantStyles = styles.danger;
-  } else {
-    variantStyles = styles.primary;
+    if (variant === "outline") {
+      variantStyles = styles.outline;
+    } else if (variant === "secondary") {
+      variantStyles = styles.secondary;
+    } else if (variant === "danger") {
+      variantStyles = styles.danger;
+    } else {
+      variantStyles = styles.primary;
+    }
+
+    return (
+      <TouchableOpacity
+        ref={ref}
+        style={[
+          styles.button,
+          variantStyles,
+          buttonStyle,
+          (disabled || loading) && styles.disabled,
+        ]}
+        disabled={disabled || loading}
+        onPress={onPress}
+      >
+        {loading ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <>
+            {icon}
+            <Text style={[styles.text, textStyle]}>{title}</Text>
+          </>
+        )}
+      </TouchableOpacity>
+    );
   }
-
-  return (
-    <TouchableOpacity
-      style={[
-        styles.button,
-        variantStyles,
-        buttonStyle,
-        (disabled || loading) && styles.disabled,
-      ]}
-      disabled={disabled || loading}
-      onPress={onPress}
-    >
-      {loading ? (
-        <ActivityIndicator color="#fff" />
-      ) : (
-        <>
-          {icon}
-          <Text style={[styles.text, textStyle]}>{title}</Text>
-        </>
-      )}
-    </TouchableOpacity>
-  );
-};
+);
 
 const styles = StyleSheet.create({
   button: {

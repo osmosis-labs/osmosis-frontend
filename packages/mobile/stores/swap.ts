@@ -21,6 +21,8 @@ export const useSwapStore = create(
       // Assets
       fromAsset: undefined as MinimalAsset | undefined,
       toAsset: undefined as MinimalAsset | undefined,
+      fromAssetDenom: undefined as string | undefined,
+      toAssetDenom: undefined as string | undefined,
 
       assetSearchInput: "",
       maxSlippage: new Dec(0.05),
@@ -32,6 +34,8 @@ export const useSwapStore = create(
         set((state) => ({
           fromAsset: state.toAsset,
           toAsset: state.fromAsset,
+          fromAssetDenom: state.toAssetDenom,
+          toAssetDenom: state.fromAssetDenom,
         })),
       setAssetSearchInput: (input: string) => set({ assetSearchInput: input }),
       setFromAsset: (
@@ -45,6 +49,15 @@ export const useSwapStore = create(
       ) =>
         set({
           toAsset: asset,
+        }),
+      selectAsset: (
+        direction: "in" | "out",
+        asset: RouterOutputs["local"]["assets"]["getUserAsset"] | undefined
+      ) =>
+        set({
+          [direction === "in" ? "fromAssetDenom" : "toAssetDenom"]:
+            asset?.coinMinimalDenom,
+          [direction === "in" ? "fromAsset" : "toAsset"]: asset,
         }),
     })
   )

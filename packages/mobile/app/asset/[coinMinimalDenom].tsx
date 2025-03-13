@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case */
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
@@ -59,8 +60,9 @@ const AssetRoute = () => {
           title="Trade"
           onPress={() => {
             router.push({
-              pathname: "/trade",
+              pathname: "/trade/[fromToken]",
               params: {
+                fromToken: "USDC",
                 toToken: coinMinimalDenom,
               },
             });

@@ -10,6 +10,7 @@ import {
 
 import { TransactionActivityItem } from "~/components/portfolio/transaction-activity-item";
 import { TransactionDetailsBottomSheet } from "~/components/portfolio/transaction-details-bottom-sheet";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useTransactionHistory } from "~/hooks/use-transaction-history";
@@ -53,7 +54,12 @@ export const PortfolioActivity: FunctionComponent = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        {new Array(5).fill(0).map((_, index) => (
+          <Skeleton
+            key={index}
+            style={{ width: "100%", height: ITEM_HEIGHT, borderRadius: 10 }}
+          />
+        ))}
       </View>
     );
   }
@@ -106,7 +112,9 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
+    padding: 10,
+    gap: 8,
   },
   emptyContainer: {
     flex: 1,

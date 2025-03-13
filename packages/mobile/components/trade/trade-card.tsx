@@ -52,20 +52,26 @@ export const TradeCard = memo(
       RouterOutputs["local"]["assets"]["getUserAsset"][]
     >([]);
     const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
-    const { fromAsset, toAsset } = useSwapStore(
+    const { fromAssetDenom, toAssetDenom } = useSwapStore(
       useShallow((state) => ({
-        fromAsset: state.fromAsset,
-        toAsset: state.toAsset,
+        fromAssetDenom: state.fromAssetDenom,
+        toAssetDenom: state.toAssetDenom,
       }))
     );
+
+    useEffect(() => {
+      useSwapStore.setState({
+        fromAssetDenom: initialFromDenom,
+        toAssetDenom: initialToDenom,
+        fromAsset: undefined,
+        toAsset: undefined,
+      });
+    }, [initialFromDenom, initialToDenom]);
 
     const { asset, error } = useSwapAsset({
       direction,
       existingAssets: existingAssetsRef.current,
-      minDenomOrSymbol:
-        direction === "in"
-          ? fromAsset?.coinMinimalDenom ?? initialFromDenom
-          : toAsset?.coinMinimalDenom ?? initialToDenom,
+      minDenomOrSymbol: direction === "in" ? fromAssetDenom : toAssetDenom,
     });
 
     return (
@@ -125,16 +131,14 @@ const BottomSheetSelectAsset = memo(
       (state) => state.setAssetSearchInput
     );
 
-    const { fromAsset, toAsset, switchAssets, setFromAsset, setToAsset } =
-      useSwapStore(
-        useShallow((state) => ({
-          fromAsset: state.fromAsset,
-          toAsset: state.toAsset,
-          switchAssets: state.switchAssets,
-          setFromAsset: state.setFromAsset,
-          setToAsset: state.setToAsset,
-        }))
-      );
+    const { fromAsset, toAsset, switchAssets, selectAsset } = useSwapStore(
+      useShallow((state) => ({
+        fromAsset: state.fromAsset,
+        toAsset: state.toAsset,
+        switchAssets: state.switchAssets,
+        selectAsset: state.selectAsset,
+      }))
+    );
 
     const {
       selectableAssets,
@@ -176,9 +180,6 @@ const BottomSheetSelectAsset = memo(
       >
         <TradeBottomSheetContent
           onSelectAsset={(asset) => {
-            const setAsset = () =>
-              direction === "in" ? setFromAsset(asset) : setToAsset(asset);
-
             const oppositeSelectedAsset =
               direction === "in" ? toAsset : fromAsset;
             if (
@@ -186,7 +187,7 @@ const BottomSheetSelectAsset = memo(
             ) {
               switchAssets();
             } else {
-              setAsset();
+              selectAsset(direction, asset);
             }
 
             selectAssetBottomSheetRef.current?.dismiss();

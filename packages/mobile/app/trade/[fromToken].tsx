@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/filename-case */
 import { Stack, useLocalSearchParams } from "expo-router";
 import React from "react";
 import { View } from "react-native";
@@ -8,7 +9,8 @@ import { TradeInterface } from "~/components/trade/trade-interface";
 import { Text } from "~/components/ui/text";
 
 const TradeScreen = () => {
-  const { toToken } = useLocalSearchParams<{
+  const { fromToken, toToken } = useLocalSearchParams<{
+    fromToken: string;
     toToken: string;
   }>();
 
@@ -34,7 +36,11 @@ const TradeScreen = () => {
         </RouteHeader>
       </View>
 
-      <TradeInterface initialToDenom={toToken} showGlobalSubmitButton />
+      <TradeInterface
+        initialToDenom={toToken}
+        initialFromDenom={fromToken}
+        showGlobalSubmitButton
+      />
     </SafeAreaView>
   );
 };
