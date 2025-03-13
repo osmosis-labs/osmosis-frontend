@@ -355,8 +355,19 @@ const SubmitButton = ({
   const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = useMemo(
-    () => isQuoteLoading || !!isLoadingNetworkFee || areMessagesLoading,
-    [isLoadingNetworkFee, isQuoteLoading, areMessagesLoading]
+    () =>
+      isQuoteLoading ||
+      !!isLoadingNetworkFee ||
+      areMessagesLoading ||
+      quote?.amountIn.toCoin().amount !==
+        inAmountInput?.amount?.toCoin().amount,
+    [
+      isQuoteLoading,
+      isLoadingNetworkFee,
+      areMessagesLoading,
+      quote?.amountIn,
+      inAmountInput?.amount,
+    ]
   );
 
   useLayoutEffect(() => {
@@ -381,7 +392,8 @@ const SubmitButton = ({
       !Boolean(quote) ||
       isSwapToolLoading ||
       Boolean(error) ||
-      Boolean(networkFeeError));
+      Boolean(networkFeeError) ||
+      outAmountInput?.isEmpty);
 
   const highPriceImpact =
     quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ?? false;

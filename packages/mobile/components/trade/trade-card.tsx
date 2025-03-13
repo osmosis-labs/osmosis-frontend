@@ -3,20 +3,14 @@ import {
   BottomSheetBackdropProps,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import { Dec } from "@osmosis-labs/unit";
-import { PricePretty } from "@osmosis-labs/unit";
-import {
-  DEFAULT_VS_CURRENCY,
-  formatPretty,
-  getPriceExtendedFormatOptions,
-  trimPlaceholderZeros,
-} from "@osmosis-labs/utils";
+import { formatPretty, trimPlaceholderZeros } from "@osmosis-labs/utils";
 import equal from "fast-deep-equal";
 import React, {
   memo,
   MutableRefObject,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
 } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
@@ -33,6 +27,7 @@ import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
 import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
 import { useSwapAssets } from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
+import { formatFiatValueCompact } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 type TradeCardProps = {
@@ -85,7 +80,7 @@ export const TradeCard = memo(
             disabled={disabled}
           />
         ) : (
-          <Skeleton isLoaded={!!error}>
+          <Skeleton style={{ borderRadius: 12 }} isLoaded={!!error}>
             <TouchableOpacity
               style={styles.tradeCard}
               activeOpacity={0.8}
@@ -232,6 +227,36 @@ const SelectedAssetCard = memo(
       amountInput.toggleMax();
     }, [amountInput]);
 
+    const getFontSize = useCallback((value: string) => {
+      const length = value?.length || 0;
+      if (length >= 12) return 22;
+      if (length >= 11) return 24;
+      if (length >= 10) return 26;
+      if (length >= 9) return 28;
+      if (length >= 8) return 30;
+      if (length >= 7) return 32;
+      return 36;
+    }, []);
+
+    const inputValue = useMemo(() => {
+      if (disabled && amountInput.amount) {
+        return trimPlaceholderZeros(
+          formatPretty(amountInput.amount?.toDec(), {
+            minimumSignificantDigits: 6,
+            maximumSignificantDigits: 6,
+            maxDecimals: 10,
+            notation: "standard",
+          })
+        ).replace(/,/g, "");
+      }
+      return amountInput.inputAmount;
+    }, [disabled, amountInput.amount, amountInput.inputAmount]);
+
+    // Calculate the font size based on the input value
+    const fontSize = useMemo(() => {
+      return getFontSize(inputValue);
+    }, [getFontSize, inputValue]);
+
     useEffect(() => {
       const { inAmountInput, outAmountInput } = useSwapStore.getState();
 
@@ -261,18 +286,7 @@ const SelectedAssetCard = memo(
         <View style={styles.amountContainer}>
           <TextInput
             ref={inputRef}
-            value={
-              disabled && amountInput.amount
-                ? trimPlaceholderZeros(
-                    formatPretty(amountInput.amount?.toDec(), {
-                      minimumSignificantDigits: 6,
-                      maximumSignificantDigits: 6,
-                      maxDecimals: 10,
-                      notation: "standard",
-                    })
-                  ).replace(/,/g, "")
-                : amountInput.inputAmount
-            }
+            value={inputValue}
             keyboardType="decimal-pad"
             placeholder="0"
             placeholderTextColor={Colors["osmoverse"][400]}
@@ -281,20 +295,15 @@ const SelectedAssetCard = memo(
             style={[
               styles.amountInput,
               isSwapToolLoading && disabled && styles.amountInputDisabled,
+              { fontSize: fontSize },
             ]}
             editable={!disabled}
             contextMenuHidden={true}
+            scrollEnabled={true}
+            autoFocus
           />
           <Text style={styles.fiatValue}>
-            {formatPretty(
-              amountInput.fiatValue ??
-                new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-              amountInput.fiatValue?.toDec() && {
-                ...getPriceExtendedFormatOptions(
-                  amountInput.fiatValue?.toDec()
-                ),
-              }
-            )}
+            {formatFiatValueCompact(amountInput.fiatValue)}
           </Text>
         </View>
 
@@ -374,6 +383,8 @@ const styles = StyleSheet.create({
     fontSize: 36,
     fontWeight: "500",
     color: "#ffffff",
+    width: "100%",
+    minHeight: 43,
   },
   amountInputDisabled: {
     opacity: 0.5,

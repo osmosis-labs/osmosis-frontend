@@ -35,7 +35,6 @@ export function useSwapAmountInput({ direction }: { direction: "in" | "out" }) {
   const amountInput = useAmountInput({
     currency: asset,
     gasAmount: gasAmount,
-    inputDebounceMs: 500,
   });
 
   const balanceQuoteQueryEnabled = useMemo(

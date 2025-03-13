@@ -31,8 +31,6 @@ export const gasRouter = createTRPCRouter({
 
       const { chainList } = ctx;
 
-      console.log("aa");
-
       const { estimateGasFee, decodeAnyBase64 } = await import(
         "@osmosis-labs/tx"
       );
