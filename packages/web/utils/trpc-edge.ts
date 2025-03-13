@@ -7,10 +7,16 @@ import type { RouterOutputs } from "~/utils/trpc";
 
 export type EdgeRouterKey = keyof RouterOutputs["edge"];
 
-export const constructEdgeRouterKey = (type: EdgeRouterKey | "main") => {
+// Re-define this function to include 'EdgeRouterKey' for better type safety
+export const constructEdgeRouterKey = (
+  type: EdgeRouterKey | "main" | "mobile"
+) => {
   return constructEdgeRouterKeyUtils(type);
 };
 
-export const constructEdgeUrlPathname = (type: EdgeRouterKey | "main") => {
+// Re-define this function to include 'EdgeRouterKey' for better type safety
+export const constructEdgeUrlPathname = (
+  type: EdgeRouterKey | "main" | "mobile"
+) => {
   return constructEdgeUrlPathnameUtils(type);
 };

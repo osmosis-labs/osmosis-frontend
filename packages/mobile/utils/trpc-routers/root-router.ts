@@ -1,11 +1,15 @@
-import { createTRPCRouter } from "@osmosis-labs/trpc";
+import {
+  createTRPCRouter,
+  mobileEdgeRouter,
+  mobileNodeRouter,
+} from "@osmosis-labs/trpc";
 
 import { localRouter } from "./local-router";
-import { osmosisFeRouter } from "./osmosis-fe-router";
 
 export const appRouter = createTRPCRouter({
   local: localRouter,
-  osmosisFe: osmosisFeRouter,
+  osmosisFeEdge: mobileEdgeRouter,
+  osmosisFeNode: mobileNodeRouter,
 });
 
 export type AppRouter = typeof appRouter;

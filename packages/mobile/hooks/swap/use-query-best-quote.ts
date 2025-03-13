@@ -91,7 +91,7 @@ export function useQueryRouterBestQuote(
     [queryOptions, enabled, quoteType]
   );
 
-  const inGivenOutQuote = api.local.quoteRouter.routeTokenInGivenOut.useQuery(
+  const inGivenOutQuote = api.osmosisFeNode.quote.routeTokenInGivenOut.useQuery(
     inGivenOutParams,
     inGivenOutOptions
   );
@@ -121,7 +121,7 @@ export function useQueryRouterBestQuote(
     [queryOptions, enabled, quoteType]
   );
 
-  const outGivenInQuote = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
+  const outGivenInQuote = api.osmosisFeNode.quote.routeTokenOutGivenIn.useQuery(
     outGivenInParams,
     outGivenInOptions
   );

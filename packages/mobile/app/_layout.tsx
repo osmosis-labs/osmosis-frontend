@@ -123,17 +123,25 @@ export default function RootLayout() {
                 }),
               opentelemetryServiceName: "osmosis-mobile",
             })(runtime),
-            [constructEdgeRouterKey("main")]: makeSkipBatchLink(
+            [constructEdgeRouterKey("mobile")]: makeSkipBatchLink(
               removeLastSlash(
                 process.env.EXPO_PUBLIC_OSMOSIS_BE_BASE_URL ?? ""
-              ) + constructEdgeUrlPathname("main")
+              ) + constructEdgeUrlPathname("mobile")
+            )(runtime),
+            ["trpc-mobile"]: makeSkipBatchLink(
+              removeLastSlash(
+                process.env.EXPO_PUBLIC_OSMOSIS_BE_BASE_URL ?? ""
+              ) + `/api/trpc-mobile`
             )(runtime),
           };
 
           return (ctx) => {
             const { op } = ctx;
             const pathParts = op.path.split(".");
-            const basePath = pathParts.shift() as string | "osmosisFe";
+            const basePath = pathParts.shift() as
+              | string
+              | "osmosisFeEdge"
+              | "osmosisFeNode";
 
             /**
              * Combine the rest of the parts of the paths. This is what we're actually calling on the edge server.
@@ -141,8 +149,18 @@ export default function RootLayout() {
              */
             const possibleOsmosisFePath = pathParts.join(".");
 
-            if (basePath === "osmosisFe") {
-              return servers[constructEdgeRouterKey("main")]({
+            if (basePath === "osmosisFeEdge") {
+              return servers[constructEdgeRouterKey("mobile")]({
+                ...ctx,
+                op: {
+                  ...op,
+                  path: possibleOsmosisFePath,
+                },
+              });
+            }
+
+            if (basePath === "osmosisFeNode") {
+              return servers["trpc-mobile"]({
                 ...ctx,
                 op: {
                   ...op,

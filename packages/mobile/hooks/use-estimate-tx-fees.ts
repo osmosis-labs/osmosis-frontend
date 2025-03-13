@@ -1,22 +1,21 @@
 import type { EncodeObject } from "@cosmjs/proto-signing";
-import { DEFAULT_VS_CURRENCY, superjson } from "@osmosis-labs/server";
+import { superjson } from "@osmosis-labs/server";
 import {
   InsufficientBalanceForFeeError,
   SwapRequiresError,
 } from "@osmosis-labs/stores";
 import {
-  estimateGasFee,
+  encodeAnyBase64,
   getRegistry,
   getSmartAccountExtensionOptions,
   QuoteStdFee,
 } from "@osmosis-labs/tx";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
-import { QueryClient, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 import { useWallets } from "~/hooks/use-wallets";
-import { getCachedAssetListAndChains } from "~/utils/asset-lists";
 import { api } from "~/utils/trpc";
 
 interface QueryResult {
@@ -30,14 +29,12 @@ async function estimateTxFeesQueryFn({
   messages,
   apiUtils,
   chainId,
-  queryClient,
   address,
   authenticatorId,
 }: {
   chainId: string;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
-  queryClient: QueryClient;
   address: string | undefined;
   authenticatorId: string | undefined;
 }): Promise<QueryResult> {
@@ -47,45 +44,19 @@ async function estimateTxFeesQueryFn({
   const registry = await getRegistry();
   const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
-  const { chainList } = await getCachedAssetListAndChains({
-    queryClient,
-    environment: "mainnet",
-  });
-
-  const { amount, gas } = await estimateGasFee({
+  return apiUtils.osmosisFeNode.gas.estimateTxFees.ensureData({
     chainId,
-    chainList,
     bech32Address: address,
-    body: {
-      messages: encodedMessages,
-      nonCriticalExtensionOptions: authenticatorId
-        ? await getSmartAccountExtensionOptions({
+    messages: encodedMessages.map((m) => encodeAnyBase64(m)),
+    nonCriticalExtensionOptions: authenticatorId
+      ? (
+          await getSmartAccountExtensionOptions({
             authenticatorId,
           })
-        : undefined,
-    },
+        ).map((m) => encodeAnyBase64(m))
+      : undefined,
     gasMultiplier: 1.5,
   });
-
-  const fee = amount[0];
-  const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
-
-  if (!fee || !asset?.currentPrice) {
-    throw new Error("Failed to estimate fees");
-  }
-
-  const coinAmountDec = new Dec(fee.amount);
-  const usdValue = coinAmountDec
-    .quo(DecUtils.getTenExponentN(asset.coinDecimals))
-    .mul(asset.currentPrice.toDec());
-  const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
-
-  return {
-    gasUsdValueToPay,
-    gasAmount: new CoinPretty(asset, coinAmountDec),
-    gasLimit: gas,
-    amount,
-  };
 }
 
 export function useEstimateTxFees({
@@ -99,7 +70,6 @@ export function useEstimateTxFees({
 }) {
   const apiUtils = api.useUtils();
   const { currentWallet } = useWallets();
-  const queryClient = useQueryClient();
 
   const queryResult = useQuery<QueryResult, Error, QueryResult, string[]>({
     queryKey: ["estimate-tx-fees", superjson.stringify(messages)],
@@ -108,7 +78,6 @@ export function useEstimateTxFees({
         messages: messages!,
         apiUtils,
         chainId,
-        queryClient,
         address: currentWallet?.address,
         authenticatorId:
           currentWallet?.type === "smart-account"
@@ -156,19 +125,4 @@ export function useEstimateTxFees({
   }, [queryResult.error]);
 
   return { ...queryResult, error: specificError };
-}
-
-function getCachedAssetWithPrice(
-  apiUtils: ReturnType<typeof api.useUtils>,
-  coinMinimalDenom: string
-) {
-  return apiUtils.local.assets.getAssetWithPrice.ensureData(
-    {
-      findMinDenomOrSymbol: coinMinimalDenom,
-    },
-    {
-      staleTime: 1000 * 10, // 10 seconds
-      cacheTime: 1000 * 10, // 10 seconds
-    }
-  );
 }

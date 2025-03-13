@@ -865,11 +865,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (memo === "") {
-      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "osmosisFeEdge" so we know it originated from the frontend for
       // QA purposes.
-      memo = "OsmosisFE";
+      memo = "osmosisFeEdge";
     } else {
-      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      // Otherwise, tack on "osmosisFeEdge" to the end of the memo.
       memo += " \nOsmosisFE";
     }
 
@@ -1063,11 +1063,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     pubkey.typeUrl = pubKeyTypeUrl;
 
     if (memo === "") {
-      // If the memo is empty, set it to "OsmosisFE" so we know it originated from the frontend for
+      // If the memo is empty, set it to "osmosisFeEdge" so we know it originated from the frontend for
       // QA purposes.
-      memo = "OsmosisFE";
+      memo = "osmosisFeEdge";
     } else {
-      // Otherwise, tack on "OsmosisFE" to the end of the memo.
+      // Otherwise, tack on "osmosisFeEdge" to the end of the memo.
       memo += " \nOsmosisFE";
     }
 

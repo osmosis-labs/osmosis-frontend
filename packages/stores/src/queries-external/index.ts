@@ -1,4 +1,5 @@
 export * from "./active-gauges";
+export * from "./base";
 export * from "./concentrated-liquidity";
 export * from "./constants";
 export * from "./ibc";

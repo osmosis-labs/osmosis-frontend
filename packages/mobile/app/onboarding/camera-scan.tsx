@@ -62,8 +62,8 @@ const useWalletCreationWebRTC = ({
 
   const apiUtils = api.useUtils();
   const postCandidateMutation =
-    api.osmosisFe.webRTC.postCandidate.useMutation();
-  const postAnswerMutation = api.osmosisFe.webRTC.postAnswer.useMutation();
+    api.osmosisFeEdge.webRTC.postCandidate.useMutation();
+  const postAnswerMutation = api.osmosisFeEdge.webRTC.postAnswer.useMutation();
 
   // Keep a reference to the peer connection
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
@@ -81,9 +81,10 @@ const useWalletCreationWebRTC = ({
         if (isCleanedUp) return;
 
         // 1) Fetch the offer
-        const offerRes = await apiUtils.osmosisFe.webRTC.fetchOffer.ensureData({
-          sessionToken,
-        });
+        const offerRes =
+          await apiUtils.osmosisFeEdge.webRTC.fetchOffer.ensureData({
+            sessionToken,
+          });
         if (!offerRes.offerSDP) {
           setStatus("NoOffer");
           return;
@@ -226,7 +227,7 @@ const useWalletCreationWebRTC = ({
         // 7) Start polling for desktop ICE candidates
         intervalId = setInterval(async () => {
           const candRes =
-            await apiUtils.osmosisFe.webRTC.fetchCandidates.ensureData({
+            await apiUtils.osmosisFeEdge.webRTC.fetchCandidates.ensureData({
               sessionToken,
             });
           const candidates = candRes.candidates || [];
