@@ -14,9 +14,7 @@ import {
   isNil,
 } from "@osmosis-labs/utils";
 import { ThemeProvider } from "@react-navigation/native";
-import { createSyncStoragePersister } from "@tanstack/query-sync-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { persistQueryClient } from "@tanstack/react-query-persist-client";
 import { loggerLink } from "@trpc/client";
 import { useFonts } from "expo-font";
 import { Redirect, Stack } from "expo-router";
@@ -34,8 +32,7 @@ import { useWallets } from "~/hooks/use-wallets";
 import { useCurrentWalletStore } from "~/stores/current-wallet";
 import { useKeyringStore } from "~/stores/keyring";
 import { getCachedAssetListAndChains } from "~/utils/asset-lists";
-import { mmkvStorage } from "~/utils/mmkv";
-import { api, RouterKeys } from "~/utils/trpc";
+import { api } from "~/utils/trpc";
 import { appRouter } from "~/utils/trpc-routers/root-router";
 
 const queryClient = new QueryClient({
@@ -46,51 +43,53 @@ const queryClient = new QueryClient({
   },
 });
 
-const localStoragePersister = createSyncStoragePersister({
-  storage: mmkvStorage,
-  serialize: (client) => {
-    try {
-      return superjson.stringify(client);
-    } catch (error) {
-      console.error("Error serializing client", error);
-      return "";
-    }
-  },
-  deserialize: (cachedString) => superjson.parse(cachedString),
-});
+// Disable this as serialization was too expensive and was slowing the whole app down.
+// TODO: Re-enable this once we have a better way to persist the query client.
+// const localStoragePersister = createSyncStoragePersister({
+//   storage: mmkvStorage,
+//   serialize: (client) => {
+//     try {
+//       return superjson.stringify(client);
+//     } catch (error) {
+//       console.error("Error serializing client", error);
+//       return "";
+//     }
+//   },
+//   deserialize: (cachedString) => superjson.parse(cachedString),
+// });
 
-persistQueryClient({
-  queryClient,
-  persister: localStoragePersister,
-  dehydrateOptions: {
-    shouldDehydrateQuery: (query) => {
-      const [key] = query.queryKey as [string[]];
-      if (Array.isArray(key)) {
-        const trpcKey = key.join(".") as RouterKeys;
-        const excludedKeys: RouterKeys[] = [
-          "local.assets.getAssetHistoricalPrice",
-          "local.oneClickTrading.getSessionAuthenticator",
-        ];
+// persistQueryClient({
+//   queryClient,
+//   persister: localStoragePersister,
+//   dehydrateOptions: {
+//     shouldDehydrateQuery: (query) => {
+//       const [key] = query.queryKey as [string[]];
+//       if (Array.isArray(key)) {
+//         const trpcKey = key.join(".") as RouterKeys;
+//         const excludedKeys: RouterKeys[] = [
+//           "local.assets.getAssetHistoricalPrice",
+//           "local.oneClickTrading.getSessionAuthenticator",
+//         ];
 
-        /**
-         * If the key is in the excludedKeys, we don't want to persist it in the cache.
-         */
-        if (excludedKeys.includes(trpcKey)) {
-          return false;
-        }
-      }
-      return true;
-    },
-  },
-  // !! IMPORTANT !!
-  // If you change a data model,
-  // it's important to bump this buster value
-  // so that the cache is invalidated
-  // and data respecting the new model is fetched from the server.
-  // Otherwise, the old data will be served from cache
-  // and unexpected data structures will be run through the app.
-  buster: "v1",
-});
+//         /**
+//          * If the key is in the excludedKeys, we don't want to persist it in the cache.
+//          */
+//         if (excludedKeys.includes(trpcKey)) {
+//           return false;
+//         }
+//       }
+//       return true;
+//     },
+//   },
+//   // !! IMPORTANT !!
+//   // If you change a data model,
+//   // it's important to bump this buster value
+//   // so that the cache is invalidated
+//   // and data respecting the new model is fetched from the server.
+//   // Otherwise, the old data will be served from cache
+//   // and unexpected data structures will be run through the app.
+//   buster: "v1",
+// });
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

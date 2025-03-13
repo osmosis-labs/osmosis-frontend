@@ -12,14 +12,7 @@ import {
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
 import equal from "fast-deep-equal";
-import React, {
-  memo,
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-} from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
@@ -219,7 +212,7 @@ const SelectedAssetCard = memo(
       amountInput.toggleMax();
     }, [amountInput]);
 
-    useLayoutEffect(() => {
+    useEffect(() => {
       const { inAmountInput, outAmountInput } = useSwapStore.getState();
 
       if (direction === "in") {
