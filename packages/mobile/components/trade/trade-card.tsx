@@ -11,6 +11,7 @@ import {
   getPriceExtendedFormatOptions,
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
+import equal from "fast-deep-equal";
 import React, {
   memo,
   useCallback,
@@ -219,14 +220,20 @@ const SelectedAssetCard = memo(
     }, [amountInput]);
 
     useLayoutEffect(() => {
+      const { inAmountInput, outAmountInput } = useSwapStore.getState();
+
       if (direction === "in") {
-        useSwapStore.setState({
-          inAmountInput: amountInput,
-        });
+        if (!equal(inAmountInput, amountInput)) {
+          useSwapStore.setState({
+            inAmountInput: amountInput,
+          });
+        }
       } else {
-        useSwapStore.setState({
-          outAmountInput: amountInput,
-        });
+        if (!equal(outAmountInput, amountInput)) {
+          useSwapStore.setState({
+            outAmountInput: amountInput,
+          });
+        }
       }
     }, [amountInput, direction]);
 
