@@ -8,6 +8,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -129,6 +130,10 @@ export function TradeInterface({
 }
 
 const NumberPad = memo(function NumberPad() {
+  const [deleteInterval, setDeleteInterval] = useState<NodeJS.Timeout | null>(
+    null
+  );
+
   const onNumberClick = (num: string) => {
     const { inAmountInput, outAmountInput } = useSwapStore.getState();
 
@@ -175,6 +180,47 @@ const NumberPad = memo(function NumberPad() {
       outAmountInput.setAmount("");
     }
   };
+
+  const startContinuousDelete = () => {
+    // First delete immediately
+    onDelete();
+
+    // Then set up interval to continue deleting
+    const interval = setInterval(() => {
+      const { inAmountInput } = useSwapStore.getState();
+      if (
+        !inAmountInput ||
+        !inAmountInput.inputAmount ||
+        inAmountInput.inputAmount.length === 0
+      ) {
+        // Stop deleting if there's nothing left
+        if (deleteInterval) {
+          clearInterval(deleteInterval);
+          setDeleteInterval(null);
+        }
+        return;
+      }
+      onDelete();
+    }, 150); // Delete every 150ms
+
+    setDeleteInterval(interval);
+  };
+
+  const stopContinuousDelete = () => {
+    if (deleteInterval) {
+      clearInterval(deleteInterval);
+      setDeleteInterval(null);
+    }
+  };
+
+  // Clean up interval on unmount
+  useEffect(() => {
+    return () => {
+      if (deleteInterval) {
+        clearInterval(deleteInterval);
+      }
+    };
+  }, [deleteInterval]);
 
   return (
     <View style={styles.numberPad}>
@@ -257,6 +303,9 @@ const NumberPad = memo(function NumberPad() {
         <TouchableOpacity
           style={[styles.numberButton, styles.deleteButton]}
           onPress={onDelete}
+          onLongPress={startContinuousDelete}
+          onPressOut={stopContinuousDelete}
+          delayLongPress={500} // Start continuous delete after 500ms
         >
           <ArrowLeftIcon width={28} height={28} fill="#fff" />
         </TouchableOpacity>

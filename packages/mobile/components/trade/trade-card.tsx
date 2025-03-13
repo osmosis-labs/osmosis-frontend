@@ -26,6 +26,7 @@ import { PlusIcon } from "~/components/icons/plus-icon";
 import { TradeBottomSheetContent } from "~/components/trade/trade-bottom-sheet-content";
 import { AssetImage } from "~/components/ui/asset-image";
 import { Button } from "~/components/ui/button";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
@@ -63,7 +64,7 @@ export const TradeCard = memo(
       }))
     );
 
-    const { asset } = useSwapAsset({
+    const { asset, error } = useSwapAsset({
       direction,
       existingAssets: existingAssetsRef.current,
       minDenomOrSymbol:
@@ -84,21 +85,23 @@ export const TradeCard = memo(
             disabled={disabled}
           />
         ) : (
-          <TouchableOpacity
-            style={styles.tradeCard}
-            activeOpacity={0.8}
-            onPress={() => {
-              selectAssetBottomSheetRef.current?.present();
-            }}
-          >
-            <View style={styles.addButton}>
-              <PlusIcon width={24} height={24} />
-            </View>
-            <View>
-              <Text style={styles.tradeCardTitle}>{title}</Text>
-              <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
-            </View>
-          </TouchableOpacity>
+          <Skeleton isLoaded={!!error}>
+            <TouchableOpacity
+              style={styles.tradeCard}
+              activeOpacity={0.8}
+              onPress={() => {
+                selectAssetBottomSheetRef.current?.present();
+              }}
+            >
+              <View style={styles.addButton}>
+                <PlusIcon width={24} height={24} />
+              </View>
+              <View>
+                <Text style={styles.tradeCardTitle}>{title}</Text>
+                <Text style={styles.tradeCardSubtitle}>{subtitle}</Text>
+              </View>
+            </TouchableOpacity>
+          </Skeleton>
         )}
 
         <BottomSheetSelectAsset
@@ -343,6 +346,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
+    minHeight: 101,
   },
   addButton: {
     backgroundColor: "#2c2d43",

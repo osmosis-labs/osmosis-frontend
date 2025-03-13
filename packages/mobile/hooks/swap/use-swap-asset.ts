@@ -25,7 +25,11 @@ export function useSwapAsset<
       setToAsset: state.setToAsset,
     }))
   );
-  const { data: asset, isLoading } = api.local.assets.getUserAsset.useQuery(
+  const {
+    data: asset,
+    isLoading,
+    error,
+  } = api.local.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: minDenomOrSymbol!,
       userOsmoAddress: currentWallet?.address,
@@ -77,5 +81,6 @@ export function useSwapAsset<
 
   return {
     asset: currentAsset,
+    error,
   };
 }
