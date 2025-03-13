@@ -44,7 +44,7 @@ async function estimateTxFeesQueryFn({
   const registry = await getRegistry();
   const encodedMessages = messages.map((m) => registry.encodeAsAny(m));
 
-  return apiUtils.osmosisFeNode.gas.estimateTxFees.ensureData({
+  return apiUtils.local.gas.estimateTxFees.ensureData({
     chainId,
     bech32Address: address,
     messages: encodedMessages.map((m) => encodeAnyBase64(m)),

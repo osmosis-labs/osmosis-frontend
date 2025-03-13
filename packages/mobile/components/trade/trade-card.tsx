@@ -12,7 +12,13 @@ import {
   trimPlaceholderZeros,
 } from "@osmosis-labs/utils";
 import equal from "fast-deep-equal";
-import React, { memo, useCallback, useEffect, useMemo, useRef } from "react";
+import React, {
+  memo,
+  MutableRefObject,
+  useCallback,
+  useEffect,
+  useRef,
+} from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import { useShallow } from "zustand/react/shallow";
 
@@ -23,23 +29,33 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
-import {
-  useSwapAssets,
-  UseSwapAssetsReturn,
-} from "~/hooks/swap/use-swap-assets";
+import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
+import { useSwapAssets } from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
+import { RouterOutputs } from "~/utils/trpc";
 
 type TradeCardProps = {
   title: string;
   subtitle: string;
   disabled?: boolean;
   direction: "in" | "out";
+  initialToDenom: string;
+  initialFromDenom: string;
 };
 
 export const TradeCard = memo(
-  ({ title, subtitle, disabled, direction }: TradeCardProps) => {
+  ({
+    title,
+    subtitle,
+    disabled,
+    direction,
+    initialToDenom,
+    initialFromDenom,
+  }: TradeCardProps) => {
+    const existingAssetsRef = useRef<
+      RouterOutputs["local"]["assets"]["getUserAsset"][]
+    >([]);
     const selectAssetBottomSheetRef = useRef<BottomSheetModal>(null);
-
     const { fromAsset, toAsset } = useSwapStore(
       useShallow((state) => ({
         fromAsset: state.fromAsset,
@@ -47,9 +63,14 @@ export const TradeCard = memo(
       }))
     );
 
-    const asset = useMemo(() => {
-      return direction === "in" ? fromAsset : toAsset;
-    }, [direction, fromAsset, toAsset]);
+    const { asset } = useSwapAsset({
+      direction,
+      existingAssets: existingAssetsRef.current,
+      minDenomOrSymbol:
+        direction === "in"
+          ? fromAsset?.coinMinimalDenom ?? initialFromDenom
+          : toAsset?.coinMinimalDenom ?? initialToDenom,
+    });
 
     return (
       <>
@@ -83,6 +104,7 @@ export const TradeCard = memo(
         <BottomSheetSelectAsset
           selectAssetBottomSheetRef={selectAssetBottomSheetRef}
           direction={direction}
+          existingAssetsRef={existingAssetsRef}
         />
       </>
     );
@@ -93,33 +115,28 @@ const BottomSheetSelectAsset = memo(
   ({
     selectAssetBottomSheetRef,
     direction,
+    existingAssetsRef,
   }: {
     selectAssetBottomSheetRef: React.RefObject<BottomSheetModal>;
     direction: "in" | "out";
+    existingAssetsRef: MutableRefObject<
+      RouterOutputs["local"]["assets"]["getUserAsset"][]
+    >;
   }): JSX.Element => {
     const setAssetSearchInput = useSwapStore(
       (state) => state.setAssetSearchInput
     );
 
-    const {
-      fromAsset,
-      toAsset,
-      switchAssets,
-      initialFromDenom,
-      initialToDenom,
-      setFromAsset,
-      setToAsset,
-    } = useSwapStore(
-      useShallow((state) => ({
-        fromAsset: state.fromAsset,
-        toAsset: state.toAsset,
-        switchAssets: state.switchAssets,
-        initialFromDenom: state.initialFromDenom,
-        initialToDenom: state.initialToDenom,
-        setFromAsset: state.setFromAsset,
-        setToAsset: state.setToAsset,
-      }))
-    );
+    const { fromAsset, toAsset, switchAssets, setFromAsset, setToAsset } =
+      useSwapStore(
+        useShallow((state) => ({
+          fromAsset: state.fromAsset,
+          toAsset: state.toAsset,
+          switchAssets: state.switchAssets,
+          setFromAsset: state.setFromAsset,
+          setToAsset: state.setToAsset,
+        }))
+      );
 
     const {
       selectableAssets,
@@ -129,9 +146,9 @@ const BottomSheetSelectAsset = memo(
       hasNextPageAssets: hasNextPage,
       isFetchingNextPageAssets: isFetchingNextPage,
     } = useSwapAssets({
-      initialFromDenom: initialFromDenom,
-      initialToDenom: initialToDenom,
+      existingAssetsRef,
     });
+
     return (
       <BottomSheetModal
         ref={selectAssetBottomSheetRef}
@@ -195,7 +212,7 @@ const SelectedAssetCard = memo(
     disabled,
     direction,
   }: {
-    asset: NonNullable<UseSwapAssetsReturn["fromAsset"]>;
+    asset: NonNullable<ReturnType<typeof useSwapAsset>["asset"]>;
     onPressAsset: () => void;
     disabled?: boolean;
     direction: "in" | "out";

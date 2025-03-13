@@ -36,6 +36,8 @@ interface TradeInterfaceProps {
 const atomMinimalDenom =
   "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
 
+const DefaultDenoms = ["ATOM", "OSMO"];
+
 export function TradeInterface({
   showGlobalSubmitButton = false,
   initialFromDenom: initialFromDenomProp,
@@ -45,20 +47,18 @@ export function TradeInterface({
     () =>
       initialToDenomProp?.toLowerCase() === atomMinimalDenom.toLowerCase()
         ? "OSMO"
-        : initialFromDenomProp ?? "ATOM",
+        : initialFromDenomProp ??
+          DefaultDenoms.filter((denom) => denom !== initialToDenomProp)[0],
     [initialFromDenomProp, initialToDenomProp]
   );
   const initialToDenom = useMemo(
-    () => initialToDenomProp ?? "OSMO",
-    [initialToDenomProp]
+    () =>
+      initialToDenomProp ??
+      DefaultDenoms.filter((denom) => denom !== initialFromDenom)[0],
+    [initialToDenomProp, initialFromDenom]
   );
 
-  const setInitialDenoms = useSwapStore((state) => state.setInitialDenoms);
   const switchAssets = useSwapStore((state) => state.switchAssets);
-
-  useLayoutEffect(() => {
-    setInitialDenoms(initialFromDenom, initialToDenom);
-  }, [initialFromDenom, initialToDenom, setInitialDenoms]);
 
   return (
     <>
@@ -77,7 +77,13 @@ export function TradeInterface({
           </View>
 
           <View style={styles.tradeCardsContainer}>
-            <TradeCard title="Pay" subtitle="Choose Asset" direction="in" />
+            <TradeCard
+              title="Pay"
+              subtitle="Choose Asset"
+              direction="in"
+              initialToDenom={initialToDenom}
+              initialFromDenom={initialFromDenom}
+            />
 
             <View style={styles.swapButtonContainer}>
               <TouchableOpacity
@@ -94,6 +100,8 @@ export function TradeInterface({
               subtitle="Choose Asset"
               direction="out"
               disabled
+              initialToDenom={initialToDenom}
+              initialFromDenom={initialFromDenom}
             />
           </View>
 
@@ -291,14 +299,15 @@ const SubmitButton = ({
     quote,
     tokenOutFiatValue,
     networkFee,
+    areMessagesLoading,
   } = useSwapQuote();
 
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
   const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
 
   const isSwapToolLoading = useMemo(
-    () => isQuoteLoading || !!isLoadingNetworkFee,
-    [isLoadingNetworkFee, isQuoteLoading]
+    () => isQuoteLoading || !!isLoadingNetworkFee || areMessagesLoading,
+    [isLoadingNetworkFee, isQuoteLoading, areMessagesLoading]
   );
 
   useLayoutEffect(() => {

@@ -5,10 +5,10 @@ import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { AssetImage } from "~/components/ui/asset-image";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { UseSwapAssetsReturn } from "~/hooks/use-swap";
+import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
 
 type BottomSheetAssetItemProps = {
-  asset: UseSwapAssetsReturn["selectableAssets"][number];
+  asset: NonNullable<ReturnType<typeof useSwapAsset>["asset"]>;
   type?: "recommended" | "selectable";
   onClick: () => void;
 };

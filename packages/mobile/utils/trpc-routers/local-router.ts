@@ -3,6 +3,7 @@ import {
   balancesRouter,
   cmsRouter,
   createTRPCRouter,
+  gasRouter,
   oneClickTradingRouter,
   portfolioRouter,
   swapRouter,
@@ -20,4 +21,5 @@ export const localRouter = createTRPCRouter({
   cms: cmsRouter,
   oneClickTrading: oneClickTradingRouter,
   transactions: transactionsRouter,
+  gas: gasRouter,
 });

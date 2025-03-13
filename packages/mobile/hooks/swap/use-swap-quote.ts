@@ -173,6 +173,7 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
     data: outGivenInQuote,
     isLoading: isQuoteLoading_,
     errorMsg: quoteErrorMsg,
+    areMessagesLoading: areOutGivenInMessagesLoading,
   } = useQueryRouterBestQuote(
     outGivenInQuoteParams,
     quoteQueryEnabled,
@@ -183,6 +184,7 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
     data: inGivenOutQuote,
     isLoading: isInGivenOutQuoteLoading_,
     errorMsg: inGivenOutQuoteError,
+    areMessagesLoading: areInGivenOutMessagesLoading,
   } = useQueryRouterBestQuote(
     inGivenOutQuoteParams,
     inGivenOutQuoteEnabled,
@@ -344,36 +346,37 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
     quoteType,
   ]);
 
-  const networkFeeQueryEnabled = useMemo(
-    () =>
+  const networkFeeQueryEnabled = useMemo(() => {
+    const amountInput =
+      quoteType === "out-given-in" ? inAmountInput : outAmountInput;
+    const queryQuoteEnabled_ =
+      quoteType === "out-given-in" ? quoteQueryEnabled : inGivenOutQuoteEnabled;
+
+    return (
       !precedentError &&
       !isQuoteLoading &&
-      (quoteQueryEnabled || inGivenOutQuoteEnabled) &&
+      queryQuoteEnabled_ &&
       Boolean(quote?.messages) &&
       Boolean(currentWallet?.address) &&
-      inAmountInput?.debouncedInAmount !== null &&
-      inAmountInput?.balance &&
-      inAmountInput?.amount &&
-      inAmountInput?.debouncedInAmount
+      amountInput?.debouncedInAmount !== null &&
+      amountInput?.balance &&
+      amountInput?.amount &&
+      amountInput?.debouncedInAmount
         .toDec()
-        .lte(inAmountInput?.balance?.toDec()) &&
-      inAmountInput?.amount?.toDec().lte(inAmountInput?.balance?.toDec()) &&
-      outAmountInput?.debouncedInAmount !== null &&
-      Boolean(outAmountInput?.amount),
-    [
-      precedentError,
-      isQuoteLoading,
-      quoteQueryEnabled,
-      inGivenOutQuoteEnabled,
-      quote?.messages,
-      currentWallet?.address,
-      inAmountInput?.debouncedInAmount,
-      inAmountInput?.balance,
-      inAmountInput?.amount,
-      outAmountInput?.debouncedInAmount,
-      outAmountInput?.amount,
-    ]
-  );
+        .lte(amountInput?.balance?.toDec()) &&
+      amountInput?.amount?.toDec().lte(amountInput?.balance?.toDec())
+    );
+  }, [
+    quoteType,
+    inAmountInput,
+    outAmountInput,
+    precedentError,
+    isQuoteLoading,
+    quoteQueryEnabled,
+    inGivenOutQuoteEnabled,
+    quote?.messages,
+    currentWallet?.address,
+  ]);
 
   const networkFeeParams = useMemo(
     () => ({
@@ -396,6 +399,13 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
     () => isLoadingNetworkFee_ && networkFeeQueryEnabled,
     [isLoadingNetworkFee_, networkFeeQueryEnabled]
   );
+
+  const error = useMemo(() => {
+    if (!isNil(precedentError)) return precedentError;
+    if (networkFeeError) return new Error("Error computing gas");
+    if (currentWallet?.type === "view-only")
+      return new Error("View only account");
+  }, [networkFeeError, precedentError, currentWallet?.type]);
 
   const isSlippageOverBalance = useMemo(() => {
     if (
@@ -655,7 +665,7 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
       networkFee,
       isLoadingNetworkFee,
       networkFeeError,
-      error: precedentError,
+      error,
       spotPriceQuote,
       isSpotPriceQuoteLoading,
       spotPriceQuoteErrorMsg,
@@ -665,6 +675,10 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
       isSlippageOverBalance,
       quoteType,
       overspendErrorParams,
+      areMessagesLoading:
+        quoteType === "out-given-in"
+          ? areOutGivenInMessagesLoading
+          : areInGivenOutMessagesLoading,
     }),
     [
       inAmountInput,
@@ -680,7 +694,7 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
       networkFee,
       isLoadingNetworkFee,
       networkFeeError,
-      precedentError,
+      error,
       spotPriceQuote,
       isSpotPriceQuoteLoading,
       spotPriceQuoteErrorMsg,
@@ -689,6 +703,8 @@ export function useSwapQuote({ forceSwapInPoolId }: SwapOptions = {}) {
       isSlippageOverBalance,
       quoteType,
       overspendErrorParams,
+      areOutGivenInMessagesLoading,
+      areInGivenOutMessagesLoading,
     ]
   );
 }

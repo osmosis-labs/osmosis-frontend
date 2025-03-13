@@ -91,7 +91,7 @@ export function useQueryRouterBestQuote(
     [queryOptions, enabled, quoteType]
   );
 
-  const inGivenOutQuote = api.osmosisFeNode.quote.routeTokenInGivenOut.useQuery(
+  const inGivenOutQuote = api.local.quoteRouter.routeTokenInGivenOut.useQuery(
     inGivenOutParams,
     inGivenOutOptions
   );
@@ -121,7 +121,7 @@ export function useQueryRouterBestQuote(
     [queryOptions, enabled, quoteType]
   );
 
-  const outGivenInQuote = api.osmosisFeNode.quote.routeTokenOutGivenIn.useQuery(
+  const outGivenInQuote = api.local.quoteRouter.routeTokenOutGivenIn.useQuery(
     outGivenInParams,
     outGivenInOptions
   );
@@ -185,43 +185,44 @@ export function useQueryRouterBestQuote(
   );
 
   // Get swap messages
-  const { value: messages } = useAsync(async () => {
-    const {
-      tokenOutCoinDecimals,
-      tokenInCoinMinimalDenom,
-      tokenInCoinDecimals,
-      tokenOutCoinMinimalDenom,
-      address,
-      quote,
-      maxSlippage,
-      coinAmount,
-      quoteType,
-    } = asyncParams;
+  const { value: messages, loading: areMessagesLoading } =
+    useAsync(async () => {
+      const {
+        tokenOutCoinDecimals,
+        tokenInCoinMinimalDenom,
+        tokenInCoinDecimals,
+        tokenOutCoinMinimalDenom,
+        address,
+        quote,
+        maxSlippage,
+        coinAmount,
+        quoteType,
+      } = asyncParams;
 
-    if (
-      !quote ||
-      typeof tokenOutCoinDecimals === "undefined" ||
-      !tokenInCoinMinimalDenom ||
-      !tokenOutCoinMinimalDenom ||
-      typeof tokenInCoinDecimals === "undefined" ||
-      !address
-    )
-      return undefined;
+      if (
+        !quote ||
+        typeof tokenOutCoinDecimals === "undefined" ||
+        !tokenInCoinMinimalDenom ||
+        !tokenOutCoinMinimalDenom ||
+        typeof tokenInCoinDecimals === "undefined" ||
+        !address
+      )
+        return undefined;
 
-    const messages = await getSwapMessages({
-      quote,
-      tokenOutCoinMinimalDenom,
-      tokenInCoinDecimals: tokenInCoinDecimals!,
-      tokenOutCoinDecimals: tokenOutCoinDecimals!,
-      tokenInCoinMinimalDenom,
-      maxSlippage,
-      coinAmount,
-      userOsmoAddress: address,
-      quoteType,
-    });
+      const messages = await getSwapMessages({
+        quote,
+        tokenOutCoinMinimalDenom,
+        tokenInCoinDecimals: tokenInCoinDecimals!,
+        tokenOutCoinDecimals: tokenOutCoinDecimals!,
+        tokenInCoinMinimalDenom,
+        maxSlippage,
+        coinAmount,
+        userOsmoAddress: address,
+        quoteType,
+      });
 
-    return messages;
-  }, [asyncParams]);
+      return messages;
+    }, [asyncParams]);
 
   // Combine quote data with messages
   const quoteData = useDeepMemo(
@@ -237,7 +238,8 @@ export function useQueryRouterBestQuote(
       errorMsg: error?.message,
       numSucceeded: isSuccess ? 1 : 0,
       numError: isError ? 1 : 0,
+      areMessagesLoading,
     }),
-    [quoteData, isSuccess, error?.message, isError]
+    [quoteData, isSuccess, error?.message, isError, areMessagesLoading]
   );
 }

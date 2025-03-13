@@ -1,15 +1,11 @@
-import { isNil } from "@osmosis-labs/utils";
-import { useEffect, useMemo, useState } from "react";
+import { MutableRefObject, useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useRecommendedAssets } from "~/hooks/swap/use-recommended-assets";
-import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
 import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useWallets } from "~/hooks/use-wallets";
 import { useSwapStore } from "~/stores/swap";
-import { api } from "~/utils/trpc";
-
-const DefaultDenoms = ["ATOM", "OSMO"];
+import { api, RouterOutputs } from "~/utils/trpc";
 
 export type UseSwapAssetsReturn = ReturnType<typeof useSwapAssets>;
 
@@ -21,47 +17,25 @@ export type UseSwapAssetsReturn = ReturnType<typeof useSwapAssets>;
  *  * Paginated swappable assets, with user balances if wallet connected
  *  * Assets search query */
 export function useSwapAssets({
-  initialFromDenom = DefaultDenoms[0],
-  initialToDenom = DefaultDenoms[1],
   useOtherCurrencies = true,
   poolId,
+  existingAssetsRef,
 }: {
-  initialFromDenom?: string;
-  initialToDenom?: string;
-  useQueryParams?: boolean;
   useOtherCurrencies?: boolean;
   poolId?: string;
+  // Keep a ref with the existing assets to avoid layout jumps while changing tokens.
+  existingAssetsRef?: MutableRefObject<
+    RouterOutputs["local"]["assets"]["getUserAsset"][]
+  >;
 } = {}) {
   const { currentWallet } = useWallets();
-  const {
-    fromAsset: storeFromAsset,
-    toAsset: storeToAsset,
-    setFromAsset,
-    setToAsset,
-    fromAssetDenom,
-    toAssetDenom,
-    setFromAssetDenom,
-    setToAssetDenom,
-    switchAssets,
-  } = useSwapStore(
+  const { switchAssets, fromAsset, toAsset } = useSwapStore(
     useShallow((state) => ({
       fromAsset: state.fromAsset,
       toAsset: state.toAsset,
-      setFromAsset: state.setFromAsset,
-      setToAsset: state.setToAsset,
-      fromAssetDenom: state.fromAssetDenom,
-      toAssetDenom: state.toAssetDenom,
-      setFromAssetDenom: state.setFromAssetDenom,
-      setToAssetDenom: state.setToAssetDenom,
       switchAssets: state.switchAssets,
     }))
   );
-
-  // Update state when initial values change
-  useEffect(() => {
-    setFromAssetDenom(initialToDenom);
-    setToAssetDenom(initialFromDenom);
-  }, [initialFromDenom, initialToDenom, setFromAssetDenom, setToAssetDenom]);
 
   // generate debounced search from user inputs
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -77,11 +51,7 @@ export function useSwapAssets({
     [debouncedSearchInput]
   );
 
-  const canLoadAssets = useMemo(
-    () =>
-      Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies,
-    [fromAssetDenom, toAssetDenom, useOtherCurrencies]
-  );
+  const canLoadAssets = useOtherCurrencies;
 
   const queryParams = useMemo(
     () => ({
@@ -128,85 +98,9 @@ export function useSwapAssets({
     [selectableAssetPages?.pages, useOtherCurrencies]
   );
 
-  const swapAssetParams = useMemo(
-    () => ({
-      minDenomOrSymbol: fromAssetDenom,
-      existingAssets: selectableAssets,
-    }),
-    [fromAssetDenom, selectableAssets]
-  );
-
-  const toSwapAssetParams = useMemo(
-    () => ({
-      minDenomOrSymbol: toAssetDenom,
-      existingAssets: selectableAssets,
-    }),
-    [toAssetDenom, selectableAssets]
-  );
-
-  const { asset: fromAsset } = useSwapAsset(swapAssetParams);
-  const { asset: toAsset } = useSwapAsset(toSwapAssetParams);
-
-  // Update the store when assets change
-  useEffect(() => {
-    // Only update if the assets have changed
-    if (fromAsset?.coinMinimalDenom !== storeFromAsset?.coinMinimalDenom) {
-      setFromAsset(fromAsset);
-    }
-
-    if (toAsset?.coinMinimalDenom !== storeToAsset?.coinMinimalDenom) {
-      setToAsset(toAsset);
-    }
-  }, [
-    fromAsset,
-    toAsset,
-    storeFromAsset,
-    storeToAsset,
-    setFromAsset,
-    setToAsset,
-  ]);
-
-  /**
-   * This effect handles the scenario where the selected asset denoms do not correspond to any available
-   * assets (`fromAsset` or `toAsset` are undefined). It attempts to set a default based on
-   *
-   * predefined DefaultDenoms or initial denoms.
-   * This ensures that the denoms are reset to valid defaults when the currently selected assets are not available.
-   */
-  useEffect(() => {
-    if (!isNil(fromAssetDenom) && !fromAsset) {
-      const nextFromDenom = determineNextFallbackFromDenom({
-        fromAssetDenom,
-        toAssetDenom,
-        initialFromDenom,
-        initialToDenom,
-        DefaultDenoms,
-      });
-
-      setFromAssetDenom(nextFromDenom);
-    }
-
-    if (!isNil(toAssetDenom) && !toAsset) {
-      const nextToDenom = determineNextFallbackToDenom({
-        toAssetDenom,
-        fromAssetDenom,
-        initialToDenom,
-        initialFromDenom,
-        DefaultDenoms,
-      });
-
-      setToAssetDenom(nextToDenom);
-    }
-  }, [
-    fromAsset,
-    fromAssetDenom,
-    initialFromDenom,
-    initialToDenom,
-    setFromAssetDenom,
-    setToAssetDenom,
-    toAsset,
-    toAssetDenom,
-  ]);
+  if (existingAssetsRef) {
+    existingAssetsRef.current = selectableAssets;
+  }
 
   const recommendedAssetsParams = useMemo(
     () => ({
@@ -223,8 +117,6 @@ export function useSwapAssets({
 
   return useMemo(
     () => ({
-      fromAsset,
-      toAsset,
       assetsQueryInput,
       selectableAssets,
       isLoadingSelectAssets,
@@ -233,22 +125,16 @@ export function useSwapAssets({
       /** Recommended assets, with to and from tokens filtered. */
       recommendedAssets,
       setAssetsQueryInput,
-      setFromAssetDenom,
-      setToAssetDenom,
       switchAssets,
       fetchNextPageAssets: fetchNextPage,
     }),
     [
-      fromAsset,
-      toAsset,
       assetsQueryInput,
       selectableAssets,
       isLoadingSelectAssets,
       hasNextPage,
       isFetchingNextPage,
       recommendedAssets,
-      setFromAssetDenom,
-      setToAssetDenom,
       switchAssets,
       fetchNextPage,
     ]
@@ -288,42 +174,5 @@ function determineNextFallbackFromDenom(params: {
     return initialToDenom;
   } else {
     return initialFromDenom;
-  }
-}
-
-/**
- * Determines the next fallback denom for `toAssetDenom` based on the
- * current asset denoms and defaults.
- * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is not the second default,
- *   it sets `toAssetDenom` to the second default denomination.
- * - If `toAssetDenom` is the same as `initialToDenom` and `fromAssetDenom` is the second default,
- *   it sets `toAssetDenom` to the first default denomination.
- * - If the `initialToDenom` is the same as `fromAssetDenom`, it sets `toAssetDenom` to `initialFromDenom`.
- * - Otherwise, it resets `toAssetDenom` to `initialToDenom`.
- */
-
-function determineNextFallbackToDenom(params: {
-  toAssetDenom: string;
-  fromAssetDenom: string | undefined;
-  initialToDenom: string;
-  initialFromDenom: string;
-  DefaultDenoms: string[];
-}): string {
-  const {
-    toAssetDenom,
-    fromAssetDenom,
-    initialToDenom,
-    initialFromDenom,
-    DefaultDenoms,
-  } = params;
-
-  if (toAssetDenom === initialToDenom) {
-    return fromAssetDenom === DefaultDenoms[1]
-      ? DefaultDenoms[0]
-      : DefaultDenoms[1];
-  } else if (initialToDenom === fromAssetDenom) {
-    return initialFromDenom;
-  } else {
-    return initialToDenom;
   }
 }
