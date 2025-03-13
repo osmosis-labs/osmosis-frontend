@@ -8,21 +8,20 @@ export enum Int3faceTransferStatus {
 }
 
 interface TransferStatusResponse {
-  id: string;
-  externalId: string;
-  externalHeight: string;
-  blockTime: string;
-  txHash: string;
-  sender: string;
-  destAddr: string;
-  destChainId: string;
-  srcChainId: string;
-  asset: {
-    denom: string;
-    sourceChain: string;
-  };
-  amount: string;
-  status: Int3faceTransferStatus;
+  transfer: {
+    amount: string;
+    assetId: {
+      sourceChain: string;
+      denom: string;
+    };
+    bridgingFee: string;
+    creationBlockTime: string;
+    destAddr: string;
+    destChainId: string;
+    srcChainId: string;
+    status: Int3faceTransferStatus;
+    transferId: string;
+  }
 }
 
 export async function getTransferStatus(
@@ -36,7 +35,7 @@ export async function getTransferStatus(
         ? "https://cachehub.testnet.int3face.zone"
         : "https://cachehub.int3face.zone";
 
-    const url = new URL(`/v1/transfers/crosschain/${transferId}`, origin);
+    const url = new URL(`/v2/transfers/${transferId}`, origin);
 
     return apiClient<TransferStatusResponse>(url.toString());
   } catch {

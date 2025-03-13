@@ -55,22 +55,23 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         const transferId = `${sourceChannelId}::${destChannelId}::${sequence}`
 
         const data = await getTransferStatus(sendTxHash, this.env, transferId);
+        const transferStatus = data?.transfer?.status
 
-        if (!data) {
+        if (!transferStatus) {
           status = "connection-error";
         } else if (
           [
             Int3faceTransferStatus.TRANSACTION_STATUS_FAILED,
             Int3faceTransferStatus.TRANSACTION_STATUS_UNSPECIFIED,
-          ].includes(data.status)
+          ].includes(transferStatus)
         ) {
           status = "failed";
         } else if (
-          data.status === Int3faceTransferStatus.TRANSACTION_STATUS_PENDING
+          transferStatus === Int3faceTransferStatus.TRANSACTION_STATUS_PENDING
         ) {
           status = "pending";
         } else if (
-          data.status === Int3faceTransferStatus.TRANSACTION_STATUS_FINALIZED
+          transferStatus === Int3faceTransferStatus.TRANSACTION_STATUS_FINALIZED
         ) {
           status = "success";
         }

@@ -1,10 +1,7 @@
 import type { Registry } from "@cosmjs/proto-signing";
 import { estimateGasFee } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
-import {
-  deriveCosmosAddress,
-  getInt3DOGEMinimalDenom,
-} from "@osmosis-labs/utils";
+import { getInt3DOGEMinimalDenom } from "@osmosis-labs/utils";
 
 import { BridgeQuoteError } from "../errors";
 import { IbcBridgeProvider } from "../ibc";
@@ -44,7 +41,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const { fromAddress, toChain, toAddress } = params;
+    const { toChain, toAddress } = params;
 
     if (toChain.chainId !== "dogecoin") {
       throw new BridgeQuoteError({
@@ -112,10 +109,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         chainName: int3faceChain.pretty_name,
       },
       toAsset: int3faceBridgeAsset,
-      toAddress: deriveCosmosAddress({
-        address: fromAddress,
-        desiredBech32Prefix: "int3",
-      }),
+      toAddress: 'int31zlefkpe3g0vvm9a4h0jf9000lmqutlh99h7fsd',
     };
 
     const [ibcTxMessages, ibcEstimatedTimeSeconds] = await Promise.all([
