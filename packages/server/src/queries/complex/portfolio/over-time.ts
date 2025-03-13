@@ -1,11 +1,11 @@
 import { PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { Dec } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "../../../utils/cache";
 import { queryPortfolioOverTime } from "../../data-services";
-import { DEFAULT_VS_CURRENCY } from "..";
 
 export type Range = "1d" | "7d" | "1mo" | "1y" | "all";
 

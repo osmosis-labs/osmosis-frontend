@@ -1,15 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
-import { DeepReadonly } from "utility-types";
 
 import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
-import {
-  IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
-  IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
-  NUMIA_INDEXER_BASEURL,
-} from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
 import {
@@ -17,6 +11,11 @@ import {
   ObservableQueryQuasarVaultsByPoolsId,
 } from "./concentrated-liquidity";
 import { ObservableQueryPriceRangeAprs } from "./concentrated-liquidity";
+import {
+  IMPERATOR_INDEXER_DEFAULT_BASEURL,
+  IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
+  NUMIA_INDEXER_BASEURL,
+} from "./constants";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryMarketCaps } from "./mcap";
@@ -25,22 +24,23 @@ import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryMarketCap } from "./token-market-cap";
+import { IQueriesExternalStore } from "./types";
 
 /** Root store for queries external to any chain. */
-export class QueriesExternalStore {
-  public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
-  public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
-  public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
-  public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
-  public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
-  public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
-  public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
-  public readonly queryPriceRangeAprs: DeepReadonly<ObservableQueryPriceRangeAprs>;
-  public readonly queryClPoolAvgAprs: DeepReadonly<ObservableQueryClPoolAvgAprs>;
-  public readonly queryQuasarVaults: DeepReadonly<ObservableQueryQuasarVaultsByPoolsId>;
-  public readonly queryCirculatingSupplies: DeepReadonly<ObservableQueryCirculatingSupplies>;
-  public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
-  public readonly queryPoolAprs: DeepReadonly<ObservableQueryPoolAprs>;
+export class QueriesExternalStore implements IQueriesExternalStore {
+  public readonly queryAccountsPoolRewards: ObservableQueryAccountsPoolRewards;
+  public readonly queryChainStatus: ObservableQueryIbcChainsStatus;
+  public readonly queryMarketCaps: ObservableQueryMarketCaps;
+  public readonly queryTokenHistoricalChart: ObservableQueryTokensHistoricalChart;
+  public readonly queryActiveGauges: ObservableQueryActiveGauges;
+  public readonly queryICNSNames: ObservableQueryICNSNames;
+  public readonly queryPositionsPerformaceMetrics: ObservableQueryPositionsPerformanceMetrics;
+  public readonly queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+  public readonly queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
+  public readonly queryQuasarVaults: ObservableQueryQuasarVaultsByPoolsId;
+  public readonly queryCirculatingSupplies: ObservableQueryCirculatingSupplies;
+  public readonly queryMarketCap: ObservableQueryMarketCap;
+  public readonly queryPoolAprs: ObservableQueryPoolAprs;
 
   constructor(
     kvStore: KVStore,
@@ -50,8 +50,8 @@ export class QueriesExternalStore {
     observableQueryGuage: ObservableQueryGauges,
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
-    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
-    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
+    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
+    indexerDataBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     this.queryQuasarVaults = new ObservableQueryQuasarVaultsByPoolsId(kvStore);
 

@@ -17,8 +17,8 @@ import { action, computed, makeObservable, observable } from "mobx";
 
 import { ObservableQueryPoolShare } from "../../queries";
 import { ObservableQueryPoolGetter } from "../../queries-external/pools";
-import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
+import { OSMO_MEDIUM_TX_FEE } from "./constants";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add liquidity msg.

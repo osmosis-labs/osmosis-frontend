@@ -2,8 +2,8 @@ import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "../constants";
 
 type Response = {
   amount: number;

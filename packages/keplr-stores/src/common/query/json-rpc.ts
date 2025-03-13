@@ -1,10 +1,10 @@
-import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
 import { KVStore } from "@keplr-wallet/common";
 import { AxiosInstance } from "axios";
 import { action, makeObservable, observable } from "mobx";
 import { sha256 } from "sha.js";
 import { Buffer } from "buffer/";
 import { HasMapStore } from "../map";
+import { ObservableQuery, QueryOptions, QueryResponse } from "./query";
 
 /**
  * Experimental implementation for json rpc.

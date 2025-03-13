@@ -5,7 +5,8 @@ import { z } from "zod";
 
 import { captureIfError } from "../../utils";
 import { getSidecarRouter } from "../sidecar/router";
-import { getAsset, getCosmwasmPoolTypeFromCodeId, Pool } from ".";
+import { getAsset } from "./assets";
+import { getCosmwasmPoolTypeFromCodeId, Pool } from "./pools";
 
 export const getRouteTokenOutGivenInParams = z.object({
   tokenInDenom: z.string(),

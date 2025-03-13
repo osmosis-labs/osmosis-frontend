@@ -1,5 +1,4 @@
 import type { Bridge, BridgeSupportedAsset } from "@osmosis-labs/bridge";
-import { CoinPretty } from "@osmosis-labs/unit";
 import { isNil, noop } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
@@ -15,20 +14,13 @@ import { refetchUserQueries, useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { AmountScreen } from "./amount-screen";
+import { SupportedAssetWithAmount, SupportedBridgeInfo } from "./bridge-types";
 import { ReviewScreen } from "./review-screen";
 import { useBridgeQuotes } from "./use-bridge-quotes";
 import {
   SupportedAsset,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
-
-export type SupportedAssetWithAmount = SupportedAsset & { amount: CoinPretty };
-export type SupportedBridgeInfo = {
-  allBridges: Bridge[];
-  quoteBridges: Bridge[];
-  externalUrlBridges: Bridge[];
-  depositAddressBridges: Bridge[];
-};
 
 interface AmountAndConfirmationScreenProps {
   direction: "deposit" | "withdraw";

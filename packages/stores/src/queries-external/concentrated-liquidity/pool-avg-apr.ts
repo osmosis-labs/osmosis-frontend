@@ -3,8 +3,8 @@ import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { RatePretty } from "@osmosis-labs/unit";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
+import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "../constants";
 
 type Response = {
   APR: number;

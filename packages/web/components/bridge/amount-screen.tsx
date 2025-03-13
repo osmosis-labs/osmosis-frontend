@@ -1,28 +1,15 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-} from "@headlessui/react";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import {
-  Dispatch,
-  FunctionComponent,
-  ReactNode,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-import { useMeasure, useUnmount } from "react-use";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { BridgeReceiveAssetDropdown } from "~/components/bridge/bridge-receive-asset-dropdown";
+import { BridgeWalletSelectModal } from "~/components/bridge/bridge-wallet-select-modal";
 import { DepositAddressScreen } from "~/components/bridge/deposit-address-screen";
 import { CryptoFiatInput } from "~/components/control/crypto-fiat-input";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
@@ -48,32 +35,19 @@ import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-import { ChainLogo } from "../assets/chain-logo";
-import {
-  SupportedAssetWithAmount,
-  SupportedBridgeInfo,
-} from "./amount-and-review-screen";
-import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
-import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
+import { SupportedAssetWithAmount, SupportedBridgeInfo } from "./bridge-types";
+import { ChainSelectorButton } from "./chain-selector-button";
 import {
   MoreBridgeOptionsModal,
   OnlyExternalBridgeSuggest,
 } from "./more-bridge-options";
-import {
-  BridgeProviderDropdownRow,
-  EstimatedTimeRow,
-  ExpandDetailsControlContent,
-  ExpectedOutputRow,
-  NetworkFeeRow,
-  ProviderFeesRow,
-  TotalFeesRow,
-} from "./quote-detail";
+import { TransferDetails } from "./transfer-details";
 import { BridgeQuote } from "./use-bridge-quotes";
 import {
   SupportedAsset,
-  SupportedChain,
   useBridgesSupportedAssets,
 } from "./use-bridges-supported-assets";
+import { WalletDisplay } from "./wallet-display";
 
 interface AmountScreenProps {
   direction: "deposit" | "withdraw";
@@ -1275,236 +1249,3 @@ export const AmountScreen = observer(
     );
   }
 );
-
-interface ChainSelectorButtonProps {
-  direction: "deposit" | "withdraw";
-  readonly: boolean;
-  children: ReactNode;
-  chainLogo: string | undefined;
-  chainColor: string | undefined;
-  chains: SupportedChain[];
-  toChain: BridgeChainWithDisplayInfo | undefined;
-  onSelectChain: (chain: BridgeChainWithDisplayInfo) => void;
-  isNetworkSelectVisible: boolean;
-  setIsNetworkSelectVisible: Dispatch<SetStateAction<boolean>>;
-  initialManualAddress?: string;
-  onConfirmManualAddress: (address: string) => void;
-  isLoading: boolean;
-}
-
-const ChainSelectorButton: FunctionComponent<ChainSelectorButtonProps> = ({
-  direction,
-  readonly,
-  children,
-  chainLogo,
-  chainColor,
-  chains,
-  onSelectChain,
-  toChain,
-  isNetworkSelectVisible,
-  setIsNetworkSelectVisible,
-  onConfirmManualAddress,
-  initialManualAddress,
-  isLoading,
-}) => {
-  if (readonly) {
-    return (
-      <div className="subtitle1 md:body2 flex w-[45%] flex-1 items-center gap-2 rounded-[48px] border border-osmoverse-700 py-2 px-4 text-osmoverse-200 md:py-1 md:px-2">
-        <ChainLogo prettyName="" logoUri={chainLogo} color={chainColor} />
-        <span className="truncate">{children}</span>
-      </div>
-    );
-  }
-
-  return (
-    <>
-      <button
-        onClick={() => {
-          setIsNetworkSelectVisible(true);
-        }}
-        className={classNames(
-          "subtitle1 md:body2 group flex w-[45%] flex-1 items-center justify-between rounded-[48px] bg-osmoverse-825 py-2 px-4 text-start transition-colors duration-200 md:py-1 md:px-2",
-          {
-            "opacity-60": isLoading,
-            "hover:bg-osmoverse-850": !isLoading,
-          }
-        )}
-        disabled={isLoading}
-      >
-        <div className="flex w-[90%] items-center gap-2">
-          {isLoading ? (
-            <Spinner className="flex-shrink-0 text-wosmongton-500" />
-          ) : (
-            <ChainLogo
-              className="flex-shrink-0"
-              prettyName=""
-              logoUri={chainLogo}
-              color={chainColor}
-            />
-          )}
-          {isLoading ? (
-            <span className="subtitle1 whitespace-nowrap text-wosmongton-200">
-              Loading networks
-            </span>
-          ) : (
-            <span className="truncate">{children}</span>
-          )}
-        </div>
-        {isLoading ? null : (
-          <Icon
-            id="chevron-down"
-            className="flex-shrink-0 text-wosmongton-200 transition-colors duration-200 group-hover:text-white-full"
-            width={12}
-            height={12}
-          />
-        )}
-      </button>
-      {toChain && (
-        <BridgeNetworkSelectModal
-          isOpen={isNetworkSelectVisible}
-          chains={chains}
-          onSelectChain={async (chain) => {
-            onSelectChain(chain);
-            setIsNetworkSelectVisible(false);
-          }}
-          onRequestClose={() => setIsNetworkSelectVisible(false)}
-          direction={direction}
-          toChain={toChain}
-          initialManualAddress={initialManualAddress}
-          onConfirmManualAddress={onConfirmManualAddress}
-        />
-      )}
-    </>
-  );
-};
-
-const WalletDisplay: FunctionComponent<{
-  icon: string | ReactNode | undefined;
-  name: string | undefined;
-  suffix?: ReactNode;
-}> = ({ icon, name, suffix }) => {
-  return (
-    <div className="subtitle1 md:body2 flex items-center gap-2 rounded-lg">
-      {!isNil(icon) && (
-        <>
-          {typeof icon === "string" ? (
-            <img src={icon} alt={name} className="h-6 w-6" />
-          ) : (
-            icon
-          )}
-        </>
-      )}
-      <span title={name}>{name}</span>
-      {suffix}
-    </div>
-  );
-};
-
-const TransferDetails: FunctionComponent<{
-  quote: BridgeQuote | undefined;
-  fromChain: BridgeChainWithDisplayInfo;
-  isLoading: boolean;
-}> = ({ quote, fromChain, isLoading }) => {
-  const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
-    useMeasure<HTMLDivElement>();
-  const { t } = useTranslation();
-  const successfulQuotes = quote?.successfulQuotes ?? [];
-
-  if (!isLoading && successfulQuotes.length === 0) {
-    return null;
-  }
-
-  return (
-    <Disclosure>
-      {({ open }) => (
-        <div
-          className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
-          style={{
-            height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
-              : 36,
-          }}
-        >
-          <DisclosureButton>
-            <div className="flex animate-[fadeIn_0.25s] items-center justify-between">
-              {isLoading || !quote ? (
-                <div className="flex items-center gap-2">
-                  <Spinner className="text-wosmongton-500" />
-                  <p className="body1 md:body2 text-osmoverse-300">
-                    {t("transfer.estimatingTime")}
-                  </p>
-                </div>
-              ) : open ? (
-                <p className="subtitle1">{t("transfer.transferDetails")}</p>
-              ) : null}
-
-              {!isLoading && quote?.selectedQuote && !open && (
-                <div className="flex items-center gap-1">
-                  <Icon id="stopwatch" className="h-4 w-4 text-osmoverse-400" />
-                  <p className="body1 md:body2 text-osmoverse-300 first-letter:capitalize">
-                    {quote.selectedQuote.estimatedTime.humanize()}
-                  </p>
-                </div>
-              )}
-
-              {isLoading || !quote ? (
-                <span className="body1 md:body2 text-osmoverse-300">
-                  {t("transfer.calculatingFees")}
-                </span>
-              ) : null}
-
-              {!isLoading && quote?.selectedQuote ? (
-                <ExpandDetailsControlContent
-                  warnUserOfPriceImpact={quote.warnUserOfPriceImpact}
-                  warnUserOfSlippage={quote.warnUserOfSlippage}
-                  selectedQuoteUpdatedAt={quote.selectedQuoteUpdatedAt}
-                  refetchInterval={quote.refetchInterval}
-                  selectedQuote={quote.selectedQuote}
-                  open={open}
-                  isRemainingTimePaused={
-                    quote.isRefetchingQuote || quote.isTxPending
-                  }
-                  showRemainingTime
-                />
-              ) : null}
-            </div>
-          </DisclosureButton>
-          <DisclosurePanel ref={detailsRef} className="flex flex-col gap-3">
-            {quote?.selectedQuote && (
-              <>
-                <BridgeProviderDropdownRow
-                  successfulQuotes={quote.successfulQuotes}
-                  setSelectedBridgeProvider={quote.setSelectedBridgeProvider}
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                />
-                <EstimatedTimeRow
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                />
-                <ProviderFeesRow
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                />
-                <NetworkFeeRow
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                  fromChainName={fromChain.prettyName}
-                />
-                <TotalFeesRow
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                />
-                <ExpectedOutputRow
-                  isRefetchingQuote={quote.isRefetchingQuote}
-                  selectedQuote={quote.selectedQuote}
-                  warnUserOfSlippage={Boolean(quote.warnUserOfSlippage)}
-                />
-              </>
-            )}
-          </DisclosurePanel>
-        </div>
-      )}
-    </Disclosure>
-  );
-};
