@@ -109,9 +109,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         chainName: int3faceChain.pretty_name,
       },
       toAsset: int3faceBridgeAsset,
-      /**
-       * x/bridge module address on the Int3face chain, all the IBC transfers have to be handled using this address
-       */
+      /** x/bridge module address on the Int3face chain, all the IBC transfers have to be handled using this address */
       toAddress: 'int31zlefkpe3g0vvm9a4h0jf9000lmqutlh99h7fsd',
     };
 
