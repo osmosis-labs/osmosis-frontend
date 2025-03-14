@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "Sessões existentes",
-    "createSession": "Criar Sessão"
+    "createSession": "Criar Sessão",
+    "noConnectedDevices": "Nenhum dispositivo conectado encontrado",
+    "clearAllSessions": "Limpar todas as sessões",
+    "mobileDevice": "Dispositivo móvel",
+    "legacy": "Legado",
+    "loadingMetadata": "Carregando metadados...",
+    "created": "Criado:"
   },
   "profile": {
     "balance": "Saldo",

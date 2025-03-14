@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "Mevcut Oturumlar",
-    "createSession": "Oturum Oluştur"
+    "createSession": "Oturum Oluştur",
+    "noConnectedDevices": "Bağlı cihaz bulunamadı",
+    "clearAllSessions": "Tüm Oturumları Temizle",
+    "mobileDevice": "Mobil Cihaz",
+    "legacy": "Miras",
+    "loadingMetadata": "Meta veriler yükleniyor...",
+    "created": "Oluşturuldu:"
   },
   "profile": {
     "balance": "denklemek",

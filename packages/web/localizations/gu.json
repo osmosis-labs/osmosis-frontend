@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "હાલના સત્રો",
-    "createSession": "સત્ર બનાવો"
+    "createSession": "સત્ર બનાવો",
+    "noConnectedDevices": "કોઈ કનેક્ટેડ ડિવાઇસ મળ્યાં નથી",
+    "clearAllSessions": "બધા સત્રો સાફ કરો",
+    "mobileDevice": "મોબાઇલ ઉપકરણ",
+    "legacy": "વારસો",
+    "loadingMetadata": "મેટાડેટા લોડ કરી રહ્યું છે...",
+    "created": "બનાવ્યું:"
   },
   "profile": {
     "balance": "સંતુલન",

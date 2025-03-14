@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "Vorhandene Sitzungen",
-    "createSession": "Sitzung erstellen"
+    "createSession": "Sitzung erstellen",
+    "noConnectedDevices": "Keine verbundenen Geräte gefunden",
+    "clearAllSessions": "Alle Sitzungen löschen",
+    "mobileDevice": "Mobilgerät",
+    "legacy": "Vermächtnis",
+    "loadingMetadata": "Metadaten werden geladen …",
+    "created": "Erstellt:"
   },
   "profile": {
     "balance": "Gleichgewicht",

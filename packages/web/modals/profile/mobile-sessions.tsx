@@ -115,7 +115,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
                   </div>
                 ) : data?.authenticators.length === 0 ? (
                   <div className="text-center py-4 text-osmoverse-300">
-                    No connected devices found
+                    {t("mobileSessions.noConnectedDevices")}
                   </div>
                 ) : (
                   data?.authenticators.map((authenticator) => (
@@ -145,7 +145,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
                     ) : (
                       <Icon id="trash" className="h-5 w-5 mr-2" />
                     )}
-                    Clear All Sessions
+                    {t("mobileSessions.clearAllSessions")}
                   </Button>
                 )}
             </div>
@@ -173,6 +173,7 @@ export function AuthenticatorItem({
   const removeMobileSession = useRemoveMobileSession();
   const apiUtils = api.useUtils();
   const { accountStore } = useStore();
+  const { t } = useTranslation();
   const accountAddress = accountStore.getWallet(
     accountStore.osmosisChainId
   )?.address;
@@ -215,7 +216,7 @@ export function AuthenticatorItem({
 
   // Get device display name from brand and model
   const getDeviceDisplayName = () => {
-    if (!metadataData?.metadata) return "Mobile Device";
+    if (!metadataData?.metadata) return t("mobileSessions.mobileDevice");
 
     const { deviceBrand, deviceModel } = metadataData.metadata;
     if (deviceBrand && deviceModel) {
@@ -225,7 +226,7 @@ export function AuthenticatorItem({
     } else if (deviceModel) {
       return deviceModel;
     }
-    return "Mobile Device";
+    return t("mobileSessions.mobileDevice");
   };
 
   return (
@@ -240,17 +241,20 @@ export function AuthenticatorItem({
             {getDeviceDisplayName()}
             {isLegacy && (
               <span className="ml-2 text-xs bg-osmoverse-600 text-osmoverse-200 px-2 py-0.5 rounded-full">
-                Legacy
+                {t("mobileSessions.legacy")}
               </span>
             )}
           </h3>
           <div className="flex flex-col gap-1">
             <p className="text-xs text-osmoverse-300">ID: {id}</p>
             {isMetadataLoading ? (
-              <p className="text-xs text-osmoverse-300">Loading metadata...</p>
+              <p className="text-xs text-osmoverse-300">
+                {t("mobileSessions.loadingMetadata")}
+              </p>
             ) : metadataData?.metadata?.createdAt ? (
               <p className="text-xs text-osmoverse-300">
-                Created: {formatDate(metadataData.metadata.createdAt)}
+                {t("mobileSessions.created")}{" "}
+                {formatDate(metadataData.metadata.createdAt)}
               </p>
             ) : null}
           </div>

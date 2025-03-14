@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "Существующие сеансы",
-    "createSession": "Создать сессию"
+    "createSession": "Создать сессию",
+    "noConnectedDevices": "Подключенных устройств не найдено.",
+    "clearAllSessions": "Очистить все сеансы",
+    "mobileDevice": "Мобильное устройство",
+    "legacy": "Наследие",
+    "loadingMetadata": "Загрузка метаданных...",
+    "created": "Созданный:"
   },
   "profile": {
     "balance": "Баланс",

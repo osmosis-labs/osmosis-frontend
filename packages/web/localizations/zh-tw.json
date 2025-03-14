@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "現有會話",
-    "createSession": "建立會話"
+    "createSession": "建立會話",
+    "noConnectedDevices": "未找到連接的設備",
+    "clearAllSessions": "清除所有會話",
+    "mobileDevice": "行動裝置",
+    "legacy": "遺產",
+    "loadingMetadata": "正在加載元資料...",
+    "created": "創建時間："
   },
   "profile": {
     "balance": "結餘",

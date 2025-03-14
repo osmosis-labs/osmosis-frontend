@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "جلسات موجود",
-    "createSession": "ایجاد جلسه"
+    "createSession": "ایجاد جلسه",
+    "noConnectedDevices": "دستگاه متصلی پیدا نشد",
+    "clearAllSessions": "تمام جلسات را پاک کنید",
+    "mobileDevice": "دستگاه موبایل",
+    "legacy": "میراث",
+    "loadingMetadata": "در حال بارگیری متادیتا...",
+    "created": "ایجاد شده:"
   },
   "profile": {
     "balance": "موجودی",

@@ -567,7 +567,13 @@
   },
   "mobileSessions": {
     "existingSessions": "Sesiuni existente",
-    "createSession": "Creați sesiune"
+    "createSession": "Creați sesiune",
+    "noConnectedDevices": "Nu s-au găsit dispozitive conectate",
+    "clearAllSessions": "Ștergeți toate sesiunile",
+    "mobileDevice": "Dispozitiv mobil",
+    "legacy": "Moştenire",
+    "loadingMetadata": "Se încarcă metadatele...",
+    "created": "Creat:"
   },
   "profile": {
     "balance": "Balanta",
