@@ -94,12 +94,12 @@ const styles = StyleSheet.create({
   },
   tabsContainer: {
     flexDirection: "row",
-    paddingHorizontal: 24,
-    paddingBottom: 16,
     justifyContent: "flex-start",
   },
   tab: {
-    marginRight: 20,
+    paddingLeft: 24,
+
+    paddingBottom: 12,
   },
   tabText: {
     fontSize: 18,

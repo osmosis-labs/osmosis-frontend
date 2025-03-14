@@ -197,16 +197,6 @@ export default function RootLayout() {
             <BottomSheetModalProvider>
               <OnboardingObserver />
               <LockScreenModal />
-              <Toaster
-                toastOptions={{
-                  style: {
-                    backgroundColor: Colors["osmoverse"][825],
-                  },
-                  titleStyle: {
-                    color: Colors["osmoverse"][100],
-                  },
-                }}
-              />
               <Stack
                 screenOptions={{
                   animation: "simple_push",
@@ -224,6 +214,16 @@ export default function RootLayout() {
               </Stack>
             </BottomSheetModalProvider>
             <StatusBar style="auto" />
+            <Toaster
+              toastOptions={{
+                style: {
+                  backgroundColor: Colors["osmoverse"][825],
+                },
+                titleStyle: {
+                  color: Colors["osmoverse"][100],
+                },
+              }}
+            />
           </GestureHandlerRootView>
         </ThemeProvider>
       </QueryClientProvider>

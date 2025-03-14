@@ -66,30 +66,34 @@ export const PortfolioAssetBalancesTable = () => {
 
   return (
     <View style={styles.contentContainer}>
-      {isLoading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator />
-        </View>
-      ) : assetsData.length === 0 ? (
-        <EmptyState onRefresh={refetch} />
-      ) : (
-        <FlashList
-          data={assetsData}
-          renderItem={({ item }) => <AssetItem asset={item} />}
-          keyExtractor={(item) => item.coinMinimalDenom}
-          estimatedItemSize={itemSize}
-          refreshing={isRefetching}
-          onRefresh={() => {
-            refetch();
-          }}
-          onEndReached={fetchNextPage}
-        />
-      )}
-      {isFetchingNextPage && (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator />
-        </View>
-      )}
+      <FlashList
+        data={assetsData}
+        renderItem={({ item }) => <AssetItem asset={item} />}
+        keyExtractor={(item) => item.coinMinimalDenom}
+        estimatedItemSize={itemSize}
+        refreshing={isRefetching}
+        onRefresh={() => {
+          refetch();
+        }}
+        onEndReached={fetchNextPage}
+        onEndReachedThreshold={0.5}
+        ListEmptyComponent={
+          isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator />
+            </View>
+          ) : (
+            <EmptyState onRefresh={refetch} />
+          )
+        }
+        ListFooterComponent={
+          isFetchingNextPage && !isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator />
+            </View>
+          ) : null
+        }
+      />
     </View>
   );
 };

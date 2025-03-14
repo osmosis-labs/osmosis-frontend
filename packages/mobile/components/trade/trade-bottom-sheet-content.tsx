@@ -1,15 +1,19 @@
 import { BottomSheetView } from "@gorhom/bottom-sheet";
 import { FlashList } from "@shopify/flash-list";
-import React, { memo } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import React, { memo, MutableRefObject } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { ScrollView as ScrollViewGestureHandler } from "react-native-gesture-handler";
 import { useShallow } from "zustand/react/shallow";
 
 import { SearchInput } from "~/components/search-input";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
-import { UseSwapAssetsReturn } from "~/hooks/swap/use-swap-assets";
+import {
+  useSwapAssets,
+  UseSwapAssetsReturn,
+} from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
+import { RouterOutputs } from "~/utils/trpc";
 
 import { TradeBottomSheetAssetItem } from "./trade-bottom-sheet-asset-item";
 
@@ -17,27 +21,27 @@ interface TradeBottomSheetContentProps {
   onSelectAsset: (
     asset: UseSwapAssetsReturn["selectableAssets"][number]
   ) => void;
-  selectableAssets: UseSwapAssetsReturn["selectableAssets"];
-  recommendedAssets: UseSwapAssetsReturn["recommendedAssets"];
-  isLoadingSelectAssets: UseSwapAssetsReturn["isLoadingSelectAssets"];
-  fetchNextPage: UseSwapAssetsReturn["fetchNextPageAssets"];
-  hasNextPage: UseSwapAssetsReturn["hasNextPageAssets"];
-  isFetchingNextPage: UseSwapAssetsReturn["isFetchingNextPageAssets"];
+  existingAssetsRef: MutableRefObject<
+    RouterOutputs["local"]["assets"]["getUserAsset"][]
+  >;
 }
 
 export const TradeBottomSheetContent = memo(
-  ({
-    onSelectAsset,
-    selectableAssets,
-    recommendedAssets,
-    isLoadingSelectAssets,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  }: TradeBottomSheetContentProps) => {
+  ({ onSelectAsset, existingAssetsRef }: TradeBottomSheetContentProps) => {
     const [assetSearchInput, setAssetSearchInput] = useSwapStore(
       useShallow((state) => [state.assetSearchInput, state.setAssetSearchInput])
     );
+
+    const {
+      selectableAssets,
+      recommendedAssets,
+      isLoadingSelectAssets,
+      fetchNextPageAssets: fetchNextPage,
+      hasNextPageAssets: hasNextPage,
+      isFetchingNextPageAssets: isFetchingNextPage,
+    } = useSwapAssets({
+      existingAssetsRef,
+    });
 
     return (
       <BottomSheetView style={styles.bottomSheetView}>
@@ -50,7 +54,7 @@ export const TradeBottomSheetContent = memo(
         </View>
         <View>
           {recommendedAssets && (
-            <ScrollView
+            <ScrollViewGestureHandler
               showsHorizontalScrollIndicator={false}
               horizontal
               style={styles.recommendedAssetsScrollView}
@@ -64,39 +68,44 @@ export const TradeBottomSheetContent = memo(
                   onClick={() => onSelectAsset(asset)}
                 />
               ))}
-            </ScrollView>
+            </ScrollViewGestureHandler>
           )}
         </View>
-        {isLoadingSelectAssets ? (
-          <ActivityIndicator />
-        ) : selectableAssets.length === 0 ? (
-          <View style={styles.centeredView}>
-            <Text type="subtitle">
-              No results {assetSearchInput && `for "${assetSearchInput}"`}
-            </Text>
-            <Text style={styles.adjustSearchText}>
-              Try adjusting your search query
-            </Text>
-          </View>
-        ) : (
-          <>
-            <FlashList
-              data={selectableAssets}
-              keyExtractor={(asset) => asset.coinMinimalDenom}
-              estimatedItemSize={40}
-              onEndReached={() => hasNextPage && fetchNextPage()}
-              renderItem={({ item: asset }) => (
-                <TradeBottomSheetAssetItem
-                  asset={asset}
-                  key={asset.coinMinimalDenom}
-                  onClick={() => onSelectAsset(asset)}
-                />
-              )}
-              renderScrollComponent={ScrollViewGestureHandler}
+
+        <FlashList
+          data={selectableAssets}
+          keyExtractor={(asset) => asset.coinMinimalDenom}
+          estimatedItemSize={40}
+          onEndReached={() => hasNextPage && fetchNextPage()}
+          onEndReachedThreshold={0.5}
+          renderItem={({ item: asset }) => (
+            <TradeBottomSheetAssetItem
+              asset={asset}
+              key={asset.coinMinimalDenom}
+              onClick={() => onSelectAsset(asset)}
             />
-            {isFetchingNextPage && <ActivityIndicator />}
-          </>
-        )}
+          )}
+          renderScrollComponent={ScrollViewGestureHandler}
+          ListEmptyComponent={
+            isLoadingSelectAssets ? (
+              <ActivityIndicator />
+            ) : (
+              <View style={styles.centeredView}>
+                <Text type="subtitle">
+                  No results {assetSearchInput && `for "${assetSearchInput}"`}
+                </Text>
+                <Text style={styles.adjustSearchText}>
+                  Try adjusting your search query
+                </Text>
+              </View>
+            )
+          }
+          ListFooterComponent={
+            isFetchingNextPage && !isLoadingSelectAssets ? (
+              <ActivityIndicator />
+            ) : null
+          }
+        />
       </BottomSheetView>
     );
   }

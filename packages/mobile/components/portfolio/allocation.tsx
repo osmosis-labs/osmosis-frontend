@@ -133,7 +133,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   sectionContainer: {
-    padding: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     marginBottom: 16,
   },
   sectionTitle: {

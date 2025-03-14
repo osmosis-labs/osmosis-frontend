@@ -51,27 +51,6 @@ export const PortfolioActivity: FunctionComponent = () => {
     }
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        {new Array(5).fill(0).map((_, index) => (
-          <Skeleton
-            key={index}
-            style={{ width: "100%", height: ITEM_HEIGHT, borderRadius: 10 }}
-          />
-        ))}
-      </View>
-    );
-  }
-
-  if (swapTransactions.length === 0) {
-    return (
-      <View style={styles.emptyContainer}>
-        <Text style={styles.emptyText}>No transactions found</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
       <FlashList
@@ -90,11 +69,31 @@ export const PortfolioActivity: FunctionComponent = () => {
         refreshing={isRefetching}
         onRefresh={refetch}
         ListFooterComponent={
-          isFetchingNextPage ? (
+          isFetchingNextPage && !isLoading ? (
             <View style={styles.footerLoader}>
               <ActivityIndicator size="small" />
             </View>
           ) : null
+        }
+        ListEmptyComponent={
+          isLoading ? (
+            <View style={styles.loadingContainer}>
+              {new Array(5).fill(0).map((_, index) => (
+                <Skeleton
+                  key={index}
+                  style={{
+                    width: "100%",
+                    height: ITEM_HEIGHT,
+                    borderRadius: 10,
+                  }}
+                />
+              ))}
+            </View>
+          ) : (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>No transactions found</Text>
+            </View>
+          )
         }
       />
 
@@ -113,7 +112,6 @@ const styles = StyleSheet.create({
   loadingContainer: {
     flex: 1,
     justifyContent: "flex-start",
-    padding: 10,
     gap: 8,
   },
   emptyContainer: {

@@ -157,31 +157,36 @@ export default function TabTwoScreen() {
           </DropdownMenuRoot>
         </View>
 
-        {isLoading ? (
-          <View style={{ paddingHorizontal: 24 }}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          <FlashList
-            data={items}
-            renderItem={({ item }) => <AssetItem asset={item} />}
-            keyExtractor={(item) => item.coinMinimalDenom}
-            estimatedItemSize={itemSize}
-            refreshing={isRefetching}
-            onRefresh={() => {
-              refetch();
-            }}
-            onEndReached={handleEndReached}
-            onEndReachedThreshold={0.5}
-            ListFooterComponent={
-              isFetchingNextPage ? (
-                <View style={{ paddingVertical: 20 }}>
-                  <ActivityIndicator />
-                </View>
-              ) : null
-            }
-          />
-        )}
+        <FlashList
+          data={items}
+          renderItem={({ item }) => <AssetItem asset={item} />}
+          keyExtractor={(item) => item.coinMinimalDenom}
+          estimatedItemSize={itemSize}
+          refreshing={isRefetching}
+          onRefresh={() => {
+            refetch();
+          }}
+          onEndReached={handleEndReached}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            isFetchingNextPage ? (
+              <View style={{ paddingVertical: 20 }}>
+                <ActivityIndicator />
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            isLoading ? (
+              <View style={{ paddingHorizontal: 24 }}>
+                <ActivityIndicator />
+              </View>
+            ) : (
+              <View style={{ paddingHorizontal: 24 }}>
+                <Text>No assets found</Text>
+              </View>
+            )
+          }
+        />
       </View>
     </SafeAreaView>
   );

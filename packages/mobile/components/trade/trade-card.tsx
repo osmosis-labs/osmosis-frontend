@@ -25,7 +25,6 @@ import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
 import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
-import { useSwapAssets } from "~/hooks/swap/use-swap-assets";
 import { useSwapStore } from "~/stores/swap";
 import { formatFiatValueCompact } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
@@ -131,26 +130,6 @@ const BottomSheetSelectAsset = memo(
       (state) => state.setAssetSearchInput
     );
 
-    const { fromAsset, toAsset, switchAssets, selectAsset } = useSwapStore(
-      useShallow((state) => ({
-        fromAsset: state.fromAsset,
-        toAsset: state.toAsset,
-        switchAssets: state.switchAssets,
-        selectAsset: state.selectAsset,
-      }))
-    );
-
-    const {
-      selectableAssets,
-      recommendedAssets,
-      isLoadingSelectAssets,
-      fetchNextPageAssets: fetchNextPage,
-      hasNextPageAssets: hasNextPage,
-      isFetchingNextPageAssets: isFetchingNextPage,
-    } = useSwapAssets({
-      existingAssetsRef,
-    });
-
     return (
       <BottomSheetModal
         ref={selectAssetBottomSheetRef}
@@ -180,6 +159,10 @@ const BottomSheetSelectAsset = memo(
       >
         <TradeBottomSheetContent
           onSelectAsset={(asset) => {
+            selectAssetBottomSheetRef.current?.dismiss();
+
+            const { fromAsset, toAsset, switchAssets, selectAsset } =
+              useSwapStore.getState();
             const oppositeSelectedAsset =
               direction === "in" ? toAsset : fromAsset;
             if (
@@ -189,15 +172,8 @@ const BottomSheetSelectAsset = memo(
             } else {
               selectAsset(direction, asset);
             }
-
-            selectAssetBottomSheetRef.current?.dismiss();
           }}
-          selectableAssets={selectableAssets}
-          recommendedAssets={recommendedAssets}
-          isLoadingSelectAssets={isLoadingSelectAssets}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage}
-          isFetchingNextPage={isFetchingNextPage}
+          existingAssetsRef={existingAssetsRef}
         />
       </BottomSheetModal>
     );
@@ -230,12 +206,12 @@ const SelectedAssetCard = memo(
 
     const getFontSize = useCallback((value: string) => {
       const length = value?.length || 0;
-      if (length >= 12) return 22;
-      if (length >= 11) return 24;
-      if (length >= 10) return 26;
-      if (length >= 9) return 28;
-      if (length >= 8) return 30;
-      if (length >= 7) return 32;
+      if (length >= 13) return 22;
+      if (length >= 12) return 24;
+      if (length >= 11) return 26;
+      if (length >= 10) return 28;
+      if (length >= 9) return 30;
+      if (length >= 8) return 32;
       return 36;
     }, []);
 
@@ -356,7 +332,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 16,
-    minHeight: 101,
+    minHeight: 106.1,
   },
   addButton: {
     backgroundColor: "#2c2d43",
@@ -385,7 +361,7 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     color: "#ffffff",
     width: "100%",
-    minHeight: 43,
+    minHeight: 48.5,
   },
   amountInputDisabled: {
     opacity: 0.5,

@@ -551,7 +551,7 @@ export function CreateMobileSession() {
         storeMetadataMutation.isLoading) && (
         <div className="flex flex-col justify-center items-center gap-3 p-6 rounded-lg w-full">
           <p className="text-bullish-400 font-medium">
-            Signing mobile creation transaction...
+            Signing mobile session transaction...
           </p>
         </div>
       )}
