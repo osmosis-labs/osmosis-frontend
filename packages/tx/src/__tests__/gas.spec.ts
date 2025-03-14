@@ -716,7 +716,7 @@ describe("getGasFeeAmount", () => {
   });
 
   // Scenario: base fee token goes down in price and a very expensive (i.e. WBTC) alternative fee token is checked but resulting fee amount is <= 0
-  it("should skip an alternative fee token that has a spot price that results in too little precision for 1 unit of fee amount", async () => {
+  it("should return 1 when an alternative fee token that has a spot price that results in too little precision for 1 unit of fee amount", async () => {
     const gasLimit = 1000;
     const chainId = "osmosis-1";
     const address = "osmo1...";
@@ -764,7 +764,6 @@ describe("getGasFeeAmount", () => {
       base_denom: "uosmo",
     } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
     (queryFeeTokenSpotPrice as jest.Mock).mockImplementation(({ denom }) => {
-      // uion should be checked but is skipped due to low precision
       if (denom === "uion") {
         return Promise.resolve({
           pool_id: "2",
@@ -795,13 +794,7 @@ describe("getGasFeeAmount", () => {
       })
     )[0];
 
-    const expectedGasAmount = new Dec(baseFee)
-      .mul(new Dec(defaultBaseFeeMultiplier))
-      .quo(new Dec(lowEnoughSpotPrice))
-      .mul(new Dec(1.01))
-      .mul(new Dec(gasLimit))
-      .truncate()
-      .toString();
+    const expectedGasAmount = "1";
 
     expect(queryBalances).toBeCalledWith({
       chainId,
@@ -825,16 +818,8 @@ describe("getGasFeeAmount", () => {
       chainList: MockChains,
       denom: "uion",
     });
-    expect(queryFeeTokenSpotPrice).toBeCalledWith({
-      chainId,
-      chainList: MockChains,
-      denom:
-        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-    });
 
-    expect(gasAmount.denom).toBe(
-      "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
-    );
+    expect(gasAmount.denom).toBe("uion");
     expect(gasAmount.amount).toBe(expectedGasAmount);
     expect(gasAmount.isSubtractiveFee).toBe(false);
   });

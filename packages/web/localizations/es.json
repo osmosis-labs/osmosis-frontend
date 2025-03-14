@@ -2,7 +2,6 @@
   "404": {
     "title": "No encontrado"
   },
-  "unknownTimeRemaining": "Tiempo restante desconocido",
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
@@ -801,6 +800,8 @@
     "receive": "Recibir {denom}",
     "selectDepositWallet": "Seleccione la billetera {network}",
     "selectWithdrawWallet": "Seleccione la billetera {network}",
+    "depositTakingLonger": "El depósito tarda más de lo esperado",
+    "withdrawalTakingLonger": "El retiro tarda más de lo esperado",
     "depositAssetDescription": "Cuando deposita ciertos activos, puede elegir qué versión del activo desea recibir en Osmosis.",
     "withdrawAssetDescription": "Cuando retira ciertos activos, puede elegir qué versión del activo desea recibir en la red de destino.",
     "estimatingTime": "tiempo estimado",

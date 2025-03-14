@@ -2,7 +2,6 @@
   "404": {
     "title": "Not found"
   },
-  "unknownTimeRemaining": "Unknown time remaining",
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
@@ -801,6 +800,8 @@
     "receive": "Receive {denom}",
     "selectDepositWallet": "Select {network} wallet",
     "selectWithdrawWallet": "Select {network} wallet",
+    "depositTakingLonger": "Deposit taking longer than expected",
+    "withdrawalTakingLonger": "Withdrawal taking longer than expected",
     "depositAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "withdrawAssetDescription": "When you withdraw certain assets, you can choose which version of the asset you want to receive on the destination network.",
     "estimatingTime": "Estimating time",

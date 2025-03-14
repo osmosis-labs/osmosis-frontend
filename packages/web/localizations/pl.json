@@ -2,7 +2,6 @@
   "404": {
     "title": "Nie znaleziono"
   },
-  "unknownTimeRemaining": "Nieznany pozostały czas",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -801,6 +800,8 @@
     "receive": "Odbierz {denom}",
     "selectDepositWallet": "Wybierz portfel {network}",
     "selectWithdrawWallet": "Wybierz portfel {network}",
+    "depositTakingLonger": "Wpłata trwa dłużej niż oczekiwano",
+    "withdrawalTakingLonger": "Wypłata trwa dłużej niż oczekiwano",
     "depositAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
     "withdrawAssetDescription": "Wycofując określone zasoby, możesz wybrać wersję, którą chcesz otrzymać w sieci docelowej.",
     "estimatingTime": "Szacowanie czasu",
