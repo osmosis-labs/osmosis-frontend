@@ -1,5 +1,5 @@
 import { captureError } from "@osmosis-labs/server";
-import { mobileNodeRouter } from "@osmosis-labs/trpc";
+import { mobileNodeRouter } from "@osmosis-labs/trpc/build/complex/mobile-node-router";
 import { createNextApiHandler } from "@trpc/server/adapters/next";
 
 import { createNextTrpcContext } from "~/server/api/trpc";

@@ -1,8 +1,6 @@
-import {
-  createTRPCRouter,
-  mobileEdgeRouter,
-  mobileNodeRouter,
-} from "@osmosis-labs/trpc";
+import { createTRPCRouter } from "@osmosis-labs/trpc/build/api";
+import { mobileEdgeRouter } from "@osmosis-labs/trpc/build/complex/mobile-edge-router";
+import { mobileNodeRouter } from "@osmosis-labs/trpc/build/complex/mobile-node-router";
 
 import { localRouter } from "./local-router";
 

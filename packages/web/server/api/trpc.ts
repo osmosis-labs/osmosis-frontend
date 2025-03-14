@@ -1,5 +1,5 @@
-import { createInnerTRPCContext } from "@osmosis-labs/trpc";
-import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
+import { createInnerTRPCContext } from "@osmosis-labs/trpc/build/api";
+import { type FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 
 import { AssetLists } from "~/config/generated/asset-lists";
