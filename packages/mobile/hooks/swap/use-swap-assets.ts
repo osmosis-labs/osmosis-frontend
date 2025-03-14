@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useMemo, useState } from "react";
+import { MutableRefObject, useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useRecommendedAssets } from "~/hooks/swap/use-recommended-assets";
@@ -38,13 +38,13 @@ export function useSwapAssets({
   );
 
   // generate debounced search from user inputs
-  const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
+  const assetSearchInput = useSwapStore((state) => state.assetSearchInput);
   const [debouncedSearchInput, setDebouncedSearchInput] =
     useDebouncedState<string>("", 500);
 
   useEffect(() => {
-    setDebouncedSearchInput(assetsQueryInput);
-  }, [setDebouncedSearchInput, assetsQueryInput]);
+    setDebouncedSearchInput(assetSearchInput);
+  }, [setDebouncedSearchInput, assetSearchInput]);
 
   const queryInput = useMemo(
     () => (debouncedSearchInput ? { query: debouncedSearchInput } : undefined),
@@ -117,19 +117,16 @@ export function useSwapAssets({
 
   return useMemo(
     () => ({
-      assetsQueryInput,
       selectableAssets,
       isLoadingSelectAssets,
       hasNextPageAssets: hasNextPage,
       isFetchingNextPageAssets: isFetchingNextPage,
       /** Recommended assets, with to and from tokens filtered. */
       recommendedAssets,
-      setAssetsQueryInput,
       switchAssets,
       fetchNextPageAssets: fetchNextPage,
     }),
     [
-      assetsQueryInput,
       selectableAssets,
       isLoadingSelectAssets,
       hasNextPage,
@@ -139,40 +136,4 @@ export function useSwapAssets({
       fetchNextPage,
     ]
   );
-}
-
-/**
- * Determines the next fallback denom for `fromAssetDenom` based on the
- * current asset denoms and defaults.
- * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is not the first default,
- *   set `fromAssetDenom` to the first default denom.
- * - If `fromAssetDenom` is the same as `initialFromDenom` and `toAssetDenom` is the first default,
- *   set `fromAssetDenom` to the second default denomination.
- * - If `initialFromDenom` is the same as `toAssetDenom`, set `fromAssetDenom` to `initialToDenom`.
- * - Otherwise, reset `fromAssetDenom` to `initialFromDenom`.
- */
-function determineNextFallbackFromDenom(params: {
-  fromAssetDenom: string;
-  toAssetDenom: string | undefined;
-  initialFromDenom: string;
-  initialToDenom: string;
-  DefaultDenoms: string[];
-}): string {
-  const {
-    fromAssetDenom,
-    toAssetDenom,
-    initialFromDenom,
-    initialToDenom,
-    DefaultDenoms,
-  } = params;
-
-  if (fromAssetDenom === initialFromDenom) {
-    return toAssetDenom === DefaultDenoms[0]
-      ? DefaultDenoms[1]
-      : DefaultDenoms[0];
-  } else if (initialFromDenom === toAssetDenom) {
-    return initialToDenom;
-  } else {
-    return initialFromDenom;
-  }
 }
