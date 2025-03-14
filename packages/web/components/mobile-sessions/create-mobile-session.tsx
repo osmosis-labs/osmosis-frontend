@@ -388,7 +388,7 @@ export function CreateMobileSession() {
   return (
     <div className="flex flex-col items-center gap-6">
       {!isReady && (
-        <div className="flex flex-col items-center gap-4 p-6 rounded-lg w-full">
+        <div className="flex flex-col items-center gap-4 px-6 py-2 rounded-lg w-full">
           <p className="text-center text-osmoverse-100 font-medium">
             Generating QR Code...
           </p>
@@ -535,7 +535,7 @@ export function CreateMobileSession() {
         !verificationState.verified &&
         !createMobileSessionMutation.isLoading &&
         !storeMetadataMutation.isLoading && (
-          <div className="flex flex-col items-center gap-5 p-6 rounded-lg w-full">
+          <div className="flex flex-col items-center gap-5 px-6 py-2 rounded-lg w-full">
             <p className="text-center font-medium">
               Enter the 6-digit code shown on your mobile device:
             </p>
@@ -549,14 +549,14 @@ export function CreateMobileSession() {
         )}
       {(createMobileSessionMutation.isLoading ||
         storeMetadataMutation.isLoading) && (
-        <div className="flex flex-col justify-center items-center gap-3 p-6 rounded-lg w-full">
+        <div className="flex flex-col justify-center items-center gap-3 px-6 py-2 rounded-lg w-full">
           <p className="text-bullish-400 font-medium">
             Signing mobile session transaction...
           </p>
         </div>
       )}
       {verificationState.verified && (
-        <div className="flex flex-col items-center gap-3 p-6 rounded-lg w-full">
+        <div className="flex flex-col items-center gap-3 px-6 py-2 rounded-lg w-full">
           <div className="bg-bullish-400/20 p-3 rounded-full">
             <svg
               className="h-8 w-8 text-bullish-400"

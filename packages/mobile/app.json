@@ -2,7 +2,7 @@
   "expo": {
     "name": "Osmosis",
     "slug": "osmosis-mobile",
-    "version": "1.1.1",
+    "version": "1.1.3",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "osmosis-mobile",
@@ -15,6 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
+        "monochromeImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#090524"
       },
       "permissions": [
@@ -22,7 +23,7 @@
         "android.permission.USE_FINGERPRINT"
       ],
       "package": "com.osmosis.mobile",
-      "versionCode": 5
+      "versionCode": 7
     },
     "web": {
       "bundler": "metro",
@@ -36,8 +37,8 @@
         {
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#090524"
+          "backgroundColor": "#090524",
+          "resizeMode": "contain"
         }
       ],
       "expo-asset",
@@ -66,7 +67,6 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ]
-      // "@config-plugins/react-native-webrtc"
     ],
     "experiments": {
       "typedRoutes": true

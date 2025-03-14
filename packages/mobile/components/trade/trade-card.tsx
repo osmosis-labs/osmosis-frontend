@@ -3,7 +3,11 @@ import {
   BottomSheetBackdropProps,
   BottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import { formatPretty, trimPlaceholderZeros } from "@osmosis-labs/utils";
+import {
+  ellipsisText,
+  formatPretty,
+  trimPlaceholderZeros,
+} from "@osmosis-labs/utils";
 import equal from "fast-deep-equal";
 import React, {
   memo,
@@ -204,17 +208,6 @@ const SelectedAssetCard = memo(
       amountInput.toggleMax();
     }, [amountInput]);
 
-    const getFontSize = useCallback((value: string) => {
-      const length = value?.length || 0;
-      if (length >= 13) return 22;
-      if (length >= 12) return 24;
-      if (length >= 11) return 26;
-      if (length >= 10) return 28;
-      if (length >= 9) return 30;
-      if (length >= 8) return 32;
-      return 36;
-    }, []);
-
     const inputValue = useMemo(() => {
       if (disabled && amountInput.amount) {
         return trimPlaceholderZeros(
@@ -231,8 +224,15 @@ const SelectedAssetCard = memo(
 
     // Calculate the font size based on the input value
     const fontSize = useMemo(() => {
-      return getFontSize(inputValue);
-    }, [getFontSize, inputValue]);
+      const length = inputValue?.length || 0;
+      if (length >= 13) return 22;
+      if (length >= 12) return 24;
+      if (length >= 11) return 26;
+      if (length >= 10) return 28;
+      if (length >= 9) return 30;
+      if (length >= 8) return 32;
+      return 36;
+    }, [inputValue?.length]);
 
     useEffect(() => {
       const { inAmountInput, outAmountInput } = useSwapStore.getState();
@@ -299,7 +299,9 @@ const SelectedAssetCard = memo(
               />
             )}
             <View>
-              <Text style={styles.assetDenom}>{asset.coinDenom}</Text>
+              <Text style={styles.assetDenom}>
+                {ellipsisText(asset.coinDenom, 8)}
+              </Text>
             </View>
           </TouchableOpacity>
           {!disabled && asset.amount && (

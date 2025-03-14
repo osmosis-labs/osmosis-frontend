@@ -77,7 +77,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
   };
 
   return (
-    <div className="flex flex-col gap-6 items-center w-full pt-6 max-w-md mx-auto">
+    <div className="flex flex-col gap-4 items-center w-full pt-6 max-w-md mx-auto">
       <GoBackButton
         onClick={onClose}
         className="absolute top-7 left-8 hover:bg-osmoverse-800 transition-colors"
@@ -104,7 +104,7 @@ export function MobileSessions({ onClose }: MobileSessionsProps) {
         }}
       />
 
-      <div className="w-full rounded-xl p-2">
+      <div className="w-full rounded-xl px-2">
         <ScreenManager currentScreen={currentScreen}>
           <Screen screenName="existing-sessions">
             <div className="flex flex-col gap-4 w-full">

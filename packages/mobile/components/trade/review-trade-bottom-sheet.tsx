@@ -5,7 +5,11 @@ import {
 } from "@gorhom/bottom-sheet";
 import { CoinPretty } from "@osmosis-labs/unit";
 import { PricePretty } from "@osmosis-labs/unit";
-import { formatPretty, formatSpendLimit } from "@osmosis-labs/utils";
+import {
+  ellipsisText,
+  formatPretty,
+  formatSpendLimit,
+} from "@osmosis-labs/utils";
 import React, { useCallback, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { toast } from "sonner-native";
@@ -200,14 +204,14 @@ export const ReviewTradeBottomSheet = React.forwardRef<
               </Text>
               <View style={styles.detailValue}>
                 <Text style={styles.value}>
-                  1 {fromAsset.coinDenom} ≈{" "}
+                  1 {ellipsisText(fromAsset.coinDenom, 8)} ≈{" "}
                   {formatPretty(expectedOutput.quo(inAmount).toDec(), {
                     minimumSignificantDigits: 6,
                     maximumSignificantDigits: 6,
                     maxDecimals: 8,
                     notation: "standard",
                   })}{" "}
-                  {toAsset.coinDenom}
+                  {ellipsisText(toAsset.coinDenom, 8)}
                 </Text>
               </View>
             </View>

@@ -126,6 +126,7 @@ const styles = StyleSheet.create({
   },
   recommendedAssetsContentContainer: {
     gap: 5,
+    paddingRight: 12,
   },
   centeredView: {
     justifyContent: "center",

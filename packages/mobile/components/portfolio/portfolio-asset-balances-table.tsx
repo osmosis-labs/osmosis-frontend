@@ -64,6 +64,10 @@ export const PortfolioAssetBalancesTable = () => {
     [assetPagesData]
   );
 
+  if (!currentWallet?.address) {
+    return null;
+  }
+
   return (
     <View style={styles.contentContainer}>
       <FlashList

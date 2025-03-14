@@ -3,12 +3,12 @@ import {
   balancesRouter,
   cmsRouter,
   createTRPCRouter,
-  gasRouter,
   oneClickTradingRouter,
   portfolioRouter,
   swapRouter,
   transactionsRouter,
 } from "@osmosis-labs/trpc";
+import { gasRouter } from "@osmosis-labs/trpc/build/gas";
 
 /**
  * This section includes tRPC functions that execute on the client-side.
