@@ -6,13 +6,12 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { SupportedAssetWithAmount } from "~/components/bridge/bridge-types";
 import { SupportedAsset } from "~/components/bridge/use-bridges-supported-assets";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 
 interface BridgeReceiveAssetDropdownProps {
   direction: "deposit" | "withdraw";
