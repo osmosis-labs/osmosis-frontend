@@ -1,5 +1,5 @@
 import { captureError } from "@osmosis-labs/server";
-import { mobileEdgeRouter } from "@osmosis-labs/trpc";
+import { mobileEdgeRouter } from "@osmosis-labs/trpc/build/complex/mobile-edge-router";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
