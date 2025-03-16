@@ -1,5 +1,5 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
-import { ObservableQueryPool, QuasarVault } from "@osmosis-labs/stores";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -96,7 +96,7 @@ export const AddConcLiquidity: FunctionComponent<
               return (
                 <Overview
                   pool={pool}
-                  quasarVaults={quasarVaults}
+                  poolId={poolId}
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
                 />
@@ -109,13 +109,6 @@ export const AddConcLiquidity: FunctionComponent<
                   actionButton={actionButton}
                 />
               );
-            case "add_managed":
-              return (
-                <AddConcLiqManaged
-                  quasarVaults={quasarVaults}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-              );
           }
         })()}
       </div>
@@ -126,11 +119,11 @@ export const AddConcLiquidity: FunctionComponent<
 const Overview: FunctionComponent<
   {
     pool?: ObservableQueryPool;
-    quasarVaults: QuasarVault[];
+    poolId: string;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
+> = observer(({ addLiquidityConfig, pool, poolId, onRequestClose }) => {
   const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
   const { t } = useTranslation();
   const [selected, selectView] =
@@ -141,7 +134,19 @@ const Overview: FunctionComponent<
     addLiquidityConfig.poolId
   );
 
-  const hasProvidersVaults = quasarVaults.length;
+  // Construct Magma URL using pool assets
+  const magmaUrl = useMemo(() => {
+    if (!pool) return "";
+
+    const assetDenoms = pool.poolAssets.map(
+      (asset: { amount: CoinPretty }) => asset.amount.currency.coinMinimalDenom
+    );
+
+    // Join asset denoms with comma for the URL
+    const assetsParam = assetDenoms.join(",");
+
+    return `https://app.magma.eco/vaults?minimumTVL=1&minimumTvlCheck=true&assets=${assetsParam}`;
+  }, [pool]);
 
   return (
     <>
@@ -228,23 +233,20 @@ const Overview: FunctionComponent<
       <div className="flex flex-col">
         <div className="flex justify-center gap-[12px] xs:flex-col">
           <div>
-            {hasProvidersVaults ? (
+            <a
+              href={magmaUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="block"
+            >
               <StrategySelector
                 title={t("addConcentratedLiquidity.managed")}
                 description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
-                onClick={() => selectView("add_managed")}
+                selected={false}
                 imgSrc="/images/cl-pool-providers.png"
                 isNew
               />
-            ) : (
-              <StrategySelector
-                title={t("addConcentratedLiquidity.managed")}
-                description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
-                imgSrc="/images/cl-managed-pick-strategy.png"
-              />
-            )}
+            </a>
           </div>
           <div>
             <StrategySelector
@@ -613,93 +615,6 @@ const AddConcLiqView: FunctionComponent<
         </div>
       </section>
       {actionButton}
-    </>
-  );
-});
-
-const AddConcLiqManaged: FunctionComponent<
-  {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    quasarVaults: QuasarVault[];
-  } & CustomClasses
-> = observer(({ quasarVaults, addLiquidityConfig }) => {
-  const { setModalView } = addLiquidityConfig;
-  const { t } = useTranslation();
-  const { priceStore } = useStore();
-
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
-  if (!fiat) throw new Error("Could not find fiat currency from price store.");
-
-  return (
-    <>
-      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <button
-          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
-        >
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-          />
-          <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
-          </span>
-        </button>
-        <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2TitleManaged")}
-        </h6>
-      </div>
-      <div className="flex flex-col gap-3">
-        {quasarVaults.map((vault) => {
-          return (
-            <a
-              key={vault.slug}
-              href={`https://app.quasar.fi/vault/${vault.slug}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="grid cursor-pointer grid-cols-4 items-center rounded-2xl border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
-                <div className="col-span-3 flex items-center gap-4">
-                  <Image
-                    alt="quasar-provider"
-                    src="/tokens/quasar.png"
-                    width={80}
-                    height={80}
-                    className="h-[80px]"
-                  />
-                  <div>
-                    <Image
-                      alt="quasar-provider"
-                      src="/logos/quasar.svg"
-                      width={80}
-                      height={30}
-                      className="mb-1.5 h-[30px]"
-                    />
-                    <p className="text-lg">{vault.name}</p>
-                  </div>
-                </div>
-                <div className="col-span-1 flex gap-6">
-                  <div className="flex flex-col">
-                    <p className="text-sm text-osmoverse-200">TVL</p>
-                    <p className="text-lg">
-                      {formatPretty(
-                        new PricePretty(fiat, vault.tvl.usd)
-                      ).toString()}
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm text-osmoverse-200">Est. APR</p>
-                    <p className="text-lg">~ {(vault.apy * 100).toFixed(0)}%</p>
-                  </div>
-                </div>
-              </div>
-            </a>
-          );
-        })}
-      </div>
     </>
   );
 });
