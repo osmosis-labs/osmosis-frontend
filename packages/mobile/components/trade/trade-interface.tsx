@@ -34,9 +34,6 @@ interface TradeInterfaceProps {
   initialToDenom?: string;
 }
 
-const atomMinimalDenom =
-  "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2";
-
 const DefaultDenoms = ["ATOM", "OSMO"];
 
 export function TradeInterface({
@@ -44,14 +41,13 @@ export function TradeInterface({
   initialFromDenom: initialFromDenomProp,
   initialToDenom: initialToDenomProp,
 }: TradeInterfaceProps) {
-  const initialFromDenom = useMemo(
-    () =>
-      initialToDenomProp?.toLowerCase() === atomMinimalDenom.toLowerCase()
-        ? "OSMO"
-        : initialFromDenomProp ??
-          DefaultDenoms.filter((denom) => denom !== initialToDenomProp)[0],
-    [initialFromDenomProp, initialToDenomProp]
-  );
+  const initialFromDenom = useMemo(() => {
+    if (initialToDenomProp?.toLowerCase() === "usdc") return "OSMO";
+    return initialToDenomProp?.toLowerCase() === "atom"
+      ? "OSMO"
+      : initialFromDenomProp ??
+          DefaultDenoms.filter((denom) => denom !== initialToDenomProp)[0];
+  }, [initialFromDenomProp, initialToDenomProp]);
   const initialToDenom = useMemo(
     () =>
       initialToDenomProp ??

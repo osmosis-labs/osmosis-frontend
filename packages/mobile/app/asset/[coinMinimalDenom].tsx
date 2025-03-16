@@ -63,7 +63,7 @@ const AssetRoute = () => {
               pathname: "/trade/[fromToken]",
               params: {
                 fromToken: "USDC",
-                toToken: coinMinimalDenom,
+                toToken: coinDenom,
               },
             });
           }}

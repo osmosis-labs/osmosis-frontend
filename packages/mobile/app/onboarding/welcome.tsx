@@ -143,7 +143,8 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 12,
     flex: 1,
-    justifyContent: "center",
+    paddingBottom: 24,
+    justifyContent: "flex-end",
   },
   button: {
     width: "100%",
