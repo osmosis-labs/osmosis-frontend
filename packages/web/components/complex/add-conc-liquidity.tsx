@@ -1,4 +1,4 @@
-import type { Pool, PoolIncentives } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -133,24 +133,10 @@ const Overview: FunctionComponent<
     onRequestClose: () => void;
     getMagmaUrl: (pool?: Pool) => string;
   } & CustomClasses
-> = ({
-  addLiquidityConfig,
-  quasarVaults,
-  pool,
-  onRequestClose,
-  getMagmaUrl,
-}) => {
+> = ({ addLiquidityConfig, pool, onRequestClose, getMagmaUrl }) => {
   const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
-
-  const hasProvidersVaults = quasarVaults.length;
-
-  const isSuperfluid = Boolean(
-    (
-      pool as Pool & { incentives?: PoolIncentives }
-    )?.incentives?.incentiveTypes?.includes("superfluid")
-  );
 
   return (
     <>
