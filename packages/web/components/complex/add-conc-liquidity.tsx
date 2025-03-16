@@ -82,7 +82,9 @@ export const AddConcLiquidity: FunctionComponent<
 
     const getMagmaUrl = (pool?: Pool) => {
       if (!pool) return "";
-      const assetDenoms = pool.reserveCoins.map((coin) => coin.denom).join(",");
+      const assetDenoms = pool.reserveCoins
+        .map((coin) => coin.currency.coinMinimalDenom)
+        .join(",");
       return `https://app.magma.eco/vaults?minimumTVL=1&minimumTvlCheck=true&assets=${assetDenoms}`;
     };
 
@@ -167,23 +169,21 @@ const Overview: FunctionComponent<
         <div className="flex justify-center gap-[12px] xs:flex-col">
           <div>
             <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={false}
-              onClick={() => {
-                window.open(getMagmaUrl(pool), "_blank");
-              }}
-              imgSrc="/images/cl-pool-providers.png"
-              isNew
-            />
-          </div>
-          <div>
-            <StrategySelector
               title={t("addConcentratedLiquidity.manual")}
               description={t("addConcentratedLiquidity.manualDescription")}
               selected={selected === "add_manual"}
               onClick={() => selectView("add_manual")}
               imgSrc="/images/cl-manual-pick-strategy.png"
+            />
+          </div>
+          <div>
+            <StrategySelector
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={selected === "add_managed"}
+              onClick={() => selectView("add_managed")}
+              imgSrc="/images/magma-vault.png"
+              isNew
             />
           </div>
         </div>
@@ -192,7 +192,12 @@ const Overview: FunctionComponent<
         <Button
           className="w-[25rem]"
           onClick={() => {
-            addLiquidityConfig.setModalView(selected);
+            if (selected === "add_managed") {
+              window.open(getMagmaUrl(pool), "_blank");
+              addLiquidityConfig.setModalView("overview");
+            } else {
+              addLiquidityConfig.setModalView(selected);
+            }
           }}
         >
           {t("pools.createPool.buttonNext")}
