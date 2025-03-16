@@ -1,6 +1,6 @@
-import type { Pool } from "@osmosis-labs/server";
+import type { Pool, PoolIncentives } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
-import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
@@ -16,7 +16,7 @@ import React, {
   useState,
 } from "react";
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
@@ -80,6 +80,12 @@ export const AddConcLiquidity: FunctionComponent<
       poolId,
     });
 
+    const getMagmaUrl = (pool?: Pool) => {
+      if (!pool) return "";
+      const assetDenoms = pool.reserveCoins.map((coin) => coin.denom).join(",");
+      return `https://app.magma.eco/vaults?minimumTVL=1&minimumTvlCheck=true&assets=${assetDenoms}`;
+    };
+
     return (
       <div
         className={classNames(
@@ -97,6 +103,7 @@ export const AddConcLiquidity: FunctionComponent<
                   quasarVaults={quasarVaults}
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
+                  getMagmaUrl={getMagmaUrl}
                 />
               );
             case "add_manual":
@@ -108,12 +115,9 @@ export const AddConcLiquidity: FunctionComponent<
                 />
               );
             case "add_managed":
-              return (
-                <AddConcLiqManaged
-                  quasarVaults={quasarVaults}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-              );
+              window.open(getMagmaUrl(pool), "_blank");
+              addLiquidityConfig.setModalView("overview");
+              return null;
           }
         })()}
       </div>
@@ -127,8 +131,15 @@ const Overview: FunctionComponent<
     quasarVaults: QuasarVault[];
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
+    getMagmaUrl: (pool?: Pool) => string;
   } & CustomClasses
-> = ({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
+> = ({
+  addLiquidityConfig,
+  quasarVaults,
+  pool,
+  onRequestClose,
+  getMagmaUrl,
+}) => {
   const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
@@ -136,7 +147,9 @@ const Overview: FunctionComponent<
   const hasProvidersVaults = quasarVaults.length;
 
   const isSuperfluid = Boolean(
-    pool?.incentives?.incentiveTypes?.includes("superfluid")
+    (
+      pool as Pool & { incentives?: PoolIncentives }
+    )?.incentives?.incentiveTypes?.includes("superfluid")
   );
 
   return (
@@ -164,79 +177,19 @@ const Overview: FunctionComponent<
           />
         </div>
       </div>
-      <div className="flex rounded-2xl bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
-        <div className="flex flex-1 flex-col gap-1">
-          <div className="flex flex-nowrap items-center gap-2">
-            {pool && (
-              <>
-                <PoolAssetsIcon
-                  assets={pool.reserveCoins.map((asset) => ({
-                    coinDenom: asset.denom,
-                    coinImageUrl: asset.currency.coinImageUrl,
-                  }))}
-                  size="sm"
-                />
-                <PoolAssetsName
-                  size="md"
-                  className="max-w-xs truncate"
-                  assetDenoms={pool.reserveCoins.map(({ denom }) => denom)}
-                />
-              </>
-            )}
-          </div>
-          {isSuperfluid && (
-            <span className="body2 text-superfluid-gradient">
-              {t("pool.superfluidEnabled")}
-            </span>
-          )}
-        </div>
-        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-x-6 xs:gap-y-4">
-          <div className="gap-[3px]">
-            <span className="body2 text-osmoverse-400">
-              {t("pool.24hrTradingVolume")}
-            </span>
-            <h6 className="text-osmoverse-100">
-              {pool?.market?.volume24hUsd?.toString() ?? ""}
-            </h6>
-          </div>
-          <div className="gap-[3px]">
-            <span className="body2 text-osmoverse-400">
-              {t("pool.liquidity")}
-            </span>
-            <h6 className="text-osmoverse-100">
-              {pool?.totalFiatValueLocked?.toString() ?? ""}
-            </h6>
-          </div>
-          <div className="gap-[3px]">
-            <span className="body2 text-osmoverse-400">
-              {t("pool.spreadFactor")}
-            </span>
-            <h6 className="text-osmoverse-100">
-              {pool?.spreadFactor.toString()}
-            </h6>
-          </div>
-        </div>
-      </div>
       <div className="flex flex-col">
         <div className="flex justify-center gap-[12px] xs:flex-col">
           <div>
-            {hasProvidersVaults ? (
-              <StrategySelector
-                title={t("addConcentratedLiquidity.managed")}
-                description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
-                onClick={() => selectView("add_managed")}
-                imgSrc="/images/cl-pool-providers.png"
-                isNew
-              />
-            ) : (
-              <StrategySelector
-                title={t("addConcentratedLiquidity.managed")}
-                description={t("addConcentratedLiquidity.managedDescription")}
-                selected={selected === "add_managed"}
-                imgSrc="/images/cl-managed-pick-strategy.png"
-              />
-            )}
+            <StrategySelector
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={false}
+              onClick={() => {
+                window.open(getMagmaUrl(pool), "_blank");
+              }}
+              imgSrc="/images/cl-pool-providers.png"
+              isNew
+            />
           </div>
           <div>
             <StrategySelector
@@ -605,93 +558,6 @@ const AddConcLiqView: FunctionComponent<
         </div>
       </section>
       {actionButton}
-    </>
-  );
-});
-
-const AddConcLiqManaged: FunctionComponent<
-  {
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    quasarVaults: QuasarVault[];
-  } & CustomClasses
-> = observer(({ quasarVaults, addLiquidityConfig }) => {
-  const { setModalView } = addLiquidityConfig;
-  const { t } = useTranslation();
-  const { priceStore } = useStore();
-
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-
-  if (!fiat) throw new Error("Could not find fiat currency from price store.");
-
-  return (
-    <>
-      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <button
-          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
-        >
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-          />
-          <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
-          </span>
-        </button>
-        <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2TitleManaged")}
-        </h6>
-      </div>
-      <div className="flex flex-col gap-3">
-        {quasarVaults.map((vault) => {
-          return (
-            <a
-              key={vault.slug}
-              href={`https://app.quasar.fi/vault/${vault.slug}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <div className="grid cursor-pointer grid-cols-4 items-center rounded-2xl border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
-                <div className="col-span-3 flex items-center gap-4">
-                  <Image
-                    alt="quasar-provider"
-                    src="/tokens/quasar.png"
-                    width={80}
-                    height={80}
-                    className="h-[80px]"
-                  />
-                  <div>
-                    <Image
-                      alt="quasar-provider"
-                      src="/logos/quasar.svg"
-                      width={80}
-                      height={30}
-                      className="mb-1.5 h-[30px]"
-                    />
-                    <p className="text-lg">{vault.name}</p>
-                  </div>
-                </div>
-                <div className="col-span-1 flex gap-6">
-                  <div className="flex flex-col">
-                    <p className="text-sm text-osmoverse-200">TVL</p>
-                    <p className="text-lg">
-                      {formatPretty(
-                        new PricePretty(fiat, vault.tvl.usd)
-                      ).toString()}
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-sm text-osmoverse-200">Est. APR</p>
-                    <p className="text-lg">~ {(vault.apy * 100).toFixed(0)}%</p>
-                  </div>
-                </div>
-              </div>
-            </a>
-          );
-        })}
-      </div>
     </>
   );
 });
