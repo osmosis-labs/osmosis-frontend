@@ -22,7 +22,12 @@ import { Button } from "~/components/ui/button";
 import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useSwapQuote } from "~/hooks/swap/use-swap-quote";
-import { useSwapStore } from "~/stores/swap";
+import {
+  createSwapStore,
+  SwapStoreContext,
+  useSwapStore,
+  useSwapStoreApi,
+} from "~/stores/swap";
 
 import { TradeCard } from "./trade-card";
 
@@ -37,6 +42,23 @@ interface TradeInterfaceProps {
 const DefaultDenoms = ["ATOM", "OSMO"];
 
 export function TradeInterface({
+  showGlobalSubmitButton = false,
+  initialFromDenom: initialFromDenomProp,
+  initialToDenom: initialToDenomProp,
+}: TradeInterfaceProps) {
+  const store = useMemo(() => createSwapStore(), []);
+  return (
+    <SwapStoreContext.Provider value={store}>
+      <TradeInterfaceContent
+        showGlobalSubmitButton={showGlobalSubmitButton}
+        initialFromDenom={initialFromDenomProp}
+        initialToDenom={initialToDenomProp}
+      />
+    </SwapStoreContext.Provider>
+  );
+}
+
+export function TradeInterfaceContent({
   showGlobalSubmitButton = false,
   initialFromDenom: initialFromDenomProp,
   initialToDenom: initialToDenomProp,
@@ -129,9 +151,10 @@ const NumberPad = memo(function NumberPad() {
   const [deleteInterval, setDeleteInterval] = useState<NodeJS.Timeout | null>(
     null
   );
+  const swapStoreApi = useSwapStoreApi();
 
   const onNumberClick = (num: string) => {
-    const { inAmountInput, outAmountInput } = useSwapStore.getState();
+    const { inAmountInput, outAmountInput } = swapStoreApi.getState();
 
     if (!inAmountInput || !outAmountInput) return;
 
@@ -162,7 +185,7 @@ const NumberPad = memo(function NumberPad() {
   };
 
   const onDelete = () => {
-    const { inAmountInput, outAmountInput } = useSwapStore.getState();
+    const { inAmountInput, outAmountInput } = swapStoreApi.getState();
 
     if (!inAmountInput || !outAmountInput) return;
 
@@ -183,7 +206,7 @@ const NumberPad = memo(function NumberPad() {
 
     // Then set up interval to continue deleting
     const interval = setInterval(() => {
-      const { inAmountInput } = useSwapStore.getState();
+      const { inAmountInput } = swapStoreApi.getState();
       if (
         !inAmountInput ||
         !inAmountInput.inputAmount ||
@@ -349,6 +372,7 @@ const SubmitButton = ({
 
   const reviewTradeBottomSheetRef = useRef<BottomSheetModal>(null);
   const limitExceededBottomSheetRef = useRef<BottomSheetModal>(null);
+  const swapStoreApi = useSwapStoreApi();
 
   const isSwapToolLoading = useMemo(
     () =>
@@ -367,16 +391,16 @@ const SubmitButton = ({
   );
 
   useLayoutEffect(() => {
-    useSwapStore.setState({
+    swapStoreApi.setState({
       isSwapToolLoading,
     });
-  }, [isSwapToolLoading]);
+  }, [isSwapToolLoading, swapStoreApi]);
 
   useEffect(() => {
-    useSwapStore.setState({
+    swapStoreApi.setState({
       error,
     });
-  }, [error]);
+  }, [error, swapStoreApi]);
 
   const isSwapButtonDisabled =
     /**

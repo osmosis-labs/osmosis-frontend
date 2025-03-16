@@ -2,7 +2,7 @@ import { useEffect, useMemo } from "react";
 import { useShallow } from "zustand/react/shallow";
 
 import { useWallets } from "~/hooks/use-wallets";
-import { useSwapStore } from "~/stores/swap";
+import { useSwapStore, useSwapStoreApi } from "~/stores/swap";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
@@ -19,6 +19,7 @@ export function useSwapAsset<
   direction: "in" | "out";
 }) {
   const { currentWallet } = useWallets();
+  const swapStoreApi = useSwapStoreApi();
   const { setFromAsset, setToAsset } = useSwapStore(
     useShallow((state) => ({
       setFromAsset: state.setFromAsset,
@@ -60,7 +61,7 @@ export function useSwapAsset<
   // Update the store when assets change
   useEffect(() => {
     // Get these values here to avoid unnecessary re-renders
-    const { fromAsset, toAsset } = useSwapStore.getState();
+    const { fromAsset, toAsset } = swapStoreApi.getState();
 
     const previousAsset = direction === "in" ? fromAsset : toAsset;
 
@@ -77,7 +78,15 @@ export function useSwapAsset<
     } else {
       setToAsset(currentAsset);
     }
-  }, [asset, direction, setFromAsset, setToAsset, isLoading, currentAsset]);
+  }, [
+    asset,
+    direction,
+    setFromAsset,
+    setToAsset,
+    isLoading,
+    currentAsset,
+    swapStoreApi,
+  ]);
 
   return {
     asset: currentAsset,

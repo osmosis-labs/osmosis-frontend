@@ -29,7 +29,7 @@ import { Text } from "~/components/ui/text";
 import { Colors } from "~/constants/theme-colors";
 import { useSwapAmountInput } from "~/hooks/swap/use-swap-amount-input";
 import { useSwapAsset } from "~/hooks/swap/use-swap-asset";
-import { useSwapStore } from "~/stores/swap";
+import { SwapStoreContext, useSwapStore, useSwapStoreApi } from "~/stores/swap";
 import { formatFiatValueCompact } from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
@@ -61,15 +61,16 @@ export const TradeCard = memo(
         toAssetDenom: state.toAssetDenom,
       }))
     );
+    const swapStoreApi = useSwapStoreApi();
 
     useEffect(() => {
-      useSwapStore.setState({
+      swapStoreApi.setState({
         fromAssetDenom: initialFromDenom,
         toAssetDenom: initialToDenom,
         fromAsset: undefined,
         toAsset: undefined,
       });
-    }, [initialFromDenom, initialToDenom]);
+    }, [initialFromDenom, initialToDenom, swapStoreApi]);
 
     const { asset, error } = useSwapAsset({
       direction,
@@ -133,7 +134,7 @@ const BottomSheetSelectAsset = memo(
     const setAssetSearchInput = useSwapStore(
       (state) => state.setAssetSearchInput
     );
-
+    const swapStoreApi = useSwapStoreApi();
     return (
       <BottomSheetModal
         ref={selectAssetBottomSheetRef}
@@ -161,24 +162,27 @@ const BottomSheetSelectAsset = memo(
           setAssetSearchInput("");
         }}
       >
-        <TradeBottomSheetContent
-          onSelectAsset={(asset) => {
-            selectAssetBottomSheetRef.current?.dismiss();
+        <SwapStoreContext.Provider value={swapStoreApi}>
+          <TradeBottomSheetContent
+            onSelectAsset={(asset) => {
+              selectAssetBottomSheetRef.current?.dismiss();
 
-            const { fromAsset, toAsset, switchAssets, selectAsset } =
-              useSwapStore.getState();
-            const oppositeSelectedAsset =
-              direction === "in" ? toAsset : fromAsset;
-            if (
-              asset.coinMinimalDenom === oppositeSelectedAsset?.coinMinimalDenom
-            ) {
-              switchAssets();
-            } else {
-              selectAsset(direction, asset);
-            }
-          }}
-          existingAssetsRef={existingAssetsRef}
-        />
+              const { fromAsset, toAsset, switchAssets, selectAsset } =
+                swapStoreApi.getState();
+              const oppositeSelectedAsset =
+                direction === "in" ? toAsset : fromAsset;
+              if (
+                asset.coinMinimalDenom ===
+                oppositeSelectedAsset?.coinMinimalDenom
+              ) {
+                switchAssets();
+              } else {
+                selectAsset(direction, asset);
+              }
+            }}
+            existingAssetsRef={existingAssetsRef}
+          />
+        </SwapStoreContext.Provider>
       </BottomSheetModal>
     );
   }
@@ -197,8 +201,11 @@ const SelectedAssetCard = memo(
     direction: "in" | "out";
   }) => {
     const inputRef = useRef<TextInput>(null);
+    const swapStoreApi = useSwapStoreApi();
 
-    const isSwapToolLoading = useSwapStore((state) => state.isSwapToolLoading);
+    const isSwapToolLoading = useSwapStore(
+      useShallow((state) => state.isSwapToolLoading)
+    );
     const amountInput = useSwapAmountInput({
       direction,
     });
@@ -235,22 +242,22 @@ const SelectedAssetCard = memo(
     }, [inputValue?.length]);
 
     useEffect(() => {
-      const { inAmountInput, outAmountInput } = useSwapStore.getState();
+      const { inAmountInput, outAmountInput } = swapStoreApi.getState();
 
       if (direction === "in") {
         if (!equal(inAmountInput, amountInput)) {
-          useSwapStore.setState({
+          swapStoreApi.setState({
             inAmountInput: amountInput,
           });
         }
       } else {
         if (!equal(outAmountInput, amountInput)) {
-          useSwapStore.setState({
+          swapStoreApi.setState({
             outAmountInput: amountInput,
           });
         }
       }
-    }, [amountInput, direction]);
+    }, [amountInput, direction, swapStoreApi]);
 
     useEffect(() => {
       if (!disabled) {
