@@ -24,14 +24,17 @@ export const AssetImage = ({
       style={[styles.assetIcon, style]}
     />
   ) : (
-    <Image source={{ uri }} style={[styles.assetIcon, style as ImageStyle]} />
+    <Image
+      source={{ uri }}
+      width={width}
+      height={height}
+      style={[styles.assetIcon, style as ImageStyle]}
+    />
   );
 };
 
 const styles = StyleSheet.create({
   assetIcon: {
-    width: 40,
-    height: 40,
     borderRadius: 20,
   },
 });

@@ -132,7 +132,12 @@ const AssetItem = ({
       <View style={styles.assetItem}>
         <View style={[styles.assetLeft, { opacity: 0.5 }]}>
           {asset.coinImageUrl && (
-            <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
+            <AssetImage
+              uri={asset.coinImageUrl}
+              style={styles.assetIcon}
+              width={40}
+              height={40}
+            />
           )}
           <View>
             {CoinName}
@@ -180,7 +185,12 @@ const AssetItem = ({
       <TouchableOpacity style={styles.assetItem}>
         <View style={styles.assetLeft}>
           {asset.coinImageUrl && (
-            <AssetImage uri={asset.coinImageUrl} style={styles.assetIcon} />
+            <AssetImage
+              uri={asset.coinImageUrl}
+              style={styles.assetIcon}
+              width={40}
+              height={40}
+            />
           )}
           <View>
             {CoinName}
@@ -254,8 +264,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   assetIcon: {
-    width: 40,
-    height: 40,
     borderRadius: 20,
     marginRight: 12,
   },

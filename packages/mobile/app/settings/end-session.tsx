@@ -67,17 +67,10 @@ export default function EndSessionScreen() {
             <Text style={{ lineHeight: 20 }}>
               2. Click on your Profile in the top right
             </Text>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text style={{ lineHeight: 20 }}>3. Select</Text>
-              <MobileSessionIcon width={16} height={16} />
-              <Text>and head into Existing sessions.</Text>
-            </View>
+            <Text style={{ flex: 1, lineHeight: 20 }}>
+              3. Select <MobileSessionIcon width={16} height={16} /> and head
+              into Existing sessions.
+            </Text>
             <Text style={{ lineHeight: 20 }}>
               4. Find and delete the session with this ID:
             </Text>

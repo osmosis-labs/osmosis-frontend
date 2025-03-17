@@ -46,14 +46,16 @@ export const TransactionActivityItem: FunctionComponent<
         <View style={styles.tokenImages}>
           <AssetImage
             uri={tokenIn.token?.currency.coinImageUrl || ""}
-            style={styles.tokenImage}
+            width={30}
+            height={30}
           />
           <View style={styles.arrowContainer}>
             <Text style={styles.arrow}>→</Text>
           </View>
           <AssetImage
             uri={tokenOut.token?.currency.coinImageUrl || ""}
-            style={styles.tokenImage}
+            width={30}
+            height={30}
           />
         </View>
       </View>
@@ -98,10 +100,6 @@ const styles = StyleSheet.create({
   tokenImages: {
     flexDirection: "row",
     alignItems: "center",
-  },
-  tokenImage: {
-    width: 30,
-    height: 30,
   },
   arrowContainer: {
     marginHorizontal: 4,

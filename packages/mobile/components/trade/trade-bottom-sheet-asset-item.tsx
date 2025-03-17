@@ -29,7 +29,9 @@ export const TradeBottomSheetAssetItem = ({
           {asset.coinImageUrl && (
             <AssetImage
               uri={asset.coinImageUrl}
-              style={[styles.assetImage, styles.recommendedAssetImage]}
+              style={styles.assetImage}
+              width={24}
+              height={24}
             />
           )}
           <View>
@@ -45,7 +47,12 @@ export const TradeBottomSheetAssetItem = ({
       <View style={styles.assetContainer}>
         <View style={styles.assetLeft}>
           {asset.coinImageUrl && (
-            <AssetImage uri={asset.coinImageUrl} style={styles.assetImage} />
+            <AssetImage
+              uri={asset.coinImageUrl}
+              style={styles.assetImage}
+              width={40}
+              height={40}
+            />
           )}
           <View>
             <Text
@@ -94,10 +101,7 @@ const styles = StyleSheet.create({
   assetImage: {
     marginRight: 8,
   },
-  recommendedAssetImage: {
-    width: 24,
-    height: 24,
-  },
+
   assetContainer: {
     flexDirection: "row",
     alignItems: "center",

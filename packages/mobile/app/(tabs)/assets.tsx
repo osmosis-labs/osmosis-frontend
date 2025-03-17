@@ -214,7 +214,12 @@ const AssetItem = ({
     >
       <TouchableOpacity style={styles.assetItem}>
         <View style={styles.assetLeft}>
-          <AssetImage uri={asset.coinImageUrl ?? ""} style={styles.assetIcon} />
+          <AssetImage
+            uri={asset.coinImageUrl ?? ""}
+            style={styles.assetIcon}
+            width={40}
+            height={40}
+          />
           <View>
             <Text style={styles.assetName}>{asset.coinDenom}</Text>
           </View>
