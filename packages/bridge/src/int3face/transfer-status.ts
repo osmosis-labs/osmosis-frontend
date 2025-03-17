@@ -58,7 +58,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         const transferStatus = data?.transfer?.status
 
         if (!transferStatus) {
-          status = "connection-error";
+          return;
         } else if (
           [
             Int3faceTransferStatus.TRANSACTION_STATUS_FAILED,
