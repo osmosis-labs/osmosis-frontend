@@ -62,17 +62,17 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
           return;
         } else if (
           [
-            Int3faceTransferStatus.TRANSACTION_STATUS_FAILED,
-            Int3faceTransferStatus.TRANSACTION_STATUS_UNSPECIFIED,
+            Int3faceTransferStatus.TRANSFER_STATUS_FAILED,
+            Int3faceTransferStatus.TRANSFER_STATUS_UNSPECIFIED,
           ].includes(transferStatus)
         ) {
           status = "failed";
         } else if (
-          transferStatus === Int3faceTransferStatus.TRANSACTION_STATUS_PENDING
+          transferStatus === Int3faceTransferStatus.TRANSFER_STATUS_PENDING
         ) {
           status = "pending";
         } else if (
-          transferStatus === Int3faceTransferStatus.TRANSACTION_STATUS_FINALIZED
+          transferStatus === Int3faceTransferStatus.TRANSFER_STATUS_FINALIZED
         ) {
           status = "success";
         }
