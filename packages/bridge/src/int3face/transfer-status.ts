@@ -58,6 +58,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         const transferStatus = data?.transfer?.status
 
         if (!transferStatus) {
+          /** The information about the transfer is still missing, try again */
           return;
         } else if (
           [
