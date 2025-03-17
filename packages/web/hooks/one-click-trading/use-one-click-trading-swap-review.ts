@@ -1,7 +1,8 @@
 import { OneClickTradingInfo } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
+import { formatSpendLimit } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAsync, useLocalStorage } from "react-use";
 import { create } from "zustand";
@@ -14,7 +15,6 @@ import {
 } from "~/hooks/one-click-trading/use-one-click-trading-params";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useStore } from "~/stores";
-import { trimPlaceholderZeros } from "~/utils/number";
 import { api } from "~/utils/trpc";
 
 const use1CTSwapReviewStore = create<{
@@ -291,10 +291,4 @@ function useOneClickRemainingSpendLimit({
     remainingSpendLimit,
     wouldExceedSpendLimit,
   };
-}
-
-export function formatSpendLimit(price: PricePretty | undefined) {
-  return `${price?.symbol}${trimPlaceholderZeros(
-    price?.toDec().toString(2) ?? ""
-  )}`;
 }

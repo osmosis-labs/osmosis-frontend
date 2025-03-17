@@ -136,16 +136,31 @@ export const api = createTRPCNext<AppRouter>({
          * We'll use the node server for things that require the node.js api (E.g. Creating transactions).
          */
         (runtime) => {
+          const constructServerUrl = (
+            type: "node" | "edge",
+            key?: EdgeRouterKey
+          ) => {
+            const baseUrl = getBaseUrl();
+            if (type === "node") {
+              return `${baseUrl}/api/trpc`;
+            }
+            if (key) {
+              return `${baseUrl}${constructEdgeUrlPathname(key)}`;
+            }
+            return `${baseUrl}${constructEdgeUrlPathname("main")}`; // default to main edge server
+          };
+
           // initialize the different links for different targets (edge and node)
           const servers = {
-            node: makeSkipBatchLink(`${getBaseUrl()}/api/trpc`)(runtime),
+            node: makeSkipBatchLink(constructServerUrl("node"))(runtime),
             [constructEdgeRouterKey("main")]: makeSkipBatchLink(
-              `${getBaseUrl()}${constructEdgeUrlPathname("main")}`
+              constructServerUrl("edge")
             )(runtime),
             local: localLink({
               router: trpcLocalRouter,
-              assetLists: AssetLists,
-              chainList: ChainList,
+              getLists: async () => {
+                return { assetLists: AssetLists, chainList: ChainList };
+              },
               opentelemetryServiceName: getOpentelemetryServiceName(),
             })(runtime),
 
@@ -157,10 +172,10 @@ export const api = createTRPCNext<AppRouter>({
              * /pages/api/ folder with the following format: edge-trpc-[key]/[trpc].ts
              */
             [constructEdgeRouterKey("pools")]: makeSkipBatchLink(
-              `${getBaseUrl()}${constructEdgeUrlPathname("pools")}`
+              constructServerUrl("edge", "pools")
             )(runtime),
             [constructEdgeRouterKey("assets")]: makeSkipBatchLink(
-              `${getBaseUrl()}${constructEdgeUrlPathname("assets")}`
+              constructServerUrl("edge", "assets")
             )(runtime),
           };
 

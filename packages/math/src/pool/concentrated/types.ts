@@ -42,3 +42,41 @@ export type ActiveLiquidityPerTickRange = {
   /** Net liquidity, for calculating active liquidity. */
   liquidityAmount: Dec;
 };
+
+export interface SwapStrategy {
+  getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec;
+  computeSwapStepOutGivenIn(
+    curSqrtPrice: BigDec,
+    sqrtPriceTarget: Dec,
+    liquidity: Dec,
+    amountRemainingIn: Dec
+  ): {
+    sqrtPriceNext: BigDec;
+    amountInConsumed: Dec;
+    amountOutComputed: Dec;
+    feeChargeTotal: Dec;
+  };
+  computeSwapStepInGivenOut(
+    curSqrtPrice: BigDec,
+    sqrtPriceTarget: Dec,
+    liquidity: Dec,
+    amountRemainingOut: Dec
+  ): {
+    sqrtPriceNext: BigDec;
+    amountOutConsumed: Dec;
+    amountInComputed: Dec;
+    feeChargeTotal: Dec;
+  };
+  validatePriceLimit(sqrtPriceLimit: Dec, curSqrtPrice: Dec): boolean;
+  setLiquidityDeltaSign(liquidityDelta: Dec): Dec;
+}
+
+export type OneForZero = {
+  sqrtPriceLimit: Dec;
+  swapFee: Dec;
+};
+
+export type ZeroForOne = {
+  sqrtPriceLimit: Dec;
+  swapFee: Dec;
+};

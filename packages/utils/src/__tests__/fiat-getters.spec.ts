@@ -1,22 +1,20 @@
-import { Asset, DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Currency } from "@osmosis-labs/types";
 import { Dec, Int, PricePretty } from "@osmosis-labs/unit";
 
 import {
+  DEFAULT_VS_CURRENCY,
   getTokenInFeeAmountFiatValue,
   getTokenOutFiatValue,
-} from "../fiat-getters";
+} from "..";
 
 const testDenom = "USDC";
 
 describe("getTokenInFeeAmountFiatValue", () => {
-  const defaultZeroDecimalAsset: Asset = {
-    coinName: "test",
+  const defaultZeroDecimalAsset: Currency = {
     coinDenom: testDenom,
     coinMinimalDenom: testDenom,
     coinDecimals: 0,
     coinGeckoId: "",
-    isVerified: true,
-    isUnstable: false,
   };
   const defaultTokenIn = new Int(100);
   const defaultPriceOne = new PricePretty(DEFAULT_VS_CURRENCY, 1);
@@ -25,7 +23,7 @@ describe("getTokenInFeeAmountFiatValue", () => {
 
   describe("undefined inputs", () => {
     it("should return PricePretty with 0 value if asset is undefined", () => {
-      const asset: Asset | undefined = undefined;
+      const asset: Currency | undefined = undefined;
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = defaultPriceOne;
 
@@ -39,7 +37,7 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should return PricePretty with 0 value if tokenInFeeAmount is undefined", () => {
-      const asset: Asset | undefined = defaultZeroDecimalAsset;
+      const asset: Currency | undefined = defaultZeroDecimalAsset;
       const tokenInFeeAmount: Int | undefined = undefined;
       const inAmountInputPrice: PricePretty | undefined = defaultPriceOne;
 
@@ -53,7 +51,7 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should return PricePretty with 0 value if inAmountInputPrice is zero", () => {
-      const asset: Asset | undefined = defaultZeroDecimalAsset;
+      const asset: Currency | undefined = defaultZeroDecimalAsset;
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = undefined;
 
@@ -69,7 +67,7 @@ describe("getTokenInFeeAmountFiatValue", () => {
 
   describe("valid inputs", () => {
     it("should calculate tokenInFiatFeeAmount correctly, exponent zero, fee amount 100, price 1", () => {
-      const asset: Asset | undefined = defaultZeroDecimalAsset;
+      const asset: Currency | undefined = defaultZeroDecimalAsset;
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = defaultPriceOne;
 
@@ -83,7 +81,7 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should calculate tokenInFiatFeeAmount correctly, exponent zero, fee amount 100, price 2", () => {
-      const asset: Asset | undefined = defaultZeroDecimalAsset;
+      const asset: Currency | undefined = defaultZeroDecimalAsset;
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = new PricePretty(
         DEFAULT_VS_CURRENCY,
@@ -100,14 +98,11 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should calculate tokenInFiatFeeAmount correctly, exponent 18, fee amount 100, price 1", () => {
-      const asset: Asset | undefined = {
-        coinName: "test",
+      const asset: Currency | undefined = {
         coinDenom: testDenom,
         coinMinimalDenom: testDenom,
         coinDecimals: 18,
         coinGeckoId: "",
-        isVerified: true,
-        isUnstable: false,
       };
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = defaultPriceOne;
@@ -122,14 +117,11 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should calculate tokenInFiatFeeAmount correctly, exponent 18, fee amount 100, price 2", () => {
-      const asset: Asset | undefined = {
-        coinName: "test",
+      const asset: Currency | undefined = {
         coinDenom: testDenom,
         coinMinimalDenom: testDenom,
         coinDecimals: 18,
         coinGeckoId: "",
-        isVerified: true,
-        isUnstable: false,
       };
       const tokenInFeeAmount: Int | undefined = defaultTokenIn;
       const inAmountInputPrice: PricePretty | undefined = new PricePretty(
@@ -147,14 +139,11 @@ describe("getTokenInFeeAmountFiatValue", () => {
     });
 
     it("should calculate tokenInFiatFeeAmount correctly (zero return due to truncation), exponent 18, fee amount 1, price 0.5", () => {
-      const asset: Asset | undefined = {
-        coinName: "test",
+      const asset: Currency | undefined = {
         coinDenom: testDenom,
         coinMinimalDenom: testDenom,
         coinDecimals: 18,
         coinGeckoId: "",
-        isVerified: true,
-        isUnstable: false,
       };
       const tokenInFeeAmount: Int | undefined = new Int(1);
       const inAmountInputPrice: PricePretty | undefined = new PricePretty(

@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Vorhandene Sitzungen",
+    "createSession": "Sitzung erstellen",
+    "noConnectedDevices": "Keine verbundenen Geräte gefunden",
+    "clearAllSessions": "Alle Sitzungen löschen",
+    "mobileDevice": "Mobilgerät",
+    "legacy": "Vermächtnis",
+    "loadingMetadata": "Metadaten werden geladen …",
+    "created": "Erstellt:"
+  },
   "profile": {
     "balance": "Gleichgewicht",
     "modalTitle": "Profil",
     "viewAllAssets": "Alle Assets anzeigen",
     "wallet": "Geldbörse",
     "transactions": "Transaktionen",
-    "oneClickTrading": "1-Klick-Handel"
+    "oneClickTrading": "1-Klick-Handel",
+    "mobileSessions": "Mobile"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} Aktien",

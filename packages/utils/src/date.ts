@@ -54,3 +54,24 @@ export function safeTimeout(callback: () => void, milliseconds: number) {
 
   return { clear };
 }
+
+/**
+ * Converts a Unix timestamp in seconds to a local time Unix timestamp in seconds.
+ * This is achieved by creating a Date object from the input value, and then using Date.UTC to get the local time.
+ * @param originalTime The original Unix timestamp in seconds.
+ * @returns The local time Unix timestamp in seconds.
+ */
+export const timeToLocal = (originalTime: number): number => {
+  const d = new Date(originalTime * 1000);
+  return (
+    Date.UTC(
+      d.getFullYear(),
+      d.getMonth(),
+      d.getDate(),
+      d.getHours(),
+      d.getMinutes(),
+      d.getSeconds(),
+      d.getMilliseconds()
+    ) / 1000
+  );
+};

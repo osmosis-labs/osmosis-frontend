@@ -8,11 +8,11 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import { FunctionComponent } from "react";
 
 import { HideBalancesUserSetting } from "~/stores/user-settings/hide-balances";
 import { HideDustUserSetting } from "~/stores/user-settings/hide-dust";
 import { LanguageUserSetting } from "~/stores/user-settings/language";
+import { UserSetting } from "~/stores/user-settings/types";
 import { UnverifiedAssetsUserSetting } from "~/stores/user-settings/unverified-assets";
 
 type UserSettingName =
@@ -20,14 +20,6 @@ type UserSettingName =
   | LanguageUserSetting["id"]
   | UnverifiedAssetsUserSetting["id"]
   | HideBalancesUserSetting["id"];
-
-export interface UserSetting<TState = any> {
-  readonly id: string;
-  readonly state: TState;
-  readonly getLabel: (t: Function) => string;
-  readonly controlComponent: FunctionComponent<TState>;
-  setState(value: TState): void;
-}
 
 export class UserSettings {
   @observable

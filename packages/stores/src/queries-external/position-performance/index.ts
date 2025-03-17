@@ -5,8 +5,8 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
+import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "../constants";
 import { PositionPerformance } from "./types";
 
 /** Queries performance metrics for a given position. */

@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "جلسات موجود",
+    "createSession": "ایجاد جلسه",
+    "noConnectedDevices": "دستگاه متصلی پیدا نشد",
+    "clearAllSessions": "تمام جلسات را پاک کنید",
+    "mobileDevice": "دستگاه موبایل",
+    "legacy": "میراث",
+    "loadingMetadata": "در حال بارگیری متادیتا...",
+    "created": "ایجاد شده:"
+  },
   "profile": {
     "balance": "موجودی",
     "modalTitle": "پروفایل",
     "viewAllAssets": "نمایش همه دارایی ها",
     "wallet": "کیف پول",
     "transactions": "معاملات",
-    "oneClickTrading": "1- روی تجارت کلیک کنید"
+    "oneClickTrading": "1- روی تجارت کلیک کنید",
+    "mobileSessions": "موبایل"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",

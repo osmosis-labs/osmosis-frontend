@@ -34,6 +34,7 @@ import {
   getAllBtcMinimalDenom,
   getnBTCMinimalDenom,
   isNil,
+  makeMinimalAsset,
   sort,
 } from "@osmosis-labs/utils";
 import { z } from "zod";
@@ -369,21 +370,22 @@ export const assetsRouter = createTRPCRouter({
     ),
   getUserBridgeAssets: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.merge(UserOsmoAddressSchema).merge(
-        z.object({
-          sort: createSortSchema([
-            "currentPrice",
-            "priceChange24h",
-            "usdValue",
-          ] as const).optional(),
-        })
-      )
+      GetInfiniteAssetsInputSchema.omit({ onlyVerified: true })
+        .merge(UserOsmoAddressSchema)
+        .merge(
+          z.object({
+            sort: createSortSchema([
+              "currentPrice",
+              "priceChange24h",
+              "usdValue",
+            ] as const).optional(),
+          })
+        )
     )
     .query(
       ({
         input: {
           search,
-          onlyVerified,
           userOsmoAddress,
           sort: sortInput,
           categories,
@@ -445,7 +447,6 @@ export const assetsRouter = createTRPCRouter({
           },
           cacheKey: JSON.stringify({
             search,
-            onlyVerified,
             userOsmoAddress,
             sort: sortInput,
             categories,
@@ -756,4 +757,24 @@ export const assetsRouter = createTRPCRouter({
           limit,
         })
     ),
+  getSwapRecommendedAssets: publicProcedure.query(({ ctx }) => {
+    const RecommendedSwapDenoms = [
+      "OSMO",
+      "USDC",
+      "USDT",
+      "BTC",
+      "ETH",
+      "ATOM",
+      "TIA",
+    ];
+
+    return RecommendedSwapDenoms.map((denom) => {
+      const asset = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .find((asset) => asset.symbol === denom);
+      if (!asset) return;
+
+      return makeMinimalAsset(asset);
+    }).filter((c): c is NonNullable<typeof c> => !!c);
+  }),
 });

@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "기존 세션",
+    "createSession": "세션 생성",
+    "noConnectedDevices": "연결된 장치를 찾을 수 없습니다",
+    "clearAllSessions": "모든 세션 지우기",
+    "mobileDevice": "모바일 장치",
+    "legacy": "유산",
+    "loadingMetadata": "메타데이터를 로딩하는 중...",
+    "created": "생성됨:"
+  },
   "profile": {
     "balance": "잔액",
     "modalTitle": "프로필",
     "viewAllAssets": "모든 자산 보기",
     "wallet": "지갑",
     "transactions": "업무",
-    "oneClickTrading": "1-클릭 거래"
+    "oneClickTrading": "1-클릭 거래",
+    "mobileSessions": "이동하는"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",

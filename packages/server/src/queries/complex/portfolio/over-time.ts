@@ -1,3 +1,6 @@
+import { PricePretty, RatePretty } from "@osmosis-labs/unit";
+import { Dec } from "@osmosis-labs/unit";
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
@@ -47,3 +50,79 @@ export async function getPortfolioOverTime({
     },
   });
 }
+
+type Nominal<T, Name extends string> = T & {
+  /** The 'name' or species of the nominal. */
+  [Symbol.species]: Name;
+};
+
+export const calculatePortfolioPerformance = (
+  data: ChartPortfolioOverTimeResponse[] | undefined,
+  dataPoint: {
+    value?: number;
+    time?:
+      | Nominal<number, "UTCTimestamp">
+      | {
+          year: number;
+          month: number;
+          day: number;
+        }
+      | string
+      | number;
+  }
+): {
+  selectedPercentageRatePretty: RatePretty;
+  selectedDifferencePricePretty: PricePretty;
+  totalPriceChange: number;
+} => {
+  if (!data) {
+    return {
+      selectedPercentageRatePretty: new RatePretty(new Dec(0)),
+      selectedDifferencePricePretty: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        new Dec(0)
+      ),
+      totalPriceChange: 0,
+    };
+  }
+
+  // Check if all values are 0, for instance if a user created a new wallet and has no transactions
+  const hasAllZeroValues = data?.every((point) => point.value === 0);
+  if (
+    hasAllZeroValues &&
+    (dataPoint?.value === 0 || dataPoint?.value === undefined)
+  ) {
+    return {
+      selectedPercentageRatePretty: new RatePretty(new Dec(0)),
+      selectedDifferencePricePretty: new PricePretty(
+        DEFAULT_VS_CURRENCY,
+        new Dec(0)
+      ),
+      totalPriceChange: 0,
+    };
+  }
+
+  const openingPrice = data?.[0]?.value;
+  const openingPriceWithFallback = !openingPrice ? 1 : openingPrice; // handle first value being 0 or undefined
+  const selectedDifference = (dataPoint?.value ?? 0) - openingPriceWithFallback;
+  const selectedPercentage = selectedDifference / openingPriceWithFallback;
+  const selectedPercentageRatePretty = new RatePretty(
+    new Dec(selectedPercentage)
+  );
+
+  const selectedDifferencePricePretty = new PricePretty(
+    DEFAULT_VS_CURRENCY,
+    new Dec(selectedDifference)
+  );
+
+  const closingPrice = data?.[data.length - 1]?.value;
+  const closingPriceWithFallback = !closingPrice ? 1 : closingPrice; // handle last value being 0 or undefined
+
+  const totalPriceChange = closingPriceWithFallback - openingPriceWithFallback;
+
+  return {
+    selectedPercentageRatePretty,
+    selectedDifferencePricePretty,
+    totalPriceChange,
+  };
+};

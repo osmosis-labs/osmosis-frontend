@@ -1,6 +1,6 @@
-import { FiatCurrency } from "@keplr-wallet/types";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { mulPrice } from "@osmosis-labs/utils";
 import { useMemo } from "react";
 
 import { usePrice } from "~/hooks/queries/assets/use-price";
@@ -17,20 +17,4 @@ export function useCoinFiatValue(
     ),
     isLoading,
   };
-}
-
-// mulPrice multiplies the amount of a coin by its price to get the final value.
-// It returns the final value as a PricePretty object.
-// Returns undefined if either the amount or price is undefined.
-export function mulPrice(
-  amount: CoinPretty | undefined,
-  price: PricePretty | undefined,
-  vsCurrency: FiatCurrency
-) {
-  if (!amount || !price) {
-    return undefined;
-  }
-
-  const value = amount.toDec().mul(price.toDec());
-  return new PricePretty(vsCurrency, value);
 }

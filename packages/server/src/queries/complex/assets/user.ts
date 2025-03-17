@@ -16,9 +16,9 @@ import {
   getUserTotalDelegatedCoin,
   getUserTotalUndelegations,
 } from "../staking/user";
-import { AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
-import { calcAssetValue } from "./price";
+import { AssetFilter, getAsset, getAssets } from "./get-assets";
+import { calcAssetValue, calcSumCoinsValue } from "./price";
 
 /** Available if the user holds a balance. */
 export type MaybeUserAssetCoin = Partial<{

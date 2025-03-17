@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "既存のセッション",
+    "createSession": "セッションを作成",
+    "noConnectedDevices": "接続されているデバイスが見つかりません",
+    "clearAllSessions": "すべてのセッションをクリア",
+    "mobileDevice": "モバイルデバイス",
+    "legacy": "遺産",
+    "loadingMetadata": "メタデータを読み込んでいます...",
+    "created": "作成日:"
+  },
   "profile": {
     "balance": "バランス",
     "modalTitle": "プロフィール",
     "viewAllAssets": "すべてのアセットを表示",
     "wallet": "財布",
     "transactions": "取引",
-    "oneClickTrading": "1クリック取引"
+    "oneClickTrading": "1クリック取引",
+    "mobileSessions": "携帯"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares}シェア",

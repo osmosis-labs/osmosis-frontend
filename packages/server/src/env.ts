@@ -1,6 +1,7 @@
 // Osmosis node
 export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 export const SPEND_LIMIT_CONTRACT_ADDRESS =
+  process.env.EXPO_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS ??
   process.env.NEXT_PUBLIC_SPEND_LIMIT_CONTRACT_ADDRESS;
 
 // twitter
@@ -18,6 +19,7 @@ export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 // data services
 export const HISTORICAL_DATA_URL =
   process.env.NEXT_PUBLIC_HISTORICAL_DATA_URL ??
+  process.env.EXPO_PUBLIC_HISTORICAL_DATA_URL ??
   "https://data.stage.osmosis.zone";
 export const NUMIA_API_KEY = process.env.NUMIA_API_KEY;
 

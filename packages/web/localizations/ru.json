@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Существующие сеансы",
+    "createSession": "Создать сессию",
+    "noConnectedDevices": "Подключенных устройств не найдено.",
+    "clearAllSessions": "Очистить все сеансы",
+    "mobileDevice": "Мобильное устройство",
+    "legacy": "Наследие",
+    "loadingMetadata": "Загрузка метаданных...",
+    "created": "Созданный:"
+  },
   "profile": {
     "balance": "Баланс",
     "modalTitle": "Профиль",
     "viewAllAssets": "Посмотреть все активы",
     "wallet": "Кошелек",
     "transactions": "Транзакции",
-    "oneClickTrading": "Торговля в 1 клик"
+    "oneClickTrading": "Торговля в 1 клик",
+    "mobileSessions": "Мобильный"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} общие ресурсы",

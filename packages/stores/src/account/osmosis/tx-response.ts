@@ -1,4 +1,4 @@
-import { DeliverTxResponse } from "../types";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 
 /** Try to extract the create_position event from the raw log. */
 export function findNewClPositionId(

@@ -5,7 +5,7 @@ import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks/language";
 
 import { Icon } from "../../components/assets";
-import { UserSetting } from ".";
+import { UserSetting } from "./types";
 
 export type UnverifiedAssetsState = { showUnverifiedAssets: boolean };
 export class UnverifiedAssetsUserSetting

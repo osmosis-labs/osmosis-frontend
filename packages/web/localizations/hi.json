@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "मौजूदा सत्र",
+    "createSession": "सत्र बनाएं",
+    "noConnectedDevices": "कोई कनेक्टेड डिवाइस नहीं मिला",
+    "clearAllSessions": "सभी सत्र साफ़ करें",
+    "mobileDevice": "मोबाइल डिवाइस",
+    "legacy": "परंपरा",
+    "loadingMetadata": "मेटाडेटा लोड हो रहा है...",
+    "created": "बनाया था:"
+  },
   "profile": {
     "balance": "संतुलन",
     "modalTitle": "प्रोफ़ाइल",
     "viewAllAssets": "सभी संपत्तियां देखें",
     "wallet": "बटुआ",
     "transactions": "लेनदेन",
-    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें"
+    "oneClickTrading": "1-ट्रेडिंग पर क्लिक करें",
+    "mobileSessions": "गतिमान"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} शेयर",

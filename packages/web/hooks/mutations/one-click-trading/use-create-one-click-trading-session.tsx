@@ -1,6 +1,6 @@
 import { toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
-import { DeliverTxResponse } from "@osmosis-labs/stores";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 import {
   makeAddAuthenticatorMsg,
   makeRemoveAuthenticatorMsg,

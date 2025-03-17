@@ -565,13 +565,24 @@
       }
     }
   },
+  "mobileSessions": {
+    "existingSessions": "Sessões existentes",
+    "createSession": "Criar Sessão",
+    "noConnectedDevices": "Nenhum dispositivo conectado encontrado",
+    "clearAllSessions": "Limpar todas as sessões",
+    "mobileDevice": "Dispositivo móvel",
+    "legacy": "Legado",
+    "loadingMetadata": "Carregando metadados...",
+    "created": "Criado:"
+  },
   "profile": {
     "balance": "Saldo",
     "modalTitle": "Perfil",
     "viewAllAssets": "Ver todos os ativos",
     "wallet": "Carteira",
     "transactions": "Transações",
-    "oneClickTrading": "Negociação em 1 Clique"
+    "oneClickTrading": "Negociação em 1 Clique",
+    "mobileSessions": "Móvel"
   },
   "removeLiquidity": {
     "sharesAmount": "{shares} participações",

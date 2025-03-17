@@ -8,8 +8,8 @@ import {
 } from "../../tests/test-env";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
-import { DeliverTxResponse } from "../types";
 import { TestOsmosisChainId } from "../../tests/mock-data";
+import { DeliverTxResponse } from "@osmosis-labs/tx";
 dayjs.extend(duration);
 
 describe("Unbond Token Tx", () => {

@@ -1,7 +1,7 @@
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { noop, runIfFn } from "@osmosis-labs/utils";
+import { formatSpendLimit, noop, runIfFn } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import React, {
@@ -32,7 +32,6 @@ import {
   useOneClickTradingSession,
   useTranslation,
 } from "~/hooks";
-import { formatSpendLimit } from "~/hooks/one-click-trading/use-one-click-trading-swap-review";
 import { useEstimateTxFees } from "~/hooks/use-estimate-tx-fees";
 import { ModalBase, ModalCloseButton } from "~/modals";
 import { useStore } from "~/stores";

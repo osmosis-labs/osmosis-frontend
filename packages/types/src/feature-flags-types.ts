@@ -28,4 +28,5 @@ export type AvailableFlags =
   | "layerswapcoinbase"
   | "kado"
   | "onrampmoney"
-  | "transak";
+  | "transak"
+  | "mobileSessions";
