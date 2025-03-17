@@ -1,5 +1,5 @@
 import { BridgeChain } from "@osmosis-labs/bridge";
-import { BitcoinChainInfo } from "@osmosis-labs/utils";
+import { BitcoinChainInfo, DogecoinChainInfo } from "@osmosis-labs/utils";
 
 import { api } from "~/utils/trpc";
 
@@ -41,6 +41,12 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
         chainPrettyName: BitcoinChainInfo.prettyName,
         chainLogoUri: BitcoinChainInfo.logoUri,
         chainColor: BitcoinChainInfo.color,
+      };
+    } else if (chain?.chainType === "doge") {
+      return {
+        chainPrettyName: DogecoinChainInfo.prettyName,
+        chainLogoUri: DogecoinChainInfo.logoUri,
+        chainColor: DogecoinChainInfo.color,
       };
     }
     return {

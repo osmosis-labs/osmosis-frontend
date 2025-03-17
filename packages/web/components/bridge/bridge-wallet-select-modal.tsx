@@ -1,6 +1,7 @@
 import {
   isBitcoinAddressValid,
   isCosmosAddressValid,
+  isDogecoinAddressValid,
   isEvmAddressValid,
   isNil,
 } from "@osmosis-labs/utils";
@@ -16,6 +17,7 @@ import { Connector } from "wagmi";
 
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
+import { SupportedChain } from "~/components/bridge/use-bridges-supported-assets";
 import { SearchBox, TextareaBox } from "~/components/input";
 import {
   Screen,
@@ -51,6 +53,11 @@ interface BridgeWalletSelectProps {
   onConfirmManualAddress: ((address: string) => void) | undefined;
 }
 
+export const chainTypesRequiringManualAddress = [
+  "bitcoin",
+  "doge",
+] as const satisfies readonly SupportedChain["chainType"][];
+
 export const BridgeWalletSelectModal: FunctionComponent<
   BridgeWalletSelectProps & ModalBaseProps
 > = (props) => {
@@ -64,9 +71,14 @@ export const BridgeWalletSelectModal: FunctionComponent<
     });
   } else if (
     props.direction === "withdraw" &&
-    props.toChain.chainType === "bitcoin"
+    chainTypesRequiringManualAddress.includes(
+      props.toChain
+        .chainType as (typeof chainTypesRequiringManualAddress)[number]
+    )
   ) {
-    modalTitle = t("transfer.enterBitcoinAddress");
+    modalTitle = t("transfer.enterChainAddress", {
+      chain: props.toChain.prettyName,
+    });
   } else {
     modalTitle = t("transfer.selectWithdrawWallet", {
       network: props.toChain.prettyName,
@@ -227,7 +239,9 @@ const BridgeWalletSelectScreens: FunctionComponent<
     return (
       <ScreenManager
         defaultScreen={
-          toChain.chainType === "bitcoin"
+          chainTypesRequiringManualAddress.includes(
+            toChain.chainType as (typeof chainTypesRequiringManualAddress)[number]
+          )
             ? WalletSelectScreens.SendToAnotherAddress
             : WalletSelectScreens.WalletSelect
         }
@@ -534,6 +548,10 @@ const SendToAnotherAddressForm: FunctionComponent<
                 address: nextValue,
                 env: IS_TESTNET ? "testnet" : "mainnet",
               });
+            } else if (toChain.chainType === "doge") {
+              isValid = isDogecoinAddressValid({
+                address: nextValue,
+              });
             }
 
             if (!nextValue) setIsInvalidAddress(false);
@@ -570,7 +588,9 @@ const SendToAnotherAddressForm: FunctionComponent<
           className="body1 cursor-pointer select-none text-osmoverse-300"
           onClick={() => setIsAcknowledged(!isAcknowledged)}
         >
-          {toChain.chainType === "bitcoin"
+          {chainTypesRequiringManualAddress.includes(
+            toChain.chainType as (typeof chainTypesRequiringManualAddress)[number]
+          )
             ? t("transfer.acknowledgementWithoutExchange")
             : t("transfer.acknowledgement")}
         </p>
