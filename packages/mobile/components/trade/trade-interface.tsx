@@ -420,7 +420,7 @@ const SubmitButton = ({
 
   let buttonText: string;
   if (highPriceImpact) {
-    buttonText = "Swap anyway";
+    buttonText = "High price impact";
   } else if (hasOverSpendLimitError) {
     buttonText = "Limit exceeded";
   } else if (
@@ -495,6 +495,8 @@ const SubmitButton = ({
           networkFee={networkFee?.gasUsdValueToPay}
           sendTradeTokenInTx={sendTradeTokenInTx}
           onSuccess={onSuccess}
+          highPriceImpact={highPriceImpact}
+          priceImpact={quote.priceImpactTokenOut}
         />
       )}
 

@@ -3,7 +3,7 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from "@gorhom/bottom-sheet";
-import { CoinPretty } from "@osmosis-labs/unit";
+import { CoinPretty, RatePretty } from "@osmosis-labs/unit";
 import { PricePretty } from "@osmosis-labs/unit";
 import {
   ellipsisText,
@@ -33,6 +33,8 @@ interface ReviewTradeBottomSheetProps {
   networkFee: PricePretty | undefined;
   sendTradeTokenInTx: SendTradeTokenInTx;
   onSuccess: () => void;
+  highPriceImpact: boolean;
+  priceImpact: RatePretty | undefined;
 }
 
 /**
@@ -55,6 +57,8 @@ export const ReviewTradeBottomSheet = React.forwardRef<
       networkFee,
       sendTradeTokenInTx,
       onSuccess,
+      highPriceImpact,
+      priceImpact,
     },
     ref
   ) => {
@@ -225,6 +229,20 @@ export const ReviewTradeBottomSheet = React.forwardRef<
                 {networkFee ? networkFee.toString() : "Unknown"}
               </Text>
             </View>
+
+            <View style={styles.detailRow}>
+              <Text type="subtitle" style={styles.detailLabel}>
+                Price Impact
+              </Text>
+              <Text
+                style={[
+                  styles.value,
+                  highPriceImpact && styles.highPriceImpact,
+                ]}
+              >
+                {priceImpact ? priceImpact.toString() : "Unknown"}
+              </Text>
+            </View>
           </View>
 
           <View style={styles.buttonContainer}>
@@ -348,5 +366,8 @@ const styles = StyleSheet.create({
   detailValue: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  highPriceImpact: {
+    color: Colors["rust"][500],
   },
 });
