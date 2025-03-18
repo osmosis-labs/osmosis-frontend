@@ -23,6 +23,7 @@ import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   BitcoinChainInfo,
+  DogecoinChainInfo,
   EthereumChainInfo,
   getnBTCMinimalDenom,
   isNil,
@@ -46,6 +47,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "penumbra" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
   | Extract<BridgeChain, { chainType: "tron" }>
+  | Extract<BridgeChain, { chainType: "doge" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -428,6 +430,12 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...PenumbraChainInfo,
               chainType,
               logoUri: "/networks/penumbra.svg",
+            };
+          } else if (chainType === "doge") {
+            return {
+              ...DogecoinChainInfo,
+              chainType,
+              logoUri: "/networks/dogecoin.svg",
             };
           }
 

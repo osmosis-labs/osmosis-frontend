@@ -54,7 +54,10 @@ import {
   SupportedBridgeInfo,
 } from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
-import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
+import {
+  BridgeWalletSelectModal,
+  chainTypesRequiringManualAddress,
+} from "./bridge-wallet-select-modal";
 import {
   MoreBridgeOptionsModal,
   OnlyExternalBridgeSuggest,
@@ -200,6 +203,14 @@ export const AmountScreen = observer(
 
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
+
+    const chainThatNeedsConnectionIsManual = useMemo(() => {
+      if (isNil(chainThatNeedsWalletConnection)) return false;
+      return chainTypesRequiringManualAddress.includes(
+        chainThatNeedsWalletConnection.chainType as (typeof chainTypesRequiringManualAddress)[number]
+      );
+    }, [chainThatNeedsWalletConnection]);
+
     const cosmosAccountRequiringConnection =
       !isNil(chainThatNeedsWalletConnection) &&
       chainThatNeedsWalletConnection.chainType === "cosmos"
@@ -214,7 +225,7 @@ export const AmountScreen = observer(
         return isEvmWalletConnected;
       }
 
-      if (chainThatNeedsWalletConnection.chainType === "bitcoin") {
+      if (chainThatNeedsConnectionIsManual) {
         return !isNil(manualToAddress);
       }
 
@@ -224,6 +235,7 @@ export const AmountScreen = observer(
       chainThatNeedsWalletConnection,
       isEvmWalletConnected,
       manualToAddress,
+      chainThatNeedsConnectionIsManual,
     ]);
 
     const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
@@ -324,7 +336,7 @@ export const AmountScreen = observer(
               }
             })
             .finally(() => setPendingChainApproval(false));
-        } else if (chain.chainType === "bitcoin") {
+        } else if (chainThatNeedsConnectionIsManual) {
           onOpenBridgeWalletSelect();
         }
       },
@@ -341,6 +353,7 @@ export const AmountScreen = observer(
         supportedChains.length,
         switchEvmChain,
         toChain,
+        chainThatNeedsConnectionIsManual,
       ]
     );
 
@@ -433,6 +446,11 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "penumbra" }
             >[],
+          };
+        case "doge":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "doge" }>[],
           };
         default:
           return {
@@ -1193,7 +1211,7 @@ export const AmountScreen = observer(
                   disabled={pendingChainApproval}
                 >
                   <h6 className="flex items-center gap-3">
-                    {toChain?.chainType === "bitcoin" &&
+                    {chainThatNeedsConnectionIsManual &&
                     direction === "withdraw"
                       ? t("transfer.confirmAmount")
                       : pendingChainApproval

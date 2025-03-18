@@ -932,7 +932,7 @@
     "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
     "transactionDetails": "વ્યવહારની વિગતો",
     "confirmAmount": "રકમની પુષ્ટિ કરો",
-    "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો"
+    "enterChainAddress": "{chain} સરનામું દાખલ કરો"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",

@@ -14,6 +14,7 @@ const supportedAssetsBridges: Bridge[] = [
   "Squid",
   "Axelar",
   "IBC",
+  "Int3face",
   // include nomic, nitro, wormhole, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
@@ -251,9 +252,10 @@ export const useBridgesSupportedAssets = ({
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
-            // prioritize bitcoin chains first, then evm
+            // prioritize bitcoin and doge chains first, then evm
             if (a.chainType === "bitcoin" && b.chainType !== "bitcoin")
               return -1;
+            if (a.chainType === "doge" && b.chainType !== "doge") return -1;
             if (
               a.chainType === "evm" &&
               b.chainType !== "evm" &&
