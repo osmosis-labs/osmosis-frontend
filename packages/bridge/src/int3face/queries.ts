@@ -21,7 +21,7 @@ interface TransferStatusResponse {
     srcChainId: string;
     status: Int3faceTransferStatus;
     transferId: string;
-  }
+  };
 }
 
 export async function getTransferStatus(

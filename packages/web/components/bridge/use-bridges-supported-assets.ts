@@ -252,9 +252,10 @@ export const useBridgesSupportedAssets = ({
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
-            // prioritize bitcoin chains first, then evm
+            // prioritize bitcoin and doge chains first, then evm
             if (a.chainType === "bitcoin" && b.chainType !== "bitcoin")
               return -1;
+            if (a.chainType === "doge" && b.chainType !== "doge") return -1;
             if (
               a.chainType === "evm" &&
               b.chainType !== "evm" &&

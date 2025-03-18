@@ -1,6 +1,8 @@
 import type { Registry } from "@cosmjs/proto-signing";
-import { estimateGasFee } from "@osmosis-labs/tx";
+import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
+import { estimateGasFee, getSwapMessages } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
+import { Dec } from "@osmosis-labs/unit";
 import { getInt3DOGEMinimalDenom } from "@osmosis-labs/utils";
 
 import { BridgeQuoteError } from "../errors";
@@ -25,6 +27,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   static readonly ID = Int3faceProviderId;
   readonly providerName = Int3faceBridgeProvider.ID;
   readonly int3DOGEMinimalDenom: string;
+  readonly allDogeMinimalDenom: string | undefined;
   protected protoRegistry: Registry | null = null;
 
   protected readonly observerApiURL: string;
@@ -38,10 +41,16 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     this.int3DOGEMinimalDenom = getInt3DOGEMinimalDenom({
       env: this.ctx.env,
     });
+
+    // Define allDogeMinimalDenom inline
+    this.allDogeMinimalDenom =
+      ctx.env === "mainnet"
+        ? "factory/osmo10pk4crey8fpdyqd62rsau0y02e3rk055w5u005ah6ly7k849k5tsf72x40/alloyed/allDOGE"
+        : undefined; // No testnet allDOGE for now
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const { toChain, toAddress } = params;
+    const { fromAddress, toChain, toAddress, fromAsset, fromAmount } = params;
 
     if (toChain.chainId !== "dogecoin") {
       throw new BridgeQuoteError({
@@ -91,6 +100,46 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       });
     }
 
+    let swapMessages: Awaited<ReturnType<typeof getSwapMessages>>;
+    let swapRoute:
+      | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
+      | undefined;
+
+    if (
+      this.allDogeMinimalDenom &&
+      fromAsset.address.toLowerCase() === this.allDogeMinimalDenom.toLowerCase()
+    ) {
+      swapRoute = await getRouteTokenOutGivenIn({
+        assetLists: this.ctx.assetLists,
+        tokenInAmount: fromAmount,
+        tokenInDenom: fromAsset.address,
+        tokenOutDenom: this.int3DOGEMinimalDenom,
+      });
+
+      swapMessages = await getSwapMessages({
+        coinAmount: fromAmount,
+        maxSlippage: params.slippage?.toString() ?? "0.005",
+        quote: swapRoute,
+        tokenInCoinDecimals: fromAsset.decimals,
+        tokenInCoinMinimalDenom: fromAsset.address,
+        tokenOutCoinDecimals: int3Doge.decimals,
+        tokenOutCoinMinimalDenom: int3Doge.coinMinimalDenom,
+        userOsmoAddress: fromAddress,
+        quoteType: "out-given-in",
+      });
+    } else {
+      swapMessages = [];
+      swapRoute = undefined;
+    }
+
+    if (!swapMessages) {
+      throw new BridgeQuoteError({
+        bridgeId: Int3faceProviderId,
+        errorType: "CreateCosmosTxError",
+        message: "Failed to get swap messages.",
+      });
+    }
+
     const int3faceBridgeAsset: BridgeAsset = {
       address: int3Doge.coinMinimalDenom,
       decimals: int3Doge.decimals,
@@ -101,7 +150,9 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
     const transactionDataParams: GetBridgeQuoteParams = {
       ...params,
-      fromAmount: params.fromAmount,
+      fromAmount: !!swapRoute
+        ? swapRoute.amount.toCoin().amount
+        : params.fromAmount,
       fromAsset: int3faceBridgeAsset,
       toChain: {
         chainId: int3faceChain.chain_id,
@@ -110,7 +161,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       },
       toAsset: int3faceBridgeAsset,
       /** x/bridge module address on the Int3face chain, all the IBC transfers have to be handled using this address */
-      toAddress: 'int31zlefkpe3g0vvm9a4h0jf9000lmqutlh99h7fsd',
+      toAddress: "int31zlefkpe3g0vvm9a4h0jf9000lmqutlh99h7fsd",
     };
 
     const [ibcTxMessages, ibcEstimatedTimeSeconds] = await Promise.all([
@@ -127,7 +178,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     // 10 minutes
     const int3faceEstimatedTimeSeconds = 10 * 60;
 
-    const msgs = [...ibcTxMessages];
+    const msgs = [...swapMessages, ...ibcTxMessages];
 
     // Estimated Gas
     const txSimulation = await estimateGasFee({
@@ -173,10 +224,13 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: params.fromAmount,
+        amount: (!!swapRoute
+          ? new Dec(swapRoute.amount.toCoin().amount)
+          : new Dec(params.fromAmount)
+        ).toString(),
         ...int3faceBridgeAsset,
         denom: "DOGE",
-        priceImpact: "0",
+        priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
@@ -189,12 +243,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       estimatedTime: ibcEstimatedTimeSeconds + int3faceEstimatedTimeSeconds,
       estimatedGasFee: gasFee
         ? {
-          address: gasAsset?.address ?? gasFee.denom,
-          denom: gasAsset?.denom ?? gasFee.denom,
-          decimals: gasAsset?.decimals ?? 0,
-          coinGeckoId: gasAsset?.coinGeckoId,
-          amount: gasFee.amount,
-        }
+            address: gasAsset?.address ?? gasFee.denom,
+            denom: gasAsset?.denom ?? gasFee.denom,
+            decimals: gasAsset?.decimals ?? 0,
+            coinGeckoId: gasAsset?.coinGeckoId,
+            amount: gasFee.amount,
+          }
         : undefined,
       transactionRequest: {
         type: "cosmos",
@@ -285,7 +339,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         assetListAsset.coinMinimalDenom.toLowerCase() ===
         this.int3DOGEMinimalDenom.toLowerCase();
 
-      if (isInt3Doge) {
+      const isAllDoge =
+        this.allDogeMinimalDenom &&
+        assetListAsset.coinMinimalDenom.toLowerCase() ===
+          this.allDogeMinimalDenom.toLowerCase();
+
+      if (isInt3Doge || isAllDoge) {
         return [
           {
             transferTypes: ["quote"],
