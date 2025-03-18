@@ -2,7 +2,7 @@
   "name": "@osmosis-labs/mobile",
   "private": true,
   "main": "index.ts",
-  "version": "1.0.2",
+  "version": "1.1.4",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",

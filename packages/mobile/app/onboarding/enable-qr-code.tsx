@@ -1,6 +1,6 @@
 import * as Linking from "expo-linking";
 import React from "react";
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Platform, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { RouteHeader } from "~/components/route-header";
@@ -18,6 +18,8 @@ export default function LinkViaDesktop() {
     // TODO: Implement manual connection flow
     console.log("Connect manually pressed");
   };
+
+  const deviceType = Platform.OS === "ios" ? "iPhone" : "Android";
 
   return (
     <SafeAreaView style={styles.container}>
@@ -43,7 +45,7 @@ export default function LinkViaDesktop() {
 
         <Text style={styles.description}>
           To Connect via QR Code, you need to allow access to the camera through
-          the iPhone settings and connect using QR code.
+          the {deviceType} settings and connect using QR code.
         </Text>
 
         <View style={styles.buttonContainer}>

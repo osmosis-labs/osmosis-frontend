@@ -5,7 +5,12 @@ import {
   STUN_SERVER,
 } from "@osmosis-labs/utils";
 import MaskedView from "@react-native-masked-view/masked-view";
-import { BarcodeScanningResult, CameraView, FocusMode } from "expo-camera";
+import {
+  BarcodeScanningResult,
+  CameraView,
+  FocusMode,
+  useCameraPermissions,
+} from "expo-camera";
 import { getRandomBytes } from "expo-crypto";
 import * as Device from "expo-device";
 import { router } from "expo-router";
@@ -281,12 +286,20 @@ export default function Welcome() {
   const [showConnectionModal, setShowConnectionModal] = useState(false);
   const { isCheckingBiometricAvailability, isBiometricEnabled } =
     useOsBiometricAuthEnabled();
+  const [permission] = useCameraPermissions();
 
   const shouldFreezeCamera = !!sessionToken;
 
   const { status, verificationCode, reset } = useWalletCreationWebRTC({
     sessionToken,
   });
+
+  // Check camera permissions and redirect if not granted
+  useEffect(() => {
+    if (permission?.granted === false) {
+      router.replace("/onboarding/enable-qr-code");
+    }
+  }, [permission]);
 
   const resetCameraAutoFocus = () => {
     const abortController = new AbortController();
