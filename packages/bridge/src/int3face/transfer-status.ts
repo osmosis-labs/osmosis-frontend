@@ -37,7 +37,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         const ibcDetails = await this.getIbcTransferDetails({
           sendTxHash,
           fromChainId,
-        })
+        });
 
         if (!ibcDetails) {
           return {
@@ -52,10 +52,10 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         }
 
         const { sourceChannelId, destChannelId, sequence } = ibcDetails;
-        const transferId = `${sourceChannelId}::${destChannelId}::${sequence}`
+        const transferId = `${sourceChannelId}::${destChannelId}::${sequence}`;
 
         const data = await getTransferStatus(sendTxHash, this.env, transferId);
-        const transferStatus = data?.transfer?.status
+        const transferStatus = data?.transfer?.status;
 
         if (!transferStatus) {
           /** The information about the transfer is still missing, try again */
@@ -92,7 +92,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
       .catch((e) => console.error(`Polling Int3face has failed`, e));
   }
 
-  async getIbcTransferDetails ({
+  async getIbcTransferDetails({
     sendTxHash,
     fromChainId,
   }: {
@@ -129,7 +129,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
         sourceChannelId: msgEvents.sourceChannelId,
         destChannelId: msgEvents.destChannelId,
         sequence: msgEvents.sequence,
-      }
+      };
     } catch (e) {
       console.error("Unexpected failure when tracing IBC transfer status", e);
     }
