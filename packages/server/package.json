@@ -36,6 +36,8 @@
     "@osmosis-labs/types": "^1.0.0",
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
+    "@sentry/core": "^9.5.0",
+    "@sentry/node": "^9.5.0",
     "@upstash/redis": "^1.31.5",
     "axios": "^0.27.2",
     "cachified": "^3.5.4",
