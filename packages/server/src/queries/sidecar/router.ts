@@ -138,8 +138,8 @@ class OsmosisSidecarRemoteRouter {
         swapFee,
         priceImpactTokenOut: priceImpact,
         tokenInFeeAmount: new Dec(amount_in).mul(swapFee).truncate(),
-        split: routes.map(({ pools, in_amount }) => ({
-          initialAmount: new Int(in_amount),
+        split: routes.map(({ pools, out_amount }) => ({
+          initialAmount: new Int(out_amount),
           pools: pools
             .map(({ id, spread_factor, type, code_id }) => ({
               id: id.toString(),
