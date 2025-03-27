@@ -54,7 +54,7 @@ export class WalletPage {
     await this.startImport()
     await this.privateKeyBtn.click()
     await this.privateKeyInput.fill(privateKey)
-    await this.importBtn.click()
+    await this.importBtn.click({ timeout: 4000 })
   }
 
   async importWalletFromSeed(seed: string) {
