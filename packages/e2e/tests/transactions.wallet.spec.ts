@@ -1,17 +1,9 @@
-import {
-  type BrowserContext,
-  type Page,
-  chromium,
-  expect,
-  test,
-} from '@playwright/test'
+import { type BrowserContext, type Page, expect, test } from '@playwright/test'
 
-import { WalletPage } from '../pages/keplr-page'
 import { PortfolioPage } from '../pages/portfolio-page'
 import { SwapPage } from '../pages/swap-page'
 import { TransactionsPage } from '../pages/transactions-page'
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
+import { SetupKeplr } from '../setup-keplr'
 
 test.describe('Test Transactions feature', () => {
   let context: BrowserContext
@@ -24,33 +16,12 @@ test.describe('Test Transactions feature', () => {
   let swapPage: SwapPage
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension()
-    console.log('\nSetup Wallet Extension before tests.')
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      '',
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension),
-    )
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0]
-    await emptyPage.waitForTimeout(2000)
-    page = context.pages()[1]
-    const walletPage = new WalletPage(page)
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey)
-    await walletPage.setWalletNameAndPassword('Test Transactions')
-    await walletPage.selectChainsAndSave()
-    await walletPage.finish()
-    // Switch to Application
+    context = await new SetupKeplr().setupWallet(privateKey)
     page = context.pages()[0]
     portfolioPage = new PortfolioPage(page)
     await portfolioPage.goto()
     await portfolioPage.connectWallet()
     transactionsPage = await new TransactionsPage(page).open()
-  })
-
-  test.afterAll(async () => {
-    await context.close()
   })
 
   test('User should be able to see old transactions', async () => {
