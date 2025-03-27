@@ -33,7 +33,7 @@ export class SetupKeplr {
     }
   }
 
-  async setupWallet(testSeed: string, headless = true) {
+  async setupWallet(testSeed: string, headless = false) {
     try {
       return await this.setupWalletKeplr(testSeed, headless);
     } catch (error) {
