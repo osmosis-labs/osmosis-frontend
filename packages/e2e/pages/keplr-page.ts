@@ -46,7 +46,7 @@ export class WalletPage {
       expect(
         this.importWalletBtn,
         'Import Keplr wallet button is not visible!',
-      ).toBeVisible({ timeout: 1000 })
+      ).toBeVisible({ timeout: 2000 })
     }
   }
 
@@ -55,6 +55,9 @@ export class WalletPage {
     await this.privateKeyBtn.click()
     await this.privateKeyInput.fill(privateKey)
     await this.importBtn.click({ timeout: 4000 })
+    await this.setWalletNameAndPassword('Keplr')
+    await this.selectChainsAndSave()
+    await this.finish()
   }
 
   async importWalletFromSeed(seed: string) {

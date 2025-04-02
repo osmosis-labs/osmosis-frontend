@@ -1,16 +1,6 @@
-import {
-  type BrowserContext,
-  type Page,
-  chromium,
-  expect,
-  test,
-} from '@playwright/test'
-
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
-
-import { WalletPage } from '../pages/keplr-page'
+import { type BrowserContext, type Page, expect, test } from '@playwright/test'
 import { PortfolioPage } from '../pages/portfolio-page'
+import { SetupKeplr } from '../setup-keplr'
 
 test.describe('Test Portfolio feature', () => {
   let context: BrowserContext
@@ -20,34 +10,13 @@ test.describe('Test Portfolio feature', () => {
   let page: Page
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension()
-    console.log('\nSetup Wallet Extension before tests.')
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      '',
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension),
-    )
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0]
-    await emptyPage.waitForTimeout(2000)
-    page = context.pages()[1]
-    const walletPage = new WalletPage(page)
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey)
-    await walletPage.setWalletNameAndPassword('Test Portfolio')
-    await walletPage.selectChainsAndSave()
-    await walletPage.finish()
-    // Switch to Application
+    context = await new SetupKeplr().setupWallet(privateKey)
     page = context.pages()[0]
     portfolioPage = new PortfolioPage(page)
     await portfolioPage.goto()
     await portfolioPage.connectWallet()
     await portfolioPage.hideZeroBalances()
     await portfolioPage.viewMoreBalances()
-  })
-
-  test.afterAll(async () => {
-    await context.close()
   })
 
   // biome-ignore lint/complexity/noForEach: <explanation>
