@@ -19,9 +19,66 @@ import {
   UserCosmosAddressSchema,
   UserEvmAddressSchema,
 } from "@osmosis-labs/trpc";
-import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { getAddress } from "viem";
 import { z } from "zod";
+
+/**
+ * Normalizes an amount between different decimal precisions
+ * Used primarily for cross-chain asset normalization when comparing or displaying values
+ *
+ * @param params - Normalization parameters
+ * @param params.amount - The amount to normalize as a string
+ * @param params.fromDecimals - Source decimal precision (e.g., asset.decimals)
+ * @param params.toDecimals - Target decimal precision (e.g., representativeAsset.coinDecimals)
+ * @returns Normalized amount as string, with decimal places adjusted and truncated
+ *
+ * @example
+ * // Convert from 18 decimals to 6 decimals (e.g., ETH to USDC scale)
+ * normalizeDecimals({
+ *   amount: "1000000000000000000",
+ *   fromDecimals: 18,
+ *   toDecimals: 6
+ * }) // Returns "1000000"
+ *
+ * @example
+ * // Convert from 6 decimals to 18 decimals (e.g., USDC to ETH scale)
+ * normalizeDecimals({
+ *   amount: "1000000",
+ *   fromDecimals: 6,
+ *   toDecimals: 18
+ * }) // Returns "1000000000000000000"
+ */
+function normalizeDecimals({
+  amount,
+  fromDecimals,
+  toDecimals,
+}: {
+  amount: string;
+  fromDecimals: number;
+  toDecimals: number;
+}): string {
+  if (fromDecimals === toDecimals) {
+    return amount;
+  }
+
+  const decAmount = new Dec(amount);
+  const decimalDifference = fromDecimals - toDecimals;
+
+  if (decimalDifference > 0) {
+    // If source has more decimals, divide (multiply by negative exponent)
+    return decAmount
+      .mul(DecUtils.getTenExponentN(-decimalDifference))
+      .truncate()
+      .toString();
+  } else {
+    // If source has fewer decimals, multiply
+    return decAmount
+      .mul(DecUtils.getTenExponentN(Math.abs(decimalDifference)))
+      .truncate()
+      .toString();
+  }
+}
 
 const createAssetObject = <T extends string, U extends z.ZodObject<any>>(
   type: T,
@@ -214,11 +271,21 @@ export const localBridgeTransferRouter = createTRPCRouter({
                 anyDenom: representativeAssetMinimalDenom,
               });
 
+              // Normalize the amount if decimals differ between asset and representative asset
+              let normalizedAmount = balance.amount;
+              if (asset.decimals !== representativeAsset.coinDecimals) {
+                normalizedAmount = normalizeDecimals({
+                  amount: balance.amount,
+                  fromDecimals: asset.decimals,
+                  toDecimals: representativeAsset.coinDecimals,
+                });
+              }
+
               // is user asset, include user data
               const usdValue = await calcAssetValue({
                 ...ctx,
                 anyDenom: representativeAsset.coinMinimalDenom,
-                amount: balance.amount,
+                amount: normalizedAmount,
               }).catch((e) => captureErrorAndReturn(e, undefined));
 
               return {

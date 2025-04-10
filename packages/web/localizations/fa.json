@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "مرحله 1: یک استراتژی انتخاب کنید",
     "step2Title": "مرحله 2: اضافه کردن نقدینگی",
-    "step2TitleManaged": "مرحله 2: ارائه دهنده را انتخاب کنید",
     "managed": "اداره می شود",
     "managedDescription": "یکی از ارائه دهندگان ما را برای مدیریت موقعیت خود استخدام کنید. یک تجربه کاملاً دستی.",
     "manual": "کتابچه راهنمای",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid سپرده گداری",
     "swap": "تبدیل جفت ارز",
-    "spreadFactor": "فاکتور گسترش",
     "swapFee": "کارمزد تبدیل",
     "swapFees": "کارمزد تبدیل",
     "title": "استخر #{id}",

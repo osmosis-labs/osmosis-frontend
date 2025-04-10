@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
     "step2Title": "Étape 2 : Ajouter des liquidités",
-    "step2TitleManaged": "Étape 2 : Sélectionnez le fournisseur",
     "managed": "Géré",
     "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
     "manual": "Manuel",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
     "swap": "Échange de jeton",
-    "spreadFactor": "Facteur de propagation",
     "swapFee": "Frais d'échange",
     "swapFees": "frais d'échange",
     "title": "Bassin n°{id}",

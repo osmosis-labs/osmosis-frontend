@@ -1,11 +1,7 @@
-import { type BrowserContext, chromium, test } from '@playwright/test'
-
-import { TransactionsPage } from '../pages/transactions-page'
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
-
-import { WalletPage } from '../pages/keplr-page'
+import { type BrowserContext, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
+import { TransactionsPage } from '../pages/transactions-page'
+import { SetupKeplr } from '../setup-keplr'
 
 test.describe('Test Claim All Orders feature', () => {
   let context: BrowserContext
@@ -13,31 +9,10 @@ test.describe('Test Claim All Orders feature', () => {
   let tradePage: TradePage
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension()
-    console.log('\nSetup Wallet Extension before tests.')
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      '',
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension),
-    )
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0]
-    await emptyPage.waitForTimeout(2000)
-    const page = context.pages()[1]
-    const walletPage = new WalletPage(page)
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey)
-    await walletPage.setWalletNameAndPassword('Claim All Orders')
-    await walletPage.selectChainsAndSave()
-    await walletPage.finish()
-    // Switch to Application
+    context = await new SetupKeplr().setupWallet(privateKey)
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
     await tradePage.connectWallet()
-  })
-
-  test.afterAll(async () => {
-    await context.close()
   })
 
   test('User should be able to Claim All filled limit orders', async () => {
