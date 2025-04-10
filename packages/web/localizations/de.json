@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Schritt 1: Wählen Sie eine Strategie",
     "step2Title": "Schritt 2: Liquidität hinzufügen",
-    "step2TitleManaged": "Schritt 2: Anbieter auswählen",
     "managed": "Gelang es",
     "managedDescription": "Beauftragen Sie einen unserer Anbieter mit der Verwaltung Ihrer Position. Ein völlig praktisches Erlebnis.",
     "manual": "Handbuch",
