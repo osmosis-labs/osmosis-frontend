@@ -487,7 +487,6 @@
     "superfluidEnabled": "сверхтекучий",
     "superfluidStaking": "Сверхтекучий стейкинг",
     "swap": "Торговая пара",
-    "spreadFactor": "Фактор распространения",
     "swapFee": "Комиссия за своп",
     "swapFees": "своп-комиссии",
     "title": "Пул № {id}",

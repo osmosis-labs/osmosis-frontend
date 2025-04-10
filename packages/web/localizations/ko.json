@@ -487,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid 스테이킹",
     "swap": "토큰 교환",
-    "spreadFactor": "스프레드 팩터",
     "swapFee": "수수료",
     "swapFees": "교환 수수료",
     "title": "풀 #{id}",
