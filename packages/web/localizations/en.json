@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
     "step2Title": "Step 2: Add Liquidity",
-    "step2TitleManaged": "Step 2: Select Provider",
     "managed": "Managed",
     "managedDescription": "Enlist a community liquidity manager to actively manage your position through Magma vaults.",
     "manual": "Manual",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
-    "spreadFactor": "Spread Factor",
     "swapFee": "Swap fee",
     "swapFees": "swap fees",
     "title": "Pool #{id}",

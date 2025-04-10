@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",
     "step2Title": "2. Adım: Likidite Ekleyin",
-    "step2TitleManaged": "Adım 2: Sağlayıcıyı Seçin",
     "managed": "Yönetilen",
     "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
     "manual": "Manuel",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Stake",
     "swap": "Tokenleri Takas Et",
-    "spreadFactor": "Yayılma Faktörü",
     "swapFee": "Takas ücreti",
     "swapFees": "takas ücretleri",
     "title": "Havuz #{id}",

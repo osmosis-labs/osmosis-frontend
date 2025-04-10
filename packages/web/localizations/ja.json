@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "ステップ 1: 戦略を選択する",
     "step2Title": "ステップ 2: 流動性を追加する",
-    "step2TitleManaged": "ステップ 2: プロバイダーを選択する",
     "managed": "管理された",
     "managedDescription": "当社のプロバイダーにポジションの管理を依頼してください。完全に手を使わない体験。",
     "manual": "マニュアル",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "超流動体",
     "superfluidStaking": "超流動性ステーキング",
     "swap": "トレードペア",
-    "spreadFactor": "スプレッドファクター",
     "swapFee": "スワップ手数料",
     "swapFees": "スワップ手数料",
     "title": "プール番号{id}",

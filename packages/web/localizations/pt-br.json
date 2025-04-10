@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",
     "step2Title": "Passo 2: Adicionar Liquidez",
-    "step2TitleManaged": "Etapa 2: selecione o provedor",
     "managed": "Gerenciou",
     "managedDescription": "Recrute um de nossos provedores para gerenciar sua posição. Uma experiência totalmente independente.",
     "manual": "Manual",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "Superfluido",
     "superfluidStaking": "Staking Superfluido",
     "swap": "Par de Negociação",
-    "spreadFactor": "Fator de propagação",
     "swapFee": "Taxa de Troca",
     "swapFees": "taxas de trocas",
     "title": "Piscina #{id}",

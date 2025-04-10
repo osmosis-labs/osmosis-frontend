@@ -20,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "પગલું 1: વ્યૂહરચના પસંદ કરો",
     "step2Title": "પગલું 2: લિક્વિડિટી ઉમેરો",
-    "step2TitleManaged": "પગલું 2: પ્રદાતા પસંદ કરો",
     "managed": "વ્યવસ્થાપિત",
     "managedDescription": "તમારી સ્થિતિનું સંચાલન કરવા માટે અમારા પ્રદાતાઓમાંની એકની નોંધણી કરો. એક સંપૂર્ણપણે હાથ બંધ અનુભવ.",
     "manual": "મેન્યુઅલ",
@@ -488,7 +487,6 @@
     "superfluidEnabled": "અતિપ્રવાહી",
     "superfluidStaking": "સુપરફ્લુઇડ સ્ટેકિંગ",
     "swap": "વેપાર જોડી",
-    "spreadFactor": "સ્પ્રેડ ફેક્ટર",
     "swapFee": "સ્વેપ ફી",
     "swapFees": "સ્વેપ ફી",
     "title": "પૂલ # {id}",
