@@ -113,7 +113,7 @@ export function useAddConcentratedLiquidityConfig(
           pool?.reserveCoins[0].currency.coinMinimalDenom ?? "",
         quoteCoinMinimalDenom:
           pool?.reserveCoins[1].currency.coinMinimalDenom ?? "",
-        timeDuration: "7d",
+        timeDuration: "1d",
       },
       { enabled: isPoolFetched }
     );

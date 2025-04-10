@@ -213,7 +213,7 @@ interface ChartTick {
 
 export class ObservableAssetInfoConfig {
   @observable
-  protected _historicalRange: PriceRange = "7d";
+  protected _historicalRange: PriceRange = "1d";
 
   @observable
   protected _dataType: AssetChartDataType = "price";
