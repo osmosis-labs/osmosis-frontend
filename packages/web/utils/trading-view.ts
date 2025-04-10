@@ -1,4 +1,8 @@
-import { TokenHistoricalPrice } from "@osmosis-labs/server";
+import {
+  AvailableRangeValues,
+  TokenHistoricalPrice,
+} from "@osmosis-labs/server";
+import { isNumeric } from "@osmosis-labs/utils";
 
 import type {
   DatafeedConfiguration,
@@ -15,7 +19,7 @@ import type {
 import { api } from "~/utils/trpc";
 
 const configurationData: DatafeedConfiguration = {
-  supported_resolutions: ["5", "15", "60", "240", "480"] as ResolutionString[],
+  supported_resolutions: ["5", "15", "60", "240", "1440"] as ResolutionString[],
   exchanges: [
     {
       value: "Osmosis", // `exchange` argument for the `searchSymbols` method, if a user selects this exchange
@@ -106,22 +110,32 @@ export const historicalDatafeed: ({
         timeFrame: 5,
       };
 
-      switch (resolution) {
-        case "60":
-          customTimeFrame.timeFrame = 5;
-          break;
-        case "1D":
-          customTimeFrame.timeFrame = 60;
-          break;
-        case "1W":
-          customTimeFrame.timeFrame = 720;
-          break;
-        case "1M":
-          customTimeFrame.timeFrame = 1440;
-          break;
-        case "12M":
-          customTimeFrame.timeFrame = 1440;
-          break;
+      // Check if resolution is a numeric string
+      if (isNumeric(resolution)) {
+        const parsedTimeFrame = parseInt(resolution, 10);
+        customTimeFrame.timeFrame = AvailableRangeValues.includes(
+          parsedTimeFrame as any
+        )
+          ? parsedTimeFrame
+          : 5; // Default to 5 if not in allowed ranges
+      } else {
+        // Handle non-numeric resolutions through the switch
+        switch (resolution) {
+          case "1D":
+            customTimeFrame.timeFrame = 60;
+            break;
+          case "1W":
+            customTimeFrame.timeFrame = 720;
+            break;
+          case "1M":
+            customTimeFrame.timeFrame = 1440;
+            break;
+          case "12M":
+            customTimeFrame.timeFrame = 1440;
+            break;
+          default:
+            customTimeFrame.timeFrame = 5; // Default value
+        }
       }
 
       let bars: TokenHistoricalPrice[] = [];
