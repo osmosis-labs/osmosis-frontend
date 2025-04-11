@@ -1315,5 +1315,8 @@
     "conversionFees": "Umtauschgebühren",
     "free": "Frei",
     "unavailable": "Derzeit nicht verfügbar. Versuchen Sie es später erneut."
+  },
+  "babyBanner": {
+    "with": "mit"
   }
 }

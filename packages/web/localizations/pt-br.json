@@ -1315,5 +1315,8 @@
     "conversionFees": "Taxas de conversão",
     "free": "Livre",
     "unavailable": "Atualmente indisponível. Tente novamente mais tarde."
+  },
+  "babyBanner": {
+    "with": "com"
   }
 }

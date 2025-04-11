@@ -1315,5 +1315,12 @@
     "conversionFees": "Conversion fees",
     "free": "Free",
     "unavailable": "Currently unavailable. Try again later."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Limited time only",
+    "skipWaitlist": "Skip the waitlist",
+    "anyTokenOnAnyNetworkOn": "any token on any network on",
+    "trade": "Trade",
+    "with": "with"
   }
 }

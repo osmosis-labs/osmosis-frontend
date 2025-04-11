@@ -1315,5 +1315,8 @@
     "conversionFees": "환전 수수료",
     "free": "무료",
     "unavailable": "현재 사용할 수 없습니다. 나중에 다시 시도하세요."
+  },
+  "babyBanner": {
+    "with": "~와 함께"
   }
 }

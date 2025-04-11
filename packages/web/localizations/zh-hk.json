@@ -1315,5 +1315,8 @@
     "conversionFees": "轉換費",
     "free": "自由的",
     "unavailable": "目前不可用。稍後再試。"
+  },
+  "babyBanner": {
+    "with": "和"
   }
 }
