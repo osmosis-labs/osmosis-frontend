@@ -24,6 +24,7 @@ export type AvailableFlags =
   | "bridgeDepositAddress"
   | "nomicWithdrawAmount"
   | "swapToolTopGainers"
+  | "babyTokenBanner"
   | "moonpay"
   | "layerswapcoinbase"
   | "kado"

@@ -30,6 +30,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   bridgeDepositAddress: false,
   nomicWithdrawAmount: false,
   swapToolTopGainers: false,
+  babyTokenBanner: false,
   moonpay: true,
   layerswapcoinbase: true,
   kado: true,

@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
@@ -11,8 +11,13 @@ import {
   SwapToolTab,
   SwapToolTabs,
 } from "~/components/swap-tool/swap-tool-tabs";
+import { BabyBanner } from "~/components/trade-tool/baby-banner";
 import { EventName, EventPage } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { PreviousTrade } from "~/pages";
 import { useStore } from "~/stores";
 
@@ -27,12 +32,14 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
   ({ page, swapToolProps, previousTrade, setPreviousTrade }) => {
     const { logEvent } = useAmplitudeAnalytics();
     const { t } = useTranslation();
+    const featureFlags = useFeatureFlags();
     const [tab, setTab] = useQueryState(
       "tab",
       parseAsStringEnum<SwapToolTab>(Object.values(SwapToolTab)).withDefault(
         SwapToolTab.SWAP
       )
     );
+    const [showBanner, setShowBanner] = useState(true);
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
@@ -130,6 +137,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             }
           }, [page, swapToolProps, tab, previousTrade, setPreviousTrade])}
         </div>
+
         {wallet?.isWalletConnected && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
@@ -159,6 +167,9 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
               </div>
             </div>
           </Link>
+        )}
+        {featureFlags.babyTokenBanner && showBanner && (
+          <BabyBanner onClose={() => setShowBanner(false)} />
         )}
       </>
     );
