@@ -1317,6 +1317,10 @@
     "unavailable": "目前不可用。稍後再試。"
   },
   "babyBanner": {
+    "limitedTimeOnly": "僅限時",
+    "skipWaitlist": "跳過候補名單",
+    "anyTokenOnAnyNetworkOn": "任何網路上的任何令牌",
+    "trade": "貿易",
     "with": "和"
   }
 }

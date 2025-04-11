@@ -1317,6 +1317,10 @@
     "unavailable": "Momentan indisponibil. Încercați din nou mai târziu."
   },
   "babyBanner": {
+    "limitedTimeOnly": "Doar timp limitat",
+    "skipWaitlist": "Sari peste lista de asteptare",
+    "anyTokenOnAnyNetworkOn": "orice simbol din orice rețea activată",
+    "trade": "Comerț",
     "with": "cu"
   }
 }

@@ -1317,6 +1317,10 @@
     "unavailable": "Actuellement indisponible. Réessayez plus tard."
   },
   "babyBanner": {
+    "limitedTimeOnly": "Durée limitée seulement",
+    "skipWaitlist": "Évitez la liste d'attente",
+    "anyTokenOnAnyNetworkOn": "n'importe quel jeton sur n'importe quel réseau sur",
+    "trade": "Commerce",
     "with": "avec"
   }
 }

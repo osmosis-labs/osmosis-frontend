@@ -1317,6 +1317,10 @@
     "unavailable": "वर्तमान में अनुपलब्ध। बाद में पुनः प्रयास करें।"
   },
   "babyBanner": {
+    "limitedTimeOnly": "केवल सीमित समय के लिए",
+    "skipWaitlist": "प्रतीक्षा सूची छोड़ें",
+    "anyTokenOnAnyNetworkOn": "किसी भी नेटवर्क पर कोई भी टोकन",
+    "trade": "व्यापार",
     "with": "साथ"
   }
 }

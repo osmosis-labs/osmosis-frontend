@@ -1317,6 +1317,10 @@
     "unavailable": "Şu anda mevcut değil. Daha sonra tekrar deneyin."
   },
   "babyBanner": {
+    "limitedTimeOnly": "Sadece sınırlı bir süre için",
+    "skipWaitlist": "Bekleme listesini atlayın",
+    "anyTokenOnAnyNetworkOn": "herhangi bir ağdaki herhangi bir belirteç",
+    "trade": "Ticaret",
     "with": "ile"
   }
 }

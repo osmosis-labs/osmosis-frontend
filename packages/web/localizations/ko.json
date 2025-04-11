@@ -1317,6 +1317,10 @@
     "unavailable": "현재 사용할 수 없습니다. 나중에 다시 시도하세요."
   },
   "babyBanner": {
+    "limitedTimeOnly": "기간 한정",
+    "skipWaitlist": "대기자 명단 건너뛰기",
+    "anyTokenOnAnyNetworkOn": "모든 네트워크의 모든 토큰",
+    "trade": "거래",
     "with": "~와 함께"
   }
 }

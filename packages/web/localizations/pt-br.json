@@ -1317,6 +1317,10 @@
     "unavailable": "Atualmente indisponível. Tente novamente mais tarde."
   },
   "babyBanner": {
+    "limitedTimeOnly": "Somente por tempo limitado",
+    "skipWaitlist": "Pule a lista de espera",
+    "anyTokenOnAnyNetworkOn": "qualquer token em qualquer rede em",
+    "trade": "Troca",
     "with": "com"
   }
 }

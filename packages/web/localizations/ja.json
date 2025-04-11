@@ -1317,6 +1317,10 @@
     "unavailable": "現在ご利用いただけません。しばらくしてからもう一度お試しください。"
   },
   "babyBanner": {
+    "limitedTimeOnly": "期間限定",
+    "skipWaitlist": "順番待ちリストをスキップ",
+    "anyTokenOnAnyNetworkOn": "あらゆるネットワーク上のあらゆるトークン",
+    "trade": "貿易",
     "with": "と"
   }
 }
