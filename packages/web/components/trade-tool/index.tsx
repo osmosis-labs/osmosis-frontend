@@ -1,7 +1,8 @@
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { parseAsStringEnum, useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
+import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
@@ -39,7 +40,10 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
         SwapToolTab.SWAP
       )
     );
-    const [showBanner, setShowBanner] = useState(true);
+    const [showBanner, setShowBanner] = useLocalStorage(
+      "babyTokenBanner",
+      true
+    );
 
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
