@@ -12,6 +12,7 @@ import {
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
+import { BabyBanner } from "~/components/trade-tool/baby-banner";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -33,6 +34,7 @@ const Home = () => {
 
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+  const [showBanner, setShowBanner] = useLocalStorage("babyTokenBanner", true);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -61,6 +63,9 @@ const Home = () => {
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
+            {featureFlags.babyTokenBanner && showBanner && (
+              <BabyBanner onClose={() => setShowBanner(false)} />
+            )}
             {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
         </div>

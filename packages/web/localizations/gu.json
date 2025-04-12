@@ -1315,5 +1315,12 @@
     "conversionFees": "રૂપાંતર ફી",
     "free": "મફત",
     "unavailable": "હાલમાં અનુપલબ્ધ. પછીથી ફરી પ્રયાસ કરો."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "મર્યાદિત સમય માટે જ",
+    "skipWaitlist": "રાહ જોવાની સૂચિ છોડી દો",
+    "anyTokenOnAnyNetworkOn": "કોઈપણ નેટવર્ક પર કોઈપણ ટોકન",
+    "trade": "વેપાર",
+    "with": "સાથે"
   }
 }

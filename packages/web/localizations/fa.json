@@ -1315,5 +1315,12 @@
     "conversionFees": "هزینه های تبدیل",
     "free": "رایگان",
     "unavailable": "در حال حاضر در دسترس نیست. بعداً دوباره امتحان کنید."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "فقط زمان محدود",
+    "skipWaitlist": "از لیست انتظار رد شوید",
+    "anyTokenOnAnyNetworkOn": "هر توکنی در هر شبکه ای در",
+    "trade": "تجارت",
+    "with": "با"
   }
 }
