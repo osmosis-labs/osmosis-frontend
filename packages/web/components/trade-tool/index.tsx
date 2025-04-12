@@ -58,7 +58,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
     }, [tab]);
 
     return (
-      <>
+      <div className="flex flex-col gap-3">
         <div className="relative flex flex-col gap-3 rounded-3xl bg-osmoverse-900 px-5 pt-5 pb-3 sm:px-4 sm:pt-4 sm:pb-2">
           <div className="flex w-full items-center justify-between md:gap-2">
             <SwapToolTabs activeTab={tab} setTab={setTab} />
@@ -130,10 +130,11 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             }
           }, [page, swapToolProps, tab, previousTrade, setPreviousTrade])}
         </div>
+
         {wallet?.isWalletConnected && (
           <Link
             href="/transactions?tab=orders&fromPage=swap"
-            className="my-3 flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
+            className="flex items-center justify-between rounded-2xl border border-solid border-osmoverse-800/50 bg-osmoverse-1000 py-2 px-4 hover:bg-osmoverse-850"
           >
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center">
@@ -160,7 +161,7 @@ export const TradeTool: FunctionComponent<TradeToolProps> = observer(
             </div>
           </Link>
         )}
-      </>
+      </div>
     );
   }
 );

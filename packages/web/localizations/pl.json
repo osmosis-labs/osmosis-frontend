@@ -1315,5 +1315,12 @@
     "conversionFees": "Opłaty za konwersję",
     "free": "Bezpłatny",
     "unavailable": "Obecnie niedostępne. Spróbuj ponownie później."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Tylko przez ograniczony czas",
+    "skipWaitlist": "Omiń listę oczekujących",
+    "anyTokenOnAnyNetworkOn": "dowolny token w dowolnej sieci",
+    "trade": "Handel",
+    "with": "z"
   }
 }

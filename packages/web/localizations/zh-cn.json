@@ -1315,5 +1315,12 @@
     "conversionFees": "转换费",
     "free": "自由的",
     "unavailable": "目前不可用。请稍后重试。"
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "仅限时",
+    "skipWaitlist": "跳过候补名单",
+    "anyTokenOnAnyNetworkOn": "任何网络上的任何令牌",
+    "trade": "贸易",
+    "with": "和"
   }
 }
