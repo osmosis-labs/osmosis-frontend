@@ -36,32 +36,32 @@ export const BabyBanner: FunctionComponent<BabyBannerProps> = ({ onClose }) => {
           </div>
           <div className="flex items-center gap-1">
             <span className="subtitle1 text-white-full">
-              {t("babyBanner.anyTokenOnAnyNetworkOn")}
-            </span>
-            <div className="pt-[2px] w-[70px]">
+              {t("babyBanner.anyTokenOnAnyNetworkOn")}{" "}
               <Image
                 src="/images/polaris-logo.svg"
                 alt="Polaris"
                 width={70}
                 height={16}
+                className="inline-block align-middle ml-1"
               />
-            </div>
+            </span>
           </div>
         </div>
         <IconButton
           aria-label="Close"
           data-testid="close"
-          className="absolute -right-2 -top-2 z-50 !h-10 !w-10 cursor-pointer !bg-transparent !py-0 text-wosmongton-200 hover:text-osmoverse-100"
+          className="absolute -right-2 -top-2 z-50 !h-10 !w-10 cursor-pointer !bg-transparent !py-0 text-wosmongton-400 hover:text-osmoverse-300"
           icon={<Icon id="close" width={16} height={16} />}
           onClick={onClose}
         />
       </div>
-      <div className="flex justify-between items-end w-full">
+      <div className="flex justify-between items-end w-full sm:flex-col sm:gap-2 sm:items-start">
         <span className="text-osmoverse-300 body2">
           {t("babyBanner.limitedTimeOnly")}
         </span>
         <Link
-          href="/baby"
+          target="_blank"
+          href="https://beta.polaris.app/tokens/BABY?toToken=ubbn&toChain=cosmos:bbn-1"
           className="flex items-center justify-center h-8 px-3 py-1 bg-wosmongton-100 rounded-full transition-colors duration-150 hover:bg-wosmongton-200"
         >
           <span className="text-osmoverse-1000 body2 gap-1 flex items-center">
