@@ -2,7 +2,6 @@ import {
   NativeEVMTokenConstantAddress,
   TronChainInfo,
 } from "@osmosis-labs/utils";
-import basex from "base-x";
 
 import {
   BridgeAsset,
@@ -18,7 +17,6 @@ import {
 } from "../interface";
 
 const BASE58 = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
-const bs58 = basex(BASE58);
 
 export class NitroBridgeProvider implements BridgeProvider {
   static readonly ID = "Nitro";
@@ -57,6 +55,9 @@ export class NitroBridgeProvider implements BridgeProvider {
         );
 
         if (tronCounterparty) {
+          const basex = await import("base-x");
+          const bs58 = basex.default(BASE58);
+
           const isTRC20Token = tronCounterparty.sourceDenom.startsWith("T");
           const address = isTRC20Token
             ? Buffer.from(bs58.decode(tronCounterparty.sourceDenom))

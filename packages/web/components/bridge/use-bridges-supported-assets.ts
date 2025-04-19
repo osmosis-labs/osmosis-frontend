@@ -15,6 +15,7 @@ const supportedAssetsBridges: Bridge[] = [
   "Axelar",
   "IBC",
   "Int3face",
+  "FastUsdc",
   // include nomic, nitro, wormhole, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
@@ -180,7 +181,7 @@ export const useBridgesSupportedAssets = ({
               ][data.supportedAssets.providerName] = new Set();
             }
 
-            asset.transferTypes.forEach((type) => {
+            asset.transferTypes?.forEach((type) => {
               assetAddress_chainId_supportedVariants_bridges[address][chainId][
                 inputAssetAddress
               ][data.supportedAssets.providerName]!.add(type);

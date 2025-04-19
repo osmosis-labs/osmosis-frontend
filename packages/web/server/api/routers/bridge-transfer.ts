@@ -641,7 +641,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         throw new Error("Bridge does not support deposit addresses");
       }
 
-      const depositData = await bridgeProvider.getDepositAddress({
+      const depositData = await bridgeProvider.getDepositAddress?.({
         toAddress: input.toAddress,
         fromChain: input.fromChain,
         fromAsset: input.fromAsset,

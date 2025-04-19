@@ -1,4 +1,5 @@
 import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
+import { FastUsdcTransferStatusProvider } from "@osmosis-labs/bridge/build/fast-usdc/transfer-status";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
 import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
 import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
@@ -56,7 +57,6 @@ import {
   TRANSFER_HISTORY_STORE_KEY,
   TransferHistoryStore,
 } from "./transfer-history";
-
 const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
@@ -223,6 +223,10 @@ export class RootStore {
 
     const transferStatusProviders = [
       new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
+      new FastUsdcTransferStatusProvider(
+        IS_TESTNET ? "testnet" : "mainnet",
+        ChainList
+      ),
       new SquidTransferStatusProvider(
         IS_TESTNET ? "testnet" : "mainnet",
         ChainList
