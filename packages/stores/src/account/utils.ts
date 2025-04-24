@@ -100,6 +100,7 @@ export function getPublicKeyTypeUrl({
   const chainIsInjective = chainId.startsWith("injective");
   const chainIsStratos = chainId.startsWith("stratos");
   const useEthereumSign = chainFeatures.includes("eth-key-sign");
+  const chainIsInitia = chainId.startsWith("interwoven-1");
 
   if (!useEthereumSign) {
     return "/cosmos.crypto.secp256k1.PubKey";
@@ -111,6 +112,10 @@ export function getPublicKeyTypeUrl({
 
   if (chainIsStratos) {
     return "/stratos.crypto.v1.ethsecp256k1.PubKey";
+  }
+
+  if (chainIsInitia) {
+    return "/initia.crypto.v1beta1.ethsecp256k1.PubKey";
   }
 
   return "/ethermint.crypto.v1.ethsecp256k1.PubKey";
