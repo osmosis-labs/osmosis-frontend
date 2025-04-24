@@ -644,6 +644,8 @@ export const AmountScreen = observer(
           );
     }, [direction, canonicalAsset, assetsInOsmosis, toAsset?.address]);
 
+    console.log(areAssetTransfersDisabled, canonicalAsset, assetsInOsmosis);
+
     const onChangeCryptoInput = useCallback(
       (amount: string) => {
         if (isNil(fromAsset?.decimals)) return;
