@@ -202,6 +202,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ? getAssetPrice({
               ...ctx,
               asset: {
+                sourceDenom: quote.estimatedGasFee.address,
                 coinMinimalDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
@@ -248,6 +249,8 @@ export const bridgeTransferRouter = createTRPCRouter({
           ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
           : undefined,
       };
+
+      console.log(quote.estimatedGasFee);
 
       const estimatedGasFee = quote.estimatedGasFee
         ? {
