@@ -33,6 +33,7 @@ export async function getAssetPrice({
     | { coinMinimalDenom: string }
     | { chainId: number | string; address: string }
     | { coinGeckoId: string }
+    | { sourceDenom: string }
   );
   currency?: CoingeckoVsCurrencies;
   priceProvider?: PriceProvider;
@@ -44,7 +45,7 @@ export async function getAssetPrice({
       ? asset
       : { chainId: undefined, address: undefined };
   const coinGeckoId = "coinGeckoId" in asset ? asset.coinGeckoId : undefined;
-
+  const sourceDenom = "sourceDenom" in asset ? asset.sourceDenom : undefined;
   const foundAsset = assetLists
     .map((assets) => assets.assets)
     .flat()
@@ -59,7 +60,8 @@ export async function getAssetPrice({
               "address" in counterparty &&
               counterparty.chainId === chainId &&
               counterparty.address.toLowerCase() === address.toLowerCase()
-          ))
+          )) ||
+        (sourceDenom && asset.sourceDenom === sourceDenom)
     );
 
   // Fall back to CoinGecko if asset list does not provide
