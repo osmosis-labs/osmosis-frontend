@@ -265,9 +265,19 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   async getExternalUrl({
     fromChain,
     toChain,
-    fromAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    if (fromChain?.chainType !== "cosmos" || toChain?.chainType !== "doge") {
+    // Check for valid chain combinations: either osmosis->dogecoin or dogecoin->osmosis
+    const isOsmosisToDoge =
+      fromChain?.chainType === "cosmos" &&
+      fromChain.chainId === "osmosis" &&
+      toChain?.chainId === "dogecoin";
+
+    const isDogeToOsmosis =
+      fromChain?.chainId === "dogecoin" &&
+      toChain?.chainType === "cosmos" &&
+      toChain.chainId === "osmosis";
+
+    if (!isOsmosisToDoge && !isDogeToOsmosis) {
       return undefined;
     }
 
@@ -276,18 +286,15 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         ? "https://int3face.zone/bridge/"
         : "https://testnet.app.int3face.zone/bridge/"
     );
-    // Note: currently supports only osmosis -> dogecoin
-    if (fromChain) {
-      // url.searchParams.set("fromChain", fromChain.chainName as string);
+
+    if (isOsmosisToDoge) {
       url.searchParams.set("fromChain", "osmosis");
-    }
-    if (fromAsset) {
-      // url.searchParams.set("fromToken", fromAsset.denom);
       url.searchParams.set("fromToken", "DOGE.int3");
-    }
-    if (toChain) {
-      // url.searchParams.set("toChain", toChain.chainId);
       url.searchParams.set("toChain", "dogecoin");
+    } else {
+      url.searchParams.set("fromChain", "dogecoin");
+      url.searchParams.set("toChain", "osmosis");
+      url.searchParams.set("toToken", "DOGE.int3");
     }
 
     return { urlProviderName: "Int3face", url };
@@ -324,10 +331,6 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }: GetBridgeSupportedAssetsParams): Promise<
     (BridgeChain & BridgeSupportedAsset)[]
   > {
-    if (direction === "deposit") {
-      return [];
-    }
-
     const assetListAsset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
       .find(
@@ -347,7 +350,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       if (isInt3Doge || isAllDoge) {
         return [
           {
-            transferTypes: ["quote"],
+            transferTypes:
+              direction === "deposit" ? ["external-url"] : ["quote"],
             chainId: "dogecoin",
             chainName: "Dogecoin",
             chainType: "doge",
