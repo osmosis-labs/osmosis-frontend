@@ -38,15 +38,15 @@ import { SkipApiClient } from "../skip/client";
 import { SkipEvmTx, SkipMsg } from "../skip/types";
 import { FastUsdcClient } from "./client";
 
-const OSMOSIS_CHAIN_ID = "osmosis-1";
-const NATIVE_OSMOSIS_USDC_IBC_DENOM =
+const OsmosisChainId = "osmosis-1";
+const NativeOsmosisUsdcIbcDenom =
   "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
 
-const AGORIC_CHAIN_ID = "agoric-3";
-const NATIVE_AGORIC_USDC_IBC_DENOM =
+const AgoricChainId = "agoric-3";
+const NativeAgoricUsdcIbcDenom =
   "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9";
 
-const TARGET_USDC_ASSETS: { [chainId: number]: string } = {
+const TargetUsdcAssets: { [chainId: number]: string } = {
   1: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48", // Ethereum
   137: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", // Polygon (Native)
   42161: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", // Arbitrum (Native)
@@ -54,8 +54,8 @@ const TARGET_USDC_ASSETS: { [chainId: number]: string } = {
   8453: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // Base (Native)
 };
 
-const USDC_DECIMALS = 6;
-const FAST_USDC_ESTIMATED_TIME_SECONDS = 60;
+const UsdcDecimals = 6;
+const FastUsdcEstimatedTimeSeconds = 60;
 
 export class FastUsdcBridgeProvider implements BridgeProvider {
   static readonly ID = "FastUsdc";
@@ -164,7 +164,7 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
           sourceChainPolicy?.rateLimits?.tx?.digits ?? "0"
         );
         if (bigInteger(fromAmount).greater(limit)) {
-          const prettyAmount = limit.divide(bigInteger(10).pow(USDC_DECIMALS));
+          const prettyAmount = limit.divide(bigInteger(10).pow(UsdcDecimals));
           throw new BridgeQuoteError({
             bridgeId: FastUsdcBridgeProvider.ID,
             errorType: "UnsupportedQuoteError",
@@ -177,8 +177,8 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
             .route({
               source_asset_denom: sourceAsset.denom,
               source_asset_chain_id: fromChain.chainId.toString(),
-              dest_asset_denom: NATIVE_AGORIC_USDC_IBC_DENOM,
-              dest_asset_chain_id: AGORIC_CHAIN_ID,
+              dest_asset_denom: NativeAgoricUsdcIbcDenom,
+              dest_asset_chain_id: AgoricChainId,
               amount_in: fromAmount,
               allow_unsafe: true,
               allow_multi_tx: true,
@@ -305,7 +305,7 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
           fromChain,
           toChain,
           transferFee,
-          estimatedTime: FAST_USDC_ESTIMATED_TIME_SECONDS,
+          estimatedTime: FastUsdcEstimatedTimeSeconds,
           transactionRequest,
           estimatedGasFee,
         };
@@ -324,8 +324,8 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
     (BridgeChain & BridgeSupportedAsset)[]
   > {
     const isNativeOsmosisUsdc =
-      chain.chainId === OSMOSIS_CHAIN_ID &&
-      asset.address === NATIVE_OSMOSIS_USDC_IBC_DENOM;
+      chain.chainId === OsmosisChainId &&
+      asset.address === NativeOsmosisUsdcIbcDenom;
 
     if (!isNativeOsmosisUsdc) {
       return [];
@@ -339,10 +339,9 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
 
       const supportedTargets: (BridgeChain & BridgeSupportedAsset)[] = [];
 
-      for (const targetChainIdStr of Object.keys(TARGET_USDC_ASSETS)) {
+      for (const targetChainIdStr of Object.keys(TargetUsdcAssets)) {
         const targetChainId = Number(targetChainIdStr);
-        const targetUsdcAddress =
-          TARGET_USDC_ASSETS[targetChainId].toLowerCase();
+        const targetUsdcAddress = TargetUsdcAssets[targetChainId].toLowerCase();
 
         const targetChainInfo = allChains.find(
           (c: any) => c.chain_id === targetChainIdStr
@@ -360,7 +359,7 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
         targetUsdcAssetInfo = assetsForChain.find(
           (a: any) =>
             a.token_contract?.toLowerCase() === targetUsdcAddress &&
-            a.decimals === USDC_DECIMALS
+            a.decimals === UsdcDecimals
         );
 
         if (!targetUsdcAssetInfo) {
@@ -373,7 +372,7 @@ export class FastUsdcBridgeProvider implements BridgeProvider {
         const supportedAssetInfo: BridgeSupportedAsset = {
           address: targetUsdcAddress,
           denom: "USDC",
-          decimals: USDC_DECIMALS,
+          decimals: UsdcDecimals,
           coinGeckoId: targetUsdcAssetInfo.coingecko_id,
           transferTypes: ["quote"],
         };

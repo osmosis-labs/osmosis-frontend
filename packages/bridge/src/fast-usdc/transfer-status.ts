@@ -10,7 +10,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { AGORIC_API_URL } from "./client";
+import { AgoricApiUrl } from "./client";
 import { FastUsdcBridgeProvider } from "./index";
 
 /** Tracks and reports status updates on Fast USDC transfers. */
@@ -31,7 +31,7 @@ export class FastUsdcTransferStatusProvider implements TransferStatusProvider {
     await poll({
       fn: async () => {
         const rawData = await apiClient<{ value: string }>(
-          `${AGORIC_API_URL}/agoric/vstorage/data/published.fastUsdc.txns.${sendTxHash}`
+          `${AgoricApiUrl}/agoric/vstorage/data/published.fastUsdc.txns.${sendTxHash}`
         );
         if (!rawData?.value) {
           return { id: sendTxHash, status: "pending" as TransferStatus };

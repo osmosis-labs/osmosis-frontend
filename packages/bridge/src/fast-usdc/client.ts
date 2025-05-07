@@ -4,12 +4,12 @@ import cachified from "cachified";
 
 import { BridgeProviderContext } from "../interface";
 
-export const AGORIC_API_URL = "https://main.api.agoric.net";
-export const NOBLE_TO_AGORIC_CHANNEL = "channel-21";
-export const NETWORK_CONFIG_URL = "https://main.agoric.net/network-config";
-export const FAST_USDC_SERVICE_URL =
+export const AgoricApiUrl = "https://main.api.agoric.net";
+export const NobleToAgoricChannel = "channel-21";
+export const NetworkConfigUrl = "https://main.agoric.net/network-config";
+export const FastUsdcServiceUrl =
   "https://fastusdc-map.agoric-core.workers.dev/store";
-export const NOBLE_API_URL = "https://noble-api.polkachu.com";
+export const NobleApiUrl = "https://noble-api.polkachu.com";
 
 export interface FastUsdcFee {
   numerator: string;
@@ -49,7 +49,7 @@ export class FastUsdcClient {
       getFreshValue: async (): Promise<FastUsdcFee> => {
         try {
           const rawData = await apiClient<{ value: string }>(
-            `${AGORIC_API_URL}/agoric/vstorage/data/published.fastUsdc.feeConfig`
+            `${AgoricApiUrl}/agoric/vstorage/data/published.fastUsdc.feeConfig`
           );
 
           const nestedValue = JSON.parse(rawData.value);
@@ -100,7 +100,7 @@ export class FastUsdcClient {
       getFreshValue: async (): Promise<bigInteger.BigInteger> => {
         try {
           const rawData = await apiClient<{ value: string }>(
-            `${AGORIC_API_URL}/agoric/vstorage/data/published.fastUsdc.poolMetrics`
+            `${AgoricApiUrl}/agoric/vstorage/data/published.fastUsdc.poolMetrics`
           );
 
           const nestedValue = JSON.parse(rawData.value);
@@ -146,7 +146,7 @@ export class FastUsdcClient {
       getFreshValue: async (): Promise<FastUsdcChainPolicies> => {
         try {
           const rawData = await apiClient<{ value: string }>(
-            `${AGORIC_API_URL}/agoric/vstorage/data/published.fastUsdc.feedPolicy`
+            `${AgoricApiUrl}/agoric/vstorage/data/published.fastUsdc.feedPolicy`
           );
 
           const nestedValue = JSON.parse(rawData.value);
@@ -191,14 +191,14 @@ export class FastUsdcClient {
           : 10 * 1000, // 10 seconds
       getFreshValue: async (): Promise<boolean> => {
         try {
-          const config = await apiClient<any>(NETWORK_CONFIG_URL);
+          const config = await apiClient<any>(NetworkConfigUrl);
 
           const fastUsdcAllowed = config?.fastUsdcAllowed;
 
           if (fastUsdcAllowed === undefined) {
             console.error(
               'Could not find key "fastUsdcAllowed" in network config, disabling feature.',
-              NETWORK_CONFIG_URL,
+              NetworkConfigUrl,
               config
             );
             return false;
@@ -207,7 +207,7 @@ export class FastUsdcClient {
           if (!fastUsdcAllowed) {
             console.warn(
               "Fast USDC is not allowed in network config, disabling feature.",
-              NETWORK_CONFIG_URL,
+              NetworkConfigUrl,
               config
             );
           }
@@ -248,7 +248,7 @@ export class FastUsdcClient {
         );
 
         const vstorage = await fetch(
-          `${AGORIC_API_URL}/agoric/vstorage/data/published.fastUsdc`
+          `${AgoricApiUrl}/agoric/vstorage/data/published.fastUsdc`
         );
         const data = await vstorage.json();
         const settlementAccountAddress = JSON.parse(
@@ -260,11 +260,11 @@ export class FastUsdcClient {
             EUD: userDestinationAddress,
           }
         );
-        await fetch(FAST_USDC_SERVICE_URL, {
+        await fetch(FastUsdcServiceUrl, {
           method: "POST",
           headers: [["Content-Type", "application/json"]],
           body: JSON.stringify({
-            channel: NOBLE_TO_AGORIC_CHANNEL,
+            channel: NobleToAgoricChannel,
             recipient: encodedAgoricAddress,
           }),
           mode: "no-cors",
@@ -288,9 +288,9 @@ export class FastUsdcClient {
           : Infinity,
       getFreshValue: async (): Promise<string> => {
         const client = await apiClient<{ address: string; exists: boolean }>(
-          NOBLE_API_URL +
+          NobleApiUrl +
             "/noble/forwarding/v1/address/" +
-            NOBLE_TO_AGORIC_CHANNEL +
+            NobleToAgoricChannel +
             "/" +
             agoricAddress +
             "/"
