@@ -226,7 +226,9 @@ describe("getTokenOutFiatValue", () => {
 
       expect(result).toEqual(expectedZeroPricePretty);
     });
+  });
 
+  describe("valid inputs", () => {
     it("should return tokenOutFiatValue correctly, price impact is 1, fiat value 100", () => {
       const priceImpactTokenOut: Dec | undefined = new Dec(1);
       const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
@@ -239,7 +241,7 @@ describe("getTokenOutFiatValue", () => {
       expect(result.toDec()).toEqual(new Dec(200));
     });
 
-    it("should return tokenOutFiatValue correctly, price impact is 1, fiat value 100", () => {
+    it("should return tokenOutFiatValue correctly, price impact is -1, fiat value 100", () => {
       const priceImpactTokenOut: Dec | undefined = new Dec(-1);
       const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
 
@@ -262,9 +264,6 @@ describe("getTokenOutFiatValue", () => {
 
       expect(result.toDec()).toEqual(new Dec(50));
     });
-  });
-
-  describe("valid inputs", () => {
     it("should calculate tokenOutFiatValue correctly, price impact 0.5, fiat value 100", () => {
       const priceImpactTokenOut: Dec | undefined = defaultPriceImpactTokenOut;
       const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
