@@ -50,16 +50,21 @@ export function getTokenOutFiatValue(
   inAmountFiatValue: Dec | undefined
 ) {
   // If either of the inputs are undefined, return 0
-  // Additionally, return 0 if the price impact is greater than or equal to 1 which is an invalid value
-  if (!priceImpactTokenOut || !inAmountFiatValue) {
+  // Additionally, return 0 if the price impact is greater 1 which is an invalid value
+  if (
+    !priceImpactTokenOut ||
+    !inAmountFiatValue ||
+    priceImpactTokenOut.gt(new Dec(1)) ||
+    priceImpactTokenOut.lt(new Dec(-1))
+  ) {
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }
 
   // Calculate the fiat value of the token out amount.
-  const oneMinusPriceImpact = new Dec(1).add(priceImpactTokenOut);
+  const onePlusPriceImpact = new Dec(1).add(priceImpactTokenOut);
   const tokenOutFiatValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    inAmountFiatValue.mul(oneMinusPriceImpact)
+    inAmountFiatValue.mul(onePlusPriceImpact)
   );
 
   return tokenOutFiatValue;

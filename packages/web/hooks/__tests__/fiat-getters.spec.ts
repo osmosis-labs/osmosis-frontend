@@ -203,8 +203,8 @@ describe("getTokenOutFiatValue", () => {
       expect(result).toEqual(expectedZeroPricePretty);
     });
 
-    it("should return PricePretty with 0 value if priceImpactTokenOut is greater than or equal to 1", () => {
-      const priceImpactTokenOut: Dec | undefined = new Dec(1);
+    it("should return PricePretty with 0 value if priceImpactTokenOut is greater than 1", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(1.1);
       const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
 
       const result = getTokenOutFiatValue(
@@ -215,8 +215,8 @@ describe("getTokenOutFiatValue", () => {
       expect(result).toEqual(expectedZeroPricePretty);
     });
 
-    it("should return PricePretty with 0 value if priceImpactTokenOut is less than 0", () => {
-      const priceImpactTokenOut: Dec | undefined = new Dec(-0.5);
+    it("should return PricePretty with 0 value if priceImpactTokenOut is less than -1", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(-1.1);
       const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
 
       const result = getTokenOutFiatValue(
@@ -225,6 +225,42 @@ describe("getTokenOutFiatValue", () => {
       );
 
       expect(result).toEqual(expectedZeroPricePretty);
+    });
+
+    it("should return tokenOutFiatValue correctly, price impact is 1, fiat value 100", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(1);
+      const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
+
+      const result = getTokenOutFiatValue(
+        priceImpactTokenOut,
+        inAmountFiatValue
+      );
+
+      expect(result.toDec()).toEqual(new Dec(200));
+    });
+
+    it("should return tokenOutFiatValue correctly, price impact is 1, fiat value 100", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(-1);
+      const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
+
+      const result = getTokenOutFiatValue(
+        priceImpactTokenOut,
+        inAmountFiatValue
+      );
+
+      expect(result.toDec()).toEqual(new Dec(0));
+    });
+
+    it("should return tokenOutFiatValue correctly, price impact is -0.5, fiat value 100", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(-0.5);
+      const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
+
+      const result = getTokenOutFiatValue(
+        priceImpactTokenOut,
+        inAmountFiatValue
+      );
+
+      expect(result.toDec()).toEqual(new Dec(50));
     });
   });
 
@@ -238,7 +274,19 @@ describe("getTokenOutFiatValue", () => {
         inAmountFiatValue
       );
 
-      expect(result.toDec()).toEqual(new Dec(50));
+      expect(result.toDec()).toEqual(new Dec(150));
+    });
+
+    it("should calculate tokenOutFiatValue correctly, price impact -0.2, fiat value 100", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(-0.2);
+      const inAmountFiatValue: Dec | undefined = defaultInAmountFiatValue;
+
+      const result = getTokenOutFiatValue(
+        priceImpactTokenOut,
+        inAmountFiatValue
+      );
+
+      expect(result.toDec()).toEqual(new Dec(80));
     });
 
     it("should calculate tokenOutFiatValue correctly, price impact 0.2, fiat value 100", () => {
@@ -250,7 +298,19 @@ describe("getTokenOutFiatValue", () => {
         inAmountFiatValue
       );
 
-      expect(result.toDec()).toEqual(new Dec(80));
+      expect(result.toDec()).toEqual(new Dec(120));
+    });
+
+    it("should calculate tokenOutFiatValue correctly, price impact -0.8, fiat value 50", () => {
+      const priceImpactTokenOut: Dec | undefined = new Dec(-0.8);
+      const inAmountFiatValue: Dec | undefined = new Dec(50);
+
+      const result = getTokenOutFiatValue(
+        priceImpactTokenOut,
+        inAmountFiatValue
+      );
+
+      expect(result.toDec()).toEqual(new Dec(10));
     });
 
     it("should calculate tokenOutFiatValue correctly, price impact 0.8, fiat value 50", () => {
@@ -262,7 +322,7 @@ describe("getTokenOutFiatValue", () => {
         inAmountFiatValue
       );
 
-      expect(result.toDec()).toEqual(new Dec(10));
+      expect(result.toDec()).toEqual(new Dec(90));
     });
   });
 });
