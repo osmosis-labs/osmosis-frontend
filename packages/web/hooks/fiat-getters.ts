@@ -51,10 +51,7 @@ export function getTokenOutFiatValue(
 ) {
   // If either of the inputs are undefined, return 0
   // Additionally, return 0 if the price impact is greater than or equal to 1 which is an invalid value
-  if (
-    !priceImpactTokenOut ||
-    !inAmountFiatValue
-  ) {
+  if (!priceImpactTokenOut || !inAmountFiatValue) {
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }
 
