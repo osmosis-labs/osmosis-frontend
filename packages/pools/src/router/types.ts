@@ -43,7 +43,10 @@ export type Quote = {
   afterSpotPriceOutOverIn?: Dec;
   effectivePriceInOverOut?: Dec;
   effectivePriceOutOverIn?: Dec;
-  /** Generally a positive number. */
+  /**
+   * Negative number represents negative price impact
+   * while positive number represents positive price impact
+   * */
   priceImpactTokenOut?: Dec;
 };
 

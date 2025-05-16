@@ -58,7 +58,7 @@ export async function getRouteTokenOutGivenIn({
     timeMs,
     amount: new CoinPretty(tokenOutAsset, quote.amount),
     priceImpactTokenOut: quote.priceImpactTokenOut
-      ? new RatePretty(quote.priceImpactTokenOut.abs())
+      ? new RatePretty(quote.priceImpactTokenOut)
       : undefined,
     swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
     feeAmount: fee ? new CoinPretty(tokenInAsset, fee) : undefined,
@@ -160,7 +160,7 @@ export async function getRouteTokenInGivenOut({
     timeMs,
     amount: new CoinPretty(tokenInAsset, quote.amount),
     priceImpactTokenOut: quote.priceImpactTokenOut
-      ? new RatePretty(quote.priceImpactTokenOut.abs())
+      ? new RatePretty(quote.priceImpactTokenOut)
       : undefined,
     swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,
     feeAmount: fee ? new CoinPretty(tokenInAsset, fee) : undefined,

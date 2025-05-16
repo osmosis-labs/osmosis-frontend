@@ -159,8 +159,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .gt(new Dec(0.05));
 
     const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.05)) ??
-      false;
+      swapState.quote?.priceImpactTokenOut?.toDec().lt(new Dec(-0.05)) ?? false;
 
     // token select dropdown
     const [showFromTokenSelectModal, setFromTokenSelectDropdownLocal] =
