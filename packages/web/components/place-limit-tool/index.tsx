@@ -789,14 +789,14 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         body={t("tradeDetails.outputDifference.content")}
                         disabled={swapState.marketState.quote?.priceImpactTokenOut
                           .toDec()
-                          .lt(new Dec(0.01))}
+                          .lt(new Dec(-0.01))}
                         childWrapperClassName={classNames(
                           "ml-1 text-osmoverse-500 !cursor-pointer !pointer-events-auto",
                           {
                             hidden:
                               swapState.marketState.quote?.priceImpactTokenOut
                                 .toDec()
-                                .lt(new Dec(0.01)),
+                                .lt(new Dec(-0.01)),
                           }
                         )}
                         tooltipClassName="!cursor-pointer"
