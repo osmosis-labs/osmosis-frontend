@@ -201,7 +201,7 @@ export const TradeDetails = observer(
                                 "text-bullish-400": !isPriceImpactHigh,
                               })}
                             >
-                              {!priceImpact?.toDec().isZero() && "~"}
+                              {!priceImpact?.toDec().isZero()}
                               {formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>
