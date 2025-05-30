@@ -375,14 +375,14 @@ const Wormhole: FunctionComponent = () => {
     const script = document.createElement("script");
     script.type = "module";
     script.src =
-      "https://www.unpkg.com/@wormhole-foundation/wormhole-connect@0.3.16/dist/main.js";
+      "https://www.unpkg.com/@wormhole-foundation/wormhole-connect@1.1.7/dist/main.js";
     script.defer = true;
     /**
      * On version bumps make sure to update the hash.
      * @see https://www.srihash.org/ - to compute it
      */
     script.integrity =
-      "sha384-RolM9SJlJRj0Qi9rYuG5ge7kxPsT4iyrxKLPN4EMnoe5R//1mFRYrlz6L09eyXAT";
+      "sha384-eK7jGhjzpFIwS92jrhQ1eOH9smDQbGSdfEpYNjhO/jM+OPb6Z1vqdpY2DnuxESvv";
     script.crossOrigin = "anonymous";
     script.onload = () => setScriptLoaded(true);
     document.body.appendChild(script);
