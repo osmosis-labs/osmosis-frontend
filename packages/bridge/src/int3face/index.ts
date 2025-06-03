@@ -21,6 +21,7 @@ import {
   GetBridgeSupportedAssetsParams,
 } from "../interface";
 import { getGasAsset } from "../utils/gas";
+import { checkCanTransfer } from "./queries";
 import { Int3faceProviderId } from "./utils";
 
 export class Int3faceBridgeProvider implements BridgeProvider {
@@ -50,13 +51,29 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const { fromAddress, toChain, toAddress, fromAsset, fromAmount } = params;
+    const { fromAddress, fromChain, toChain, toAddress, fromAsset, fromAmount } = params;
 
     if (toChain.chainId !== "dogecoin") {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
         message: "Only Dogecoin is supported as a destination chain.",
+      });
+    }
+
+    // Check if transfer is available on Int3face side
+    const canTransfer = await checkCanTransfer(
+        fromChain.chainId,
+        toChain.chainId,
+        fromAsset.denom,
+        this.ctx.env
+    );
+
+    if (!canTransfer?.can_transfer) {
+      throw new BridgeQuoteError({
+        bridgeId: Int3faceProviderId,
+        errorType: "UnsupportedQuoteError",
+        message: canTransfer?.reason || "Transfer is not available at this time",
       });
     }
 
