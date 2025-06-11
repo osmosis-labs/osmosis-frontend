@@ -8,7 +8,7 @@ import { useStore } from "~/stores";
 /** Assumed wallet connected */
 export const Kado: FunctionComponent<
   Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = observer(({ assetKey }) => {
+> = observer(() => {
   const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
