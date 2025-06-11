@@ -7,7 +7,7 @@ import { useStore } from "~/stores";
 
 /** Assumed wallet connected */
 export const Kado: FunctionComponent<
-  { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+  Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = observer(({ assetKey }) => {
   const { chainStore, accountStore } = useStore();
 
