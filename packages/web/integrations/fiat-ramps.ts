@@ -24,9 +24,9 @@ export const FiatRampDisplayInfos: Record<
   },
   kado: {
     rampKey: "kado",
-    iconUrl: "/logos/kado.svg",
-    displayName: "Kado",
-    logoId: "kado-logo",
+    iconUrl: "/logos/swapped_com.svg",
+    displayName: "Swapped.com",
+    logoId: "swapped-logo",
   },
   transak: {
     rampKey: "transak",
