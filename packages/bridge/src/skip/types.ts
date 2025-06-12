@@ -40,6 +40,11 @@ export type SkipRouteRequestBase = {
 
   cumulative_affiliate_fee_bps?: string;
   client_id?: string;
+  allow_unsafe?: boolean;
+  bridges?: string[];
+  experimental_features?: string[];
+  allow_multi_tx?: boolean;
+  smart_relay?: boolean;
 };
 
 export type SkipRouteRequestGivenIn = SkipRouteRequestBase & {
