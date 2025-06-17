@@ -363,9 +363,9 @@ export const AmountAndReviewScreen = observer(
                             ? fromChain.chainName
                             : toChain.chainName;
 
-                        let valueUsd = Number(
-                          q.input.fiatValue.toDec().toString()
-                        );
+                        let valueUsd = q.input.fiatValue
+                          ? Number(q.input.fiatValue.toDec().toString())
+                          : 0;
                         // Protect our data from outliers
                         // Perhaps from upstream issues with price data providers
                         if (

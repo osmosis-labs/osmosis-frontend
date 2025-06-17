@@ -189,7 +189,7 @@ const AssetBox: FunctionComponent<{
   address: string;
   chain: BridgeChainWithDisplayInfo;
   walletImageUrl: string | undefined;
-  value: PricePretty;
+  value: PricePretty | undefined;
   coin: CoinPretty;
   isManualAddress?: boolean;
 }> = ({
@@ -311,13 +311,28 @@ const AssetBox: FunctionComponent<{
         </div>
         <div className="text-right md:flex md:flex-col md:gap-1">
           <div className="subtitle1 md:body2">
-            {type === "to" && "~"} {value.inequalitySymbol(false).toString()}
+            {value ? (
+              <>
+                {type === "to" && "~"}{" "}
+                {value.inequalitySymbol(false).toString()}
+              </>
+            ) : (
+              formatPretty(coin, {
+                maxDecimals: 6,
+              })
+            )}
           </div>
           <div className="body1 md:caption text-osmoverse-300">
-            {type === "to" && "~"}{" "}
-            {formatPretty(coin, {
-              maxDecimals: 6,
-            })}
+            {value ? (
+              <>
+                {type === "to" && "~"}{" "}
+                {formatPretty(coin, {
+                  maxDecimals: 6,
+                })}
+              </>
+            ) : (
+              coin.denom
+            )}
           </div>
         </div>
       </div>
