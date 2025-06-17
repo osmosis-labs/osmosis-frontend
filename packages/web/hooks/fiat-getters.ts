@@ -42,7 +42,6 @@ export function getTokenInFeeAmountFiatValue(
 // The client must handle the case where the returned value is 0.
 //
 // priceImpactTokenOut is the price impact of the token out amount.
-// The price impact must be less than 1 but grater than or equal to zero, otherwise it returns a PricePretty with 0 value.
 // inAmountFiatValue is the fiat value of the token in amount.
 //
 // Returns the fiat value of the token out amount.
@@ -51,21 +50,21 @@ export function getTokenOutFiatValue(
   inAmountFiatValue: Dec | undefined
 ) {
   // If either of the inputs are undefined, return 0
-  // Additionally, return 0 if the price impact is greater than or equal to 1 which is an invalid value
+  // Additionally, return 0 if the price impact is greater 1 which is an invalid value
   if (
     !priceImpactTokenOut ||
     !inAmountFiatValue ||
-    priceImpactTokenOut.gte(new Dec(1)) ||
-    priceImpactTokenOut.lt(new Dec(0))
+    priceImpactTokenOut.gt(new Dec(1)) ||
+    priceImpactTokenOut.lt(new Dec(-1))
   ) {
     return new PricePretty(DEFAULT_VS_CURRENCY, 0);
   }
 
   // Calculate the fiat value of the token out amount.
-  const oneMinusPriceImpact = new Dec(1).sub(priceImpactTokenOut);
+  const onePlusPriceImpact = new Dec(1).add(priceImpactTokenOut);
   const tokenOutFiatValue = new PricePretty(
     DEFAULT_VS_CURRENCY,
-    inAmountFiatValue.mul(oneMinusPriceImpact)
+    inAmountFiatValue.mul(onePlusPriceImpact)
   );
 
   return tokenOutFiatValue;

@@ -64,7 +64,7 @@ export const TradeDetails = observer(
     const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
     const isPriceImpactHigh = useMemo(
-      () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
+      () => priceImpact?.toDec().lt(new Dec(-0.1)),
       [priceImpact]
     );
 
@@ -201,7 +201,6 @@ export const TradeDetails = observer(
                                 "text-bullish-400": !isPriceImpactHigh,
                               })}
                             >
-                              {!priceImpact?.toDec().isZero() && "~"}
                               {formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>
