@@ -35,16 +35,7 @@ export class BasePage {
     await newPage.getByRole("button", { name: "Approve" }).click();
     // PopUp page is auto-closed
     // Handle Pop-up page <-
-    console.log("Wait for wallet to connect and load balances for 10s.");
-    await expect(
-      this.connectedWalletBtn,
-      "Wallet should be connected."
-    ).toBeVisible({
-      timeout: 10000,
-    });
-    console.log("Wallet is connected.");
-    //Need to be merged to Master first
-    //await this.getWalletBalance();
+    await this.getWalletBalance();
   }
 
   async gotoPortfolio() {
@@ -64,8 +55,9 @@ export class BasePage {
   }
 
   async getWalletBalance() {
+    console.log("Wait for a wallet balance for 9s.");
     await expect(this.walletBalance, "Wallet should be connected.").toBeVisible(
-      { timeout: 4000 }
+      { timeout: 9000 }
     );
     const balance = await this.walletBalance.textContent({ timeout: 2000 });
     console.log(`Wallet balance: ${balance}`);
