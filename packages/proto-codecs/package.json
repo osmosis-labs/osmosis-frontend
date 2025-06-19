@@ -3,7 +3,7 @@
   "version": "5.1.0",
   "main": "build/index.js",
   "author": "osmosis-labs",
-  "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/telescope#readme",
+  "homepage": "https://github.com/osmosis-labs/osmosis-frontend/",
   "repository": {
     "type": "git",
     "url": "https://github.com/osmosis-labs/osmosis-frontend"
