@@ -465,6 +465,31 @@ export const AmountScreen = observer(
             type: fromChain.chainType,
             assets: assets as Extract<SupportedAsset, { chainType: "doge" }>[],
           };
+        case "litecoin":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "litecoin" }>[],
+          };
+        case "xrpl":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "xrpl" }>[],
+          };
+        case "bitcoin-cash":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "bitcoin-cash" }>[],
+          };
+        case "ton":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "ton" }>[],
+          };
+        case "solana":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "solana" }>[],
+          };
         default:
           return {
             type: fromChain.chainType,

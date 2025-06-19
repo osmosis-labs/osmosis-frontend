@@ -1,6 +1,8 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
+import { Address } from '@ton/core';
 import * as bitcoin from "bitcoinjs-lib";
 import bs58check from "bs58check";
+import WAValidator from 'multicoin-address-validator';
 import * as viem from "viem";
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
 export function truncate(str: string, num = 8) {
@@ -177,6 +179,56 @@ export function isDogecoinAddressValid({ address }: { address: string }) {
     return version === 0x1e || version === 0x16;
   } catch (error) {
     // If decoding fails (invalid checksum/base58), it's not valid
+    return false;
+  }
+}
+
+/**
+ * Verifies if a given string is a valid Litecoin address.
+ * @param address The Litecoin address to validate
+ * @returns boolean True if valid, false otherwise
+ */
+export function isLitecoinAddressValid({ address }: { address: string }) {
+  try {
+    // Decode base58-check; this throws if the checksum or format is invalid.
+    const payload = bs58check.decode(address);
+
+    // payload is 21 bytes: 1 version byte + 20 data bytes
+    // The 4-byte checksum is verified and removed internally by bs58check.
+    if (payload.length !== 21) {
+      return false;
+    }
+
+    // The first byte is the "version". For Litecoin mainnet:
+    // - 0x30 (48 decimal) for P2PKH (commonly looks like a 'L' address)
+    // - 0x05 (5 decimal) for P2SH (often starts with '3')
+    const version = payload[0];
+
+    // Return true if it matches Litecoin mainnet prefixes
+    return version === 0x30 || version === 0x05;
+  } catch (error) {
+    try {
+      // If Base58Check decoding fails, try Bech32 decoding for SegWit addresses
+      const decoded = bitcoin.address.fromBech32(address);
+      return decoded.prefix === "ltc";
+    } catch (error) {
+      // If both decodings fail, it's not valid
+      return false;
+    }
+  }
+}
+
+export function isAddressValidByWA({ address, waSymbol, env }: { address: string; waSymbol: string; env: "mainnet" | "testnet"; }) {
+  return WAValidator.validate(address, waSymbol, {
+    networkType: env === 'mainnet' ? 'prod' : 'testnet',
+  });
+}
+
+export function isTonAddressValid({ address }: { address: string }) {
+  try {
+    Address.parse(address);
+    return true;
+  } catch {
     return false;
   }
 }

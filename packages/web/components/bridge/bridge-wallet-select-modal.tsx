@@ -1,9 +1,11 @@
 import {
+  isAddressValidByWA,
   isBitcoinAddressValid,
   isCosmosAddressValid,
   isDogecoinAddressValid,
   isEvmAddressValid,
   isNil,
+  isTonAddressValid,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -55,7 +57,12 @@ interface BridgeWalletSelectProps {
 
 export const chainTypesRequiringManualAddress = [
   "bitcoin",
+  "bitcoin-cash",
   "doge",
+  "litecoin",
+  "xrpl",
+  "solana",
+  "ton",
 ] as const satisfies readonly SupportedChain["chainType"][];
 
 export const BridgeWalletSelectModal: FunctionComponent<
@@ -550,6 +557,34 @@ const SendToAnotherAddressForm: FunctionComponent<
               });
             } else if (toChain.chainType === "doge") {
               isValid = isDogecoinAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "bitcoin-cash") {
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'bch',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
+            } else if (toChain.chainType === "litecoin") {
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'ltc',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
+            } else if (toChain.chainType === "xrpl") {
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'xrp',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
+            } else if (toChain.chainType === "solana") {
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'sol',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
+            } else if (toChain.chainType === "ton") {
+              isValid = isTonAddressValid({
                 address: nextValue,
               });
             }

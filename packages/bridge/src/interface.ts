@@ -204,17 +204,75 @@ const dogecoinChainSchema = z.object({
   chainType: z.literal("doge"),
 });
 
+const bitcoinCashChainSchema = z.object({
+  /**
+   * `bitcoin-cash`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("bitcoin-cash"),
+});
+
+const tonChainSchema = z.object({
+  /**
+   * `ton`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("ton"),
+});
+
+const litecoinChainSchema = z.object({
+  /**
+   * `litecoin`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("litecoin"),
+});
+
+const xrplChainSchema = z.object({
+  /**
+   * `xrpl`
+   */
+  chainId: z.string(),
+  /**
+   * Optional: The human-readable name of the chain.
+   */
+  chainName: z.string().optional(),
+
+  chainType: z.literal("xrpl"),
+});
+
 export const bridgeChainSchema = z.discriminatedUnion("chainType", [
   cosmosChainSchema,
   evmChainSchema,
   solanaChainSchema,
+  tonChainSchema,
   bitcoinChainSchema,
+  bitcoinCashChainSchema,
   tronChainSchema,
   penumbraChainSchema,
   dogecoinChainSchema,
+  litecoinChainSchema,
+  xrplChainSchema,
 ]);
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
+
+export type NonCosmosChainType = Exclude<BridgeChain["chainType"], "cosmos">
 
 export interface BridgeStatus {
   /**
