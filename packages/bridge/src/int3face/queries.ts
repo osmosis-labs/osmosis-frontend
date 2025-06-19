@@ -48,12 +48,18 @@ interface CanTransferResponse {
 }
 
 const denomOfInt3face: Record<string, string> = {
-  DOGE: 'dogecoin-doge'
+  DOGE: 'dogecoin-doge',
+  SOL: 'solana-sol',
+  LTC: 'litecoin-ltc',
+  BTC: 'bitcoin-btc',
+  BCH: 'bitcoin-cash-bch',
+  XRP: 'xrpl-xrp',
+  TON: 'ton-ton',
 }
 
 export async function checkCanTransfer(
     srcChainId: string | number,
-    destChainId: string,
+    destChainId: string | number,
     assetId: string,
     env: "testnet" | "mainnet"
 ): Promise<CanTransferResponse> {

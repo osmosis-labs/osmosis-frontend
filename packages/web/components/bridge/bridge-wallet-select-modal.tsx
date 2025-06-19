@@ -3,6 +3,7 @@ import {
   isCosmosAddressValid,
   isDogecoinAddressValid,
   isEvmAddressValid,
+  isLitecoinAddressValid,
   isNil,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -55,7 +56,12 @@ interface BridgeWalletSelectProps {
 
 export const chainTypesRequiringManualAddress = [
   "bitcoin",
+  "bitcoin-cash",
   "doge",
+  "litecoin",
+  "xrpl",
+  "solana",
+  "ton",
 ] as const satisfies readonly SupportedChain["chainType"][];
 
 export const BridgeWalletSelectModal: FunctionComponent<
@@ -552,6 +558,18 @@ const SendToAnotherAddressForm: FunctionComponent<
               isValid = isDogecoinAddressValid({
                 address: nextValue,
               });
+            } else if (toChain.chainType === "bitcoin-cash") {
+              isValid = true;
+            } else if (toChain.chainType === "litecoin") {
+              isValid = isLitecoinAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "xrpl") {
+              isValid = true;
+            } else if (toChain.chainType === "solana") {
+              isValid = true;
+            } else if (toChain.chainType === "ton") {
+              isValid = true;
             }
 
             if (!nextValue) setIsInvalidAddress(false);
