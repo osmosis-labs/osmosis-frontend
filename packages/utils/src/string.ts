@@ -1,6 +1,8 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
+import { Address } from '@ton/core';
 import * as bitcoin from "bitcoinjs-lib";
 import bs58check from "bs58check";
+import WAValidator from 'multicoin-address-validator';
 import * as viem from "viem";
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
 export function truncate(str: string, num = 8) {
@@ -213,5 +215,20 @@ export function isLitecoinAddressValid({ address }: { address: string }) {
       // If both decodings fail, it's not valid
       return false;
     }
+  }
+}
+
+export function isAddressValidByWA({ address, waSymbol, env }: { address: string; waSymbol: string; env: "mainnet" | "testnet"; }) {
+  return WAValidator.validate(address, waSymbol, {
+    networkType: env === 'mainnet' ? 'prod' : 'testnet',
+  });
+}
+
+export function isTonAddressValid({ address }: { address: string }) {
+  try {
+    Address.parse(address);
+    return true;
+  } catch {
+    return false;
   }
 }

@@ -1,10 +1,11 @@
 import {
+  isAddressValidByWA,
   isBitcoinAddressValid,
   isCosmosAddressValid,
   isDogecoinAddressValid,
   isEvmAddressValid,
-  isLitecoinAddressValid,
   isNil,
+  isTonAddressValid,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -559,17 +560,33 @@ const SendToAnotherAddressForm: FunctionComponent<
                 address: nextValue,
               });
             } else if (toChain.chainType === "bitcoin-cash") {
-              isValid = true;
-            } else if (toChain.chainType === "litecoin") {
-              isValid = isLitecoinAddressValid({
+              isValid = isAddressValidByWA({
                 address: nextValue,
+                waSymbol: 'bch',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
+            } else if (toChain.chainType === "litecoin") {
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'ltc',
+                env: IS_TESTNET ? "testnet" : "mainnet",
               });
             } else if (toChain.chainType === "xrpl") {
-              isValid = true;
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'xrp',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
             } else if (toChain.chainType === "solana") {
-              isValid = true;
+              isValid = isAddressValidByWA({
+                address: nextValue,
+                waSymbol: 'sol',
+                env: IS_TESTNET ? "testnet" : "mainnet",
+              });
             } else if (toChain.chainType === "ton") {
-              isValid = true;
+              isValid = isTonAddressValid({
+                address: nextValue,
+              });
             }
 
             if (!nextValue) setIsInvalidAddress(false);
