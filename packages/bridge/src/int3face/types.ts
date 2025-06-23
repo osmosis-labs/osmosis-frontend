@@ -107,10 +107,10 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
 
   return {
     'DOGE': dogeConfig,
-    'DOGE.in3': dogeConfig,
+    'DOGE.int3': dogeConfig,
 
     'BCH': bchConfig,
-    'BCH.in3': bchConfig,
+    'BCH.int3': bchConfig,
 
     'LTC': ltcConfig,
     'LTC.int3': ltcConfig,
