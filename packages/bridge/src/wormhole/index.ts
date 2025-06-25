@@ -95,10 +95,7 @@ export class WormholeBridgeProvider implements BridgeProvider {
     const fullPath = queryString ? `${urlPath}?${queryString}` : urlPath;
 
     // Create URL with proper relative path handling
-    const baseUrl = typeof window !== "undefined" 
-      ? window.location.origin 
-      : "https://app.osmosis.zone";
-    const url = new URL(fullPath, baseUrl);
+    const url = new URL(fullPath, "https://app.osmosis.zone");
 
     return {
       urlProviderName: "Wormhole Connect",
