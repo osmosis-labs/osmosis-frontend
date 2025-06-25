@@ -51,7 +51,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const { fromAddress, fromChain, toChain, toAddress, fromAsset, fromAmount } = params;
+    const {
+      fromAddress,
+      fromChain,
+      toChain,
+      toAddress,
+      fromAsset,
+      fromAmount,
+    } = params;
 
     if (toChain.chainId !== "dogecoin") {
       throw new BridgeQuoteError({
@@ -63,17 +70,18 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
     // Check if transfer is available on Int3face side
     const canTransfer = await checkCanTransfer(
-        fromChain.chainId,
-        toChain.chainId,
-        fromAsset.denom,
-        this.ctx.env
+      fromChain.chainId,
+      toChain.chainId,
+      fromAsset.denom,
+      this.ctx.env
     );
 
     if (!canTransfer?.can_transfer) {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
-        message: canTransfer?.reason || "Transfer is not available at this time",
+        message:
+          canTransfer?.reason || "Transfer is not available at this time",
       });
     }
 
