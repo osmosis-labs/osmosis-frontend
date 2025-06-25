@@ -67,7 +67,7 @@ export class WormholeBridgeProvider implements BridgeProvider {
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
     // Use local Wormhole Connect instead of Portal Bridge
-    let urlPath = "/wormhole";
+    const urlPath = "/wormhole";
     const params = new URLSearchParams();
 
     if (fromChain) {
@@ -93,7 +93,12 @@ export class WormholeBridgeProvider implements BridgeProvider {
     // Construct the final URL with query parameters
     const queryString = params.toString();
     const fullPath = queryString ? `${urlPath}?${queryString}` : urlPath;
-    const url = new URL(fullPath, "http://localhost");
+
+    // Create URL with proper relative path handling
+    const baseUrl = typeof window !== "undefined" 
+      ? window.location.origin 
+      : "https://app.osmosis.zone";
+    const url = new URL(fullPath, baseUrl);
 
     return {
       urlProviderName: "Wormhole Connect",
