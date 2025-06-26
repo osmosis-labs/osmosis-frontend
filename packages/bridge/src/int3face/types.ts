@@ -5,7 +5,7 @@ import {
   getInt3XRPMinimalDenom
 } from "@osmosis-labs/utils";
 
-import { NonCosmosChainType } from "../interface";
+import type { NonCosmosChainType } from "../interface";
 
 export interface Int3faceSupportedToken {
   chainId: string;
@@ -21,7 +21,7 @@ export interface Int3faceSupportedToken {
 export type Int3faceSupportedTokensConfig = Record<string, Int3faceSupportedToken>;
 
 export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSupportedTokensConfig => {
-  const dogeConfig = {
+  const dogeConfig: Int3faceSupportedToken = {
     chainId: "dogecoin",
     chainName: "Dogecoin",
     chainType: "doge",
@@ -35,7 +35,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
     address: "koinu",
   }
 
-  const bchConfig = {
+  const bchConfig: Int3faceSupportedToken = {
     chainId: "bitcoin-cash",
     chainName: "Bitcoin Cash",
     chainType: "bitcoin-cash",
@@ -49,7 +49,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
     address: "bch",
   }
 
-  const xrpConfig = {
+  const xrpConfig: Int3faceSupportedToken = {
     chainId: "xrpl",
     chainName: "Xrpl",
     chainType: "xrpl",
@@ -63,7 +63,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
     address: "xrp",
   }
 
-  const ltcConfig = {
+  const ltcConfig: Int3faceSupportedToken = {
     chainId: "litecoin",
     chainName: "Litecoin",
     chainType: "litecoin",
@@ -77,7 +77,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
     address: "litecoin",
   }
 
-  const tonConfig = {
+  const tonConfig: Int3faceSupportedToken = {
     chainId: "ton",
     chainName: "Ton",
     chainType: "ton",
@@ -91,7 +91,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
     address: "ton",
   }
 
-  const solConfig = {
+  const solConfig: Int3faceSupportedToken = {
     chainId: "solana",
     chainName: "Solana",
     chainType: "solana",
