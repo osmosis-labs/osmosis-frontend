@@ -272,8 +272,6 @@ export const bridgeChainSchema = z.discriminatedUnion("chainType", [
 
 export type BridgeChain = z.infer<typeof bridgeChainSchema>;
 
-export type NonCosmosChainType = Exclude<BridgeChain["chainType"], "cosmos">
-
 export interface BridgeStatus {
   /**
    * Indicates whether the bridge is currently in maintenance mode.

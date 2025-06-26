@@ -21,7 +21,11 @@ import {
 } from "../interface";
 import { getGasAsset } from "../utils";
 import { checkCanTransfer } from "./queries";
-import { getInt3faceBridgeConfig, Int3faceSupportedToken, Int3faceSupportedTokensConfig } from "./types";
+import {
+  getInt3faceBridgeConfig,
+  Int3faceSupportedToken,
+  Int3faceSupportedTokensConfig,
+} from "./types";
 import { Int3faceProviderId } from "./utils";
 
 export class Int3faceBridgeProvider implements BridgeProvider {
@@ -41,9 +45,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     this.tokenConfigs = getInt3faceBridgeConfig(ctx.env);
   }
 
-  private getInt3TokenInfo(
-    denom?: string
-  ): Int3faceSupportedToken | null {
+  private getInt3TokenInfo(denom?: string): Int3faceSupportedToken | null {
     if (!denom) {
       return null;
     }
@@ -60,7 +62,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
-    const { fromAddress, fromChain, toChain, toAddress, fromAsset, fromAmount } = params;
+    const {
+      fromAddress,
+      fromChain,
+      toChain,
+      toAddress,
+      fromAsset,
+      fromAmount,
+    } = params;
     const tokenConfig = this.getInt3TokenInfo(fromAsset.denom);
 
     if (!tokenConfig) {
@@ -83,7 +92,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
-        message: canTransfer?.reason || "Transfer is not available at this time",
+        message:
+          canTransfer?.reason || "Transfer is not available at this time",
       });
     }
 

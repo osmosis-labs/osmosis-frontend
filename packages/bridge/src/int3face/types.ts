@@ -1,16 +1,25 @@
 import {
   getInt3BCHMinimalDenom,
   getInt3DOGEMinimalDenom,
-  getInt3LTCMinimalDenom, getInt3SOLMinimalDenom, getInt3TONMinimalDenom,
-  getInt3XRPMinimalDenom
+  getInt3LTCMinimalDenom,
+  getInt3SOLMinimalDenom,
+  getInt3TONMinimalDenom,
+  getInt3XRPMinimalDenom,
 } from "@osmosis-labs/utils";
 
-import type { NonCosmosChainType } from "../interface";
+// Create a more specific type that matches exactly what Int3face uses
+type Int3faceChainType =
+  | "doge"
+  | "bitcoin-cash"
+  | "xrpl"
+  | "litecoin"
+  | "ton"
+  | "solana";
 
 export interface Int3faceSupportedToken {
   chainId: string;
   chainName: string;
-  chainType: NonCosmosChainType;
+  chainType: Int3faceChainType;
   int3MinimalDenom: string;
   int3TokenSymbol: string;
   allTokenMinimalDenom?: string;
@@ -18,9 +27,14 @@ export interface Int3faceSupportedToken {
   address: string;
 }
 
-export type Int3faceSupportedTokensConfig = Record<string, Int3faceSupportedToken>;
+export type Int3faceSupportedTokensConfig = Record<
+  string,
+  Int3faceSupportedToken
+>;
 
-export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSupportedTokensConfig => {
+export const getInt3faceBridgeConfig = (
+  env: "testnet" | "mainnet"
+): Int3faceSupportedTokensConfig => {
   const dogeConfig: Int3faceSupportedToken = {
     chainId: "dogecoin",
     chainName: "Dogecoin",
@@ -33,7 +47,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "DOGE",
     address: "koinu",
-  }
+  };
 
   const bchConfig: Int3faceSupportedToken = {
     chainId: "bitcoin-cash",
@@ -47,7 +61,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "BCH",
     address: "bch",
-  }
+  };
 
   const xrpConfig: Int3faceSupportedToken = {
     chainId: "xrpl",
@@ -61,7 +75,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "XRP",
     address: "xrp",
-  }
+  };
 
   const ltcConfig: Int3faceSupportedToken = {
     chainId: "litecoin",
@@ -75,7 +89,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "LTC",
     address: "litecoin",
-  }
+  };
 
   const tonConfig: Int3faceSupportedToken = {
     chainId: "ton",
@@ -89,7 +103,7 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "TON",
     address: "ton",
-  }
+  };
 
   const solConfig: Int3faceSupportedToken = {
     chainId: "solana",
@@ -103,26 +117,25 @@ export const getInt3faceBridgeConfig = (env: "testnet" | "mainnet"): Int3faceSup
         : undefined,
     denom: "SOL",
     address: "solana",
-  }
-
+  };
 
   return {
-    'DOGE': dogeConfig,
-    'DOGE.int3': dogeConfig,
+    DOGE: dogeConfig,
+    "DOGE.int3": dogeConfig,
 
-    'BCH': bchConfig,
-    'BCH.int3': bchConfig,
+    BCH: bchConfig,
+    "BCH.int3": bchConfig,
 
-    'LTC': ltcConfig,
-    'LTC.int3': ltcConfig,
+    LTC: ltcConfig,
+    "LTC.int3": ltcConfig,
 
-    'XRP': xrpConfig,
-    'XRP.int3': xrpConfig,
+    XRP: xrpConfig,
+    "XRP.int3": xrpConfig,
 
-    'TON': tonConfig,
-    'TON.int3': tonConfig,
+    TON: tonConfig,
+    "TON.int3": tonConfig,
 
-    'SOL': solConfig,
-    'SOL.int3': solConfig,
-  }
-}
+    SOL: solConfig,
+    "SOL.int3": solConfig,
+  };
+};
