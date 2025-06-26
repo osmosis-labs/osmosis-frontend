@@ -111,7 +111,7 @@ export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
 }
 
 function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
-  // Format the date to be shorter and more compact
+  // Format the date to be shorter by shortening the year
   const formatDateText = (dateText: string | undefined) => {
     if (!dateText) return null;
     
@@ -121,18 +121,8 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
     // Replace full year with short year (2024 -> '24, 2025 -> '25)
     formattedDate = formattedDate.replace(/\b20(\d{2})\b/g, "'$1");
     
-    // Convert month names to 3-letter codes
-    const monthMap: { [key: string]: string } = {
-      'January': 'JAN', 'February': 'FEB', 'March': 'MAR',
-      'April': 'APR', 'May': 'MAY', 'June': 'JUN',
-      'July': 'JUL', 'August': 'AUG', 'September': 'SEP',
-      'October': 'OCT', 'November': 'NOV', 'December': 'DEC'
-    };
-    
-    // Replace full month names with 3-letter codes
-    Object.entries(monthMap).forEach(([full, short]) => {
-      formattedDate = formattedDate.replace(new RegExp(`\\b${full}\\b`, 'g'), short);
-    });
+    // Capitalize first letter of months (they should already be capitalized, but ensuring consistency)
+    formattedDate = formattedDate.replace(/\b([a-z])/g, (match, letter) => letter.toUpperCase());
     
     return formattedDate;
   };
@@ -148,7 +138,7 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
     extraInfo: asset.estimatedLaunchDateUtc ? (
       <div className="flex items-center gap-2 min-w-0">
         <span className="body2 text-osmoverse-400 whitespace-nowrap">
-          ~ {formatDateText(asset.estimatedLaunchDateUtc)}
+          Est. {formatDateText(asset.estimatedLaunchDateUtc)}
         </span>
       </div>
     ) : null,
