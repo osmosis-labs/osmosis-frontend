@@ -3,6 +3,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
+import { BridgeChain } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
@@ -492,7 +493,7 @@ export const AmountScreen = observer(
           };
         default:
           return {
-            type: fromChain.chainType,
+            type: (fromChain as BridgeChain).chainType,
             assets: assets as Extract<
               SupportedAsset,
               { chainType: "solana" }

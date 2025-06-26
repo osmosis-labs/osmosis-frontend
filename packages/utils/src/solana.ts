@@ -3,6 +3,7 @@ export const SolanaChainInfo = {
   chainId: "solana",
   chainName: "Solana",
   color: "#9945FF",
+  logoUri: "/networks/solana.svg",
 };
 
 export function getSolanaExplorerUrl({
