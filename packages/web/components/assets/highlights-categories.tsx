@@ -111,7 +111,7 @@ export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
 }
 
 function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
-  // Format the date to be shorter by shortening the year
+  // Format the date to "Est. MMM 'YY" format
   const formatDateText = (dateText: string | undefined) => {
     if (!dateText) return null;
     
@@ -121,8 +121,18 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
     // Replace full year with short year (2024 -> '24, 2025 -> '25)
     formattedDate = formattedDate.replace(/\b20(\d{2})\b/g, "'$1");
     
-    // Capitalize first letter of months (they should already be capitalized, but ensuring consistency)
-    formattedDate = formattedDate.replace(/\b([a-z])/g, (match, letter) => letter.toUpperCase());
+    // Convert month names to 3-letter codes with proper capitalization
+    const monthMap: { [key: string]: string } = {
+      'January': 'Jan', 'February': 'Feb', 'March': 'Mar',
+      'April': 'Apr', 'May': 'May', 'June': 'Jun',
+      'July': 'Jul', 'August': 'Aug', 'September': 'Sep',
+      'October': 'Oct', 'November': 'Nov', 'December': 'Dec'
+    };
+    
+    // Replace full month names with 3-letter codes (case-insensitive)
+    Object.entries(monthMap).forEach(([full, short]) => {
+      formattedDate = formattedDate.replace(new RegExp(`\\b${full}\\b`, 'gi'), short);
+    });
     
     return formattedDate;
   };
