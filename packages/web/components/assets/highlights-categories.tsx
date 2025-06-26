@@ -111,15 +111,12 @@ export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
 }
 
 function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
-  // Format the date to "Est. MMM 'YY" format
+  // Format the date to "Est. MMM YYYY" format
   const formatDateText = (dateText: string | undefined) => {
     if (!dateText) return null;
     
     // Handle different date formats
     let formattedDate = dateText;
-    
-    // Replace full year with short year (2024 -> '24, 2025 -> '25)
-    formattedDate = formattedDate.replace(/\b20(\d{2})\b/g, "'$1");
     
     // Convert month names to 3-letter codes with proper capitalization
     const monthMap: { [key: string]: string } = {
