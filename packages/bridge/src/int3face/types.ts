@@ -1,10 +1,11 @@
-import { NonCosmosChainType } from "@osmosis-labs/bridge";
 import {
   getInt3BCHMinimalDenom,
   getInt3DOGEMinimalDenom,
   getInt3LTCMinimalDenom, getInt3SOLMinimalDenom, getInt3TONMinimalDenom,
   getInt3XRPMinimalDenom
 } from "@osmosis-labs/utils";
+
+import { NonCosmosChainType } from "../interface";
 
 export interface Int3faceSupportedToken {
   chainId: string;
