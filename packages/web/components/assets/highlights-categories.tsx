@@ -114,23 +114,34 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
   // Format the date to "Est. MMM YYYY" format
   const formatDateText = (dateText: string | undefined) => {
     if (!dateText) return null;
-    
+
     // Handle different date formats
     let formattedDate = dateText;
-    
+
     // Convert month names to 3-letter codes with proper capitalization
     const monthMap: { [key: string]: string } = {
-      'January': 'Jan', 'February': 'Feb', 'March': 'Mar',
-      'April': 'Apr', 'May': 'May', 'June': 'Jun',
-      'July': 'Jul', 'August': 'Aug', 'September': 'Sep',
-      'October': 'Oct', 'November': 'Nov', 'December': 'Dec'
+      January: "Jan",
+      February: "Feb",
+      March: "Mar",
+      April: "Apr",
+      May: "May",
+      June: "Jun",
+      July: "Jul",
+      August: "Aug",
+      September: "Sep",
+      October: "Oct",
+      November: "Nov",
+      December: "Dec",
     };
-    
+
     // Replace full month names with 3-letter codes (case-insensitive)
     Object.entries(monthMap).forEach(([full, short]) => {
-      formattedDate = formattedDate.replace(new RegExp(`\\b${full}\\b`, 'gi'), short);
+      formattedDate = formattedDate.replace(
+        new RegExp(`\\b${full}\\b`, "gi"),
+        short
+      );
     });
-    
+
     return formattedDate;
   };
 
