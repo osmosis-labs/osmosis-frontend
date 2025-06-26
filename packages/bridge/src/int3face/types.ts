@@ -7,7 +7,6 @@ import {
   getInt3XRPMinimalDenom,
 } from "@osmosis-labs/utils";
 
-// Create a more specific type that matches exactly what Int3face uses
 type Int3faceChainType =
   | "doge"
   | "bitcoin-cash"
