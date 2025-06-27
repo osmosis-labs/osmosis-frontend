@@ -247,10 +247,13 @@ export const useBridgesSupportedAssets = ({
 
   const supportedChains = useMemo(() => {
     // Check if this is a USDC withdrawal to prioritize Noble
-    const isUsdcWithdrawal = direction === "withdraw" && assets?.some(asset => 
-      asset.coinDenom?.toUpperCase().includes("USDC") || 
-      asset.coinGeckoId === "usd-coin"
-    );
+    const isUsdcWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("USDC") ||
+          asset.coinGeckoId === "usd-coin"
+      );
 
     return Array.from(
       // Remove duplicate chains
