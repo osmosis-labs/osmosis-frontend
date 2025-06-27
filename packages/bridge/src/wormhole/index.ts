@@ -66,35 +66,39 @@ export class WormholeBridgeProvider implements BridgeProvider {
     fromAsset,
     toAsset,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    // For now we use Portal Bridge
-    const url = new URL("https://portalbridge.com/");
-
-    if (fromChain?.chainType === "cosmos" || toChain?.chainType === "cosmos") {
-      url.pathname = "/cosmos/";
-    }
+    // Use local Wormhole Connect instead of Portal Bridge
+    const urlPath = "/wormhole";
+    const params = new URLSearchParams();
 
     if (fromChain) {
-      url.searchParams.set(
-        "sourceChain",
+      params.set(
+        "from",
         fromChain.chainName?.toLowerCase() ?? fromChain.chainId.toString()
       );
-      if (fromChain.chainType === "solana" && fromAsset) {
-        url.searchParams.set("asset", fromAsset.address);
-      }
     }
 
     if (toChain) {
-      url.searchParams.set(
-        "targetChain",
+      params.set(
+        "to",
         toChain.chainName?.toLowerCase() ?? toChain.chainId.toString()
       );
-      if (fromChain?.chainType !== "solana" && toAsset) {
-        url.searchParams.set("asset", toAsset.address);
-      }
     }
 
+    // Use token symbol for the token parameter
+    const tokenSymbol = fromAsset?.denom || toAsset?.denom;
+    if (tokenSymbol) {
+      params.set("token", tokenSymbol);
+    }
+
+    // Construct the final URL with query parameters
+    const queryString = params.toString();
+    const fullPath = queryString ? `${urlPath}?${queryString}` : urlPath;
+
+    // Create URL with proper relative path handling
+    const url = new URL(fullPath, "https://app.osmosis.zone");
+
     return {
-      urlProviderName: "Portal",
+      urlProviderName: "Wormhole Connect",
       url,
     };
   }

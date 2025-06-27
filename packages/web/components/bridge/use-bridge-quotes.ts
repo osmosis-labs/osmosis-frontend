@@ -219,11 +219,29 @@ export const useBridgeQuotes = ({
             const priceImpact = new RatePretty(
               new Dec(expectedOutput.priceImpact)
             );
-            const expectedOutputFiatDec = expectedOutput.fiatValue.toDec();
-            const inputFiatDec = input.fiatValue.toDec();
+
+            // Handle cases where fiat values might be undefined
+            const expectedOutputFiatDec = expectedOutput.fiatValue?.toDec();
+            const inputFiatDec = input.fiatValue?.toDec();
 
             let transferSlippage: Dec;
-            if (expectedOutputFiatDec.gt(inputFiatDec)) {
+            if (!expectedOutputFiatDec || !inputFiatDec) {
+              // If we don't have fiat values, use actual token amounts for slippage calculation
+              const expectedOutputAmount = expectedOutput.amount.toDec();
+              const inputAmount = input.amount.toDec();
+
+              if (expectedOutputAmount.gt(inputAmount)) {
+                // if expected output is greater than input, assume slippage is 0%
+                transferSlippage = new Dec(0);
+              } else if (expectedOutputAmount.lte(new Dec(0))) {
+                // if expected output is zero or negative, assume slippage is 100%
+                transferSlippage = new Dec(1);
+              } else {
+                transferSlippage = new Dec(1).sub(
+                  expectedOutputAmount.quo(inputAmount)
+                );
+              }
+            } else if (expectedOutputFiatDec.gt(inputFiatDec)) {
               // if expected output is greater than input, assume slippage is 0%
               transferSlippage = new Dec(0);
             } else if (expectedOutputFiatDec.lt(new Dec(0))) {

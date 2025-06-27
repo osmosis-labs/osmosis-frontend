@@ -52,8 +52,17 @@ export const BridgeProviderDropdown = ({
   }, [quotes]);
 
   const cheapestQuote = useMemo(() => {
-    const minFee = quotes
-      .map((q) => q.data.totalFeeFiatValue?.toDec() ?? new Dec(0))
+    // Only calculate cheapest if all quotes have fiat values
+    const quotesWithFiatValues = quotes.filter(
+      (q) => !isNil(q.data.totalFeeFiatValue)
+    );
+
+    if (quotesWithFiatValues.length === 0) {
+      return undefined; // Can't determine cheapest without fiat values
+    }
+
+    const minFee = quotesWithFiatValues
+      .map((q) => q.data.totalFeeFiatValue!.toDec())
       .reduce((acc, fee) => {
         if (acc === null || fee.lt(acc)) {
           return fee;
@@ -61,9 +70,9 @@ export const BridgeProviderDropdown = ({
         return acc;
       }, null as Dec | null);
 
-    const uniqueCheapestQuotes = quotes.filter((q) => {
-      const feeDec = q.data.totalFeeFiatValue?.toDec();
-      return !isNil(feeDec) && !isNil(minFee) && feeDec.equals(minFee);
+    const uniqueCheapestQuotes = quotesWithFiatValues.filter((q) => {
+      const feeDec = q.data.totalFeeFiatValue!.toDec();
+      return !isNil(minFee) && feeDec.equals(minFee);
     });
 
     return uniqueCheapestQuotes.length === 1
@@ -104,79 +113,81 @@ export const BridgeProviderDropdown = ({
             anchor="bottom end"
             className="z-[1000] mt-3 flex max-h-64 flex-col gap-1 overflow-auto rounded-2xl bg-osmoverse-825 px-2 py-2"
           >
-            {quotes.map(
-              ({
-                data: {
-                  provider,
-                  estimatedTime,
-                  expectedOutputFiat,
-                  totalFeeFiatValue,
-                },
-              }) => {
-                const isSelected = selectedQuote.provider.id === provider.id;
-                const isCheapest =
-                  cheapestQuote?.data.provider.id === provider.id;
-                const isFastest =
-                  fastestQuote?.data.provider.id === provider.id;
+            {quotes.map(({ data }) => {
+              const {
+                provider,
+                estimatedTime,
+                expectedOutputFiat,
+                totalFeeFiatValue,
+              } = data;
+              const isSelected = selectedQuote.provider.id === provider.id;
+              const isCheapest =
+                cheapestQuote?.data.provider.id === provider.id;
+              const isFastest = fastestQuote?.data.provider.id === provider.id;
 
-                return (
-                  <MenuItem key={provider.id}>
-                    <button
-                      className={classNames(
-                        "flex w-full justify-between gap-12 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-700 md:gap-10",
-                        {
-                          "bg-osmoverse-700": isSelected,
-                          "hover:bg-osmoverse-800": !isSelected,
-                        }
-                      )}
-                      onClick={() => {
-                        onSelect(provider.id);
-                        logEvent([
-                          EventName.DepositWithdraw.providerSelected,
-                          { bridgeProviderName: provider.id },
-                        ]);
-                      }}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={provider.logoUrl}
-                          alt={`${provider.id} logo`}
-                          width={32}
-                          height={32}
-                        />
-                        <div className="flex flex-col items-start">
-                          <span className="body1 md:body2">{provider.id}</span>
-                          <div className="flex items-center gap-2">
-                            <span className="body2 md:caption text-osmoverse-300">
-                              {estimatedTime.humanize()}
+              return (
+                <MenuItem key={provider.id}>
+                  <button
+                    className={classNames(
+                      "flex w-full justify-between gap-12 rounded-lg py-2 px-3 data-[active]:bg-osmoverse-700 md:gap-10",
+                      {
+                        "bg-osmoverse-700": isSelected,
+                        "hover:bg-osmoverse-800": !isSelected,
+                      }
+                    )}
+                    onClick={() => {
+                      onSelect(provider.id);
+                      logEvent([
+                        EventName.DepositWithdraw.providerSelected,
+                        { bridgeProviderName: provider.id },
+                      ]);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src={provider.logoUrl}
+                        alt={`${provider.id} logo`}
+                        width={32}
+                        height={32}
+                      />
+                      <div className="flex flex-col items-start">
+                        <span className="body1 md:body2">{provider.id}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="body2 md:caption text-osmoverse-300">
+                            {estimatedTime.humanize()}
+                          </span>
+                          {/* First quote is the cheapest */}
+                          {isCheapest ? (
+                            <span className="body2 md:caption text-bullish-400">
+                              {t("transfer.cheapest")}
                             </span>
-                            {/* First quote is the cheapest */}
-                            {isCheapest ? (
-                              <span className="body2 md:caption text-bullish-400">
-                                {t("transfer.cheapest")}
-                              </span>
-                            ) : isFastest ? (
-                              <span className="body2 md:caption text-ammelia-400">
-                                {t("transfer.fastest")}
-                              </span>
-                            ) : null}
-                          </div>
+                          ) : isFastest ? (
+                            <span className="body2 md:caption text-ammelia-400">
+                              {t("transfer.fastest")}
+                            </span>
+                          ) : null}
                         </div>
                       </div>
+                    </div>
 
-                      <div className="flex flex-col text-end">
-                        <p className="body1 md:body2">
-                          {expectedOutputFiat.toString()}
-                        </p>
-                        <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
-                          ~ {totalFeeFiatValue?.toString()} {t("transfer.fee")}
-                        </p>
-                      </div>
-                    </button>
-                  </MenuItem>
-                );
-              }
-            )}
+                    <div className="flex flex-col text-end">
+                      <p className="body1 md:body2">
+                        {expectedOutputFiat
+                          ? expectedOutputFiat.toString()
+                          : "—"}
+                      </p>
+                      <p className="body2 md:caption whitespace-nowrap text-osmoverse-200">
+                        {totalFeeFiatValue
+                          ? `~ ${totalFeeFiatValue.toString()} ${t(
+                              "transfer.fee"
+                            )}`
+                          : "—"}
+                      </p>
+                    </div>
+                  </button>
+                </MenuItem>
+              );
+            })}
           </MenuItems>
         </div>
       )}
