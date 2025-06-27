@@ -66,16 +66,20 @@ export async function checkCanTransfer(
   let srcChainIdConverted;
 
   if (typeof srcChainId === "string" && srcChainId.startsWith("osmosis")) {
-    srcChainIdConverted = "osmosis"
+    srcChainIdConverted = "osmosis";
   } else {
     srcChainIdConverted = srcChainId.toString();
   }
 
-  const origin = env === "mainnet"
+  const origin =
+    env === "mainnet"
       ? "https://api.mainnet.int3face.zone/int3face"
       : "https://api.testnet.int3face.zone/int3face";
 
-  const url = new URL(`/bridge/v1beta1/can-transfer/${srcChainIdConverted}/${destChainId}/${denomOfInt3face[assetId]}`, origin);
+  const url = new URL(
+    `/bridge/v1beta1/can-transfer/${srcChainIdConverted}/${destChainId}/${denomOfInt3face[assetId]}`,
+    origin
+  );
 
   return apiClient<CanTransferResponse>(url.toString());
 }
