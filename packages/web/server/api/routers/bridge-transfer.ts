@@ -22,16 +22,20 @@ import {
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
+  BitcoinCashChainInfo,
   BitcoinChainInfo,
   DogecoinChainInfo,
   EthereumChainInfo,
   getnBTCMinimalDenom,
   isNil,
   isSameVariant,
+  LitecoinChainInfo,
   PenumbraChainInfo,
   SolanaChainInfo,
   timeout,
+  TonChainInfo,
   TronChainInfo,
+  XrplChainInfo,
 } from "@osmosis-labs/utils";
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -48,6 +52,10 @@ export type BridgeChainWithDisplayInfo = (
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
   | Extract<BridgeChain, { chainType: "tron" }>
   | Extract<BridgeChain, { chainType: "doge" }>
+  | Extract<BridgeChain, { chainType: "bitcoin-cash" }>
+  | Extract<BridgeChain, { chainType: "litecoin" }>
+  | Extract<BridgeChain, { chainType: "xrpl" }>
+  | Extract<BridgeChain, { chainType: "ton" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -447,6 +455,30 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...DogecoinChainInfo,
               chainType,
               logoUri: "/networks/dogecoin.svg",
+            };
+          } else if (chainType === "bitcoin-cash") {
+            return {
+              ...BitcoinCashChainInfo,
+              chainType,
+              logoUri: "/networks/bitcoin-cash.svg",
+            };
+          } else if (chainType === "litecoin") {
+            return {
+              ...LitecoinChainInfo,
+              chainType,
+              logoUri: "/networks/litecoin.svg",
+            };
+          } else if (chainType === "xrpl") {
+            return {
+              ...XrplChainInfo,
+              chainType,
+              logoUri: "/networks/xrpl.svg",
+            };
+          } else if (chainType === "ton") {
+            return {
+              ...TonChainInfo,
+              chainType,
+              logoUri: "/networks/ton.svg",
             };
           }
 

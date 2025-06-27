@@ -3,6 +3,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
+import { BridgeChain } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
@@ -465,9 +466,34 @@ export const AmountScreen = observer(
             type: fromChain.chainType,
             assets: assets as Extract<SupportedAsset, { chainType: "doge" }>[],
           };
-        default:
+        case "litecoin":
           return {
             type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "litecoin" }>[],
+          };
+        case "xrpl":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "xrpl" }>[],
+          };
+        case "bitcoin-cash":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "bitcoin-cash" }>[],
+          };
+        case "ton":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "ton" }>[],
+          };
+        case "solana":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "solana" }>[],
+          };
+        default:
+          return {
+            type: (fromChain as BridgeChain).chainType,
             assets: assets as Extract<
               SupportedAsset,
               { chainType: "solana" }
