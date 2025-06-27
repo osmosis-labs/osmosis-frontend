@@ -249,7 +249,7 @@ export const useBridgesSupportedAssets = ({
     // Check if this is a USDC withdrawal to prioritize Noble
     const isUsdcWithdrawal = direction === "withdraw" && assets?.some(asset => 
       asset.coinDenom?.toUpperCase().includes("USDC") || 
-      asset.coingeckoId === "usd-coin"
+      asset.coinGeckoId === "usd-coin"
     );
 
     return Array.from(
