@@ -565,22 +565,18 @@ const SendToAnotherAddressForm: FunctionComponent<
               isValid = isBitcoinCashAddressValid({
                 address: nextValue,
               });
-              return true;
             } else if (toChain.chainType === "litecoin") {
               isValid = isLitecoinAddressValid({
                 address: nextValue,
               });
-              return true;
             } else if (toChain.chainType === "xrpl") {
               isValid = isXrplAddressValid({
                 address: nextValue,
               });
-              return true;
             } else if (toChain.chainType === "solana") {
               isValid = isSolanaAddressValid({
                 address: nextValue,
               });
-              return true;
             } else if (toChain.chainType === "ton") {
               isValid = isTonAddressValid({
                 address: nextValue,

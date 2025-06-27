@@ -3,6 +3,7 @@ import { Address } from '@ton/core';
 import * as bitcoin from "bitcoinjs-lib";
 import bs58 from "bs58";
 import bs58check from "bs58check";
+import { isValidCashAddress } from "ecashaddrjs";
 import { isValidClassicAddress, isValidXAddress } from "ripple-address-codec";
 import * as viem from "viem";
 /** Trucates a string with ellipsis, default breakpoint: `num = 8`. */
@@ -220,41 +221,7 @@ export function isLitecoinAddressValid({ address }: { address: string }) {
 }
 
 export function isBitcoinCashAddressValid({ address }: { address: string }) {
-  try {
-    // Decode base58-check; this throws if the checksum or format is invalid.
-    const payload = bs58check.decode(address);
-
-    // payload is 21 bytes: 1 version byte + 20 data bytes
-    // The 4-byte checksum is verified and removed internally by bs58check.
-    if (payload.length !== 21) {
-      return false;
-    }
-
-    // The first byte is the "version". For Bitcoin Cash mainnet:
-    // - 0x00 (0 decimal) for P2PKH (legacy addresses starting with '1')
-    // - 0x05 (5 decimal) for P2SH (addresses starting with '3')
-    const version = payload[0];
-
-    // Return true if it matches Bitcoin Cash mainnet prefixes
-    return version === 0x00 || version === 0x05;
-  } catch (error) {
-    try {
-      // If Base58Check decoding fails, try Bech32 decoding for CashAddr format
-      // Bitcoin Cash uses 'bitcoincash:' prefix for CashAddr format
-      if (address.toLowerCase().startsWith('bitcoincash:')) {
-        // For CashAddr format, we can do a basic check
-        // Remove the prefix and check if it's a valid CashAddr
-        const cashAddr = address.substring(12); // Remove 'bitcoincash:'
-        // CashAddr uses different encoding, but for basic validation we can check length
-        // A valid CashAddr should be 42 characters (after removing prefix)
-        return cashAddr.length === 42;
-      }
-      return false;
-    } catch (error) {
-      // If both decodings fail, it's not valid
-      return false;
-    }
-  }
+  return isValidCashAddress(address);
 }
 
 export function isSolanaAddressValid({ address }: { address: string }): boolean {

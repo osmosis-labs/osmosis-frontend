@@ -12000,6 +12000,11 @@ easy-table@1.2.0:
   optionalDependencies:
     wcwidth "^1.0.1"
 
+ecashaddrjs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ecashaddrjs/-/ecashaddrjs-2.0.0.tgz#d45ede7fb6168815dbcf664b8e0a6872e485d874"
+  integrity sha512-EvK1V4D3+nIEoD0ggy/b0F4lW39/72R9aOs/scm6kxMVuXu16btc+H74eQv7okNfXaQWKgolEekZkQ6wfcMMLw==
+
 ecc-jsbn@~0.1.1:
   version "0.1.2"
   resolved "https://registry.npmjs.org/ecc-jsbn/-/ecc-jsbn-0.1.2.tgz"

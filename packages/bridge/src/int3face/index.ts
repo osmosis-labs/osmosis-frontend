@@ -71,7 +71,6 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       fromAmount,
     } = params;
     const tokenConfig = this.getInt3TokenInfo(fromAsset.denom);
-
     if (!tokenConfig) {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
