@@ -1,5 +1,6 @@
 import {
   getInt3BCHMinimalDenom,
+  getInt3BTCMinimalDenom,
   getInt3DOGEMinimalDenom,
   getInt3LTCMinimalDenom,
   getInt3SOLMinimalDenom,
@@ -9,6 +10,7 @@ import {
 
 type Int3faceChainType =
   | "doge"
+  | "bitcoin"
   | "bitcoin-cash"
   | "xrpl"
   | "litecoin"
@@ -34,6 +36,20 @@ export type Int3faceSupportedTokensConfig = Record<
 export const getInt3faceBridgeConfig = (
   env: "testnet" | "mainnet"
 ): Int3faceSupportedTokensConfig => {
+  const btcConfig: Int3faceSupportedToken = {
+    chainId: "bitcoin",
+    chainName: "Bitcoin",
+    chainType: "bitcoin",
+    int3MinimalDenom: getInt3BTCMinimalDenom({ env }),
+    int3TokenSymbol: "BTC.int3",
+    allTokenMinimalDenom:
+      env === "mainnet"
+        ? "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC"
+        : undefined,
+    denom: "BTC",
+    address: "btc",
+  };
+
   const dogeConfig: Int3faceSupportedToken = {
     chainId: "dogecoin",
     chainName: "Dogecoin",
@@ -121,6 +137,9 @@ export const getInt3faceBridgeConfig = (
   return {
     DOGE: dogeConfig,
     "DOGE.int3": dogeConfig,
+
+    BTC: btcConfig,
+    "BTC.int3": btcConfig,
 
     BCH: bchConfig,
     "BCH.int3": bchConfig,
