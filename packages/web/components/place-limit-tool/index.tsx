@@ -796,12 +796,12 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                             hidden:
                               swapState.marketState.quote?.priceImpactTokenOut
                                 .toDec()
-                                .lt(new Dec(-0.01)),
+                                .gt(new Dec(-0.5)),
                           }
                         )}
                         tooltipClassName="!cursor-pointer"
                       >
-                        &#40;-
+                        &#40;
                         {formatPretty(
                           swapState.marketState.quote?.priceImpactTokenOut
                         )}
