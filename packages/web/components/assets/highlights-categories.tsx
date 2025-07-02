@@ -111,6 +111,40 @@ export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
 }
 
 function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
+  // Format the date to "Est. MMM YYYY" format
+  const formatDateText = (dateText: string | undefined) => {
+    if (!dateText) return null;
+
+    // Handle different date formats
+    let formattedDate = dateText;
+
+    // Convert month names to 3-letter codes with proper capitalization
+    const monthMap: { [key: string]: string } = {
+      January: "Jan",
+      February: "Feb",
+      March: "Mar",
+      April: "Apr",
+      May: "May",
+      June: "Jun",
+      July: "Jul",
+      August: "Aug",
+      September: "Sep",
+      October: "Oct",
+      November: "Nov",
+      December: "Dec",
+    };
+
+    // Replace full month names with 3-letter codes (case-insensitive)
+    Object.entries(monthMap).forEach(([full, short]) => {
+      formattedDate = formattedDate.replace(
+        new RegExp(`\\b${full}\\b`, "gi"),
+        short
+      );
+    });
+
+    return formattedDate;
+  };
+
   return {
     asset: {
       coinDenom: asset.symbol,
@@ -120,9 +154,9 @@ function highlightUpcomingReleaseAsset(asset: UpcomingReleaseAsset) {
       externalLink: true,
     },
     extraInfo: asset.estimatedLaunchDateUtc ? (
-      <div className="flex items-center gap-2">
-        <span className="body2 text-osmoverse-400">
-          Est. {asset.estimatedLaunchDateUtc}
+      <div className="flex items-center gap-2 min-w-0">
+        <span className="body2 text-osmoverse-400 whitespace-nowrap">
+          Est. {formatDateText(asset.estimatedLaunchDateUtc)}
         </span>
       </div>
     ) : null,
@@ -227,7 +261,7 @@ const AssetHighlightRow: FunctionComponent<{
         {coinImageUrl && (
           <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
         )}
-        <span className="body2 max-w-[8.125rem] overflow-clip text-ellipsis whitespace-nowrap">
+        <span className="body2 max-w-[7rem] overflow-clip text-ellipsis whitespace-nowrap">
           {coinName}
         </span>
         <span className="caption text-osmoverse-400">{coinDenom}</span>

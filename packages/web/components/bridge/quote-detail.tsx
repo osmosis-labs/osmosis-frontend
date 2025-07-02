@@ -172,7 +172,9 @@ export const ExpectedOutputRow: FunctionComponent<{
     isLoading={isRefetchingQuote}
   >
     <p className={warnUserOfSlippage ? "text-rust-300" : "text-osmoverse-100"}>
-      {selectedQuote.expectedOutputFiat.toString()}{" "}
+      {selectedQuote.expectedOutputFiat
+        ? `${selectedQuote.expectedOutputFiat.toString()} `
+        : ""}
       <span
         title={selectedQuote.expectedOutput
           .maxDecimals(6)
@@ -182,7 +184,7 @@ export const ExpectedOutputRow: FunctionComponent<{
           "text-osmoverse-300": !warnUserOfSlippage,
         })}
       >
-        (
+        {selectedQuote.expectedOutputFiat ? "(" : ""}
         {trimPlaceholderZeros(
           selectedQuote.expectedOutput
             .maxDecimals(6)
@@ -194,7 +196,7 @@ export const ExpectedOutputRow: FunctionComponent<{
           prefixLength: 8,
           suffixLength: 3,
         })}
-        )
+        {selectedQuote.expectedOutputFiat ? ")" : ""}
       </span>
     </p>
   </QuoteDetailRow>

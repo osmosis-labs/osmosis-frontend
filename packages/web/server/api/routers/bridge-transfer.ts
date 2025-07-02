@@ -171,6 +171,14 @@ export const bridgeTransferRouter = createTRPCRouter({
               address: input.fromAsset.address,
               coinGeckoId: input.fromAsset.coinGeckoId,
             },
+          }).catch((e) => {
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "getQuoteByBridge: Failed to get asset price for fromAsset",
+                e
+              );
+            }
+            return undefined;
           });
         }),
         getAssetPrice({
@@ -232,9 +240,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           : Promise.resolve(undefined),
       ]);
 
-      if (!assetPrice) {
-        throw new Error("Invalid quote: Missing toAsset or fromAsset price");
-      }
+      console.log(assetPrice, feeAssetPrice, gasFeeAssetPrice);
 
       const transferFee = {
         amount: new CoinPretty(
@@ -249,8 +255,6 @@ export const bridgeTransferRouter = createTRPCRouter({
           ? priceFromBridgeCoin(feeCoin, feeAssetPrice)
           : undefined,
       };
-
-      console.log(quote.estimatedGasFee);
 
       const estimatedGasFee = quote.estimatedGasFee
         ? {
@@ -293,7 +297,9 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.input.amount
             ),
-            fiatValue: priceFromBridgeCoin(quote.input, assetPrice),
+            fiatValue: assetPrice
+              ? priceFromBridgeCoin(quote.input, assetPrice)
+              : undefined,
           },
           expectedOutput: {
             ...quote.expectedOutput,
@@ -305,11 +311,13 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.expectedOutput.amount
             ),
-            fiatValue: priceFromBridgeCoin(
-              quote.expectedOutput,
-              // output is same token as input
-              assetPrice
-            ),
+            fiatValue: assetPrice
+              ? priceFromBridgeCoin(
+                  quote.expectedOutput,
+                  // output is same token as input
+                  assetPrice
+                )
+              : undefined,
           },
           transferFee,
           estimatedGasFee,

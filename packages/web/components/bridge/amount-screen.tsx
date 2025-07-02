@@ -258,8 +258,21 @@ export const AmountScreen = observer(
        * This is because providers can return variant assets that are missing in
        * our asset list.
        */
-      canonicalAsset
+      canonicalAsset,
+      {
+        retry: false,
+      }
     );
+
+    // Set initial input unit based on price availability
+    useEffect(() => {
+      if (isLoadingCanonicalAssetPrice) return;
+
+      // Default to crypto mode when price is not available
+      if (!canonicalAssetPrice && inputUnit === "fiat") {
+        setInputUnit("crypto");
+      }
+    }, [canonicalAssetPrice, isLoadingCanonicalAssetPrice, inputUnit]);
 
     const firstSupportedEvmChain = useMemo(
       () =>
@@ -679,11 +692,11 @@ export const AmountScreen = observer(
     );
 
     const isLoading =
-      isLoadingCanonicalAssetPrice ||
+      (inputUnit === "fiat" && isLoadingCanonicalAssetPrice) ||
       isLoadingSupportedAssets ||
       isLoadingAssetsInOsmosis ||
       !canonicalAsset ||
-      !canonicalAssetPrice ||
+      (inputUnit === "fiat" && !canonicalAssetPrice) ||
       // If we don't have supported chains, we won't have a fromAsset or toAsset
       // so we can't consider the loading state.
       // therefore we only consider the loading state if we have supported chains.
@@ -1007,7 +1020,8 @@ export const AmountScreen = observer(
                             {asset.denom}
                           </span>
                           <span className="body2 md:caption text-osmoverse-300">
-                            {inputUnit === "crypto"
+                            {inputUnit === "crypto" ||
+                            !asset.usdValue.toDec().isPositive()
                               ? asset.amount
                                   .trim(true)
                                   .maxDecimals(6)
