@@ -51,7 +51,16 @@ export const PortfolioPage: FunctionComponent = observer(() => {
     }
   );
 
-  const totalCap = allocation?.totalCap;
+  const { data: totalCap, isFetched: isFetchedCurrentValue } =
+    api.edge.portfolio.getPortfolioCurrentValue.useQuery(
+      {
+        address: wallet?.address ?? "",
+      },
+      {
+        enabled: Boolean(wallet?.isWalletConnected && wallet?.address),
+        staleTime: 3000, // 3 seconds
+      }
+    );
 
   const userHasNoAssets = Boolean(allocation && totalCap?.toDec()?.isZero());
 
@@ -76,7 +85,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
             <section className="flex py-3" ref={overviewRef}>
               <AssetsOverview
                 totalValue={totalCap}
-                isTotalValueFetched={isFetchedAllocation}
+                isTotalValueFetched={isFetchedCurrentValue}
               />
             </section>
             <section className="w-full py-3">
