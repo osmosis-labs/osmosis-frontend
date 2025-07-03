@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.14.0",
+    "@agoric/cosmic-proto": "^0.5.0-u20.0",
     "@axelar-network/axelarjs-sdk": "0.17.0",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
@@ -36,6 +37,7 @@
     "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/utils": "^1.0.0",
     "base-x": "^5.0.0",
+    "big-integer": "^1.6.48",
     "cachified": "^3.5.4",
     "launchdarkly-node-client-sdk": "^3.3.0",
     "long": "^5.2.3",
