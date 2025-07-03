@@ -702,12 +702,18 @@ export const assetsRouter = createTRPCRouter({
                   .then((marketAsset) => ({
                     ...asset,
                     volume24h: marketAsset ? marketAsset.volume24h : 0,
+                    liquidity: marketAsset ? marketAsset.liquidity : 0,
                   }))
               )
             );
 
             // avoid sorting while searching
-            if (search) return assets;
+            if (search)
+              return marketAssets.filter(({ liquidity, isVerified }) =>
+                liquidity instanceof PricePretty
+                  ? liquidity.toDec().isPositive()
+                  : liquidity > 0 || isVerified
+              );
 
             // Sort by volume 24h desc
             marketAssets = sort(marketAssets, "volume24h");
@@ -743,6 +749,13 @@ export const assetsRouter = createTRPCRouter({
                 if (bDeprioritizedIndex === -1) return 1; // b is not deprioritized, a is
 
                 return aDeprioritizedIndex - bDeprioritizedIndex; // Both are deprioritized, sort by their index
+              })
+              .filter(({ liquidity, isVerified }) => {
+                return (
+                  (liquidity instanceof PricePretty
+                    ? liquidity.toDec().isPositive()
+                    : liquidity > 0) || isVerified
+                );
               }) as typeof assets;
           },
           cacheKey: JSON.stringify({

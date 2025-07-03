@@ -86,8 +86,13 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
-  return await Promise.all(
+  const marketAssets = await Promise.all(
     assets.map((asset) => getMarketAsset({ asset, ...params }))
+  );
+
+  // Filter only for assets that have liquidity
+  return marketAssets.filter((asset) =>
+    (asset.liquidity?.toDec() ?? new Dec(0)).isPositive()
   );
 }
 
