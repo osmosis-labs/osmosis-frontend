@@ -601,7 +601,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                                 !showOutputDifferenceWarning,
                               hidden: outputDifference
                                 .toDec()
-                                .lt(new Dec(0.01)),
+                                .gt(new Dec(-0.5)),
                             }
                           )}
                         >
