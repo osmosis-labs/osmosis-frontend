@@ -287,14 +287,30 @@ export const useBridgesSupportedAssets = ({
 
             // For XRP withdrawals, prioritize XPRL EVM first
             if (isXrpWithdrawal) {
-              if (a.chainId === "xrplevm_1440000-1" && b.chainId !== "xrplevm_1440000-1") return -1;
-              if (a.chainId !== "xrplevm_1440000-1" && b.chainId === "xrplevm_1440000-1") return 1;
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
             }
-            
+
             // For XRP deposits, prioritize XPRL EVM first
             if (isXrpDeposit) {
-              if (a.chainId === "xrplevm_1440000-1" && b.chainId !== "xrplevm_1440000-1") return -1;
-              if (a.chainId !== "xrplevm_1440000-1" && b.chainId === "xrplevm_1440000-1") return 1;
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
             }
 
             // prioritize bitcoin and doge chains first, then evm
