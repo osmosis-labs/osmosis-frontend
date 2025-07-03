@@ -10293,7 +10293,7 @@ export interface IChartWidgetApi {
 }
 /**
  * The main interface for interacting with the library, returned by {@link ChartingLibraryWidgetConstructor}.
- * For more information, refer to the [Widget methods](https://www.tradingview.com/charting-library-docs/latest/core_concepts/widget-methods.md) article.
+ * For more information, refer to the [Widget methods](https://www.tradingview.com/charting-library-docs/latest/core_concepts/widget-methods/) article.
  */
 export interface IChartingLibraryWidget {
   /**
