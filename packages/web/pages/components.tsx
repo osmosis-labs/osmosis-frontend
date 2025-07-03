@@ -742,6 +742,7 @@ const Icons = () => (
       "help-circle",
       "moonpay-logo",
       "kado-logo",
+      "swapped-logo",
       "transak-logo",
       "more-menu",
       "sort-up",
