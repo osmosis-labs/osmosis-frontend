@@ -255,6 +255,24 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "usd-coin"
       );
 
+    // Check if this is a XRP  withdrawal to prioritize Noble
+    const isXrpWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
+    // Check if this is a XRP  withdrawal to prioritize Noble
+    const isXrpDeposit =
+      direction === "deposit" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
     return Array.from(
       // Remove duplicate chains
       new Map(
@@ -265,6 +283,34 @@ export const useBridgesSupportedAssets = ({
             if (isUsdcWithdrawal) {
               if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
               if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
+            }
+
+            // For XRP withdrawals, prioritize XPRL EVM first
+            if (isXrpWithdrawal) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
+            }
+
+            // For XRP deposits, prioritize XPRL EVM first
+            if (isXrpDeposit) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
             }
 
             // prioritize bitcoin and doge chains first, then evm
