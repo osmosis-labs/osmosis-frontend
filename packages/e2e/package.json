@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@playwright/test": "1.51.1",
+    "@playwright/test": "1.52.0",
     "decompress": "4.2.1",
     "dotenv": "16.4.7"
   },
