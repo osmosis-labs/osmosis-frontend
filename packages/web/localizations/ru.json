@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "любой токен в любой сети на",
     "trade": "Торговля",
     "with": "с"
+  },
+  "polarisBanner": {
+    "tradeYour": "Торгуйте своим",
+    "andSoMuchMore": "и многое другое.",
+    "tradeAnythingOnPolaris": "Торгуйте чем угодно на Polaris"
   }
 }

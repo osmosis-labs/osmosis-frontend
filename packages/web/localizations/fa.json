@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "هر توکنی در هر شبکه ای در",
     "trade": "تجارت",
     "with": "با"
+  },
+  "polarisBanner": {
+    "tradeYour": "تجارت خود را",
+    "andSoMuchMore": "و خیلی چیزهای دیگر.",
+    "tradeAnythingOnPolaris": "هر چیزی را در پولاریس معامله کنید"
   }
 }

@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "orice simbol din orice rețea activată",
     "trade": "Comerț",
     "with": "cu"
+  },
+  "polarisBanner": {
+    "tradeYour": "Tranzacționează-ți",
+    "andSoMuchMore": "și mult mai multe.",
+    "tradeAnythingOnPolaris": "Tranzacționează orice pe Polaris"
   }
 }

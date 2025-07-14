@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "qualquer token em qualquer rede em",
     "trade": "Troca",
     "with": "com"
+  },
+  "polarisBanner": {
+    "tradeYour": "Negocie seu",
+    "andSoMuchMore": "e muito mais.",
+    "tradeAnythingOnPolaris": "Negocie qualquer coisa na Polaris"
   }
 }

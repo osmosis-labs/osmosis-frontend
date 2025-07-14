@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "किसी भी नेटवर्क पर कोई भी टोकन",
     "trade": "व्यापार",
     "with": "साथ"
+  },
+  "polarisBanner": {
+    "tradeYour": "अपना व्यापार करें",
+    "andSoMuchMore": "और भी बहुत कुछ.",
+    "tradeAnythingOnPolaris": "पोलारिस पर कुछ भी व्यापार करें"
   }
 }

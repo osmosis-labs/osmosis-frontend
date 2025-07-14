@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "あらゆるネットワーク上のあらゆるトークン",
     "trade": "貿易",
     "with": "と"
+  },
+  "polarisBanner": {
+    "tradeYour": "あなたの",
+    "andSoMuchMore": "その他にもたくさんあります。",
+    "tradeAnythingOnPolaris": "Polarisで何でも取引"
   }
 }

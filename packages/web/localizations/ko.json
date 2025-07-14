@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "모든 네트워크의 모든 토큰",
     "trade": "거래",
     "with": "~와 함께"
+  },
+  "polarisBanner": {
+    "tradeYour": "거래하세요",
+    "andSoMuchMore": "그리고 훨씬 더 많은 것들이 있습니다.",
+    "tradeAnythingOnPolaris": "Polaris에서 무엇이든 거래하세요"
   }
 }

@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "any token on any network on",
     "trade": "Trade",
     "with": "with"
+  },
+  "polarisBanner": {
+    "tradeYour": "Trade your",
+    "andSoMuchMore": "and so much more.",
+    "tradeAnythingOnPolaris": "Trade anything on Polaris"
   }
 }

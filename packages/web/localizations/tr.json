@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "herhangi bir ağdaki herhangi bir belirteç",
     "trade": "Ticaret",
     "with": "ile"
+  },
+  "polarisBanner": {
+    "tradeYour": "Ticaretinizi yapın",
+    "andSoMuchMore": "ve çok daha fazlası.",
+    "tradeAnythingOnPolaris": "Polaris'te her şeyi alıp satabilirsiniz"
   }
 }

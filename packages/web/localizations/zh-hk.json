@@ -1322,5 +1322,10 @@
     "anyTokenOnAnyNetworkOn": "任何網路上的任何令牌",
     "trade": "貿易",
     "with": "和"
+  },
+  "polarisBanner": {
+    "tradeYour": "交易你的",
+    "andSoMuchMore": "等等。",
+    "tradeAnythingOnPolaris": "在 Polaris 上交易任何商品"
   }
 }
