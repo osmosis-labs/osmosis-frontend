@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
@@ -36,10 +37,7 @@ const Home = () => {
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
   const [showBanner, setShowBanner] = useLocalStorage("babyTokenBanner", true);
-  const [showPolarisBanner, setShowPolarisBanner] = useLocalStorage(
-    "polarisBanner",
-    true
-  );
+  const [showPolarisBanner, setShowPolarisBanner] = useState(true);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
