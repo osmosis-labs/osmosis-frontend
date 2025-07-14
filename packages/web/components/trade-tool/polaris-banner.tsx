@@ -12,7 +12,7 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
   if (!fromAsset) return null;
 
   return (
-    <div className="relative overflow-hidden flex flex-col my-3 gap-2 bg-[#653026] p-5 rounded-3xl">
+    <div className="relative overflow-hidden min-h-[208px] flex flex-col my-3 gap-2 bg-[#653026] p-5 rounded-3xl">
       <div className="flex flex-col gap-2 max-w-[290px]">
         <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-semibold">
           {t("polarisBanner.tradeYour")}
