@@ -64,7 +64,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["leap-extension"],
-    logo: "/wallets/leap.svg",
+    logo: "/wallets/leap.png",
     mobileDisabled: false,
     lazyInstall: () =>
       import("@cosmos-kit/leap-extension").then((m) => m.LeapExtensionWallet),
@@ -75,7 +75,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["leap-cosmos-mobile"],
-    logo: "/wallets/leap.svg",
+    logo: "/wallets/leap.png",
     lazyInstall: () =>
       import("@cosmos-kit/leap-mobile").then((m) => m.LeapMobileWallet),
     supportsChain: async (chainId) => {
