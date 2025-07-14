@@ -13,6 +13,7 @@ import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
 import { BabyBanner } from "~/components/trade-tool/baby-banner";
+import { PolarisBanner } from "~/components/trade-tool/polaris-banner";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -35,6 +36,10 @@ const Home = () => {
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
   const [showBanner, setShowBanner] = useLocalStorage("babyTokenBanner", true);
+  const [showPolarisBanner, setShowPolarisBanner] = useLocalStorage(
+    "polarisBanner",
+    true
+  );
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -65,6 +70,9 @@ const Home = () => {
             </ClientOnly>
             {featureFlags.babyTokenBanner && showBanner && (
               <BabyBanner onClose={() => setShowBanner(false)} />
+            )}
+            {featureFlags.polarisBanner && showPolarisBanner && (
+              <PolarisBanner onClose={() => setShowPolarisBanner(false)} />
             )}
             {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
