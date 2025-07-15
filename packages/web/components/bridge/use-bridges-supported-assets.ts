@@ -246,12 +246,73 @@ export const useBridgesSupportedAssets = ({
   }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
+    // Check if this is a USDC withdrawal to prioritize Noble
+    const isUsdcWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("USDC") ||
+          asset.coinGeckoId === "usd-coin"
+      );
+
+    // Check if this is a XRP  withdrawal to prioritize Noble
+    const isXrpWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
+    // Check if this is a XRP  withdrawal to prioritize Noble
+    const isXrpDeposit =
+      direction === "deposit" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
     return Array.from(
       // Remove duplicate chains
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
+            // For USDC withdrawals, prioritize Noble first
+            if (isUsdcWithdrawal) {
+              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
+              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
+            }
+
+            // For XRP withdrawals, prioritize XPRL EVM first
+            if (isXrpWithdrawal) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
+            }
+
+            // For XRP deposits, prioritize XPRL EVM first
+            if (isXrpDeposit) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
+            }
+
             // prioritize bitcoin and doge chains first, then evm
             if (a.chainType === "bitcoin" && b.chainType !== "bitcoin")
               return -1;
@@ -274,7 +335,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries]);
+  }, [successfulQueries, direction, assets]);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };
