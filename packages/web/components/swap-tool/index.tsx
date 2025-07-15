@@ -29,6 +29,7 @@ import {
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
@@ -599,9 +600,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               "text-rust-400": showOutputDifferenceWarning,
                               "text-osmoverse-600":
                                 !showOutputDifferenceWarning,
-                              hidden: outputDifference
-                                .toDec()
-                                .gt(new Dec(-0.5)),
+                              hidden: getShouldHideSlippage(outputDifference),
                             }
                           )}
                         >

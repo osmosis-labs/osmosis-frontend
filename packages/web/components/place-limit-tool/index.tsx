@@ -28,6 +28,7 @@ import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-se
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
@@ -793,10 +794,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         childWrapperClassName={classNames(
                           "ml-1 text-osmoverse-500 !cursor-pointer !pointer-events-auto",
                           {
-                            hidden:
+                            hidden: getShouldHideSlippage(
                               swapState.marketState.quote?.priceImpactTokenOut
-                                .toDec()
-                                .gt(new Dec(-0.5)),
+                            ),
                           }
                         )}
                         tooltipClassName="!cursor-pointer"
