@@ -300,7 +300,6 @@ export const useBridgesSupportedAssets = ({
               if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
             }
 
-
             // For XRP withdrawals, prioritize XPRL EVM first
             if (isXrpWithdrawal) {
               if (
