@@ -163,7 +163,6 @@ const TableControls = () => {
           selectedOptionIds={filters.poolIncentivesFilter}
           atLeastOneSelected
           options={[
-            { id: "superfluid", display: t("pools.aprBreakdown.superfluid") },
             { id: "osmosis", display: t("pools.aprBreakdown.boost") },
             {
               id: "boost",
