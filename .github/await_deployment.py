@@ -15,23 +15,8 @@ def wait_for_deployment(timeout):
     }
     url = f"https://api.vercel.com/v6/deployments?projectId={project_id}&target={target}&state=BUILDING"
     response = requests.get(url, headers=headers)
-    # … earlier code …
-
-    # Second request: fetch latest deployment
-    response = requests.get(url, headers=headers)
     if response.status_code != 200:
-        raise Exception(f"Failed to fetch latest deployment: {response.text}")
-    deployments = response.json()['deployments']
-
-    # … some lines in between …
-
-    # Third request: check deployment status
-    current_response = requests.get(current_url, headers=headers)
-    if current_response.status_code != 200:
-        raise Exception(f"Failed to fetch deployment status: {current_response.text}")
-    status = current_response.json()['status']
-
-    # … remaining code …
+        raise Exception(f"Failed to fetch latest deployments: {response.text}")
     deployments = response.json()['deployments']
     print(f"Found {len(deployments)} deployments in BUILDING state.")
     
