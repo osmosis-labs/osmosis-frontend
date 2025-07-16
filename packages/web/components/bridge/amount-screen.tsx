@@ -469,7 +469,10 @@ export const AmountScreen = observer(
         case "litecoin":
           return {
             type: fromChain.chainType,
-            assets: assets as Extract<SupportedAsset, { chainType: "litecoin" }>[],
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "litecoin" }
+            >[],
           };
         case "xrpl":
           return {
@@ -479,7 +482,10 @@ export const AmountScreen = observer(
         case "bitcoin-cash":
           return {
             type: fromChain.chainType,
-            assets: assets as Extract<SupportedAsset, { chainType: "bitcoin-cash" }>[],
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "bitcoin-cash" }
+            >[],
           };
         case "ton":
           return {
@@ -489,7 +495,10 @@ export const AmountScreen = observer(
         case "solana":
           return {
             type: fromChain.chainType,
-            assets: assets as Extract<SupportedAsset, { chainType: "solana" }>[],
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "solana" }
+            >[],
           };
         default:
           return {
@@ -995,32 +1004,32 @@ export const AmountScreen = observer(
             transferGasChain={fromChain}
           />
 
+          {(isLoadingAssetsBalance || isLoading) && (
+            <div className="flex w-full items-center justify-center gap-3">
+              <Spinner className="text-wosmongton-500" />
+              <p className="body1 md:body2 text-osmoverse-300">
+                {t("transfer.lookingForBalances")}
+              </p>
+            </div>
+          )}
+
+          {!isLoadingAssetsBalance &&
+            !isLoading &&
+            assetsBalances?.length === 1 && (
+              <p className="body1 md:body2 w-full text-center text-osmoverse-300">
+                {inputUnit === "crypto"
+                  ? assetsBalances[0].amount
+                      .trim(true)
+                      .maxDecimals(6)
+                      .hideDenom(true)
+                      .toString()
+                  : assetsBalances[0].usdValue.toString()}{" "}
+                {t("transfer.available")}
+              </p>
+            )}
+
           {(isWalletNeededConnected || isLoading) && (
             <>
-              {(isLoadingAssetsBalance || isLoading) && (
-                <div className="flex w-full items-center justify-center gap-3">
-                  <Spinner className="text-wosmongton-500" />
-                  <p className="body1 md:body2 text-osmoverse-300">
-                    {t("transfer.lookingForBalances")}
-                  </p>
-                </div>
-              )}
-
-              {!isLoadingAssetsBalance &&
-                !isLoading &&
-                assetsBalances?.length === 1 && (
-                  <p className="body1 md:body2 w-full text-center text-osmoverse-300">
-                    {inputUnit === "crypto"
-                      ? assetsBalances[0].amount
-                          .trim(true)
-                          .maxDecimals(6)
-                          .hideDenom(true)
-                          .toString()
-                      : assetsBalances[0].usdValue.toString()}{" "}
-                    {t("transfer.available")}
-                  </p>
-                )}
-
               {!isLoadingAssetsBalance &&
                 !isLoading &&
                 assetsBalances &&
@@ -1479,7 +1488,7 @@ const TransferDetails: FunctionComponent<{
           className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              ? detailsHeight + detailsOffset + 46 // collapsed height
               : 36,
           }}
         >
