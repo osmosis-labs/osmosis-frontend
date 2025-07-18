@@ -369,7 +369,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             LOW_LIQUIDITY_WARNING_THRESHOLD
           )
             ? swapState.fromAsset?.coinDenom
-            : swapState.toAsset?.coinDenom,
+            : outTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD)
+            ? swapState.toAsset?.coinDenom
+            : undefined,
         };
       }, [swapState.fromAsset, swapState.toAsset]);
 
