@@ -71,6 +71,8 @@ export interface SwapToolProps {
   }) => void;
 }
 
+const LOW_LIQUIDITY_WARNING_THRESHOLD = new Dec(3000);
+
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
     useOtherCurrencies,
@@ -345,6 +347,32 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
+    const { shouldDisplayLowLiquidityWarning, tokenWithLowLiquidity } =
+      useMemo(() => {
+        const _inTokenLiquidity = swapState.fromAsset?.liquidity;
+        const _outTokenLiquidity = swapState.toAsset?.liquidity;
+
+        const inTokenLiquidity =
+          typeof _inTokenLiquidity === "number"
+            ? new Dec(_inTokenLiquidity)
+            : _inTokenLiquidity?.toDec() ?? new Dec(0);
+        const outTokenLiquidity =
+          typeof _outTokenLiquidity === "number"
+            ? new Dec(_outTokenLiquidity)
+            : _outTokenLiquidity?.toDec() ?? new Dec(0);
+
+        return {
+          shouldDisplayLowLiquidityWarning:
+            inTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD) ||
+            outTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD),
+          tokenWithLowLiquidity: inTokenLiquidity?.lte(
+            LOW_LIQUIDITY_WARNING_THRESHOLD
+          )
+            ? swapState.fromAsset?.coinDenom
+            : swapState.toAsset?.coinDenom,
+        };
+      }, [swapState.fromAsset, swapState.toAsset]);
+
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
     return (
@@ -618,6 +646,26 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
+              {shouldDisplayLowLiquidityWarning && tokenWithLowLiquidity && (
+                <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
+                  <Icon
+                    id="alert-triangle"
+                    width={20}
+                    height={20}
+                    className="text-rust-600 min-w-[20px] mt-1"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <span className="body2 text-base text-rust-500">
+                      {t("lowLiquidityAlert.title")}
+                    </span>
+                    <span className="subtitle2 text-osmoverse-400">
+                      {t("lowLiquidityAlert.description", {
+                        tokenWithLowLiquidity,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           {swapButton ?? (
