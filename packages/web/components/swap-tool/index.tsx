@@ -346,6 +346,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
+    const displayedOutputDifference = outputDifference
+      .toDec()
+      .abs()
+      .mul(new Dec(100))
+      .toString(4);
+
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
     return (
@@ -608,7 +614,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                             title={t("tradeDetails.outputDifference.header")}
                             body={t("tradeDetails.outputDifference.content")}
                             childWrapperClassName="ml-1"
-                          >{` (-${outputDifference})`}</GenericDisclaimer>
+                          >{`(-${displayedOutputDifference}%)`}</GenericDisclaimer>
                         </span>
                       </>
                     ) : (
