@@ -1322,5 +1322,9 @@
     "anyTokenOnAnyNetworkOn": "dowolny token w dowolnej sieci",
     "trade": "Handel",
     "with": "z"
+  },
+  "lowLiquidityAlert": {
+    "title": "Twój handel może się nie powieść",
+    "description": "Ze względu na niską płynność {tokenWithLowLiquidity} we wszystkich pulach, transakcja ta może skutkować dużym poślizgiem i może nie zostać zrealizowana."
   }
 }
