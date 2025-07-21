@@ -614,7 +614,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                             title={t("tradeDetails.outputDifference.header")}
                             body={t("tradeDetails.outputDifference.content")}
                             childWrapperClassName="ml-1"
-                          >{`(-${displayedOutputDifference}%)`}</GenericDisclaimer>
+                          >{`(${
+                            outputDifference.toDec().isNegative() ? "" : "-"
+                          }${displayedOutputDifference}%)`}</GenericDisclaimer>
                         </span>
                       </>
                     ) : (
