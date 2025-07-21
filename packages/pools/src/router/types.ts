@@ -48,6 +48,8 @@ export type Quote = {
    * while positive number represents positive price impact
    * */
   priceImpactTokenOut?: Dec;
+  liquidityCap?: string;
+  liquidityCapOverflow?: boolean;
 };
 
 /** Quote with potential split of in token amount across multiple routes. */
