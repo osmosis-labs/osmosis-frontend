@@ -1325,6 +1325,6 @@
   },
   "lowLiquidityAlert": {
     "title": "Su operación puede fracasar",
-    "description": "Debido a la baja liquidez, esta operación puede generar un alto deslizamiento y podría no ejecutarse."
+    "description": "Debido a la baja liquidez de {tokenWithLowLiquidity} en todos los grupos, esta operación puede generar un alto deslizamiento y es posible que no se ejecute."
   }
 }

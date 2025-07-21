@@ -1325,6 +1325,6 @@
   },
   "lowLiquidityAlert": {
     "title": "Seu negócio pode falhar",
-    "description": "Devido à baixa liquidez, esta negociação pode resultar em alto deslizamento e pode não ser executada."
+    "description": "Devido à baixa liquidez de {tokenWithLowLiquidity} em todos os pools, esta negociação pode resultar em alto deslizamento e pode não ser executada."
   }
 }

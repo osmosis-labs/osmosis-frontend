@@ -1325,6 +1325,6 @@
   },
   "lowLiquidityAlert": {
     "title": "你的交易可能會失敗",
-    "description": "由於流動性低，該交易可能會導致高滑點，並且可能無法執行。"
+    "description": "由於所有資金池的{tokenWithLowLiquidity}流動性較低，該交易可能會導致高滑點，並且可能無法執行。"
   }
 }
