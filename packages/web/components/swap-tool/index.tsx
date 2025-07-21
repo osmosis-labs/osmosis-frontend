@@ -29,6 +29,7 @@ import {
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
@@ -345,6 +346,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
+    const displayedOutputDifference = outputDifference
+      .toDec()
+      .abs()
+      .mul(new Dec(100))
+      .toString(4);
+
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
     return (
@@ -599,9 +606,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               "text-rust-400": showOutputDifferenceWarning,
                               "text-osmoverse-600":
                                 !showOutputDifferenceWarning,
-                              hidden: outputDifference
-                                .toDec()
-                                .lt(new Dec(0.01)),
+                              hidden: getShouldHideSlippage(outputDifference),
                             }
                           )}
                         >
@@ -609,7 +614,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                             title={t("tradeDetails.outputDifference.header")}
                             body={t("tradeDetails.outputDifference.content")}
                             childWrapperClassName="ml-1"
-                          >{` (-${outputDifference})`}</GenericDisclaimer>
+                          >{`(${
+                            outputDifference.toDec().isNegative() ? "+" : "-"
+                          }${displayedOutputDifference}%)`}</GenericDisclaimer>
                         </span>
                       </>
                     ) : (
