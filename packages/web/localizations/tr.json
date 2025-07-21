@@ -1325,6 +1325,6 @@
   },
   "lowLiquidityAlert": {
     "title": "İşleminiz başarısız olabilir",
-    "description": "Tüm havuzlarda {tokenWithLowLiquidity} likiditesinin düşük olması nedeniyle, bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
+    "description": "Düşük likidite nedeniyle bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
   }
 }

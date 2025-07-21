@@ -1325,6 +1325,6 @@
   },
   "lowLiquidityAlert": {
     "title": "Your trade may fail",
-    "description": "Due to low liquidity of {tokenWithLowLiquidity} across all pools, this trade may result in high slippage and may not be executed."
+    "description": "Due to low liquidity, this trade may result in high slippage and may not be executed."
   }
 }
