@@ -347,33 +347,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       onOpen: openAddFundsModal,
     } = useDisclosure();
 
-    const { shouldDisplayLowLiquidityWarning, tokenWithLowLiquidity } =
-      useMemo(() => {
-        const _inTokenLiquidity = swapState.fromAsset?.liquidity;
-        const _outTokenLiquidity = swapState.toAsset?.liquidity;
+    const shouldDisplayLowLiquidityWarning = useMemo(() => {
+      if (!swapState.quote?.liquidityCap) return false;
 
-        const inTokenLiquidity =
-          typeof _inTokenLiquidity === "number"
-            ? new Dec(_inTokenLiquidity)
-            : _inTokenLiquidity?.toDec() ?? new Dec(0);
-        const outTokenLiquidity =
-          typeof _outTokenLiquidity === "number"
-            ? new Dec(_outTokenLiquidity)
-            : _outTokenLiquidity?.toDec() ?? new Dec(0);
-
-        return {
-          shouldDisplayLowLiquidityWarning:
-            inTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD) ||
-            outTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD),
-          tokenWithLowLiquidity: inTokenLiquidity?.lte(
-            LOW_LIQUIDITY_WARNING_THRESHOLD
-          )
-            ? swapState.fromAsset?.coinDenom
-            : outTokenLiquidity?.lte(LOW_LIQUIDITY_WARNING_THRESHOLD)
-            ? swapState.toAsset?.coinDenom
-            : undefined,
-        };
-      }, [swapState.fromAsset, swapState.toAsset]);
+      return new Dec(swapState.quote.liquidityCap).lte(
+        LOW_LIQUIDITY_WARNING_THRESHOLD
+      );
+    }, [swapState.quote]);
 
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
@@ -648,7 +628,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
-              {shouldDisplayLowLiquidityWarning && tokenWithLowLiquidity && (
+              {shouldDisplayLowLiquidityWarning && (
                 <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
                   <Icon
                     id="alert-triangle"
@@ -661,9 +641,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       {t("lowLiquidityAlert.title")}
                     </span>
                     <span className="subtitle2 text-osmoverse-400">
-                      {t("lowLiquidityAlert.description", {
-                        tokenWithLowLiquidity,
-                      })}
+                      {t("lowLiquidityAlert.description")}
                     </span>
                   </div>
                 </div>
