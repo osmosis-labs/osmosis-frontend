@@ -1322,5 +1322,9 @@
     "anyTokenOnAnyNetworkOn": "n'importe quel jeton sur n'importe quel réseau sur",
     "trade": "Commerce",
     "with": "avec"
+  },
+  "lowLiquidityAlert": {
+    "title": "Votre transaction peut échouer",
+    "description": "En raison de la faible liquidité de {tokenWithLowLiquidity} dans tous les pools, cette transaction peut entraîner un glissement élevé et peut ne pas être exécutée."
   }
 }

@@ -7,6 +7,12 @@ export type SidecarQuoteResponse = {
   effective_fee: string;
   price_impact: string;
   in_base_out_quote_spot_price: string;
+  liquidity_cap: string;
+  liquidity_cap_overflow: boolean;
+  tokens: {
+    denom: string;
+    liquidity_cap: string;
+  }[];
   route: {
     in_amount: string;
     out_amount: string;
@@ -37,6 +43,12 @@ export type SidecarInGivenOutQuoteResponse = {
   effective_fee: string;
   price_impact: string;
   in_base_out_quote_spot_price: string;
+  liquidity_cap: string;
+  liquidity_cap_overflow: boolean;
+  tokens: {
+    denom: string;
+    liquidity_cap: string;
+  }[];
   route: {
     in_amount: string;
     out_amount: string;

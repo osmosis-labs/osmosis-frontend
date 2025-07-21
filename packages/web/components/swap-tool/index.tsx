@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -33,6 +33,7 @@ import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { DefaultSlippage } from "~/config/swap";
 import {
   useAmplitudeAnalytics,
@@ -71,6 +72,8 @@ export interface SwapToolProps {
     outTokenDenom: string;
   }) => void;
 }
+
+const LOW_LIQUIDITY_WARNING_THRESHOLD = new Dec(3000);
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
@@ -352,6 +355,39 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       .mul(new Dec(100))
       .toString(4);
 
+    const { shouldDisplayLowLiquidityWarning, tokenWithLowLiquidity } =
+      useMemo(() => {
+        if (!swapState.quote?.tokens) {
+          return {
+            shouldDisplayLowLiquidityWarning: false,
+            tokenWithLowLiquidity: undefined,
+          };
+        }
+
+        const tokenWithLowLiquidity = swapState.quote.tokens.find((token) => {
+          return new Dec(token.liquidity_cap).lte(
+            LOW_LIQUIDITY_WARNING_THRESHOLD
+          );
+        });
+
+        if (!tokenWithLowLiquidity) {
+          return {
+            shouldDisplayLowLiquidityWarning: false,
+            tokenWithLowLiquidity: undefined,
+          };
+        }
+
+        const { coinDenom } = getAsset({
+          anyDenom: tokenWithLowLiquidity.denom,
+          assetLists: AssetLists,
+        });
+
+        return {
+          shouldDisplayLowLiquidityWarning: true,
+          tokenWithLowLiquidity: coinDenom,
+        };
+      }, [swapState.quote]);
+
     const [containerRef, { width }] = useMeasure<HTMLDivElement>();
 
     return (
@@ -625,6 +661,26 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
+              {shouldDisplayLowLiquidityWarning && tokenWithLowLiquidity && (
+                <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
+                  <Icon
+                    id="alert-triangle"
+                    width={20}
+                    height={20}
+                    className="text-rust-600 min-w-[20px] mt-1"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <span className="body2 text-base text-rust-500">
+                      {t("lowLiquidityAlert.title")}
+                    </span>
+                    <span className="subtitle2 text-osmoverse-400">
+                      {t("lowLiquidityAlert.description", {
+                        tokenWithLowLiquidity,
+                      })}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
           {swapButton ?? (

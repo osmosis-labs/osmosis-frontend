@@ -1322,5 +1322,9 @@
     "anyTokenOnAnyNetworkOn": "orice simbol din orice rețea activată",
     "trade": "Comerț",
     "with": "cu"
+  },
+  "lowLiquidityAlert": {
+    "title": "Tranzacția ta ar putea eșua",
+    "description": "Din cauza lichidității reduse a tranzacției {tokenWithLowLiquidity} în toate portofoliile, această tranzacție poate duce la alunecări mari și este posibil să nu fie executată."
   }
 }
