@@ -255,7 +255,16 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "usd-coin"
       );
 
-    // Check if this is a XRP  withdrawal to prioritize Noble
+    // Check if this is a USDC deposit to prioritize Noble
+    const isUsdcDeposit =
+      direction === "deposit" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("USDC") ||
+          asset.coinGeckoId === "usd-coin"
+      );
+
+    // Check if this is a XRP withdrawal to prioritize XRPL EVM
     const isXrpWithdrawal =
       direction === "withdraw" &&
       assets?.some(
@@ -264,7 +273,7 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "ripple"
       );
 
-    // Check if this is a XRP  withdrawal to prioritize Noble
+    // Check if this is a XRP deposit to prioritize XRPL EVM
     const isXrpDeposit =
       direction === "deposit" &&
       assets?.some(
@@ -281,6 +290,12 @@ export const useBridgesSupportedAssets = ({
           .sort((a, b) => {
             // For USDC withdrawals, prioritize Noble first
             if (isUsdcWithdrawal) {
+              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
+              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
+            }
+
+            // For USDC deposits, prioritize Noble first
+            if (isUsdcDeposit) {
               if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
               if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
             }
