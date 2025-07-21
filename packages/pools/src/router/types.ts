@@ -50,7 +50,7 @@ export type Quote = {
   priceImpactTokenOut?: Dec;
   liquidityCap?: string;
   liquidityCapOverflow?: boolean;
-  tokens: {
+  tokens?: {
     denom: string;
     liquidity_cap: string;
   }[];
