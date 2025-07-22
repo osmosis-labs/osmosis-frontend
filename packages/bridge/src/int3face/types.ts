@@ -149,6 +149,7 @@ export const getInt3faceBridgeConfig = (
 
     XRP: xrpConfig,
     "XRP.int3": xrpConfig,
+    "XRP.xrpl.int3": xrpConfig,
 
     TON: tonConfig,
     "TON.int3": tonConfig,
