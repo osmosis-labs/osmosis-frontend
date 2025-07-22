@@ -120,7 +120,7 @@ const PoolTypeEnum: PoolType = {
   weighted: 0, // Maps to Balancer
   stable: 1, // Maps to Stableswap
   concentrated: 2, // Maps to Concentrated
-  cosmwasm: 3, // Maps to CosmWasm
+  "cosmwasm-transmuter": 3, // Maps to Transmuter
 };
 
 // Function to retrieve integer values from the filter types
