@@ -2,14 +2,14 @@ import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Icon } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { useTranslation } from "~/hooks";
 export interface PoolCompositionCell {
   poolId: string;
   poolAssets: {
     coinImageUrl: string | undefined;
     coinDenom: string;
+    coinMinimalDenom: string;
   }[];
   stableswapPool: boolean;
   superchargedPool: boolean;
@@ -37,7 +37,10 @@ export const PoolCompositionCell: FunctionComponent<
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
           <PoolAssetsName
             size="sm"
-            assetDenoms={poolAssets?.map((asset) => asset.coinDenom)}
+            assetDenoms={poolAssets?.map(({ coinDenom, coinMinimalDenom }) => ({
+              minDenom: coinMinimalDenom,
+              symbol: coinDenom,
+            }))}
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
             {t("components.table.poolId", { id: poolId ? poolId : "-" })}

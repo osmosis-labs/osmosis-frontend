@@ -277,7 +277,7 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: asset.symbol,
+      denom: asset.coinMinimalDenom,
     },
   })) as { params: { denom: string } }[];
 
@@ -297,11 +297,15 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
       findMinDenomOrSymbol: tokenDenom,
     });
 
+    const asset = await trpcHelpers.edge.assets.getUserAsset.fetch({
+      findMinDenomOrSymbol: tokenDenom,
+    });
+
     if (tokenDenom) {
       try {
         const tokenDetailsByLanguage =
           await trpcHelpers.local.cms.getTokenInfos.fetch({
-            coinDenom: tokenDenom,
+            coinDenom: asset.coinMinimalDenom,
             langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
           });
 
