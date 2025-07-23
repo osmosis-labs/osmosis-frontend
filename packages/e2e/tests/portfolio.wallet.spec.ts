@@ -40,7 +40,7 @@ test.describe('Test Portfolio feature', () => {
     {
       name: 'TIA',
       minimalDenom:
-        'ibc%2FD79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877',
+        'ibc/D79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877',
     },
     {
       name: 'DAI',
