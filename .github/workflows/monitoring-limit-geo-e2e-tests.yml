@@ -392,7 +392,7 @@ jobs:
         fe-limit-us,
         fe-limit-eu,
       ]
-    if: failure() && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-trade-sg.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
+    if: failure() && github.run_attempt == 1 && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-trade-sg.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
     # Send alert only if something failed and unexpected failures are more than 1
     steps:
       - name: Send Slack alert if test fails
