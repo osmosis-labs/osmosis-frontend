@@ -40,7 +40,7 @@ test.describe('Test Portfolio feature', () => {
     {
       name: 'TIA',
       minimalDenom:
-        'factory/osmo1em6xs47hd82806f5cxgyufguxrrc7l0aqx7nzzptjuqgswczk8csavdxek/alloyed/allTIA',
+        'ibc%2FD79E7D83AB399BFFF93433E54FAA480C191248FC556924A2A8351AE2638B3877',
     },
     {
       name: 'DAI',
@@ -57,7 +57,6 @@ test.describe('Test Portfolio feature', () => {
       expect(osmoBalance).toMatch(dollarBalanceRegEx)
     })
   })
-
   // biome-ignore lint/complexity/noForEach: <explanation>
   ;[
     {
