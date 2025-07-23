@@ -277,7 +277,7 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: asset.symbol,
+      denom: asset.coinMinimalDenom,
     },
   })) as { params: { denom: string } }[];
 

@@ -162,6 +162,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     assets={pool?.reserveCoins.map((coin) => ({
                       coinImageUrl: coin.currency.coinImageUrl,
                       coinDenom: coin.currency.coinDenom,
+                      coinMinimalDenom: coin.currency.coinMinimalDenom,
                     }))}
                   />
                   <div className="flex flex-wrap gap-x-2">
@@ -169,7 +170,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       size="md"
                       className="text-h5 font-h5"
                       assetDenoms={pool?.reserveCoins.map(
-                        (asset) => asset.currency.coinDenom
+                        ({ denom, currency }) => ({
+                          minDenom: currency.coinMinimalDenom,
+                          symbol: denom,
+                        })
                       )}
                     />
                     <span className="hidden py-1 text-subtitle1 text-osmoverse-100 lg:inline-block">

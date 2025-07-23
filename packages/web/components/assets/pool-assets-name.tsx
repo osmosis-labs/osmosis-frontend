@@ -3,9 +3,14 @@ import classNames from "classnames";
 import Link from "next/link";
 import { Fragment, FunctionComponent, useMemo } from "react";
 
+interface PoolAsset {
+  symbol: string;
+  minDenom: string;
+}
+
 export const PoolAssetsName: FunctionComponent<{
   size?: "sm" | "md";
-  assetDenoms?: string[];
+  assetDenoms?: PoolAsset[];
   className?: string;
   withAssetInfoLink?: boolean;
 }> = ({ size = "md", assetDenoms, className, withAssetInfoLink = true }) => {
@@ -24,12 +29,14 @@ export const PoolAssetsName: FunctionComponent<{
       `${assetDenoms.length} Token Pool`
     ) : (
       <>
-        {assetDenoms.map((asset, index) => (
-          <Fragment key={asset}>
+        {assetDenoms.map(({ minDenom, symbol }, index) => (
+          <Fragment key={minDenom}>
             {withAssetInfoLink ? (
-              <Link href={`/assets/${asset}`}>{formatAssetName(asset)}</Link>
+              <Link href={`/assets/${encodeURIComponent(minDenom)}`}>
+                {formatAssetName(symbol)}
+              </Link>
             ) : (
-              formatAssetName(asset)
+              formatAssetName(symbol)
             )}
             {index < assetDenoms.length - 1 && (size === "sm" ? "/" : " / ")}
           </Fragment>
