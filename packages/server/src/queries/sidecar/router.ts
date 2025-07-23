@@ -55,6 +55,9 @@ class OsmosisSidecarRemoteRouter {
         route: routes,
         effective_fee,
         price_impact,
+        liquidity_cap,
+        liquidity_cap_overflow,
+        tokens,
       } = await apiClient<SidecarQuoteResponse>(queryUrl.toString());
 
       const swapFee = new Dec(effective_fee);
@@ -77,6 +80,9 @@ class OsmosisSidecarRemoteRouter {
           tokenInDenom: tokenIn.denom,
           tokenOutDenoms: pools.map(({ token_out_denom }) => token_out_denom),
         })),
+        liquidityCap: liquidity_cap,
+        liquidityCapOverflow: liquidity_cap_overflow,
+        tokens,
       };
     } catch (e) {
       // handle error JSON as it comes from sidecar
@@ -127,6 +133,7 @@ class OsmosisSidecarRemoteRouter {
         route: routes,
         effective_fee,
         price_impact,
+        tokens,
       } = await apiClient<SidecarInGivenOutQuoteResponse>(queryUrl.toString());
 
       const swapFee = new Dec(effective_fee);
@@ -151,6 +158,7 @@ class OsmosisSidecarRemoteRouter {
           tokenInDenoms: pools.map((p) => p.token_in_denom).reverse(),
           tokenOutDenom: tokenOut.denom,
         })),
+        tokens,
       };
     } catch (e) {
       // handle error JSON as it comes from sidecar

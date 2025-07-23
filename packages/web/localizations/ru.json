@@ -1327,5 +1327,9 @@
     "tradeYour": "Торгуйте своим",
     "andSoMuchMore": "и многое другое.",
     "tradeAnythingOnPolaris": "Торгуйте чем угодно на Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Ваша сделка может потерпеть неудачу",
+    "description": "Из-за низкой ликвидности {tokenWithLowLiquidity} во всех пулах эта сделка может привести к значительному проскальзыванию и может быть не исполнена."
   }
 }

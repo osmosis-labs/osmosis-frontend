@@ -1327,5 +1327,9 @@
     "tradeYour": "تجارت خود را",
     "andSoMuchMore": "و خیلی چیزهای دیگر.",
     "tradeAnythingOnPolaris": "هر چیزی را در پولاریس معامله کنید"
+  },
+  "lowLiquidityAlert": {
+    "title": "ممکن است معامله شما شکست بخورد",
+    "description": "به دلیل نقدینگی پایین {tokenWithLowLiquidity} در تمام استخرها، این معامله ممکن است منجر به لغزش قیمت بالا شود و اجرا نشود."
   }
 }

@@ -1327,5 +1327,9 @@
     "tradeYour": "Intercambia tu",
     "andSoMuchMore": "y mucho más.",
     "tradeAnythingOnPolaris": "Intercambia cualquier cosa en Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Su operación puede fracasar",
+    "description": "Debido a la baja liquidez de {tokenWithLowLiquidity} en todos los grupos, esta operación puede generar un alto deslizamiento y es posible que no se ejecute."
   }
 }
