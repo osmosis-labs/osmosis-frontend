@@ -34,7 +34,6 @@ const caller = createCaller({
    */
   assetLists: AssetLists,
   chainList: MockChains,
-  opentelemetryServiceName: undefined,
 });
 
 type RouterOutputs = inferRouterOutputs<typeof router>;
