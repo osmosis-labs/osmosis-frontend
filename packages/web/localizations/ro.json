@@ -1323,6 +1323,11 @@
     "trade": "Comerț",
     "with": "cu"
   },
+  "polarisBanner": {
+    "tradeYour": "Tranzacționează-ți",
+    "andSoMuchMore": "și mult mai multe.",
+    "tradeAnythingOnPolaris": "Tranzacționează orice pe Polaris"
+  },
   "lowLiquidityAlert": {
     "title": "Tranzacția ta ar putea eșua",
     "description": "Din cauza lichidității reduse a tranzacției {tokenWithLowLiquidity} în toate portofoliile, această tranzacție poate duce la alunecări mari și este posibil să nu fie executată."

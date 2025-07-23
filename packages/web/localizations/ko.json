@@ -1323,6 +1323,11 @@
     "trade": "거래",
     "with": "~와 함께"
   },
+  "polarisBanner": {
+    "tradeYour": "거래하세요",
+    "andSoMuchMore": "그리고 훨씬 더 많은 것들이 있습니다.",
+    "tradeAnythingOnPolaris": "Polaris에서 무엇이든 거래하세요"
+  },
   "lowLiquidityAlert": {
     "title": "당신의 거래는 실패할 수 있습니다",
     "description": "모든 풀에서 {tokenWithLowLiquidity} 의 유동성이 낮기 때문에 이 거래는 높은 슬리피지를 초래할 수 있으며 실행되지 않을 수 있습니다."

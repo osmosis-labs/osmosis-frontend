@@ -1323,6 +1323,11 @@
     "trade": "Troca",
     "with": "com"
   },
+  "polarisBanner": {
+    "tradeYour": "Negocie seu",
+    "andSoMuchMore": "e muito mais.",
+    "tradeAnythingOnPolaris": "Negocie qualquer coisa na Polaris"
+  },
   "lowLiquidityAlert": {
     "title": "Seu negócio pode falhar",
     "description": "Devido à baixa liquidez de {tokenWithLowLiquidity} em todos os pools, esta negociação pode resultar em alto deslizamento e pode não ser executada."
