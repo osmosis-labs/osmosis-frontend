@@ -23,7 +23,7 @@ const Options = (
     subtitle: t("components.fiatOnrampSelection.moonpaySubtitle"),
   },
   {
-    ...FiatRampDisplayInfos.kado,
+    ...FiatRampDisplayInfos.swapped,
     initialAsset: "USDC",
     subtitle: t("components.fiatOnrampSelection.kadoSubtitle"),
   },
@@ -56,11 +56,18 @@ export const FiatOnrampSelectionModal: FunctionComponent<
     >
       <div className="flex flex-col gap-5 pt-8">
         {Options(t).map(
-          ({ rampKey, displayName, initialAsset, logoId, subtitle }) => {
+          ({
+            rampKey,
+            displayName,
+            initialAsset,
+            logoId,
+            iconUrl,
+            subtitle,
+          }) => {
             if (rampKey === "layerswapcoinbase" && !flags.layerswapcoinbase)
               return null;
             if (rampKey === "moonpay" && !flags.moonpay) return null;
-            if (rampKey === "kado" && !flags.kado) return null;
+            if (rampKey === "swapped" && !flags.kado) return null;
             if (rampKey === "transak" && !flags.transak) return null;
             if (rampKey === "onrampmoney" && !flags.onrampmoney) return null;
 
@@ -77,7 +84,16 @@ export const FiatOnrampSelectionModal: FunctionComponent<
                   modalProps.onRequestClose();
                 }}
               >
-                <Icon id={logoId!} className="h-16 w-16" />
+                {logoId ? (
+                  <Icon id={logoId} className="h-16 w-16" />
+                ) : (
+                  <Image
+                    src={iconUrl}
+                    width={64}
+                    height={64}
+                    alt={displayName}
+                  />
+                )}
                 {rampKey === "moonpay" ? (
                   <div className="ml-5 flex flex-col text-left gap-1">
                     <div className="flex items-center gap-2">

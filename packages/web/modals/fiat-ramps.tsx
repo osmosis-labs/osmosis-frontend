@@ -12,7 +12,7 @@ import { useTransakModal } from "~/integrations/transak";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
-  kado: "Kado",
+  swapped: "Swapped",
   layerswapcoinbase: "Coinbase Layer Swap",
   moonpay: "MoonPay",
   onrampmoney: "Onramp.money",
@@ -70,7 +70,7 @@ export const FiatRampsModal: FunctionComponent<
       </div>
       {(() => {
         switch (fiatRampKey) {
-          case "kado":
+          case "swapped":
             if (flags.kado) return <Swapped {...props} />;
           case "moonpay":
             if (flags.moonpay) return <Moonpay {...props} />;
