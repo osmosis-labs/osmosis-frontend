@@ -67,7 +67,7 @@ export const FiatOnrampSelectionModal: FunctionComponent<
             if (rampKey === "layerswapcoinbase" && !flags.layerswapcoinbase)
               return null;
             if (rampKey === "moonpay" && !flags.moonpay) return null;
-            if (rampKey === "swapped" && !flags.kado) return null;
+            if (rampKey === "swapped" && !flags.swapped) return null;
             if (rampKey === "transak" && !flags.transak) return null;
             if (rampKey === "onrampmoney" && !flags.onrampmoney) return null;
 
