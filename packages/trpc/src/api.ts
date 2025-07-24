@@ -1,4 +1,3 @@
-import { SpanStatusCode, trace } from "@opentelemetry/api";
 import { superjson } from "@osmosis-labs/server";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { timeout } from "@osmosis-labs/utils";
@@ -20,7 +19,6 @@ import { ZodError } from "zod";
 type CreateContextOptions = {
   assetLists: AssetList[];
   chainList: Chain[];
-  opentelemetryServiceName: string | undefined;
 };
 
 /**
@@ -84,44 +82,6 @@ export const publicProcedure = t.procedure
   /**
    * Opentelemetry tRPC middleware that names the handling transaction after the called procedure.
    */
-  .use(async ({ path, rawInput, type, next, ctx }) => {
-    const serviceName =
-      ctx.opentelemetryServiceName ?? "fallback-osmosis-frontend-service-name";
-    const tracer = trace.getTracer(serviceName);
-
-    return tracer.startActiveSpan(`trpc/${path}`, async (span) => {
-      try {
-        span.setAttribute("procedure_type", type);
-        span.setAttribute("input", JSON.stringify(rawInput));
-
-        const result = await next();
-
-        if (
-          typeof result === "object" &&
-          result !== null &&
-          "ok" in result &&
-          !result.ok
-        ) {
-          span.setStatus({ code: SpanStatusCode.ERROR });
-          if ("error" in result && result.error instanceof Error) {
-            span.recordException(result.error);
-          }
-        } else {
-          span.setStatus({ code: SpanStatusCode.OK });
-        }
-
-        return result;
-      } catch (e) {
-        if (e instanceof Error) {
-          span.recordException(e);
-          span.setStatus({ code: SpanStatusCode.ERROR, message: e.message });
-        }
-        throw e;
-      } finally {
-        span.end();
-      }
-    });
-  })
   .use(async (opts) => {
     /**
      * Default timeout for all procedures
@@ -141,12 +101,10 @@ export function localLink<TRouter extends AnyRouter>({
   router,
   assetLists,
   chainList,
-  opentelemetryServiceName,
 }: {
   router: TRouter;
   assetLists: AssetList[];
   chainList: Chain[];
-  opentelemetryServiceName: string | undefined;
 }): TRPCLink<TRouter> {
   return () =>
     ({ op }) =>
@@ -157,7 +115,6 @@ export function localLink<TRouter extends AnyRouter>({
             const caller = createCaller({
               assetLists,
               chainList,
-              opentelemetryServiceName,
             });
             try {
               // Attempt to execute the operation using the router's caller.

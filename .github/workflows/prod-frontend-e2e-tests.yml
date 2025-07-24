@@ -72,7 +72,7 @@ jobs:
           path: packages/e2e/playwright-report
       - name: Send Slack alert if test fails
         id: slack
-        if: failure()
+        if: failure() && github.run_attempt == 1
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |

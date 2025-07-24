@@ -1322,5 +1322,14 @@
     "anyTokenOnAnyNetworkOn": "jedes Token in jedem Netzwerk auf",
     "trade": "Handel",
     "with": "mit"
+  },
+  "polarisBanner": {
+    "tradeYour": "Handeln Sie Ihre",
+    "andSoMuchMore": "und vieles mehr.",
+    "tradeAnythingOnPolaris": "Handeln Sie mit allem auf Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Ihr Handel kann scheitern",
+    "description": "Aufgrund der geringen Liquidität von {tokenWithLowLiquidity} in allen Pools kann dieser Handel zu hohem Slippage führen und wird möglicherweise nicht ausgeführt."
   }
 }

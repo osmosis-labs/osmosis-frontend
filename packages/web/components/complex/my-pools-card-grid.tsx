@@ -128,6 +128,7 @@ export const MyPoolsCardsGrid = observer(() => {
                     poolAssets={reserveCoins.map((coin) => ({
                       coinImageUrl: coin.currency.coinImageUrl,
                       coinDenom: coin.currency.coinDenom,
+                      coinMinimalDenom: coin.currency.coinMinimalDenom,
                     }))}
                     poolMetrics={myPoolMetrics}
                     isSuperfluid={isSuperfluid}

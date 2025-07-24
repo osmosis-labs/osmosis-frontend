@@ -1322,5 +1322,14 @@
     "anyTokenOnAnyNetworkOn": "કોઈપણ નેટવર્ક પર કોઈપણ ટોકન",
     "trade": "વેપાર",
     "with": "સાથે"
+  },
+  "polarisBanner": {
+    "tradeYour": "તમારા વેપાર કરો",
+    "andSoMuchMore": "અને ઘણું બધું.",
+    "tradeAnythingOnPolaris": "પોલારિસ પર કંઈપણ વેપાર કરો"
+  },
+  "lowLiquidityAlert": {
+    "title": "તમારો વેપાર નિષ્ફળ થઈ શકે છે",
+    "description": "બધા પૂલમાં {tokenWithLowLiquidity} ની ઓછી તરલતાને કારણે, આ વેપારમાં ઉચ્ચ સ્લિપેજ થઈ શકે છે અને તે અમલમાં ન પણ આવી શકે."
   }
 }

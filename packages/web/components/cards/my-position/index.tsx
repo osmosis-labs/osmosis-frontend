@@ -4,14 +4,16 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useState } from "react";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Icon } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -109,6 +111,7 @@ export const MyPositionCard: FunctionComponent<{
             assets={currentCoins.map((poolAsset) => ({
               coinImageUrl: poolAsset.currency.coinImageUrl,
               coinDenom: poolAsset.denom,
+              coinMinimalDenom: poolAsset.currency.coinMinimalDenom,
             }))}
           />
 
@@ -116,7 +119,10 @@ export const MyPositionCard: FunctionComponent<{
             <div className="flex items-center gap-[6px] xs:flex-col xs:items-start">
               <PoolAssetsName
                 size="md"
-                assetDenoms={currentCoins.map((asset) => asset.denom)}
+                assetDenoms={currentCoins.map(({ denom, currency }) => ({
+                  minDenom: currency.coinMinimalDenom,
+                  symbol: denom,
+                }))}
                 withAssetInfoLink={false}
               />
               <SkeletonLoader isLoaded={!isLoadingPositionDetails}>
