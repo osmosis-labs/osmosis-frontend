@@ -86,8 +86,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
     } = useAssetInfo();
 
     useEffect(() => {
-      if (routerDenom !== asset?.coinMinimalDenom) {
-        router.push(`/assets/${encodeURIComponent(asset?.coinMinimalDenom)}`);
+      if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
+        router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
       }
     }, [asset, router, routerDenom]);
 
