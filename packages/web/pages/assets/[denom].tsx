@@ -77,7 +77,19 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const [previousTrade, setPreviousTrade] =
       useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
-    const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
+    const {
+      title,
+      details,
+      coinGeckoId,
+      asset,
+      denom: routerDenom,
+    } = useAssetInfo();
+
+    useEffect(() => {
+      if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
+        router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
+      }
+    }, [asset, router, routerDenom]);
 
     if (!asset) {
       return null;
