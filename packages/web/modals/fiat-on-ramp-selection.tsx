@@ -25,7 +25,7 @@ const Options = (
   {
     ...FiatRampDisplayInfos.swapped,
     initialAsset: "USDC",
-    subtitle: t("components.fiatOnrampSelection.kadoSubtitle"),
+    subtitle: t("components.fiatOnrampSelection.swappedSubtitle"),
   },
   {
     ...FiatRampDisplayInfos.transak,

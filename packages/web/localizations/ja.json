@@ -244,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "暗号通貨を購入する",
-      "kadoSubtitle": "OSMO、USDCをサポート",
+      "swappedSubtitle": "OSMO、USDCをサポート",
       "moonpaySubtitle": "OSMO、USDCをサポート",
       "transakSubtitle": "OSMOをサポート",
       "onrampMoneySubtitle": "OSMO、USDCをサポート",

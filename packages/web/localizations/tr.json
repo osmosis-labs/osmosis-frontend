@@ -244,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kripto satın al",
-      "kadoSubtitle": "OSMO, USDC'yi destekler",
+      "swappedSubtitle": "OSMO ve USDC'yi destekler",
       "moonpaySubtitle": "OSMO ve USDC'yi destekler",
       "transakSubtitle": "OSMO'yu destekler",
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler",

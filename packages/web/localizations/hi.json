@@ -244,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "क्रिप्टो खरीदें",
-      "kadoSubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
+      "swappedSubtitle": "OSMO, USDC का समर्थन करता है",
       "moonpaySubtitle": "OSMO, USDC का समर्थन करता है",
       "transakSubtitle": "OSMO का समर्थन करता है",
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
@@ -1323,13 +1323,13 @@
     "trade": "व्यापार",
     "with": "साथ"
   },
-  "lowLiquidityAlert": {
-    "title": "आपका व्यापार विफल हो सकता है",
-    "description": "सभी पूलों में {tokenWithLowLiquidity} की कम तरलता के कारण, इस व्यापार के परिणामस्वरूप उच्च स्लिपेज हो सकता है और इसे निष्पादित नहीं किया जा सकता है।"
-  },
   "polarisBanner": {
     "tradeYour": "अपना व्यापार करें",
     "andSoMuchMore": "और भी बहुत कुछ.",
     "tradeAnythingOnPolaris": "पोलारिस पर कुछ भी व्यापार करें"
+  },
+  "lowLiquidityAlert": {
+    "title": "आपका व्यापार विफल हो सकता है",
+    "description": "सभी पूलों में {tokenWithLowLiquidity} की कम तरलता के कारण, इस व्यापार के परिणामस्वरूप उच्च स्लिपेज हो सकता है और इसे निष्पादित नहीं किया जा सकता है।"
   }
 }
