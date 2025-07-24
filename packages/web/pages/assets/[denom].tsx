@@ -305,7 +305,7 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
       try {
         const tokenDetailsByLanguage =
           await trpcHelpers.local.cms.getTokenInfos.fetch({
-            coinDenom: asset.coinMinimalDenom,
+            coinMinimalDenom: asset.coinMinimalDenom,
             langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
           });
 
