@@ -71,7 +71,7 @@ export const FiatRampsModal: FunctionComponent<
       {(() => {
         switch (fiatRampKey) {
           case "swapped":
-            if (flags.kado) return <Swapped {...props} />;
+            if (flags.swapped) return <Swapped {...props} />;
           case "moonpay":
             if (flags.moonpay) return <Moonpay {...props} />;
           case "onrampmoney":
