@@ -3,7 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 const publicKey = "pk_live_bf928a1d16cbf9f4e4b1280d87c30dc5";
 const secretKey = process.env.SWAPPED_COM_SK;
-const currencyCode = "USD";
+const currencyCode = "OSMO";
+const baseCurrencyCode = "USD";
+const baseCurrencyAmount = 200;
+const style = "9a4e4a18a5725bf1c9237c1297549aa0";
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,7 +25,7 @@ export default async function handler(
   const walletAddress = JSON.parse(req.body).walletAddress as string;
 
   // Build URL with query parameters.
-  const originalUrl = `https://widget.swapped.com?apiKey=${publicKey}&currencyCode=${currencyCode}&walletAddress=${walletAddress}`;
+  const originalUrl = `https://widget.swapped.com?apiKey=${publicKey}&currencyCode=${currencyCode}&walletAddress=${walletAddress}&baseCurrencyCode=${baseCurrencyCode}&baseCurrencyAmount=${baseCurrencyAmount}&style=${style}`;
 
   // Create a SHA-256 HMAC signature from the URL's search string, then encode in Base64.
   const signature = crypto
