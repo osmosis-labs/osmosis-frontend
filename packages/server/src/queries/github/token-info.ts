@@ -23,9 +23,8 @@ export const getTokenInfo = (
   )}_${lang.toLowerCase()}.json`;
 
   return queryOsmosisCMS({
-    repo: "JeremyParish69/assetlists",
+    repo: "osmosis-labs/assetlists",
     filePath,
     commitHash: undefined,
-    defaultBranch: "refs/heads/asset-detail-name-use-base",
   });
 };
