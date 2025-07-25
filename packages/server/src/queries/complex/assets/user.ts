@@ -1,5 +1,5 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
-import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import {
   aggregateCoinsByDenom,
   isNil,
@@ -16,7 +16,13 @@ import {
   getUserTotalDelegatedCoin,
   getUserTotalUndelegations,
 } from "../staking/user";
-import { AssetFilter, calcSumCoinsValue, getAsset, getAssets } from ".";
+import {
+  AssetFilter,
+  calcSumCoinsValue,
+  getAsset,
+  getAssetMarketActivity,
+  getAssets,
+} from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue } from "./price";
 
@@ -54,7 +60,7 @@ export async function getAssetWithUserBalance<TAsset extends MinimalAsset>({
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
 export async function mapGetAssetsWithUserBalances<
-  TAsset extends MinimalAsset
+  TAsset extends MinimalAsset & { liquidity?: number | PricePretty }
 >({
   poolId,
   ...params
@@ -72,6 +78,19 @@ export async function mapGetAssetsWithUserBalances<
   const { userOsmoAddress, search, sortFiatValueDirection } = params;
   let { assets } = params;
   if (!assets) assets = getAssets(params) as TAsset[];
+
+  assets = await Promise.all(
+    assets.map(async (asset) => {
+      const marketActivity = await getAssetMarketActivity({
+        coinMinimalDenom: asset.coinMinimalDenom,
+      });
+
+      return {
+        ...asset,
+        liquidity: marketActivity?.liquidity,
+      };
+    })
+  );
 
   // If poolId is provided, only include assets that are part of the pool.
   if (assets && !isNil(poolId)) {
@@ -118,7 +137,16 @@ export async function mapGetAssetsWithUserBalances<
     })
     .filter((a): a is Promise<TAsset & MaybeUserAssetCoin> => !!a);
 
-  const userAssets = await Promise.all(eventualUserAssets);
+  const userAssets = (await Promise.all(eventualUserAssets)).filter(
+    ({ usdValue, liquidity }) => {
+      if (usdValue) return true;
+
+      if (liquidity instanceof PricePretty)
+        return liquidity.toDec().gt(new Dec(0));
+
+      return liquidity ? liquidity > 0 : false;
+    }
+  );
 
   // if no search provided, sort by usdValue at head of list by default
   if (!search && sortFiatValueDirection) {

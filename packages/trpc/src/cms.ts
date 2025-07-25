@@ -14,15 +14,15 @@ export const cmsRouter = createTRPCRouter({
   getTokenInfos: publicProcedure
     .input(
       z.object({
-        coinDenom: z.string(),
+        coinMinimalDenom: z.string(),
         langs: z.array(z.string()),
       })
     )
-    .query(async ({ input: { coinDenom, langs } }) => {
+    .query(async ({ input: { coinMinimalDenom, langs } }) => {
       const results = await Promise.all(
         langs.map(async (lang) => {
           try {
-            const res = await getTokenInfo(coinDenom, lang);
+            const res = await getTokenInfo(coinMinimalDenom, lang);
 
             return [lang, res];
           } catch (error) {}

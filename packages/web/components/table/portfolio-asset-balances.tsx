@@ -377,9 +377,11 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
             </tr>
           )}
           {virtualRows.map((virtualRow) => {
-            const pushUrl = rows?.[virtualRow.index]?.original?.coinDenom
+            const pushUrl = rows?.[virtualRow.index]?.original?.coinMinimalDenom
               ? `/assets/${
-                  rows?.[virtualRow.index]?.original?.coinDenom ?? ""
+                  encodeURIComponent(
+                    rows?.[virtualRow.index]?.original?.coinMinimalDenom
+                  ) ?? ""
                 }?ref=portfolio`
               : "/assets/?ref=portfolio";
             const unverified =

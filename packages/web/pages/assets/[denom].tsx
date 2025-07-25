@@ -77,7 +77,19 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const [previousTrade, setPreviousTrade] =
       useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
 
-    const { title, details, coinGeckoId, asset: asset } = useAssetInfo();
+    const {
+      title,
+      details,
+      coinGeckoId,
+      asset,
+      denom: routerDenom,
+    } = useAssetInfo();
+
+    useEffect(() => {
+      if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
+        router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
+      }
+    }, [asset, router, routerDenom]);
 
     if (!asset) {
       return null;
@@ -277,7 +289,7 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: asset.symbol,
+      denom: asset.coinMinimalDenom,
     },
   })) as { params: { denom: string } }[];
 
@@ -297,11 +309,15 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
       findMinDenomOrSymbol: tokenDenom,
     });
 
+    const asset = await trpcHelpers.edge.assets.getUserAsset.fetch({
+      findMinDenomOrSymbol: tokenDenom,
+    });
+
     if (tokenDenom) {
       try {
         const tokenDetailsByLanguage =
           await trpcHelpers.local.cms.getTokenInfos.fetch({
-            coinDenom: tokenDenom,
+            coinMinimalDenom: asset.coinMinimalDenom,
             langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
           });
 

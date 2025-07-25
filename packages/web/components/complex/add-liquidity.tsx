@@ -12,8 +12,7 @@ import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
 
@@ -181,6 +180,7 @@ const AmountInput: FunctionComponent<{
                 poolAsset.currency.coinDenom
               )?.prettyChainName,
               poolShare: poolAsset.weightFraction,
+              coinMinimalDenom: poolAsset.currency.coinMinimalDenom,
             }))}
             selectedTokenDenom={
               addLiquidityConfig.singleAmountInAsset?.currency.coinDenom ?? ""
@@ -197,6 +197,7 @@ const AmountInput: FunctionComponent<{
             poolShare={weightFraction}
             ringColorIndex={index}
             isMobile={isMobile}
+            coinMinimalDenom={currency.coinMinimalDenom}
           />
         )}
         <div className="flex flex-col gap-2">

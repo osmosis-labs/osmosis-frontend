@@ -23,7 +23,7 @@ export const useAssetInfo = () => {
 
   const { data: detailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
     {
-      coinDenom: denom,
+      coinMinimalDenom: asset?.coinMinimalDenom ?? "",
       langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
     },
     {

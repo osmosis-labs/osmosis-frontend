@@ -55,7 +55,7 @@ jobs:
       # Send Slack alert if 'server-e2e-tests' job fails
       - name: Send Slack alert if test fails
         id: slack
-        if: failure()
+        if: failure() && github.run_attempt == 1
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |

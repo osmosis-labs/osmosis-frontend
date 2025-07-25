@@ -5,14 +5,17 @@ export async function queryOsmosisCMS<T>({
   commitHash = FE_CONTENT_COMMIT_HASH,
   filePath,
   repo = "osmosis-labs/fe-content",
+  defaultBranch = "main",
 }: {
   repo?: string;
   filePath: string;
   commitHash?: string;
+  defaultBranch?: string;
 }): Promise<T> {
   return await queryGithubFile<T>({
     filePath,
     repo,
     commitHash,
+    defaultBranch,
   });
 }

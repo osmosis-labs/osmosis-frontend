@@ -9,11 +9,18 @@ export interface TokenCMSData {
   stakingURL?: string;
 }
 
+// Because encoding seems different in the repo, I've added this function to replace %2F with %252F
+const replaceSlashes = (str: string) => {
+  return str.split("%2F").join("%252F");
+};
+
 export const getTokenInfo = (
-  denom: string,
+  coinMinimalDenom: string,
   lang: string
 ): Promise<TokenCMSData> => {
-  const filePath = `osmosis-1/generated/asset_detail/${denom.toLowerCase()}_asset_detail_${lang.toLowerCase()}.json`;
+  const filePath = `osmosis-1/generated/asset_detail/${replaceSlashes(
+    encodeURIComponent(coinMinimalDenom)
+  )}_${lang.toLowerCase()}.json`;
 
   return queryOsmosisCMS({
     repo: "osmosis-labs/assetlists",

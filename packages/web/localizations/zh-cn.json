@@ -1322,5 +1322,14 @@
     "anyTokenOnAnyNetworkOn": "任何网络上的任何令牌",
     "trade": "贸易",
     "with": "和"
+  },
+  "polarisBanner": {
+    "tradeYour": "交易你的",
+    "andSoMuchMore": "等等。",
+    "tradeAnythingOnPolaris": "在 Polaris 上交易任何商品"
+  },
+  "lowLiquidityAlert": {
+    "title": "你的交易可能会失败",
+    "description": "由于所有资金池的{tokenWithLowLiquidity}流动性较低，该交易可能会导致高滑点，并且可能无法执行。"
   }
 }

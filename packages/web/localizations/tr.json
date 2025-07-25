@@ -1322,5 +1322,14 @@
     "anyTokenOnAnyNetworkOn": "herhangi bir ağdaki herhangi bir belirteç",
     "trade": "Ticaret",
     "with": "ile"
+  },
+  "polarisBanner": {
+    "tradeYour": "Ticaretinizi yapın",
+    "andSoMuchMore": "ve çok daha fazlası.",
+    "tradeAnythingOnPolaris": "Polaris'te her şeyi alıp satabilirsiniz"
+  },
+  "lowLiquidityAlert": {
+    "title": "İşleminiz başarısız olabilir",
+    "description": "Tüm havuzlarda {tokenWithLowLiquidity} likiditesinin düşük olması nedeniyle, bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
   }
 }
