@@ -4,15 +4,15 @@ import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
 import { useFeatureFlags } from "~/hooks";
 import { FiatRampKey } from "~/integrations";
-import { Kado } from "~/integrations/kado";
 import { Layerswap } from "~/integrations/layerswap";
 import { Moonpay } from "~/integrations/moonpay";
 import { OnrampMoney } from "~/integrations/onrampmoney";
+import { Swapped } from "~/integrations/swapped";
 import { useTransakModal } from "~/integrations/transak";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
-  kado: "Kado",
+  swapped: "Swapped",
   layerswapcoinbase: "Coinbase Layer Swap",
   moonpay: "MoonPay",
   onrampmoney: "Onramp.money",
@@ -70,8 +70,8 @@ export const FiatRampsModal: FunctionComponent<
       </div>
       {(() => {
         switch (fiatRampKey) {
-          case "kado":
-            if (flags.kado) return <Kado {...props} />;
+          case "swapped":
+            if (flags.swapped) return <Swapped {...props} />;
           case "moonpay":
             if (flags.moonpay) return <Moonpay {...props} />;
           case "onrampmoney":

@@ -8,6 +8,7 @@ import {
   paramsRouter,
   poolsRouter,
   portfolioRouter,
+  swappedRouter,
   swapRouter,
 } from "@osmosis-labs/trpc";
 
@@ -27,4 +28,5 @@ export const localRouter = createTRPCRouter({
   params: paramsRouter,
   orderbooks: orderbookRouter,
   pools: poolsRouter,
+  swapped: swappedRouter,
 });

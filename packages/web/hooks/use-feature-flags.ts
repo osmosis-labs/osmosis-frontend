@@ -33,7 +33,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   babyTokenBanner: false,
   moonpay: true,
   layerswapcoinbase: true,
-  kado: true,
+  swapped: true,
   onrampmoney: true,
   transak: true,
   polarisBanner: false,

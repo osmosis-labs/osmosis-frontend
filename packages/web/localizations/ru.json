@@ -244,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Купить криптовалюту",
-      "kadoSubtitle": "Поддерживает OSMO, USDC",
+      "swappedSubtitle": "Поддерживает OSMO, USDC",
       "moonpaySubtitle": "Поддерживает OSMO, USDC",
       "transakSubtitle": "Поддерживает ОСМО",
       "onrampMoneySubtitle": "Поддерживает OSMO, USDC",
