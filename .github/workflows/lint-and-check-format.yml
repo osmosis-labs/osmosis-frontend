@@ -18,9 +18,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
 
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
         package: ["web", "utils", "server", "stores", "pools", "math", "bridge"]
 
     steps:
