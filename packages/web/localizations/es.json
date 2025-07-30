@@ -244,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Comprar criptomonedas",
-      "kadoSubtitle": "Soporta OSMO, USDC",
+      "swappedSubtitle": "Compatible con OSMO y USDC",
       "moonpaySubtitle": "Compatible con OSMO y USDC",
       "transakSubtitle": "Soporta OSMO",
       "onrampMoneySubtitle": "Soporta OSMO, USDC",

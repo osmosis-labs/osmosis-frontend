@@ -27,7 +27,7 @@ export type AvailableFlags =
   | "babyTokenBanner"
   | "moonpay"
   | "layerswapcoinbase"
-  | "kado"
+  | "swapped"
   | "onrampmoney"
   | "transak"
   | "polarisBanner";
