@@ -61,7 +61,7 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
           <span>{t("polarisBanner.andSoMuchMore")}</span>
         </h6>
         <Link
-          href={`https://beta.polaris.app/tokens/${fromAsset.coinDenom}?fromChain=cosmos:osmosis-1&fromToken=${fromAsset.coinMinimalDenom}&toChain=evm:hyperliquid&toToken=150`}
+          href={`https://beta.polaris.app/tokens/${fromAsset.coinDenom}?fromChain=cosmos:osmosis-1&fromToken=${fromAsset.coinMinimalDenom}&toChain=evm:hyperliquid&toToken=150&utm_source=OsmosisSwapBanner`}
           target="_blank"
           className="py-3 px-4 bg-[#F99E53] rounded-3xl mt-6 flex items-center gap-1 text-[#0A0F0D] w-fit hover:bg-[#F78425] transition-colors"
         >
