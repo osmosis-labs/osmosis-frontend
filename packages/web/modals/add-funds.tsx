@@ -6,6 +6,10 @@ import { parseAsString, useQueryStates } from "nuqs";
 import { useCallback } from "react";
 
 import { Icon } from "~/components/assets";
+import {
+  ATOM_BASE_DENOM,
+  USDC_BASE_DENOM,
+} from "~/components/place-limit-tool/defaults";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
@@ -193,8 +197,10 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 set({ tab: "swap" });
-                setFromAssetDenom?.("USDC");
-                setToAssetDenom?.(fromAsset?.coinDenom ?? "ATOM");
+                setFromAssetDenom?.(USDC_BASE_DENOM);
+                setToAssetDenom?.(
+                  fromAsset?.coinMinimalDenom ?? ATOM_BASE_DENOM
+                );
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -228,8 +234,8 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 if (!standalone) set({ tab: "swap" });
-                setFromAssetDenom?.("OSMO");
-                setToAssetDenom?.("USDC");
+                setFromAssetDenom?.("uosmo");
+                setToAssetDenom?.(USDC_BASE_DENOM);
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -267,8 +273,8 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 if (!standalone) set({ tab: "swap" });
-                setFromAssetDenom?.("");
-                setToAssetDenom?.(fromAsset?.coinDenom ?? "");
+                setFromAssetDenom?.("uosmo");
+                setToAssetDenom?.(fromAsset?.coinMinimalDenom ?? "");
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"

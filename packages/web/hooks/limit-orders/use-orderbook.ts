@@ -82,7 +82,7 @@ export const useOrderbookSelectableDenoms = () => {
     const quoteDenoms: Record<string, (MinimalAsset & MaybeUserAssetCoin)[]> =
       {};
     selectableBaseAssets.forEach((asset) => {
-      quoteDenoms[asset.coinDenom] = orderbooks
+      quoteDenoms[asset.coinMinimalDenom] = orderbooks
         .filter((orderbook) => {
           return orderbook.baseDenom === asset.coinMinimalDenom;
         })
@@ -90,7 +90,7 @@ export const useOrderbookSelectableDenoms = () => {
           const { quoteDenom } = orderbook;
 
           const existingAsset = selectableAssets.find(
-            (asset) => asset.coinMinimalDenom === quoteDenom
+            (asset) => asset.coinDenom === quoteDenom
           );
 
           if (existingAsset) {

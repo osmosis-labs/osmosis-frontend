@@ -97,12 +97,14 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         onClose();
       };
 
-      const onClickAsset = (coinDenom: string) => {
+      const onClickAsset = (coinMinimalDenom: string) => {
         let isRecommended = false;
         const selectedAsset =
-          selectableAssets.find((asset) => asset?.coinDenom === coinDenom) ??
+          selectableAssets.find(
+            (asset) => asset?.coinMinimalDenom === coinMinimalDenom
+          ) ??
           recommendedAssets.find((asset) => {
-            if (asset.coinDenom === coinDenom) {
+            if (asset.coinMinimalDenom === coinMinimalDenom) {
               isRecommended = true;
               return true;
             }
@@ -117,10 +119,10 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
           !shouldShowUnverifiedAssets &&
           !selectedAsset.isVerified
         ) {
-          return setConfirmUnverifiedAssetDenom(coinDenom);
+          return setConfirmUnverifiedAssetDenom(coinMinimalDenom);
         }
 
-        onSelect(coinDenom);
+        onSelect(coinMinimalDenom);
       };
 
       const [filterValue, setQuery, results] = useFilteredData(
@@ -138,7 +140,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
         items: results,
         onSelectItem: (item) => {
           if (item) {
-            onSelect(item.coinDenom);
+            onSelect(item.coinMinimalDenom);
           }
         },
         searchBoxRef,
@@ -176,7 +178,8 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       const assetToActivate = useMemo(
         () =>
           selectableAssets.find(
-            (asset) => asset && asset.coinDenom === confirmUnverifiedAssetDenom
+            (asset) =>
+              asset && asset.coinMinimalDenom === confirmUnverifiedAssetDenom
           ),
         [confirmUnverifiedAssetDenom, selectableAssets]
       );
@@ -266,29 +269,31 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                     onMouseDown={onMouseDownQuickSelect}
                     className="no-scrollbar flex gap-4 overflow-x-auto px-8 pt-3"
                   >
-                    {recommendedAssets.map(({ coinDenom, coinImageUrl }) => {
-                      return (
-                        <button
-                          key={coinDenom}
-                          className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
-                          onClick={() => {
-                            onClickAsset(coinDenom);
-                          }}
-                        >
-                          {coinImageUrl && (
-                            <div className="h-6 w-6 rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={24}
-                                height={24}
-                              />
-                            </div>
-                          )}
-                          <p className="font-semibold">{coinDenom}</p>
-                        </button>
-                      );
-                    })}
+                    {recommendedAssets.map(
+                      ({ coinDenom, coinMinimalDenom, coinImageUrl }) => {
+                        return (
+                          <button
+                            key={coinDenom}
+                            className="flex items-center gap-3 rounded-[40px] border border-osmoverse-700 py-2 pl-2 pr-3 transition-colors duration-150 ease-out hover:bg-osmoverse-900 focus:bg-osmoverse-900"
+                            onClick={() => {
+                              onClickAsset(coinMinimalDenom);
+                            }}
+                          >
+                            {coinImageUrl && (
+                              <div className="h-6 w-6 rounded-full">
+                                <Image
+                                  src={coinImageUrl}
+                                  alt="token icon"
+                                  width={24}
+                                  height={24}
+                                />
+                              </div>
+                            )}
+                            <p className="font-semibold">{coinDenom}</p>
+                          </button>
+                        );
+                      }
+                    )}
                   </div>
                 )}
               </div>
@@ -327,7 +332,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                             data-testid="token-select-asset"
                             onClick={(e) => {
                               e.stopPropagation();
-                              onClickAsset?.(coinDenom);
+                              onClickAsset?.(coinMinimalDenom);
                             }}
                             onMouseOver={() => setKeyboardSelectedIndex(index)}
                             onFocus={() => setKeyboardSelectedIndex(index)}

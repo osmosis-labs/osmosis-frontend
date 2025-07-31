@@ -10,6 +10,11 @@ import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import React, { Fragment, memo, useEffect, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
+import {
+  ATOM_BASE_DENOM,
+  USDC_BASE_DENOM,
+  USDT_BASE_DENOM,
+} from "~/components/place-limit-tool/defaults";
 import { EventName } from "~/config";
 import {
   AssetLists,
@@ -30,21 +35,32 @@ import { api } from "~/utils/trpc";
 
 type AssetWithBalance = Asset & MaybeUserAssetCoin;
 
-const UI_DEFAULT_QUOTES: MainnetAssetSymbols[] = ["USDC", "USDT"];
+const UI_DEFAULT_QUOTES: string[] = [USDC_BASE_DENOM, USDT_BASE_DENOM];
 
-const VALID_QUOTES: MainnetAssetSymbols[] = [
+const VALID_QUOTES: string[] = [
   ...UI_DEFAULT_QUOTES,
-  "USDC.sol.wh",
-  "USDC.eth.grv",
-  "USDC.eth.wh",
-  "USDC.e.matic.axl",
-  "USDC.avax.axl",
-  "USDC.eth.axl",
-  "USDT.eth.grv",
-  "USDT.eth.wh",
-  "USDT.kava",
-  "USDT.eth.pica",
-  "USDT.sol.pica",
+  // "USDC.sol.wh",
+  "ibc/F08DE332018E8070CC4C68FE06E04E254F527556A614F5F8F9A68AF38D367E45",
+  // "USDC.eth.grv",
+  "ibc/9F9B07EF9AD291167CF5700628145DE1DEB777C2CFC7907553B24446515F6D0E",
+  // "USDC.eth.wh",
+  "ibc/6B99DB46AA9FF47162148C1726866919E44A6A5E0274B90912FD17E19A337695",
+  // "USDC.e.matic.axl",
+  "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A",
+  // "USDC.avax.axl",
+  "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C",
+  // "USDC.eth.axl",
+  "ibc/D189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858",
+  // "USDT.eth.grv",
+  "ibc/71B441E27F1BBB44DD0891BCD370C2794D404D60A4FFE5AECCD9B1E28BC89805",
+  // "USDT.eth.wh",
+  "ibc/2108F2D81CBE328F371AD0CEF56691B18A86E08C3651504E42487D9EE92DDE9C",
+  // "USDT.kava",
+  "ibc/4ABBEF4C8926DDDB320AE5188CFD63267ABBCEFC0583E4AE05D6E5AA2401DDAB",
+  // "USDT.eth.pica",
+  "ibc/078AD6F581E8115CDFBD8FFA29D8C71AFE250CE952AFF80040CBC64868D44AD3",
+  // "USDT.sol.pica",
+  "ibc/0233A3F2541FD43DBCA569B27AF886E97F5C03FC0305E4A8A3FAC6AC26249C7A",
 ];
 
 function sortByAmount(
@@ -65,8 +81,8 @@ interface PriceSelectorProps {
 
 export const PriceSelector = memo(
   ({
-    initialBaseDenom = "ATOM",
-    initialQuoteDenom = "USDC",
+    initialBaseDenom = ATOM_BASE_DENOM,
+    initialQuoteDenom = USDC_BASE_DENOM,
   }: PriceSelectorProps) => {
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -74,11 +90,11 @@ export const PriceSelector = memo(
     const [tab, setTab] = useQueryState("tab");
     const [quote, setQuote] = useQueryState(
       "quote",
-      parseAsString.withDefault(initialQuoteDenom || "USDC")
+      parseAsString.withDefault(initialQuoteDenom)
     );
     const [base, setBase] = useQueryState(
       "from",
-      parseAsString.withDefault(initialBaseDenom || "ATOM")
+      parseAsString.withDefault(initialBaseDenom)
     );
     const [_, setSellOpen] = useQueryState(
       "sellOpen",
@@ -94,20 +110,22 @@ export const PriceSelector = memo(
 
     const quoteAsset = useMemo(
       () =>
-        getAssetFromAssetList({ assetLists: AssetLists, symbol: quote })
-          ?.rawAsset as Asset | undefined,
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          coinMinimalDenom: quote,
+        })?.rawAsset as Asset | undefined,
       [quote]
     );
 
     useEffect(() => {
       if (quote === base) {
-        setBase("ATOM");
+        setBase(ATOM_BASE_DENOM);
       }
     }, [base, quote, setBase]);
 
     useEffect(() => {
       if (!quoteAsset) {
-        setQuote("USDC");
+        setQuote(USDC_BASE_DENOM);
       }
     }, [quoteAsset, setQuote]);
 
@@ -117,10 +135,10 @@ export const PriceSelector = memo(
     const defaultQuotes = useMemo(
       () =>
         UI_DEFAULT_QUOTES.map(
-          (symbol) =>
+          (coinMinimalDenom) =>
             getAssetFromAssetList({
               assetLists: AssetLists,
-              symbol,
+              coinMinimalDenom,
             })?.rawAsset
         ).filter(Boolean) as Asset[],
       []
@@ -135,7 +153,7 @@ export const PriceSelector = memo(
             .map((walletAsset) => {
               if (
                 !(tab === "sell" ? UI_DEFAULT_QUOTES : VALID_QUOTES).includes(
-                  walletAsset.coinDenom as MainnetAssetSymbols
+                  walletAsset.coinMinimalDenom
                 )
               ) {
                 return undefined;
@@ -143,7 +161,7 @@ export const PriceSelector = memo(
 
               const asset = getAssetFromAssetList({
                 assetLists: AssetLists,
-                symbol: walletAsset.coinDenom,
+                coinMinimalDenom: walletAsset.coinMinimalDenom,
               });
 
               // Extrapolate the rawAsset and return the amount and usdValue
@@ -160,7 +178,7 @@ export const PriceSelector = memo(
             .toSorted(sortByAmount)
             .toSorted((assetA) => {
               const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
-                (asset) => asset.coinDenom === assetA?.symbol
+                (asset) => asset.coinMinimalDenom === assetA?.coinMinimalDenom
               );
 
               return isAssetAAvailable ? -1 : 1;
@@ -314,6 +332,7 @@ export const PriceSelector = memo(
                       </button>
                     )}
                     <button
+                      type="button"
                       onClick={() => {
                         logEvent([EventName.LimitOrder.swapFromAnotherAsset]);
                         if (tab === "buy") {
@@ -415,103 +434,114 @@ const SelectableQuotes = observer(
     const { accountStore } = useStore();
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-    const [base] = useQueryState("from", parseAsString.withDefault("ATOM"));
+    const [base] = useQueryState(
+      "from",
+      parseAsString.withDefault(ATOM_BASE_DENOM)
+    );
     const [quote, setQuote] = useQueryState(
       "quote",
-      parseAsString.withDefault("USDC")
+      parseAsString.withDefault(USDC_BASE_DENOM)
     );
     const [type] = useQueryState("type", parseAsString.withDefault("market"));
 
     const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
-    return selectableQuotes.map(({ symbol, name, logoURIs }) => {
-      const isSelected = quote === symbol;
-      const availableBalance =
-        userQuotes &&
-        (userQuotes.find((u) => u?.symbol === symbol)?.amount?.toDec() ??
-          new Dec(0));
-      const isDisabled =
-        type === "limit" &&
-        !selectableQuoteDenoms[base]?.some(
-          (asset) => asset.coinDenom === symbol
-        );
-      return (
-        <Menu.Item key={name}>
-          {({ active }) => (
-            <button
-              onClick={() => setQuote(symbol)}
-              className={classNames(
-                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
-                {
-                  "bg-osmoverse-700": active,
-                  "opacity-50": isDisabled,
-                }
-              )}
-              disabled={isDisabled}
-            >
-              <div className="flex items-center gap-3">
-                <Image
-                  src={logoURIs.svg || logoURIs.png || ""}
-                  alt={`${name} logo`}
-                  className="h-10 w-10"
-                  width={40}
-                  height={40}
-                />
-                <div className="flex flex-col gap-1 text-left">
-                  <p>{name}</p>
-                  <small className="text-sm leading-5 text-osmoverse-300">
-                    {symbol}
-                  </small>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                {isDisabled ? (
-                  <div className="flex w-[80px] items-end gap-3">
-                    <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-                      <span className="body2 font-light">
-                        {t("limitOrders.unavailable", {
-                          denom: base,
-                        })}
-                      </span>
-                    </p>
-                  </div>
-                ) : (
-                  wallet?.isWalletConnected &&
-                  availableBalance &&
-                  !availableBalance.isZero() &&
-                  !isDisabled && (
-                    <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                      <span
-                        className={classNames({
-                          "text-white-full": availableBalance.gt(new Dec(0)),
-                        })}
-                      >
-                        {formatFiatPrice(
-                          new PricePretty(DEFAULT_VS_CURRENCY, availableBalance)
-                        )}
-                      </span>
-                      <span className="body2 font-light">
-                        {t("pool.available").toLowerCase()}
-                      </span>
-                    </p>
-                  )
+    return selectableQuotes.map(
+      ({ name, logoURIs, symbol, coinMinimalDenom }) => {
+        const isSelected = quote === coinMinimalDenom;
+        const availableBalance =
+          userQuotes &&
+          (userQuotes
+            .find((u) => u?.coinMinimalDenom === coinMinimalDenom)
+            ?.amount?.toDec() ??
+            new Dec(0));
+        const isDisabled =
+          type === "limit" &&
+          !selectableQuoteDenoms[base]?.some(
+            (asset) => asset.coinDenom === coinMinimalDenom
+          );
+        return (
+          <Menu.Item key={name}>
+            {({ active }) => (
+              <button
+                type="button"
+                onClick={() => setQuote(coinMinimalDenom)}
+                className={classNames(
+                  "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
+                  {
+                    "bg-osmoverse-700": active,
+                    "opacity-50": isDisabled,
+                  }
                 )}
-                <Icon
-                  id="check-mark"
-                  width={16}
-                  height={16}
-                  className={classNames(
-                    "text-white h-[16px] w-[16px] rounded-full",
-                    {
-                      "opacity-0": !isSelected,
-                    }
+                disabled={isDisabled}
+              >
+                <div className="flex items-center gap-3">
+                  <Image
+                    src={logoURIs.svg || logoURIs.png || ""}
+                    alt={`${name} logo`}
+                    className="h-10 w-10"
+                    width={40}
+                    height={40}
+                  />
+                  <div className="flex flex-col gap-1 text-left">
+                    <p>{name}</p>
+                    <small className="text-sm leading-5 text-osmoverse-300">
+                      {symbol}
+                    </small>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {isDisabled ? (
+                    <div className="flex w-[80px] items-end gap-3">
+                      <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+                        <span className="body2 font-light">
+                          {t("limitOrders.unavailable", {
+                            denom: base,
+                          })}
+                        </span>
+                      </p>
+                    </div>
+                  ) : (
+                    wallet?.isWalletConnected &&
+                    availableBalance &&
+                    !availableBalance.isZero() &&
+                    !isDisabled && (
+                      <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                        <span
+                          className={classNames({
+                            "text-white-full": availableBalance.gt(new Dec(0)),
+                          })}
+                        >
+                          {formatFiatPrice(
+                            new PricePretty(
+                              DEFAULT_VS_CURRENCY,
+                              availableBalance
+                            )
+                          )}
+                        </span>
+                        <span className="body2 font-light">
+                          {t("pool.available").toLowerCase()}
+                        </span>
+                      </p>
+                    )
                   )}
-                />
-              </div>
-            </button>
-          )}
-        </Menu.Item>
-      );
-    });
+                  <Icon
+                    id="check-mark"
+                    width={16}
+                    height={16}
+                    className={classNames(
+                      "text-white h-[16px] w-[16px] rounded-full",
+                      {
+                        "opacity-0": !isSelected,
+                      }
+                    )}
+                  />
+                </div>
+              </button>
+            )}
+          </Menu.Item>
+        );
+      }
+    );
   }
 );
