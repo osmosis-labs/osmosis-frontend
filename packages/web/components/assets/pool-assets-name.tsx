@@ -32,7 +32,7 @@ export const PoolAssetsName: FunctionComponent<{
         {assetDenoms.map(({ minDenom, symbol }, index) => (
           <Fragment key={minDenom}>
             {withAssetInfoLink ? (
-              <Link href={`/assets/${encodeURIComponent(minDenom)}`}>
+              <Link href={`/assets/${minDenom}`}>
                 {formatAssetName(symbol)}
               </Link>
             ) : (

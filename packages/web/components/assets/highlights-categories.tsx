@@ -98,7 +98,7 @@ export function highlightPrice24hChangeAsset(asset: PriceChange24hAsset) {
   return {
     asset: {
       ...asset,
-      href: `/assets/${encodeURIComponent(asset.coinMinimalDenom)}`,
+      href: `/assets/${asset.coinMinimalDenom}`,
     },
     extraInfo: asset.priceChange24h ? (
       <PriceChange

@@ -54,17 +54,19 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
-    const { asset: token } = useAssetInfo();
+    const { asset: token, denom, isAssetLoading } = useAssetInfo();
 
     useEffect(() => {
       if (
         (typeof featureFlags.tokenInfo !== "undefined" &&
           !featureFlags.tokenInfo) ||
-        !token
+        (!isAssetLoading && !token)
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router, token]);
+    }, [denom, featureFlags.tokenInfo, isAssetLoading, router, token]);
+
+    if (!token) return;
 
     return <AssetInfoView {...props} />;
   }
@@ -90,10 +92,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
         router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
       }
     }, [asset, router, routerDenom]);
-
-    if (!asset) {
-      return null;
-    }
 
     const assetInfoConfig = useAssetInfoConfig(
       asset.coinDenom,
@@ -157,6 +155,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       }),
       [assetInfoConfig]
     );
+
+    if (!asset) {
+      return null;
+    }
 
     const SwapTool_ = (
       <TradeTool
@@ -289,16 +291,17 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: asset.coinMinimalDenom,
+      denom: asset.coinMinimalDenom.split("/"),
     },
-  })) as { params: { denom: string } }[];
+  })) as { params: { denom: string[] } }[];
 
   return { paths, fallback: "blocking" };
 };
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
-  const tokenDenom = params?.denom as string;
+  const denom = params?.denom as string[];
+  const tokenDenom = encodeURIComponent(denom.join("/"));
 
   try {
     /**

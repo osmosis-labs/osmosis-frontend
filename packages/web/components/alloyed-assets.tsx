@@ -91,9 +91,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
       <div className="flex flex-col gap-8">
         {alloyedAssets.map((alloyedAsset) => (
           <Link
-            href={`/assets/${encodeURIComponent(
-              alloyedAsset.asset.coinMinimalDenom
-            )}`}
+            href={`/assets/${alloyedAsset.asset.coinMinimalDenom}`}
             key={alloyedAsset.asset.coinMinimalDenom}
             className="flex"
           >
