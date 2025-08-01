@@ -37,6 +37,7 @@ import {
   getParametersFromOverspendErrorMessage,
   isOverspendErrorMessage,
 } from "~/components/alert/prettify";
+import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -1274,13 +1275,13 @@ function useToFromDenoms({
    */
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    parseAsString.withDefault(initialFromDenom ?? "ATOM")
+    parseAsString.withDefault(initialFromDenom ?? ATOM_BASE_DENOM)
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
   const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    parseAsString.withDefault(initialToDenom ?? "OSMO")
+    parseAsString.withDefault(initialToDenom ?? "uosmo")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;

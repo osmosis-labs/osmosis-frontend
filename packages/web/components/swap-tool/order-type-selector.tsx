@@ -2,10 +2,15 @@ import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { useEffect, useMemo } from "react";
 
+import {
+  ATOM_BASE_DENOM,
+  USDC_BASE_DENOM,
+} from "~/components/place-limit-tool/defaults";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
+import { api } from "~/utils/trpc";
 
 interface UITradeType {
   id: "market" | "limit";
@@ -21,8 +26,8 @@ interface OrderTypeSelectorProps {
 export const TRADE_TYPES = ["market", "limit"] as const;
 
 export const OrderTypeSelector = ({
-  initialQuoteDenom,
-  initialBaseDenom,
+  initialQuoteDenom = USDC_BASE_DENOM,
+  initialBaseDenom = ATOM_BASE_DENOM,
 }: OrderTypeSelectorProps) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -33,18 +38,18 @@ export const OrderTypeSelector = ({
   );
   const [base] = useQueryState(
     "from",
-    parseAsString.withDefault(initialBaseDenom || "ATOM")
+    parseAsString.withDefault(initialBaseDenom)
   );
   const [quote, setQuote] = useQueryState(
     "quote",
-    parseAsString.withDefault(initialQuoteDenom || "USDC")
+    parseAsString.withDefault(initialQuoteDenom)
   );
 
   const { selectableBaseAssets, selectableQuoteDenoms, isLoading } =
     useOrderbookSelectableDenoms();
 
   const hasOrderbook = useMemo(
-    () => selectableBaseAssets.some((asset) => asset.coinDenom === base),
+    () => selectableBaseAssets.some((asset) => asset.coinMinimalDenom === base),
     [base, selectableBaseAssets]
   );
 
@@ -57,10 +62,10 @@ export const OrderTypeSelector = ({
       setType("market");
     } else if (
       type === "limit" &&
-      !selectableQuotes.some((asset) => asset.coinDenom === quote) &&
+      !selectableQuotes.some((asset) => asset.coinMinimalDenom === quote) &&
       selectableQuotes.length > 0
     ) {
-      setQuote(selectableQuotes[0].coinDenom);
+      setQuote(selectableQuotes[0].coinMinimalDenom);
     }
   }, [
     hasOrderbook,
@@ -71,6 +76,10 @@ export const OrderTypeSelector = ({
     quote,
     isLoading,
   ]);
+
+  const { data: baseAsset } = api.edge.assets.getUserAsset.useQuery({
+    findMinDenomOrSymbol: base,
+  });
 
   useEffect(() => {
     switch (type) {
@@ -106,20 +115,23 @@ export const OrderTypeSelector = ({
   );
 
   return (
-    <div className="flex w-max items-center gap-px rounded-3xl border border-osmoverse-700 ">
+    <div className="flex w-max items-center gap-px rounded-3xl border border-osmoverse-700">
       {uiTradeTypes.map(({ disabled, id, title }) => {
         const isSelected = type === id;
 
         return (
           <GenericDisclaimer
             disabled={!disabled}
-            title={t("limitOrders.unavailable", { denom: base })}
+            title={t("limitOrders.unavailable", {
+              denom: baseAsset?.coinDenom ?? base,
+            })}
             key={`order-type-selector-${id}`}
             containerClassName={classNames("!w-fit", {
               hidden: isLoading,
             })}
           >
             <button
+              type="button"
               onClick={() => setType(id)}
               className={classNames(
                 "sm:body2 -m-px rounded-[22px] px-4 py-3 transition-colors disabled:pointer-events-none disabled:opacity-50 sm:px-3 sm:py-1.5",
