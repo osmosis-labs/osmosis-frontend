@@ -9,7 +9,7 @@ import { api } from "~/utils/trpc";
 export const useAssetInfo = () => {
   const language = useCurrentLanguage();
   const router = useRouter();
-  const denom = router.query.denom as string;
+  const denom = (router.query.denom as string[]).join("/");
 
   const { data: asset } = api.edge.assets.getUserAsset.useQuery(
     {

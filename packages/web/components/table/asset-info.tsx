@@ -557,9 +557,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
                 key={row.id}
                 onClick={() => {
-                  router.push(
-                    `/assets/${encodeURIComponent(coinMinimalDenom)}`
-                  );
+                  router.push(`/assets/${coinMinimalDenom}`);
                   logEvent([
                     EventName.Assets.assetClicked,
                     { tokenName: coinDenom },
@@ -578,7 +576,7 @@ export const AssetsInfoTable: FunctionComponent<{
                     key={cell.id}
                   >
                     <Link
-                      href={`/assets/${encodeURIComponent(coinMinimalDenom)}`}
+                      href={`/assets/${coinMinimalDenom}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         logEvent([

@@ -301,11 +301,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
       () =>
         pool.reserveCoins.map(({ denom, currency }, index) => (
           <Fragment key={denom}>
-            <Link
-              href={`/assets/${encodeURIComponent(currency.coinMinimalDenom)}`}
-            >
-              {denom}
-            </Link>
+            <Link href={`/assets/${currency.coinMinimalDenom}`}>{denom}</Link>
             {index < pool.reserveCoins.length - 1 && " / "}
           </Fragment>
         )),

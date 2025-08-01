@@ -54,7 +54,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
-    const { asset: token } = useAssetInfo();
+    const { asset: token, denom } = useAssetInfo();
 
     useEffect(() => {
       if (
@@ -64,7 +64,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
       ) {
         router.push("/assets");
       }
-    }, [featureFlags.tokenInfo, router, token]);
+    }, [denom, featureFlags.tokenInfo, router, token]);
 
     return <AssetInfoView {...props} />;
   }
@@ -289,16 +289,21 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const paths = topVolumeAssets.map((asset) => ({
     params: {
-      denom: asset.coinMinimalDenom,
+      denom: asset.coinMinimalDenom.split("/"),
     },
-  })) as { params: { denom: string } }[];
+  })) as { params: { denom: string[] } }[];
+
+  console.log({ paths: paths.map((p) => p.params.denom) });
 
   return { paths, fallback: "blocking" };
 };
 
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
-  const tokenDenom = params?.denom as string;
+  const denom = params?.denom as string[];
+  const tokenDenom = encodeURIComponent(denom.join("/"));
+
+  console.log({ tokenDenom });
 
   try {
     /**
