@@ -14,7 +14,7 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
   return (
     <div className="relative overflow-hidden min-h-[208px] flex flex-col my-3 gap-2 bg-[#653026] p-5 rounded-3xl">
       <div className="flex flex-col gap-2 max-w-[290px]">
-        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-semibold">
+        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-medium">
           {t("polarisBanner.tradeYour")}
           <div className="px-1">
             <Image
@@ -28,7 +28,7 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
           <span className="text-[#F8F6F2]">{fromAsset?.coinDenom ?? ""}</span>
           {t("babyBanner.with")}
         </h6>
-        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-semibold">
+        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-medium">
           <div className="px-1">
             <Image
               src="/tokens/generated/sol.svg"
@@ -48,13 +48,14 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
           </div>
           <span className="text-[#F8F6F2]">HYPE,</span>
         </h6>
-        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-semibold">
+        <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-medium">
           <div className="px-1">
             <Image
               src="/logos/polaris-banner-logos.png"
               alt="GOOGL - 1TSLA - AAPL logos"
               width={52}
               height={24}
+              unoptimized
               className="min-w-[52px]"
             />
           </div>
