@@ -293,8 +293,6 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
     },
   })) as { params: { denom: string[] } }[];
 
-  console.log({ paths: paths.map((p) => p.params.denom) });
-
   return { paths, fallback: "blocking" };
 };
 
@@ -302,8 +300,6 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const denom = params?.denom as string[];
   const tokenDenom = encodeURIComponent(denom.join("/"));
-
-  console.log({ tokenDenom });
 
   try {
     /**
