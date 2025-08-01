@@ -90,7 +90,7 @@ export const useOrderbookSelectableDenoms = () => {
           const { quoteDenom } = orderbook;
 
           const existingAsset = selectableAssets.find(
-            (asset) => asset.coinDenom === quoteDenom
+            (asset) => asset.coinMinimalDenom === quoteDenom
           );
 
           if (existingAsset) {

@@ -458,7 +458,7 @@ const SelectableQuotes = observer(
         const isDisabled =
           type === "limit" &&
           !selectableQuoteDenoms[base]?.some(
-            (asset) => asset.coinDenom === coinMinimalDenom
+            (asset) => asset.coinMinimalDenom === coinMinimalDenom
           );
         return (
           <Menu.Item key={name}>
