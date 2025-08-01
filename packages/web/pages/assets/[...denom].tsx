@@ -54,17 +54,19 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageStaticProps> = observer(
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
-    const { asset: token, denom } = useAssetInfo();
+    const { asset: token, denom, isAssetLoading } = useAssetInfo();
 
     useEffect(() => {
       if (
         (typeof featureFlags.tokenInfo !== "undefined" &&
           !featureFlags.tokenInfo) ||
-        !token
+        (!isAssetLoading && !token)
       ) {
         router.push("/assets");
       }
-    }, [denom, featureFlags.tokenInfo, router, token]);
+    }, [denom, featureFlags.tokenInfo, isAssetLoading, router, token]);
+
+    if (!token) return;
 
     return <AssetInfoView {...props} />;
   }
@@ -90,10 +92,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
         router.push(`/assets/${encodeURIComponent(asset.coinMinimalDenom)}`);
       }
     }, [asset, router, routerDenom]);
-
-    if (!asset) {
-      return null;
-    }
 
     const assetInfoConfig = useAssetInfoConfig(
       asset.coinDenom,
@@ -157,6 +155,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       }),
       [assetInfoConfig]
     );
+
+    if (!asset) {
+      return null;
+    }
 
     const SwapTool_ = (
       <TradeTool
