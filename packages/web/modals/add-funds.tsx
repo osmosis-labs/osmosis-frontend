@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import {
   ATOM_BASE_DENOM,
   USDC_BASE_DENOM,
+  USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { Tooltip } from "~/components/tooltip";
 import { useTranslation } from "~/hooks";
@@ -98,7 +99,10 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                bridgeAsset({ anyDenom: "USDC", direction: "deposit" });
+                bridgeAsset({
+                  anyDenom: USDC_BASE_DENOM,
+                  direction: "deposit",
+                });
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
@@ -129,7 +133,7 @@ export function AddFundsModal({
               type="button"
               onClick={() => {
                 bridgeAsset({
-                  anyDenom: fromAsset?.coinDenom ?? "ATOM",
+                  anyDenom: fromAsset?.coinMinimalDenom ?? ATOM_BASE_DENOM,
                   direction: "deposit",
                 });
                 onRequestClose();
@@ -166,7 +170,10 @@ export function AddFundsModal({
             <button
               type="button"
               onClick={() => {
-                bridgeAsset({ anyDenom: "USDT", direction: "deposit" });
+                bridgeAsset({
+                  anyDenom: USDT_BASE_DENOM,
+                  direction: "deposit",
+                });
                 onRequestClose();
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
