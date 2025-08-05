@@ -26,9 +26,10 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
   const { chainPrettyName, chainLogoUri, chainColor } = (() => {
     if (chain?.chainType === "cosmos") {
       return {
-        chainPrettyName: cosmosChain?.pretty_name,
-        chainLogoUri: cosmosChain?.logoURIs?.png ?? cosmosChain?.logoURIs?.svg,
-        chainColor: cosmosChain?.logoURIs?.theme?.primary_color_hex,
+        chainPrettyName: cosmosChain?.prettyName,
+        chainLogoUri:
+          cosmosChain?.logo_URIs?.png ?? cosmosChain?.logo_URIs?.svg,
+        // chainColor: cosmosChain?.logo_URIs?.theme?.primary_color_hex,
       };
     } else if (chain?.chainType === "evm") {
       return {

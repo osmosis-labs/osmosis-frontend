@@ -2,6 +2,7 @@ import { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
+import { SquidBridgeProvider } from ".";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
@@ -9,7 +10,6 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
-import { SquidBridgeProvider } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {
@@ -147,7 +147,7 @@ export class SquidTransferStatusProvider implements TransferStatusProvider {
         return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
       }
 
-      return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+      return chain.explorers[0].txPage.replace("{txHash}", sendTxHash);
     }
   }
 }

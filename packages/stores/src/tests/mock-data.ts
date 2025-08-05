@@ -15,11 +15,11 @@ export const MockChainList: (Chain & {
   {
     chain_name: "osmosis",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Osmosis",
+    networkType: "mainnet",
+    prettyName: "Osmosis",
     chain_id: TestOsmosisChainId,
-    bech32_prefix: "osmo",
-    bech32_config: {
+    bech32Prefix: "osmo",
+    bech32Config: {
       bech32PrefixAccAddr: "osmo",
       bech32PrefixAccPub: "osmopub",
       bech32PrefixValAddr: "osmovaloper",
@@ -28,27 +28,27 @@ export const MockChainList: (Chain & {
       bech32PrefixConsPub: "osmovalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uosmo",
-          fixed_min_gas_price: 0.0025,
-          low_gas_price: 0.0025,
-          average_gas_price: 0.035,
-          high_gas_price: 0.04,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uosmo",
+        coinDecimals: 6,
+        coinDenom: "OSMO",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.0025,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
-    },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uosmo",
-        },
-      ],
-      lock_duration: {
-        time: "1209600s",
       },
+    ],
+    stakeCurrency: {
+      coinMinimalDenom: "uosmo",
+      coinDenom: "OSMO",
+      coinDecimals: 6,
+      coinGeckoId: "",
     },
+    currencies: [],
     description:
       "Osmosis (OSMO) is a decentralized exchange (DEX) for Cosmos, an ecosystem of sovereign, interoperable blockchains all connected trustlessly over IBC, the Inter-Blockchain Communication Protocol. Osmosis also offers non-IBC assets bridged from the Ethereum and Polkadot ecosystems. Osmosis' Supercharged Liquidity implements an efficient liquidity pool mechanism analogous to Uniswap's concentrated liquidity, attaining improved capital efficiency and allowing liquidity providers to compete for earned fees and incentives.\n\nAs an appchain DEX, Osmosis has greater control over the full blockchain stack than DEXs that must follow the code of a parent chain. This fine-grained control has enabled, for example, the development of Superfluid Staking, an improvement to Proof-of-Stake security. Superfluid staking allows the underlying OSMO in an LP position to add to chain security and earn staking rewards for doing so. The customizability of appchains also allows for the development of a transaction mempool shielded with threshold encryption, which will greatly reduce harmful MEV on Osmosis.\n\nOsmosis's vision is to build a cross-chain native DEX and trading suite that connects all chains over IBC, including Ethereum and Bitcoin. To build out the trading functionalities, Osmosis has invited external developers to create a bespoke DEX ecosystem that includes lending, credit, margin, fiat on-ramps, Defi strategy vaults, NFTs, stablecoins, and more – all the functionalities of a centralized exchange and more, plus the trust-minimization of decentralized finance.",
     apis: {
@@ -65,7 +65,7 @@ export const MockChainList: (Chain & {
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/osmosis/txs/{txHash}",
+        txPage: "https://www.mintscan.io/osmosis/txs/{txHash}",
       },
     ],
     features: [
@@ -221,11 +221,11 @@ export const MockChainList: (Chain & {
   {
     chain_name: "cosmoshub",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "cosmoshub",
+    networkType: "mainnet",
+    prettyName: "cosmoshub",
     chain_id: "cosmoshub-4",
-    bech32_prefix: "cosmos",
-    bech32_config: {
+    bech32Prefix: "cosmos",
+    bech32Config: {
       bech32PrefixAccAddr: "cosmos",
       bech32PrefixAccPub: "cosmospub",
       bech32PrefixValAddr: "cosmosvaloper",
@@ -234,24 +234,27 @@ export const MockChainList: (Chain & {
       bech32PrefixConsPub: "cosmosvalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uatom",
-          fixed_min_gas_price: 0.005,
-          low_gas_price: 0.01,
-          average_gas_price: 0.045,
-          high_gas_price: 0.03,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6,
+        coinDenom: "ATOM",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinDenom: "ATOM",
+      coinMinimalDenom: "uatom",
+      coinDecimals: 6,
+      coinGeckoId: "",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uatom",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "In a nutshell, Cosmos Hub bills itself as a project that solves some of the hardest problems facing the blockchain industry. It aims to offer an antidote to slow, expensive, unscalable and environmentally harmful proof-of-work protocols, like those used by Bitcoin, by offering an ecosystem of connected blockchains.\n\nThe project’s other goals include making blockchain technology less complex and difficult for developers thanks to a modular framework that demystifies decentralized apps. Last but not least, an Inter-blockchain Communication protocol makes it easier for blockchain networks to communicate with each other — preventing fragmentation in the industry.\n\nCosmos Hub's origins can be dated back to 2014, when Tendermint, a core contributor to the network, was founded. In 2016, a white paper for Cosmos was published — and a token sale was held the following year. ATOM tokens are earned through a hybrid proof-of-stake algorithm, and they help to keep the Cosmos Hub, the project’s flagship blockchain, secure. This cryptocurrency also has a role in the network’s governance.",
     apis: {
@@ -268,7 +271,7 @@ export const MockChainList: (Chain & {
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/cosmos/txs/{txHash}",
+        txPage: "https://www.mintscan.io/cosmos/txs/{txHash}",
       },
     ],
     features: ["ibc-go", "ibc-transfer"],
@@ -334,11 +337,11 @@ export const MockChainList: (Chain & {
   {
     chain_name: "cosmoshub",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "cosmoshub",
+    networkType: "mainnet",
+    prettyName: "cosmoshub",
     chain_id: "cosmoshub-4-no-gas-price",
-    bech32_prefix: "cosmos",
-    bech32_config: {
+    bech32Prefix: "cosmos",
+    bech32Config: {
       bech32PrefixAccAddr: "cosmos",
       bech32PrefixAccPub: "cosmospub",
       bech32PrefixValAddr: "cosmosvaloper",
@@ -347,20 +350,27 @@ export const MockChainList: (Chain & {
       bech32PrefixConsPub: "cosmosvalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uatom",
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6,
+        coinDenom: "ATOM",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinDenom: "ATOM",
+      coinMinimalDenom: "uatom",
+      coinDecimals: 6,
+      coinGeckoId: "",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uatom",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "In a nutshell, Cosmos Hub bills itself as a project that solves some of the hardest problems facing the blockchain industry. It aims to offer an antidote to slow, expensive, unscalable and environmentally harmful proof-of-work protocols, like those used by Bitcoin, by offering an ecosystem of connected blockchains.\n\nThe project’s other goals include making blockchain technology less complex and difficult for developers thanks to a modular framework that demystifies decentralized apps. Last but not least, an Inter-blockchain Communication protocol makes it easier for blockchain networks to communicate with each other — preventing fragmentation in the industry.\n\nCosmos Hub's origins can be dated back to 2014, when Tendermint, a core contributor to the network, was founded. In 2016, a white paper for Cosmos was published — and a token sale was held the following year. ATOM tokens are earned through a hybrid proof-of-stake algorithm, and they help to keep the Cosmos Hub, the project’s flagship blockchain, secure. This cryptocurrency also has a role in the network’s governance.",
     apis: {
@@ -377,7 +387,7 @@ export const MockChainList: (Chain & {
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/cosmos/txs/{txHash}",
+        txPage: "https://www.mintscan.io/cosmos/txs/{txHash}",
       },
     ],
     features: ["ibc-go", "ibc-transfer"],

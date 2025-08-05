@@ -82,8 +82,8 @@ function getMockKeplr(
         });
       }
     },
-    ChainList.map(({ bech32_config, chain_id }) => ({
-      bech32Config: bech32_config,
+    ChainList.map(({ bech32Config, chain_id }) => ({
+      bech32Config: bech32Config,
       chainId: chain_id,
     })),
     mnemonic
