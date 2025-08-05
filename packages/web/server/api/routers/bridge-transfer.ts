@@ -410,13 +410,13 @@ export const bridgeTransferRouter = createTRPCRouter({
             }
 
             return {
-              prettyName: cosmosChain.pretty_name,
+              prettyName: cosmosChain.prettyName,
               chainId: cosmosChain.chain_id,
               chainName: cosmosChain.chain_name,
               chainType,
-              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
-              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
-              bech32Prefix: cosmosChain.bech32_prefix,
+              logoUri: cosmosChain.logo_URIs?.svg ?? cosmosChain.logo_URIs?.png,
+              // color: cosmosChain.logo_URIs?.theme?.primary_color_hex,
+              bech32Prefix: cosmosChain.bech32Prefix,
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           } else if (chainType === "bitcoin") {
             return {

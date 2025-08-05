@@ -4,11 +4,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "osmosis",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Osmosis",
+    networkType: "mainnet",
+    prettyName: "Osmosis",
     chain_id: "osmosis-1",
-    bech32_prefix: "osmo",
-    bech32_config: {
+    bech32Prefix: "osmo",
+    bech32Config: {
       bech32PrefixAccAddr: "osmo",
       bech32PrefixAccPub: "osmopub",
       bech32PrefixValAddr: "osmovaloper",
@@ -17,27 +17,27 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "osmovalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uosmo",
-          fixed_min_gas_price: 0.0025,
-          low_gas_price: 0.0025,
-          average_gas_price: 0.025,
-          high_gas_price: 0.04,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uosmo",
+        coinDecimals: 6,
+        coinDenom: "OSMO",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.0025,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
-    },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uosmo",
-        },
-      ],
-      lock_duration: {
-        time: "1209600s",
       },
+    ],
+    stakeCurrency: {
+      coinMinimalDenom: "uosmo",
+      coinDenom: "OSMO",
+      coinDecimals: 6,
+      coinGeckoId: "",
     },
+    currencies: [],
     description:
       "Swap, earn, and build on the leading decentralized Cosmos exchange.",
     apis: {
@@ -54,7 +54,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/cosmos/txs/${txHash}",
+        txPage: "https://www.mintscan.io/cosmos/txs/${txHash}",
       },
     ],
     features: [
@@ -68,11 +68,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "cosmoshub",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Cosmos Hub",
+    networkType: "mainnet",
+    prettyName: "Cosmos Hub",
     chain_id: "cosmoshub-4",
-    bech32_prefix: "cosmos",
-    bech32_config: {
+    bech32Prefix: "cosmos",
+    bech32Config: {
       bech32PrefixAccAddr: "cosmos",
       bech32PrefixAccPub: "cosmospub",
       bech32PrefixValAddr: "cosmosvaloper",
@@ -81,24 +81,27 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "cosmosvalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uatom",
-          fixed_min_gas_price: 0,
-          low_gas_price: 0.01,
-          average_gas_price: 0.025,
-          high_gas_price: 0.03,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uatom",
+        coinDecimals: 6,
+        coinDenom: "ATOM",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinDenom: "ATOM",
+      coinMinimalDenom: "uatom",
+      coinDecimals: 6,
+      coinGeckoId: "",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uatom",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "Cosmos Hub is the gateway to a rapidly expanding ecosystem of independent interconnected blockchains built using developer-friendly application components and connected with ground-breaking IBC (Inter-Blockchain Communication) protocol.",
     apis: {
@@ -115,7 +118,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/osmosis/txs/${txHash}",
+        txPage: "https://www.mintscan.io/osmosis/txs/${txHash}",
       },
     ],
     features: ["ibc-go", "ibc-transfer"],
@@ -123,11 +126,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "juno",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Juno",
+    networkType: "mainnet",
+    prettyName: "Juno",
     chain_id: "juno-1",
-    bech32_prefix: "juno",
-    bech32_config: {
+    bech32Prefix: "juno",
+    bech32Config: {
       bech32PrefixAccAddr: "juno",
       bech32PrefixAccPub: "junopub",
       bech32PrefixValAddr: "junovaloper",
@@ -136,32 +139,40 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "junovalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "ujuno",
-          fixed_min_gas_price: 0.075,
-          low_gas_price: 0.075,
-          average_gas_price: 0.1,
-          high_gas_price: 0.125,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "ujuno",
+        coinDecimals: 6,
+        coinDenom: "JUNO",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.075,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-        {
-          denom:
-            "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
-          fixed_min_gas_price: 0.003,
-          low_gas_price: 0.003,
-          average_gas_price: 0.0035,
-          high_gas_price: 0.004,
+      },
+      {
+        coinMinimalDenom:
+          "ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9",
+        coinDecimals: 6,
+        coinDenom: "ATOM",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.003,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinMinimalDenom: "ujuno",
+      coinDecimals: 6,
+      coinDenom: "JUNO",
+      coinGeckoId: "",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "ujuno",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "Juno is a completely community owned and operated smart contract platform.",
     apis: {
@@ -178,7 +189,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/juno/txs/${txHash}",
+        txPage: "https://www.mintscan.io/juno/txs/${txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -186,11 +197,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "injective",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Injective",
+    networkType: "mainnet",
+    prettyName: "Injective",
     chain_id: "injective-1",
-    bech32_prefix: "inj",
-    bech32_config: {
+    bech32Prefix: "inj",
+    bech32Config: {
       bech32PrefixAccAddr: "inj",
       bech32PrefixAccPub: "injpub",
       bech32PrefixValAddr: "injvaloper",
@@ -199,24 +210,27 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "injvalconspub",
     },
     slip44: 60,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "inj",
-          fixed_min_gas_price: 500000000,
-          low_gas_price: 500000000,
-          average_gas_price: 700000000,
-          high_gas_price: 900000000,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "inj",
+        coinDecimals: 6,
+        coinDenom: "INJ",
+        coinGeckoId: "",
+        fixed_min_gas_price: 500000000,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinDecimals: 6,
+      coinDenom: "INJ",
+      coinGeckoId: "",
+      coinMinimalDenom: "inj",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "inj",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "Injective’s mission is to create a truly free and inclusive financial system through decentralization.",
     apis: {
@@ -233,7 +247,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://explorer.injective.network/transaction/${txHash}",
+        txPage: "https://explorer.injective.network/transaction/${txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
@@ -241,11 +255,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "secretnetwork",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Secret Network",
+    networkType: "mainnet",
+    prettyName: "Secret Network",
     chain_id: "secret-4",
-    bech32_prefix: "secret",
-    bech32_config: {
+    bech32Prefix: "secret",
+    bech32Config: {
       bech32PrefixAccAddr: "secret",
       bech32PrefixAccPub: "secretpub",
       bech32PrefixValAddr: "secretvaloper",
@@ -254,25 +268,28 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "secretvalconspub",
     },
     slip44: 529,
-    alternative_slip44s: [118],
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uscrt",
-          fixed_min_gas_price: 0.1,
-          low_gas_price: 0.1,
-          average_gas_price: 0.1,
-          high_gas_price: 0.25,
+    alternativeSlip44s: [118],
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uscrt",
+        coinDecimals: 6,
+        coinDenom: "SCRT",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.1,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinMinimalDenom: "uscrt",
+      coinDecimals: 6,
+      coinDenom: "SCRT",
+      coinGeckoId: "",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uscrt",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "Secret Network is the first blockchain with customizable privacy. You get to choose what you share, with whom, and how. This protects users, and empowers developers to build a better Web3.",
     apis: {
@@ -289,7 +306,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page:
+        txPage:
           "https://secretnodes.com/secret/chains/secret-4/transactions/${txHash}",
       },
     ],
@@ -304,11 +321,11 @@ export const MockChains: Chain[] = [
   {
     chain_name: "axelar",
     status: "live",
-    network_type: "mainnet",
-    pretty_name: "Axelar",
+    networkType: "mainnet",
+    prettyName: "Axelar",
     chain_id: "axelar-dojo-1",
-    bech32_prefix: "axelar",
-    bech32_config: {
+    bech32Prefix: "axelar",
+    bech32Config: {
       bech32PrefixAccAddr: "axelar",
       bech32PrefixAccPub: "axelarpub",
       bech32PrefixValAddr: "axelarvaloper",
@@ -317,24 +334,27 @@ export const MockChains: Chain[] = [
       bech32PrefixConsPub: "axelarvalconspub",
     },
     slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uaxl",
-          fixed_min_gas_price: 0.007,
-          low_gas_price: 0.007,
-          average_gas_price: 0.007,
-          high_gas_price: 0.01,
+    feeCurrencies: [
+      {
+        coinMinimalDenom: "uaxl",
+        coinDecimals: 6,
+        coinDenom: "AXL",
+        coinGeckoId: "",
+        fixed_min_gas_price: 0.007,
+        gasPriceStep: {
+          low: 0.0025,
+          average: 0.025,
+          high: 0.04,
         },
-      ],
+      },
+    ],
+    stakeCurrency: {
+      coinDecimals: 6,
+      coinDenom: "AXL",
+      coinGeckoId: "",
+      coinMinimalDenom: "uaxl",
     },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uaxl",
-        },
-      ],
-    },
+    currencies: [],
     description:
       "Axelar delivers secure cross-chain communication for Web3. Our infrastructure enables dApp users to interact with any asset or application, on any chain, with one click.",
     apis: {
@@ -351,7 +371,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        tx_page: "https://axelarscan.io/tx/${txHash}",
+        txPage: "https://axelarscan.io/tx/${txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "axelar-evm-bridge"],

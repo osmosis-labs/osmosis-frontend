@@ -99,7 +99,7 @@ export const TransactionTransferDetails = ({
     }
 
     if (transaction.fromChain.chainType === "cosmos") {
-      return cosmosFromChain?.explorers[0].tx_page.replace(
+      return cosmosFromChain?.explorers[0].txPage.replace(
         "{txHash}",
         transaction.sendTxHash
       );

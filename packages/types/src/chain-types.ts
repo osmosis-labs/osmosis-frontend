@@ -1,6 +1,11 @@
 import type { ChainInfo as BaseChainInfo } from "@keplr-wallet/types";
 
-import type { AppCurrency, FeeCurrency, StakeCurrency } from "./asset-types";
+import type {
+  AppCurrency,
+  FeeCurrency,
+  MinimalAsset,
+  StakeCurrency,
+} from "./asset-types";
 
 export interface ChainList {
   zone: string;
@@ -10,36 +15,21 @@ export interface ChainList {
 export interface Chain {
   chain_name: string;
   status: string;
-  network_type: string;
-  pretty_name: string;
+  networkType: string;
+  prettyName: string;
   chain_id: string;
   description?: string;
-  bech32_prefix: string;
-  bech32_config: Bech32Config;
+  bech32Prefix: string;
+  bech32Config: Bech32Config;
   slip44: number;
-  alternative_slip44s?: number[];
-  logoURIs?: {
+  alternativeSlip44s?: number[];
+  logo_URIs?: {
     png?: string;
     svg?: string;
-    layout?: "logomark";
-    theme?: {
-      primary_color_hex?: string;
-      background_color_hex?: string;
-      dark_mode?: false;
-      circle?: boolean;
-    };
-    image_sync?: {
-      chain_name: string;
-      base_denom: string;
-    };
   };
-  fees: {
-    fee_tokens: FeeToken[];
-  };
-  staking?: {
-    staking_tokens: StakingToken[];
-    lock_duration?: LockDuration;
-  };
+  feeCurrencies: FeeToken[];
+  stakeCurrency?: StakeCurrency;
+  currencies: ChainCurrency[];
   apis: {
     rpc: Api[];
     rest: Api[];
@@ -57,24 +47,53 @@ interface Bech32Config {
   bech32PrefixConsPub: string;
 }
 
-interface FeeToken {
-  denom: string;
+interface FeeToken
+  extends Omit<
+    MinimalAsset,
+    | "isUnstable"
+    | "coinName"
+    | "isUnstable"
+    | "areTransfersDisabled"
+    | "isVerified"
+    | "isAlloyed"
+    | "variantGroupKey"
+    | "coinGeckoId"
+    | "coinMinimalDenom"
+  > {
+  coinMinimalDenom?: string;
+  coinGeckoId?: string;
+  contractAddress?: string;
+  sourceDenom?: string;
+  denom?: string;
   fixed_min_gas_price?: number;
-  low_gas_price?: number;
-  average_gas_price?: number;
-  high_gas_price?: number;
-  gas_costs?: {
-    cosmos_send: number;
-    ibc_transfer: number;
+  gasPriceStep?: {
+    low?: number;
+    average?: number;
+    high?: number;
+  };
+  gasCosts?: {
+    cosmosSend?: number;
+    ibcTransfer?: number;
   };
 }
 
-interface StakingToken {
-  denom: string;
-}
-
-interface LockDuration {
-  time: string;
+interface ChainCurrency
+  extends Omit<
+    MinimalAsset,
+    | "isUnstable"
+    | "coinName"
+    | "isUnstable"
+    | "areTransfersDisabled"
+    | "isVerified"
+    | "isAlloyed"
+    | "variantGroupKey"
+    | "coinGeckoId"
+    | "coinMinimalDenom"
+  > {
+  coinMinimalDenom?: string;
+  coinGeckoId?: string;
+  contractAddress?: string;
+  sourceDenom?: string;
 }
 
 interface Api {
@@ -82,10 +101,10 @@ interface Api {
 }
 
 interface Explorer {
-  tx_page: string;
+  txPage: string;
 }
 
-export interface ChainInfo extends BaseChainInfo {
+export interface ChainInfo extends Partial<BaseChainInfo> {
   prettyChainName: string;
 }
 
