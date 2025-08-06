@@ -4,6 +4,8 @@ import {
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { MsgSwapExactAmountIn } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
@@ -37,6 +39,7 @@ import {
   getParametersFromOverspendErrorMessage,
   isOverspendErrorMessage,
 } from "~/components/alert/prettify";
+import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { Button } from "~/components/ui/button";
 import { RecommendedSwapDenoms } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
@@ -211,8 +214,43 @@ export function useSwap(
     "in-given-out"
   );
 
+  /**
+   * Temporairly re-scale tokenOutMinAmount as a workaround about a potential SQS
+   * issue with the "/estimate-gas-fees" endpoint failing with error
+   *
+   * ```
+   * failed to execute message;
+   * message index: 0: ibc/... token is lesser than min amount:
+   * calculated amount is lesser than min amount [osmosis-labs/osmosis/v29/x/gamm/keeper/swap.go:72] with gas used: 'XXX'
+   * ```
+   *
+   * [See issue](https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee)
+   */
+  const TEMPORARY_outGivenInQuote = useMemo(
+    () =>
+      (outGivenInQuote
+        ? {
+            ...outGivenInQuote,
+            messages: outGivenInQuote?.messages?.map(({ value, ...rest }) => {
+              const tokenOutMinAmount = Math.floor(
+                +(value as MsgSwapExactAmountIn).tokenOutMinAmount * 0.8
+              ).toString();
+
+              return {
+                ...rest,
+                value: {
+                  ...value,
+                  tokenOutMinAmount,
+                } as MsgSwapExactAmountIn,
+              };
+            }),
+          }
+        : undefined) as typeof outGivenInQuote | undefined,
+    [outGivenInQuote]
+  );
+
   const quote =
-    quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
+    quoteType === "in-given-out" ? inGivenOutQuote : TEMPORARY_outGivenInQuote;
 
   useEffect(() => {
     if (
@@ -1274,13 +1312,13 @@ function useToFromDenoms({
    */
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryState(
     "from",
-    parseAsString.withDefault(initialFromDenom ?? "ATOM")
+    parseAsString.withDefault(initialFromDenom ?? ATOM_BASE_DENOM)
   );
   const fromDenomQueryParamStr =
     typeof fromDenomQueryParam === "string" ? fromDenomQueryParam : undefined;
   const [toAssetQueryParam, setToAssetQueryParam] = useQueryState(
     "to",
-    parseAsString.withDefault(initialToDenom ?? "OSMO")
+    parseAsString.withDefault(initialToDenom ?? "uosmo")
   );
   const toDenomQueryParamStr =
     typeof toAssetQueryParam === "string" ? toAssetQueryParam : undefined;

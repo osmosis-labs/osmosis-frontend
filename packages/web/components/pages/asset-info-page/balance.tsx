@@ -78,7 +78,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
             className="flex flex-1 items-center"
             onClick={() =>
               bridgeAsset({
-                anyDenom: asset.coinDenom,
+                anyDenom: asset.coinMinimalDenom,
                 direction: "deposit",
               })
             }
@@ -92,7 +92,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
             variant="secondary"
             onClick={() =>
               bridgeAsset({
-                anyDenom: asset.coinDenom,
+                anyDenom: asset.coinMinimalDenom,
                 direction: "withdraw",
               })
             }

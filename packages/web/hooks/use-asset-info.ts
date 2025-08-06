@@ -9,9 +9,9 @@ import { api } from "~/utils/trpc";
 export const useAssetInfo = () => {
   const language = useCurrentLanguage();
   const router = useRouter();
-  const denom = router.query.denom as string;
+  const denom = (router.query.denom as string[]).join("/");
 
-  const { data: asset } = api.edge.assets.getUserAsset.useQuery(
+  const { data: asset, isLoading } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: denom,
     },
@@ -94,6 +94,7 @@ export const useAssetInfo = () => {
     coingeckoURL,
     coinGeckoId,
     asset: asset!,
+    isAssetLoading: isLoading,
     denom,
     detailsByLanguage,
     coingeckoCoin,

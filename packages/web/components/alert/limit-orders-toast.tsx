@@ -8,6 +8,7 @@ import { useLocalStorage } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
+import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { IconButton } from "~/components/ui/button";
 import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
@@ -17,7 +18,7 @@ export const LimitOrdersFloatingBannerDoNotShowKey =
 
 export function LimitOrdersToast() {
   const { t } = useTranslation();
-  const [from] = useQueryState("from", parseAsString.withDefault("OSMO"));
+  const [from] = useQueryState("from", parseAsString.withDefault("uosmo"));
   const router = useRouter();
   const [doNotShowAgain, setDoNotShowAgain] = useLocalStorage(
     LimitOrdersFloatingBannerDoNotShowKey,
@@ -27,11 +28,11 @@ export function LimitOrdersToast() {
 
   const { orderbook, isOrderbookLoading } = useOrderbook({
     baseDenom: from,
-    quoteDenom: "USDC",
+    quoteDenom: USDC_BASE_DENOM,
   });
 
-  const fromDenom = orderbook ? from : "OSMO";
-  const quoteDenom = "USDC";
+  const fromDenom = orderbook ? from : "uosmo";
+  const quoteDenom = USDC_BASE_DENOM;
 
   const onClose = () => {
     setDoNotShowAgain(true);

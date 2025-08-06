@@ -28,6 +28,7 @@ import {
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
 import { tError } from "~/components/localization";
+import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
 import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
@@ -138,11 +139,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
-    if (swapState.fromAsset?.coinDenom === swapState.toAsset?.coinDenom) {
-      if (swapState.toAsset?.coinDenom === "OSMO") {
-        swapState.setToAssetDenom("USDC");
+    if (
+      swapState.fromAsset?.coinMinimalDenom ===
+      swapState.toAsset?.coinMinimalDenom
+    ) {
+      if (swapState.toAsset?.coinMinimalDenom === "uosmo") {
+        swapState.setToAssetDenom(USDC_BASE_DENOM);
       } else {
-        swapState.setToAssetDenom("OSMO");
+        swapState.setToAssetDenom("uosmo");
       }
     }
 
@@ -264,8 +268,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
           if (swapState.toAsset && swapState.fromAsset) {
             onSwapSuccess?.({
-              outTokenDenom: swapState.toAsset.coinDenom,
-              sendTokenDenom: swapState.fromAsset.coinDenom,
+              outTokenDenom: swapState.toAsset.coinMinimalDenom,
+              sendTokenDenom: swapState.fromAsset.coinMinimalDenom,
             });
           }
 
@@ -745,7 +749,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           onSelect={useCallback(
             (tokenDenom: string) => {
               // If the selected token is the same as the current "to" token, switch the assets
-              if (tokenDenom === swapState.toAsset?.coinDenom) {
+              if (tokenDenom === swapState.toAsset?.coinMinimalDenom) {
                 swapState.switchAssets();
               } else {
                 swapState.setFromAssetDenom(tokenDenom);
@@ -772,7 +776,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           onSelect={useCallback(
             (tokenDenom: string) => {
               // If the selected token is the same as the current "from" token, switch the assets
-              if (tokenDenom === swapState.fromAsset?.coinDenom) {
+              if (tokenDenom === swapState.fromAsset?.coinMinimalDenom) {
                 swapState.switchAssets();
               } else {
                 swapState.setToAssetDenom(tokenDenom);

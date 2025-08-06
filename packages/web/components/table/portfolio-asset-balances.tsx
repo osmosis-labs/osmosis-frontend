@@ -21,6 +21,7 @@ import {
   useState,
 } from "react";
 
+import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -379,9 +380,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
           {virtualRows.map((virtualRow) => {
             const pushUrl = rows?.[virtualRow.index]?.original?.coinMinimalDenom
               ? `/assets/${
-                  encodeURIComponent(
-                    rows?.[virtualRow.index]?.original?.coinMinimalDenom
-                  ) ?? ""
+                  rows?.[virtualRow.index]?.original?.coinMinimalDenom ?? ""
                 }?ref=portfolio`
               : "/assets/?ref=portfolio";
             const unverified =
@@ -552,18 +551,18 @@ const AssetActionsCell: AssetCellComponent<{
 
   const onSelectAction = (action: Action) => {
     if (action === "trade") {
-      const to = coinDenom === "OSMO" ? "ATOM" : "OSMO";
-      router.push(`/?from=${coinDenom}&to=${to}`);
+      const to = coinMinimalDenom === "uosmo" ? ATOM_BASE_DENOM : "uosmo";
+      router.push(`/?from=${coinMinimalDenom}&to=${to}`);
     } else if (action === "earn") {
-      router.push(`/earn?search=${coinDenom}`);
+      router.push(`/earn?search=${coinMinimalDenom}`);
     } else if (action === "deposit") {
       bridgeAsset({
-        anyDenom: coinDenom,
+        anyDenom: coinMinimalDenom,
         direction: "deposit",
       });
     } else if (action === "withdraw") {
       bridgeAsset({
-        anyDenom: coinDenom,
+        anyDenom: coinMinimalDenom,
         direction: "withdraw",
       });
     }
@@ -608,7 +607,7 @@ const AssetActionsCell: AssetCellComponent<{
                   e.stopPropagation();
                   e.preventDefault();
                   bridgeAsset({
-                    anyDenom: coinDenom,
+                    anyDenom: coinMinimalDenom,
                     direction: "deposit",
                   });
                 }}
@@ -623,7 +622,7 @@ const AssetActionsCell: AssetCellComponent<{
                   e.stopPropagation();
                   e.preventDefault();
                   bridgeAsset({
-                    anyDenom: coinDenom,
+                    anyDenom: coinMinimalDenom,
                     direction: "withdraw",
                   });
                 }}

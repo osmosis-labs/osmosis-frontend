@@ -40,11 +40,7 @@ export class PortfolioPage extends BasePage {
   }) {
     await this.page.evaluate(() => window.scrollBy(0, 250))
     const bal = this.page
-      .locator(
-        `//tbody/tr//a[contains(@href, "/assets/${encodeURIComponent(
-          minimalDenom,
-        )}")]`,
-      )
+      .locator(`//tbody/tr//a[contains(@href, "/assets/${minimalDenom}")]`)
       .nth(1)
     const tokenBalance: string = await bal.innerText()
     console.log(`Balance for ${name}: ${tokenBalance}`)
