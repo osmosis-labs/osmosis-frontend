@@ -5,7 +5,6 @@ import {
   mapGetUserPositionDetails,
   mapGetUserPositions,
   queryClParams,
-  queryPoolmanagerParams,
   queryPositionById,
 } from "@osmosis-labs/server";
 import { AppCurrency } from "@osmosis-labs/types";
@@ -106,7 +105,7 @@ export const concentratedLiquidityRouter = createTRPCRouter({
   getLiquidityPerTickRange: publicProcedure
     .input(z.object({ poolId: z.string() }))
     .query(({ ctx, input }) => getLiquidityPerTickRange({ ...ctx, ...input })),
-  getBaseTokens: publicProcedure
+  getTokens: publicProcedure
     .input(
       z.object({
         onlyVerified: z.boolean().default(false),
@@ -139,41 +138,6 @@ export const concentratedLiquidityRouter = createTRPCRouter({
         })
         .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset))
     ),
-  getQuoteTokens: publicProcedure.query(async ({ ctx }) => {
-    const {
-      params: { authorized_quote_denoms: authorizedQuoteDenoms },
-    } = await queryPoolmanagerParams({
-      chainList: ctx.chainList,
-      chainId: ctx.chainList[0].chain_id,
-    });
-
-    return authorizedQuoteDenoms
-      .map((quoteMinimalDenom) => {
-        const asset = getAssetFromAssetList({
-          assetLists: ctx.assetLists,
-          coinMinimalDenom: quoteMinimalDenom,
-        });
-
-        if (!asset) return;
-
-        const {
-          symbol,
-          decimals,
-          coinMinimalDenom,
-          rawAsset: { logoURIs },
-        } = asset;
-        return {
-          token: {
-            coinDenom: symbol,
-            coinDecimals: decimals,
-            coinMinimalDenom,
-            coinImageUrl: logoURIs.svg ?? logoURIs.png ?? "",
-          } satisfies AppCurrency,
-          chainName: asset.rawAsset.chainName,
-        };
-      })
-      .filter((asset): asset is NonNullable<typeof asset> => Boolean(asset));
-  }),
   getClParams: publicProcedure.query(({ ctx }) =>
     queryClParams({ ...ctx, chainId: ctx.chainList[0].chain_id }).then(
       (clParams) => ({

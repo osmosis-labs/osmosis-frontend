@@ -11,7 +11,7 @@ import {
 import { RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
@@ -58,13 +58,25 @@ export const SetBaseInfos = observer(
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets
     );
 
-    const { data: baseTokens, isLoading: isLoadingBaseTokens } =
-      api.local.concentratedLiquidity.getBaseTokens.useQuery({
+    const { data: tokens, isLoading: isLoadingTokens } =
+      api.local.concentratedLiquidity.getTokens.useQuery({
         includePreview: showPreviewAssets,
         onlyVerified: showUnverifiedAssets === false,
       });
-    const { data: quoteTokens, isLoading: isLoadingQuoteTokens } =
-      api.local.concentratedLiquidity.getQuoteTokens.useQuery();
+
+    const quoteTokens = useMemo(() => {
+      return tokens
+        ?.filter(
+          ({ token }) => token.coinDenom !== selectedQuote?.token.coinDenom
+        )
+        .sort((a, b) => {
+          if (a.token.coinDenom === "BTC" || b.token.coinDenom === "BTC")
+            return -1;
+
+          return 1;
+        });
+    }, [tokens, selectedQuote]);
+
     const { data: clParams } =
       api.local.concentratedLiquidity.getClParams.useQuery();
 
@@ -83,9 +95,9 @@ export const SetBaseInfos = observer(
               <span className="subtitle1 text-white">
                 {t("pools.createSupercharged.base")}
               </span>
-              {baseTokens ? (
+              {tokens ? (
                 <TokenSelector
-                  assets={baseTokens.filter(
+                  assets={tokens.filter(
                     (qc) =>
                       qc.token.coinDenom !== selectedQuote?.token.coinDenom
                   )}
@@ -102,9 +114,7 @@ export const SetBaseInfos = observer(
               </span>
               {quoteTokens ? (
                 <TokenSelector
-                  assets={quoteTokens.filter(
-                    (qc) => qc.token.coinDenom !== selectedBase?.token.coinDenom
-                  )}
+                  assets={quoteTokens}
                   selectedAsset={selectedQuote}
                   setSelectedAsset={setSelectedQuote}
                 />
@@ -161,9 +171,7 @@ export const SetBaseInfos = observer(
           </Field>
           <Button
             disabled={!isAgreementChecked || !selectedBase}
-            isLoading={
-              isLoadingBaseTokens || isLoadingQuoteTokens || isTxLoading
-            }
+            isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
               setIsTxLoading(true);
               account?.osmosis
