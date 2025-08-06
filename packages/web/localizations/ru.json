@@ -78,7 +78,7 @@
     "yourPositions": "Ваши позиции",
     "yourPosition": "Твоя позиция",
     "yourPositionsDesc": "Заставьте свои активы работать и зарабатывайте спред от каждого свопа.",
-    "learnMoreAboutPools": "Узнать больше о бассейнах",
+    "learnMoreAboutPools": "Узнать больше о пулах",
     "supercharged": "Заряженный",
     "createAPosition": "Создать позицию",
     "addMoreLiquidity": "Добавьте больше ликвидности",
@@ -129,7 +129,7 @@
     "historyTable": {
       "colums": {
         "deposit": "Депозит",
-        "withdraw": "Отзывать"
+        "withdraw": "Вывод"
       }
     },
     "table": {
@@ -138,7 +138,7 @@
       },
       "depositButton": "Депозит",
       "search": "Поиск",
-      "withdrawButton": "Отзывать",
+      "withdrawButton": "Вывод",
       "activate": "Активировать",
       "marketCap": "Рыночная капитализация",
       "volume24h": "Объем",
@@ -185,7 +185,7 @@
       "topGainers": "Лидеры роста",
       "more": "Больше категорий"
     },
-    "seeAll": "Увидеть все",
+    "seeAll": "Смотреть все",
     "highlights": {
       "new": "Новый",
       "topGainers": "Лидеры роста",
@@ -234,7 +234,7 @@
     "trade": "Торговля",
     "earn": "Зарабатывать",
     "deposit": "Депозит",
-    "withdraw": "Отзывать",
+    "withdraw": "Вывод",
     "convert": "Конвертировать"
   },
   "buyTokens": "Купить токены",
@@ -246,7 +246,7 @@
       "chooseOnramp": "Купить криптовалюту",
       "swappedSubtitle": "Поддерживает OSMO, USDC",
       "moonpaySubtitle": "Поддерживает OSMO, USDC",
-      "transakSubtitle": "Поддерживает ОСМО",
+      "transakSubtitle": "Поддерживает OSMO",
       "onrampMoneySubtitle": "Поддерживает OSMO, USDC",
       "moonpayCountrySupport": "165+ стран"
     },
@@ -255,12 +255,12 @@
     },
     "MAX": "МАКС",
     "pool": {
-      "title": "Типы бассейнов"
+      "title": "Типы пулов"
     },
     "searchTokens": "Поиск",
     "selectToken": {
       "title": "Выберите токен",
-      "unverifiedAsset": "Этот актив не проверен. Действовать с осторожностью.",
+      "unverifiedAsset": "Этот актив не проверен. Действуйте с осторожностью.",
       "clickToActivate": "Нажмите, чтобы активировать"
     },
     "show": {
@@ -340,10 +340,10 @@
   },
   "menu": {
     "assets": "Ресурсы",
-    "portfolio": "портфолио",
+    "portfolio": "Портфолио",
     "help": "Лаборатория поддержки",
     "info": "Статистика",
-    "pools": "Бассейны",
+    "pools": "Пулы",
     "stake": "Ставка",
     "store": "Программы",
     "vote": "Голосование",
@@ -353,7 +353,7 @@
     "perpetuals": "Вечные",
     "marsSubtext": "При поддержке Марса",
     "levanaSubtext": "При поддержке Леваны",
-    "more": "Более",
+    "more": "Еще",
     "new": "НОВЫЙ",
     "settings": "Настройки"
   },
@@ -454,7 +454,7 @@
     "24hrTradingVolume": "Объем торгов за 24 часа",
     "amountDaysUnbonding": "{numDays} день отсоединения",
     "amountDaysUnbonding_plural": "{numDays} дней отсоединения",
-    "APR": "АПРЕЛЬ",
+    "APR": "АПР",
     "available": "Доступный",
     "bonded": "Связанный",
     "bondLiquidity": "Ликвидность облигаций",
@@ -500,15 +500,15 @@
   "pools": {
     "allPools": {
       "sort": {
-        "APRIncentivized": "АПРЕЛЬ",
+        "APRIncentivized": "АПР",
         "fees": "Сборы (7D)",
         "liquidity": "Ликвидность",
         "poolName": "Имя/номер пула",
         "volume24h": "Объем (24 часа)"
       },
-      "title": "Откройте для себя бассейны"
+      "title": "Откройте для себя gпулы"
     },
-    "APR": "АПРЕЛЬ",
+    "APR": "АПР",
     "bonded": "Связанный",
     "createPool": {
       "amount": "Количество",
@@ -519,7 +519,7 @@
       "infoCaption": "Переведено в пул сообщества Osmosis.",
       "infoMessage": "Плата за создание пула",
       "scalingFactorController": "Установите контроллер коэффициента масштабирования (опционально)",
-      "stablePool": "Стабильный бассейн",
+      "stablePool": "Стабильный пул",
       "step": {
         "one": {
           "stable": "Шаг {step} / {nbStep} – установка коэффициентов масштабирования",
@@ -547,9 +547,9 @@
     },
     "TVL": "ТВЛ",
     "myLiquidity": "Моя ликвидность",
-    "myPools": "Ваши бассейны",
+    "myPools": "Ваши пулы",
     "poolId": "Пул № {id}",
-    "priceOsmo": "ОСМО Цена",
+    "priceOsmo": "Цена OSMO",
     "rewardDistribution": "Распределение вознаграждений в",
     "aprBreakdown": {
       "swapFees": "Комиссия за своп",
@@ -590,7 +590,7 @@
   "search": {
     "noResultsFor": "Нет результатов для \" {query} \"",
     "adjust": "Попробуйте изменить поисковый запрос",
-    "noPools": "Нет бассейнов",
+    "noPools": "Нет пулов",
     "poolsEmpty": "В настоящее время в Osmosis нет пулов для {denom}"
   },
   "stake": {
