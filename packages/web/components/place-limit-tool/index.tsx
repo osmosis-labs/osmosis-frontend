@@ -883,8 +883,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             setReviewOpen(false);
             setIsSendingTx(false);
             onOrderSuccess?.(
-              swapState.baseAsset?.coinDenom,
-              swapState.quoteAsset?.coinDenom
+              swapState.baseAsset?.coinMinimalDenom,
+              swapState.quoteAsset?.coinMinimalDenom
             );
             resetSlippage();
           }}
