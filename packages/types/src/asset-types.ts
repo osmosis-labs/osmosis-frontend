@@ -35,10 +35,21 @@ export type FeeCurrency = AppCurrency & {
   sourceDenom?: string;
 };
 
-export type StakeCurrency = Partial<Currency> & {
+interface BaseCurrency {
+  readonly coinDenom: string;
+  readonly coinDecimals: number;
+  readonly coinMinimalDenom?: string;
+  readonly coinGeckoId?: string;
+  readonly coinImageUrl?: string;
+}
+
+export type StakeCurrency = BaseCurrency & {
   base?: string;
   chainSuggestionDenom?: string;
   sourceDenom?: string;
+  originCurrency?: BaseCurrency & {
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+  };
 };
 
 export interface LogoURIs {
