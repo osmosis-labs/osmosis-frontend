@@ -30,6 +30,7 @@ import {
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
+import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
 import { SwapToolProps } from "~/components/swap-tool";
 import { TradeTool } from "~/components/trade-tool";
 import { EventName } from "~/config";
@@ -105,11 +106,14 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
         fixedWidth: true,
         useQueryParams: false,
         useOtherCurrencies: true,
-        initialSendTokenDenom: asset.coinDenom === "USDC" ? "OSMO" : "USDC",
-        initialOutTokenDenom: asset.coinDenom,
+        initialSendTokenDenom:
+          asset.coinMinimalDenom === USDC_BASE_DENOM
+            ? "uosmo"
+            : USDC_BASE_DENOM,
+        initialOutTokenDenom: asset.coinMinimalDenom,
         page: "Token Info Page",
       }),
-      [asset.coinDenom]
+      [asset.coinMinimalDenom]
     );
     useAmplitudeAnalytics({
       onLoadEvent: [
