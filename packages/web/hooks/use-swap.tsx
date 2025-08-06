@@ -232,9 +232,9 @@ export function useSwap(
         ? {
             ...outGivenInQuote,
             messages: outGivenInQuote?.messages?.map(({ value, ...rest }) => {
-              const tokenOutMinAmount = (~~(
+              const tokenOutMinAmount = Math.floor(
                 +(value as MsgSwapExactAmountIn).tokenOutMinAmount * 0.8
-              )).toString();
+              ).toString();
 
               return {
                 ...rest,
