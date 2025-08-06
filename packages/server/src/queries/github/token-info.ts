@@ -31,9 +31,9 @@ export const getTokenInfo = async (
   )}.json`;
 
   const file = (await queryOsmosisCMS({
-    repo: "JeremyParish69/assetlists",
+    repo: "osmosis-labs/assetlists",
     filePath,
-    commitHash: "merge_asset_detail_localizations",
+    commitHash: undefined,
   })) as RawTokenCMSData;
 
   return {
