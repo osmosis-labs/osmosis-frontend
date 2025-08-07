@@ -30,8 +30,8 @@ export function GenericDisclaimer({
       )}
       content={
         <div className="relative flex items-start gap-3 rounded-xl border border-[#39383D] bg-osmoverse-1000 p-3">
-          <div className="flex flex-col gap-1">
-            {title && <span className="caption">{title}</span>}
+          <div className="flex flex-col gap-1 w-full">
+            {title && <span className="caption break-words">{title}</span>}
             {body && <span className="caption text-osmoverse-300">{body}</span>}
           </div>
         </div>
