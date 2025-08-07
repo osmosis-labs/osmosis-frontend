@@ -104,7 +104,7 @@ interface Explorer {
   txPage: string;
 }
 
-export interface ChainInfo extends Partial<BaseChainInfo> {
+export interface ChainInfo extends BaseChainInfo {
   prettyChainName: string;
 }
 

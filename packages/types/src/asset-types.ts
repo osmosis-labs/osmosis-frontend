@@ -38,7 +38,7 @@ export type FeeCurrency = AppCurrency & {
 interface BaseCurrency {
   readonly coinDenom: string;
   readonly coinDecimals: number;
-  readonly coinMinimalDenom?: string;
+  readonly coinMinimalDenom: string;
   readonly coinGeckoId?: string;
   readonly coinImageUrl?: string;
 }

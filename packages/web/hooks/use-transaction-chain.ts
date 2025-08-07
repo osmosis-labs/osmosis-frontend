@@ -23,7 +23,7 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
     }
   );
 
-  const { chainPrettyName, chainLogoUri, chainColor } = (() => {
+  const { chainPrettyName, chainLogoUri } = (() => {
     if (chain?.chainType === "cosmos") {
       return {
         chainPrettyName: cosmosChain?.prettyName,
@@ -35,27 +35,33 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
       return {
         chainPrettyName: evmChain?.name,
         chainLogoUri: evmChain?.relativeLogoUrl,
-        chainColor: evmChain?.color,
+        // chainColor: evmChain?.color,
       };
     } else if (chain?.chainType === "bitcoin") {
       return {
         chainPrettyName: BitcoinChainInfo.prettyName,
         chainLogoUri: BitcoinChainInfo.logoUri,
-        chainColor: BitcoinChainInfo.color,
+        // chainColor: BitcoinChainInfo.color,
       };
     } else if (chain?.chainType === "doge") {
       return {
         chainPrettyName: DogecoinChainInfo.prettyName,
         chainLogoUri: DogecoinChainInfo.logoUri,
-        chainColor: DogecoinChainInfo.color,
+        // chainColor: DogecoinChainInfo.color,
       };
     }
     return {
       chainPrettyName: undefined,
       chainLogoUri: undefined,
-      chainColor: undefined,
+      // chainColor: undefined,
     };
   })();
 
-  return { chainPrettyName, chainLogoUri, chainColor, cosmosChain, evmChain };
+  return {
+    chainPrettyName,
+    chainLogoUri,
+    chainColor: undefined,
+    cosmosChain,
+    evmChain,
+  };
 };
