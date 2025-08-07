@@ -791,6 +791,18 @@ export const useBridgeQuotes = ({
       heading: t("transfer.somethingIsntWorking"),
       description: t("transfer.sorryForTheInconvenience"),
     };
+  } else if (warnUserOfSlippage) {
+    errorBoxMessage = {
+      heading: "Slippage is too high",
+      description:
+        "The slippage is too high and you might incur heavy losses. Please use an alternative provider or swap manually.",
+    };
+  } else if (warnUserOfPriceImpact) {
+    errorBoxMessage = {
+      heading: "Price impact is too high",
+      description:
+        "The price impact is too high and you might incur into heavy losses. Please use an alternative provider or swap manually.",
+    };
   }
 
   let warningBoxMessage: { heading: string; description: string } | undefined;
@@ -831,7 +843,11 @@ export const useBridgeQuotes = ({
 
   let buttonText: string;
   if (warnUserOfSlippage || warnUserOfPriceImpact) {
-    buttonText = t("assets.transfer.transferAnyway");
+    if (warnUserOfPriceImpact) {
+      buttonText = "Price impact too high";
+    } else {
+      buttonText = "Slippage too high";
+    }
   } else {
     buttonText =
       direction === "deposit"

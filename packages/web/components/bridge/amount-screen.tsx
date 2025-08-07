@@ -1262,7 +1262,9 @@ export const AmountScreen = observer(
                   disabled={
                     cryptoAmount === "" ||
                     cryptoAmount === "0" ||
-                    !quote.userCanAdvance
+                    !quote.userCanAdvance ||
+                    warnUserOfPriceImpact ||
+                    warnUserOfSlippage
                   }
                   className="w-full md:h-12"
                   variant={
