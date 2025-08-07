@@ -1200,14 +1200,14 @@ describe("getDefaultGasPrice", () => {
     {
       chain_id: chainId,
       features: ["osmosis-txfees"],
-      fees: {
-        fee_tokens: [
-          {
-            denom: "uosmo",
-            high_gas_price: 0.025,
+      feeCurrencies: [
+        {
+          coinMinimalDenom: "uosmo",
+          gasPrices: {
+            high: 0.025,
           },
-        ],
-      },
+        },
+      ],
     },
   ] as any;
 
@@ -1225,7 +1225,7 @@ describe("getDefaultGasPrice", () => {
     const result = await getDefaultGasPrice({
       chainId,
       chainList,
-      baseFeeMultiplier: baseFeeMultiplier,
+      baseFeeMultiplier,
     });
 
     expect(result.gasPrice.toString()).toBe(
@@ -1248,14 +1248,14 @@ describe("getDefaultGasPrice", () => {
       {
         chain_id: chainId,
         features: [],
-        fees: {
-          fee_tokens: [
-            {
-              denom: "uosmo",
-              high_gas_price: 0.025,
+        feeCurrencies: [
+          {
+            coinMinimalDenom: "uosmo",
+            gasPrices: {
+              high: 0.025,
             },
-          ],
-        },
+          },
+        ],
       },
     ] as any;
 
@@ -1312,16 +1312,12 @@ describe("getDefaultGasPrice", () => {
     const chainListWithoutAverageGasPrice = [
       {
         chain_id: chainId,
-        // no fee market
         features: [],
-        fees: {
-          fee_tokens: [
-            {
-              denom: "uosmo",
-              // no high_gas_price
-            },
-          ],
-        },
+        feeCurrencies: [
+          {
+            coinMinimalDenom: "uosmo",
+          },
+        ],
       },
     ] as any;
 
