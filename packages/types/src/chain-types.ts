@@ -64,7 +64,6 @@ interface FeeToken
   coinGeckoId?: string;
   contractAddress?: string;
   sourceDenom?: string;
-  denom?: string;
   fixed_min_gas_price?: number;
   gasPriceStep?: {
     low?: number;

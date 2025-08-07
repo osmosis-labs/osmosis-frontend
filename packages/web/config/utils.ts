@@ -163,7 +163,7 @@ function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom = chain.stakeCurrency?.coinMinimalDenom ?? "";
+  const stakingTokenSourceDenom = chain.stakeCurrency?.sourceDenom ?? "";
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
@@ -211,7 +211,7 @@ function getKeplrCompatibleChain({
 
         let gasPriceStep: ChainInfo["gasPriceStep"];
         const matchingFeeCurrency = chain.feeCurrencies.find(
-          (token) => token.denom === sourceDenom
+          (token) => token.coinDenom === sourceDenom
         );
 
         if (
@@ -288,7 +288,7 @@ function getKeplrCompatibleChain({
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
       const asset = assetList!.assets.find(
-        (asset) => asset.sourceDenom === token.denom
+        (asset) => asset.sourceDenom === token.coinDenom
       );
 
       if (!asset) {
@@ -311,7 +311,7 @@ function getKeplrCompatibleChain({
 
       let gasPriceStep: ChainInfo["gasPriceStep"];
       const matchingFeeCurrency = chain.feeCurrencies.find(
-        (token) => token.denom === sourceDenom
+        (token) => token.coinDenom === sourceDenom
       );
 
       if (

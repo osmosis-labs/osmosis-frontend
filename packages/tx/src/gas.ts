@@ -544,7 +544,7 @@ export async function getGasPriceByFeeDenom({
     };
   }
 
-  const feeToken = chain.feeCurrencies.find((ft) => ft.denom === feeDenom);
+  const feeToken = chain.feeCurrencies.find((ft) => ft.coinDenom === feeDenom);
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
   // use high gas price to be on safe side that it will be enough
@@ -635,7 +635,7 @@ export async function getChainSupportedFeeDenoms({
     return [baseDenom, ...alternativeFeeDenoms];
   }
 
-  return chain.feeCurrencies.map(({ denom }) => denom);
+  return chain.feeCurrencies.map(({ coinDenom }) => coinDenom);
 }
 
 // cached query functions
