@@ -163,7 +163,7 @@ function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom = chain.stakeCurrency!.coinMinimalDenom;
+  const stakingTokenSourceDenom = chain.stakeCurrency?.coinMinimalDenom ?? "";
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
@@ -267,7 +267,8 @@ function getKeplrCompatibleChain({
         ? {
             coinDecimals: stakeDisplayDecimals ?? 0,
             coinDenom: stakeAsset.symbol ?? stakingTokenSourceDenom,
-            coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom!,
+            coinMinimalDenom:
+              stakeSourceDenom ?? stakingTokenSourceDenom! ?? "",
             coinGeckoId: stakeAsset.coingeckoId,
             coinImageUrl:
               stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
@@ -276,7 +277,7 @@ function getKeplrCompatibleChain({
                     stakeAsset.symbol
                   )
                 : undefined,
-            base: stakeAsset.coinMinimalDenom,
+            base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
           }
         : {
             coinDecimals: 0,
