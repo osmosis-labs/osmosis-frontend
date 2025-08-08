@@ -1,8 +1,4 @@
-import {
-  getTokenInfo,
-  querySwapAdBanners,
-  TokenCMSData,
-} from "@osmosis-labs/server";
+import { getTokenInfo, querySwapAdBanners } from "@osmosis-labs/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
@@ -15,22 +11,9 @@ export const cmsRouter = createTRPCRouter({
     .input(
       z.object({
         coinMinimalDenom: z.string(),
-        langs: z.array(z.string()),
       })
     )
-    .query(async ({ input: { coinMinimalDenom, langs } }) => {
-      const results = await Promise.all(
-        langs.map(async (lang) => {
-          try {
-            const res = await getTokenInfo(coinMinimalDenom, lang);
-
-            return [lang, res];
-          } catch (error) {}
-
-          return [lang, null];
-        })
-      );
-
-      return Object.fromEntries(results) as { [key: string]: TokenCMSData };
+    .query(async ({ input: { coinMinimalDenom } }) => {
+      return await getTokenInfo(coinMinimalDenom);
     }),
 });
