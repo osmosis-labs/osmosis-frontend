@@ -32,6 +32,7 @@ import {
   useScreenManager,
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
@@ -177,6 +178,7 @@ export const AmountScreen = observer(
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
     const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
     const [pendingChainApproval, setPendingChainApproval] = useState(false);
+    const [wishesToProceed, setWishesToProceed] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const {
@@ -1258,11 +1260,32 @@ export const AmountScreen = observer(
                     </div>
                   </div>
                 )}
+                {(warnUserOfPriceImpact || warnUserOfSlippage) &&
+                  !isInsufficientFee && (
+                    <div className="flex gap-4">
+                      <Checkbox
+                        checked={wishesToProceed}
+                        onCheckedChange={(checked) => {
+                          if (checked === "indeterminate") {
+                            return setWishesToProceed(false);
+                          }
+
+                          return setWishesToProceed(checked);
+                        }}
+                      />
+                      <h2 className="body2">
+                        Yes, I understand this could cause heavy loss of funds
+                        and I wish to proceed.
+                      </h2>
+                    </div>
+                  )}
                 <Button
                   disabled={
                     cryptoAmount === "" ||
                     cryptoAmount === "0" ||
-                    !quote.userCanAdvance
+                    !quote.userCanAdvance ||
+                    ((warnUserOfPriceImpact || warnUserOfSlippage) &&
+                      !wishesToProceed)
                   }
                   className="w-full md:h-12"
                   variant={
