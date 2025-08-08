@@ -121,6 +121,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             ...quote.transferFee,
             ...input.fromAsset,
             denom: quote.transferFee.denom ?? input.fromAsset.denom,
+            decimals: quote.transferFee.decimals ?? input.fromAsset.decimals,
             chainId: input.fromChain.chainId,
           }
         : quote.transferFee;
