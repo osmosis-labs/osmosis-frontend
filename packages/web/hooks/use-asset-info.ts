@@ -27,6 +27,7 @@ export const useAssetInfo = () => {
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
+      enabled: !!asset?.coinMinimalDenom,
     }
   );
 
