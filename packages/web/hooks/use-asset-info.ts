@@ -3,7 +3,6 @@ import { useMemo } from "react";
 
 import { COINGECKO_PUBLIC_URL, TWITTER_PUBLIC_URL } from "~/config";
 import { useCurrentLanguage } from "~/hooks/user-settings";
-import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { api } from "~/utils/trpc";
 
 export const useAssetInfo = () => {
@@ -21,10 +20,9 @@ export const useAssetInfo = () => {
     }
   );
 
-  const { data: detailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
+  const { data: details } = api.local.cms.getTokenInfos.useQuery(
     {
       coinMinimalDenom: asset?.coinMinimalDenom ?? "",
-      langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
     },
     {
       refetchOnMount: false,
@@ -32,9 +30,9 @@ export const useAssetInfo = () => {
     }
   );
 
-  const details = useMemo(() => {
-    return detailsByLanguage ? detailsByLanguage[language] : undefined;
-  }, [language, detailsByLanguage]);
+  const description = useMemo(() => {
+    return details ? details.description?.[language] : undefined;
+  }, [language, details]);
 
   const coinGeckoId = useMemo(
     () => (details?.coingeckoID ? details?.coingeckoID : asset?.coinGeckoId),
@@ -96,7 +94,7 @@ export const useAssetInfo = () => {
     asset: asset!,
     isAssetLoading: isLoading,
     denom,
-    detailsByLanguage,
+    description,
     coingeckoCoin,
     isLoadingCoingeckoCoin,
   };

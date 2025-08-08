@@ -45,7 +45,6 @@ import {
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
-import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { trpcHelpers } from "~/utils/helpers";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
@@ -82,11 +81,14 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
 
     const {
       title,
-      details,
       coinGeckoId,
       asset,
+      description,
+      details,
       denom: routerDenom,
     } = useAssetInfo();
+
+    console.log({ details });
 
     useEffect(() => {
       if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
@@ -188,7 +190,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
           title={`${
             title ? `${title} (${asset.coinDenom})` : asset.coinDenom
           } | Osmosis`}
-          description={details?.description}
+          description={description}
         />
         <main className="mx-auto flex max-w-7xl flex-col gap-8 px-10 pb-11 xs:px-2">
           <LinkButton
@@ -305,7 +307,7 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
 export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
   let tweets: RichTweet[] = [];
   const denom = params?.denom as string[];
-  const tokenDenom = encodeURIComponent(denom.join("/"));
+  const tokenDenom = denom.join("/");
 
   try {
     /**
@@ -322,15 +324,9 @@ export const getStaticProps = async ({ params }: GetStaticPropsContext) => {
 
     if (tokenDenom) {
       try {
-        const tokenDetailsByLanguage =
-          await trpcHelpers.local.cms.getTokenInfos.fetch({
-            coinMinimalDenom: asset.coinMinimalDenom,
-            langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
-          });
-
-        const tokenDetails = tokenDetailsByLanguage
-          ? tokenDetailsByLanguage["en"]
-          : undefined;
+        const tokenDetails = await trpcHelpers.local.cms.getTokenInfos.fetch({
+          coinMinimalDenom: asset.coinMinimalDenom,
+        });
 
         if (tokenDetails) {
           if (tokenDetails.twitterURL) {
