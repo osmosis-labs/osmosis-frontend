@@ -84,11 +84,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       coinGeckoId,
       asset,
       description,
-      details,
       denom: routerDenom,
     } = useAssetInfo();
-
-    console.log({ details });
 
     useEffect(() => {
       if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
