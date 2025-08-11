@@ -82,7 +82,7 @@ export class TradePage extends BasePage {
   }
 
   async openLimit() {
-    expect(this.limitTabBtn, "Limit tab is not visible!").toBeVisible({
+    await expect(this.limitTabBtn, "Limit tab is not visible!").toBeVisible({
       timeout: 5000,
     });
     await this.limitTabBtn.click();

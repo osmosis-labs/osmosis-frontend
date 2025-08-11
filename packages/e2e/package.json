@@ -16,8 +16,8 @@
     "dotenv": "16.4.7"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.1.4",
     "@types/node": "22.13.13",
-    "typescript": "5.8.2"
+    "typescript": "5.9.2"
   }
 }
