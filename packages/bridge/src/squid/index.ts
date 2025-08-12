@@ -64,7 +64,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   ) {
     this.apiURL =
       ctx.env === "mainnet"
-        ? "https://api.0xsquid.com"
+        ? "https://v2.api.squidrouter.com"
         : "https://testnet.api.squidrouter.com";
     this.squidScanBaseUrl =
       ctx.env === "mainnet"
@@ -111,7 +111,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           receiveGasOnDestination: false,
         };
 
-        const url = new URL(`${this.apiURL}/v1/route`);
+        const url = new URL(`${this.apiURL}/v2/route`);
         Object.entries(getRouteParams).forEach(([key, value]) => {
           url.searchParams.append(key, value.toString());
         });
@@ -631,7 +631,12 @@ export class SquidBridgeProvider implements BridgeProvider {
       getFreshValue: async () => {
         try {
           const data = await apiClient<ChainsResponse>(
-            `${this.apiURL}/v1/chains`
+            `${this.apiURL}/v2/chains`,
+            {
+              headers: {
+                "x-integrator-id": this.integratorId,
+              },
+            }
           );
           return data.chains;
         } catch (e) {
@@ -650,7 +655,12 @@ export class SquidBridgeProvider implements BridgeProvider {
       getFreshValue: async () => {
         try {
           const data = await apiClient<TokensResponse>(
-            `${this.apiURL}/v1/tokens`
+            `${this.apiURL}/v2/tokens`,
+            {
+              headers: {
+                "x-integrator-id": this.integratorId,
+              },
+            }
           );
           return data.tokens;
         } catch (e) {
