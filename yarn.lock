@@ -4513,34 +4513,34 @@
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.4.0.tgz"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.27", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.24":
-  version "0.0.6-rc.27"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.27.tgz#f1bc7f560c1af6adb2895485fb1df80240f8345d"
-  integrity sha512-W6dHlaGuvPMR4WZ26U72p62WYTkOWhL3Y/us5jJGKsQVYlsh0q5G0MCZi+5Zi29EMxM6K8NtzLuItRGboM9UeA==
+"@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.34":
+  version "0.0.6-rc.34"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.34.tgz#78b06bd37c27967d9506e3b6b7972bd275c5313f"
+  integrity sha512-f6QzW6l4K1u0rE38h+30UNM1/MMlzEfNKbHaLTUaLwE8PJUlGlO8/Kq91gE5CmR6hRnCS6SlF3i8bkH15j76dw==
   dependencies:
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.4"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.5"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.28":
-  version "0.0.6-rc.28"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.28.tgz#d4a63d9688cecc155c4e6f6f52508f16fe16e7b6"
-  integrity sha512-jI5J5XJyDhvknAnZHWC5fipliL/QLNcNwGA/0HmSyOlfZeq2iOm4OG0WPQrcZATA7psgPL4NKQJcgDuKiuhSUw==
+"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.42":
+  version "0.0.6-rc.42"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.42.tgz#6c5c1ad9a827bd2ae4501a8cbc2edea9da43979a"
+  integrity sha512-Ni2aCi5rBrYhT7zMeJjZPi/6FOI2HSu5cT1nHJPzm9AwRqfP8G+MSx3/PdFAd9w388866kOGXACo+34ZhsPtmw==
   dependencies:
     "@cosmjs/amino" "^0.33.1"
     "@cosmjs/proto-signing" "^0.33.1"
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.24"
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.3"
-    "@keplr-wallet/common" "^0.12.253"
-    "@keplr-wallet/simple-fetch" "^0.12.253"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.34"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.5"
+    "@keplr-wallet/proto-types" "^0.12.253"
     "@keplr-wallet/types" "^0.12.253"
     "@noble/curves" "^1.9.2"
     "@noble/hashes" "^1.8.0"
     bech32 "^2.0.0"
+    buffer "^6.0.3"
 
-"@keplr-ewallet/stdlib-js@^0.0.2-rc.3", "@keplr-ewallet/stdlib-js@^0.0.2-rc.4":
-  version "0.0.2-rc.4"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/stdlib-js/-/stdlib-js-0.0.2-rc.4.tgz#cc70fd9f2bdea5ee00040ff5ca3d349dc6bd4a0f"
-  integrity sha512-guGfcvGDmLV62S3e59BwAblCg813NUHTBNxEeXIcGRoXQF9yS6bIsMactyo6Jo9zNpmZWZVcIe+KXNhUrLZTbQ==
+"@keplr-ewallet/stdlib-js@^0.0.2-rc.5":
+  version "0.0.2-rc.5"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/stdlib-js/-/stdlib-js-0.0.2-rc.5.tgz#40c2850099760c7d23140de961a7c4bf808a7808"
+  integrity sha512-O7q98kM2Vx/CZQF4e8kZCHAp6p5ItNkjh4Jd33AVUl6ngT3AAeYPeUWn7FKUK4KBYSC9Lk/y0JbRzvGt3pMrtA==
 
 "@keplr-wallet/background@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
@@ -4577,7 +4577,7 @@
     secretjs "^0.17.0"
     utility-types "^3.10.0"
 
-"@keplr-wallet/common@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/common@^0.12.253":
+"@keplr-wallet/common@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/common/-/common-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-yxgMFyBm32noKKuH8grKmOOvm6MnFfBOnxu3H6mSXAiZbxP8cMqw5ZOewDCLgQtLA6UCctFjBkn7kpDte+Dgiw==
@@ -4675,7 +4675,7 @@
   resolved "https://registry.npmjs.org/@keplr-wallet/popup/-/popup-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-Q/teyV6vdmpH3SySGd1xrNc/mVGK/tCP5vFEG2I3Y4FDCSV1yD7vcVgUy+tN19Z8EM3goR57V2QlarSOidtdjQ==
 
-"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.12.12":
+"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.12.12", "@keplr-wallet/proto-types@^0.12.253":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/proto-types/-/proto-types-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-fLUJEtDadYJIMBzhMSZpEDTvXqk8wW68TwnUCRAcAooEQEtXPwY5gfo3hcekQEiCYtIu8XqzJ9fg01rp2Z4d3w==
@@ -4762,11 +4762,6 @@
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/router/-/router-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-bt9weexlbhlh8KsOvbDrvHJ8jtUXrXgB2LX+hEAwjclHQt7PMUhx9a5z0Obd19/ive5G/1M7/ccdPIWxRBpKQw==
-
-"@keplr-wallet/simple-fetch@^0.12.253":
-  version "0.12.263"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/simple-fetch/-/simple-fetch-0.12.263.tgz#b0c59c6e699de5e1839ac364ac50e579866b135f"
-  integrity sha512-ENgzTbj287lhcfrCXbcx2m3DQuaNKKzsoFC+iUC157hFw9l3C2+vR+4w4VOiHVUsY13U2zyKxgeT6Rm9KPff3g==
 
 "@keplr-wallet/types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/types@0.12.107", "@keplr-wallet/types@0.12.12", "@keplr-wallet/types@0.12.96", "@keplr-wallet/types@^0.12.253", "@keplr-wallet/types@^0.12.257", "@keplr-wallet/types@^0.12.95":
   version "0.10.24-ibc.go.v7.hot.fix"

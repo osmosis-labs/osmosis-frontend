@@ -361,7 +361,10 @@ const WalletInfo: FunctionComponent<
             logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect({
               walletOptions: [
-                { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+                {
+                  walletType: "cosmos",
+                  chainId: accountStore.osmosisChainId,
+                },
               ],
             });
           }}
