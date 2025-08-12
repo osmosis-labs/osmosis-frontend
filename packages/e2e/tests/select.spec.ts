@@ -36,7 +36,7 @@ test.describe('Test Select Swap Pair feature', () => {
     await swapPage.showSwapInfo()
   })
 
-  test.skip('User should be able to select WBTC/USDC', async () => {
+  test('User should be able to select WBTC/USDC', async () => {
     await swapPage.goto()
     await swapPage.selectPair('WBTC', 'USDC')
     await swapPage.enterAmount('0.1')
