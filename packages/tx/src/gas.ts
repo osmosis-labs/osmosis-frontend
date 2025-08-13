@@ -544,7 +544,9 @@ export async function getGasPriceByFeeDenom({
     };
   }
 
-  const feeToken = chain.feeCurrencies.find((ft) => ft.coinDenom === feeDenom);
+  const feeToken = chain.feeCurrencies.find(
+    (ft) => ft.coinMinimalDenom === feeDenom
+  );
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
   // use high gas price to be on safe side that it will be enough
@@ -596,7 +598,9 @@ export async function getDefaultGasPrice({
   } else {
     // registry
 
-    feeDenom = chain.feeCurrencies[0].coinDenom;
+    feeDenom =
+      chain.feeCurrencies[0].coinMinimalDenom ??
+      chain.feeCurrencies[0].coinDenom;
     // use high gas price to be on safe side that it will be enough
     // to cover fees
     gasPrice = new Dec(
