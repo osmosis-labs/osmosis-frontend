@@ -4521,10 +4521,10 @@
     "@keplr-ewallet/stdlib-js" "^0.0.2-rc.5"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.46":
-  version "0.0.6-rc.46"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.46.tgz#124155a78164f00528a9813d84cc091c23d09a4a"
-  integrity sha512-PBdMBAU9RL8hU2SohvT+9mY0uyAOpaKJTybZuu/cbjgbgbOWbGOu3hxCWDuSdI/OOX8mNPqUlUrNvg81eq+XFQ==
+"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.43":
+  version "0.0.6-rc.43"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.43.tgz#ba6faa5255e4db3dfdac11d7b0ab4462ae167b33"
+  integrity sha512-J3wWMZtXFZV4y5HLV4DRNLxQqwlZtgq5wZg3H3u806+IF35NeYS+3QZBzz5ZZCnNpfHoznO4uLg/VA4NoPSDtA==
   dependencies:
     "@cosmjs/amino" "^0.33.1"
     "@cosmjs/proto-signing" "^0.33.1"
