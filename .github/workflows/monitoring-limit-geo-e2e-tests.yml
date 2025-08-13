@@ -9,7 +9,7 @@ jobs:
   fe-swap-us:
     timeout-minutes: 10
     name: prod-fe-swap-us
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
   fe-swap-eu:
     timeout-minutes: 15
     name: prod-fe-swap-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -91,7 +91,7 @@ jobs:
   fe-swap-sg:
     timeout-minutes: 15
     name: prod-fe-swap-sg
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
@@ -137,7 +137,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-eu
     name: prod-fe-trade-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -188,7 +188,7 @@ jobs:
     if: failure() || success()
     name: prod-fe-limit-eu
     needs: fe-trade-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -238,7 +238,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-sg
     name: prod-fe-trade-sg
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -288,7 +288,7 @@ jobs:
     timeout-minutes: 10
     needs: fe-swap-us
     name: prod-fe-trade-us
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -336,7 +336,7 @@ jobs:
     if: failure() || success()
     needs: fe-trade-us
     name: prod-fe-limit-us
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
