@@ -391,6 +391,16 @@ export function getChainList({
 
         return {
           ...chain,
+          /**
+           * Needed for CosmosKit to function correctly, otherwise
+           * chain suggestion won't work.
+           */
+          fees: {
+            fee_tokens: chain.feeCurrencies,
+          },
+          staking: {
+            staking_tokens: chain.stakeCurrency ? [chain.stakeCurrency] : [],
+          },
           chain_id: isOsmosis
             ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
             : chain.chain_id,

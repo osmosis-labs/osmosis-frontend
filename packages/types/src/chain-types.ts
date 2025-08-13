@@ -36,6 +36,16 @@ export interface Chain {
   };
   explorers: Explorer[];
   features: string[];
+  /**
+   * Needed for CosmosKit to function correctly, otherwise
+   * chain suggestion won't work.
+   */
+  fees?: {
+    fee_tokens: FeeToken[];
+  };
+  staking?: {
+    staking_tokens: StakeCurrency[];
+  };
 }
 
 interface Bech32Config {
