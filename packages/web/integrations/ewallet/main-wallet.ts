@@ -35,13 +35,13 @@ export class EWalletMainWallet extends MainWalletBase {
           "72bd2afd04374f86d563a40b814b7098e5ad6c7f52d3b8f84ab0c3d05f73ac6c",
       });
 
-      if (!cosmosEWallet) {
+      if (!cosmosEWallet.success) {
         throw new Error(
           "Failed to initialize CosmosEWallet - initialization returned null"
         );
       }
 
-      this.cosmosEWallet = cosmosEWallet;
+      this.cosmosEWallet = cosmosEWallet.data;
       this.logger?.info("[EWallet] Main wallet initialized successfully");
     } catch (error) {
       const err = error as Error;
