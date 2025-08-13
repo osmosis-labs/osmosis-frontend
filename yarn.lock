@@ -4513,22 +4513,22 @@
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.4.0.tgz"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.34":
-  version "0.0.6-rc.34"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.34.tgz#78b06bd37c27967d9506e3b6b7972bd275c5313f"
-  integrity sha512-f6QzW6l4K1u0rE38h+30UNM1/MMlzEfNKbHaLTUaLwE8PJUlGlO8/Kq91gE5CmR6hRnCS6SlF3i8bkH15j76dw==
+"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.35", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.35":
+  version "0.0.6-rc.35"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.35.tgz#bba64e1a06b22c01470a959afdd8bcb32710857b"
+  integrity sha512-EoGSO4WZrBSHv9cmc41oVVzuK6Ttx7KhbEWbi/OnzPWZWR02IoYZDU8crx+3kpLp1rc8HcLrwACFjfCJJRXwvQ==
   dependencies:
     "@keplr-ewallet/stdlib-js" "^0.0.2-rc.5"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.42":
-  version "0.0.6-rc.42"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.42.tgz#6c5c1ad9a827bd2ae4501a8cbc2edea9da43979a"
-  integrity sha512-Ni2aCi5rBrYhT7zMeJjZPi/6FOI2HSu5cT1nHJPzm9AwRqfP8G+MSx3/PdFAd9w388866kOGXACo+34ZhsPtmw==
+"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.43":
+  version "0.0.6-rc.43"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.43.tgz#ba6faa5255e4db3dfdac11d7b0ab4462ae167b33"
+  integrity sha512-J3wWMZtXFZV4y5HLV4DRNLxQqwlZtgq5wZg3H3u806+IF35NeYS+3QZBzz5ZZCnNpfHoznO4uLg/VA4NoPSDtA==
   dependencies:
     "@cosmjs/amino" "^0.33.1"
     "@cosmjs/proto-signing" "^0.33.1"
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.34"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.35"
     "@keplr-ewallet/stdlib-js" "^0.0.2-rc.5"
     "@keplr-wallet/proto-types" "^0.12.253"
     "@keplr-wallet/types" "^0.12.253"
