@@ -4,7 +4,7 @@ import {
   WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 
-import { EWalletWallet } from "~/integrations/ewallet/ewallet-wallet";
+import { EWalletMainWallet } from "~/integrations/ewallet";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
@@ -19,14 +19,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     rejectMessage: {
       source: "Request rejected",
     },
-    downloads: [
-      {
-        device: "desktop",
-        browser: "chrome",
-        link: "https://wallet.keplr.app",
-      },
-    ],
-    lazyInstall: () => Promise.resolve(EWalletWallet),
+    lazyInstall: () => Promise.resolve(EWalletMainWallet),
     windowPropertyName: "keplr",
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
