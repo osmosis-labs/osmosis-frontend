@@ -24,21 +24,25 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const { title, websiteURL, twitterUrl, coingeckoURL, details, asset } =
-    useAssetInfo();
+  const {
+    title,
+    websiteURL,
+    twitterUrl,
+    coingeckoURL,
+    details,
+    asset,
+    description,
+  } = useAssetInfo();
 
-  const isExpandable =
-    details?.description && details?.description.length > TEXT_CHAR_LIMIT;
+  const isExpandable = description && description.length > TEXT_CHAR_LIMIT;
 
   const expandedText = useMemo(() => {
     if (isExpandable && !isExpanded) {
-      return details?.description
-        ? details.description.substring(0, TEXT_CHAR_LIMIT)
-        : "";
+      return description ? description.substring(0, TEXT_CHAR_LIMIT) : "";
     }
 
-    return details?.description;
-  }, [isExpandable, isExpanded, details]);
+    return description;
+  }, [isExpandable, isExpanded, description]);
 
   const toggleExpand = () => {
     logEvent([
