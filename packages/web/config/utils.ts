@@ -288,7 +288,9 @@ function getKeplrCompatibleChain({
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
       const asset = assetList!.assets.find(
-        (asset) => asset.sourceDenom === token.coinDenom
+        (asset) =>
+          asset.sourceDenom ===
+          (token.chainSuggestionDenom ?? token.coinMinimalDenom)
       );
 
       if (!asset) {
