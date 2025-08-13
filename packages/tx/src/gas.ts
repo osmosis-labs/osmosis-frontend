@@ -639,7 +639,7 @@ export async function getChainSupportedFeeDenoms({
     return [baseDenom, ...alternativeFeeDenoms];
   }
 
-  return chain.feeCurrencies.map(({ coinDenom }) => coinDenom);
+  return chain.feeCurrencies.map(({ coinMinimalDenom }) => coinMinimalDenom);
 }
 
 // cached query functions
