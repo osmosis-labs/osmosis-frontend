@@ -54,7 +54,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        txPage: "https://www.mintscan.io/cosmos/txs/${txHash}",
+        txPage: "https://www.mintscan.io/osmosis/txs/{txHash}",
       },
     ],
     features: [
@@ -118,7 +118,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        txPage: "https://www.mintscan.io/osmosis/txs/${txHash}",
+        txPage: "https://www.mintscan.io/cosmos/txs/{txHash}",
       },
     ],
     features: ["ibc-go", "ibc-transfer"],
@@ -189,7 +189,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        txPage: "https://www.mintscan.io/juno/txs/${txHash}",
+        txPage: "https://www.mintscan.io/juno/txs/{txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -307,7 +307,7 @@ export const MockChains: Chain[] = [
     explorers: [
       {
         txPage:
-          "https://secretnodes.com/secret/chains/secret-4/transactions/${txHash}",
+          "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
       },
     ],
     features: [
@@ -371,7 +371,7 @@ export const MockChains: Chain[] = [
     },
     explorers: [
       {
-        txPage: "https://axelarscan.io/tx/${txHash}",
+        txPage: "https://axelarscan.io/tx/{txHash}",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "axelar-evm-bridge"],
