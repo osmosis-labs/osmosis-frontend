@@ -2,7 +2,6 @@ import { StatusResponse } from "@0xsquid/sdk";
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, poll } from "@osmosis-labs/utils";
 
-import { SquidBridgeProvider } from ".";
 import type {
   BridgeEnvironment,
   BridgeTransferStatus,
@@ -10,6 +9,7 @@ import type {
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { SquidBridgeProvider } from ".";
 
 /** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusProvider implements TransferStatusProvider {

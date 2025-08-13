@@ -3,13 +3,13 @@ import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
 import { ChainIdHelper } from "@osmosis-labs/utils";
 
-import { IbcBridgeProvider } from ".";
 import {
   TransferStatus,
   TransferStatusProvider,
   TransferStatusReceiver,
   TxSnapshot,
 } from "../interface";
+import { IbcBridgeProvider } from ".";
 
 export type IbcTransferStatus = "pending" | "complete" | "timeout" | "refunded";
 
