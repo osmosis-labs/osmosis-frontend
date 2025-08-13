@@ -29,36 +29,35 @@ test.describe("Test Select Swap Pair feature", () => {
     await context.close();
   });
 
-  test("User should be able to select BTC/USDC", async () => {
+  test.beforeEach(async () => {
     await swapPage.goto();
+  });
+
+  test("User should be able to select BTC/USDC", async () => {
     await swapPage.selectPair("nBTC", "USDC");
     await swapPage.enterAmount("0.01");
     await swapPage.showSwapInfo();
   });
 
   test.skip("User should be able to select WBTC/USDC", async () => {
-    await swapPage.goto();
     await swapPage.selectPair("WBTC", "USDC");
     await swapPage.enterAmount("0.1");
     await swapPage.showSwapInfo();
   });
 
   test("User should be able to select OSMO/USDC", async () => {
-    await swapPage.goto();
     await swapPage.selectPair("OSMO", "USDC");
     await swapPage.enterAmount("1");
     await swapPage.showSwapInfo();
   });
 
   test("User should be able to select INJ/USDC", async () => {
-    await swapPage.goto();
     await swapPage.selectPair("INJ", "USDC");
     await swapPage.enterAmount("10");
     await swapPage.showSwapInfo();
   });
 
   test("User should be able to select TIA/USDC", async () => {
-    await swapPage.goto();
     await swapPage.selectPair("TIA", "USDC");
     await swapPage.enterAmount("100");
     await swapPage.showSwapInfo();
