@@ -130,7 +130,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -145,9 +145,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -185,9 +185,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -207,7 +207,7 @@ jobs:
 
   preview-trade-tests:
     timeout-minutes: 15
-    runs-on: macos-latest
+    runs-on: macos-14
     needs:
       [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests]
     steps:
@@ -224,9 +224,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -249,7 +249,7 @@ jobs:
 
   preview-claim-tests:
     timeout-minutes: 10
-    runs-on: macos-latest
+    runs-on: macos-14
     needs: wait-for-deployment
     steps:
       - name: Check out repository
@@ -265,9 +265,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
