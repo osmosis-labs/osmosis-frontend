@@ -1,118 +1,361 @@
-import { ChainRecord, ChainWalletBase, Wallet } from "@cosmos-kit/core";
+import { AccountData, OfflineAminoSigner } from "@cosmjs/amino";
+import { OfflineDirectSigner } from "@cosmjs/proto-signing";
+import { ChainRecord, ChainWalletBase, State, Wallet } from "@cosmos-kit/core";
 import type { CosmosEWallet } from "@keplr-ewallet/ewallet-sdk-cosmos";
 
 import { EWalletMainWallet } from "./main-wallet";
 
 export class EWalletChainWallet extends ChainWalletBase {
+  mainWallet!: EWalletMainWallet;
+  private _accountData: AccountData | undefined;
+
   constructor(walletInfo: Wallet, chainInfo: ChainRecord) {
     super(walletInfo, chainInfo);
   }
 
-  async initClient(): Promise<void> {
-    if (this.client) {
-      return; // Already initialized
-    }
+  get address() {
+    return this._accountData?.address;
+  }
+
+  get username() {
+    return undefined;
+  }
+
+  connect = async (_sync?: boolean) => {
+    console.log(`[EWallet] Connect called for chain: ${this.chainId}`);
 
     try {
-      // Get the main wallet instance
-      const mainWallet = this.mainWallet as EWalletMainWallet;
+      this.setState(State.Pending);
 
-      // Ensure main wallet is initialized
-      await mainWallet.initClient();
+      // Ensure mainWallet is properly initialized
+      await this.mainWallet.initClient();
 
-      // Get the cosmos ewallet instance
-      const cosmosEWallet = mainWallet.getCosmosEWallet();
-
+      const cosmosEWallet = this.mainWallet.getCosmosEWallet();
       if (!cosmosEWallet) {
-        throw new Error(
-          "CosmosEWallet instance not available from main wallet"
-        );
+        throw new Error("Cosmos EWallet not available");
       }
 
-      this.logger?.info("[EWallet] Creating chain wallet client...");
+      // Check login status and handle login if needed
+      await this.ensureLogin(cosmosEWallet);
 
-      // Create a Keplr-compatible wrapper
-      const keplrCompatibleWallet =
-        this.createKeplrCompatibleInterface(cosmosEWallet);
+      // Get account information for this chain
+      const chainId = this.chainRecord.chain?.chain_id;
+      if (!chainId) {
+        throw new Error("Chain ID not available");
+      }
 
-      this.logger?.info("[EWallet] Chain wallet client created successfully");
+      // Get account key
+      const account = await cosmosEWallet.getKey(chainId);
 
-      this.initClientDone(keplrCompatibleWallet);
+      this._accountData = {
+        address: account.bech32Address,
+        algo: account.algo as any,
+        pubkey: account.pubKey,
+      };
+
+      console.log(
+        `[EWallet] Connected successfully to chain: ${chainId}, address: ${account.bech32Address}`
+      );
+      this.setState(State.Done);
     } catch (error) {
-      const err = error as Error;
-      this.logger?.error("[EWallet] Chain wallet initialization failed:", err);
-      this.initClientError(err);
+      console.error(`[EWallet] Connect failed:`, error);
+      this.setState(State.Error);
+      throw error;
+    }
+  };
+
+  private async ensureLogin(cosmosEWallet: CosmosEWallet): Promise<void> {
+    console.log("[EWallet] Checking login status...");
+
+    // 현재 로그인 상태 확인
+    const publicKey = await cosmosEWallet.getPublicKey();
+
+    if (!publicKey) {
+      console.log("[EWallet] User not logged in, triggering login...");
+
+      // Get core EWallet for login
+      const coreEWallet = (cosmosEWallet as any).eWallet;
+      if (coreEWallet && typeof coreEWallet.signIn === "function") {
+        await coreEWallet.signIn("google");
+        console.log("[EWallet] Login successful");
+
+        // 로그인 후 다시 확인
+        const newPublicKey = await cosmosEWallet.getPublicKey();
+        if (!newPublicKey) {
+          throw new Error("Login verification failed");
+        }
+      } else {
+        throw new Error("Please login to EWallet first");
+      }
+    } else {
+      console.log("[EWallet] User already logged in");
     }
   }
 
-  private createKeplrCompatibleInterface(cosmosEWallet: CosmosEWallet): any {
-    // Create a Keplr-compatible interface that wraps the CosmosEWallet
-    return {
-      // Core wallet info
-      version: "ewallet-0.0.6-rc.43",
-      mode: "ewallet",
+  async getAccount() {
+    if (!this._accountData) {
+      await this.connect();
+    }
+    return this._accountData;
+  }
 
-      // Enable chain support
-      enable: (chainId: string) => cosmosEWallet.enable(chainId),
+  async signAmino(signerAddress: string, signDoc: any, signOptions?: any) {
+    console.log(`[EWallet] SignAmino called for address: ${signerAddress}`);
 
-      // Account management
-      getKey: (chainId: string) => cosmosEWallet.getKey(chainId),
-      getAccounts: () => cosmosEWallet.getAccounts(),
-      getKeysSettled: (chainIds: string[]) =>
-        cosmosEWallet.getKeysSettled(chainIds),
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
 
-      // Signing operations
-      signAmino: (
-        chainId: string,
-        signer: string,
-        signDoc: any,
-        signOptions?: any
-      ) => cosmosEWallet.signAmino(chainId, signer, signDoc, signOptions),
-      signDirect: (
-        chainId: string,
-        signer: string,
-        signDoc: any,
-        signOptions?: any
-      ) => cosmosEWallet.signDirect(chainId, signer, signDoc, signOptions),
-      signArbitrary: (
-        chainId: string,
-        signer: string,
-        data: string | Uint8Array
-      ) => cosmosEWallet.signArbitrary(chainId, signer, data),
-      verifyArbitrary: (
-        chainId: string,
-        signer: string,
-        data: string | Uint8Array,
-        signature: any
-      ) => cosmosEWallet.verifyArbitrary(chainId, signer, data, signature),
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
 
-      // Offline signers
-      getOfflineSigner: (chainId: string, signOptions?: any) =>
-        cosmosEWallet.getOfflineSigner(chainId, signOptions),
-      getOfflineSignerOnlyAmino: (chainId: string, signOptions?: any) =>
-        cosmosEWallet.getOfflineSignerOnlyAmino(chainId, signOptions),
-      getOfflineSignerAuto: (chainId: string, signOptions?: any) =>
-        cosmosEWallet.getOfflineSignerAuto(chainId, signOptions),
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
 
-      // Transaction sending
-      sendTx: (
-        chainId: string,
-        tx: unknown,
-        mode: "async" | "sync" | "block",
-        options?: any
-      ) => cosmosEWallet.sendTx(chainId, tx, mode, options),
+    return await cosmosEWallet.signAmino(
+      chainId,
+      signerAddress,
+      signDoc,
+      signOptions
+    );
+  }
 
-      // Chain management
-      experimentalSuggestChain: (chainInfo: any) =>
-        cosmosEWallet.experimentalSuggestChain(chainInfo),
+  async signDirect(signerAddress: string, signDoc: any, signOptions?: any) {
+    console.log(`[EWallet] SignDirect called for address: ${signerAddress}`);
 
-      // EWallet specific methods
-      getCosmosChainInfo: () => cosmosEWallet.getCosmosChainInfo(),
-      getPublicKey: () => cosmosEWallet.getPublicKey(),
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
 
-      // Additional properties for compatibility
-      isEWallet: true,
-      _cosmosEWallet: cosmosEWallet, // Keep reference to original ewallet instance
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    return await cosmosEWallet.signDirect(
+      chainId,
+      signerAddress,
+      signDoc,
+      signOptions
+    );
+  }
+
+  async signArbitrary(signerAddress: string, data: string | Uint8Array) {
+    console.log(`[EWallet] SignArbitrary called for address: ${signerAddress}`);
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    return await cosmosEWallet.signArbitrary(chainId, signerAddress, data);
+  }
+
+  async verifyArbitrary(
+    signerAddress: string,
+    data: string | Uint8Array,
+    signature: any
+  ): Promise<boolean> {
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    return (await cosmosEWallet.verifyArbitrary(
+      chainId,
+      signerAddress,
+      data,
+      signature
+    )) as boolean;
+  }
+
+  on() {
+    // Event handling placeholder
+  }
+
+  off() {
+    // Event handling placeholder
+  }
+
+  removeAllListeners() {
+    // Event handling placeholder
+  }
+
+  async initOfflineSigner(): Promise<void> {
+    console.log("[EWallet] InitOfflineSigner called");
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    // Get the offline signer and set it
+    const [aminoSigner, directSigner] = await Promise.all([
+      cosmosEWallet.getOfflineSignerOnlyAmino(chainId),
+      cosmosEWallet.getOfflineSigner(chainId),
+    ]);
+
+    // Create a combined signer that satisfies both interfaces
+    const combinedSigner = {
+      getAccounts: () => directSigner.getAccounts(),
+      signDirect: directSigner.signDirect.bind(directSigner),
+      signAmino: aminoSigner.signAmino.bind(aminoSigner),
     };
+
+    // Set the offline signer and client property for downstream checks
+    this.offlineSigner = combinedSigner as unknown as OfflineAminoSigner &
+      OfflineDirectSigner;
+
+    // Set client property safely
+    if (!(this as any).client) {
+      Object.defineProperty(this, "client", {
+        value: combinedSigner,
+        writable: true,
+        configurable: true,
+      });
+    } else {
+      (this as any).client = combinedSigner;
+    }
+
+    console.log("[EWallet] OfflineSigner initialized successfully");
+  }
+
+  async getOfflineSigner(): Promise<OfflineAminoSigner & OfflineDirectSigner> {
+    console.log("[EWallet] GetOfflineSigner called");
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    const [aminoSigner, directSigner] = await Promise.all([
+      cosmosEWallet.getOfflineSignerOnlyAmino(chainId),
+      cosmosEWallet.getOfflineSigner(chainId),
+    ]);
+
+    return {
+      getAccounts: () => directSigner.getAccounts(),
+      signDirect: directSigner.signDirect.bind(directSigner),
+      signAmino: aminoSigner.signAmino.bind(aminoSigner),
+    };
+  }
+
+  async getOfflineSignerAuto(): Promise<
+    OfflineAminoSigner | OfflineDirectSigner
+  > {
+    console.log("[EWallet] GetOfflineSignerAuto called");
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    return await cosmosEWallet.getOfflineSignerAuto(chainId);
+  }
+
+  async getOfflineSignerOnlyAmino(): Promise<OfflineAminoSigner> {
+    console.log("[EWallet] GetOfflineSignerOnlyAmino called");
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    return await cosmosEWallet.getOfflineSignerOnlyAmino(chainId);
+  }
+
+  async sendTx(tx: Uint8Array, mode?: any) {
+    console.log("[EWallet] SendTx called");
+
+    // Ensure wallet is connected
+    if (!this._accountData) {
+      await this.connect();
+    }
+
+    const cosmosEWallet = this.mainWallet.getCosmosEWallet();
+    if (!cosmosEWallet) {
+      throw new Error("Cosmos EWallet not available");
+    }
+
+    const chainId = this.chainRecord.chain?.chain_id;
+    if (!chainId) {
+      throw new Error("Chain ID not available");
+    }
+
+    // Default to sync mode if not specified
+    const txMode = mode || "sync";
+
+    return await cosmosEWallet.sendTx(chainId, tx, txMode);
   }
 }
