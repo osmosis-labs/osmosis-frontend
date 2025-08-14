@@ -188,9 +188,7 @@ const ChartHeader = observer(() => {
       data = decHoverPrice;
     } else {
       if (assetInfoConfig.dataType === "price") {
-        data =
-          marketAsset?.currentPrice?.toDec() ??
-          new Dec(assetInfoConfig.lastChartData?.close ?? 0);
+        data = new Dec(assetInfoConfig.lastChartData?.close ?? 0);
       } else {
         data = marketAsset?.volume24h?.toDec() ?? new Dec(0);
       }
@@ -201,7 +199,6 @@ const ChartHeader = observer(() => {
     assetInfoConfig.hoverData,
     assetInfoConfig.dataType,
     assetInfoConfig.lastChartData?.close,
-    marketAsset?.currentPrice,
     marketAsset?.volume24h,
   ]);
 
