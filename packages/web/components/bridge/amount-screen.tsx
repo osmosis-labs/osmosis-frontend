@@ -707,6 +707,23 @@ export const AmountScreen = observer(
           ? !fromChain || !fromAsset
           : !toChain || !toAsset));
 
+    const isTransferButtonDisabled = useMemo(() => {
+      if (cryptoAmount === "" || cryptoAmount === "0" || !quote.userCanAdvance)
+        return true;
+
+      if (warnUserOfPriceImpact || warnUserOfSlippage) {
+        return !wishesToProceed;
+      }
+
+      return false;
+    }, [
+      cryptoAmount,
+      quote.userCanAdvance,
+      warnUserOfPriceImpact,
+      warnUserOfSlippage,
+      wishesToProceed,
+    ]);
+
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
         ? !isNil(fromAsset) &&
@@ -1177,6 +1194,8 @@ export const AmountScreen = observer(
               }
               fromChain={fromChain}
               isLoading={isLoadingBridgeQuote}
+              warnUserOfPriceImpact={warnUserOfPriceImpact}
+              warnUserOfSlippage={warnUserOfSlippage}
             />
           )}
 
@@ -1280,13 +1299,7 @@ export const AmountScreen = observer(
                     </div>
                   )}
                 <Button
-                  disabled={
-                    cryptoAmount === "" ||
-                    cryptoAmount === "0" ||
-                    !quote.userCanAdvance ||
-                    ((warnUserOfPriceImpact || warnUserOfSlippage) &&
-                      !wishesToProceed)
-                  }
+                  disabled={isTransferButtonDisabled}
                   className="w-full md:h-12"
                   variant={
                     warnUserOfSlippage || warnUserOfPriceImpact
@@ -1459,7 +1472,15 @@ const TransferDetails: FunctionComponent<{
   quote: BridgeQuote | undefined;
   fromChain: BridgeChainWithDisplayInfo;
   isLoading: boolean;
-}> = ({ quote, fromChain, isLoading }) => {
+  warnUserOfPriceImpact?: boolean;
+  warnUserOfSlippage?: boolean;
+}> = ({
+  quote,
+  fromChain,
+  isLoading,
+  warnUserOfPriceImpact,
+  warnUserOfSlippage,
+}) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
@@ -1470,7 +1491,7 @@ const TransferDetails: FunctionComponent<{
   }
 
   return (
-    <Disclosure>
+    <Disclosure defaultOpen={warnUserOfPriceImpact || warnUserOfSlippage}>
       {({ open }) => (
         <div
           className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
