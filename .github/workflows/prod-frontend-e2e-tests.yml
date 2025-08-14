@@ -29,7 +29,7 @@ jobs:
         run: echo "$environment_url"
 
   prod-e2e-tests:
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 20
     needs: wait-for-deployment
     environment:
