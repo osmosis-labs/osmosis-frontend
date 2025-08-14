@@ -91,7 +91,7 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle successful transfer status", async () => {
     server.use(
-      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
+      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
         return res(
           ctx.json({ id: "testTxHash", squidTransactionStatus: "success" })
         );
@@ -111,7 +111,7 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle failed transfer status", async () => {
     server.use(
-      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
+      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
         return res(
           ctx.json({ id: "testTxHash", squidTransactionStatus: "needs_gas" })
         );
@@ -131,7 +131,7 @@ describe("SquidTransferStatusProvider", () => {
 
   it("should handle undefined transfer status", async () => {
     server.use(
-      rest.get("https://api.0xsquid.com/v1/status", (_req, res, ctx) => {
+      rest.get("https://v2.api.squidrouter.com/v2/status", (_req, res, ctx) => {
         return res(ctx.status(404));
       })
     );
