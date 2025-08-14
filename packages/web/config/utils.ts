@@ -313,7 +313,7 @@ function getKeplrCompatibleChain({
 
       let gasPriceStep: ChainInfo["gasPriceStep"];
       const matchingFeeCurrency = chain.feeCurrencies.find(
-        (token) => token.coinDenom === sourceDenom
+        (token) => token.coinMinimalDenom === asset.coinMinimalDenom
       );
 
       if (
@@ -396,7 +396,14 @@ export function getChainList({
            * chain suggestion won't work.
            */
           fees: {
-            fee_tokens: chain.feeCurrencies,
+            fee_tokens: chain.feeCurrencies.map((token) => ({
+              ...token,
+              denom: token.chainSuggestionDenom ?? token.coinMinimalDenom,
+              fixed_min_gas_price: token.gasPriceStep?.low ?? 0,
+              low_gas_price: token.gasPriceStep?.low,
+              average_gas_price: token.gasPriceStep?.average,
+              high_gas_price: token.gasPriceStep?.high,
+            })),
           },
           staking: {
             staking_tokens: chain.stakeCurrency ? [chain.stakeCurrency] : [],

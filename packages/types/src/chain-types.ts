@@ -74,7 +74,6 @@ interface FeeToken
   coinGeckoId?: string;
   contractAddress?: string;
   sourceDenom?: string;
-  fixed_min_gas_price?: number;
   gasPriceStep?: {
     low?: number;
     average?: number;
@@ -84,6 +83,15 @@ interface FeeToken
     cosmosSend?: number;
     ibcTransfer?: number;
   };
+  /**
+   * Needed for CosmosKit to function correctly, otherwise
+   * chain suggestion won't work correctly.
+   */
+  denom?: string;
+  fixed_min_gas_price?: number;
+  low_gas_price?: number;
+  average_gas_price?: number;
+  high_gas_price?: number;
 }
 
 interface ChainCurrency
