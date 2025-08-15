@@ -2,7 +2,6 @@
   "404": {
     "title": "Bulunamadı"
   },
-  "unknownTimeRemaining": "Bilinmeyen kalan süre",
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",
     "step2Title": "2. Adım: Likidite Ekleyin",
-    "step2TitleManaged": "Adım 2: Sağlayıcıyı Seçin",
     "managed": "Yönetilen",
     "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
     "manual": "Manuel",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kripto satın al",
-      "kadoSubtitle": "OSMO, USDC'yi destekler",
+      "swappedSubtitle": "OSMO ve USDC'yi destekler",
       "moonpaySubtitle": "OSMO ve USDC'yi destekler",
       "transakSubtitle": "OSMO'yu destekler",
       "onrampMoneySubtitle": "OSMO, USDC'yi destekler",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Stake",
     "swap": "Tokenleri Takas Et",
-    "spreadFactor": "Yayılma Faktörü",
     "swapFee": "Takas ücreti",
     "swapFees": "takas ücretleri",
     "title": "Havuz #{id}",
@@ -796,6 +793,8 @@
     "receive": "{denom}",
     "selectDepositWallet": "{network} cüzdanını seçin",
     "selectWithdrawWallet": "{network} cüzdanını seçin",
+    "depositTakingLonger": "Para yatırma işlemi beklenenden daha uzun sürüyor",
+    "withdrawalTakingLonger": "Geri çekilmenin beklenenden daha uzun sürmesi",
     "depositAssetDescription": "Belirli varlıkları yatırdığınızda, Osmosis'te varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "withdrawAssetDescription": "Belirli varlıkları çekerken, hedef ağda varlığın hangi versiyonunu almak istediğinizi seçebilirsiniz.",
     "estimatingTime": "Tahmini süre",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Yeni para yatırma adresi oluştur",
     "transactionDetails": "İşlem detayları",
     "confirmAmount": "Tutarı Onayla",
-    "enterBitcoinAddress": "Bitcoin adresini girin"
+    "enterChainAddress": "{chain} adresini girin"
   },
   "unknownError": "Bilinmeyen hata",
   "viewExplorer": "gezginde görüntüle",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Dönüşüm ücretleri",
     "free": "Özgür",
     "unavailable": "Şu anda mevcut değil. Daha sonra tekrar deneyin."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Sadece sınırlı bir süre için",
+    "skipWaitlist": "Bekleme listesini atlayın",
+    "anyTokenOnAnyNetworkOn": "herhangi bir ağdaki herhangi bir belirteç",
+    "trade": "Ticaret",
+    "with": "ile"
+  },
+  "polarisBanner": {
+    "tradeYour": "Ticaretinizi yapın",
+    "andSoMuchMore": "ve çok daha fazlası.",
+    "tradeAnythingOnPolaris": "Polaris'te her şeyi alıp satabilirsiniz"
+  },
+  "lowLiquidityAlert": {
+    "title": "İşleminiz başarısız olabilir",
+    "description": "Tüm havuzlarda {tokenWithLowLiquidity} likiditesinin düşük olması nedeniyle, bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
   }
 }

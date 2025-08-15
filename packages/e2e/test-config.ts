@@ -21,11 +21,7 @@ export class TestConfig {
     // GitHub Actions matrix does not understand true
     const USE_PROXY: boolean = process.env.USE_TEST_PROXY === "use";
     const viewport = { width: 1440, height: 1280 };
-    const args = [
-      "--headless=new",
-      `--disable-extensions-except=${pathToExtension}`,
-      `--load-extension=${pathToExtension}`,
-    ];
+    const args = this.getArgs(headless, pathToExtension);
 
     if (USE_PROXY) {
       console.info(
@@ -71,6 +67,21 @@ export class TestConfig {
         viewport: viewport,
         slowMo: 300,
       };
+    }
+  }
+
+  getArgs(headless: boolean, pathToExtension: string) {
+    if (headless) {
+      return [
+        "--headless=new",
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ];
+    } else {
+      return [
+        `--disable-extensions-except=${pathToExtension}`,
+        `--load-extension=${pathToExtension}`,
+      ];
     }
   }
 }

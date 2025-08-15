@@ -520,7 +520,10 @@ const PoolCompositionCell: PoolCellComponent = ({
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
           <PoolAssetsName
             size="sm"
-            assetDenoms={reserveCoins.map((coin) => coin.denom)}
+            assetDenoms={reserveCoins.map(({ denom, currency }) => ({
+              minDenom: currency.coinMinimalDenom,
+              symbol: denom,
+            }))}
           />
           <span className={classNames("text-sm font-caption opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>

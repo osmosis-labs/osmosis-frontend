@@ -2,7 +2,6 @@
   "404": {
     "title": "Not found"
   },
-  "unknownTimeRemaining": "Unknown time remaining",
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
@@ -21,9 +20,8 @@
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
     "step2Title": "Step 2: Add Liquidity",
-    "step2TitleManaged": "Step 2: Select Provider",
     "managed": "Managed",
-    "managedDescription": "Enlist one of our providers to manage your position. An entirely hands off experience.",
+    "managedDescription": "Enlist a community liquidity manager to actively manage your position through Magma vaults.",
     "manual": "Manual",
     "manualDescription": "Create a position which you can regularly manage for maximum efficiency and rewards.",
     "back": "Back",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Buy crypto",
-      "kadoSubtitle": "Supports OSMO, USDC",
+      "swappedSubtitle": "Supports OSMO, USDC",
       "moonpaySubtitle": "Supports OSMO, USDC",
       "transakSubtitle": "Supports OSMO",
       "onrampMoneySubtitle": "Supports OSMO, USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
-    "spreadFactor": "Spread Factor",
     "swapFee": "Swap fee",
     "swapFees": "swap fees",
     "title": "Pool #{id}",
@@ -796,6 +793,8 @@
     "receive": "Receive {denom}",
     "selectDepositWallet": "Select {network} wallet",
     "selectWithdrawWallet": "Select {network} wallet",
+    "depositTakingLonger": "Deposit taking longer than expected",
+    "withdrawalTakingLonger": "Withdrawal taking longer than expected",
     "depositAssetDescription": "When you deposit certain assets, you can choose which version of the asset you want to receive on Osmosis.",
     "withdrawAssetDescription": "When you withdraw certain assets, you can choose which version of the asset you want to receive on the destination network.",
     "estimatingTime": "Estimating time",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Create new deposit address",
     "transactionDetails": "Transaction details",
     "confirmAmount": "Confirm Amount",
-    "enterBitcoinAddress": "Enter Bitcoin address"
+    "enterChainAddress": "Enter {chain} address"
   },
   "unknownError": "Unknown error",
   "viewExplorer": "View explorer",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Conversion fees",
     "free": "Free",
     "unavailable": "Currently unavailable. Try again later."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Limited time only",
+    "skipWaitlist": "Skip the waitlist",
+    "anyTokenOnAnyNetworkOn": "any token on any network on",
+    "trade": "Trade",
+    "with": "with"
+  },
+  "polarisBanner": {
+    "tradeYour": "Trade your",
+    "andSoMuchMore": "and so much more.",
+    "tradeAnythingOnPolaris": "Trade anything on Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Your trade may fail",
+    "description": "Due to low liquidity of {tokenWithLowLiquidity} across all pools, this trade may result in high slippage and may not be executed."
   }
 }

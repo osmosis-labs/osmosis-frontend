@@ -2,16 +2,17 @@ import { FunctionComponent, useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/ui/button";
+import { useFeatureFlags } from "~/hooks";
 import { FiatRampKey } from "~/integrations";
-import { Kado } from "~/integrations/kado";
 import { Layerswap } from "~/integrations/layerswap";
 import { Moonpay } from "~/integrations/moonpay";
 import { OnrampMoney } from "~/integrations/onrampmoney";
+import { Swapped } from "~/integrations/swapped";
 import { useTransakModal } from "~/integrations/transak";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 const FIAT_RAMPS_PRETTY_NAMES: Record<FiatRampKey, string> = {
-  kado: "Kado",
+  swapped: "Swapped",
   layerswapcoinbase: "Coinbase Layer Swap",
   moonpay: "MoonPay",
   onrampmoney: "Onramp.money",
@@ -25,6 +26,7 @@ export const FiatRampsModal: FunctionComponent<
     transakModalProps?: Parameters<typeof useTransakModal>[0];
   } & ModalBaseProps
 > = (props) => {
+  const flags = useFeatureFlags();
   const { fiatRampKey, isOpen } = props;
 
   const { setModal } = useTransakModal({
@@ -68,14 +70,14 @@ export const FiatRampsModal: FunctionComponent<
       </div>
       {(() => {
         switch (fiatRampKey) {
-          case "kado":
-            return <Kado {...props} />;
+          case "swapped":
+            if (flags.swapped) return <Swapped {...props} />;
           case "moonpay":
-            return <Moonpay {...props} />;
+            if (flags.moonpay) return <Moonpay {...props} />;
           case "onrampmoney":
-            return <OnrampMoney {...props} />;
+            if (flags.onrampmoney) return <OnrampMoney {...props} />;
           case "layerswapcoinbase":
-            return <Layerswap {...props} />;
+            if (flags.layerswapcoinbase) return <Layerswap {...props} />;
           default:
             return null;
         }

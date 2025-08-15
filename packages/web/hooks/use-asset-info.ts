@@ -3,15 +3,14 @@ import { useMemo } from "react";
 
 import { COINGECKO_PUBLIC_URL, TWITTER_PUBLIC_URL } from "~/config";
 import { useCurrentLanguage } from "~/hooks/user-settings";
-import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { api } from "~/utils/trpc";
 
 export const useAssetInfo = () => {
   const language = useCurrentLanguage();
   const router = useRouter();
-  const denom = router.query.denom as string;
+  const denom = (router.query.denom as string[]).join("/");
 
-  const { data: asset } = api.edge.assets.getUserAsset.useQuery(
+  const { data: asset, isLoading } = api.edge.assets.getUserAsset.useQuery(
     {
       findMinDenomOrSymbol: denom,
     },
@@ -21,20 +20,20 @@ export const useAssetInfo = () => {
     }
   );
 
-  const { data: detailsByLanguage } = api.local.cms.getTokenInfos.useQuery(
+  const { data: details } = api.local.cms.getTokenInfos.useQuery(
     {
-      coinDenom: denom,
-      langs: SUPPORTED_LANGUAGES.map((lang) => lang.value),
+      coinMinimalDenom: asset?.coinMinimalDenom ?? "",
     },
     {
       refetchOnMount: false,
       refetchOnWindowFocus: false,
+      enabled: !!asset?.coinMinimalDenom,
     }
   );
 
-  const details = useMemo(() => {
-    return detailsByLanguage ? detailsByLanguage[language] : undefined;
-  }, [language, detailsByLanguage]);
+  const description = useMemo(() => {
+    return details ? details.description?.[language] : undefined;
+  }, [language, details]);
 
   const coinGeckoId = useMemo(
     () => (details?.coingeckoID ? details?.coingeckoID : asset?.coinGeckoId),
@@ -94,8 +93,9 @@ export const useAssetInfo = () => {
     coingeckoURL,
     coinGeckoId,
     asset: asset!,
+    isAssetLoading: isLoading,
     denom,
-    detailsByLanguage,
+    description,
     coingeckoCoin,
     isLoadingCoingeckoCoin,
   };

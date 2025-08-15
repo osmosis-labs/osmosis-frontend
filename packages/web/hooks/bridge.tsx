@@ -371,9 +371,9 @@ export const ImmersiveBridge = () => {
                               direction ? (
                                 <AssetSelectScreen
                                   type={direction}
-                                  onSelectAsset={({ coinDenom }) => {
+                                  onSelectAsset={({ coinMinimalDenom }) => {
                                     setCurrentScreen(BridgeScreen.Amount);
-                                    setSelectedAssetDenom(coinDenom);
+                                    setSelectedAssetDenom(coinMinimalDenom);
                                   }}
                                 />
                               ) : null

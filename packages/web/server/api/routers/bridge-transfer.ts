@@ -23,6 +23,7 @@ import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
   BitcoinChainInfo,
+  DogecoinChainInfo,
   EthereumChainInfo,
   getnBTCMinimalDenom,
   isNil,
@@ -46,6 +47,7 @@ export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "penumbra" }>
   | (Extract<BridgeChain, { chainType: "cosmos" }> & { bech32Prefix: string })
   | Extract<BridgeChain, { chainType: "tron" }>
+  | Extract<BridgeChain, { chainType: "doge" }>
 ) & {
   logoUri?: string;
   color?: string;
@@ -119,6 +121,7 @@ export const bridgeTransferRouter = createTRPCRouter({
             ...quote.transferFee,
             ...input.fromAsset,
             denom: quote.transferFee.denom ?? input.fromAsset.denom,
+            decimals: quote.transferFee.decimals ?? input.fromAsset.decimals,
             chainId: input.fromChain.chainId,
           }
         : quote.transferFee;
@@ -168,6 +171,14 @@ export const bridgeTransferRouter = createTRPCRouter({
               address: input.fromAsset.address,
               coinGeckoId: input.fromAsset.coinGeckoId,
             },
+          }).catch((e) => {
+            if (process.env.NODE_ENV === "development") {
+              console.warn(
+                "getQuoteByBridge: Failed to get asset price for fromAsset",
+                e
+              );
+            }
+            return undefined;
           });
         }),
         getAssetPrice({
@@ -199,6 +210,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           ? getAssetPrice({
               ...ctx,
               asset: {
+                sourceDenom: quote.estimatedGasFee.address,
                 coinMinimalDenom: quote.estimatedGasFee.address,
                 chainId: quote.fromChain.chainId,
                 address: quote.estimatedGasFee.address,
@@ -228,9 +240,7 @@ export const bridgeTransferRouter = createTRPCRouter({
           : Promise.resolve(undefined),
       ]);
 
-      if (!assetPrice) {
-        throw new Error("Invalid quote: Missing toAsset or fromAsset price");
-      }
+      console.log(assetPrice, feeAssetPrice, gasFeeAssetPrice);
 
       const transferFee = {
         amount: new CoinPretty(
@@ -287,7 +297,9 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.input.amount
             ),
-            fiatValue: priceFromBridgeCoin(quote.input, assetPrice),
+            fiatValue: assetPrice
+              ? priceFromBridgeCoin(quote.input, assetPrice)
+              : undefined,
           },
           expectedOutput: {
             ...quote.expectedOutput,
@@ -299,11 +311,13 @@ export const bridgeTransferRouter = createTRPCRouter({
               },
               quote.expectedOutput.amount
             ),
-            fiatValue: priceFromBridgeCoin(
-              quote.expectedOutput,
-              // output is same token as input
-              assetPrice
-            ),
+            fiatValue: assetPrice
+              ? priceFromBridgeCoin(
+                  quote.expectedOutput,
+                  // output is same token as input
+                  assetPrice
+                )
+              : undefined,
           },
           transferFee,
           estimatedGasFee,
@@ -397,13 +411,13 @@ export const bridgeTransferRouter = createTRPCRouter({
             }
 
             return {
-              prettyName: cosmosChain.pretty_name,
+              prettyName: cosmosChain.prettyName,
               chainId: cosmosChain.chain_id,
               chainName: cosmosChain.chain_name,
               chainType,
-              logoUri: cosmosChain.logoURIs?.svg ?? cosmosChain.logoURIs?.png,
-              color: cosmosChain.logoURIs?.theme?.primary_color_hex,
-              bech32Prefix: cosmosChain.bech32_prefix,
+              logoUri: cosmosChain.logo_URIs?.svg ?? cosmosChain.logo_URIs?.png,
+              // color: cosmosChain.logo_URIs?.theme?.primary_color_hex,
+              bech32Prefix: cosmosChain.bech32Prefix,
             } as Extract<BridgeChainWithDisplayInfo, { chainType: "cosmos" }>;
           } else if (chainType === "bitcoin") {
             return {
@@ -428,6 +442,12 @@ export const bridgeTransferRouter = createTRPCRouter({
               ...PenumbraChainInfo,
               chainType,
               logoUri: "/networks/penumbra.svg",
+            };
+          } else if (chainType === "doge") {
+            return {
+              ...DogecoinChainInfo,
+              chainType,
+              logoUri: "/networks/dogecoin.svg",
             };
           }
 

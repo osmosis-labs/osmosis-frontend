@@ -2,7 +2,6 @@
   "404": {
     "title": "未找到"
   },
-  "unknownTimeRemaining": "剩余时间未知",
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
     "step2Title": "第二步：增加流动性",
-    "step2TitleManaged": "第 2 步：选择提供商",
     "managed": "管理",
     "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
     "manual": "手动的",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "购买加密货币",
-      "kadoSubtitle": "支持OSMO, USDC",
+      "swappedSubtitle": "支持OSMO、USDC",
       "moonpaySubtitle": "支持OSMO、USDC",
       "transakSubtitle": "支持OSMO",
       "onrampMoneySubtitle": "支持OSMO、USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "超流",
     "superfluidStaking": "超流质押",
     "swap": "兑换代币",
-    "spreadFactor": "扩频因子",
     "swapFee": "交易费",
     "swapFees": "交易费",
     "title": "资金池 #{id}",
@@ -796,6 +793,8 @@
     "receive": "接收{denom}",
     "selectDepositWallet": "选择{network}钱包",
     "selectWithdrawWallet": "选择{network}钱包",
+    "depositTakingLonger": "存款时间比预期的要长",
+    "withdrawalTakingLonger": "提款时间比预期的要长",
     "depositAssetDescription": "当你存入某些资产时，你可以选择要在 Osmosis 上接收哪个版本的资产。",
     "withdrawAssetDescription": "当你提取某些资产时，你可以选择要在目标网络上接收哪个版本的资产。",
     "estimatingTime": "估计时间",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "创建新的存款地址",
     "transactionDetails": "交易详情",
     "confirmAmount": "确认金额",
-    "enterBitcoinAddress": "输入比特币地址"
+    "enterChainAddress": "输入{chain}地址"
   },
   "unknownError": "未知错误",
   "viewExplorer": "浏览器查看",
@@ -1316,5 +1315,21 @@
     "conversionFees": "转换费",
     "free": "自由的",
     "unavailable": "目前不可用。请稍后重试。"
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "仅限时",
+    "skipWaitlist": "跳过候补名单",
+    "anyTokenOnAnyNetworkOn": "任何网络上的任何令牌",
+    "trade": "贸易",
+    "with": "和"
+  },
+  "polarisBanner": {
+    "tradeYour": "交易你的",
+    "andSoMuchMore": "等等。",
+    "tradeAnythingOnPolaris": "在 Polaris 上交易任何商品"
+  },
+  "lowLiquidityAlert": {
+    "title": "你的交易可能会失败",
+    "description": "由于所有资金池的{tokenWithLowLiquidity}流动性较低，该交易可能会导致高滑点，并且可能无法执行。"
   }
 }

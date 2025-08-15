@@ -2,7 +2,6 @@
   "404": {
     "title": "Não encontrado"
   },
-  "unknownTimeRemaining": "Tempo restante desconhecido",
   "addLiquidity": {
     "allAssets": "Todos os ativos",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",
     "step2Title": "Passo 2: Adicionar Liquidez",
-    "step2TitleManaged": "Etapa 2: selecione o provedor",
     "managed": "Gerenciou",
     "managedDescription": "Recrute um de nossos provedores para gerenciar sua posição. Uma experiência totalmente independente.",
     "manual": "Manual",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Comprar cripto",
-      "kadoSubtitle": "Suporta OSMO, USDC",
+      "swappedSubtitle": "Suporta OSMO, USDC",
       "moonpaySubtitle": "Suporta OSMO, USDC",
       "transakSubtitle": "Suporta OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superfluido",
     "superfluidStaking": "Staking Superfluido",
     "swap": "Par de Negociação",
-    "spreadFactor": "Fator de propagação",
     "swapFee": "Taxa de Troca",
     "swapFees": "taxas de trocas",
     "title": "Piscina #{id}",
@@ -796,6 +793,8 @@
     "receive": "Receba {denom}",
     "selectDepositWallet": "Selecione a carteira {network}",
     "selectWithdrawWallet": "Selecione a carteira {network}",
+    "depositTakingLonger": "Depósito demorando mais do que o esperado",
+    "withdrawalTakingLonger": "A retirada está demorando mais do que o esperado",
     "depositAssetDescription": "Ao depositar determinados ativos, você pode escolher qual versão do ativo deseja receber no Osmosis.",
     "withdrawAssetDescription": "Ao retirar determinados ativos, você pode escolher qual versão do ativo deseja receber na rede de destino.",
     "estimatingTime": "Estimando tempo",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Criar novo endereço de depósito",
     "transactionDetails": "Detalhes da transação",
     "confirmAmount": "Confirmar valor",
-    "enterBitcoinAddress": "Insira o endereço do Bitcoin"
+    "enterChainAddress": "Insira o endereço {chain}"
   },
   "unknownError": "Erro desconhecido",
   "viewExplorer": "Visualizar explorer",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Taxas de conversão",
     "free": "Livre",
     "unavailable": "Atualmente indisponível. Tente novamente mais tarde."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Somente por tempo limitado",
+    "skipWaitlist": "Pule a lista de espera",
+    "anyTokenOnAnyNetworkOn": "qualquer token em qualquer rede em",
+    "trade": "Troca",
+    "with": "com"
+  },
+  "polarisBanner": {
+    "tradeYour": "Negocie seu",
+    "andSoMuchMore": "e muito mais.",
+    "tradeAnythingOnPolaris": "Negocie qualquer coisa na Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Seu negócio pode falhar",
+    "description": "Devido à baixa liquidez de {tokenWithLowLiquidity} em todos os pools, esta negociação pode resultar em alto deslizamento e pode não ser executada."
   }
 }

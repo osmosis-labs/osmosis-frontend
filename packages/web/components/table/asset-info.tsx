@@ -549,7 +549,7 @@ export const AssetsInfoTable: FunctionComponent<{
           )}
           {virtualRows.map((virtualRow) => {
             const row = rows[virtualRow.index];
-            const { coinDenom, isVerified } = row.original;
+            const { coinDenom, coinMinimalDenom, isVerified } = row.original;
             const unverified = !isVerified && !showUnverifiedAssets;
 
             return (
@@ -557,7 +557,7 @@ export const AssetsInfoTable: FunctionComponent<{
                 className="group transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
                 key={row.id}
                 onClick={() => {
-                  router.push(`/assets/${coinDenom}`);
+                  router.push(`/assets/${coinMinimalDenom}`);
                   logEvent([
                     EventName.Assets.assetClicked,
                     { tokenName: coinDenom },
@@ -576,7 +576,7 @@ export const AssetsInfoTable: FunctionComponent<{
                     key={cell.id}
                   >
                     <Link
-                      href={`/assets/${coinDenom}`}
+                      href={`/assets/${coinMinimalDenom}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         logEvent([

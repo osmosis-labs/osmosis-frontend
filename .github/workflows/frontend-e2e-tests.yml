@@ -5,6 +5,10 @@ on:
     branches-ignore:
       - master
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   wait-for-deployment:
     runs-on: ubuntu-latest
@@ -28,8 +32,10 @@ jobs:
 
   preview-swap-osmo-tests:
     timeout-minutes: 15
-    runs-on: macos-latest
+    runs-on: macos-14
     needs: wait-for-deployment
+    outputs:
+      unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -46,14 +52,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
+          node-version: 22.x
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -66,8 +65,14 @@ jobs:
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
+      - name: set-output
+        if: failure() || success()
+        id: set-output
+        run: |
+          echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)"
+          echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload Swap test results
-        if: failure()
+        if: failure() || success()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -76,7 +81,7 @@ jobs:
 
   preview-swap-usdc-tests:
     timeout-minutes: 15
-    runs-on: macos-latest
+    runs-on: macos-14
     needs: [wait-for-deployment, preview-swap-osmo-tests]
     steps:
       - name: Check out repository
@@ -94,14 +99,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -115,7 +120,7 @@ jobs:
           cd packages/e2e
           npx playwright test swap.usdc.wallet
       - name: upload Swap test results
-        if: failure()
+        if: failure() || success()
         id: swap-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -125,7 +130,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -135,14 +140,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -175,14 +180,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -202,7 +207,7 @@ jobs:
 
   preview-trade-tests:
     timeout-minutes: 15
-    runs-on: macos-latest
+    runs-on: macos-14
     needs:
       [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests]
     steps:
@@ -214,14 +219,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"
@@ -244,7 +249,7 @@ jobs:
 
   preview-claim-tests:
     timeout-minutes: 10
-    runs-on: macos-latest
+    runs-on: macos-14
     needs: wait-for-deployment
     steps:
       - name: Check out repository
@@ -255,14 +260,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           echo "$GITHUB_OUTPUT"

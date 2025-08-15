@@ -473,19 +473,25 @@ export const assetsRouter = createTRPCRouter({
           }),
           z.enum(["1H", "1D", "1W", "1M"]),
         ]),
+        realtime: z.boolean().optional(),
       })
     )
-    .query(({ input: { coinMinimalDenom, timeFrame } }) =>
-      getAssetHistoricalPrice({
-        coinMinimalDenom,
-        ...(typeof timeFrame === "string"
-          ? { timeFrame }
-          : (timeFrame.custom as {
-              timeFrame: TimeFrame;
-              numRecentFrames?: number;
-            })),
-      }).catch((e) => captureErrorAndReturn(e, []))
-    ),
+    .query(({ input: { coinMinimalDenom, timeFrame, realtime } }) => {
+      if (typeof timeFrame === "string") {
+        return getAssetHistoricalPrice({
+          coinMinimalDenom,
+          timeFrame,
+          realtime,
+        }).catch((e) => captureErrorAndReturn(e, []));
+      } else {
+        return getAssetHistoricalPrice({
+          coinMinimalDenom,
+          timeFrame: timeFrame.custom.timeFrame as TimeFrame,
+          numRecentFrames: timeFrame.custom.numRecentFrames,
+          realtime,
+        }).catch((e) => captureErrorAndReturn(e, []));
+      }
+    }),
   getCoingeckoAssetHistoricalPrice: publicProcedure
     .input(
       z.object({
@@ -696,12 +702,18 @@ export const assetsRouter = createTRPCRouter({
                   .then((marketAsset) => ({
                     ...asset,
                     volume24h: marketAsset ? marketAsset.volume24h : 0,
+                    liquidity: marketAsset ? marketAsset.liquidity : 0,
                   }))
               )
             );
 
             // avoid sorting while searching
-            if (search) return assets;
+            if (search)
+              return marketAssets.filter(({ liquidity, isVerified }) =>
+                liquidity instanceof PricePretty
+                  ? liquidity.toDec().isPositive()
+                  : liquidity > 0 || isVerified
+              );
 
             // Sort by volume 24h desc
             marketAssets = sort(marketAssets, "volume24h");
@@ -737,6 +749,13 @@ export const assetsRouter = createTRPCRouter({
                 if (bDeprioritizedIndex === -1) return 1; // b is not deprioritized, a is
 
                 return aDeprioritizedIndex - bDeprioritizedIndex; // Both are deprioritized, sort by their index
+              })
+              .filter(({ liquidity, isVerified }) => {
+                return (
+                  (liquidity instanceof PricePretty
+                    ? liquidity.toDec().isPositive()
+                    : liquidity > 0) || isVerified
+                );
               }) as typeof assets;
           },
           cacheKey: JSON.stringify({

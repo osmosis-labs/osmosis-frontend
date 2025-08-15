@@ -18,12 +18,14 @@ export const BasePoolDetails: FunctionComponent<{
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
 
-  const poolNameAssetLinks = pool.reserveCoins.map((poolAsset, index) => (
-    <Fragment key={poolAsset.denom}>
-      <Link href={`/assets/${poolAsset.denom}`}>{poolAsset.denom}</Link>
-      {index < pool.reserveCoins.length - 1 && " / "}
-    </Fragment>
-  ));
+  const poolNameAssetLinks = pool.reserveCoins.map(
+    ({ denom, currency }, index) => (
+      <Fragment key={denom}>
+        <Link href={`/assets/${currency.coinMinimalDenom}`}>{denom}</Link>
+        {index < pool.reserveCoins.length - 1 && " / "}
+      </Fragment>
+    )
+  );
 
   const poolValue = pool.totalFiatValueLocked;
 
@@ -63,6 +65,7 @@ export const BasePoolDetails: FunctionComponent<{
                     assets={pool.reserveCoins.map(({ currency }) => ({
                       coinDenom: currency.coinDenom,
                       coinImageUrl: currency.coinImageUrl,
+                      coinMinimalDenom: currency.coinMinimalDenom,
                     }))}
                     size="sm"
                   />

@@ -30,6 +30,13 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   bridgeDepositAddress: false,
   nomicWithdrawAmount: false,
   swapToolTopGainers: false,
+  babyTokenBanner: false,
+  moonpay: true,
+  layerswapcoinbase: true,
+  swapped: true,
+  onrampmoney: true,
+  transak: true,
+  polarisBanner: false,
 };
 
 export function useFeatureFlags() {

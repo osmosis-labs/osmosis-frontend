@@ -21,7 +21,7 @@ export function getChain<Chain extends ChainType>({
 
   return chainList.find((chain) => {
     return (
-      destinationAddress?.startsWith(chain.bech32_config.bech32PrefixAccAddr) ||
+      destinationAddress?.startsWith(chain.bech32Config.bech32PrefixAccAddr) ||
       chain.chain_id === chainId ||
       chain.chain_name === chainName
     );
@@ -42,12 +42,12 @@ export function getChainStakeTokenSourceDenom({
     return;
   }
 
-  if (!chain.staking) {
+  if (!chain.stakeCurrency) {
     console.error("This chain does not have staking info:", chainId);
     return;
   }
 
-  return chain.staking!.staking_tokens[0].denom;
+  return chain.stakeCurrency.coinMinimalDenom;
 }
 
 export class ChainIdHelper {

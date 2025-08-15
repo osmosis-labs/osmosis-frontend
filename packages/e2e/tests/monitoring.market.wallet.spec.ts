@@ -1,10 +1,7 @@
 import * as core from '@actions/core'
-import { type BrowserContext, chromium, expect, test } from '@playwright/test'
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
-
-import { WalletPage } from '../pages/keplr-page'
+import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
+import { SetupKeplr } from '../setup-keplr'
 
 test.describe('Test Market Buy/Sell Order feature', () => {
   let context: BrowserContext
@@ -13,32 +10,22 @@ test.describe('Test Market Buy/Sell Order feature', () => {
   const TRX_SUCCESS_TIMEOUT = 10000
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension()
-    console.log('\nSetup Wallet Extension before tests.')
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      '',
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension),
-    )
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0]
-    await emptyPage.waitForTimeout(2000)
-    const page = context.pages()[1]
-    const walletPage = new WalletPage(page)
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey)
-    await walletPage.setWalletNameAndPassword('Monitoring E2E Tests')
-    await walletPage.selectChainsAndSave()
-    await walletPage.finish()
-    // Switch to Application
+    context = await new SetupKeplr().setupWallet(privateKey)
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
-    await tradePage.connectWallet()
-    expect(await tradePage.isError(), 'Swap is not available!').toBeFalsy()
   })
 
   test.afterAll(async () => {
     await context.close()
+  })
+
+  test.beforeEach(async () => {
+    await tradePage.connectWallet()
+    expect(await tradePage.isError(), 'Swap is not available!').toBeFalsy()
+  })
+
+  test.afterEach(async () => {
+    await tradePage.logOut()
   })
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>

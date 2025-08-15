@@ -4,8 +4,7 @@ import { FunctionComponent } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { PoolAssetInfo } from "~/components/assets/types";
-import { CustomClasses } from "~/components/types";
-import { Metric } from "~/components/types";
+import { CustomClasses, Metric } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 export const PoolCard: FunctionComponent<
@@ -49,7 +48,12 @@ export const PoolCard: FunctionComponent<
           <div className="ml-5 flex flex-col">
             <PoolAssetsName
               size="md"
-              assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
+              assetDenoms={poolAssets.map(
+                ({ coinMinimalDenom, coinDenom }) => ({
+                  minDenom: coinMinimalDenom,
+                  symbol: coinDenom,
+                })
+              )}
               withAssetInfoLink={false}
             />
             <div className="subtitle1 flex items-center gap-1 text-white-mid">

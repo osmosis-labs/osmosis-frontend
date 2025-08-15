@@ -21,7 +21,6 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { localRouter } from "~/server/api/local-router";
 import { type AppRouter } from "~/server/api/root-router";
-import { getOpentelemetryServiceName } from "~/utils/service-name";
 import {
   constructEdgeRouterKey,
   constructEdgeUrlPathname,
@@ -146,7 +145,6 @@ export const api = createTRPCNext<AppRouter>({
               router: trpcLocalRouter,
               assetLists: AssetLists,
               chainList: ChainList,
-              opentelemetryServiceName: getOpentelemetryServiceName(),
             })(runtime),
 
             /**

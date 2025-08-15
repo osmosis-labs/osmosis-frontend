@@ -50,7 +50,7 @@ export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
           className=" text-wosmongton-200"
           asChild
         >
-          <Link href={`/pools?searchQuery=${encodeURIComponent(`=${denom}`)}`}>
+          <Link href={`/pools?searchQuery=${encodeURIComponent(`${denom}`)}`}>
             {t("assets.seeAll")}
           </Link>
         </Button>

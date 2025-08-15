@@ -2,7 +2,6 @@
   "404": {
     "title": "Nu a fost gasit"
   },
-  "unknownTimeRemaining": "Timp rămas necunoscut",
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
     "step2Title": "Pasul 2: Adăugați lichiditate",
-    "step2TitleManaged": "Pasul 2: Selectați Furnizor",
     "managed": "A reușit",
     "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
     "manual": "Manual",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Cumpărați cripto",
-      "kadoSubtitle": "Acceptă OSMO, USDC",
+      "swappedSubtitle": "Suportă OSMO, USDC",
       "moonpaySubtitle": "Suporta OSMO, USDC",
       "transakSubtitle": "Acceptă OSMO",
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Staking Superfluid",
     "swap": "Schimba Tokeni",
-    "spreadFactor": "Factorul de răspândire",
     "swapFee": "Taxa de schimb",
     "swapFees": "taxe schimb",
     "title": "Pool #{id}",
@@ -796,6 +793,8 @@
     "receive": "Primiți {denom}",
     "selectDepositWallet": "Selectați portofelul {network}",
     "selectWithdrawWallet": "Selectați portofelul {network}",
+    "depositTakingLonger": "Depunerea durează mai mult decât se aștepta",
+    "withdrawalTakingLonger": "Retragerea durează mai mult decât se aștepta",
     "depositAssetDescription": "Când depui anumite active, poți alege ce versiune a activului vrei să primești pe Osmosis.",
     "withdrawAssetDescription": "Când retrageți anumite active, puteți alege ce versiune a activului doriți să primiți în rețeaua de destinație.",
     "estimatingTime": "Estimarea timpului",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Creați o nouă adresă de depozit",
     "transactionDetails": "Detalii tranzacție",
     "confirmAmount": "Confirmați suma",
-    "enterBitcoinAddress": "Introdu adresa Bitcoin"
+    "enterChainAddress": "Introduceți adresa {chain}"
   },
   "unknownError": "Eroare necunoscuta",
   "viewExplorer": "vezi explorer",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Taxe de conversie",
     "free": "Gratuit",
     "unavailable": "Momentan indisponibil. Încercați din nou mai târziu."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Doar timp limitat",
+    "skipWaitlist": "Sari peste lista de asteptare",
+    "anyTokenOnAnyNetworkOn": "orice simbol din orice rețea activată",
+    "trade": "Comerț",
+    "with": "cu"
+  },
+  "polarisBanner": {
+    "tradeYour": "Tranzacționează-ți",
+    "andSoMuchMore": "și mult mai multe.",
+    "tradeAnythingOnPolaris": "Tranzacționează orice pe Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Tranzacția ta ar putea eșua",
+    "description": "Din cauza lichidității reduse a tranzacției {tokenWithLowLiquidity} în toate portofoliile, această tranzacție poate duce la alunecări mari și este posibil să nu fie executată."
   }
 }

@@ -1,22 +1,21 @@
 import type { CommonPriceChartTimeFrame } from "@osmosis-labs/server";
 import { RatePretty } from "@osmosis-labs/unit";
-import { NextPage } from "next";
-import { GetServerSideProps, GetServerSidePropsContext } from "next";
+import { GetServerSideProps, GetServerSidePropsContext, NextPage } from "next";
 import Image from "next/image";
 import { ReactNode, useCallback, useContext, useState } from "react";
 
-import { PoolAssetsIcon } from "~/components/assets";
 import {
   CopyIcon,
   ExternalLinkIcon,
   FallbackImg,
   Icon,
   LogOutIcon,
+  PoolAssetsIcon,
   PoolAssetsName,
   QRIcon,
+  RateRing,
+  Token,
 } from "~/components/assets";
-import { RateRing } from "~/components/assets";
-import { Token } from "~/components/assets";
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { GradientView } from "~/components/assets/gradient-view";
@@ -32,8 +31,10 @@ import {
   Radio,
   StakeTab,
 } from "~/components/control";
-import { FilterProvider } from "~/components/earn/filters/filter-context";
-import { FilterContext } from "~/components/earn/filters/filter-context";
+import {
+  FilterContext,
+  FilterProvider,
+} from "~/components/earn/filters/filter-context";
 import { InputBox, SearchBox } from "~/components/input";
 import { MetricLoader } from "~/components/loaders";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
@@ -41,9 +42,12 @@ import { Spinner } from "~/components/loaders/spinner";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { Step, Stepper } from "~/components/stepper";
 import { Tooltip } from "~/components/tooltip";
-import { ArrowButton } from "~/components/ui/button";
-import { ShowMoreButton } from "~/components/ui/button";
-import { Button, ChartButton } from "~/components/ui/button";
+import {
+  ArrowButton,
+  Button,
+  ChartButton,
+  ShowMoreButton,
+} from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input as InputShadcn } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
@@ -741,7 +745,6 @@ const Icons = () => (
       "tune",
       "help-circle",
       "moonpay-logo",
-      "kado-logo",
       "transak-logo",
       "more-menu",
       "sort-up",
@@ -854,24 +857,39 @@ const Assets = () => (
             coinImageUrl: "/icons/superfluid-osmo.svg",
             networkName: "osmosis-1",
             poolShare: new RatePretty(0.5),
+            coinMinimalDenom: "uosmo",
           },
           {
             coinDenom: "Osmo",
             coinImageUrl: "/icons/superfluid-osmo.svg",
             networkName: "osmosis-1",
             poolShare: new RatePretty(0.5),
+            coinMinimalDenom: "uosmo",
           },
           {
             coinDenom: "Osmo",
             coinImageUrl: "/icons/superfluid-osmo.svg",
             networkName: "osmosis-1",
             poolShare: new RatePretty(0.5),
+            coinMinimalDenom: "uosmo",
           },
         ]}
       />
     </Component>
     <Component title="Pool Assets Name">
-      <PoolAssetsName assetDenoms={["OSMO", "BTC"]} />
+      <PoolAssetsName
+        assetDenoms={[
+          {
+            minDenom: "uosmo",
+            symbol: "OSMO",
+          },
+          {
+            minDenom:
+              "factory/osmo1z6r6qdknhgsc0zeracktgpcxf43j6sekq07nw8sxduc9lg0qjjlqfu25e3/alloyed/allBTC",
+            symbol: "BTC",
+          },
+        ]}
+      />
     </Component>
     <Component title="Coins">
       <CoinsIcon className="h-32" />
@@ -894,6 +912,7 @@ const Assets = () => (
         coinImageUrl="/icons/superfluid-osmo.svg"
         networkName="osmosis-1"
         poolShare={new RatePretty(0.5)}
+        coinMinimalDenom="uosmo"
       />
     </Component>
   </Card>

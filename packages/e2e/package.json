@@ -10,14 +10,14 @@
     "setup": "yarn install && npx playwright install --with-deps chromium"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1",
-    "@playwright/test": "1.49.0",
+    "@actions/core": "1.11.1",
+    "@playwright/test": "1.52.0",
     "decompress": "4.2.1",
-    "dotenv": "16.4.5"
+    "dotenv": "17.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/node": "22.7.5",
-    "typescript": "5.6.3"
+    "@biomejs/biome": "2.1.4",
+    "@types/node": "22.17.1",
+    "typescript": "5.9.2"
   }
 }

@@ -2,7 +2,6 @@
   "404": {
     "title": "搵唔到呢一頁喎"
   },
-  "unknownTimeRemaining": "剩餘時間未知",
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
     "step2Title": "第二步：增加流動性",
-    "step2TitleManaged": "第 2 步：選擇提供者",
     "managed": "管理",
     "managedDescription": "聘請我們的一位供應商來管理您的職位。完全不干涉的體驗。",
     "manual": "手動的",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "購買加密貨幣",
-      "kadoSubtitle": "支援OSMO, USDC",
+      "swappedSubtitle": "支援OSMO、USDC",
       "moonpaySubtitle": "支援OSMO、USDC",
       "transakSubtitle": "支援OSMO",
       "onrampMoneySubtitle": "支援OSMO、USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "超流",
     "superfluidStaking": "超流體質押",
     "swap": "兌換代幣",
-    "spreadFactor": "擴頻因子",
     "swapFee": "兌換費",
     "swapFees": "兌換費",
     "title": "流動性池 #{id}",
@@ -796,6 +793,8 @@
     "receive": "接收{denom}",
     "selectDepositWallet": "選擇{network}錢包",
     "selectWithdrawWallet": "選擇{network}錢包",
+    "depositTakingLonger": "存款時間比預期的要長",
+    "withdrawalTakingLonger": "提款時間比預期的要長",
     "depositAssetDescription": "當您存入某些資產時，您可以選擇想要在 Osmosis 上接收的資產版本。",
     "withdrawAssetDescription": "當您提取某些資產時，您可以選擇要在目標網路上接收哪個版本的資產。",
     "estimatingTime": "預計時間",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "建立新的儲值地址",
     "transactionDetails": "交易詳情",
     "confirmAmount": "確認金額",
-    "enterBitcoinAddress": "輸入比特幣地址"
+    "enterChainAddress": "輸入{chain}地址"
   },
   "unknownError": "未知錯誤",
   "viewExplorer": "使用區塊瀏覽器查看",
@@ -1316,5 +1315,21 @@
     "conversionFees": "轉換費",
     "free": "自由的",
     "unavailable": "目前不可用。稍後再試。"
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "僅限時",
+    "skipWaitlist": "跳過候補名單",
+    "anyTokenOnAnyNetworkOn": "任何網路上的任何令牌",
+    "trade": "貿易",
+    "with": "和"
+  },
+  "polarisBanner": {
+    "tradeYour": "交易你的",
+    "andSoMuchMore": "等等。",
+    "tradeAnythingOnPolaris": "在 Polaris 上交易任何商品"
+  },
+  "lowLiquidityAlert": {
+    "title": "你的交易可能會失敗",
+    "description": "由於所有資金池的{tokenWithLowLiquidity}流動性較低，該交易可能會導致高滑點，並且可能無法執行。"
   }
 }

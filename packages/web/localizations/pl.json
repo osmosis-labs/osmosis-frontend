@@ -2,7 +2,6 @@
   "404": {
     "title": "Nie znaleziono"
   },
-  "unknownTimeRemaining": "Nieznany pozostały czas",
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
     "step2Title": "Krok 2: Dodaj płynność",
-    "step2TitleManaged": "Krok 2: Wybierz dostawcę",
     "managed": "Zarządzany",
     "managedDescription": "Zaangażuj jednego z naszych dostawców do zarządzania Twoim stanowiskiem. Całkowicie wolne doświadczenie.",
     "manual": "podręcznik",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Kup kryptowalutę",
-      "kadoSubtitle": "Obsługuje OSMO, USDC",
+      "swappedSubtitle": "Obsługuje OSMO, USDC",
       "moonpaySubtitle": "Obsługuje OSMO, USDC",
       "transakSubtitle": "Obsługuje OSMO",
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superpłynne",
     "superfluidStaking": "Superpłynne stakowanie",
     "swap": "Wymień Tokeny",
-    "spreadFactor": "Współczynnik rozrzutu",
     "swapFee": "Prowizja wymiany",
     "swapFees": "prowizje wymiany",
     "title": "Pula #{id}",
@@ -796,6 +793,8 @@
     "receive": "Odbierz {denom}",
     "selectDepositWallet": "Wybierz portfel {network}",
     "selectWithdrawWallet": "Wybierz portfel {network}",
+    "depositTakingLonger": "Wpłata trwa dłużej niż oczekiwano",
+    "withdrawalTakingLonger": "Wypłata trwa dłużej niż oczekiwano",
     "depositAssetDescription": "Kiedy zdeponujesz określone aktywa, możesz wybrać, którą wersję aktywów chcesz otrzymać na Osmozie.",
     "withdrawAssetDescription": "Wycofując określone zasoby, możesz wybrać wersję, którą chcesz otrzymać w sieci docelowej.",
     "estimatingTime": "Szacowanie czasu",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Utwórz nowy adres depozytowy",
     "transactionDetails": "Szczegóły transakcji",
     "confirmAmount": "Potwierdź kwotę",
-    "enterBitcoinAddress": "Wprowadź adres Bitcoin"
+    "enterChainAddress": "Wprowadź adres {chain}"
   },
   "unknownError": "Nieznany błąd",
   "viewExplorer": "zobacz eksplorer",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Opłaty za konwersję",
     "free": "Bezpłatny",
     "unavailable": "Obecnie niedostępne. Spróbuj ponownie później."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Tylko przez ograniczony czas",
+    "skipWaitlist": "Omiń listę oczekujących",
+    "anyTokenOnAnyNetworkOn": "dowolny token w dowolnej sieci",
+    "trade": "Handel",
+    "with": "z"
+  },
+  "polarisBanner": {
+    "tradeYour": "Handluj swoim",
+    "andSoMuchMore": "i wiele więcej.",
+    "tradeAnythingOnPolaris": "Handluj czymkolwiek na Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Twój handel może się nie powieść",
+    "description": "Ze względu na niską płynność {tokenWithLowLiquidity} we wszystkich pulach, transakcja ta może skutkować dużym poślizgiem i może nie zostać zrealizowana."
   }
 }

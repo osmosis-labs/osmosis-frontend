@@ -54,7 +54,10 @@ import {
   SupportedBridgeInfo,
 } from "./amount-and-review-screen";
 import { BridgeNetworkSelectModal } from "./bridge-network-select-modal";
-import { BridgeWalletSelectModal } from "./bridge-wallet-select-modal";
+import {
+  BridgeWalletSelectModal,
+  chainTypesRequiringManualAddress,
+} from "./bridge-wallet-select-modal";
 import {
   MoreBridgeOptionsModal,
   OnlyExternalBridgeSuggest,
@@ -200,6 +203,14 @@ export const AmountScreen = observer(
 
     const chainThatNeedsWalletConnection =
       direction === "deposit" ? fromChain : toChain;
+
+    const chainThatNeedsConnectionIsManual = useMemo(() => {
+      if (isNil(chainThatNeedsWalletConnection)) return false;
+      return chainTypesRequiringManualAddress.includes(
+        chainThatNeedsWalletConnection.chainType as (typeof chainTypesRequiringManualAddress)[number]
+      );
+    }, [chainThatNeedsWalletConnection]);
+
     const cosmosAccountRequiringConnection =
       !isNil(chainThatNeedsWalletConnection) &&
       chainThatNeedsWalletConnection.chainType === "cosmos"
@@ -214,7 +225,7 @@ export const AmountScreen = observer(
         return isEvmWalletConnected;
       }
 
-      if (chainThatNeedsWalletConnection.chainType === "bitcoin") {
+      if (chainThatNeedsConnectionIsManual) {
         return !isNil(manualToAddress);
       }
 
@@ -224,6 +235,7 @@ export const AmountScreen = observer(
       chainThatNeedsWalletConnection,
       isEvmWalletConnected,
       manualToAddress,
+      chainThatNeedsConnectionIsManual,
     ]);
 
     const { data: osmosisChain } = api.edge.chains.getCosmosChain.useQuery(
@@ -246,8 +258,21 @@ export const AmountScreen = observer(
        * This is because providers can return variant assets that are missing in
        * our asset list.
        */
-      canonicalAsset
+      canonicalAsset,
+      {
+        retry: false,
+      }
     );
+
+    // Set initial input unit based on price availability
+    useEffect(() => {
+      if (isLoadingCanonicalAssetPrice) return;
+
+      // Default to crypto mode when price is not available
+      if (!canonicalAssetPrice && inputUnit === "fiat") {
+        setInputUnit("crypto");
+      }
+    }, [canonicalAssetPrice, isLoadingCanonicalAssetPrice, inputUnit]);
 
     const firstSupportedEvmChain = useMemo(
       () =>
@@ -324,7 +349,7 @@ export const AmountScreen = observer(
               }
             })
             .finally(() => setPendingChainApproval(false));
-        } else if (chain.chainType === "bitcoin") {
+        } else if (chainThatNeedsConnectionIsManual) {
           onOpenBridgeWalletSelect();
         }
       },
@@ -341,6 +366,7 @@ export const AmountScreen = observer(
         supportedChains.length,
         switchEvmChain,
         toChain,
+        chainThatNeedsConnectionIsManual,
       ]
     );
 
@@ -433,6 +459,11 @@ export const AmountScreen = observer(
               SupportedAsset,
               { chainType: "penumbra" }
             >[],
+          };
+        case "doge":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "doge" }>[],
           };
         default:
           return {
@@ -566,11 +597,11 @@ export const AmountScreen = observer(
         setChain({
           chainId: osmosisChain.chain_id,
           chainName: osmosisChain.chain_name,
-          prettyName: osmosisChain.pretty_name,
+          prettyName: osmosisChain.prettyName,
           chainType: "cosmos",
-          logoUri: osmosisChain.logoURIs?.svg ?? osmosisChain.logoURIs?.png,
-          color: osmosisChain.logoURIs?.theme?.primary_color_hex,
-          bech32Prefix: osmosisChain.bech32_prefix,
+          logoUri: osmosisChain.logo_URIs?.svg ?? osmosisChain.logo_URIs?.png,
+          // color: osmosisChain.logoURIs?.theme?.primary_color_hex,
+          bech32Prefix: osmosisChain.bech32Prefix,
         });
       }
     }, [
@@ -661,11 +692,11 @@ export const AmountScreen = observer(
     );
 
     const isLoading =
-      isLoadingCanonicalAssetPrice ||
+      (inputUnit === "fiat" && isLoadingCanonicalAssetPrice) ||
       isLoadingSupportedAssets ||
       isLoadingAssetsInOsmosis ||
       !canonicalAsset ||
-      !canonicalAssetPrice ||
+      (inputUnit === "fiat" && !canonicalAssetPrice) ||
       // If we don't have supported chains, we won't have a fromAsset or toAsset
       // so we can't consider the loading state.
       // therefore we only consider the loading state if we have supported chains.
@@ -989,7 +1020,8 @@ export const AmountScreen = observer(
                             {asset.denom}
                           </span>
                           <span className="body2 md:caption text-osmoverse-300">
-                            {inputUnit === "crypto"
+                            {inputUnit === "crypto" ||
+                            !asset.usdValue.toDec().isPositive()
                               ? asset.amount
                                   .trim(true)
                                   .maxDecimals(6)
@@ -1193,7 +1225,7 @@ export const AmountScreen = observer(
                   disabled={pendingChainApproval}
                 >
                   <h6 className="flex items-center gap-3">
-                    {toChain?.chainType === "bitcoin" &&
+                    {chainThatNeedsConnectionIsManual &&
                     direction === "withdraw"
                       ? t("transfer.confirmAmount")
                       : pendingChainApproval

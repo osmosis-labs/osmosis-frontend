@@ -418,17 +418,19 @@ export async function getGasFeeAmount({
       feeDenom: denom,
       gasMultiplier,
     });
-    const feeAmount = feeDenomGasPrice
-      .mul(new Dec(gasLimit))
-      .truncate()
-      .toString();
 
-    // Check if this balance is not enough or fee amount is too little (not enough precision) to pay the fee, if so skip.
-    if (
-      new Int(feeAmount).gt(new Int(amount)) ||
-      new Int(feeAmount).lte(new Int(1))
-    )
+    // Calculate the raw fee amount first before applying Math.max
+    const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).truncate();
+
+    // Only skip if the fee amount is greater than balance
+    if (new Int(rawFeeAmount.toString()).gt(new Int(amount))) {
       continue;
+    }
+
+    // Ensure a minimum of 1.
+    // This covers cases where the fee amount precision is too small to be represented in the balance.
+    // This is common for WBTC and similar tokens.
+    const feeAmount = Math.max(1, Number(rawFeeAmount.toString())).toString();
 
     const spentAmount =
       coinsSpent.find((coinSpent) => coinSpent.denom === denom)?.amount || "0";
@@ -542,12 +544,14 @@ export async function getGasPriceByFeeDenom({
     };
   }
 
-  const feeToken = chain.fees.fee_tokens.find((ft) => ft.denom === feeDenom);
+  const feeToken = chain.feeCurrencies.find(
+    (ft) => ft.coinMinimalDenom === feeDenom
+  );
   if (!feeToken) throw new Error("Fee token not found: " + feeDenom);
 
   // use high gas price to be on safe side that it will be enough
   // to cover fees
-  return { gasPrice: new Dec(feeToken.high_gas_price ?? defaultGasPrice) };
+  return { gasPrice: new Dec(feeToken.gasPriceStep?.high ?? defaultGasPrice) };
 }
 
 /**
@@ -594,11 +598,13 @@ export async function getDefaultGasPrice({
   } else {
     // registry
 
-    feeDenom = chain.fees.fee_tokens[0].denom;
+    feeDenom =
+      chain.feeCurrencies[0].coinMinimalDenom ??
+      chain.feeCurrencies[0].coinDenom;
     // use high gas price to be on safe side that it will be enough
     // to cover fees
     gasPrice = new Dec(
-      chain.fees.fee_tokens[0].high_gas_price || defaultGasPrice
+      chain.feeCurrencies[0].gasPriceStep?.high || defaultGasPrice
     );
   }
 
@@ -633,7 +639,7 @@ export async function getChainSupportedFeeDenoms({
     return [baseDenom, ...alternativeFeeDenoms];
   }
 
-  return chain.fees.fee_tokens.map(({ denom }) => denom);
+  return chain.feeCurrencies.map(({ coinMinimalDenom }) => coinMinimalDenom);
 }
 
 // cached query functions

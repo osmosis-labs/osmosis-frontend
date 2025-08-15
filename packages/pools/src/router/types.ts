@@ -43,8 +43,17 @@ export type Quote = {
   afterSpotPriceOutOverIn?: Dec;
   effectivePriceInOverOut?: Dec;
   effectivePriceOutOverIn?: Dec;
-  /** Generally a positive number. */
+  /**
+   * Negative number represents negative price impact
+   * while positive number represents positive price impact
+   * */
   priceImpactTokenOut?: Dec;
+  liquidityCap?: string;
+  liquidityCapOverflow?: boolean;
+  tokens?: {
+    denom: string;
+    liquidity_cap: string;
+  }[];
 };
 
 /** Quote with potential split of in token amount across multiple routes. */

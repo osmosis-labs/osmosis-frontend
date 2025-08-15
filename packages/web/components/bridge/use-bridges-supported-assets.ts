@@ -14,6 +14,7 @@ const supportedAssetsBridges: Bridge[] = [
   "Squid",
   "Axelar",
   "IBC",
+  "Int3face",
   // include nomic, nitro, wormhole, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
@@ -245,15 +246,92 @@ export const useBridgesSupportedAssets = ({
   }, [successfulQueries]);
 
   const supportedChains = useMemo(() => {
+    // Check if this is a USDC withdrawal to prioritize Noble
+    const isUsdcWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("USDC") ||
+          asset.coinGeckoId === "usd-coin"
+      );
+
+    // Check if this is a USDC deposit to prioritize Noble
+    const isUsdcDeposit =
+      direction === "deposit" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("USDC") ||
+          asset.coinGeckoId === "usd-coin"
+      );
+
+    // Check if this is a XRP withdrawal to prioritize XRPL EVM
+    const isXrpWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
+    // Check if this is a XRP deposit to prioritize XRPL EVM
+    const isXrpDeposit =
+      direction === "deposit" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("XRP") ||
+          asset.coinGeckoId === "ripple"
+      );
+
     return Array.from(
       // Remove duplicate chains
       new Map(
         successfulQueries
           .flatMap(({ data }) => data!.supportedAssets.availableChains)
           .sort((a, b) => {
-            // prioritize bitcoin chains first, then evm
+            // For USDC withdrawals, prioritize Noble first
+            if (isUsdcWithdrawal) {
+              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
+              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
+            }
+
+            // For USDC deposits, prioritize Noble first
+            if (isUsdcDeposit) {
+              if (a.chainId === "noble-1" && b.chainId !== "noble-1") return -1;
+              if (a.chainId !== "noble-1" && b.chainId === "noble-1") return 1;
+            }
+
+            // For XRP withdrawals, prioritize XPRL EVM first
+            if (isXrpWithdrawal) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
+            }
+
+            // For XRP deposits, prioritize XPRL EVM first
+            if (isXrpDeposit) {
+              if (
+                a.chainId === "xrplevm_1440000-1" &&
+                b.chainId !== "xrplevm_1440000-1"
+              )
+                return -1;
+              if (
+                a.chainId !== "xrplevm_1440000-1" &&
+                b.chainId === "xrplevm_1440000-1"
+              )
+                return 1;
+            }
+
+            // prioritize bitcoin and doge chains first, then evm
             if (a.chainType === "bitcoin" && b.chainType !== "bitcoin")
               return -1;
+            if (a.chainType === "doge" && b.chainType !== "doge") return -1;
             if (
               a.chainType === "evm" &&
               b.chainType !== "evm" &&
@@ -272,7 +350,7 @@ export const useBridgesSupportedAssets = ({
           .map((chain) => [chain.chainId, chain])
       ).values()
     );
-  }, [successfulQueries]);
+  }, [successfulQueries, direction, assets]);
 
   return { supportedAssetsByChainId, supportedChains, isLoading };
 };

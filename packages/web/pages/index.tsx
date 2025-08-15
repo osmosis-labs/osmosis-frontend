@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useLocalStorage } from "react-use";
 
 import { AdBanners } from "~/components/ad-banner";
@@ -12,6 +13,8 @@ import {
 import { ClientOnly } from "~/components/client-only";
 import { ErrorBoundary } from "~/components/error/error-boundary";
 import { TradeTool } from "~/components/trade-tool";
+import { BabyBanner } from "~/components/trade-tool/baby-banner";
+import { PolarisBanner } from "~/components/trade-tool/polaris-banner";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -33,6 +36,8 @@ const Home = () => {
 
   const [previousTrade, setPreviousTrade] =
     useLocalStorage<PreviousTrade>(SwapPreviousTradeKey);
+  const [showBanner, setShowBanner] = useLocalStorage("babyTokenBanner", true);
+  const [showPolarisBanner, setShowPolarisBanner] = useState(true);
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
@@ -61,6 +66,12 @@ const Home = () => {
                 setPreviousTrade={setPreviousTrade}
               />
             </ClientOnly>
+            {featureFlags.babyTokenBanner && showBanner && (
+              <BabyBanner onClose={() => setShowBanner(false)} />
+            )}
+            {featureFlags.polarisBanner && showPolarisBanner && (
+              <PolarisBanner onClose={() => setShowPolarisBanner(false)} />
+            )}
             {featureFlags.swapToolTopGainers && <TopGainers />}
           </div>
         </div>

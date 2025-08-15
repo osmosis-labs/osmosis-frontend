@@ -31,13 +31,19 @@ export class PortfolioPage extends BasePage {
     console.log(`FE opened at: ${currentUrl}`)
   }
 
-  async getBalanceFor(token: string) {
+  async getBalanceFor({
+    name,
+    minimalDenom,
+  }: {
+    name: string
+    minimalDenom: string
+  }) {
     await this.page.evaluate(() => window.scrollBy(0, 250))
     const bal = this.page
-      .locator(`//tbody/tr//a[contains(@href, "/assets/${token}")]`)
+      .locator(`//tbody/tr//a[contains(@href, "/assets/${minimalDenom}")]`)
       .nth(1)
     const tokenBalance: string = await bal.innerText()
-    console.log(`Balance for ${token}: ${tokenBalance}`)
+    console.log(`Balance for ${name}: ${tokenBalance}`)
     return tokenBalance
   }
 

@@ -10,6 +10,7 @@ import { useMeasure } from "react-use";
 import { Icon } from "~/components/assets/icon";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { RouteLane } from "~/components/swap-tool/split-route";
+import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { RecapRow } from "~/components/ui/recap-row";
 import {
@@ -64,7 +65,7 @@ export const TradeDetails = observer(
     const priceImpact = swapState?.quote?.priceImpactTokenOut;
 
     const isPriceImpactHigh = useMemo(
-      () => priceImpact?.toDec().abs().gt(new Dec(0.1)),
+      () => priceImpact?.toDec().lt(new Dec(-0.1)),
       [priceImpact]
     );
 
@@ -173,6 +174,9 @@ export const TradeDetails = observer(
                 <Disclosure.Panel className="body2 sm:caption flex flex-col text-osmoverse-300">
                   {type === "market" ? (
                     <RecapRow
+                      className={classNames({
+                        hidden: getShouldHideSlippage(priceImpact),
+                      })}
                       left={
                         <GenericDisclaimer
                           title={t("tradeDetails.priceImpact.header")}
@@ -201,7 +205,6 @@ export const TradeDetails = observer(
                                 "text-bullish-400": !isPriceImpactHigh,
                               })}
                             >
-                              {!priceImpact?.toDec().isZero() && "~"}
                               {formatPretty(priceImpact ?? new Dec(0))}
                             </span>
                           </div>

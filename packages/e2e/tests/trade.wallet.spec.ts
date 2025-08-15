@@ -1,11 +1,7 @@
-import { type BrowserContext, chromium, expect, test } from '@playwright/test'
-
-import { TransactionsPage } from '../pages/transactions-page'
-import { TestConfig } from '../test-config'
-import { UnzipExtension } from '../unzip-extension'
-
-import { WalletPage } from '../pages/keplr-page'
+import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
+import { TransactionsPage } from '../pages/transactions-page'
+import { SetupKeplr } from '../setup-keplr'
 
 test.describe('Test Trade feature', () => {
   let context: BrowserContext
@@ -17,32 +13,22 @@ test.describe('Test Trade feature', () => {
     'ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2'
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension()
-    console.log('\nSetup Keplr Wallet Extension before tests.')
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      '',
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension),
-    )
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0]
-    await emptyPage.waitForTimeout(2000)
-    const page = context.pages()[1]
-    const walletPage = new WalletPage(page)
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey)
-    await walletPage.setWalletNameAndPassword('Test Trades')
-    await walletPage.selectChainsAndSave()
-    await walletPage.finish()
-    // Switch to Application
+    context = await new SetupKeplr().setupWallet(privateKey)
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
-    await tradePage.connectWallet()
-    expect(await tradePage.isError(), 'Swap is not available!').toBeFalsy()
   })
 
   test.afterAll(async () => {
     await context.close()
+  })
+
+  test.beforeEach(async () => {
+    await tradePage.connectWallet()
+    expect(await tradePage.isError(), 'Swap is not available!').toBeFalsy()
+  })
+
+  test.afterEach(async () => {
+    await tradePage.logOut()
   })
 
   test('User should be able to Buy ATOM', async () => {

@@ -1,10 +1,7 @@
 import * as core from "@actions/core";
-import { type BrowserContext, chromium, expect, test } from "@playwright/test";
-import { TestConfig } from "../test-config";
-import { UnzipExtension } from "../unzip-extension";
-
-import { WalletPage } from "../pages/keplr-page";
+import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
+import { SetupKeplr } from "../setup-keplr";
 
 test.describe("Test Swap to/from USDC feature", () => {
   let context: BrowserContext;
@@ -24,23 +21,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     "ibc/1480B8FD20AD5FCAE81EA87584D269547DD4D436843C1D20F15E00EB64743EF4";
 
   test.beforeAll(async () => {
-    const pathToExtension = new UnzipExtension().getPathToExtension();
-    console.log("\nSetup Wallet Extension before tests.");
-    // Launch Chrome with a Keplr wallet extension
-    context = await chromium.launchPersistentContext(
-      "",
-      new TestConfig().getBrowserExtensionConfig(false, pathToExtension)
-    );
-    // Get all new pages (including Extension) in the context and wait
-    const emptyPage = context.pages()[0];
-    await emptyPage.waitForTimeout(2000);
-    const page = context.pages()[1];
-    const walletPage = new WalletPage(page);
-    // Import existing Wallet (could be aggregated in one function).
-    await walletPage.importWalletWithPrivateKey(privateKey);
-    await walletPage.setWalletNameAndPassword("Test Swaps");
-    await walletPage.selectChainsAndSave();
-    await walletPage.finish();
+    context = await new SetupKeplr().setupWallet(privateKey);
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
@@ -49,7 +30,12 @@ test.describe("Test Swap to/from USDC feature", () => {
   });
 
   test.afterAll(async () => {
+    await tradePage.logOut();
     await context.close();
+  });
+
+  test.beforeEach(async () => {
+    await tradePage.goto();
   });
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>
@@ -62,105 +48,73 @@ test.describe("Test Swap to/from USDC feature", () => {
   });
 
   test("User should be able to swap ATOM to USDC", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("ATOM", "USDC");
     await tradePage.enterAmount("0.015");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${ATOM}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to ATOM", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("USDC", "ATOM");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${USDC}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to TIA", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("USDC", "TIA");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${USDC}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${TIA}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap TIA to USDC", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("TIA", "USDC");
     await tradePage.enterAmount("0.02");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${TIA}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to INJ", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("USDC", "INJ");
     await tradePage.enterAmount("0.2");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${USDC}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${INJ}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap INJ to USDC", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("INJ", "USDC");
     await tradePage.enterAmount("0.01");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${INJ}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to AKT", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("USDC", "AKT");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${USDC}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${AKT}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap AKT to USDC", async () => {
-    await tradePage.goto();
     await tradePage.selectPair("AKT", "USDC");
     await tradePage.enterAmount("0.025");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    //expect(msgContent).toContain(`denom: ${AKT}`);
-    //expect(msgContent).toContain(`sender: ${walletId}`);
-    //expect(msgContent).toContain(`token_out_denom: ${USDC}`);
     await tradePage.isTransactionSuccesful();
     await tradePage.getTransactionUrl();
   });

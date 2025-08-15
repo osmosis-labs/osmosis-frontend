@@ -96,6 +96,12 @@ export const CryptoFiatInput: FunctionComponent<{
     onChange: setIsMaxProp,
   });
 
+  // Check if price is available for fiat input
+  const isPriceAvailable = Boolean(assetPrice?.fiatCurrency);
+
+  // Force crypto mode when price is not available
+  const effectiveCurrentUnit = isPriceAvailable ? currentUnit : "crypto";
+
   /**
    * If the asset price is not available, set the pending ratio update to true
    * so that the ratio is updated once the asset price is available.
@@ -219,13 +225,13 @@ export const CryptoFiatInput: FunctionComponent<{
       onUpdateRatio({
         assetPrice,
         nextValue: fiatInputRaw,
-        type: currentUnit,
+        type: effectiveCurrentUnit,
       });
     }
   }, [
     assetPrice,
     assetWithBalance,
-    currentUnit,
+    effectiveCurrentUnit,
     fiatInputRaw,
     onUpdateRatio,
     pendingRatioUpdate,
@@ -289,75 +295,79 @@ export const CryptoFiatInput: FunctionComponent<{
               {t("components.cryptoFiatInput.insufficientFunds")}
             </p>
           )}
+
+          {/* Only show fiat input if price is available */}
+          {isPriceAvailable && (
+            <div
+              className={classNames(
+                "absolute top-1/2 transition-transform",
+                effectiveCurrentUnit === "fiat" ? "max-w-[300px]" : ""
+              )}
+              style={{
+                transform: `scale(${
+                  effectiveCurrentUnit === "fiat" ? 1 : 0.3
+                }) translateY(${effectiveCurrentUnit === "fiat" ? -50 : 120}%)`,
+              }}
+            >
+              {effectiveCurrentUnit === "fiat" ? (
+                <ScaledCurrencyInput
+                  fiatSymbol={assetPrice?.symbol ?? DEFAULT_VS_CURRENCY.symbol}
+                  inputRef={inputRef}
+                  value={fiatInputRaw}
+                  onChange={(value) => {
+                    setIsMax(false);
+
+                    // Prevent the user from entering more decimals than fiat supports
+                    if (
+                      value.split(".")[1]?.length >
+                      (assetPrice?.fiatCurrency.maxDecimals ??
+                        DEFAULT_VS_CURRENCY.maxDecimals)
+                    ) {
+                      return;
+                    }
+                    onInput("fiat")(value);
+                  }}
+                />
+              ) : (
+                <button
+                  className={classNames(
+                    "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
+                    isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
+                  )}
+                  onClick={() => {
+                    setCurrentUnit("fiat");
+                  }}
+                >
+                  <span>
+                    {inputValue
+                      ?.maxDecimals(
+                        assetPrice?.fiatCurrency.maxDecimals ??
+                          DEFAULT_VS_CURRENCY.maxDecimals
+                      )
+                      .toString()}
+                  </span>
+                  <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
+                </button>
+              )}
+            </div>
+          )}
+
           <div
             className={classNames(
               "absolute top-1/2 transition-transform",
-              currentUnit === "fiat" ? "max-w-[300px]" : ""
+              effectiveCurrentUnit === "crypto" ? "max-w-[300px]" : ""
             )}
             style={{
               transform: `scale(${
-                currentUnit === "fiat" ? 1 : 0.3
-              }) translateY(${currentUnit === "fiat" ? -50 : 120}%)`,
-            }}
-          >
-            {currentUnit === "fiat" ? (
-              <ScaledCurrencyInput
-                fiatSymbol={assetPrice?.symbol ?? DEFAULT_VS_CURRENCY.symbol}
-                inputRef={inputRef}
-                value={fiatInputRaw}
-                onChange={(value) => {
-                  setIsMax(false);
-
-                  // Prevent the user from entering more decimals than fiat supports
-                  if (
-                    value.split(".")[1]?.length >
-                    (assetPrice?.fiatCurrency.maxDecimals ??
-                      DEFAULT_VS_CURRENCY.maxDecimals)
-                  ) {
-                    return;
-                  }
-                  onInput("fiat")(value);
-                }}
-              />
-            ) : (
-              <button
-                className={classNames(
-                  "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
-                  isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
-                )}
-                onClick={() => {
-                  setCurrentUnit("fiat");
-                }}
-              >
-                <span>
-                  {inputValue
-                    ?.maxDecimals(
-                      assetPrice?.fiatCurrency.maxDecimals ??
-                        DEFAULT_VS_CURRENCY.maxDecimals
-                    )
-                    .toString()}
-                </span>
-                <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
-              </button>
-            )}
-          </div>
-
-          <div
-            className={classNames(
-              "absolute top-1/2 transition-transform",
-              currentUnit === "crypto" ? "max-w-[300px]" : ""
-            )}
-            style={{
-              transform: `scale(${
-                currentUnit === "crypto" ? 1 : 0.3
-              }) translateY(${currentUnit === "crypto" ? -50 : 120}%)`,
+                effectiveCurrentUnit === "crypto" ? 1 : 0.3
+              }) translateY(${effectiveCurrentUnit === "crypto" ? -50 : 120}%)`,
             }}
           >
             <SkeletonLoader
               className="min-w-[280px]"
               isLoaded={!!assetWithBalance}
             >
-              {currentUnit === "crypto" ? (
+              {effectiveCurrentUnit === "crypto" ? (
                 <ScaledCurrencyInput
                   coinDenom={inputCoin?.denom}
                   inputRef={inputRef}
@@ -382,23 +392,29 @@ export const CryptoFiatInput: FunctionComponent<{
                   }}
                 />
               ) : (
-                <button
-                  className={classNames(
-                    "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
-                    isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
-                  )}
-                  onClick={() => {
-                    setCurrentUnit("crypto");
-                  }}
-                >
-                  <span>
-                    {trimPlaceholderZeros(
-                      inputCoin?.toDec().toString(2) ?? "0"
-                    )}{" "}
-                    {inputCoin?.denom}
-                  </span>
-                  <Icon id="switch" className="h-12 w-12 text-wosmongton-200" />
-                </button>
+                // Only show switch button if price is available
+                isPriceAvailable && (
+                  <button
+                    className={classNames(
+                      "z-50 flex items-center gap-3 text-center !font-normal text-wosmongton-200",
+                      isMobile ? "text-h3 font-h3" : "text-h2 font-h2"
+                    )}
+                    onClick={() => {
+                      setCurrentUnit("crypto");
+                    }}
+                  >
+                    <span>
+                      {trimPlaceholderZeros(
+                        inputCoin?.toDec().toString(2) ?? "0"
+                      )}{" "}
+                      {inputCoin?.denom}
+                    </span>
+                    <Icon
+                      id="switch"
+                      className="h-12 w-12 text-wosmongton-200"
+                    />
+                  </button>
+                )
               )}
             </SkeletonLoader>
           </div>

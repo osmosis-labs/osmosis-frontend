@@ -163,7 +163,7 @@ function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenSourceDenom = chain.staking?.staking_tokens[0].denom;
+  const stakingTokenSourceDenom = chain.stakeCurrency?.sourceDenom ?? "";
   const stakeAsset = assetList!.assets.find(
     (asset) => asset.sourceDenom === stakingTokenSourceDenom
   );
@@ -173,7 +173,7 @@ function getKeplrCompatibleChain({
 
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
-  const prettyChainName = chain.pretty_name;
+  const prettyChainName = chain.prettyName;
 
   return {
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
@@ -210,25 +210,25 @@ function getKeplrCompatibleChain({
         }
 
         let gasPriceStep: ChainInfo["gasPriceStep"];
-        const matchingFeeCurrency = chain.fees.fee_tokens.find(
-          (token) => token.denom === sourceDenom
+        const matchingFeeCurrency = chain.feeCurrencies.find(
+          (token) => token.coinDenom === sourceDenom
         );
 
         if (
           matchingFeeCurrency &&
-          matchingFeeCurrency.low_gas_price &&
-          matchingFeeCurrency.average_gas_price &&
-          matchingFeeCurrency.high_gas_price
+          matchingFeeCurrency.gasPriceStep?.low &&
+          matchingFeeCurrency.gasPriceStep.average &&
+          matchingFeeCurrency.gasPriceStep.high
         ) {
           gasPriceStep = {
-            low: matchingFeeCurrency.low_gas_price,
-            average: matchingFeeCurrency.average_gas_price,
-            high: matchingFeeCurrency.high_gas_price,
+            low: matchingFeeCurrency.gasPriceStep.low,
+            average: matchingFeeCurrency.gasPriceStep.average,
+            high: matchingFeeCurrency.gasPriceStep.high,
           };
         }
 
         acc.push({
-          type,
+          type: type ?? "cw20",
           coinDenom: asset.symbol,
           /**
            * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
@@ -237,8 +237,8 @@ function getKeplrCompatibleChain({
             ? sourceDenom + `:${asset.symbol}`
             : sourceDenom,
           contractAddress: isCW20ContractToken
-            ? sourceDenom.split(":")[1]
-            : undefined,
+            ? sourceDenom.split(":")[1]!
+            : "",
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingeckoId,
           coinImageUrl: getImageRelativeFilePath(
@@ -267,7 +267,8 @@ function getKeplrCompatibleChain({
         ? {
             coinDecimals: stakeDisplayDecimals ?? 0,
             coinDenom: stakeAsset.symbol ?? stakingTokenSourceDenom,
-            coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom!,
+            coinMinimalDenom:
+              stakeSourceDenom ?? stakingTokenSourceDenom! ?? "",
             coinGeckoId: stakeAsset.coingeckoId,
             coinImageUrl:
               stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
@@ -276,18 +277,20 @@ function getKeplrCompatibleChain({
                     stakeAsset.symbol
                   )
                 : undefined,
-            base: stakeAsset.coinMinimalDenom,
+            base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
           }
         : {
             coinDecimals: 0,
             coinDenom: "STAKE",
             coinMinimalDenom: "tempStakePlaceholder",
           },
-    feeCurrencies: chain.fees.fee_tokens.reduce<
+    feeCurrencies: chain.feeCurrencies.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
       const asset = assetList!.assets.find(
-        (asset) => asset.sourceDenom === token.denom
+        (asset) =>
+          asset.sourceDenom ===
+          (token.chainSuggestionDenom ?? token.coinMinimalDenom)
       );
 
       if (!asset) {
@@ -309,25 +312,25 @@ function getKeplrCompatibleChain({
       }
 
       let gasPriceStep: ChainInfo["gasPriceStep"];
-      const matchingFeeCurrency = chain.fees.fee_tokens.find(
-        (token) => token.denom === sourceDenom
+      const matchingFeeCurrency = chain.feeCurrencies.find(
+        (token) => token.coinMinimalDenom === asset.coinMinimalDenom
       );
 
       if (
         matchingFeeCurrency &&
-        matchingFeeCurrency.low_gas_price &&
-        matchingFeeCurrency.average_gas_price &&
-        matchingFeeCurrency.high_gas_price
+        matchingFeeCurrency.gasPriceStep?.low &&
+        matchingFeeCurrency.gasPriceStep.average &&
+        matchingFeeCurrency.gasPriceStep.high
       ) {
         gasPriceStep = {
-          low: matchingFeeCurrency.low_gas_price,
-          average: matchingFeeCurrency.average_gas_price,
-          high: matchingFeeCurrency.high_gas_price,
+          low: matchingFeeCurrency.gasPriceStep.low,
+          average: matchingFeeCurrency.gasPriceStep.average,
+          high: matchingFeeCurrency.gasPriceStep.high,
         };
       }
 
       acc.push({
-        type,
+        type: type ?? "cw20",
         coinDenom: asset.symbol,
         /**
          * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
@@ -335,9 +338,7 @@ function getKeplrCompatibleChain({
         coinMinimalDenom: isContractToken
           ? sourceDenom + `:${asset.symbol}`
           : sourceDenom,
-        contractAddress: isContractToken
-          ? sourceDenom.split(":")[1]
-          : undefined,
+        contractAddress: isContractToken ? sourceDenom.split(":")[1] : "ƒ",
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingeckoId,
         coinImageUrl:
@@ -352,8 +353,8 @@ function getKeplrCompatibleChain({
       });
       return acc;
     }, []),
-    bech32Config: chain.bech32_config,
-    explorerUrlToTx: chain.explorers[0].tx_page.replace("${", "{"),
+    bech32Config: chain.bech32Config,
+    explorerUrlToTx: chain.explorers[0].txPage.replace("${", "{"),
     features: chain.features,
   };
 }
@@ -390,12 +391,29 @@ export function getChainList({
 
         return {
           ...chain,
+          /**
+           * Needed for CosmosKit to function correctly, otherwise
+           * chain suggestion won't work.
+           */
+          fees: {
+            fee_tokens: chain.feeCurrencies.map((token) => ({
+              ...token,
+              denom: token.chainSuggestionDenom ?? token.coinMinimalDenom,
+              fixed_min_gas_price: token.gasPriceStep?.low ?? 0,
+              low_gas_price: token.gasPriceStep?.low,
+              average_gas_price: token.gasPriceStep?.average,
+              high_gas_price: token.gasPriceStep?.high,
+            })),
+          },
+          staking: {
+            staking_tokens: chain.stakeCurrency ? [chain.stakeCurrency] : [],
+          },
           chain_id: isOsmosis
             ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
             : chain.chain_id,
-          pretty_name: isOsmosis
-            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.pretty_name
-            : chain.pretty_name,
+          prettyName: isOsmosis
+            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.prettyName
+            : chain.prettyName,
           apis: {
             rpc:
               isOsmosis && OSMOSIS_RPC_OVERWRITE
@@ -408,7 +426,7 @@ export function getChainList({
           },
           explorers: chain.explorers.map((explorer) => ({
             ...explorer,
-            tx_page: explorer.tx_page.replace("${", "{"),
+            txPage: explorer.txPage.replace("${", "{"),
           })),
           keplrChain,
         };

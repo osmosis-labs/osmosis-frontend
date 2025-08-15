@@ -2,7 +2,6 @@
   "404": {
     "title": "नहीं मिला"
   },
-  "unknownTimeRemaining": "शेष समय अज्ञात",
   "addLiquidity": {
     "allAssets": "सारी संपत्ति",
     "autoswapCaption": "एकल परिसंपत्ति में तरलता जोड़ने के लिए ऑटोस्वैप का उपयोग करें।",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "चरण 1: एक रणनीति चुनें",
     "step2Title": "चरण 2: तरलता जोड़ें",
-    "step2TitleManaged": "चरण 2: प्रदाता का चयन करें",
     "managed": "प्रबंधित",
     "managedDescription": "अपनी स्थिति का प्रबंधन करने के लिए हमारे प्रदाताओं में से एक को सूचीबद्ध करें। पूरी तरह से एक अनोखा अनुभव।",
     "manual": "नियमावली",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "क्रिप्टो खरीदें",
-      "kadoSubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
+      "swappedSubtitle": "OSMO, USDC का समर्थन करता है",
       "moonpaySubtitle": "OSMO, USDC का समर्थन करता है",
       "transakSubtitle": "OSMO का समर्थन करता है",
       "onrampMoneySubtitle": "OSMO, यूएसडीसी का समर्थन करता है",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "अतितरल",
     "superfluidStaking": "सुपरफ्लुइड स्टेकिंग",
     "swap": "व्यापार जोड़ी",
-    "spreadFactor": "प्रसार कारक",
     "swapFee": "स्वैप शुल्क",
     "swapFees": "अदला-बदली शुल्क",
     "title": "पूल # {id}",
@@ -796,6 +793,8 @@
     "receive": "{denom} प्राप्त करें",
     "selectDepositWallet": "{network} वॉलेट चुनें",
     "selectWithdrawWallet": "{network} वॉलेट चुनें",
+    "depositTakingLonger": "जमा करने में अपेक्षा से अधिक समय लग रहा है",
+    "withdrawalTakingLonger": "निकासी में अपेक्षा से अधिक समय लग रहा है",
     "depositAssetDescription": "जब आप कुछ परिसंपत्तियां जमा करते हैं, तो आप चुन सकते हैं कि आप ओस्मोसिस पर परिसंपत्ति का कौन सा संस्करण प्राप्त करना चाहते हैं।",
     "withdrawAssetDescription": "जब आप कुछ परिसंपत्तियाँ निकालते हैं, तो आप चुन सकते हैं कि गंतव्य नेटवर्क पर आप परिसंपत्ति का कौन सा संस्करण प्राप्त करना चाहते हैं।",
     "estimatingTime": "समय का अनुमान लगाना",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "नया जमा पता बनाएं",
     "transactionDetails": "लेन-देन विवरण",
     "confirmAmount": "राशि की पुष्टि करें",
-    "enterBitcoinAddress": "बिटकॉइन पता दर्ज करें"
+    "enterChainAddress": "{chain} पता दर्ज करें"
   },
   "unknownError": "अज्ञात त्रुटि",
   "viewExplorer": "एक्सप्लोरर देखें",
@@ -1316,5 +1315,21 @@
     "conversionFees": "रूपांतरण शुल्क",
     "free": "मुक्त",
     "unavailable": "वर्तमान में अनुपलब्ध। बाद में पुनः प्रयास करें।"
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "केवल सीमित समय के लिए",
+    "skipWaitlist": "प्रतीक्षा सूची छोड़ें",
+    "anyTokenOnAnyNetworkOn": "किसी भी नेटवर्क पर कोई भी टोकन",
+    "trade": "व्यापार",
+    "with": "साथ"
+  },
+  "polarisBanner": {
+    "tradeYour": "अपना व्यापार करें",
+    "andSoMuchMore": "और भी बहुत कुछ.",
+    "tradeAnythingOnPolaris": "पोलारिस पर कुछ भी व्यापार करें"
+  },
+  "lowLiquidityAlert": {
+    "title": "आपका व्यापार विफल हो सकता है",
+    "description": "सभी पूलों में {tokenWithLowLiquidity} की कम तरलता के कारण, इस व्यापार के परिणामस्वरूप उच्च स्लिपेज हो सकता है और इसे निष्पादित नहीं किया जा सकता है।"
   }
 }

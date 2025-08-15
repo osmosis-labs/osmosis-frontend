@@ -2,7 +2,6 @@
   "404": {
     "title": "Page non trouvée"
   },
-  "unknownTimeRemaining": "Temps restant inconnu",
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
     "step2Title": "Étape 2 : Ajouter des liquidités",
-    "step2TitleManaged": "Étape 2 : Sélectionnez le fournisseur",
     "managed": "Géré",
     "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
     "manual": "Manuel",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "Acheter des crypto-monnaies",
-      "kadoSubtitle": "Prend en charge OSMO, USDC",
+      "swappedSubtitle": "Prend en charge OSMO, USDC",
       "moonpaySubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO",
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
     "swap": "Échange de jeton",
-    "spreadFactor": "Facteur de propagation",
     "swapFee": "Frais d'échange",
     "swapFees": "frais d'échange",
     "title": "Bassin n°{id}",
@@ -796,6 +793,8 @@
     "receive": "Recevoir {denom}",
     "selectDepositWallet": "Sélectionnez le portefeuille {network}",
     "selectWithdrawWallet": "Sélectionnez le portefeuille {network}",
+    "depositTakingLonger": "Le dépôt prend plus de temps que prévu",
+    "withdrawalTakingLonger": "Le retrait prend plus de temps que prévu",
     "depositAssetDescription": "Lorsque vous déposez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur Osmosis.",
     "withdrawAssetDescription": "Lorsque vous retirez certains actifs, vous pouvez choisir la version de l'actif que vous souhaitez recevoir sur le réseau de destination.",
     "estimatingTime": "Temps estimé",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "Créer une nouvelle adresse de dépôt",
     "transactionDetails": "Détails de la transaction",
     "confirmAmount": "Confirmer le montant",
-    "enterBitcoinAddress": "Entrez l'adresse Bitcoin"
+    "enterChainAddress": "Entrez l'adresse {chain}"
   },
   "unknownError": "Erreur inconnue",
   "viewExplorer": "Voir dans l'exploreur",
@@ -1316,5 +1315,21 @@
     "conversionFees": "Frais de conversion",
     "free": "Gratuit",
     "unavailable": "Actuellement indisponible. Réessayez plus tard."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "Durée limitée seulement",
+    "skipWaitlist": "Évitez la liste d'attente",
+    "anyTokenOnAnyNetworkOn": "n'importe quel jeton sur n'importe quel réseau sur",
+    "trade": "Commerce",
+    "with": "avec"
+  },
+  "polarisBanner": {
+    "tradeYour": "Échangez votre",
+    "andSoMuchMore": "et bien plus encore.",
+    "tradeAnythingOnPolaris": "Échangez n'importe quoi sur Polaris"
+  },
+  "lowLiquidityAlert": {
+    "title": "Votre transaction peut échouer",
+    "description": "En raison de la faible liquidité de {tokenWithLowLiquidity} dans tous les pools, cette transaction peut entraîner un glissement élevé et peut ne pas être exécutée."
   }
 }

@@ -2,7 +2,6 @@
   "404": {
     "title": "મળી નથી"
   },
-  "unknownTimeRemaining": "અજ્ઞાત સમય બાકી",
   "addLiquidity": {
     "allAssets": "બધી સંપત્તિ",
     "autoswapCaption": "સિંગલ એસેટ સાથે લિક્વિડિટી ઉમેરવા માટે ઑટોસ્વેપનો ઉપયોગ કરો.",
@@ -21,7 +20,6 @@
   "addConcentratedLiquidity": {
     "step1Title": "પગલું 1: વ્યૂહરચના પસંદ કરો",
     "step2Title": "પગલું 2: લિક્વિડિટી ઉમેરો",
-    "step2TitleManaged": "પગલું 2: પ્રદાતા પસંદ કરો",
     "managed": "વ્યવસ્થાપિત",
     "managedDescription": "તમારી સ્થિતિનું સંચાલન કરવા માટે અમારા પ્રદાતાઓમાંની એકની નોંધણી કરો. એક સંપૂર્ણપણે હાથ બંધ અનુભવ.",
     "manual": "મેન્યુઅલ",
@@ -246,7 +244,7 @@
     },
     "fiatOnrampSelection": {
       "chooseOnramp": "ક્રિપ્ટો ખરીદો",
-      "kadoSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
+      "swappedSubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "moonpaySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "transakSubtitle": "OSMO ને સપોર્ટ કરે છે",
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
@@ -489,7 +487,6 @@
     "superfluidEnabled": "અતિપ્રવાહી",
     "superfluidStaking": "સુપરફ્લુઇડ સ્ટેકિંગ",
     "swap": "વેપાર જોડી",
-    "spreadFactor": "સ્પ્રેડ ફેક્ટર",
     "swapFee": "સ્વેપ ફી",
     "swapFees": "સ્વેપ ફી",
     "title": "પૂલ # {id}",
@@ -796,6 +793,8 @@
     "receive": "{denom} મેળવો",
     "selectDepositWallet": "{network} વૉલેટ પસંદ કરો",
     "selectWithdrawWallet": "{network} વૉલેટ પસંદ કરો",
+    "depositTakingLonger": "ડિપોઝિટમાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે",
+    "withdrawalTakingLonger": "ઉપાડમાં અપેક્ષા કરતાં વધુ સમય લાગી રહ્યો છે",
     "depositAssetDescription": "જ્યારે તમે અમુક સંપત્તિઓ જમા કરો છો, ત્યારે તમે ઓસ્મોસિસ પર સંપત્તિનું કયું સંસ્કરણ પ્રાપ્ત કરવા માંગો છો તે પસંદ કરી શકો છો.",
     "withdrawAssetDescription": "જ્યારે તમે અમુક સંપત્તિઓ પાછી ખેંચો છો, ત્યારે તમે ગંતવ્ય નેટવર્ક પર સંપત્તિનું કયું સંસ્કરણ પ્રાપ્ત કરવા માંગો છો તે તમે પસંદ કરી શકો છો.",
     "estimatingTime": "સમયનો અંદાજ",
@@ -931,7 +930,7 @@
     "createNewDepositAddress": "નવું ડિપોઝિટ સરનામું બનાવો",
     "transactionDetails": "વ્યવહારની વિગતો",
     "confirmAmount": "રકમની પુષ્ટિ કરો",
-    "enterBitcoinAddress": "Bitcoin સરનામું દાખલ કરો"
+    "enterChainAddress": "{chain} સરનામું દાખલ કરો"
   },
   "unknownError": "અજાણી ભૂલ",
   "viewExplorer": "સંશોધક જુઓ",
@@ -1316,5 +1315,21 @@
     "conversionFees": "રૂપાંતર ફી",
     "free": "મફત",
     "unavailable": "હાલમાં અનુપલબ્ધ. પછીથી ફરી પ્રયાસ કરો."
+  },
+  "babyBanner": {
+    "limitedTimeOnly": "મર્યાદિત સમય માટે જ",
+    "skipWaitlist": "રાહ જોવાની સૂચિ છોડી દો",
+    "anyTokenOnAnyNetworkOn": "કોઈપણ નેટવર્ક પર કોઈપણ ટોકન",
+    "trade": "વેપાર",
+    "with": "સાથે"
+  },
+  "polarisBanner": {
+    "tradeYour": "તમારા વેપાર કરો",
+    "andSoMuchMore": "અને ઘણું બધું.",
+    "tradeAnythingOnPolaris": "પોલારિસ પર કંઈપણ વેપાર કરો"
+  },
+  "lowLiquidityAlert": {
+    "title": "તમારો વેપાર નિષ્ફળ થઈ શકે છે",
+    "description": "બધા પૂલમાં {tokenWithLowLiquidity} ની ઓછી તરલતાને કારણે, આ વેપારમાં ઉચ્ચ સ્લિપેજ થઈ શકે છે અને તે અમલમાં ન પણ આવી શકે."
   }
 }

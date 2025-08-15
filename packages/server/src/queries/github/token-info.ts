@@ -1,19 +1,29 @@
 import { queryOsmosisCMS } from "./osmosis-cms";
-export interface TokenCMSData {
+
+interface GenericCmsData {
+  localization?: string;
   name?: string;
   symbol?: string;
-  description?: string;
   coingeckoID?: string;
   twitterURL?: string;
   websiteURL?: string;
   stakingURL?: string;
 }
+export interface TokenCMSData extends GenericCmsData {
+  description?: Record<string, string>;
+}
 
-export const getTokenInfo = (
-  denom: string,
-  lang: string
+// Because encoding seems different in the repo, I've added this function to replace %2F with %252F
+const replaceSlashes = (str: string) => {
+  return str.split("%2F").join("%252F");
+};
+
+export const getTokenInfo = async (
+  coinMinimalDenom: string
 ): Promise<TokenCMSData> => {
-  const filePath = `osmosis-1/generated/asset_detail/${denom.toLowerCase()}_asset_detail_${lang.toLowerCase()}.json`;
+  const filePath = `osmosis-1/generated/asset_detail/${replaceSlashes(
+    encodeURIComponent(coinMinimalDenom)
+  )}.json`;
 
   return queryOsmosisCMS({
     repo: "osmosis-labs/assetlists",

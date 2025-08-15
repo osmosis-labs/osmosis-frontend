@@ -24,10 +24,16 @@ import {
   AssetFieldsetInput,
   AssetFieldsetTokenSelector,
 } from "~/components/complex/asset-fieldset";
+import {
+  ATOM_BASE_DENOM,
+  USDC_BASE_DENOM,
+  USDT_BASE_DENOM,
+} from "~/components/place-limit-tool/defaults";
 import { LimitPriceSelector } from "~/components/place-limit-tool/limit-price-selector";
 import { TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
 import { PriceSelector } from "~/components/swap-tool/price-selector";
 import { TradeDetails } from "~/components/swap-tool/trade-details";
+import { getShouldHideSlippage } from "~/components/swap-tool/utils";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EventPage } from "~/config";
@@ -120,8 +126,8 @@ const NON_DISPLAY_ERRORS = [
 export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
   ({
     page,
-    initialBaseDenom = "ATOM",
-    initialQuoteDenom = "USDC",
+    initialBaseDenom = ATOM_BASE_DENOM,
+    initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
@@ -137,8 +143,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     const featureFlags = useFeatureFlags();
 
     const [{ from, quote, tab, type }, set] = useQueryStates({
-      from: parseAsString.withDefault(initialBaseDenom || "ATOM"),
-      quote: parseAsString.withDefault(initialQuoteDenom || "USDC"),
+      from: parseAsString.withDefault(initialBaseDenom),
+      quote: parseAsString.withDefault(initialQuoteDenom),
       type: parseAsStringLiteral(TRADE_TYPES).withDefault("market"),
       tab: parseAsString,
       to: parseAsString,
@@ -155,10 +161,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     useEffect(() => {
       if (from === quote) {
-        if (quote === "USDC") {
-          set({ quote: "USDT" });
+        if (quote === USDC_BASE_DENOM) {
+          set({ quote: USDT_BASE_DENOM });
         } else {
-          set({ quote: "USDC" });
+          set({ quote: USDC_BASE_DENOM });
         }
       }
     }, [from, quote, set]);
@@ -257,7 +263,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
 
     const selectableBaseAssets = useMemo(() => {
       return swapState.marketState.selectableAssets.filter(
-        (asset) => asset.coinDenom !== swapState.quoteAsset!.coinDenom
+        (asset) =>
+          asset.coinMinimalDenom !== swapState.quoteAsset?.coinMinimalDenom
       );
     }, [swapState.marketState.selectableAssets, swapState.quoteAsset]);
 
@@ -789,19 +796,18 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
                         body={t("tradeDetails.outputDifference.content")}
                         disabled={swapState.marketState.quote?.priceImpactTokenOut
                           .toDec()
-                          .lt(new Dec(0.01))}
+                          .lt(new Dec(-0.01))}
                         childWrapperClassName={classNames(
                           "ml-1 text-osmoverse-500 !cursor-pointer !pointer-events-auto",
                           {
-                            hidden:
+                            hidden: getShouldHideSlippage(
                               swapState.marketState.quote?.priceImpactTokenOut
-                                .toDec()
-                                .lt(new Dec(0.01)),
+                            ),
                           }
                         )}
                         tooltipClassName="!cursor-pointer"
                       >
-                        &#40;-
+                        &#40;
                         {formatPretty(
                           swapState.marketState.quote?.priceImpactTokenOut
                         )}
@@ -877,8 +883,8 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             setReviewOpen(false);
             setIsSendingTx(false);
             onOrderSuccess?.(
-              swapState.baseAsset?.coinDenom,
-              swapState.quoteAsset?.coinDenom
+              swapState.baseAsset?.coinMinimalDenom,
+              swapState.quoteAsset?.coinMinimalDenom
             );
             resetSlippage();
           }}

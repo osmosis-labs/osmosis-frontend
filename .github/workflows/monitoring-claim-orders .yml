@@ -8,14 +8,14 @@ on:
 jobs:
   fe-claim1-tests:
     timeout-minutes: 10
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -43,14 +43,14 @@ jobs:
 
   fe-claim2-tests:
     timeout-minutes: 10
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: 22.x
       - name: Cache dependencies
         uses: actions/cache@v4
         with:

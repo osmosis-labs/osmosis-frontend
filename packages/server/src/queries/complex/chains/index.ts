@@ -84,14 +84,14 @@ function filterChainList({
       0.0 // Exact match
     );
 
-    // if not exact match for chain_id, search by chain_name or pretty_name
+    // if not exact match for chain_id, search by chain_name or prettyName
     if (chainIdMatches.length > 0) {
       chainListChains = chainIdMatches;
     } else {
       const nameMatches = search(
         chainListChains,
         /** Search is performed on the raw chain list data, instead of `Chain` type. */
-        ["chain_name", "pretty_name"] as (keyof Chain)[],
+        ["chain_name", "prettyName"] as (keyof Chain)[],
         searchParam
       );
       chainListChains = nameMatches;

@@ -299,9 +299,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
 
     const poolNameAssetLinks = useMemo(
       () =>
-        pool.reserveCoins.map((poolAsset, index) => (
-          <Fragment key={poolAsset.denom}>
-            <Link href={`/assets/${poolAsset.denom}`}>{poolAsset.denom}</Link>
+        pool.reserveCoins.map(({ denom, currency }, index) => (
+          <Fragment key={denom}>
+            <Link href={`/assets/${currency.coinMinimalDenom}`}>{denom}</Link>
             {index < pool.reserveCoins.length - 1 && " / "}
           </Fragment>
         )),
@@ -392,9 +392,10 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 <div className="flex flex-col gap-2">
                   <div className="flex flex-wrap items-center gap-3">
                     <PoolAssetsIcon
-                      assets={pool.reserveCoins.map((asset) => ({
-                        coinDenom: asset.denom,
-                        coinImageUrl: asset.currency.coinImageUrl,
+                      assets={pool.reserveCoins.map(({ denom, currency }) => ({
+                        coinDenom: denom,
+                        coinImageUrl: currency.coinImageUrl,
+                        coinMinimalDenom: currency.coinMinimalDenom,
                       }))}
                       size="sm"
                     />
@@ -624,9 +625,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                         className="w-fit shrink-0 xs:w-full"
                         variant="outline"
                         disabled={
-                          !userSharePool?.availableShares
-                            ?.toDec()
-                            .isPositive() ?? true
+                          !userSharePool?.availableShares?.toDec().isPositive()
                         }
                         onClick={() => {
                           logEvent([
