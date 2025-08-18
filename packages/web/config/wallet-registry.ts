@@ -5,6 +5,7 @@ import {
 } from "@osmosis-labs/stores";
 
 import { EWalletMainWallet } from "~/integrations/ewallet";
+import { type EWalletInfo, ewalletInfo } from "~/integrations/ewallet/registry";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
@@ -19,7 +20,15 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     rejectMessage: {
       source: "Request rejected",
     },
-    lazyInstall: () => Promise.resolve(EWalletMainWallet),
+    lazyInstall: () =>
+      Promise.resolve(
+        class extends EWalletMainWallet {
+          constructor(walletInfo: EWalletInfo) {
+            // Ensure apiKey is passed to the constructor for keplr-ewallet too
+            super({ ...walletInfo, apiKey: ewalletInfo.apiKey });
+          }
+        }
+      ),
     windowPropertyName: "keplr",
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
