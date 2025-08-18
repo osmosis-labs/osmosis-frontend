@@ -12,8 +12,8 @@ import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
-    name: "keplr-ewallet",
-    prettyName: "Keplr EWallet",
+    name: "ewallet",
+    prettyName: "eWallet",
     logo: "/wallets/keplr.svg",
     mode: "extension",
     mobileDisabled: false,
