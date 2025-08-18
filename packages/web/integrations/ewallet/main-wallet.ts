@@ -1,5 +1,12 @@
 import { type EndpointOptions, MainWalletBase } from "@cosmos-kit/core";
-import { initCosmosEWallet } from "@keplr-ewallet/ewallet-sdk-cosmos";
+import {
+  initKeplrEwalletCore,
+  KeplrEWallet,
+} from "@keplr-ewallet/ewallet-sdk-core";
+import {
+  CosmosEWallet,
+  initCosmosEWallet,
+} from "@keplr-ewallet/ewallet-sdk-cosmos";
 
 import { type EWalletInfo } from "~/integrations/ewallet/registry";
 
@@ -8,6 +15,9 @@ import { EWalletClient } from "./client";
 
 export class EWalletMainWallet extends MainWalletBase {
   private apiKey: string;
+  private eWallet: KeplrEWallet | null = null;
+  private cosmosEWallet: CosmosEWallet | null = null;
+
   constructor(
     walletInfo: EWalletInfo,
     preferredEndpoints?: EndpointOptions["endpoints"]
@@ -20,21 +30,117 @@ export class EWalletMainWallet extends MainWalletBase {
   async initClient() {
     this.initingClient();
     try {
-      // Initialize the Cosmos EWallet with API key
-      const cosmosEWallet = await initCosmosEWallet({
-        api_key: this.apiKey,
-      });
+      await this.init();
 
-      if (!cosmosEWallet.success) {
-        throw new Error(
-          "Failed to initialize CosmosEWallet - initialization returned null"
-        );
+      if (!this.eWallet) {
+        throw new Error("eWallet not initialized after init()");
       }
-      this.initClientDone(new EWalletClient(cosmosEWallet.data));
+
+      // Check if already signed in before calling signIn
+      let isSignedIn = false;
+      try {
+        const publicKey = await this.eWallet.getPublicKey();
+        isSignedIn = !!publicKey;
+      } catch (error) {
+        isSignedIn = false;
+      }
+
+      // Skip signIn during initialization to avoid popup during page refresh
+      if (!isSignedIn) {
+        // Don't call signIn during initialization - let it be called manually
+        // await this.eWallet.signIn("google");
+      }
+
+      if (this.cosmosEWallet) {
+        this.initClientDone(new EWalletClient(this.cosmosEWallet));
+      } else {
+        this.initClientError(new Error("CosmosEWallet not initialized"));
+      }
     } catch (error) {
       this.initClientError(
         error instanceof Error ? error : new Error(String(error))
       );
     }
   }
+
+  async init() {
+    console.log(
+      `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
+        0,
+        10
+      )}...`
+    );
+
+    if (!this.eWallet) {
+      console.log(`[EWalletMainWallet] Initializing KeplrEwalletCore...`);
+      const result = await initKeplrEwalletCore({
+        api_key: this.apiKey,
+      });
+
+      if (result && result.success) {
+        this.eWallet = result.data;
+        console.log(
+          `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
+        );
+      } else {
+        console.error(
+          `[EWalletMainWallet] KeplrEwalletCore init failed:`,
+          result?.err
+        );
+        throw new Error(result?.err || "Unknown initialization error");
+      }
+    }
+
+    if (!this.cosmosEWallet && this.eWallet) {
+      console.log(`[EWalletMainWallet] Initializing CosmosEWallet...`);
+      const result = await initCosmosEWallet({
+        api_key: this.apiKey,
+      });
+
+      if (result && result.success) {
+        this.cosmosEWallet = result.data;
+        console.log(
+          `[EWalletMainWallet] CosmosEWallet initialized successfully`
+        );
+      } else {
+        console.error(
+          `[EWalletMainWallet] CosmosEWallet init failed:`,
+          result?.err
+        );
+        throw new Error(
+          result?.err || "Unknown cosmos ewallet initialization error"
+        );
+      }
+    }
+  }
+
+  connect = async (
+    _syncOrChainIds?: boolean | string | string[],
+    _options?: any
+  ) => {
+    // Ensure client is initialized first
+    if (this.state === "Init") {
+      await this.initClient();
+    }
+
+    await this.init();
+
+    if (!this.eWallet) {
+      throw new Error("Ewallet not initialized");
+    }
+
+    // Check if already signed in before calling signIn
+    let isSignedIn = false;
+    try {
+      const publicKey = await this.eWallet.getPublicKey();
+      isSignedIn = !!publicKey;
+    } catch (error) {
+      isSignedIn = false;
+    }
+
+    if (!isSignedIn) {
+      console.log("Calling signIn from connect method");
+      await this.eWallet.signIn("google");
+    }
+  };
 }
