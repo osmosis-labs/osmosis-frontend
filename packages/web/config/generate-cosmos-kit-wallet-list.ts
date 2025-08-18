@@ -16,6 +16,8 @@ import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
 import { isFunction } from "@osmosis-labs/utils";
 import * as prettier from "prettier";
 
+import { ewalletInfo } from "~/integrations/ewallet/registry";
+
 type UpdateWalletMode =
   | "ledger"
   | "extension"
@@ -28,6 +30,7 @@ interface Wallet extends Omit<DefaultWallet, "mode"> {
 }
 
 const CosmosKitWalletList: Wallet[] = [
+  ewalletInfo as Wallet,
   keplrExtensionInfo,
   keplrMobileInfo,
   leapExtensionInfo,
@@ -104,7 +107,7 @@ async function generateCosmosKitWalletList() {
             wallet.name
           }"`
       ).join(",")}}
-      export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet> = ${getStringifiedWallet(
+      export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet & { apiKey?: string }> = ${getStringifiedWallet(
         registryObject
       )}     
     `;
