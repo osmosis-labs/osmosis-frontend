@@ -23,7 +23,7 @@ import { CosmosEWallet } from "@keplr-ewallet/ewallet-sdk-cosmos";
 export class EWalletClient implements WalletClient {
   readonly client: CosmosEWallet;
   private _defaultSignOptions: SignOptions = {
-    preferNoSetFee: false,
+    preferNoSetFee: true,
     preferNoSetMemo: true,
     disableBalanceCheck: true,
   };
