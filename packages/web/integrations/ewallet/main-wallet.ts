@@ -45,10 +45,8 @@ export class EWalletMainWallet extends MainWalletBase {
         isSignedIn = false;
       }
 
-      // Skip signIn during initialization to avoid popup during page refresh
       if (!isSignedIn) {
-        // Don't call signIn during initialization - let it be called manually
-        // await this.eWallet.signIn("google");
+        await this.eWallet.signIn("google");
       }
 
       if (this.cosmosEWallet) {
