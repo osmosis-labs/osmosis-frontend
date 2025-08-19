@@ -1372,6 +1372,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     initialFee?: Optional<StdFee, "gas">;
     signOptions?: SignOptions;
   }): Promise<StdFee> {
+    console.log("signOptions", signOptions);
     if (!wallet.address) throw new Error("No wallet address available.");
 
     try {
