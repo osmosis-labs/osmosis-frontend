@@ -142,32 +142,20 @@ export class FeeConfig extends TxChainSetter implements IFeeConfig {
   }
 
   getFeePrimitive(): CoinPrimitive | undefined {
-    console.log('[FeeConfig] getFeePrimitive debug:', {
-      feeCurrency: this.feeCurrency,
-      _manualFee: this._manualFee,
-      feeType: this.feeType,
-      'chainInfo.feeCurrencies': this.chainInfo.feeCurrencies
-    });
-
     // If there is no fee currency, just return with empty fee amount.
     if (!this.feeCurrency) {
-      console.log('[FeeConfig] No fee currency, returning undefined');
       return undefined;
     }
 
     if (this._manualFee) {
-      console.log('[FeeConfig] Using manual fee:', this._manualFee);
       return this._manualFee;
     }
 
     if (this.feeType) {
-      const fee = this.getFeeTypePrimitive(this.feeType);
-      console.log('[FeeConfig] Using fee type:', this.feeType, 'result:', fee);
-      return fee;
+      return this.getFeeTypePrimitive(this.feeType);
     }
 
     // If fee is not set, just return with empty fee amount.
-    console.log('[FeeConfig] No fee set, returning undefined');
     return undefined;
   }
 
