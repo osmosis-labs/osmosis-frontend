@@ -29,6 +29,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
           }
         }
       ),
+    windowPropertyName: "keplr",
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
     features: ["notifications"],
