@@ -132,19 +132,26 @@ export class EWalletClient implements WalletClient {
     signDoc: StdSignDoc,
     signOptions?: SignOptions
   ): Promise<AminoSignResponse> {
+    const finalSignOptions = {
+      ...this.defaultSignOptions,
+      ...signOptions,
+      preferNoSetFee: true,
+    };
+
     console.log("[EWallet] signAmino - Gas fee settings:", {
       chainId,
       fee: signDoc.fee,
       gasWanted: signDoc.fee?.gas,
       gasPrice: signDoc.fee?.amount,
-      signOptions: signOptions || this.defaultSignOptions,
+      originalSignOptions: signOptions,
+      finalSignOptions,
     });
 
     return await this.client.signAmino(
       chainId,
       signer,
       signDoc,
-      signOptions || this.defaultSignOptions
+      finalSignOptions
     );
   }
 
@@ -162,6 +169,12 @@ export class EWalletClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): Promise<DirectSignResponse> {
+    const finalSignOptions = {
+      ...this.defaultSignOptions,
+      ...signOptions,
+      preferNoSetFee: true,
+    };
+
     console.log("[EWallet] signDirect - Gas fee settings:", {
       chainId,
       signDoc: {
@@ -169,7 +182,8 @@ export class EWalletClient implements WalletClient {
         accountNumber: signDoc.accountNumber,
         authInfoBytes: signDoc.authInfoBytes?.length + " bytes",
       },
-      signOptions: signOptions || this.defaultSignOptions,
+      originalSignOptions: signOptions,
+      finalSignOptions,
     });
 
     const resp = await this.client.signDirect(
@@ -182,7 +196,7 @@ export class EWalletClient implements WalletClient {
         chainId: signDoc.chainId ?? "",
         accountNumber: BigInt(signDoc.accountNumber ?? "0"),
       },
-      signOptions || this.defaultSignOptions
+      finalSignOptions
     );
     return {
       ...resp,
