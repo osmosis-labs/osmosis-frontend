@@ -14,11 +14,9 @@ import { ChainEWallet } from "./chain-wallet";
 import { EWalletClient } from "./client";
 
 export class EWalletMainWallet extends MainWalletBase {
-  private static initPromise: Promise<void> | undefined;
-  private static ewallet: KeplrEWallet | null = null;
-  private static cosmosEWallet: CosmosEWallet | null = null;
-
   private apiKey: string;
+  private eWallet: KeplrEWallet | null = null;
+  private cosmosEWallet: CosmosEWallet | null = null;
 
   constructor(
     walletInfo: EWalletInfo,
@@ -34,25 +32,25 @@ export class EWalletMainWallet extends MainWalletBase {
     try {
       await this.init();
 
-      if (!EWalletMainWallet.eWallet) {
+      if (!this.eWallet) {
         throw new Error("eWallet not initialized after init()");
       }
 
       // Check if already signed in before calling signIn
       let isSignedIn = false;
       try {
-        const publicKey = await EWalletMainWallet.eWallet.getPublicKey();
+        const publicKey = await this.eWallet.getPublicKey();
         isSignedIn = !!publicKey;
       } catch (error) {
         isSignedIn = false;
       }
 
       if (!isSignedIn) {
-        await EWalletMainWallet.eWallet.signIn("google");
+        await this.eWallet.signIn("google");
       }
 
-      if (EWalletMainWallet.cosmosEWallet) {
-        this.initClientDone(new EWalletClient(EWalletMainWallet.cosmosEWallet));
+      if (this.cosmosEWallet) {
+        this.initClientDone(new EWalletClient(this.cosmosEWallet));
       } else {
         this.initClientError(new Error("CosmosEWallet not initialized"));
       }
@@ -63,62 +61,52 @@ export class EWalletMainWallet extends MainWalletBase {
     }
   }
 
-  init() {
-    if (EWalletMainWallet.initPromise) {
-      return EWalletMainWallet.initPromise
-    }
-
-    EWalletMainWallet.initPromise = this.initInternal();
-
-    return EWalletMainWallet.initPromise
-  }
-
-  protected async initInternal() {
+  async init() {
     console.log(
-        `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
-            0,
-            10
-        )}...`
+      `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
+        0,
+        10
+      )}...`
     );
 
-    if (!EWalletMainWallet.eWallet) {
+    if (!this.eWallet) {
       console.log(`[EWalletMainWallet] Initializing KeplrEwalletCore...`);
       const result = await initKeplrEwalletCore({
         api_key: this.apiKey,
       });
 
       if (result && result.success) {
-        EWalletMainWallet.eWallet = result.data;
+        this.eWallet = result.data;
         console.log(
-            `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
+          `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
         );
       } else {
         console.error(
-            `[EWalletMainWallet] KeplrEwalletCore init failed:`,
-            result?.err
+          `[EWalletMainWallet] KeplrEwalletCore init failed:`,
+          result?.err
         );
         throw new Error(result?.err || "Unknown initialization error");
       }
     }
 
-    if (!EWalletMainWallet.cosmosEWallet && EWalletMainWallet.eWallet) {
+    if (!this.cosmosEWallet && this.eWallet) {
       console.log(`[EWalletMainWallet] Initializing CosmosEWallet...`);
       const result = await initCosmosEWallet({
         api_key: this.apiKey,
       });
 
       if (result && result.success) {
-        EWalletMainWallet.cosmosEWallet = result.data;
+        this.cosmosEWallet = result.data;
         console.log(
-            `[EWalletMainWallet] CosmosEWallet initialized successfully`
+          `[EWalletMainWallet] CosmosEWallet initialized successfully`
         );
       } else {
         console.error(
-            `[EWalletMainWallet] CosmosEWallet init failed:`,
-            result?.err
+          `[EWalletMainWallet] CosmosEWallet init failed:`,
+          result?.err
         );
         throw new Error(
-            result?.err || "Unknown cosmos ewallet initialization error"
+          result?.err || "Unknown cosmos ewallet initialization error"
         );
       }
     }
@@ -135,25 +123,22 @@ export class EWalletMainWallet extends MainWalletBase {
 
     await this.init();
 
-    if (!EWalletMainWallet.eWallet) {
+    if (!this.eWallet) {
       throw new Error("Ewallet not initialized");
     }
 
     // Check if already signed in before calling signIn
     let isSignedIn = false;
     try {
-      console.log("XXX try get pubkey");
-      const publicKey = await EWalletMainWallet.eWallet.getPublicKey();
+      const publicKey = await this.eWallet.getPublicKey();
       isSignedIn = !!publicKey;
     } catch (error) {
-      console.log("!!!!", error);
       isSignedIn = false;
     }
 
-    console.log("???? pubkey get", isSignedIn);
     if (!isSignedIn) {
       console.log("Calling signIn from connect method");
-      await EWalletMainWallet.eWallet.signIn("google");
+      await this.eWallet.signIn("google");
     }
   };
 }
