@@ -571,15 +571,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ...signOptions,
       };
 
+      console.log("[AccountStore] signAndBroadcast - Fee check:", {
+        walletName: wallet.walletName,
+        "typeof fee": typeof fee,
+        "fee value": fee,
+        "will call estimateFee": typeof fee === "undefined",
+      });
+
       // Estimate gas fee & token if not provided
       if (typeof fee === "undefined") {
+        console.log("[AccountStore] signAndBroadcast - Calling estimateFee...");
         try {
           fee = await this.estimateFee({
             wallet,
             messages: msgs,
             signOptions: mergedSignOptions,
           });
+          console.log(
+            "[AccountStore] signAndBroadcast - estimateFee result:",
+            fee
+          );
         } catch (e) {
+          console.error(
+            "[AccountStore] signAndBroadcast - estimateFee error:",
+            e
+          );
           if (e instanceof SimulateNotAvailableError) {
             console.warn(
               "Gas simulation not supported for chain ID:",
@@ -589,6 +605,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
           throw e;
         }
+      } else {
+        console.log(
+          "[AccountStore] signAndBroadcast - Fee already provided, skipping estimateFee"
+        );
       }
 
       const txRaw = await this.sign({
