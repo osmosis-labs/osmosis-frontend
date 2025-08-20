@@ -16,7 +16,7 @@ import { EWalletClient } from "./client";
 
 export class EWalletMainWallet extends MainWalletBase {
   private static initPromise: Promise<void> | undefined;
-  private static ewallet: KeplrEWallet | null = null;
+  private static eWallet: KeplrEWallet | null = null;
   private static cosmosEWallet: CosmosEWallet | null = null;
 
   private apiKey: string;
@@ -66,20 +66,20 @@ export class EWalletMainWallet extends MainWalletBase {
 
   init() {
     if (EWalletMainWallet.initPromise) {
-      return EWalletMainWallet.initPromise
+      return EWalletMainWallet.initPromise;
     }
 
     EWalletMainWallet.initPromise = this.initInternal();
 
-    return EWalletMainWallet.initPromise
+    return EWalletMainWallet.initPromise;
   }
 
   protected async initInternal() {
     console.log(
-        `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
-            0,
-            10
-        )}...`
+      `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
+        0,
+        10
+      )}...`
     );
 
     if (!EWalletMainWallet.eWallet) {
@@ -91,12 +91,12 @@ export class EWalletMainWallet extends MainWalletBase {
       if (result && result.success) {
         EWalletMainWallet.eWallet = result.data;
         console.log(
-            `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
+          `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
         );
       } else {
         console.error(
-            `[EWalletMainWallet] KeplrEwalletCore init failed:`,
-            result?.err
+          `[EWalletMainWallet] KeplrEwalletCore init failed:`,
+          result?.err
         );
         throw new Error(result?.err || "Unknown initialization error");
       }
@@ -111,15 +111,15 @@ export class EWalletMainWallet extends MainWalletBase {
       if (result && result.success) {
         EWalletMainWallet.cosmosEWallet = result.data;
         console.log(
-            `[EWalletMainWallet] CosmosEWallet initialized successfully`
+          `[EWalletMainWallet] CosmosEWallet initialized successfully`
         );
       } else {
         console.error(
-            `[EWalletMainWallet] CosmosEWallet init failed:`,
-            result?.err
+          `[EWalletMainWallet] CosmosEWallet init failed:`,
+          result?.err
         );
         throw new Error(
-            result?.err || "Unknown cosmos ewallet initialization error"
+          result?.err || "Unknown cosmos ewallet initialization error"
         );
       }
     }
@@ -164,10 +164,10 @@ export class EWalletMainWallet extends MainWalletBase {
     options?: DisconnectOptions
   ): Promise<void> {
     await super.disconnectAll(activeOnly, exclude, options);
-    if (this.eWallet) {
-      await this.eWallet.signOut();
+    if (EWalletMainWallet.eWallet) {
+      await EWalletMainWallet.eWallet.signOut();
     }
-    this.eWallet = null;
-    this.cosmosEWallet = null;
+    EWalletMainWallet.eWallet = null;
+    EWalletMainWallet.cosmosEWallet = null;
   }
 }
