@@ -3,6 +3,7 @@ import { createConfig, http } from "wagmi";
 import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 
 import { WALLETCONNECT_PROJECT_KEY } from "~/config/env";
+import {keplrEWalletConnector} from "~/config/wagmi-keplr-ewallet";
 import { theme } from "~/tailwind.config";
 
 declare module "wagmi" {
@@ -25,6 +26,7 @@ export const wagmiConfig = createConfig({
       },
       injectProvider: false,
     }),
+    keplrEWalletConnector(),
     walletConnect({
       projectId: WALLETCONNECT_PROJECT_KEY ?? "",
       qrModalOptions: {
