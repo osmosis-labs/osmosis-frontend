@@ -61,7 +61,8 @@ export async function checkCanTransfer(
     srcChainId: string | number,
     destChainId: string | number,
     assetId: string,
-    env: "testnet" | "mainnet"
+    env: "testnet" | "mainnet",
+    fromAmount: string
 ): Promise<CanTransferResponse> {
   let srcChainIdConverted;
 
@@ -80,6 +81,9 @@ export async function checkCanTransfer(
     `/int3face/bridge/v1beta1/can-transfer/${srcChainIdConverted}/${destChainId}/${denomOfInt3face[assetId]}`,
     origin
   );
+
+  // Note: Add minimum amount check
+  url.searchParams.set("amount", fromAmount);
 
   return apiClient<CanTransferResponse>(url.toString());
 }

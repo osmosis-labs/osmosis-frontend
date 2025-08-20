@@ -84,15 +84,17 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       fromChain.chainId,
       toChain.chainId,
       fromAsset.denom,
-      this.ctx.env
+      this.ctx.env,
+      fromAmount
     );
 
     if (!canTransfer?.can_transfer) {
+      const reason = canTransfer?.reason || "Transfer is not available at this time";
+
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
-        errorType: "UnsupportedQuoteError",
-        message:
-          canTransfer?.reason || "Transfer is not available at this time",
+        errorType: reason?.toLowerCase().includes("amount is too low") ? "InsufficientAmountError" : "ApprovalTxError",
+        message: reason,
       });
     }
 
