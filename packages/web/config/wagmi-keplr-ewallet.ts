@@ -22,7 +22,14 @@ export function keplrEWalletConnector(): CreateConnectorFn {
 
     if (!initPromise) {
       initPromise = (async () => {
-        console.log("keplr-ewallet: setup");
+        // XXX: 일단 QA를 할 수 있도록 대충 처리함.
+        //      ewallet이 init이 동시에 여러개 발생하면 진행이 안되는 문제가 있는데
+        //      sign-in 후에 refresh를 하면 cosmos 쪽의 init이 수행 중에 얘도 발생하게 됨.
+        //      둘이 꽤 떨어져 있는 코드라서 한번만 발생하도록 여기서 수정하기 힘들기 때문에
+        //      일단 1초를 기다리는 것으로 수정
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        console.log("keplr-ewallet: init");
 
         // TODO: enable to override chain info when init ethereum wallet
         const initRes = await initEthEWallet({
@@ -53,7 +60,7 @@ export function keplrEWalletConnector(): CreateConnectorFn {
           // You are in nextjs server.
           return;
         }
-        await ensureInit();
+        // await ensureInit();
       },
       connect: async (parameters?: {
         chainId?: number | undefined;
