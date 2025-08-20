@@ -13,7 +13,7 @@ export function keplrEWalletConnector(): CreateConnectorFn {
   let initPromise: Promise<EthEWallet> | null = null;
 
   let ethEWallet: EthEWallet | null = null;
-  let cachedProvider: EIP1193Provider | null = null;
+  let cachedProviderPromise: Promise<EIP1193Provider> | null = null;
 
   const ensureInit = () => {
     if (typeof window === "undefined") {
@@ -129,25 +129,32 @@ export function keplrEWalletConnector(): CreateConnectorFn {
         });
         return Number(chainId);
       },
-      getProvider: async () => {
+      getProvider: () => {
         console.log("[keplr-ewallet] handle `getProvider`");
-        if (cachedProvider) {
-          return cachedProvider;
+        if (cachedProviderPromise) {
+          return cachedProviderPromise;
         }
 
-        const ethEWallet = await ensureInit();
+        cachedProviderPromise = (async () => {
+          const ethEWallet = await ensureInit();
 
-        cachedProvider = await ethEWallet.getEthereumProvider();
+          const provider = await ethEWallet.getEthereumProvider();
 
-        cachedProvider.on("chainChanged", (chainId) => {
-          wallet.onChainChanged(chainId);
+          provider.on("chainChanged", (chainId: string) => {
+            wallet.onChainChanged(chainId);
+          });
+
+          provider.on("accountsChanged", (accounts: string[]) => {
+            wallet.onAccountsChanged(accounts);
+          });
+
+          return provider;
+        })().catch((e) => {
+          console.error(e);
+          cachedProviderPromise = null;
         });
 
-        cachedProvider.on("accountsChanged", (accounts) => {
-          wallet.onAccountsChanged(accounts);
-        });
-
-        return cachedProvider;
+        return cachedProviderPromise;
       },
       isAuthorized: async () => {
         console.log("[keplr-ewallet] handle `isAuthorized`");
