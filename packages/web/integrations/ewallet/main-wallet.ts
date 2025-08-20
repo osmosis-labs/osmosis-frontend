@@ -1,4 +1,5 @@
 import { type EndpointOptions, MainWalletBase } from "@cosmos-kit/core";
+import { ChainName, DisconnectOptions } from "@cosmos-kit/core/cjs/types";
 import {
   initKeplrEwalletCore,
   KeplrEWallet,
@@ -141,4 +142,17 @@ export class EWalletMainWallet extends MainWalletBase {
       await this.eWallet.signIn("google");
     }
   };
+
+  async disconnectAll(
+    activeOnly?: boolean,
+    exclude?: ChainName,
+    options?: DisconnectOptions
+  ): Promise<void> {
+    await super.disconnectAll(activeOnly, exclude, options);
+    if (this.eWallet) {
+      await this.eWallet.signOut();
+    }
+    this.eWallet = null;
+    this.cosmosEWallet = null;
+  }
 }
