@@ -60,7 +60,7 @@ export function keplrEWalletConnector(): CreateConnectorFn {
           // You are in nextjs server.
           return;
         }
-        // await ensureInit();
+        await ensureInit();
       },
       connect: async (parameters?: {
         chainId?: number | undefined;
