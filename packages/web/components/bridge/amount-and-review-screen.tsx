@@ -209,7 +209,7 @@ export const AmountAndReviewScreen = observer(
 
     const quote = useBridgeQuotes({
       toAddress,
-      toChain: toChain,
+      toChain,
       toAsset: (() => {
         if (!toAsset) return undefined;
         const asset = assetsInOsmosis?.find(
@@ -221,7 +221,7 @@ export const AmountAndReviewScreen = observer(
           address:
             toChain?.chainType === "evm"
               ? getAddress(toAsset.address)
-              : toAsset.address,
+              : asset?.coinMinimalDenom || toAsset.address,
           decimals: toAsset.decimals,
           denom: toAsset.denom,
           imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
@@ -229,7 +229,7 @@ export const AmountAndReviewScreen = observer(
         };
       })(),
       fromAddress,
-      fromChain: fromChain,
+      fromChain,
       fromAsset: (() => {
         if (!fromAsset) return undefined;
         const asset = assetsInOsmosis?.find(
@@ -241,7 +241,7 @@ export const AmountAndReviewScreen = observer(
           address:
             fromChain?.chainType === "evm"
               ? getAddress(fromAsset.address)
-              : fromAsset.address,
+              : asset?.coinMinimalDenom || fromAsset.address,
           decimals: fromAsset.decimals,
           denom: fromAsset.denom,
           amount: fromAsset.amount,
