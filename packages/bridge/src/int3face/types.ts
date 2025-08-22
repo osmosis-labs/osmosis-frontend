@@ -3,8 +3,10 @@ import {
   getInt3BTCMinimalDenom,
   getInt3DOGEMinimalDenom,
   getInt3LTCMinimalDenom,
+  getInt3PENGUMinimalDenom,
   getInt3SOLMinimalDenom,
   getInt3TONMinimalDenom,
+  getInt3TRUMPMinimalDenom,
   getInt3XRPMinimalDenom,
 } from "@osmosis-labs/utils";
 
@@ -134,6 +136,34 @@ export const getInt3faceBridgeConfig = (
     address: "solana",
   };
 
+  const trumpConfig: Int3faceSupportedToken = {
+    chainId: "solana",
+    chainName: "Solana",
+    chainType: "solana",
+    int3MinimalDenom: getInt3TRUMPMinimalDenom({ env }),
+    int3TokenSymbol: "TRUMP.int3",
+    allTokenMinimalDenom:
+      env === "mainnet"
+        ? "factory/osmo1524q4dt7ckx25daydfd0ya0hyu6t26ch5509nvmxm4gcvuhk0fvs8qzl5q/alloyed/allTRUMP"
+        : undefined,
+    denom: "TRUMP",
+    address: "solana",
+  };
+
+  const penguConfig: Int3faceSupportedToken = {
+    chainId: "solana",
+    chainName: "Solana",
+    chainType: "solana",
+    int3MinimalDenom: getInt3PENGUMinimalDenom({ env }),
+    int3TokenSymbol: "PENGU.int3",
+    allTokenMinimalDenom:
+      env === "mainnet"
+        ? "factory/osmo10nu66efsxxkdgh70xs8xur9mygrg79m5ht7zcmzsrdzxkhz7hpssz9hg9k/alloyed/allPENGU"
+        : undefined,
+    denom: "PENGU",
+    address: "solana",
+  };
+
   return {
     DOGE: dogeConfig,
     "DOGE.int3": dogeConfig,
@@ -156,5 +186,11 @@ export const getInt3faceBridgeConfig = (
 
     SOL: solConfig,
     "SOL.int3": solConfig,
+
+    TRUMP: trumpConfig,
+    "TRUMP.int3": trumpConfig,
+
+    PENGU: penguConfig,
+    "PENGU.int3": penguConfig,
   };
 };

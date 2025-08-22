@@ -55,6 +55,8 @@ const denomOfInt3face: Record<string, string> = {
   BCH: "bitcoin-cash-bch",
   XRP: "xrpl-xrp",
   TON: "ton-ton",
+  TRUMP: "solana-trump",
+  PENGU: "solana-pengu",
 }
 
 export async function checkCanTransfer(
