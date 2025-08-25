@@ -15,6 +15,7 @@ import {
   USDC_BASE_DENOM,
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import {
   AssetLists,
@@ -246,16 +247,12 @@ export const PriceSelector = memo(
                       </span>
                       <div className="flex items-center gap-2 py-1 pl-1 pr-3 sm:gap-1 sm:py-1.5">
                         {quoteAsset.logoURIs && (
-                          <Image
-                            src={
-                              quoteAsset.logoURIs.svg ||
-                              quoteAsset.logoURIs.png ||
-                              ""
-                            }
-                            alt={`${quoteAsset.symbol} icon`}
+                          <EntityImage
                             width={isMobile ? 20 : 24}
                             height={isMobile ? 20 : 24}
-                            priority
+                            logoURIs={quoteAsset.logoURIs}
+                            name={quoteAsset.name}
+                            symbol={quoteAsset.symbol}
                           />
                         )}
                         <span className="md:caption body2 text-left">
@@ -307,20 +304,23 @@ export const PriceSelector = memo(
                         <div className="flex items-center gap-1">
                           <div className="relative flex items-center">
                             {/** Here we just display default quotes */}
-                            {defaultQuotes.map(({ symbol, logoURIs }, i) => {
-                              return (
-                                <Image
-                                  key={`${symbol}-logo`}
-                                  alt=""
-                                  src={logoURIs.svg || logoURIs.png || ""}
-                                  width={24}
-                                  height={24}
-                                  className={classNames("h-6 w-6", {
-                                    "-ml-2": i > 0,
-                                  })}
-                                />
-                              );
-                            })}
+                            {defaultQuotes.map(
+                              ({ symbol, logoURIs, name }, i) => {
+                                return (
+                                  <EntityImage
+                                    key={`${symbol}-logo`}
+                                    width={24}
+                                    height={24}
+                                    logoURIs={logoURIs}
+                                    name={name}
+                                    symbol={symbol}
+                                    className={classNames("h-6 w-6", {
+                                      "-ml-2": i > 0,
+                                    })}
+                                  />
+                                );
+                              }
+                            )}
                           </div>
                           <div className="flex h-6 w-6 items-center justify-center">
                             <Icon
@@ -476,12 +476,13 @@ const SelectableQuotes = observer(
                 disabled={isDisabled}
               >
                 <div className="flex items-center gap-3">
-                  <Image
-                    src={logoURIs.svg || logoURIs.png || ""}
-                    alt={`${name} logo`}
-                    className="h-10 w-10"
+                  <EntityImage
                     width={40}
                     height={40}
+                    logoURIs={logoURIs}
+                    name={name}
+                    symbol={symbol}
+                    className="h-10 w-10"
                   />
                   <div className="flex flex-col gap-1 text-left">
                     <p>{name}</p>
