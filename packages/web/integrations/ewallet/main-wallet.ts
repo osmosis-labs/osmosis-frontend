@@ -60,7 +60,7 @@ export class EWalletMainWallet extends MainWalletBase {
     });
 
     if (!res.success) {
-      throw new Error("Failed to initialize CosmosEWallet", res.err);
+      throw new Error(`Failed to initialize CosmosEWallet: ${res.err}`);
     }
 
     EWalletMainWallet.cosmosEWallet = res.data;
