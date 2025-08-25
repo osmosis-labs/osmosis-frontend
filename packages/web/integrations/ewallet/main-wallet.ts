@@ -30,15 +30,17 @@ export class EWalletMainWallet extends MainWalletBase {
     this.initingClient();
     try {
       console.log(this);
-      const cosmosEwallet = await this.initOnce(this.apiKey);
+      const ewallet = await EWalletMainWallet.initOnce(this.apiKey);
 
-      this.initClientDone(new EWalletClient(cosmosEWallet));
+      this.initClientDone(new EWalletClient(ewallet));
     } catch (error) {
       this.initClientError(error as Error);
     }
   }
 
-  protected initOnce = async (apiKey: string): Promise<CosmosEWallet> => {
+  protected static initOnce = async (
+    apiKey: string
+  ): Promise<CosmosEWallet> => {
     if (EWalletMainWallet.cosmosEWallet) {
       return EWalletMainWallet.cosmosEWallet;
     }
