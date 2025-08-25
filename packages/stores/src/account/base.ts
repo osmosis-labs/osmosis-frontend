@@ -957,9 +957,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1091,9 +1091,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1251,9 +1251,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
