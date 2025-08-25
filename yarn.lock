@@ -4513,31 +4513,31 @@
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.4.0.tgz"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.44", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.44":
-  version "0.0.6-rc.44"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.44.tgz#44eaf521c09bec617839053fabe394ced50af5a7"
-  integrity sha512-hp30g/tI8k6Yc4r5//7zycpeKxkgOLWZzuanexYLskKI2KbwzPPH3+jk6RvwtI1z5B8co5MWUerMXGN6gmAlDw==
+"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.52", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.52":
+  version "0.0.6-rc.52"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.52.tgz#072b5131d356733545490ba352c7e4f5ba1227aa"
+  integrity sha512-vj8n2cim/bW57EwxY4roauwO3asjOo/XBTz0MXYYsvLH8KJVISvfcMEayAOvpKg90lkM3DboC8U3Ock1ZDWenA==
   dependencies:
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.9"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.10"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.45":
-  version "0.0.6-rc.46"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.46.tgz#62c5b19f17ccfc815ba6573218b92f24fed6389f"
-  integrity sha512-l8oQbkyGbc9c4mF2R64SvfzIVm4yD5WvkwC5YNW9ZfoeyLvwzx8q35MlGwtPF5khsw6Hh0If2Kk1dnwdOniz9g==
+"@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.49":
+  version "0.0.6-rc.51"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.51.tgz#12131f6da5c2efab48b7f9a1aa734e75573f59e4"
+  integrity sha512-pQHmnt2gvad2SDQ5wlryIMFpVbu3GD5ZLNkyZhuHVs0SJjlRX1Hk97IjkRPEC8tq+lGiaC0gCodzUNpyBogCsA==
   dependencies:
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.9"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.10"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.58":
-  version "0.0.6-rc.58"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.58.tgz#9806e0bcb01f83eb5297ab6b1cf7946da976caa6"
-  integrity sha512-HttsR9WqrRi1XA9jaXBgc5QGKiFxo6Gt8le80o35J7mL4C6LIAI9ZUtQOtU2pF0/DC/h5B8F39tYMAt+5GO1mw==
+"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.68":
+  version "0.0.6-rc.68"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.68.tgz#676928d2c8dca786c84189fd0d35177eeebf03d7"
+  integrity sha512-mtgzvhNGoTr793ccMCTwvZVElStAJhxIWJAs5A9PH0dqnmsvgwNFj+QrIdmy6gHf2OOZXo36b7qnArfju1Y6pA==
   dependencies:
     "@cosmjs/amino" "^0.33.1"
     "@cosmjs/proto-signing" "^0.33.1"
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.44"
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.9"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.52"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.10"
     "@keplr-wallet/proto-types" "^0.12.253"
     "@keplr-wallet/types" "^0.12.253"
     "@noble/curves" "^1.9.2"
@@ -4545,16 +4545,21 @@
     bech32 "^2.0.0"
     buffer "^6.0.3"
 
-"@keplr-ewallet/ewallet-sdk-eth@0.0.6-rc.52":
-  version "0.0.6-rc.52"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-eth/-/ewallet-sdk-eth-0.0.6-rc.52.tgz#e6db817af841670ed0c4eb0bef0a099108a4ab73"
-  integrity sha512-DxsPEyvLqj4EfL1M81J4spP7i6R+LuWMNvTlEQfWsjto5t5r61d13YaPzdRc6ZLJYApaZehLLohjJvLaF+mqjA==
+"@keplr-ewallet/ewallet-sdk-eth@0.0.6-rc.56":
+  version "0.0.6-rc.56"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-eth/-/ewallet-sdk-eth-0.0.6-rc.56.tgz#974fc84257698f801409ab9fd5bde737e08bd4d3"
+  integrity sha512-xfhMemGzJssCKHwLAEaIWPmav064JaKO+ztijZPtgM/j1qH+2gWX80L7HdwNDWJVRGvr6JK4dNWikFPoGBxJmA==
   dependencies:
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.45"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.49"
     "@keplr-ewallet/stdlib-js" "^0.0.2-rc.9"
     eventemitter3 "^5.0.1"
     uuid "*"
     viem "*"
+
+"@keplr-ewallet/stdlib-js@^0.0.2-rc.10":
+  version "0.0.2-rc.10"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/stdlib-js/-/stdlib-js-0.0.2-rc.10.tgz#899ef268c3667a42804ed60511d91bb6ee9cc5bf"
+  integrity sha512-9dkRQvYgcpMwzd3B655RpmbL4CZxB+u7bstuv8rfLO77GJ8asF9zp6V88qN8xp/sto0r4Q4tkDIcBCIG7CdWaQ==
 
 "@keplr-ewallet/stdlib-js@^0.0.2-rc.9":
   version "0.0.2-rc.9"
