@@ -2,13 +2,12 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
 import React, { FunctionComponent } from "react";
 
-import { FallbackImg } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { useOrderbookOrders } from "~/hooks/limit-orders/use-orderbook";
 import { useStore } from "~/stores";
-import { formatFiatPrice } from "~/utils/formatter";
-import { formatPretty } from "~/utils/formatter";
+import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 const OPEN_ORDERS_LIMIT = 5;
 
@@ -100,12 +99,12 @@ export const OpenOrders: FunctionComponent = () => {
 
             return (
               <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
-                <FallbackImg
-                  src={baseAssetLogo}
-                  alt={`${baseAsset?.symbol} icon`}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
                   width={32}
                   height={32}
+                  logoURIs={baseAsset?.rawAsset.logoURIs ?? { png: undefined }}
+                  name={baseAsset?.rawAsset.name ?? ""}
+                  symbol={baseAsset?.rawAsset.symbol ?? ""}
                   className="inline-block"
                 />
                 <div className="flex h-full flex-col justify-between overflow-hidden whitespace-nowrap">
