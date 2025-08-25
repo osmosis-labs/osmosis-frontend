@@ -45,11 +45,6 @@ export const OpenOrders: FunctionComponent = () => {
             { baseAsset, quoteAsset, order_direction, output, placed_quantity },
             index
           ) => {
-            const baseAssetLogo =
-              baseAsset?.rawAsset.logoURIs.svg ??
-              baseAsset?.rawAsset.logoURIs.png ??
-              "";
-
             // example: 0.01 OSMO
             const formattedBuySellToken = formatPretty(
               new CoinPretty(
