@@ -1,10 +1,6 @@
 import { type EndpointOptions, MainWalletBase } from "@cosmos-kit/core";
 import { ChainName, DisconnectOptions } from "@cosmos-kit/core/cjs/types";
 import {
-  initKeplrEwalletCore,
-  KeplrEWallet,
-} from "@keplr-ewallet/ewallet-sdk-core";
-import {
   CosmosEWallet,
   initCosmosEWallet,
 } from "@keplr-ewallet/ewallet-sdk-cosmos";
@@ -15,11 +11,10 @@ import { ChainEWallet } from "./chain-wallet";
 import { EWalletClient } from "./client";
 
 export class EWalletMainWallet extends MainWalletBase {
-  private static initPromise: Promise<void> | undefined;
-  private static eWallet: KeplrEWallet | null = null;
-  private static cosmosEWallet: CosmosEWallet | null = null;
+  protected static cosmosEWallet: CosmosEWallet | null = null;
+  protected static initPromise: Promise<CosmosEWallet> | null = null;
 
-  private apiKey: string;
+  private readonly apiKey: string;
 
   constructor(
     walletInfo: EWalletInfo,
@@ -31,132 +26,50 @@ export class EWalletMainWallet extends MainWalletBase {
   }
 
   async initClient() {
+    console.log("[EWalletMainWallet] initClient");
     this.initingClient();
     try {
-      await this.init();
+      console.log(this);
+      const cosmosEwallet = await this.initOnce(this.apiKey);
 
-      if (!EWalletMainWallet.eWallet) {
-        throw new Error("eWallet not initialized after init()");
-      }
-
-      // Check if already signed in before calling signIn
-      let isSignedIn = false;
-      try {
-        const publicKey = await EWalletMainWallet.eWallet.getPublicKey();
-        isSignedIn = !!publicKey;
-      } catch (error) {
-        isSignedIn = false;
-      }
-
-      if (!isSignedIn) {
-        await EWalletMainWallet.eWallet.signIn("google");
-      }
-
-      if (EWalletMainWallet.cosmosEWallet) {
-        this.initClientDone(new EWalletClient(EWalletMainWallet.cosmosEWallet));
-      } else {
-        this.initClientError(new Error("CosmosEWallet not initialized"));
-      }
+      this.initClientDone(new EWalletClient(cosmosEWallet));
     } catch (error) {
-      this.initClientError(
-        error instanceof Error ? error : new Error(String(error))
-      );
+      this.initClientError(error as Error);
     }
   }
 
-  init() {
-    if (EWalletMainWallet.initPromise) {
-      return EWalletMainWallet.initPromise;
+  protected initOnce = async (apiKey: string): Promise<CosmosEWallet> => {
+    if (EWalletMainWallet.cosmosEWallet) {
+      return EWalletMainWallet.cosmosEWallet;
     }
 
-    EWalletMainWallet.initPromise = this.initInternal();
+    if (EWalletMainWallet.initPromise) {
+      return await EWalletMainWallet.initPromise;
+    }
+
+    EWalletMainWallet.initPromise = EWalletMainWallet.initInternal(apiKey);
 
     return EWalletMainWallet.initPromise;
-  }
-
-  protected async initInternal() {
-    console.log(
-      `[EWalletMainWallet] Starting init with API key: ${this.apiKey?.substring(
-        0,
-        10
-      )}...`
-    );
-
-    if (!EWalletMainWallet.eWallet) {
-      console.log(`[EWalletMainWallet] Initializing KeplrEwalletCore...`);
-      const result = await initKeplrEwalletCore({
-        api_key: this.apiKey,
-      });
-
-      if (result && result.success) {
-        EWalletMainWallet.eWallet = result.data;
-        console.log(
-          `[EWalletMainWallet] KeplrEwalletCore initialized successfully`
-        );
-      } else {
-        console.error(
-          `[EWalletMainWallet] KeplrEwalletCore init failed:`,
-          result?.err
-        );
-        throw new Error(result?.err || "Unknown initialization error");
-      }
-    }
-
-    if (!EWalletMainWallet.cosmosEWallet && EWalletMainWallet.eWallet) {
-      console.log(`[EWalletMainWallet] Initializing CosmosEWallet...`);
-      const result = await initCosmosEWallet({
-        api_key: this.apiKey,
-      });
-
-      if (result && result.success) {
-        EWalletMainWallet.cosmosEWallet = result.data;
-        console.log(
-          `[EWalletMainWallet] CosmosEWallet initialized successfully`
-        );
-      } else {
-        console.error(
-          `[EWalletMainWallet] CosmosEWallet init failed:`,
-          result?.err
-        );
-        throw new Error(
-          result?.err || "Unknown cosmos ewallet initialization error"
-        );
-      }
-    }
-  }
-
-  connect = async (
-    _syncOrChainIds?: boolean | string | string[],
-    _options?: any
-  ) => {
-    // Ensure client is initialized first
-    if (this.state === "Init") {
-      await this.initClient();
-    }
-
-    await this.init();
-
-    if (!EWalletMainWallet.eWallet) {
-      throw new Error("Ewallet not initialized");
-    }
-
-    // Check if already signed in before calling signIn
-    let isSignedIn = false;
-    try {
-      console.log("XXX try get pubkey");
-      const publicKey = await EWalletMainWallet.eWallet.getPublicKey();
-      isSignedIn = !!publicKey;
-    } catch (error) {
-      console.log("!!!!", error);
-      isSignedIn = false;
-    }
-
-    console.log("???? pubkey get", isSignedIn);
-    if (!isSignedIn) {
-      console.log("Calling signIn from connect method");
-      await EWalletMainWallet.eWallet.signIn("google");
-    }
   };
+
+  protected static async initInternal(apiKey: string): Promise<CosmosEWallet> {
+    const res = initCosmosEWallet({
+      api_key: apiKey,
+    });
+
+    if (!res.success) {
+      throw new Error("Failed to initialize CosmosEWallet", res.err);
+    }
+
+    EWalletMainWallet.cosmosEWallet = res.data;
+
+    if (localStorage.getItem("ewallet-auto-sign-in") !== "true") {
+      await EWalletMainWallet.cosmosEWallet.eWallet.signIn("google");
+      localStorage.setItem("ewallet-auto-sign-in", "true");
+    }
+
+    return EWalletMainWallet.cosmosEWallet;
+  }
 
   async disconnectAll(
     activeOnly?: boolean,
@@ -164,10 +77,10 @@ export class EWalletMainWallet extends MainWalletBase {
     options?: DisconnectOptions
   ): Promise<void> {
     await super.disconnectAll(activeOnly, exclude, options);
-    if (EWalletMainWallet.eWallet) {
-      await EWalletMainWallet.eWallet.signOut();
+    if (EWalletMainWallet.cosmosEWallet) {
+      await EWalletMainWallet.cosmosEWallet.eWallet.signOut();
+      localStorage.removeItem("ewallet-auto-sign-in");
     }
-    EWalletMainWallet.eWallet = null;
     EWalletMainWallet.cosmosEWallet = null;
   }
 }
