@@ -45,8 +45,8 @@ interface BaseCurrency {
 
 export type StakeCurrency = BaseCurrency & {
   base?: string;
-  chainSuggestionDenom?: string;
-  sourceDenom?: string;
+  // chainSuggestionDenom?: string;
+  // sourceDenom?: string;
   originCurrency?: BaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
   };
