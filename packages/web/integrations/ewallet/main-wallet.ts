@@ -57,7 +57,6 @@ export class EWalletMainWallet extends MainWalletBase {
   protected static async initInternal(apiKey: string): Promise<CosmosEWallet> {
     const res = initCosmosEWallet({
       api_key: apiKey,
-      sdk_endpoint: process.env.NEXT_PUBLIC_KEPLR_EWALLET_DEV_SDK_ENDPOINT,
     });
 
     if (!res.success) {
