@@ -18,10 +18,10 @@ import type {
   WalletAccount,
   WalletClient,
 } from "@cosmos-kit/core";
-import { CosmosEWallet } from "@keplr-ewallet/ewallet-sdk-cosmos";
+import { CosmosEWalletInterface } from "@keplr-ewallet/ewallet-sdk-cosmos";
 
 export class EWalletClient implements WalletClient {
-  readonly client: CosmosEWallet;
+  readonly client: CosmosEWalletInterface;
   private _defaultSignOptions: SignOptions = {
     preferNoSetFee: true,
     preferNoSetMemo: true,
@@ -36,7 +36,7 @@ export class EWalletClient implements WalletClient {
     this._defaultSignOptions = options;
   }
 
-  constructor(client: CosmosEWallet) {
+  constructor(client: CosmosEWalletInterface) {
     this.client = client;
   }
 
@@ -218,6 +218,6 @@ export class EWalletClient implements WalletClient {
       mode,
     });
 
-    return await this.client.sendTx(chainId, tx, mode);
+    return await this.client.sendTx(chainId, tx, mode, {});
   }
 }
