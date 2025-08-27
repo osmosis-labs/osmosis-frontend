@@ -9,7 +9,7 @@ jobs:
   fe-swap-us:
     timeout-minutes: 10
     name: prod-fe-swap-us
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -24,9 +24,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -48,7 +48,7 @@ jobs:
   fe-swap-eu:
     timeout-minutes: 15
     name: prod-fe-swap-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -63,9 +63,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -91,7 +91,7 @@ jobs:
   fe-swap-sg:
     timeout-minutes: 15
     name: prod-fe-swap-sg
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
@@ -108,9 +108,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -137,7 +137,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-eu
     name: prod-fe-trade-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -154,9 +154,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -188,7 +188,7 @@ jobs:
     if: failure() || success()
     name: prod-fe-limit-eu
     needs: fe-trade-eu
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -205,9 +205,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -238,7 +238,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-sg
     name: prod-fe-trade-sg
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -255,9 +255,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -288,7 +288,7 @@ jobs:
     timeout-minutes: 10
     needs: fe-swap-us
     name: prod-fe-trade-us
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -305,9 +305,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -336,7 +336,7 @@ jobs:
     if: failure() || success()
     needs: fe-trade-us
     name: prod-fe-limit-us
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -353,9 +353,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -392,7 +392,7 @@ jobs:
         fe-limit-us,
         fe-limit-eu,
       ]
-    if: failure() && github.run_attempt == 1 && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-trade-sg.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
+    if: failure() && github.run_attempt == 2 && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-trade-sg.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
     # Send alert only if something failed and unexpected failures are more than 1
     steps:
       - name: Send Slack alert if test fails

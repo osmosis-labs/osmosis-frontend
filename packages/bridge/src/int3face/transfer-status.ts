@@ -169,7 +169,7 @@ export class Int3faceTransferStatusProvider implements TransferStatusProvider {
       return `https://www.mintscan.io/${chain.chain_name}/txs/${sendTxHash}`;
     }
 
-    return chain.explorers[0].tx_page.replace("{txHash}", sendTxHash);
+    return chain.explorers[0].txPage.replace("{txHash}", sendTxHash);
   }
 }
 

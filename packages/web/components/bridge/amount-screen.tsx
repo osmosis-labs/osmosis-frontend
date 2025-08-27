@@ -599,11 +599,11 @@ export const AmountScreen = observer(
         setChain({
           chainId: osmosisChain.chain_id,
           chainName: osmosisChain.chain_name,
-          prettyName: osmosisChain.pretty_name,
+          prettyName: osmosisChain.prettyName,
           chainType: "cosmos",
-          logoUri: osmosisChain.logoURIs?.svg ?? osmosisChain.logoURIs?.png,
-          color: osmosisChain.logoURIs?.theme?.primary_color_hex,
-          bech32Prefix: osmosisChain.bech32_prefix,
+          logoUri: osmosisChain.logo_URIs?.svg ?? osmosisChain.logo_URIs?.png,
+          // color: osmosisChain.logoURIs?.theme?.primary_color_hex,
+          bech32Prefix: osmosisChain.bech32Prefix,
         });
       }
     }, [
