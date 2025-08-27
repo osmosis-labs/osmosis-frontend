@@ -46,6 +46,7 @@ export interface Chain {
   staking?: {
     staking_tokens: StakeCurrency[];
   };
+  keplrChain?: ChainInfoWithExplorer;
 }
 
 interface Bech32Config {
