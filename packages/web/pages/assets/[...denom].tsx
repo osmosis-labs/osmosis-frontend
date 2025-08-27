@@ -214,7 +214,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
               <AssetBalance className="hidden xl:block" />
               <AssetDetails />
               <AssetStats className="hidden xl:flex" />
-              <AssetPools denom={asset.coinDenom} />
+              <AssetPools denom={asset.coinMinimalDenom} />
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
                   {SwapTool_}
