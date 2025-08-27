@@ -2,7 +2,7 @@ import { type EndpointOptions, MainWalletBase } from "@cosmos-kit/core";
 import { ChainName, DisconnectOptions } from "@cosmos-kit/core/cjs/types";
 import {
   CosmosEWallet,
-  initCosmosEWallet,
+  CosmosEWalletInterface,
 } from "@keplr-ewallet/ewallet-sdk-cosmos";
 
 import { type EWalletInfo } from "~/integrations/ewallet/registry";
@@ -11,8 +11,8 @@ import { ChainEWallet } from "./chain-wallet";
 import { EWalletClient } from "./client";
 
 export class EWalletMainWallet extends MainWalletBase {
-  protected static cosmosEWallet: CosmosEWallet | null = null;
-  protected static initPromise: Promise<CosmosEWallet> | null = null;
+  protected static cosmosEWallet: CosmosEWalletInterface | null = null;
+  protected static initPromise: Promise<CosmosEWalletInterface> | null = null;
 
   private readonly apiKey: string;
 
@@ -40,7 +40,7 @@ export class EWalletMainWallet extends MainWalletBase {
 
   protected static initOnce = async (
     apiKey: string
-  ): Promise<CosmosEWallet> => {
+  ): Promise<CosmosEWalletInterface> => {
     if (EWalletMainWallet.cosmosEWallet) {
       return EWalletMainWallet.cosmosEWallet;
     }
@@ -54,8 +54,10 @@ export class EWalletMainWallet extends MainWalletBase {
     return EWalletMainWallet.initPromise;
   };
 
-  protected static async initInternal(apiKey: string): Promise<CosmosEWallet> {
-    const res = initCosmosEWallet({
+  protected static async initInternal(
+    apiKey: string
+  ): Promise<CosmosEWalletInterface> {
+    const res = CosmosEWallet.init({
       api_key: apiKey,
     });
 
@@ -66,7 +68,7 @@ export class EWalletMainWallet extends MainWalletBase {
     EWalletMainWallet.cosmosEWallet = res.data;
 
     if (localStorage.getItem("ewallet-auto-sign-in") !== "true") {
-      await EWalletMainWallet.cosmosEWallet.eWallet.signIn("google");
+      await EWalletMainWallet.cosmosEWallet?.eWallet.signIn("google");
       localStorage.setItem("ewallet-auto-sign-in", "true");
     }
 
