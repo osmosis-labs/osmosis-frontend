@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
@@ -25,17 +25,18 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
     >
       <div className="mx-auto flex max-w-sm flex-col items-center gap-8 pt-8">
         <div className="flex flex-col items-center gap-5">
-          {coinImageUrl && (
-            <div className="mr-4 h-16 w-16 rounded-full">
-              <Image
-                src={coinImageUrl}
-                alt="token icon"
-                width={64}
-                height={64}
-              />
-            </div>
-          )}
-
+          <div className="mr-4 h-16 w-16 rounded-full">
+            <EntityImage
+              symbol={coinDenom}
+              name={coinDenom}
+              logoURIs={{
+                png: coinImageUrl,
+                svg: coinImageUrl,
+              }}
+              width={64}
+              height={64}
+            />
+          </div>
           <div>
             <p className="body2 rounded-2xl text-osmoverse-100">
               <span className="font-semibold">{coinDenom}</span>{" "}
