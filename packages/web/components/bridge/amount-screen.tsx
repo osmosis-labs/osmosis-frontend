@@ -32,6 +32,7 @@ import {
   useScreenManager,
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
@@ -177,6 +178,7 @@ export const AmountScreen = observer(
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
     const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
     const [pendingChainApproval, setPendingChainApproval] = useState(false);
+    const [wishesToProceed, setWishesToProceed] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const {
@@ -705,6 +707,23 @@ export const AmountScreen = observer(
           ? !fromChain || !fromAsset
           : !toChain || !toAsset));
 
+    const isTransferButtonDisabled = useMemo(() => {
+      if (cryptoAmount === "" || cryptoAmount === "0" || !quote.userCanAdvance)
+        return true;
+
+      if (warnUserOfPriceImpact || warnUserOfSlippage) {
+        return !wishesToProceed;
+      }
+
+      return false;
+    }, [
+      cryptoAmount,
+      quote.userCanAdvance,
+      warnUserOfPriceImpact,
+      warnUserOfSlippage,
+      wishesToProceed,
+    ]);
+
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
         ? !isNil(fromAsset) &&
@@ -1175,6 +1194,8 @@ export const AmountScreen = observer(
               }
               fromChain={fromChain}
               isLoading={isLoadingBridgeQuote}
+              warnUserOfPriceImpact={warnUserOfPriceImpact}
+              warnUserOfSlippage={warnUserOfSlippage}
             />
           )}
 
@@ -1258,12 +1279,27 @@ export const AmountScreen = observer(
                     </div>
                   </div>
                 )}
+                {(warnUserOfPriceImpact || warnUserOfSlippage) &&
+                  !isInsufficientFee && (
+                    <div className="flex gap-4">
+                      <Checkbox
+                        checked={wishesToProceed}
+                        onCheckedChange={(checked) => {
+                          if (checked === "indeterminate") {
+                            return setWishesToProceed(false);
+                          }
+
+                          return setWishesToProceed(checked);
+                        }}
+                      />
+                      <h2 className="body2">
+                        Yes, I understand this could cause heavy loss of funds
+                        and I wish to proceed.
+                      </h2>
+                    </div>
+                  )}
                 <Button
-                  disabled={
-                    cryptoAmount === "" ||
-                    cryptoAmount === "0" ||
-                    !quote.userCanAdvance
-                  }
+                  disabled={isTransferButtonDisabled}
                   className="w-full md:h-12"
                   variant={
                     warnUserOfSlippage || warnUserOfPriceImpact
@@ -1436,7 +1472,15 @@ const TransferDetails: FunctionComponent<{
   quote: BridgeQuote | undefined;
   fromChain: BridgeChainWithDisplayInfo;
   isLoading: boolean;
-}> = ({ quote, fromChain, isLoading }) => {
+  warnUserOfPriceImpact?: boolean;
+  warnUserOfSlippage?: boolean;
+}> = ({
+  quote,
+  fromChain,
+  isLoading,
+  warnUserOfPriceImpact,
+  warnUserOfSlippage,
+}) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
@@ -1447,7 +1491,7 @@ const TransferDetails: FunctionComponent<{
   }
 
   return (
-    <Disclosure>
+    <Disclosure defaultOpen={warnUserOfPriceImpact || warnUserOfSlippage}>
       {({ open }) => (
         <div
           className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
