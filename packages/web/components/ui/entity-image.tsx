@@ -1,6 +1,7 @@
 import { Asset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import Image, { ImageProps } from "next/image";
+import { useState } from "react";
 
 /**
  * Component to display an image for an entity, either a chain or a token, and a fallback for it.
@@ -17,8 +18,9 @@ export function EntityImage({
     symbol,
     isChain = false,
   } = props;
+  const [err, setErr] = useState(false);
 
-  if (!logoURIs.png || !logoURIs.svg) {
+  if (!logoURIs.png || !logoURIs.svg || err) {
     return (
       <div
         className={classNames(
@@ -34,7 +36,7 @@ export function EntityImage({
         }}
       >
         <span
-          className={classNames("text-osmoverse-400", {
+          className={classNames("text-sm text-osmoverse-400", {
             "text-xxs": +width <= 20,
           })}
         >
@@ -44,5 +46,12 @@ export function EntityImage({
     );
   }
 
-  return <Image {...props} src={logoURIs.png || logoURIs.svg} alt={name} />;
+  return (
+    <Image
+      {...props}
+      src={logoURIs.png || logoURIs.svg}
+      alt={name}
+      onError={() => setErr(true)}
+    />
+  );
 }

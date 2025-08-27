@@ -145,13 +145,17 @@ function createOrAddToAssetList(
     ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
     : chain.chain_id;
   const chainName = chain.chain_name;
+  const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
   const augmentedAsset: Asset = {
     ...asset,
-    relative_image_url: getImageRelativeFilePath(
-      asset.logoURIs.svg ?? asset.logoURIs.png!,
-      asset.symbol
-    ),
+    logoURIs: asset.logoURIs ?? {
+      png: "",
+      svg: "",
+    },
+    relative_image_url: imageUrl
+      ? getImageRelativeFilePath(imageUrl, asset.symbol)
+      : "",
   };
 
   if (assetlistIndex === -1) {
@@ -312,8 +316,12 @@ async function generateAssetImages({
 }) {
   console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
+    const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
+    if (!imageUrl) continue;
+
     await saveAssetImageToTokensDir({
-      imageUrl: asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
+      imageUrl,
       asset,
       currentAssetListHash: commitHash,
     });

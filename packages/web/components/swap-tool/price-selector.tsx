@@ -403,21 +403,23 @@ function HighestBalanceAssetsIcons({
 
   return (
     <div className="relative flex h-6 w-[88px] items-center">
-      {userSortedAssets?.map(({ coinImageUrl }, i) =>
-        coinImageUrl ? (
-          <Image
-            key={coinImageUrl}
-            src={coinImageUrl}
-            alt={coinImageUrl}
-            width={24}
-            height={24}
-            className="absolute rounded-full"
-            style={{
-              right: i * 16,
-            }}
-          />
-        ) : null
-      )}
+      {userSortedAssets?.map(({ coinImageUrl, coinName }, i) => (
+        <EntityImage
+          key={coinImageUrl}
+          width={24}
+          height={24}
+          logoURIs={{
+            png: coinImageUrl,
+            svg: coinImageUrl,
+          }}
+          name={coinName}
+          symbol={coinName}
+          className="absolute rounded-full"
+          style={{
+            right: i * 16,
+          }}
+        />
+      ))}
     </div>
   );
 }

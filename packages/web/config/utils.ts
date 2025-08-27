@@ -175,6 +175,9 @@ function getKeplrCompatibleChain({
   const rest = chain.apis.rest[0].address;
   const prettyChainName = chain.prettyName;
 
+  const stakeCurrencyImageUrl =
+    stakeAsset?.logoURIs?.svg ?? stakeAsset?.logoURIs?.png;
+
   return {
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
     rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
@@ -203,11 +206,11 @@ function getKeplrCompatibleChain({
           type = "cw20";
         }
 
-        if (!asset.logoURIs.svg && !asset.logoURIs.png) {
-          throw new Error(
-            `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
-          );
-        }
+        // if (!asset.logoURIs.svg && !asset.logoURIs.png) {
+        //   throw new Error(
+        //     `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
+        //   );
+        // }
 
         let gasPriceStep: ChainInfo["gasPriceStep"];
         const matchingFeeCurrency = chain.feeCurrencies.find(
@@ -227,6 +230,8 @@ function getKeplrCompatibleChain({
           };
         }
 
+        const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
         acc.push({
           type: type ?? "cw20",
           coinDenom: asset.symbol,
@@ -241,10 +246,9 @@ function getKeplrCompatibleChain({
             : "",
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingeckoId,
-          coinImageUrl: getImageRelativeFilePath(
-            asset.logoURIs.svg ?? asset.logoURIs.png!,
-            asset.symbol
-          ),
+          coinImageUrl: imageUrl
+            ? getImageRelativeFilePath(imageUrl, asset.symbol)
+            : undefined,
           base: asset.coinMinimalDenom,
           pegMechanism: asset.pegMechanism,
           gasPriceStep,
@@ -270,13 +274,12 @@ function getKeplrCompatibleChain({
             coinMinimalDenom:
               stakeSourceDenom ?? stakingTokenSourceDenom! ?? "",
             coinGeckoId: stakeAsset.coingeckoId,
-            coinImageUrl:
-              stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
-                ? getImageRelativeFilePath(
-                    stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
-                    stakeAsset.symbol
-                  )
-                : undefined,
+            coinImageUrl: stakeCurrencyImageUrl
+              ? getImageRelativeFilePath(
+                  stakeCurrencyImageUrl,
+                  stakeAsset.symbol
+                )
+              : undefined,
             base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
           }
         : {
@@ -329,6 +332,8 @@ function getKeplrCompatibleChain({
         };
       }
 
+      const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
       acc.push({
         type: type ?? "cw20",
         coinDenom: asset.symbol,
@@ -341,13 +346,9 @@ function getKeplrCompatibleChain({
         contractAddress: isContractToken ? sourceDenom.split(":")[1] : "ƒ",
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingeckoId,
-        coinImageUrl:
-          asset?.logoURIs.svg || asset?.logoURIs.png
-            ? getImageRelativeFilePath(
-                asset.logoURIs.svg ?? asset.logoURIs.png!,
-                asset.symbol
-              )
-            : undefined,
+        coinImageUrl: imageUrl
+          ? getImageRelativeFilePath(imageUrl, asset.symbol)
+          : undefined,
         base: asset.coinMinimalDenom,
         gasPriceStep,
       });
