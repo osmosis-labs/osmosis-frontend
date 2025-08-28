@@ -32,7 +32,7 @@ jest.mock("viem", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) => {
+    rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
       return res(
         ctx.json({
           route: {
@@ -67,14 +67,14 @@ beforeEach(() => {
         })
       );
     }),
-    rest.get("https://api.0xsquid.com/v1/tokens", (_req, res, ctx) =>
+    rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
       res(
         ctx.json({
           tokens: MockTokens,
         })
       )
     ),
-    rest.get("https://api.0xsquid.com/v1/chains", (_req, res, ctx) =>
+    rest.get("https://v2.api.squidrouter.com/v2/chains", (_req, res, ctx) =>
       res(
         ctx.json({
           chains: MockChains,
@@ -111,7 +111,7 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
-      rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) =>
+      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
         res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
       )
     );
@@ -187,7 +187,7 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
-      rest.get("https://api.0xsquid.com/v1/route", (_req, res, ctx) =>
+      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
         res(ctx.json(ETH_OsmosisToEthereum_Route))
       )
     );

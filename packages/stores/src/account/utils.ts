@@ -92,14 +92,14 @@ export async function makeSignDocAmino(
 
 export function getPublicKeyTypeUrl({
   chainId,
-  chainFeatures,
+  coinType,
 }: {
   chainId: string;
-  chainFeatures: string[];
+  coinType: number;
 }) {
   const chainIsInjective = chainId.startsWith("injective");
   const chainIsStratos = chainId.startsWith("stratos");
-  const useEthereumSign = chainFeatures.includes("eth-key-sign");
+  const useEthereumSign = coinType === 60;
   const chainIsInitia = chainId.startsWith("interwoven-1");
 
   if (!useEthereumSign) {

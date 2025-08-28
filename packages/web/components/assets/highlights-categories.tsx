@@ -1,10 +1,10 @@
 import classNames from "classnames";
-import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, ReactNode } from "react";
 
 import { PriceChange } from "~/components/assets/price";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import {
   Breakpoint,
@@ -258,9 +258,16 @@ const AssetHighlightRow: FunctionComponent<{
   const AssetContent = (
     <>
       <div className="flex items-center gap-2">
-        {coinImageUrl && (
-          <Image src={coinImageUrl} alt={coinDenom} height={32} width={32} />
-        )}
+        <EntityImage
+          symbol={coinDenom}
+          name={coinName}
+          logoURIs={{
+            png: coinImageUrl,
+            svg: coinImageUrl,
+          }}
+          width={32}
+          height={32}
+        />
         <span className="body2 max-w-[7rem] overflow-clip text-ellipsis whitespace-nowrap">
           {coinName}
         </span>

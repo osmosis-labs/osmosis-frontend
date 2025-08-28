@@ -2,7 +2,6 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import {
   FunctionComponent,
   useCallback,
@@ -14,6 +13,7 @@ import {
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { EntityImage } from "~/components/ui/entity-image";
 import {
   Breakpoint,
   useFilteredData,
@@ -279,16 +279,18 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               onClickAsset(coinMinimalDenom);
                             }}
                           >
-                            {coinImageUrl && (
-                              <div className="h-6 w-6 rounded-full">
-                                <Image
-                                  src={coinImageUrl}
-                                  alt="token icon"
-                                  width={24}
-                                  height={24}
-                                />
-                              </div>
-                            )}
+                            <div className="h-6 w-6 rounded-full">
+                              <EntityImage
+                                symbol={coinDenom}
+                                name={coinDenom}
+                                logoURIs={{
+                                  png: coinImageUrl,
+                                  svg: coinImageUrl,
+                                }}
+                                width={24}
+                                height={24}
+                              />
+                            </div>
                             <p className="font-semibold">{coinDenom}</p>
                           </button>
                         );
@@ -348,17 +350,19 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               )}
                             >
                               <div className="flex min-w-0 items-center gap-4">
-                                {coinImageUrl && (
-                                  <div className="h-12 w-12 shrink-0 rounded-full">
-                                    <Image
-                                      src={coinImageUrl}
-                                      alt={`${coinDenom} icon`}
-                                      width={48}
-                                      height={48}
-                                      className="rounded-full"
-                                    />
-                                  </div>
-                                )}
+                                <div className="h-12 w-12 shrink-0 rounded-full">
+                                  <EntityImage
+                                    symbol={coinDenom}
+                                    name={coinDenom}
+                                    logoURIs={{
+                                      png: coinImageUrl,
+                                      svg: coinImageUrl,
+                                    }}
+                                    width={48}
+                                    height={48}
+                                    className="rounded-full"
+                                  />
+                                </div>
                                 <div className="flex flex-col gap-1 overflow-hidden">
                                   <span className="subtitle1 truncate">
                                     {coinName}
