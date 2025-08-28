@@ -142,8 +142,8 @@ function createOrAddToAssetList(
   const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
 
   const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-    : chain.chain_id;
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? ""
+    : chain.chain_id ?? "";
   const chainName = chain.chain_name;
   const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
@@ -223,9 +223,10 @@ async function generateAssetListFile({
     );
 
     if (!chain) {
-      throw new Error(
+      console.error(
         `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
       );
+      return acc;
     }
 
     return createOrAddToAssetList(acc, chain, asset, environment);
