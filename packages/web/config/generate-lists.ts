@@ -54,11 +54,11 @@ function getFilePath({
   chainId: string;
   fileType: "assetlist" | "chainlist";
 }) {
-  // TEMPORARY
-  // use legacy chain list
-  if (fileType === "chainlist") {
-    return `${chainId}/${chainId}.${fileType}.json`;
-  }
+  // // TEMPORARY
+  // // use legacy chain list
+  // if (fileType === "chainlist") {
+  //   return `${chainId}/${chainId}.${fileType}.json`;
+  // }
 
   return `${chainId}/generated/frontend/${fileType}.json`;
 }
@@ -142,16 +142,20 @@ function createOrAddToAssetList(
   const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
 
   const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-    : chain.chain_id;
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? ""
+    : chain.chain_id ?? "";
   const chainName = chain.chain_name;
+  const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
   const augmentedAsset: Asset = {
     ...asset,
-    relative_image_url: getImageRelativeFilePath(
-      asset.logoURIs.svg ?? asset.logoURIs.png!,
-      asset.symbol
-    ),
+    logoURIs: asset.logoURIs ?? {
+      png: "",
+      svg: "",
+    },
+    relative_image_url: imageUrl
+      ? getImageRelativeFilePath(imageUrl, asset.symbol)
+      : "",
   };
 
   if (assetlistIndex === -1) {
@@ -219,9 +223,10 @@ async function generateAssetListFile({
     );
 
     if (!chain) {
-      throw new Error(
+      console.error(
         `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
       );
+      return acc;
     }
 
     return createOrAddToAssetList(acc, chain, asset, environment);
@@ -312,8 +317,12 @@ async function generateAssetImages({
 }) {
   console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
+    const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
+    if (!imageUrl) continue;
+
     await saveAssetImageToTokensDir({
-      imageUrl: asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
+      imageUrl,
       asset,
       currentAssetListHash: commitHash,
     });

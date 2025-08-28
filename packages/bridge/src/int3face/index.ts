@@ -182,7 +182,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       toChain: {
         chainId: int3faceChain.chain_id,
         chainType: "cosmos",
-        chainName: int3faceChain.pretty_name,
+        chainName: int3faceChain.prettyName,
       },
       toAsset: int3faceBridgeAsset,
       /** x/bridge module address on the Int3face chain, all the IBC transfers have to be handled using this address */

@@ -173,7 +173,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       toChain: {
         chainId: nomicChain.chain_id,
         chainType: "cosmos",
-        chainName: nomicChain.pretty_name,
+        chainName: nomicChain.prettyName,
       },
       toAsset: nomicBridgeAsset,
       toAddress: deriveCosmosAddress({
@@ -383,7 +383,7 @@ export class NomicBridgeProvider implements BridgeProvider {
       bitcoinNetwork: this.ctx.env === "testnet" ? "testnet" : "bitcoin",
       sender: deriveCosmosAddress({
         address: toAddress,
-        desiredBech32Prefix: nomicChain.bech32_prefix,
+        desiredBech32Prefix: nomicChain.bech32Prefix,
       }),
       receiver:
         userWantsAllBtc && swapMemo ? swapMemo.wasm.contract : toAddress,

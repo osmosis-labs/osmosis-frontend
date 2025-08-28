@@ -1,15 +1,15 @@
-import { IRecipientConfig } from "./types";
-import { TxChainSetter } from "./chain";
+import { isAddress } from "@ethersproject/address";
+import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
+import { useState } from "react";
+import { TxChainSetter } from "./chain";
 import {
   EmptyAddressError,
   InvalidBech32Error,
   InvalidHexError,
 } from "./errors";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { useState } from "react";
-import { isAddress } from "@ethersproject/address";
+import { IRecipientConfig } from "./types";
 
 export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
   @observable
@@ -52,8 +52,7 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
       return new EmptyAddressError("Address is empty");
     }
 
-    const hasEthereumAddress =
-      this.chainInfo.features?.includes("eth-address-gen");
+    const hasEthereumAddress = this.chainInfo.bip44.coinType === 60;
     if (hasEthereumAddress && rawRecipient.startsWith("0x")) {
       if (isAddress(rawRecipient)) {
         return;

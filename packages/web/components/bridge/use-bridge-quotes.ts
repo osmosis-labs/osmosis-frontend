@@ -7,7 +7,7 @@ import {
   EvmBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -144,7 +144,8 @@ export const useBridgeQuotes = ({
           // CoinPretty only accepts whole amounts
           DecUtils.getTenExponentNInPrecisionRange(fromAsset?.decimals ?? 0)
         )
-        .truncate(),
+        .truncate()
+        .div(new Int(95)),
     [debouncedInputValue, fromAsset?.decimals]
   );
   const availableBalance = fromAsset?.amount;
@@ -791,6 +792,18 @@ export const useBridgeQuotes = ({
       heading: t("transfer.somethingIsntWorking"),
       description: t("transfer.sorryForTheInconvenience"),
     };
+  } else if (warnUserOfSlippage) {
+    errorBoxMessage = {
+      heading: "Slippage is too high",
+      description:
+        "The slippage for this transfer is too high. Try a smaller amount or check to confirm you are happy to proceed.",
+    };
+  } else if (warnUserOfPriceImpact) {
+    errorBoxMessage = {
+      heading: "Price impact is too high",
+      description:
+        "The price impact for this transfer is too high. Check to confirm you are happy to proceed.",
+    };
   }
 
   let warningBoxMessage: { heading: string; description: string } | undefined;
@@ -830,7 +843,7 @@ export const useBridgeQuotes = ({
     Boolean(selectedQuote);
 
   let buttonText: string;
-  if (warnUserOfSlippage || warnUserOfPriceImpact) {
+  if ((warnUserOfSlippage || warnUserOfPriceImpact) && !isInsufficientFee) {
     buttonText = t("assets.transfer.transferAnyway");
   } else {
     buttonText =

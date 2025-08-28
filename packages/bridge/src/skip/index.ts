@@ -714,7 +714,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         fromChain.chainType === "cosmos"
       ) {
         addressList.push(
-          toBech32(chain.bech32_prefix, fromBech32(fromAddress).data)
+          toBech32(chain.bech32Prefix, fromBech32(fromAddress).data)
         );
         continue;
       }
@@ -725,7 +725,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         toChain.chainType === "cosmos"
       ) {
         addressList.push(
-          toBech32(chain.bech32_prefix, fromBech32(toAddress).data)
+          toBech32(chain.bech32Prefix, fromBech32(toAddress).data)
         );
         continue;
       }
@@ -741,7 +741,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (!bech32Address) continue;
 
         addressList.push(
-          toBech32(chain.bech32_prefix, fromBech32(bech32Address).data)
+          toBech32(chain.bech32Prefix, fromBech32(bech32Address).data)
         );
       }
     }

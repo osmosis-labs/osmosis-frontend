@@ -1,4 +1,7 @@
-import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
+import type {
+  AssetList as CosmologyAssetList,
+  Chain as CosmologyChain,
+} from "@chain-registry/types";
 import { type OfflineAminoSigner } from "@cosmjs/amino";
 import type { StdFee } from "@cosmjs/launchpad";
 import {
@@ -227,9 +230,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
+  private _getCosmosKitCompatibleChains(): CosmologyChain[] {
+    const chains = this.chains;
+
+    return chains.map(
+      (chain) =>
+        ({
+          ...chain,
+          network_type: chain.networkType,
+          pretty_name: chain.prettyName,
+          bech32_prefix: chain.bech32Prefix,
+        } as CosmologyChain)
+    );
+  }
+
   private _createWalletManager(wallets: MainWalletBase[]) {
+    const chains = this._getCosmosKitCompatibleChains();
     this._walletManager = new WalletManager(
-      this.chains,
+      chains,
       wallets,
       logger,
       true,
@@ -240,7 +258,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.options.walletConnectOptions,
       undefined,
       {
-        endpoints: getWalletEndpoints(this.chains),
+        endpoints: getWalletEndpoints(chains),
       },
       {
         duration: 31556926000, // 1 year
@@ -939,9 +957,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1073,9 +1091,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;
@@ -1233,9 +1251,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const pubKeyTypeUrl = getPublicKeyTypeUrl({
       chainId: wallet.chain.chain_id,
-      chainFeatures:
+      coinType:
         this.chains.find(({ chain_id }) => chain_id === wallet.chain.chain_id)
-          ?.features ?? [],
+          ?.keplrChain?.bip44.coinType ?? 0,
     });
 
     pubkey.typeUrl = pubKeyTypeUrl;

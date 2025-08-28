@@ -1,7 +1,6 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { Fragment, FunctionComponent, useRef, useState } from "react";
 import { useLatest } from "react-use";
 
@@ -9,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapState } from "~/hooks/use-swap";
@@ -225,16 +225,18 @@ export const TokenSelectDrawer: FunctionComponent<{
                             onClickAsset(coinDenom);
                           }}
                         >
-                          {coinImageUrl && (
-                            <div className="h-[24px] w-[24px] rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={24}
-                                height={24}
-                              />
-                            </div>
-                          )}
+                          <div className="h-[24px] w-[24px] rounded-full">
+                            <EntityImage
+                              symbol={coinDenom}
+                              name={coinDenom}
+                              logoURIs={{
+                                png: coinImageUrl,
+                                svg: coinImageUrl,
+                              }}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
                           <p className="subtitle1">{coinDenom}</p>
                         </button>
                       );
@@ -289,16 +291,16 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                       >
                         <div className="flex items-center">
-                          {coinImageUrl && (
-                            <div className="mr-4 h-8 w-8 rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={32}
-                                height={32}
-                              />
-                            </div>
-                          )}
+                          <EntityImage
+                            symbol={coinDenom}
+                            name={coinDenom}
+                            logoURIs={{
+                              png: coinImageUrl,
+                              svg: coinImageUrl,
+                            }}
+                            width={32}
+                            height={32}
+                          />
                           <div className="mr-4">
                             <h6 className="button font-button text-white-full">
                               {coinDenom}

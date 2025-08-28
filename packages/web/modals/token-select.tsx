@@ -2,11 +2,11 @@ import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { SearchBox } from "~/components/input";
 import { InputProps } from "~/components/types";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -82,16 +82,19 @@ export const TokenSelectModal: FunctionComponent<
             >
               <button className="flex w-full items-center justify-between text-left">
                 <div className="flex items-center">
-                  {coinImageUrl && (
-                    <div className="mr-4 h-8 w-8 rounded-full">
-                      <Image
-                        src={coinImageUrl}
-                        alt="token icon"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  )}
+                  <div className="mr-4 h-8 w-8 rounded-full">
+                    <EntityImage
+                      symbol={coinDenom}
+                      name={coinDenom}
+                      logoURIs={{
+                        png: coinImageUrl,
+                        svg: coinImageUrl,
+                      }}
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
+                  </div>
                   <div>
                     <h6 className="text-white-full">{justDenom}</h6>
                     <div className="md:caption text-left font-semibold text-osmoverse-400">

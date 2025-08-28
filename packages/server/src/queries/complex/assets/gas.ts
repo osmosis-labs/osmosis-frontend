@@ -32,11 +32,11 @@ export async function getFeeTokenGasPriceStep({
   if (!counterpartyChain)
     throw new Error(`Chain (${chainId}) not found in chain list`);
 
-  const feeCurrency = counterpartyChain.fees.fee_tokens[0];
+  const feeCurrency = counterpartyChain.feeCurrencies[0];
 
   return {
-    low: feeCurrency?.low_gas_price ?? DefaultGasPriceStep.low,
-    average: feeCurrency?.average_gas_price ?? DefaultGasPriceStep.average,
-    high: feeCurrency?.high_gas_price ?? DefaultGasPriceStep.high,
+    low: feeCurrency?.gasPriceStep?.low ?? DefaultGasPriceStep.low,
+    average: feeCurrency?.gasPriceStep?.average ?? DefaultGasPriceStep.average,
+    high: feeCurrency?.gasPriceStep?.high ?? DefaultGasPriceStep.high,
   };
 }

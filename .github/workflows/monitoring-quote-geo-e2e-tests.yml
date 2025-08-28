@@ -39,9 +39,9 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.OS }}-20.x-
+            ${{ runner.OS }}-22.x-
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
@@ -66,7 +66,7 @@ jobs:
   fe-bot-alert:
     runs-on: ubuntu-latest
     needs: [fe-quote-tests]
-    if: failure() && github.run_attempt == 1
+    if: failure() && github.run_attempt == 2
     steps:
       - name: Send Slack alert if test fails
         id: slack

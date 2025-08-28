@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 
 /** Width should be defined by parent elements. */
@@ -45,14 +45,16 @@ export const AssetCell: FunctionComponent<
         </div>
       )}
       <div className="h-10 w-10 flex-shrink-0">
-        {coinImageUrl && (
-          <Image
-            alt={coinDenom ?? "coin image"}
-            src={coinImageUrl}
-            height={40}
-            width={40}
-          />
-        )}
+        <EntityImage
+          symbol={coinDenom ?? ""}
+          name={coinName ?? ""}
+          logoURIs={{
+            png: coinImageUrl,
+            svg: coinImageUrl,
+          }}
+          height={40}
+          width={40}
+        />
       </div>
       <div className="flex flex-grow flex-col overflow-hidden">
         {coinName && (

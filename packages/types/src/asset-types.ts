@@ -25,15 +25,31 @@ export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
   base?: string;
   gasPriceStep?: GasPriceStep;
+  chainSuggestionDenom?: string;
+  sourceDenom?: string;
 };
 
 export type FeeCurrency = AppCurrency & {
   gasPriceStep?: GasPriceStep;
   base?: string;
+  sourceDenom?: string;
 };
 
-export type StakeCurrency = Currency & {
+interface BaseCurrency {
+  readonly coinDenom: string;
+  readonly coinDecimals: number;
+  readonly coinMinimalDenom: string;
+  readonly coinGeckoId?: string;
+  readonly coinImageUrl?: string;
+}
+
+export type StakeCurrency = BaseCurrency & {
   base?: string;
+  // chainSuggestionDenom?: string;
+  // sourceDenom?: string;
+  originCurrency?: BaseCurrency & {
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+  };
 };
 
 export interface LogoURIs {
@@ -191,6 +207,7 @@ export type MinimalAsset = {
    */
   coinGeckoId: string | undefined;
   coinName: string;
+  chainSuggestionDenom?: string;
   /** Transfers are allowed, but unstable. */
   isUnstable: boolean;
   /** Transfers are NOT allowed. */
