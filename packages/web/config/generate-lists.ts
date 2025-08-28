@@ -45,7 +45,7 @@ interface ResponseAssetList {
   assets: Omit<Asset, "chain_id">[];
 }
 
-const repo = "JeremyParish69/assetlists";
+const repo = "osmosis-labs/assetlists";
 
 function getFilePath({
   chainId,
@@ -373,8 +373,7 @@ async function main() {
         chainId: mainnetOsmosisChainId,
         fileType: "chainlist",
       }),
-      // commitHash: mainLatestCommitHash,
-      defaultBranch: "inherit-chains",
+      commitHash: mainLatestCommitHash,
     }),
     queryGithubFile<ChainList>({
       repo,
@@ -382,8 +381,7 @@ async function main() {
         chainId: testnetOsmosisChainId,
         fileType: "chainlist",
       }),
-      // commitHash: mainLatestCommitHash,
-      defaultBranch: "inherit-chains",
+      commitHash: mainLatestCommitHash,
     }),
     queryGithubFile<ResponseAssetList>({
       repo,
@@ -391,8 +389,7 @@ async function main() {
         chainId: mainnetOsmosisChainId,
         fileType: "assetlist",
       }),
-      // commitHash: mainLatestCommitHash,
-      defaultBranch: "inherit-chains",
+      commitHash: mainLatestCommitHash,
     }),
     queryGithubFile<ResponseAssetList>({
       repo,
@@ -400,8 +397,7 @@ async function main() {
         chainId: testnetOsmosisChainId,
         fileType: "assetlist",
       }),
-      // commitHash: mainLatestCommitHash,
-      defaultBranch: "inherit-chains",
+      commitHash: mainLatestCommitHash,
     }),
   ]);
 
