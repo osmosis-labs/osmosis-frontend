@@ -45,7 +45,7 @@ interface ResponseAssetList {
   assets: Omit<Asset, "chain_id">[];
 }
 
-const repo = "osmosis-labs/assetlists";
+const repo = "JeremyParish69/assetlists";
 
 function getFilePath({
   chainId,
@@ -142,8 +142,8 @@ function createOrAddToAssetList(
   const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
 
   const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-    : chain.chain_id;
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? ""
+    : chain.chain_id ?? "";
   const chainName = chain.chain_name;
   const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
@@ -223,9 +223,10 @@ async function generateAssetListFile({
     );
 
     if (!chain) {
-      throw new Error(
+      console.error(
         `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
       );
+      return acc;
     }
 
     return createOrAddToAssetList(acc, chain, asset, environment);
@@ -372,7 +373,8 @@ async function main() {
         chainId: mainnetOsmosisChainId,
         fileType: "chainlist",
       }),
-      commitHash: mainLatestCommitHash,
+      // commitHash: mainLatestCommitHash,
+      defaultBranch: "inherit-chains",
     }),
     queryGithubFile<ChainList>({
       repo,
@@ -380,7 +382,8 @@ async function main() {
         chainId: testnetOsmosisChainId,
         fileType: "chainlist",
       }),
-      commitHash: mainLatestCommitHash,
+      // commitHash: mainLatestCommitHash,
+      defaultBranch: "inherit-chains",
     }),
     queryGithubFile<ResponseAssetList>({
       repo,
@@ -388,7 +391,8 @@ async function main() {
         chainId: mainnetOsmosisChainId,
         fileType: "assetlist",
       }),
-      commitHash: mainLatestCommitHash,
+      // commitHash: mainLatestCommitHash,
+      defaultBranch: "inherit-chains",
     }),
     queryGithubFile<ResponseAssetList>({
       repo,
@@ -396,7 +400,8 @@ async function main() {
         chainId: testnetOsmosisChainId,
         fileType: "assetlist",
       }),
-      commitHash: mainLatestCommitHash,
+      // commitHash: mainLatestCommitHash,
+      defaultBranch: "inherit-chains",
     }),
   ]);
 
