@@ -15,6 +15,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Spinner } from "~/components/loaders/spinner";
 import { Button, ChartButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -492,16 +493,24 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
           <div className="flex flex-col gap-5">
             {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
-              <div className="subtitle1 flex gap-2" key={asset.denom}>
+              <div
+                className="subtitle1 flex gap-2"
+                key={asset.currency.coinMinimalDenom}
+              >
                 {asset.currency.coinImageUrl && (
-                  <Image
-                    alt="token-icon"
-                    src={asset.currency.coinImageUrl}
+                  <EntityImage
+                    logoURIs={{
+                      png: asset.currency.coinImageUrl,
+                    }}
                     width={20}
                     height={20}
+                    name={asset.currency.coinDenom}
+                    symbol={asset.currency.coinDenom}
                   />
                 )}
-                <span className="text-osmoverse-300">{asset.denom}</span>
+                <span className="text-osmoverse-300">
+                  {asset.currency.coinDenom}
+                </span>
                 <span className="text-osmoverse-100">
                   {formatPretty(asset, { maxDecimals: 2 })}
                 </span>

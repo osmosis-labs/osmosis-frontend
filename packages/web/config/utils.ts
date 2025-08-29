@@ -193,11 +193,11 @@ function getKeplrCompatibleChain({
     bip44: {
       coinType: chain?.slip44 ?? 118,
     },
-    currencies: (assetList?.assets ?? []).reduce<
+    currencies: (chain.currencies ?? []).reduce<
       ChainInfoWithExplorer["currencies"]
     >((acc, asset) => {
-      const coinMinimalDenom = asset.coinMinimalDenom;
-      const displayDecimals = asset.decimals;
+      const coinMinimalDenom = asset.coinMinimalDenom ?? "";
+      const displayDecimals = asset.coinDecimals;
 
       const isCW20ContractToken =
         coinMinimalDenom
@@ -237,27 +237,27 @@ function getKeplrCompatibleChain({
         };
       }
 
-      const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+      const imageUrl = asset?.coinImageUrl ?? "";
 
       acc.push({
         type: type ?? "cw20",
-        coinDenom: asset.symbol,
+        coinDenom: asset.coinDenom,
         /**
          * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
          */
         coinMinimalDenom: isCW20ContractToken
-          ? coinMinimalDenom + `:${asset.symbol}`
+          ? coinMinimalDenom + `:${asset.coinDenom}`
           : coinMinimalDenom,
         contractAddress: isCW20ContractToken
           ? coinMinimalDenom.split(":")[1]!
           : "",
         coinDecimals: displayDecimals,
-        coinGeckoId: asset.coingeckoId,
+        coinGeckoId: asset.coinGeckoId,
         coinImageUrl: imageUrl
-          ? getImageRelativeFilePath(imageUrl, asset.symbol)
+          ? getImageRelativeFilePath(imageUrl, asset.coinDenom)
           : undefined,
         base: asset.coinMinimalDenom,
-        pegMechanism: asset.pegMechanism,
+        // pegMechanism: asset.pegMechanism,
         gasPriceStep,
       });
       return acc;
