@@ -4513,23 +4513,23 @@
   resolved "https://registry.npmjs.org/@juggle/resize-observer/-/resize-observer-3.4.0.tgz"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.57", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.57":
-  version "0.0.6-rc.57"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.57.tgz#90b32c5afbccd6b53ad98a241e8e541b6da8118b"
-  integrity sha512-SE7gulKlgqh38i+bpwcx/Wf9o8w3QuQ9ULpLqE8yKnq6sxUqvF4jaXCzOTxRHjzNz1+UZmjjkbEgIVwmzsXEqw==
+"@keplr-ewallet/ewallet-sdk-core@0.0.6-rc.58", "@keplr-ewallet/ewallet-sdk-core@^0.0.6-rc.58":
+  version "0.0.6-rc.58"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-core/-/ewallet-sdk-core-0.0.6-rc.58.tgz#2a372cb8a76f486ddcb7964882a82399749b9b27"
+  integrity sha512-aZTrX9mWtDJBFWQ6SDKf8L+Jiz+UjEiXBdQJGItha6U501SLSRXNKnjjyVDJ9IIevpdx97cQEJ0qPRJ5Rf6nZw==
   dependencies:
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.13"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.14"
     "@keplr-wallet/types" "^0.12.257"
 
-"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.74":
-  version "0.0.6-rc.74"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.74.tgz#795e4cf24aec9b5a32466213c56d44c8677cf941"
-  integrity sha512-+cdYEimge0i6HUKsdU/4YROmUX2tndn+DIYr3L6F8PGUdWOm67vlwWVu5meT/2xarRtHQ6UUvqwWn0zErBiAKg==
+"@keplr-ewallet/ewallet-sdk-cosmos@0.0.6-rc.75":
+  version "0.0.6-rc.75"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-cosmos/-/ewallet-sdk-cosmos-0.0.6-rc.75.tgz#a2b4c40167d4bf33c3794af07bd37f11f2f82588"
+  integrity sha512-4iS+hzN/CGmvaDbuCxo+G36kb9jKW4zTN4sAdtCyf/pJWkYkVSQuB8/D6/Dd8iLeVxQDgFlL9aYIczDgFsuoJA==
   dependencies:
     "@cosmjs/amino" "^0.33.1"
     "@cosmjs/proto-signing" "^0.33.1"
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.57"
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.13"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.58"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.14"
     "@keplr-wallet/proto-types" "^0.12.253"
     "@keplr-wallet/types" "^0.12.253"
     "@noble/curves" "^1.9.2"
@@ -4537,21 +4537,22 @@
     bech32 "^2.0.0"
     buffer "^6.0.3"
 
-"@keplr-ewallet/ewallet-sdk-eth@0.0.6-rc.65":
-  version "0.0.6-rc.65"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-eth/-/ewallet-sdk-eth-0.0.6-rc.65.tgz#72ca604f69b0006909f178cdc6bf5fef15ae3e4d"
-  integrity sha512-Bt6oLuRrMV00j8xPontY00IDIgXcBpb+tk8EPU1sOICYNTx9pdjLBcLWskTMr/Fnq+N2qz23zvrOImlNetTwmQ==
+"@keplr-ewallet/ewallet-sdk-eth@0.0.6-rc.67":
+  version "0.0.6-rc.67"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/ewallet-sdk-eth/-/ewallet-sdk-eth-0.0.6-rc.67.tgz#fb5fe6a8fd75b2e4ff7d916493ec25915f350ce0"
+  integrity sha512-S2y2nLmBw3XNV3katPv4B3yCHW8X9nnn5zaQZ3k2fmceKHLLM745ou/w+1eMdg/Gp6v63pwomWIZ2on2Tcx8jg==
   dependencies:
-    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.57"
-    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.13"
+    "@keplr-ewallet/ewallet-sdk-core" "^0.0.6-rc.58"
+    "@keplr-ewallet/stdlib-js" "^0.0.2-rc.14"
+    "@noble/curves" "*"
     eventemitter3 "^5.0.1"
     uuid "*"
     viem "*"
 
-"@keplr-ewallet/stdlib-js@^0.0.2-rc.13":
-  version "0.0.2-rc.13"
-  resolved "https://registry.yarnpkg.com/@keplr-ewallet/stdlib-js/-/stdlib-js-0.0.2-rc.13.tgz#f50684e404f711fc535f13732d5fc73cdb38346f"
-  integrity sha512-Tpa5HtyGNfOQFKmhTf0SgOsfXs23kKVuVWVG0pSbaezzAUOJCtMi46SdCHFTwbXb7tRPzho7j8M9veK4Pq36jA==
+"@keplr-ewallet/stdlib-js@^0.0.2-rc.14":
+  version "0.0.2-rc.14"
+  resolved "https://registry.yarnpkg.com/@keplr-ewallet/stdlib-js/-/stdlib-js-0.0.2-rc.14.tgz#ef9a3348266c76a406d9da9e0fee3b87bcf76a9b"
+  integrity sha512-TA6rK/o+ltqjKQF6UsYKmzXLcDNy0ZpY7olnkssOmPZgc8EDt2PbMslexEDWo6KN+UXIs8Qsy/JXLuE71XcXIQ==
 
 "@keplr-wallet/background@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
@@ -5358,6 +5359,13 @@
   resolved "https://registry.yarnpkg.com/@noble/ciphers/-/ciphers-1.3.0.tgz#f64b8ff886c240e644e5573c097f86e5b43676dc"
   integrity sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw==
 
+"@noble/curves@*":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-2.0.0.tgz#1b1d75b447e5ccfaa6a4a3c34280f0c02a763f57"
+  integrity sha512-RiwZZeJnsTnhT+/gg2KvITJZhK5oagQrpZo+yQyd3mv3D5NAG2qEeEHpw7IkXRlpkoD45wl2o4ydHAvY9wyEfw==
+  dependencies:
+    "@noble/hashes" "2.0.0"
+
 "@noble/curves@1.3.0", "@noble/curves@~1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@noble/curves/-/curves-1.3.0.tgz#01be46da4fd195822dab821e72f71bf4aeec635e"
@@ -5412,6 +5420,11 @@
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.8.0.tgz#cee43d801fcef9644b11b8194857695acd5f815a"
   integrity sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==
+
+"@noble/hashes@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-2.0.0.tgz#5c39388259a0868cadb17d688cd8cf07eae344a4"
+  integrity sha512-h8VUBlE8R42+XIDO229cgisD287im3kdY6nbNZJFjc6ZvKIXPYXe6Vc/t+kyjFdMFyt5JpapzTsEg8n63w5/lw==
 
 "@noble/hashes@^1", "@noble/hashes@^1.0.0":
   version "1.1.2"
