@@ -1,6 +1,7 @@
 import { CoinPretty } from "@osmosis-labs/unit";
-import Image from "next/image";
 import { FunctionComponent } from "react";
+
+import { EntityImage } from "~/components/ui/entity-image";
 
 export const PoolComposition: FunctionComponent<{
   assets: CoinPretty[];
@@ -11,11 +12,14 @@ export const PoolComposition: FunctionComponent<{
         <li key={asset.denom} className="flex items-center tracking-wide">
           {asset.currency.coinImageUrl && (
             <div className="mr-2 h-[20px] w-[20px]">
-              <Image
-                src={asset.currency.coinImageUrl}
+              <EntityImage
+                logoURIs={{
+                  png: asset.currency.coinImageUrl,
+                }}
+                name={asset.currency.coinDenom}
+                symbol={asset.currency.coinDenom}
                 width={20}
                 height={20}
-                alt="asset image"
               />
             </div>
           )}

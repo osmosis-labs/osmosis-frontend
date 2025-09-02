@@ -1,12 +1,11 @@
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { InputBox } from "~/components/input";
-import { useTranslation } from "~/hooks";
-import { useWindowSize } from "~/hooks";
+import { EntityImage } from "~/components/ui/entity-image";
+import { useTranslation, useWindowSize } from "~/hooks";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
@@ -30,16 +29,17 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                 className="flex h-24 place-content-between items-center rounded-2xl border border-white-faint px-7 md:h-fit md:p-2"
               >
                 <div className="flex items-center">
-                  {currency.coinImageUrl && (
-                    <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
-                      <Image
-                        src={currency.coinImageUrl}
-                        alt="token icon"
-                        width={isMobile ? 30 : 44}
-                        height={isMobile ? 30 : 44}
-                      />
-                    </div>
-                  )}
+                  <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
+                    <EntityImage
+                      logoURIs={{
+                        png: currency.coinImageUrl,
+                      }}
+                      name={currency.coinDenom}
+                      symbol={currency.coinDenom}
+                      width={isMobile ? 30 : 44}
+                      height={isMobile ? 30 : 44}
+                    />
+                  </div>
                   <div className="flex flex-col place-content-evenly">
                     {isMobile ? (
                       <span className="subtitle2">{justCoinDenom}</span>

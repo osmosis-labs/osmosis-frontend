@@ -545,14 +545,15 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                         +{incentive.apr.maxDecimals(0).toString()}
                       </span>
                     )}
-                    {incentive.coinPerDay.currency.coinImageUrl && (
-                      <Image
-                        alt="token-icon"
-                        src={incentive.coinPerDay.currency.coinImageUrl}
-                        width={20}
-                        height={20}
-                      />
-                    )}
+                    <EntityImage
+                      logoURIs={{
+                        png: incentive.coinPerDay.currency.coinImageUrl,
+                      }}
+                      name={incentive.coinPerDay.currency.coinDenom}
+                      symbol={incentive.coinPerDay.currency.coinDenom}
+                      width={20}
+                      height={20}
+                    />
                   </div>
                   <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
                     <span>

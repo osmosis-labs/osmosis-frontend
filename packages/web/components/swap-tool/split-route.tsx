@@ -10,6 +10,7 @@ import { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import type { RouterOutputs } from "~/utils/trpc";
@@ -230,19 +231,14 @@ const DenomImage: FunctionComponent<{
   currency: AppCurrency | Currency;
   /** Size in px */
   size?: number;
-}> = ({ currency, size = 20 }) =>
-  currency.coinImageUrl ? (
-    <Image
-      src={currency.coinImageUrl}
-      alt="token icon"
-      width={size}
-      height={size}
-    />
-  ) : (
-    <div
-      style={{ width: size, height: size }}
-      className="flex items-center justify-center rounded-full bg-osmoverse-700"
-    >
-      {currency.coinDenom[0].toUpperCase()}
-    </div>
-  );
+}> = ({ currency, size = 20 }) => (
+  <EntityImage
+    logoURIs={{
+      png: currency.coinImageUrl,
+    }}
+    name={currency.coinDenom}
+    symbol={currency.coinDenom}
+    width={size}
+    height={size}
+  />
+);
