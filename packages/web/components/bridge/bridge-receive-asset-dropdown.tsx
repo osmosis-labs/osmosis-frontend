@@ -2,12 +2,12 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { SupportedAsset } from "~/components/bridge/use-bridges-supported-assets";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
@@ -132,15 +132,19 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                         return (
                           <MenuItem key={asset.coinDenom}>
                             <button
+                              type="button"
                               className={classNames(
                                 "flex items-center gap-3 rounded-lg py-2 px-3 text-left data-[active]:bg-osmoverse-600",
                                 isSelected && "bg-osmoverse-700"
                               )}
                               onClick={onClick}
                             >
-                              <Image
-                                src={asset.coinImageUrl ?? "/"}
-                                alt={`${asset.coinDenom} logo`}
+                              <EntityImage
+                                logoURIs={{
+                                  png: asset.coinImageUrl,
+                                }}
+                                name={asset.coinName}
+                                symbol={asset.coinDenom}
                                 width={32}
                                 height={32}
                               />
@@ -192,9 +196,12 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               )}
                               onClick={onClick}
                             >
-                              <Image
-                                src={representativeAsset.coinImageUrl ?? "/"}
-                                alt={`${asset.denom} logo`}
+                              <EntityImage
+                                logoURIs={{
+                                  png: representativeAsset.coinImageUrl,
+                                }}
+                                name={asset.denom}
+                                symbol={asset.denom}
                                 width={32}
                                 height={32}
                               />

@@ -7,15 +7,14 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { tError } from "~/components/localization";
+import { EntityImage } from "~/components/ui/entity-image";
 import { Slider } from "~/components/ui/slider";
-import { useTranslation } from "~/hooks";
-import { useConnectWalletModalRedirect } from "~/hooks";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -207,14 +206,15 @@ const AssetAmount: FunctionComponent<{
       className
     )}
   >
-    {amount.currency.coinImageUrl && (
-      <Image
-        alt="coin image"
-        src={amount.currency.coinImageUrl}
-        height={24}
-        width={24}
-      />
-    )}
+    <EntityImage
+      logoURIs={{
+        png: amount.currency.coinImageUrl,
+      }}
+      name={amount.currency.coinDenom}
+      symbol={amount.currency.coinDenom}
+      height={24}
+      width={24}
+    />
     <span>{formatPretty(amount, { maxDecimals: 2 })}</span>
   </div>
 );

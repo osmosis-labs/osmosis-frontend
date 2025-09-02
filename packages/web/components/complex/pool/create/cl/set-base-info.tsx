@@ -10,13 +10,13 @@ import {
 } from "@headlessui/react";
 import { RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
@@ -236,9 +236,12 @@ const TokenSelector = observer(
           <div className="flex items-center gap-3">
             {selectedAsset ? (
               <>
-                <Image
-                  src={selectedAsset.token.coinImageUrl ?? ""}
-                  alt={`${selectedAsset.token.coinDenom}`}
+                <EntityImage
+                  logoURIs={{
+                    png: selectedAsset.token.coinImageUrl,
+                  }}
+                  name={selectedAsset.token.coinDenom}
+                  symbol={selectedAsset.token.coinDenom}
                   width={52}
                   height={52}
                   className="rounded-full"

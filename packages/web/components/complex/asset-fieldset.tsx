@@ -1,7 +1,6 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   ChangeEventHandler,
@@ -13,6 +12,7 @@ import {
 
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName, EventPage } from "~/config";
 import {
   Breakpoint,
@@ -254,15 +254,16 @@ const AssetFieldsetTokenSelector = ({
         }}
         {...rest}
       >
-        {selectedCoinImageUrl && (
-          <Image
-            src={selectedCoinImageUrl}
-            alt={`${selectedCoinDenom} image`}
-            width={isMobile ? 24 : 40}
-            height={isMobile ? 24 : 40}
-            className="h-10 w-10 rounded-full sm:h-6 sm:w-6"
-          />
-        )}
+        <EntityImage
+          logoURIs={{
+            png: selectedCoinImageUrl,
+          }}
+          name={selectedCoinDenom ?? ""}
+          symbol={selectedCoinDenom ?? ""}
+          width={isMobile ? 24 : 40}
+          height={isMobile ? 24 : 40}
+          className="h-10 w-10 rounded-full sm:h-6 sm:w-6"
+        />
         <span className="ml-2 truncate text-h5 font-h5 sm:ml-1 sm:text-h6 sm:font-h6">
           {selectedCoinDenom}
         </span>

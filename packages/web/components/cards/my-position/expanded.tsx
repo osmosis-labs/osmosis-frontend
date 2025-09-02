@@ -24,11 +24,10 @@ import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { ChartButton } from "~/components/ui/button";
-import { ArrowButton, Button } from "~/components/ui/button";
+import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -469,14 +468,15 @@ export const AssetsInfo: FunctionComponent<
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
                   <div className="h-[24px] w-[24px] flex-shrink-0">
-                    {asset.currency.coinImageUrl && (
-                      <Image
-                        alt="base currency"
-                        src={asset.currency.coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    )}
+                    <EntityImage
+                      logoURIs={{
+                        png: asset.currency.coinImageUrl,
+                      }}
+                      name={asset.currency.coinDenom}
+                      symbol={asset.currency.coinDenom}
+                      height={24}
+                      width={24}
+                    />
                   </div>
                   <span className="whitespace-nowrap">
                     {formatPretty(asset, { maxDecimals: 6 })}

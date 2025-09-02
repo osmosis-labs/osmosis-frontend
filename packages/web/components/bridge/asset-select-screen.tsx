@@ -3,7 +3,6 @@ import { truncate } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import debounce from "debounce";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import React, { FunctionComponent, useMemo, useRef, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -11,6 +10,7 @@ import { NoSearchResultsSplash, SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import {
   MainnetAssetSymbols,
   TestnetAssetSymbols,
@@ -208,11 +208,14 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                         !shouldShowUnverifiedAssets && !asset.isVerified,
                     })}
                   >
-                    <Image
-                      src={asset.coinImageUrl ?? "/"}
+                    <EntityImage
+                      logoURIs={{
+                        png: asset.coinImageUrl,
+                      }}
                       width={isMobile ? 32 : 48}
                       height={isMobile ? 32 : 48}
-                      alt={`${asset.coinDenom} asset image`}
+                      name={asset.coinName}
+                      symbol={asset.coinDenom}
                     />
                     <span className="flex flex-col text-left">
                       <div className="flex items-center gap-1">

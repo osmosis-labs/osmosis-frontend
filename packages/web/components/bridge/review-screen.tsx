@@ -14,6 +14,7 @@ import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -292,9 +293,12 @@ const AssetBox: FunctionComponent<{
     <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
       <div className="flex place-content-between items-center p-6 md:p-3">
         <div className="flex items-center gap-4 md:gap-2">
-          <Image
-            alt="token image"
-            src={assetImageUrl}
+          <EntityImage
+            logoURIs={{
+              png: assetImageUrl,
+            }}
+            name={coin.denom}
+            symbol={coin.denom}
             width={isMobile ? 32 : 48}
             height={isMobile ? 32 : 48}
           />

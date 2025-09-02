@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { FunctionComponent, useMemo } from "react";
 
 import { InputBox } from "~/components/input";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useStore } from "~/stores";
@@ -95,15 +96,16 @@ export const DepositAmountGroup: FunctionComponent<{
         <div className="flex w-full items-center gap-3">
           <div className="flex w-5/12 flex-wrap items-center gap-3">
             <div className="flex flex-shrink-0 overflow-clip rounded-full p-1">
-              {currency?.coinImageUrl && (
-                <Image
-                  alt=""
-                  src={currency.coinImageUrl}
-                  height={50}
-                  width={50}
-                  className="h-[50px]"
-                />
-              )}
+              <EntityImage
+                logoURIs={{
+                  png: currency?.coinImageUrl,
+                }}
+                name={currency?.coinDenom ?? ""}
+                symbol={currency?.coinDenom ?? ""}
+                height={50}
+                width={50}
+                className="h-[50px]"
+              />
             </div>
             <div className=" flex flex-col xs:mr-8">
               <h6>{currency?.coinDenom ?? ""}</h6>

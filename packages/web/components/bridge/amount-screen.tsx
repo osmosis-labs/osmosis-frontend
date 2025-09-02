@@ -8,7 +8,6 @@ import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import {
   Dispatch,
   FunctionComponent,
@@ -33,6 +32,7 @@ import {
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
@@ -953,12 +953,15 @@ export const AmountScreen = observer(
                 className="flex items-center gap-3"
                 onClick={() => setCurrentScreen(BridgeScreen.Asset)}
               >
-                <Image
+                <EntityImage
+                  logoURIs={{
+                    png: canonicalAsset.coinImageUrl,
+                  }}
+                  name={canonicalAsset.coinName}
+                  symbol={canonicalAsset.coinDenom}
                   width={32}
                   height={32}
-                  src={canonicalAsset.coinImageUrl ?? "/"}
-                  alt="token image"
-                />{" "}
+                />
                 <span>{canonicalAsset.coinDenom}</span>
               </button>
             </>
