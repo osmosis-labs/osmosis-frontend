@@ -3,13 +3,13 @@ import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectorProps } from "~/components/complex/pool/create/cl/set-base-info";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { Spinner } from "~/components/loaders";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -195,9 +195,12 @@ const TokenLiquiditySelector = observer(
     return (
       <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
         <div className="flex items-center gap-3">
-          <Image
-            src={selectedAsset.token.coinImageUrl ?? ""}
-            alt={`${selectedAsset.token.coinDenom}`}
+          <EntityImage
+            logoURIs={{
+              png: selectedAsset.token.coinImageUrl,
+            }}
+            name={selectedAsset.token.coinDenom}
+            symbol={selectedAsset.token.coinDenom}
             width={52}
             height={52}
             className="rounded-full"

@@ -1,6 +1,5 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
@@ -8,6 +7,7 @@ import { CreditCardIcon } from "~/components/assets/credit-card-icon";
 import { Sparkline } from "~/components/chart/sparkline";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useStore } from "~/stores";
@@ -38,9 +38,12 @@ export const NavbarOsmoPrice = observer(() => {
         >
           <div className="flex items-center gap-1">
             <div className="h-[20px] w-[20px]">
-              <Image
-                src={osmo.coinImageUrl!}
-                alt="Osmo icon"
+              <EntityImage
+                name={osmo.coinName}
+                symbol={osmo.coinDenom}
+                logoURIs={{
+                  png: osmo.coinImageUrl,
+                }}
                 width={20}
                 height={20}
               />

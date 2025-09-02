@@ -24,9 +24,7 @@ export async function getGasAsset({
   // try to get asset list fee asset first, or otherwise the chain fee currency
   const assetListAsset = assetLists
     .flatMap(({ assets }) => assets)
-    .find(
-      (asset) => asset.coinMinimalDenom.toLowerCase() === denom.toLowerCase()
-    );
+    .find((asset) => asset.sourceDenom.toLowerCase() === denom.toLowerCase());
 
   if (assetListAsset) {
     return {

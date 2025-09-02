@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { Icon } from "~/components/assets";
+import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
 import { api } from "~/utils/trpc";
@@ -96,9 +96,12 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
             className="flex"
           >
             {alloyedAsset.asset.coinImageUrl ? (
-              <Image
-                src={alloyedAsset.asset.coinImageUrl}
-                alt={alloyedAsset.asset.coinName}
+              <EntityImage
+                logoURIs={{
+                  png: alloyedAsset.asset.coinImageUrl,
+                }}
+                symbol={alloyedAsset.asset.coinDenom}
+                name={alloyedAsset.asset.coinName}
                 width={48}
                 height={48}
                 className="h-12 w-12 min-w-[48px]"

@@ -1,6 +1,5 @@
 import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
-import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryStates } from "nuqs";
 import { useCallback } from "react";
@@ -12,6 +11,7 @@ import {
   USDT_BASE_DENOM,
 } from "~/components/place-limit-tool/defaults";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { ModalBase } from "~/modals/base";
@@ -212,11 +212,14 @@ export function AddFundsModal({
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <Image
-                src={fromAsset?.coinImageUrl ?? ""}
+              <EntityImage
+                logoURIs={{
+                  png: fromAsset?.coinImageUrl,
+                }}
+                name={fromAsset?.coinName ?? ""}
+                symbol={fromAsset?.coinDenom ?? ""}
                 width={48}
                 height={48}
-                alt={classNames(`${fromAsset?.coinDenom} logo`)}
               />
               <div className="flex w-full flex-col gap-1">
                 <span className="subtitle1">

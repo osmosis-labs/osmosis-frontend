@@ -1,11 +1,11 @@
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { Slider } from "~/components/ui/slider";
 import { useTranslation } from "~/hooks";
 
@@ -67,14 +67,15 @@ export const RemoveLiquidity: FunctionComponent<
                 className="flex items-center gap-2"
                 key={asset.currency.coinDenom}
               >
-                {asset.currency.coinImageUrl && (
-                  <Image
-                    alt="token icon"
-                    src={asset.currency.coinImageUrl}
-                    height={16}
-                    width={16}
-                  />
-                )}
+                <EntityImage
+                  logoURIs={{
+                    png: asset.currency.coinImageUrl,
+                  }}
+                  name={asset.currency.coinDenom}
+                  symbol={asset.currency.coinDenom}
+                  height={16}
+                  width={16}
+                />
                 <span className="max-w-xs truncate">
                   {asset.mul(percentageMultiplier).trim(true).toString()}
                 </span>

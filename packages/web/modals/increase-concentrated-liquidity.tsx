@@ -15,6 +15,7 @@ import { PriceChartHeader } from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
 import { ChartButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import {
   ObservableAddConcentratedLiquidityConfig,
   useAddConcentratedLiquidityConfig,
@@ -117,21 +118,25 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
         <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
-            {baseCoin.currency.coinImageUrl && (
-              <Image
-                alt="base currency"
-                src={baseCoin.currency.coinImageUrl}
-                height={24}
-                width={24}
-              />
-            )}
+            <EntityImage
+              logoURIs={{
+                png: baseCoin.currency.coinImageUrl,
+              }}
+              name={baseCoin.currency.coinDenom}
+              symbol={baseCoin.currency.coinDenom}
+              height={24}
+              width={24}
+            />
             <span>{formatPretty(baseCoin, { maxDecimals: 2 })}</span>
           </div>
           <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
             {quoteCoin.currency.coinImageUrl && (
-              <Image
-                alt="base currency"
-                src={quoteCoin.currency.coinImageUrl}
+              <EntityImage
+                logoURIs={{
+                  png: quoteCoin.currency.coinImageUrl,
+                }}
+                name={quoteCoin.currency.coinDenom}
+                symbol={quoteCoin.currency.coinDenom}
                 height={24}
                 width={24}
               />

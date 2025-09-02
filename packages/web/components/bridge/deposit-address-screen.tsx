@@ -11,7 +11,6 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -22,6 +21,7 @@ import { NomicPendingTransfers } from "~/components/nomic/nomic-pending-transfer
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button, IconButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
@@ -126,12 +126,15 @@ export const DepositAddressScreen = observer(
                   className="flex items-center gap-3"
                   onClick={() => setCurrentScreen(BridgeScreen.Asset)}
                 >
-                  <Image
+                  <EntityImage
+                    logoURIs={{
+                      png: canonicalAsset.coinImageUrl,
+                    }}
+                    name={canonicalAsset.coinName}
+                    symbol={canonicalAsset.coinDenom}
                     width={32}
                     height={32}
-                    src={canonicalAsset.coinImageUrl ?? "/"}
-                    alt="token image"
-                  />{" "}
+                  />
                   <span>
                     {canonicalAsset.coinName} ({canonicalAsset.coinDenom})
                   </span>

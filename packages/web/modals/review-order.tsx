@@ -22,6 +22,7 @@ import { OneClickTradingSettings } from "~/components/one-click-trading/one-clic
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
@@ -385,15 +386,16 @@ export function ReviewOrder({
             >
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
-                  {fromAsset && (
-                    <Image
-                      src={fromAsset.coinImageUrl ?? ""}
-                      alt={`${fromAsset.coinDenom} image`}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10"
-                    />
-                  )}
+                  <EntityImage
+                    logoURIs={{
+                      png: fromAsset?.coinImageUrl,
+                    }}
+                    name={fromAsset?.coinDenom ?? ""}
+                    symbol={fromAsset?.coinDenom ?? ""}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10"
+                  />
                   <div className="flex flex-col">
                     <p className="sm:caption text-osmoverse-300">
                       {tab === "buy"
@@ -426,9 +428,12 @@ export function ReviewOrder({
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
                   {toAsset && (
-                    <Image
-                      src={toAsset.coinImageUrl ?? ""}
-                      alt={`${toAsset.coinDenom} image`}
+                    <EntityImage
+                      logoURIs={{
+                        png: toAsset.coinImageUrl,
+                      }}
+                      name={toAsset.coinName}
+                      symbol={toAsset.coinDenom}
                       width={40}
                       height={40}
                       className="h-10 w-10"

@@ -1,12 +1,12 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName, EventPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
@@ -87,17 +87,18 @@ export const TokenSelectWithDrawer: FunctionComponent<
               isFromSelect ? "'from'" : "'to'"
             } token. Current token is ${selectedToken.coinDenom}`}
           >
-            {selectedToken.coinImageUrl && (
-              <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
-                <Image
-                  src={selectedToken.coinImageUrl}
-                  alt="token icon"
-                  width={isMobile ? 30 : 50}
-                  height={isMobile ? 30 : 50}
-                  priority
-                />
-              </div>
-            )}
+            <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
+              <EntityImage
+                logoURIs={{
+                  png: selectedToken.coinImageUrl,
+                }}
+                name={selectedToken.coinName}
+                symbol={selectedToken.coinDenom}
+                width={isMobile ? 30 : 50}
+                height={isMobile ? 30 : 50}
+                priority
+              />
+            </div>
             <div className="flex flex-col">
               <div className="flex items-center">
                 {isMobile || selectedToken.coinDenom.length > 6 ? (

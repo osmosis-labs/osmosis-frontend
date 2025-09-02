@@ -7,7 +7,7 @@ import {
   EvmBridgeTransactionRequest,
 } from "@osmosis-labs/bridge";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@osmosis-labs/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -139,13 +139,16 @@ export const useBridgeQuotes = ({
   /** NOTE: Debounced amount. */
   const inputAmount = useMemo(
     () =>
-      new Dec(debouncedInputValue === "" ? "0" : debouncedInputValue)
+      new Dec(
+        debouncedInputValue === ""
+          ? "0"
+          : (+debouncedInputValue * 0.98).toString()
+      )
         .mul(
           // CoinPretty only accepts whole amounts
           DecUtils.getTenExponentNInPrecisionRange(fromAsset?.decimals ?? 0)
         )
-        .truncate()
-        .div(new Int(95)),
+        .truncate(),
     [debouncedInputValue, fromAsset?.decimals]
   );
   const availableBalance = fromAsset?.amount;
