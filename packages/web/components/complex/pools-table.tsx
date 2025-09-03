@@ -514,7 +514,7 @@ type PoolCellComponent<TProps = {}> = FunctionComponent<
 
 const PoolCompositionCell: PoolCellComponent = ({
   row: {
-    original: { id, type, spreadFactor, reserveCoins, raw },
+    original: { id, type, spreadFactor, reserveCoins },
   },
 }) => {
   const { t } = useTranslation();
