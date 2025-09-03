@@ -136,7 +136,7 @@ const TableControls = () => {
             },
             {
               id: "cosmwasm-transmuter",
-              display: t("components.table.transmuter"),
+              display: "Custom",
             },
           ]}
           onSelect={(poolType) => {
