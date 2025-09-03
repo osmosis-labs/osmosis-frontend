@@ -42,7 +42,7 @@ const useAllPoolsTable = () => {
       searchQuery: parseAsString,
       poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
         parseAsStringLiteral<PoolTypeFilter>(poolFilterTypes)
-      ).withDefault([...poolFilterTypes]),
+      ).withDefault(poolFilterTypes.filter(type => type !== "cosmwasm-transmuter")),
       poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
         parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
       ).withDefault([...incentiveTypes]),

@@ -100,7 +100,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     disablePagination = false,
     filters = {
       searchQuery: undefined,
-      poolTypesFilter: poolFilterTypes,
+      poolTypesFilter: poolFilterTypes.filter(type => type !== "cosmwasm-transmuter"),
       poolIncentivesFilter: incentiveTypes,
       denoms: [],
     },
@@ -139,9 +139,17 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         : undefined,
       denoms: filters.denoms,
       // These are all of the pools that we support fetching.
-      // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      // In addition, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      // When transmuter is selected, include both transmuter and alloyed pools
       types: [
-        ...filters.poolTypesFilter,
+        ...filters.poolTypesFilter.reduce((acc, type) => {
+          if (type === "cosmwasm-transmuter") {
+            acc.push("cosmwasm-transmuter" as const, "cosmwasm-alloyed" as const);
+          } else {
+            acc.push(type);
+          }
+          return acc;
+        }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
         "cosmwasm",
         "cosmwasm-astroport-pcl",
         "cosmwasm-whitewhale",
