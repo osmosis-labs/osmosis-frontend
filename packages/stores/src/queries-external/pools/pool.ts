@@ -557,7 +557,9 @@ export function isSupportedPool(
       poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
       poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE ||
       (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
-        allSupportedCosmwasmCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
+        allSupportedCosmwasmCodeIds.includes(
+          (poolRaw as CosmwasmPoolRaw).code_id
+        ))) &&
     !poolIdBlacklist.includes(poolRaw.id)
   );
 }
