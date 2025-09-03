@@ -526,13 +526,36 @@ const PoolCompositionCell: PoolCellComponent = ({
       />
       <div className="flex items-center gap-1.5 text-ion-400">
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
-          <PoolAssetsName
-            size="sm"
-            assetDenoms={reserveCoins.map(({ denom, currency }) => ({
-              minDenom: currency.coinMinimalDenom,
-              symbol: denom,
-            }))}
-          />
+          {type === "cosmwasm-alloyed" ? (
+            <span className="subtitle1 md:subtitle2">
+              {(() => {
+                // Extract asset name from alloyed denom format: factory/{contract}/alloyed/all{ASSET}
+                const firstCoin = reserveCoins[0];
+                if (firstCoin) {
+                  // Check if it's an alloyed asset denom
+                  if (firstCoin.currency.coinMinimalDenom.includes("/alloyed/all")) {
+                    // Extract the asset name (e.g., "BTC" from "allBTC")
+                    const parts = firstCoin.currency.coinMinimalDenom.split("/alloyed/all");
+                    const asset = parts[1] || firstCoin.denom.replace(/^all/, "");
+                    return `Alloyed ${asset}`;
+                  } else {
+                    // Fallback: use the symbol and remove "all" prefix if present
+                    const asset = firstCoin.denom.replace(/^all/, "");
+                    return `Alloyed ${asset}`;
+                  }
+                }
+                return "Alloyed Asset";
+              })()}
+            </span>
+          ) : (
+            <PoolAssetsName
+              size="sm"
+              assetDenoms={reserveCoins.map(({ denom, currency }) => ({
+                minDenom: currency.coinMinimalDenom,
+                symbol: denom,
+              }))}
+            />
+          )}
           <span className={classNames("text-sm font-caption opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>
               {t("components.table.poolId", { id })}
