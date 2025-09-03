@@ -534,7 +534,7 @@ const PoolCompositionCell: PoolCellComponent = ({
                     "text-ion-400": Boolean(type === "concentrated"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
-                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                      type === "cosmwasm-transmuter" || type === "cosmwasm-alloyed" || type === "cosmwasm"
                     ),
                   })}
                 >
@@ -566,6 +566,9 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "cosmwasm-transmuter" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-alloyed" && (
+                    <Icon id="custom-pool" width={16} height={16} />
+                  )}
 
                   {type != "cosmwasm-astroport-pcl" &&
                     type != "cosmwasm-whitewhale" &&
@@ -581,15 +584,24 @@ const PoolCompositionCell: PoolCellComponent = ({
 };
 
 function getPoolLink(pool: Pool): string {
+  if (pool.type === "cosmwasm-alloyed") {
+    return `https://alloyed.osmosis.zone/pools/${pool.id}`;
+  }
   if (pool.type === "cosmwasm-transmuter") {
-    return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
+    // Get contract address from raw pool data for cosmwasm pools
+    const contractAddress = (pool.raw as any).contract_address;
+    return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-astroport-pcl") {
     return `https://osmosis.astroport.fi/pools/${pool.id}`;
   }
-
   if (pool.type === "cosmwasm-whitewhale") {
     return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
+  if (pool.type === "cosmwasm") {
+    // Other cosmwasm pools should also go to celatone with contract address
+    const contractAddress = (pool.raw as any).contract_address;
+    return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
 
   return `/pool/${pool.id}`;
@@ -597,9 +609,11 @@ function getPoolLink(pool: Pool): string {
 
 function getPoolTypeTarget(pool: Pool) {
   if (
+    pool.type === "cosmwasm-alloyed" ||
     pool.type === "cosmwasm-transmuter" ||
     pool.type === "cosmwasm-astroport-pcl" ||
-    pool.type === "cosmwasm-whitewhale"
+    pool.type === "cosmwasm-whitewhale" ||
+    pool.type === "cosmwasm"
   ) {
     return "_blank";
   }

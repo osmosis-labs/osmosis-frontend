@@ -273,6 +273,7 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
+      "alloyed": "Alloyed",
       "noIncentives": "No incentives"
     }
   },
@@ -483,6 +484,7 @@
     "showDetails": "Show pool composition",
     "stableswapEnabled": "Stableswap",
     "transmuter": "Transmuter",
+    "alloyed": "Alloyed",
     "superfluidEarnMore": "Earn {rate} more. Go Superfluid",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",

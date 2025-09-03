@@ -47,15 +47,30 @@ const Pool: FunctionComponent<Props> = ({
     // this uses a legacy query to fetch the pool data, we can deprecate this once we migrate to tRPC
     if (!pool || !isValidPoolId) return;
 
-    const isCosmwasmNotSupported =
-      pool.type.startsWith("cosmwasm") &&
-      pool.type !== "cosmwasm-transmuter" &&
-      pool.type !== "cosmwasm-astroport-pcl" &&
-      pool.type !== "cosmwasm-whitewhale";
-
-    const celatoneUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
-
-    if (isCosmwasmNotSupported) window.location.href = celatoneUrl;
+    // Handle different cosmwasm pool type redirections
+    if (pool.type.startsWith("cosmwasm")) {
+      let redirectUrl = "";
+      
+      if (pool.type === "cosmwasm-alloyed") {
+        redirectUrl = `https://alloyed.osmosis.zone/pools/${poolId}`;
+      } else if (pool.type === "cosmwasm-astroport-pcl") {
+        return; // Keep on current site for astroport pools
+      } else if (pool.type === "cosmwasm-whitewhale") {
+        return; // Keep on current site for whitewhale pools
+      } else {
+        // cosmwasm-transmuter and other cosmwasm pools go to celatone
+        const contractAddress = (pool.raw as any)?.contract_address;
+        if (contractAddress) {
+          redirectUrl = `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
+        } else {
+          redirectUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
+        }
+      }
+      
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+      }
+    }
   }, [pool, poolId, isValidPoolId]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {

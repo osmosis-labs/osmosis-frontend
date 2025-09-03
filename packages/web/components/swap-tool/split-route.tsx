@@ -156,6 +156,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   {(type === "concentrated" ||
                     type === "stable" ||
                     type === "cosmwasm-transmuter" ||
+                    type === "cosmwasm-alloyed" ||
                     type === "cosmwasm-astroport-pcl" ||
                     type === "cosmwasm-whitewhale" ||
                     type === "cosmwasm") && (
@@ -164,7 +165,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                         <Icon id="lightning-small" height={16} width={16} />
                       )}
                       {(type === "stable" ||
-                        type === "cosmwasm-transmuter") && (
+                        type === "cosmwasm-transmuter" ||
+                        type === "cosmwasm-alloyed") && (
                         <Image
                           alt="stable-pool"
                           src="/icons/stableswap-pool.svg"
@@ -180,6 +182,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                           ? "clPositions.supercharged"
                           : type === "cosmwasm-transmuter"
                           ? "pool.transmuter"
+                          : type === "cosmwasm-alloyed"
+                          ? "pool.alloyed"
                           : type === "cosmwasm-astroport-pcl"
                           ? "Astroport PCL"
                           : type === "cosmwasm-whitewhale"
