@@ -6,7 +6,6 @@ import {
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
 import {
-  AlloyedPool,
   BasePool,
   CONCENTRATED_LIQ_POOL_TYPE,
   ConcentratedLiquidityPool,
