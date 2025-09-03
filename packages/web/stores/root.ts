@@ -32,6 +32,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  AlloyedPoolCodeIds,
   BlacklistedPoolIds,
   HISTORICAL_DATA_URL,
   IS_TESTNET,
@@ -113,6 +114,7 @@ export class RootStore {
         webApiBaseUrl,
         BlacklistedPoolIds,
         TransmuterPoolCodeIds,
+        AlloyedPoolCodeIds,
         IS_TESTNET
       )
     );

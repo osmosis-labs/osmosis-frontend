@@ -121,6 +121,7 @@ const PoolTypeEnum: PoolType = {
   stable: 1, // Maps to Stableswap
   concentrated: 2, // Maps to Concentrated
   "cosmwasm-transmuter": 3, // Maps to Transmuter
+  "cosmwasm-alloyed": 4, // Maps to Alloyed
 };
 
 // Function to retrieve integer values from the filter types
