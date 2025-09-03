@@ -514,7 +514,7 @@ type PoolCellComponent<TProps = {}> = FunctionComponent<
 
 const PoolCompositionCell: PoolCellComponent = ({
   row: {
-    original: { id, type, spreadFactor, reserveCoins },
+    original: { id, type, spreadFactor, reserveCoins, raw },
   },
 }) => {
   const { t } = useTranslation();
@@ -529,20 +529,20 @@ const PoolCompositionCell: PoolCellComponent = ({
           {type === "cosmwasm-alloyed" ? (
             <span className="subtitle1 md:subtitle2">
               {(() => {
-                // Extract asset name from alloyed denom format: factory/{contract}/alloyed/all{ASSET}
+                // For alloyed pools, extract asset name from reserve coin symbols
+                // Clean up symbols by removing prefixes and lowercase letters/periods
                 const firstCoin = reserveCoins[0];
                 if (firstCoin) {
-                  // Check if it's an alloyed asset denom
-                  if (firstCoin.currency.coinMinimalDenom.includes("/alloyed/all")) {
-                    // Extract the asset name (e.g., "BTC" from "allBTC")
-                    const parts = firstCoin.currency.coinMinimalDenom.split("/alloyed/all");
-                    const asset = parts[1] || firstCoin.denom.replace(/^all/, "");
-                    return `Alloyed ${asset}`;
-                  } else {
-                    // Fallback: use the symbol and remove "all" prefix if present
-                    const asset = firstCoin.denom.replace(/^all/, "");
-                    return `Alloyed ${asset}`;
+                  let asset = firstCoin.denom
+                    // Remove lowercase letters and periods
+                    .replace(/[a-z.]/g, "");
+                  
+                  // Handle specific overrides
+                  if (asset === "WBTC" || firstCoin.denom.includes("BTC")) {
+                    asset = "BTC";
                   }
+                  
+                  return `Alloyed ${asset || firstCoin.denom}`;
                 }
                 return "Alloyed Asset";
               })()}
