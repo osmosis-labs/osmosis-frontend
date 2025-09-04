@@ -631,7 +631,9 @@ function getPoolLink(pool: Pool): string {
     return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-astroport-pcl") {
-    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+    // Get contract address from raw pool data for cosmwasm pools
+    const contractAddress = (pool.raw as any).contract_address;
+    return `https://osmosis.astroport.fi/pools/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-whitewhale") {
     return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
