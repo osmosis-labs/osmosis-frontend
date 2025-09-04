@@ -9,12 +9,6 @@ export const BlacklistedPoolIds: string[] = ["895"];
  */
 export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
-/**
- * Cosmwasm Code Ids confirmed to be alloyed pools in current env.
- * @deprecated use packages/server/src/queries/complex/pools/env.ts
- */
-export const AlloyedPoolCodeIds = IS_TESTNET ? [] : ["814", "867", "996"];
-
 export const RecommendedSwapDenoms = [
   "OSMO",
   "USDC",

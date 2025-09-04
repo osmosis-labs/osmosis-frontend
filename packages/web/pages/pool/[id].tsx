@@ -50,7 +50,7 @@ const Pool: FunctionComponent<Props> = ({
     // Handle different cosmwasm pool type redirections
     if (pool.type.startsWith("cosmwasm")) {
       let redirectUrl = "";
-      
+
       if (pool.type === "cosmwasm-alloyed") {
         redirectUrl = `https://alloyed.osmosis.zone/pools/${poolId}`;
       } else if (pool.type === "cosmwasm-astroport-pcl") {
@@ -66,7 +66,7 @@ const Pool: FunctionComponent<Props> = ({
           redirectUrl = `https://celatone.osmosis.zone/osmosis-1/pools/${poolId}`;
         }
       }
-      
+
       if (redirectUrl) {
         window.location.href = redirectUrl;
       }
