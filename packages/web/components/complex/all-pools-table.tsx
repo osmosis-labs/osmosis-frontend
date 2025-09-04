@@ -42,7 +42,9 @@ const useAllPoolsTable = () => {
       searchQuery: parseAsString,
       poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
         parseAsStringLiteral<PoolTypeFilter>(poolFilterTypes)
-      ).withDefault(poolFilterTypes.filter(type => type !== "cosmwasm-transmuter")),
+      ).withDefault(
+        poolFilterTypes.filter((type) => type !== "cosmwasm-transmuter")
+      ),
       poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
         parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
       ).withDefault([...incentiveTypes]),
@@ -136,7 +138,7 @@ const TableControls = () => {
             },
             {
               id: "cosmwasm-transmuter",
-              display: "Custom",
+              display: t("components.table.custom"),
             },
           ]}
           onSelect={(poolType) => {

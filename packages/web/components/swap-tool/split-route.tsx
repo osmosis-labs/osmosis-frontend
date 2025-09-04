@@ -180,7 +180,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                       {t(
                         type === "concentrated"
                           ? "clPositions.supercharged"
-                          : type === "cosmwasm-transmuter" || type === "cosmwasm-alloyed"
+                          : type === "cosmwasm-transmuter" ||
+                            type === "cosmwasm-alloyed"
                           ? "pool.transmuter"
                           : type === "cosmwasm-astroport-pcl"
                           ? "Astroport PCL"

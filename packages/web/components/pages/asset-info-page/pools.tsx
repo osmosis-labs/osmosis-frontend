@@ -18,7 +18,9 @@ interface AssetPoolsProps {
 
 const defaultFilters: PoolsTableFilters = {
   searchQuery: null,
-  poolTypesFilter: poolFilterTypes.filter(type => type !== "cosmwasm-transmuter"),
+  poolTypesFilter: poolFilterTypes.filter(
+    (type) => type !== "cosmwasm-transmuter"
+  ),
   poolIncentivesFilter: incentiveTypes,
 };
 

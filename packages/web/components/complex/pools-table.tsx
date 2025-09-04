@@ -100,7 +100,9 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     disablePagination = false,
     filters = {
       searchQuery: undefined,
-      poolTypesFilter: poolFilterTypes.filter(type => type !== "cosmwasm-transmuter"),
+      poolTypesFilter: poolFilterTypes.filter(
+        (type) => type !== "cosmwasm-transmuter"
+      ),
       poolIncentivesFilter: incentiveTypes,
       denoms: [],
     },
@@ -144,7 +146,10 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
       types: [
         ...filters.poolTypesFilter.reduce((acc, type) => {
           if (type === "cosmwasm-transmuter") {
-            acc.push("cosmwasm-transmuter" as const, "cosmwasm-alloyed" as const);
+            acc.push(
+              "cosmwasm-transmuter" as const,
+              "cosmwasm-alloyed" as const
+            );
           } else {
             acc.push(type);
           }
@@ -536,12 +541,12 @@ const PoolCompositionCell: PoolCellComponent = ({
                   let asset = firstCoin.denom
                     // Remove lowercase letters and periods
                     .replace(/[a-z.]/g, "");
-                  
+
                   // Handle specific overrides
                   if (asset === "WBTC" || firstCoin.denom.includes("BTC")) {
                     asset = "BTC";
                   }
-                  
+
                   return `Alloyed ${asset || firstCoin.denom}`;
                 }
                 return "Alloyed Asset";
@@ -565,7 +570,9 @@ const PoolCompositionCell: PoolCellComponent = ({
                     "text-ion-400": Boolean(type === "concentrated"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
-                      type === "cosmwasm-transmuter" || type === "cosmwasm-alloyed" || type === "cosmwasm"
+                      type === "cosmwasm-transmuter" ||
+                        type === "cosmwasm-alloyed" ||
+                        type === "cosmwasm"
                     ),
                   })}
                 >
