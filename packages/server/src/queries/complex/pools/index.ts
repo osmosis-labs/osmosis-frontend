@@ -15,6 +15,7 @@ const allPooltypes = [
   "weighted",
   "stable",
   "cosmwasm-transmuter",
+  "cosmwasm-alloyed",
   "cosmwasm-astroport-pcl",
   "cosmwasm-whitewhale",
   "cosmwasm",

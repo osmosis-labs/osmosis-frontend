@@ -3,7 +3,7 @@ import {
   ConcentratedLiquidityPoolRaw,
   TickDataProvider,
 } from "./concentrated";
-import { CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
+import { AlloyedPool, CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
 import { StablePool, StablePoolRaw } from "./stable";
 import { WeightedPool, WeightedPoolRaw } from "./weighted";
 
@@ -26,6 +26,7 @@ export type PoolType =
   | "weighted"
   | "stable"
   | "transmuter"
+  | "alloyed"
   | "cosmwasm";
 
 /**
@@ -49,8 +50,14 @@ export function makeStaticPoolFromRaw(
     );
   }
   if (rawPool["@type"] === COSMWASM_POOL_TYPE) {
-    // currently only support transmuter pools
-    return new TransmuterPool(rawPool as CosmwasmPoolRaw);
+    const cosmwasmPool = rawPool as CosmwasmPoolRaw;
+    // Check code_id to determine if it's alloyed or transmuter
+    const alloyedCodeIds = ["814", "867", "996"];
+    if (alloyedCodeIds.includes(cosmwasmPool.code_id)) {
+      return new AlloyedPool(cosmwasmPool);
+    }
+    // Default to transmuter for code_id 148 and others
+    return new TransmuterPool(cosmwasmPool);
   }
 
   // Query pool should not be created without a supported pool

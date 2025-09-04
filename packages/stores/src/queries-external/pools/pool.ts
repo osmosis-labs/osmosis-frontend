@@ -548,14 +548,18 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
 export function isSupportedPool(
   poolRaw: any,
   poolIdBlacklist: string[] = [],
-  transmuterCodeIds: string[] = []
+  transmuterCodeIds: string[] = [],
+  alloyedCodeIds: string[] = []
 ) {
+  const allSupportedCosmwasmCodeIds = [...transmuterCodeIds, ...alloyedCodeIds];
   return (
     (poolRaw["@type"] === STABLE_POOL_TYPE ||
       poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
       poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE ||
       (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
-        transmuterCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
+        allSupportedCosmwasmCodeIds.includes(
+          (poolRaw as CosmwasmPoolRaw).code_id
+        ))) &&
     !poolIdBlacklist.includes(poolRaw.id)
   );
 }
