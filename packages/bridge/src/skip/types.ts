@@ -28,7 +28,7 @@ export type SkipChain = {
   cosmos_sdk_version: string;
   supports_memo: boolean;
   logo_uri?: string;
-  bech32Prefix: string;
+  bech32_prefix: string;
   chain_type: string;
 };
 
