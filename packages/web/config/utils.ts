@@ -411,6 +411,7 @@ export function getChainList({
             tx_page: explorer.tx_page.replace("${", "{"),
           })),
           keplrChain,
+          features: chain.features ?? [],
         };
       }
     )
