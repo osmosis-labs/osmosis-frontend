@@ -23,9 +23,9 @@ import { CosmosEWalletInterface } from "@keplr-ewallet/ewallet-sdk-cosmos";
 export class EWalletClient implements WalletClient {
   readonly client: CosmosEWalletInterface;
   private _defaultSignOptions: SignOptions = {
-    preferNoSetFee: true,
-    preferNoSetMemo: true,
-    disableBalanceCheck: true,
+    preferNoSetFee: false,
+    preferNoSetMemo: false,
+    disableBalanceCheck: false,
   };
 
   get defaultSignOptions() {
@@ -135,7 +135,6 @@ export class EWalletClient implements WalletClient {
     const finalSignOptions = {
       ...this.defaultSignOptions,
       ...signOptions,
-      preferNoSetFee: true,
     };
 
     console.log("[EWallet] signAmino - Gas fee settings:", {
@@ -172,7 +171,6 @@ export class EWalletClient implements WalletClient {
     const finalSignOptions = {
       ...this.defaultSignOptions,
       ...signOptions,
-      preferNoSetFee: true,
     };
 
     console.log("[EWallet] signDirect - Gas fee settings:", {
