@@ -1,5 +1,5 @@
 import * as cosmjsEncoding from "@cosmjs/encoding";
-import { Address } from '@ton/core';
+import { Address } from "@ton/core";
 import * as bitcoin from "bitcoinjs-lib";
 import bs58 from "bs58";
 import bs58check from "bs58check";
@@ -224,7 +224,11 @@ export function isBitcoinCashAddressValid({ address }: { address: string }) {
   return isValidCashAddress(address);
 }
 
-export function isSolanaAddressValid({ address }: { address: string }): boolean {
+export function isSolanaAddressValid({
+  address,
+}: {
+  address: string;
+}): boolean {
   if (address.length < 32 || address.length > 44) return false;
   try {
     const bytes = bs58.decode(address);

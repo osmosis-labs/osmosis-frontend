@@ -89,11 +89,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     );
 
     if (!canTransfer?.can_transfer) {
-      const reason = canTransfer?.reason || "Transfer is not available at this time";
+      const reason =
+        canTransfer?.reason || "Transfer is not available at this time";
 
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
-        errorType: reason?.toLowerCase().includes("amount is too low") ? "InsufficientAmountError" : "ApprovalTxError",
+        errorType: reason?.toLowerCase().includes("amount is too low")
+          ? "InsufficientAmountError"
+          : "ApprovalTxError",
         message: reason,
       });
     }
