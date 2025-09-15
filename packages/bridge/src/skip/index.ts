@@ -713,9 +713,23 @@ export class SkipBridgeProvider implements BridgeProvider {
         chain.chain_id === String(fromChain.chainId) &&
         fromChain.chainType === "cosmos"
       ) {
-        addressList.push(
-          toBech32(chain.bech32Prefix, fromBech32(fromAddress).data)
-        );
+        if (!chain.bech32_prefix) {
+          throw new Error(`Chain ${chain.chain_id} is missing bech32_prefix`);
+        }
+
+        try {
+          const decodedAddress = fromBech32(fromAddress);
+          if (!decodedAddress?.data) {
+            throw new Error(`Invalid bech32 address: ${fromAddress}`);
+          }
+          addressList.push(toBech32(chain.bech32_prefix, decodedAddress.data));
+        } catch (error) {
+          throw new Error(
+            `Failed to convert address ${fromAddress} for chain ${
+              chain.chain_id
+            }: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
         continue;
       }
 
@@ -724,9 +738,23 @@ export class SkipBridgeProvider implements BridgeProvider {
         chain.chain_id === String(toChain.chainId) &&
         toChain.chainType === "cosmos"
       ) {
-        addressList.push(
-          toBech32(chain.bech32Prefix, fromBech32(toAddress).data)
-        );
+        if (!chain.bech32_prefix) {
+          throw new Error(`Chain ${chain.chain_id} is missing bech32_prefix`);
+        }
+
+        try {
+          const decodedAddress = fromBech32(toAddress);
+          if (!decodedAddress?.data) {
+            throw new Error(`Invalid bech32 address: ${toAddress}`);
+          }
+          addressList.push(toBech32(chain.bech32_prefix, decodedAddress.data));
+        } catch (error) {
+          throw new Error(
+            `Failed to convert address ${toAddress} for chain ${
+              chain.chain_id
+            }: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
         continue;
       }
 
@@ -740,9 +768,23 @@ export class SkipBridgeProvider implements BridgeProvider {
         if (toChain.chainType === "cosmos") bech32Address = toAddress;
         if (!bech32Address) continue;
 
-        addressList.push(
-          toBech32(chain.bech32Prefix, fromBech32(bech32Address).data)
-        );
+        if (!chain.bech32_prefix) {
+          throw new Error(`Chain ${chain.chain_id} is missing bech32_prefix`);
+        }
+
+        try {
+          const decodedAddress = fromBech32(bech32Address);
+          if (!decodedAddress?.data) {
+            throw new Error(`Invalid bech32 address: ${bech32Address}`);
+          }
+          addressList.push(toBech32(chain.bech32_prefix, decodedAddress.data));
+        } catch (error) {
+          throw new Error(
+            `Failed to convert address ${bech32Address} for chain ${
+              chain.chain_id
+            }: ${error instanceof Error ? error.message : String(error)}`
+          );
+        }
       }
     }
 

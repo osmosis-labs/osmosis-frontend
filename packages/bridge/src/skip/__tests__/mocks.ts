@@ -182,7 +182,7 @@ export const SkipChains = {
       supports_memo: false,
       logo_uri:
         "https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png",
-      bech32Prefix: "",
+      bech32_prefix: "",
       fee_assets: [],
       chain_type: "evm",
       ibc_capabilities: {
@@ -201,7 +201,7 @@ export const SkipChains = {
       supports_memo: true,
       logo_uri:
         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/osmosis/chain.png",
-      bech32Prefix: "osmo",
+      bech32_prefix: "osmo",
       fee_assets: [
         {
           denom: "uosmo",
@@ -225,7 +225,7 @@ export const SkipChains = {
       supports_memo: true,
       logo_uri:
         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/agoric/chain.png",
-      bech32Prefix: "agoric",
+      bech32_prefix: "agoric",
       fee_assets: [
         {
           denom: "uist",
@@ -253,7 +253,7 @@ export const SkipChains = {
       supports_memo: true,
       logo_uri:
         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/archway/chain.png",
-      bech32Prefix: "archway",
+      bech32_prefix: "archway",
       fee_assets: [
         {
           denom: "aarch",
@@ -281,7 +281,7 @@ export const SkipChains = {
       supports_memo: true,
       logo_uri:
         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/noble/chain.png",
-      bech32Prefix: "noble",
+      bech32_prefix: "noble",
       fee_assets: [
         {
           denom:
@@ -310,7 +310,7 @@ export const SkipChains = {
       supports_memo: true,
       logo_uri:
         "https://raw.githubusercontent.com/chainapsis/keplr-chain-registry/main/images/dydx-mainnet/adydx.png",
-      bech32Prefix: "dydx",
+      bech32_prefix: "dydx",
       fee_assets: [
         {
           denom: "adydx",
