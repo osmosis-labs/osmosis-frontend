@@ -21,7 +21,6 @@ const supportedAssetsBridges: Bridge[] = [
   "Nomic",
   "Wormhole",
   "Nitro",
-  "Picasso",
   "Penumbra",
 ];
 

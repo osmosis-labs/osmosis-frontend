@@ -3,7 +3,6 @@ import { getRouteTokenOutGivenIn } from "@osmosis-labs/server";
 import { estimateGasFee, getSwapMessages } from "@osmosis-labs/tx";
 import { IbcTransferMethod } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
-import { getInt3DOGEMinimalDenom } from "@osmosis-labs/utils";
 
 import { BridgeQuoteError } from "../errors";
 import { IbcBridgeProvider } from "../ibc";
@@ -20,18 +19,22 @@ import {
   GetBridgeQuoteParams,
   GetBridgeSupportedAssetsParams,
 } from "../interface";
-import { getGasAsset } from "../utils/gas";
+import { getGasAsset } from "../utils";
 import { checkCanTransfer } from "./queries";
+import {
+  getInt3faceBridgeConfig,
+  Int3faceSupportedToken,
+  Int3faceSupportedTokensConfig,
+} from "./types";
 import { Int3faceProviderId } from "./utils";
 
 export class Int3faceBridgeProvider implements BridgeProvider {
   static readonly ID = Int3faceProviderId;
   readonly providerName = Int3faceBridgeProvider.ID;
-  readonly int3DOGEMinimalDenom: string;
-  readonly allDogeMinimalDenom: string | undefined;
   protected protoRegistry: Registry | null = null;
-
   protected readonly observerApiURL: string;
+
+  private readonly tokenConfigs: Int3faceSupportedTokensConfig;
 
   constructor(protected readonly ctx: BridgeProviderContext) {
     this.observerApiURL =
@@ -39,15 +42,23 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         ? "https://observer.mainnet.int3face.zone/v1"
         : "https://observer.testnet.int3face.zone/v1";
 
-    this.int3DOGEMinimalDenom = getInt3DOGEMinimalDenom({
-      env: this.ctx.env,
-    });
+    this.tokenConfigs = getInt3faceBridgeConfig(ctx.env);
+  }
 
-    // Define allDogeMinimalDenom inline
-    this.allDogeMinimalDenom =
-      ctx.env === "mainnet"
-        ? "factory/osmo10pk4crey8fpdyqd62rsau0y02e3rk055w5u005ah6ly7k849k5tsf72x40/alloyed/allDOGE"
-        : undefined; // No testnet allDOGE for now
+  private getInt3TokenInfo(denom?: string): Int3faceSupportedToken | null {
+    if (!denom) {
+      return null;
+    }
+
+    const config = this.tokenConfigs[denom];
+    if (!config) {
+      throw new BridgeQuoteError({
+        bridgeId: Int3faceProviderId,
+        errorType: "UnsupportedQuoteError",
+        message: `Token ${denom} is not supported.`,
+      });
+    }
+    return config;
   }
 
   async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
@@ -59,12 +70,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       fromAsset,
       fromAmount,
     } = params;
-
-    if (toChain.chainId !== "dogecoin") {
+    const tokenConfig = this.getInt3TokenInfo(fromAsset.denom);
+    if (!tokenConfig) {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
-        message: "Only Dogecoin is supported as a destination chain.",
+        message: `Int3face ${toChain.chainId} chain not found in chain list.`,
       });
     }
 
@@ -73,35 +84,41 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       fromChain.chainId,
       toChain.chainId,
       fromAsset.denom,
-      this.ctx.env
+      this.ctx.env,
+      fromAmount
     );
 
     if (!canTransfer?.can_transfer) {
+      const reason =
+        canTransfer?.reason || "Transfer is not available at this time";
+
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
-        errorType: "UnsupportedQuoteError",
-        message:
-          canTransfer?.reason || "Transfer is not available at this time",
+        errorType: reason?.toLowerCase().includes("amount is too low")
+          ? "InsufficientAmountError"
+          : "ApprovalTxError",
+        message: reason,
       });
     }
 
-    const destMemo = `{"dest-address": "${toAddress}", "dest-chain-id": "dogecoin"}`;
+    const destMemo = `{"dest-address": "${toAddress}", "dest-chain-id": "${toChain.chainId}"}`;
 
-    const int3Doge = this.ctx.assetLists
+    const int3Asset = this.ctx.assetLists
       .flatMap(({ assets }) => assets)
       .find(
-        ({ coinMinimalDenom }) => coinMinimalDenom === this.int3DOGEMinimalDenom
+        ({ coinMinimalDenom }) =>
+          coinMinimalDenom === tokenConfig.int3MinimalDenom
       );
 
-    if (!int3Doge) {
+    if (!int3Asset) {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
-        message: "Int3face Dogecoin asset not found in asset list.",
+        message: `Int3face ${toChain.chainId} asset not found in asset list.`,
       });
     }
 
-    const transferMethod = int3Doge.transferMethods.find(
+    const transferMethod = int3Asset.transferMethods.find(
       (method): method is IbcTransferMethod => method.type === "ibc"
     );
 
@@ -109,7 +126,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       throw new BridgeQuoteError({
         bridgeId: Int3faceProviderId,
         errorType: "UnsupportedQuoteError",
-        message: "IBC transfer method not found for Int3face Dogecoin asset.",
+        message: "IBC transfer method not found for Int3face asset.",
       });
     }
 
@@ -131,14 +148,15 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       | undefined;
 
     if (
-      this.allDogeMinimalDenom &&
-      fromAsset.address.toLowerCase() === this.allDogeMinimalDenom.toLowerCase()
+      tokenConfig?.allTokenMinimalDenom &&
+      fromAsset.address.toLowerCase() ===
+        tokenConfig.allTokenMinimalDenom.toLowerCase()
     ) {
       swapRoute = await getRouteTokenOutGivenIn({
         assetLists: this.ctx.assetLists,
         tokenInAmount: fromAmount,
         tokenInDenom: fromAsset.address,
-        tokenOutDenom: this.int3DOGEMinimalDenom,
+        tokenOutDenom: tokenConfig.int3MinimalDenom,
       });
 
       swapMessages = await getSwapMessages({
@@ -147,8 +165,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         quote: swapRoute,
         tokenInCoinDecimals: fromAsset.decimals,
         tokenInCoinMinimalDenom: fromAsset.address,
-        tokenOutCoinDecimals: int3Doge.decimals,
-        tokenOutCoinMinimalDenom: int3Doge.coinMinimalDenom,
+        tokenOutCoinDecimals: int3Asset.decimals,
+        tokenOutCoinMinimalDenom: int3Asset.coinMinimalDenom,
         userOsmoAddress: fromAddress,
         quoteType: "out-given-in",
       });
@@ -166,11 +184,12 @@ export class Int3faceBridgeProvider implements BridgeProvider {
     }
 
     const int3faceBridgeAsset: BridgeAsset = {
-      address: int3Doge.coinMinimalDenom,
-      decimals: int3Doge.decimals,
-      denom: int3Doge.symbol,
-      coinGeckoId: int3Doge.coingeckoId,
+      address: int3Asset.coinMinimalDenom,
+      decimals: int3Asset.decimals,
+      denom: int3Asset.symbol,
+      coinGeckoId: int3Asset.coingeckoId,
     };
+
     const ibcProvider = new IbcBridgeProvider(this.ctx);
 
     const transactionDataParams: GetBridgeQuoteParams = {
@@ -230,7 +249,6 @@ export class Int3faceBridgeProvider implements BridgeProvider {
           message: e.message,
         });
       }
-
       throw e;
     });
 
@@ -254,14 +272,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
           : new Dec(params.fromAmount)
         ).toString(),
         ...int3faceBridgeAsset,
-        denom: "DOGE",
+        denom: tokenConfig.denom,
         priceImpact: swapRoute?.priceImpactTokenOut?.toDec().toString() ?? "0",
       },
       fromChain: params.fromChain,
       toChain: params.toChain,
       transferFee: {
         ...params.fromAsset,
-        denom: "DOGE",
+        denom: tokenConfig.denom,
         chainId: params.fromChain.chainId,
         amount: "0",
       },
@@ -288,21 +306,26 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   }
 
   async getExternalUrl({
+    fromAsset,
+    toAsset,
     fromChain,
     toChain,
   }: GetBridgeExternalUrlParams): Promise<BridgeExternalUrl | undefined> {
-    // Check for valid chain combinations: either osmosis->dogecoin or dogecoin->osmosis
-    const isOsmosisToDoge =
+    const tokenConfigOfFromChain = this.getInt3TokenInfo(fromAsset?.denom);
+    const tokenConfigOfToChain = this.getInt3TokenInfo(toAsset?.denom);
+
+    // Check for valid chain combinations
+    const isOsmosisToSupportedChain =
       fromChain?.chainType === "cosmos" &&
       fromChain.chainId === "osmosis" &&
-      toChain?.chainId === "dogecoin";
+      !!tokenConfigOfToChain;
 
-    const isDogeToOsmosis =
-      fromChain?.chainId === "dogecoin" &&
+    const isSupportedChainToOsmosis =
       toChain?.chainType === "cosmos" &&
-      toChain.chainId === "osmosis";
+      toChain.chainId === "osmosis" &&
+      !!tokenConfigOfFromChain;
 
-    if (!isOsmosisToDoge && !isDogeToOsmosis) {
+    if (!isOsmosisToSupportedChain && !isSupportedChainToOsmosis) {
       return undefined;
     }
 
@@ -312,14 +335,14 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         : "https://testnet.app.int3face.zone/bridge/"
     );
 
-    if (isOsmosisToDoge) {
+    if (isOsmosisToSupportedChain) {
       url.searchParams.set("fromChain", "osmosis");
-      url.searchParams.set("fromToken", "DOGE.int3");
-      url.searchParams.set("toChain", "dogecoin");
+      url.searchParams.set("toChain", String(toChain?.chainId));
+      url.searchParams.set("fromToken", tokenConfigOfToChain?.int3TokenSymbol);
     } else {
-      url.searchParams.set("fromChain", "dogecoin");
+      url.searchParams.set("fromChain", String(fromChain?.chainId));
       url.searchParams.set("toChain", "osmosis");
-      url.searchParams.set("toToken", "DOGE.int3");
+      url.searchParams.set("fromToken", String(tokenConfigOfFromChain?.denom));
     }
 
     return { urlProviderName: "Int3face", url };
@@ -328,27 +351,6 @@ export class Int3faceBridgeProvider implements BridgeProvider {
   async getTransactionData(): Promise<BridgeTransactionRequest> {
     throw new Error("Int3face transactions are currently not supported.");
   }
-
-  // Note: keep for future
-  // getVaultAddresses() {
-  //
-  //   return cachified({
-  //     cache: this.ctx.cache,
-  //     key: Int3faceBridgeProvider.ID + "_vault",
-  //     ttl: this.ctx.env === "mainnet" ? 30 * 60 * 1000 : -1, // 30 minutes for mainnet
-  //     getFreshValue: async () => {
-  //       try {
-  //         const data = await apiClient<Int3FaceVaultResponse>(
-  //           `${this.observerApiURL}/vault_addresses`
-  //         );
-  //         return data.vault_addresses;
-  //       } catch (e) {
-  //         const error = e as ApiClientError;
-  //         throw error.data;
-  //       }
-  //     },
-  //   });
-  // }
 
   async getSupportedAssets({
     asset,
@@ -362,27 +364,33 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         (a) => a.coinMinimalDenom.toLowerCase() === asset.address.toLowerCase()
       );
 
+    const tokenConfig = this.getInt3TokenInfo(assetListAsset?.symbol);
+
+    if (!tokenConfig) {
+      return [];
+    }
+
     if (assetListAsset) {
-      const isInt3Doge =
+      const isInt3Asset =
         assetListAsset.coinMinimalDenom.toLowerCase() ===
-        this.int3DOGEMinimalDenom.toLowerCase();
+        tokenConfig.int3MinimalDenom.toLowerCase();
 
-      const isAllDoge =
-        this.allDogeMinimalDenom &&
+      const isAllAsset =
+        tokenConfig.allTokenMinimalDenom &&
         assetListAsset.coinMinimalDenom.toLowerCase() ===
-          this.allDogeMinimalDenom.toLowerCase();
+          tokenConfig.allTokenMinimalDenom.toLowerCase();
 
-      if (isInt3Doge || isAllDoge) {
+      if (isInt3Asset || isAllAsset) {
         return [
           {
             transferTypes:
               direction === "deposit" ? ["external-url"] : ["quote"],
-            chainId: "dogecoin",
-            chainName: "Dogecoin",
-            chainType: "doge",
-            denom: "DOGE",
-            address: "koinu",
-            decimals: 8,
+            chainId: tokenConfig.chainId,
+            chainName: tokenConfig.chainName,
+            chainType: tokenConfig.chainType,
+            denom: tokenConfig.denom,
+            address: tokenConfig.address,
+            decimals: assetListAsset.decimals,
           },
         ];
       }

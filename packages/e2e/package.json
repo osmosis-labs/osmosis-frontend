@@ -4,8 +4,6 @@
   "private": true,
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf .next",
-    "lint": "biome check --write",
-    "lint:fix": "biome check --fix --unsafe",
     "test": "npx playwright test",
     "setup": "yarn install && npx playwright install --with-deps chromium"
   },
@@ -16,7 +14,6 @@
     "dotenv": "17.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.1.4",
     "@types/node": "22.17.1",
     "typescript": "5.9.2"
   }

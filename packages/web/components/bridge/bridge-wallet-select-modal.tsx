@@ -1,9 +1,14 @@
 import {
   isBitcoinAddressValid,
+  isBitcoinCashAddressValid,
   isCosmosAddressValid,
   isDogecoinAddressValid,
   isEvmAddressValid,
+  isLitecoinAddressValid,
   isNil,
+  isSolanaAddressValid,
+  isTonAddressValid,
+  isXrplAddressValid,
 } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -55,7 +60,12 @@ interface BridgeWalletSelectProps {
 
 export const chainTypesRequiringManualAddress = [
   "bitcoin",
+  "bitcoin-cash",
   "doge",
+  "litecoin",
+  "xrpl",
+  "solana",
+  "ton",
 ] as const satisfies readonly SupportedChain["chainType"][];
 
 export const BridgeWalletSelectModal: FunctionComponent<
@@ -550,6 +560,26 @@ const SendToAnotherAddressForm: FunctionComponent<
               });
             } else if (toChain.chainType === "doge") {
               isValid = isDogecoinAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "bitcoin-cash") {
+              isValid = isBitcoinCashAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "litecoin") {
+              isValid = isLitecoinAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "xrpl") {
+              isValid = isXrplAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "solana") {
+              isValid = isSolanaAddressValid({
+                address: nextValue,
+              });
+            } else if (toChain.chainType === "ton") {
+              isValid = isTonAddressValid({
                 address: nextValue,
               });
             }

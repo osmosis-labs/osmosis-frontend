@@ -49,13 +49,22 @@ interface CanTransferResponse {
 
 const denomOfInt3face: Record<string, string> = {
   DOGE: "dogecoin-doge",
+  SOL: "solana-sol",
+  LTC: "litecoin-ltc",
+  BTC: "bitcoin-btc",
+  BCH: "bitcoin-cash-bch",
+  XRP: "xrpl-xrp",
+  TON: "ton-ton",
+  TRUMP: "solana-trump",
+  PENGU: "solana-pengu",
 };
 
 export async function checkCanTransfer(
   srcChainId: string | number,
-  destChainId: string,
+  destChainId: string | number,
   assetId: string,
-  env: "testnet" | "mainnet"
+  env: "testnet" | "mainnet",
+  fromAmount: string
 ): Promise<CanTransferResponse> {
   let srcChainIdConverted;
 
@@ -67,13 +76,16 @@ export async function checkCanTransfer(
 
   const origin =
     env === "mainnet"
-      ? "https://api.mainnet.int3face.zone/int3face"
-      : "https://api.testnet.int3face.zone/int3face";
+      ? "https://api.mainnet.int3face.zone"
+      : "https://api.testnet.int3face.zone";
 
   const url = new URL(
-    `/bridge/v1beta1/can-transfer/${srcChainIdConverted}/${destChainId}/${denomOfInt3face[assetId]}`,
+    `/int3face/bridge/v1beta1/can-transfer/${srcChainIdConverted}/${destChainId}/${denomOfInt3face[assetId]}`,
     origin
   );
+
+  // Note: Add minimum amount check
+  url.searchParams.set("amount", fromAmount);
 
   return apiClient<CanTransferResponse>(url.toString());
 }
