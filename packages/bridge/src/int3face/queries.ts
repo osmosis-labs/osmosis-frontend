@@ -57,14 +57,14 @@ const denomOfInt3face: Record<string, string> = {
   TON: "ton-ton",
   TRUMP: "solana-trump",
   PENGU: "solana-pengu",
-}
+};
 
 export async function checkCanTransfer(
-    srcChainId: string | number,
-    destChainId: string | number,
-    assetId: string,
-    env: "testnet" | "mainnet",
-    fromAmount: string
+  srcChainId: string | number,
+  destChainId: string | number,
+  assetId: string,
+  env: "testnet" | "mainnet",
+  fromAmount: string
 ): Promise<CanTransferResponse> {
   let srcChainIdConverted;
 
