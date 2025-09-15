@@ -90,7 +90,7 @@ export class ObservableHistoricalAndLiquidityData {
    Used to get historical range for price chart
   */
   @observable
-  protected _historicalRange: TimeDuration = "7d";
+  protected _historicalRange: TimeDuration = "1d";
 
   @observable.ref
   protected _historicalData: TokenPairHistoricalPrice[] = [];
