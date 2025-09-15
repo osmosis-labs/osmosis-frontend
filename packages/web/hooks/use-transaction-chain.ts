@@ -1,5 +1,13 @@
 import { BridgeChain } from "@osmosis-labs/bridge";
-import { BitcoinChainInfo, DogecoinChainInfo } from "@osmosis-labs/utils";
+import {
+  BitcoinCashChainInfo,
+  BitcoinChainInfo,
+  DogecoinChainInfo,
+  LitecoinChainInfo,
+  SolanaChainInfo,
+  TonChainInfo,
+  XrplChainInfo
+} from "@osmosis-labs/utils";
 
 import { api } from "~/utils/trpc";
 
@@ -48,6 +56,36 @@ export const useTransactionChain = ({ chain }: { chain: BridgeChain }) => {
         chainPrettyName: DogecoinChainInfo.prettyName,
         chainLogoUri: DogecoinChainInfo.logoUri,
         // chainColor: DogecoinChainInfo.color,
+      };
+    } else if (chain?.chainType === "litecoin") {
+      return {
+        chainPrettyName: LitecoinChainInfo.prettyName,
+        chainLogoUri: LitecoinChainInfo.logoUri,
+        chainColor: LitecoinChainInfo.color,
+      };
+    } else if (chain?.chainType === "bitcoin-cash") {
+      return {
+        chainPrettyName: BitcoinCashChainInfo.prettyName,
+        chainLogoUri: BitcoinCashChainInfo.logoUri,
+        chainColor: BitcoinCashChainInfo.color,
+      };
+    } else if (chain?.chainType === "xrpl") {
+      return {
+        chainPrettyName: XrplChainInfo.prettyName,
+        chainLogoUri: XrplChainInfo.logoUri,
+        chainColor: XrplChainInfo.color,
+      };
+    } else if (chain?.chainType === "ton") {
+      return {
+        chainPrettyName: TonChainInfo.prettyName,
+        chainLogoUri: TonChainInfo.logoUri,
+        chainColor: TonChainInfo.color,
+      };
+    } else if (chain?.chainType === "solana") {
+      return {
+        chainPrettyName: SolanaChainInfo.prettyName,
+        chainLogoUri: SolanaChainInfo.logoUri,
+        chainColor: SolanaChainInfo.color,
       };
     }
     return {
