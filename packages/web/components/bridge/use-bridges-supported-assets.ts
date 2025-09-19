@@ -48,7 +48,11 @@ export const useBridgesSupportedAssets = ({
        * since we should not be using Int3face for deposits
        * as of https://osmosis-network.slack.com/archives/C0963S0DB4Z/p1758138969630079
        */
-      .filter((bridge) => direction === "deposit" && bridge !== "Int3face")
+      .filter((bridge) => {
+        if (direction === "withdraw") return true;
+
+        return bridge !== "Int3face";
+      })
       .flatMap((bridge) =>
         (assets ?? []).map((asset) =>
           t.bridgeTransfer.getSupportedAssetsByBridge(
