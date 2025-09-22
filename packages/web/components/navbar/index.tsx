@@ -1,4 +1,3 @@
-import { logEvent } from "@amplitude/analytics-browser";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
 import { queryOsmosisCMS } from "@osmosis-labs/server";
 import {
@@ -31,7 +30,6 @@ import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-cl
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
@@ -158,7 +156,7 @@ export const NavBar: FunctionComponent<
       isBannerWithinDateRange;
 
     const handleTradeClicked = () => {
-      logEvent(EventName.Topnav.tradeClicked);
+      // logEvent(EventName.Topnav.tradeClicked);
     };
 
     const title = navBarStore.title || titleProp;
@@ -358,7 +356,7 @@ const WalletInfo: FunctionComponent<
         <Button
           size="md"
           onClick={() => {
-            logEvent([EventName.Topnav.connectWalletClicked]);
+            // logEvent([EventName.Topnav.connectWalletClicked]);
             onOpenWalletSelect({
               walletOptions: [
                 { walletType: "cosmos", chainId: accountStore.osmosisChainId },

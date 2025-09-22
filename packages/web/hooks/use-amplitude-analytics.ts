@@ -1,4 +1,3 @@
-import { Identify, identify } from "@amplitude/analytics-browser";
 import { useEffect } from "react";
 import { create } from "zustand";
 
@@ -33,12 +32,12 @@ export const logAmplitudeEvent = ([eventName, eventProperties]:
 };
 
 const setUserAmplitudeProperty = (
-  key: keyof UserProperties,
-  value: UserProperties[keyof UserProperties]
+  _: keyof UserProperties,
+  __: UserProperties[keyof UserProperties]
 ) => {
-  const newIdentify = new Identify();
-  newIdentify.set(key, value);
-  identify(newIdentify);
+  // const newIdentify = new Identify();
+  // newIdentify.set(key, value);
+  // identify(newIdentify);
 };
 
 /** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
