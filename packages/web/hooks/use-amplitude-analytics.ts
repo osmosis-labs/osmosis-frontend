@@ -1,9 +1,3 @@
-import {
-  Identify,
-  identify,
-  init as amplitudeInit,
-  logEvent as amplitudeLogEvent,
-} from "@amplitude/analytics-browser";
 import { useEffect } from "react";
 import { create } from "zustand";
 
@@ -33,17 +27,17 @@ export const logAmplitudeEvent = ([eventName, eventProperties]:
   if (DEBUG) {
     console.info({ name: eventName, props: eventProperties });
   }
-  amplitudeLogEvent(eventName, eventProperties);
+  // amplitudeLogEvent(eventName, eventProperties);
   useAmplitudeStore.getState().setLastEvent({ eventName, eventProperties });
 };
 
 const setUserAmplitudeProperty = (
-  key: keyof UserProperties,
-  value: UserProperties[keyof UserProperties]
+  _: keyof UserProperties,
+  __: UserProperties[keyof UserProperties]
 ) => {
-  const newIdentify = new Identify();
-  newIdentify.set(key, value);
-  identify(newIdentify);
+  // const newIdentify = new Identify();
+  // newIdentify.set(key, value);
+  // identify(newIdentify);
 };
 
 /** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
@@ -59,9 +53,9 @@ export function useAmplitudeAnalytics({
   useEffect(() => {
     if (init) {
       if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
-        amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
-          serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
-        });
+        // amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
+        //   serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+        // });
       }
     }
 
