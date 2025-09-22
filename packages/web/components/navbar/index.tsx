@@ -30,7 +30,7 @@ import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-cl
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useAmplitudeAnalytics, useDisclosure, useTranslation } from "~/hooks";
+import { useDisclosure, useTranslation } from "~/hooks";
 import { useOneClickTradingSession } from "~/hooks/one-click-trading/use-one-click-trading-session";
 import { useICNSName } from "~/hooks/queries/osmosis/use-icns-name";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -326,7 +326,6 @@ const WalletInfo: FunctionComponent<
     usePreviousConnectedCosmosAccount();
 
   const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
