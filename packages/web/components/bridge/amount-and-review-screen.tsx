@@ -241,6 +241,8 @@ export const AmountAndReviewScreen = observer(
           address:
             fromChain?.chainType === "evm"
               ? getAddress(fromAsset.address)
+              : direction === "deposit"
+              ? fromAsset.address
               : asset?.coinMinimalDenom || fromAsset.address,
           decimals: fromAsset.decimals,
           denom: fromAsset.denom,
