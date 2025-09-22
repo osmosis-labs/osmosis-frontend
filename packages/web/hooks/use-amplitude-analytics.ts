@@ -1,9 +1,4 @@
-import {
-  Identify,
-  identify,
-  init as amplitudeInit,
-  logEvent as amplitudeLogEvent,
-} from "@amplitude/analytics-browser";
+import { Identify, identify } from "@amplitude/analytics-browser";
 import { useEffect } from "react";
 import { create } from "zustand";
 
@@ -33,7 +28,7 @@ export const logAmplitudeEvent = ([eventName, eventProperties]:
   if (DEBUG) {
     console.info({ name: eventName, props: eventProperties });
   }
-  amplitudeLogEvent(eventName, eventProperties);
+  // amplitudeLogEvent(eventName, eventProperties);
   useAmplitudeStore.getState().setLastEvent({ eventName, eventProperties });
 };
 
@@ -59,9 +54,9 @@ export function useAmplitudeAnalytics({
   useEffect(() => {
     if (init) {
       if (process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY !== undefined) {
-        amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
-          serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
-        });
+        // amplitudeInit(process.env.NEXT_PUBLIC_AMPLITUDE_API_KEY, undefined, {
+        //   serverUrl: process.env.NEXT_PUBLIC_AMPLITUDE_SERVER_URL,
+        // });
       }
     }
 
