@@ -42,34 +42,45 @@ export const useBridgesSupportedAssets = ({
   direction: "deposit" | "withdraw";
 }) => {
   const supportedAssetsResults = api.useQueries((t) =>
-    supportedAssetsBridges.flatMap((bridge) =>
-      (assets ?? []).map((asset) =>
-        t.bridgeTransfer.getSupportedAssetsByBridge(
-          {
-            bridge,
-            asset: {
-              address: asset.coinMinimalDenom,
-              decimals: asset.coinDecimals,
-              denom: asset.coinDenom,
+    supportedAssetsBridges
+      /**
+       * Disable Int3face for deposits
+       * since we should not be using Int3face for deposits
+       * as of https://osmosis-network.slack.com/archives/C0963S0DB4Z/p1758138969630079
+       */
+      .filter((bridge) => {
+        if (direction === "withdraw") return true;
+
+        return bridge !== "Int3face";
+      })
+      .flatMap((bridge) =>
+        (assets ?? []).map((asset) =>
+          t.bridgeTransfer.getSupportedAssetsByBridge(
+            {
+              bridge,
+              asset: {
+                address: asset.coinMinimalDenom,
+                decimals: asset.coinDecimals,
+                denom: asset.coinDenom,
+              },
+              direction,
+              chain,
             },
-            direction,
-            chain,
-          },
-          {
-            enabled: !isNil(assets),
-            staleTime: 30_000,
-            cacheTime: 30_000,
-            // Disable retries, as useQueries
-            // will block successful queries from being returned
-            // if failed queries are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // query that the user can use.
-            retry: false,
-          }
+            {
+              enabled: !isNil(assets),
+              staleTime: 30_000,
+              cacheTime: 30_000,
+              // Disable retries, as useQueries
+              // will block successful queries from being returned
+              // if failed queries are being returned
+              // until retry starts returning false.
+              // This causes slow UX even though there's a
+              // query that the user can use.
+              retry: false,
+            }
+          )
         )
       )
-    )
   );
 
   const successfulQueries = useMemo(
