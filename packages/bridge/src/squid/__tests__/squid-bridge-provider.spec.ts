@@ -113,7 +113,7 @@ describe("SquidBridgeProvider", () => {
     provider = new SquidBridgeProvider("integratorId", ctx);
   });
 
-  it.only("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
+  it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
       rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
         res(
