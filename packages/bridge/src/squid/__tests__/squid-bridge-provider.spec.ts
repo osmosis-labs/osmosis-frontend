@@ -34,6 +34,10 @@ beforeEach(() => {
   server.use(
     rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
       return res(
+        ctx.set(
+          "x-integrator-id",
+          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!
+        ),
         ctx.json({
           route: {
             estimate: {
@@ -69,6 +73,10 @@ beforeEach(() => {
     }),
     rest.get("https://v2.api.squidrouter.com/v2/tokens", (_req, res, ctx) =>
       res(
+        ctx.set(
+          "x-integrator-id",
+          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!
+        ),
         ctx.json({
           tokens: MockTokens,
         })
@@ -76,6 +84,10 @@ beforeEach(() => {
     ),
     rest.get("https://v2.api.squidrouter.com/v2/chains", (_req, res, ctx) =>
       res(
+        ctx.set(
+          "x-integrator-id",
+          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!
+        ),
         ctx.json({
           chains: MockChains,
         })
@@ -112,7 +124,13 @@ describe("SquidBridgeProvider", () => {
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
       rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
+        res(
+          ctx.set(
+            "x-integrator-id",
+            process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!
+          ),
+          ctx.json(ETHtoAVAX_EthereumToAvalanche_Route)
+        )
       )
     );
 
@@ -188,7 +206,13 @@ describe("SquidBridgeProvider", () => {
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
       rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(ctx.json(ETH_OsmosisToEthereum_Route))
+        res(
+          ctx.set(
+            "x-integrator-id",
+            process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!
+          ),
+          ctx.json(ETH_OsmosisToEthereum_Route)
+        )
       )
     );
 
