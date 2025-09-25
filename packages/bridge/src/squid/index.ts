@@ -195,7 +195,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         }
 
         if (
-          data?.route.params.toToken.toLowerCase() !==
+          data?.route?.params?.toToken?.toLowerCase() !==
           toAsset.address?.toLowerCase()
         ) {
           throw new BridgeQuoteError({
