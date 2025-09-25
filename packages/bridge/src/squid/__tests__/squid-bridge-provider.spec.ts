@@ -59,9 +59,7 @@ beforeEach(() => {
               routeType: "SEND",
             },
             params: {
-              toToken: {
-                address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-              },
+              toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
             },
           },
         })
@@ -194,7 +192,32 @@ describe("SquidBridgeProvider", () => {
         res(ctx.json(ETH_OsmosisToEthereum_Route))
       )
     );
-
+    console.log(
+      "sdgfdgfd",
+      JSON.stringify({
+        fromChain: {
+          chainId: "osmosis-1",
+          chainName: "Osmosis",
+          chainType: "cosmos",
+        },
+        toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        fromAsset: {
+          denom: "ETH",
+          address:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          decimals: 18,
+        },
+        toAsset: {
+          denom: "WETH",
+          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          decimals: 18,
+        },
+        fromAmount: "1000000000000000000000",
+        fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        toAddress: "0x6c515B41bFBEe0aA754F306098Ba005152c928b9",
+        slippage: 1,
+      })
+    );
     const quote = await provider.getQuote({
       fromChain: {
         chainId: "osmosis-1",
