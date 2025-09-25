@@ -116,7 +116,28 @@ describe("SquidBridgeProvider", () => {
         res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
       )
     );
-
+    const quoteRequest = {
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        decimals: 18,
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        decimals: 18,
+      },
+      fromAmount: "1000000000000000",
+      fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      toAddress: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      slippage: 1,
+    };
+    console.log(
+      "ETH from Ethereum to AVAX on Avalanche request:",
+      JSON.stringify(quoteRequest)
+    );
     const quote = await provider.getQuote({
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
@@ -193,7 +214,7 @@ describe("SquidBridgeProvider", () => {
       )
     );
     console.log(
-      "sdgfdgfd",
+      "ETH from Osmosis to Ethereum request:",
       JSON.stringify({
         fromChain: {
           chainId: "osmosis-1",
