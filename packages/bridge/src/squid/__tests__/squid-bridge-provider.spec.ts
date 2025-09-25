@@ -32,12 +32,8 @@ jest.mock("viem", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
+    rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
       return res(
-        ctx.set(
-          "x-integrator-id",
-          process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || ""
-        ),
         ctx.json({
           route: {
             estimate: {
@@ -110,19 +106,16 @@ describe("SquidBridgeProvider", () => {
         revisionHeight: "1000",
       }),
     };
-    provider = new SquidBridgeProvider("integratorId", ctx);
+    provider = new SquidBridgeProvider(
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || "",
+      ctx
+    );
   });
 
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(
-          ctx.set(
-            "x-integrator-id",
-            process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || ""
-          ),
-          ctx.json(ETHtoAVAX_EthereumToAvalanche_Route)
-        )
+      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
+        res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
       )
     );
 
@@ -197,14 +190,8 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
-        res(
-          ctx.set(
-            "x-integrator-id",
-            process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || ""
-          ),
-          ctx.json(ETH_OsmosisToEthereum_Route)
-        )
+      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
+        res(ctx.json(ETH_OsmosisToEthereum_Route))
       )
     );
 
@@ -3692,7 +3679,10 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
         revisionHeight: "1000",
       }),
     };
-    provider = new SquidBridgeProvider("integratorId", ctx);
+    provider = new SquidBridgeProvider(
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || "",
+      ctx
+    );
   });
 
   it("should generate the correct URL for given parameters", async () => {
