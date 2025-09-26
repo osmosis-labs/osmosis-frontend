@@ -221,7 +221,7 @@ export const AmountAndReviewScreen = observer(
           address:
             toChain?.chainType === "evm"
               ? getAddress(toAsset.address)
-              : asset?.coinMinimalDenom || toAsset.address,
+              : toAsset.address,
           decimals: toAsset.decimals,
           denom: toAsset.denom,
           imageUrl: asset?.coinImageUrl ?? assetsInOsmosis?.[0]?.coinImageUrl,
@@ -241,9 +241,7 @@ export const AmountAndReviewScreen = observer(
           address:
             fromChain?.chainType === "evm"
               ? getAddress(fromAsset.address)
-              : direction === "deposit"
-              ? fromAsset.address
-              : asset?.coinMinimalDenom || fromAsset.address,
+              : fromAsset.address,
           decimals: fromAsset.decimals,
           denom: fromAsset.denom,
           amount: fromAsset.amount,

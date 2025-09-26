@@ -112,13 +112,13 @@ export class SquidBridgeProvider implements BridgeProvider {
         };
 
         const url = new URL(`${this.apiURL}/v2/route`);
-        Object.entries(getRouteParams).forEach(([key, value]) => {
-          url.searchParams.append(key, value.toString());
-        });
         const data = await apiClient<RouteResponse>(url.toString(), {
           headers: {
             "x-integrator-id": this.integratorId,
+            "Content-Type": "application/json",
           },
+          method: "POST",
+          body: JSON.stringify(getRouteParams),
         }).catch((e) => {
           if (e instanceof ApiClientError) {
             const errMsgs = getSquidErrors(e);
@@ -195,8 +195,8 @@ export class SquidBridgeProvider implements BridgeProvider {
         }
 
         if (
-          data.route.params.toToken.address.toLowerCase() !==
-          toAsset.address.toLowerCase()
+          data?.route?.params?.toToken?.toLowerCase() !==
+          toAsset.address?.toLowerCase()
         ) {
           throw new BridgeQuoteError({
             bridgeId: SquidBridgeProvider.ID,
@@ -520,13 +520,13 @@ export class SquidBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
       const parsedData = JSON.parse(data) as {
-        msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
+        typeUrl: typeof IbcTransferType | typeof WasmTransferType;
       };
 
-      if (parsedData.msgTypeUrl === IbcTransferType) {
+      if (parsedData.typeUrl === IbcTransferType) {
         const ibcData = parsedData as {
-          msgTypeUrl: typeof IbcTransferType;
-          msg: {
+          typeUrl: typeof IbcTransferType;
+          value: {
             sourcePort: string;
             sourceChannel: string;
             token: {
@@ -550,23 +550,23 @@ export class SquidBridgeProvider implements BridgeProvider {
         const timeoutHeight = await this.ctx.getTimeoutHeight(
           toChain.chainType === "cosmos"
             ? toChain
-            : { destinationAddress: ibcData.msg.receiver }
+            : { destinationAddress: ibcData.value.receiver }
         );
 
         const { typeUrl, value: msg } = await makeIBCTransferMsg({
-          memo: ibcData.msg.memo,
-          receiver: ibcData.msg.receiver,
-          sender: ibcData.msg.sender,
-          sourceChannel: ibcData.msg.sourceChannel,
-          sourcePort: ibcData.msg.sourcePort,
+          memo: ibcData.value.memo,
+          receiver: ibcData.value.receiver,
+          sender: ibcData.value.sender,
+          sourceChannel: ibcData.value.sourceChannel,
+          sourcePort: ibcData.value.sourcePort,
           timeoutTimestamp: new Long(
-            ibcData.msg.timeoutTimestamp.low,
-            ibcData.msg.timeoutTimestamp.high,
-            ibcData.msg.timeoutTimestamp.unsigned
+            ibcData.value.timeoutTimestamp.low,
+            ibcData.value.timeoutTimestamp.high,
+            ibcData.value.timeoutTimestamp.unsigned
           ).toString() as any,
           // @ts-ignore
           timeoutHeight,
-          token: ibcData.msg.token,
+          token: ibcData.value.token,
         });
 
         return {
@@ -574,21 +574,21 @@ export class SquidBridgeProvider implements BridgeProvider {
           msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
-      } else if (parsedData.msgTypeUrl === WasmTransferType) {
+      } else if (parsedData.typeUrl === WasmTransferType) {
         const cosmwasmData = parsedData as {
-          msgTypeUrl: typeof WasmTransferType;
-          msg: {
+          typeUrl: typeof WasmTransferType;
+          value: {
             wasm: {
               contract: string;
-              msg: object;
+              value: object;
             };
           };
         };
 
         const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
           sender: fromAddress,
-          contract: cosmwasmData.msg.wasm.contract,
-          msg: cosmwasmData.msg.wasm.msg,
+          contract: cosmwasmData.value.wasm.contract,
+          msg: cosmwasmData.value.wasm.value,
           funds: [fromCoin],
         });
 
