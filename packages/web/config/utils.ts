@@ -111,14 +111,14 @@ export async function saveAssetImageToTokensDir({
     console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
-    return;
+    return null;
   }
 
   if (!response.body) {
     console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
-    return;
+    return null;
   }
 
   // Save the image to the file system.
