@@ -108,15 +108,17 @@ export async function saveAssetImageToTokensDir({
   // Fetch the image from the URL.
   const response = await fetch(imageUrl);
   if (!response.ok) {
-    throw new Error(
+    console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
+    return;
   }
 
   if (!response.body) {
-    throw new Error(
+    console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
+    return;
   }
 
   // Save the image to the file system.
