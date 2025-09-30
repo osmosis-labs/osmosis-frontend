@@ -32,7 +32,7 @@ jest.mock("viem", () => ({
 
 beforeEach(() => {
   server.use(
-    rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
+    rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) => {
       return res(
         ctx.json({
           route: {
@@ -59,9 +59,7 @@ beforeEach(() => {
               routeType: "SEND",
             },
             params: {
-              toToken: {
-                address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
-              },
+              toToken: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
             },
           },
         })
@@ -106,16 +104,40 @@ describe("SquidBridgeProvider", () => {
         revisionHeight: "1000",
       }),
     };
-    provider = new SquidBridgeProvider("integratorId", ctx);
+    provider = new SquidBridgeProvider(
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || "",
+      ctx
+    );
   });
 
   it("should get a quote - ETH from Ethereum to AVAX on Avalanche", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
+      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
         res(ctx.json(ETHtoAVAX_EthereumToAvalanche_Route))
       )
     );
-
+    const quoteRequest = {
+      fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+      toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
+      fromAsset: {
+        denom: "ETH",
+        address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        decimals: 18,
+      },
+      toAsset: {
+        denom: "AVAX",
+        address: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+        decimals: 18,
+      },
+      fromAmount: "1000000000000000",
+      fromAddress: "0x7863Ec05b123885c7609B05c35Df777F3F180258",
+      toAddress: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+      slippage: 1,
+    };
+    console.log(
+      "ETH from Ethereum to AVAX on Avalanche request:",
+      JSON.stringify(quoteRequest)
+    );
     const quote = await provider.getQuote({
       fromChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
       toChain: { chainId: 43114, chainName: "Avalanche", chainType: "evm" },
@@ -187,11 +209,36 @@ describe("SquidBridgeProvider", () => {
 
   it("should get a quote - ETH from Osmosis to Ethereum", async () => {
     server.use(
-      rest.get("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
+      rest.post("https://v2.api.squidrouter.com/v2/route", (_req, res, ctx) =>
         res(ctx.json(ETH_OsmosisToEthereum_Route))
       )
     );
-
+    console.log(
+      "ETH from Osmosis to Ethereum request:",
+      JSON.stringify({
+        fromChain: {
+          chainId: "osmosis-1",
+          chainName: "Osmosis",
+          chainType: "cosmos",
+        },
+        toChain: { chainId: 1, chainName: "Ethereum", chainType: "evm" },
+        fromAsset: {
+          denom: "ETH",
+          address:
+            "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
+          decimals: 18,
+        },
+        toAsset: {
+          denom: "WETH",
+          address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+          decimals: 18,
+        },
+        fromAmount: "1000000000000000000000",
+        fromAddress: "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx",
+        toAddress: "0x6c515B41bFBEe0aA754F306098Ba005152c928b9",
+        slippage: 1,
+      })
+    );
     const quote = await provider.getQuote({
       fromChain: {
         chainId: "osmosis-1",
@@ -3676,7 +3723,10 @@ describe("SquidBridgeProvider.getExternalUrl", () => {
         revisionHeight: "1000",
       }),
     };
-    provider = new SquidBridgeProvider("integratorId", ctx);
+    provider = new SquidBridgeProvider(
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID || "",
+      ctx
+    );
   });
 
   it("should generate the correct URL for given parameters", async () => {
