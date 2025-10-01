@@ -64,7 +64,8 @@ export async function checkCanTransfer(
   destChainId: string | number,
   assetId: string,
   env: "testnet" | "mainnet",
-  fromAmount: string
+  fromAmount: string,
+  toAddress: string
 ): Promise<CanTransferResponse> {
   let srcChainIdConverted;
 
@@ -84,8 +85,9 @@ export async function checkCanTransfer(
     origin
   );
 
-  // Note: Add minimum amount check
+  // Note: Add minimum amount and dest address check
   url.searchParams.set("amount", fromAmount);
+  url.searchParams.set("dest_addr", toAddress);
 
   return apiClient<CanTransferResponse>(url.toString());
 }
