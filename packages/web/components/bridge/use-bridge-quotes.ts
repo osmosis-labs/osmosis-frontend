@@ -799,7 +799,7 @@ export const useBridgeQuotes = ({
       heading: t("transfer.invalidAddress", {
         chain: toChain?.prettyName ?? "",
       }),
-      description: t("transfer.taprootAddressNotSupported"),
+      description: t("taprootAddressNotSupported"),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {
