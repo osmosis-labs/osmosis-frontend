@@ -228,16 +228,30 @@ const TokenLiquiditySelector = observer(
             </span>
           </button>
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
             placeholder="0"
             value={value}
             onChange={(e) => {
-              // we might have to adjust this treshold
-              if (e.target.value.length > 32) return;
-              if (e.target.value === "") return setter();
+              let inputValue = e.target.value;
 
-              setter(e.target.value);
+              // we might have to adjust this treshold
+              if (inputValue.length > 32) return;
+              if (inputValue === "") return setter();
+
+              // Handle leading decimal point
+              if (inputValue.startsWith(".")) {
+                inputValue = "0" + inputValue;
+              }
+
+              // Validate input: only allow valid numerical input with optional decimal point
+              // Allows: "1", "1.", "1.0", "1.00", ".5", "0.5", etc.
+              // Rejects: "1.2.3", "abc", "1a", etc.
+              const validPattern = /^\d*\.?\d*$/;
+              if (!validPattern.test(inputValue)) return;
+
+              setter(inputValue);
             }}
           />
           <span className="caption h-3.5 text-osmoverse-400">

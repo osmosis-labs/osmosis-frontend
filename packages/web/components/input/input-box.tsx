@@ -39,6 +39,8 @@ interface Props
   classes?: Partial<Record<ClassVariants, string>>;
   styles?: Partial<Record<ClassVariants, React.CSSProperties>>;
   onClick?: () => void;
+  /** Input mode for mobile keyboards. Use "decimal" for numeric inputs with decimal support. */
+  inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
 }
 
 export const InputBox: FunctionComponent<Props> = ({
@@ -63,6 +65,7 @@ export const InputBox: FunctionComponent<Props> = ({
   defaultValue,
   styles,
   onClick,
+  inputMode,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
   const [inputValue, setValue] = useControllableState({
@@ -140,6 +143,7 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
+            inputMode={inputMode}
             onWheel={(e) => (e.target as HTMLInputElement).blur()}
             onBlur={(e: any) => {
               setInputFocused(false);
