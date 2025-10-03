@@ -1331,5 +1331,6 @@
   "lowLiquidityAlert": {
     "title": "Your trade may fail",
     "description": "Due to low liquidity of {tokenWithLowLiquidity} across all pools, this trade may result in high slippage and may not be executed."
-  }
+  },
+  "taprootAddressNotSupported": "Taproot addresses are not supported for withdrawals"
 }
