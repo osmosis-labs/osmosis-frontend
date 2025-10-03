@@ -1331,5 +1331,6 @@
   "lowLiquidityAlert": {
     "title": "Votre transaction peut échouer",
     "description": "En raison de la faible liquidité de {tokenWithLowLiquidity} dans tous les pools, cette transaction peut entraîner un glissement élevé et peut ne pas être exécutée."
-  }
+  },
+  "taprootAddressNotSupported": "Les adresses de racine pivotante ne sont pas prises en charge pour les retraits"
 }

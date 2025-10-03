@@ -85,7 +85,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       toChain.chainId,
       fromAsset.denom,
       this.ctx.env,
-      fromAmount
+      fromAmount,
+      toAddress
     );
 
     if (!canTransfer?.can_transfer) {

@@ -1331,5 +1331,6 @@
   "lowLiquidityAlert": {
     "title": "Su operación puede fracasar",
     "description": "Debido a la baja liquidez de {tokenWithLowLiquidity} en todos los grupos, esta operación puede generar un alto deslizamiento y es posible que no se ejecute."
-  }
+  },
+  "taprootAddressNotSupported": "Las direcciones Taproot no son compatibles con los retiros"
 }
