@@ -423,6 +423,10 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote]);
 
+  const isInvalidAddress = useMemo(() => {
+    return someError?.message.includes("taproot");
+  }, [someError]);
+
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
       {
@@ -789,6 +793,13 @@ export const useBridgeQuotes = ({
         chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
         asset: (isWithdraw ? toAsset?.denom : fromAsset?.denom) ?? "",
       }),
+    };
+  } else if (isInvalidAddress) {
+    errorBoxMessage = {
+      heading: t("transfer.invalidAddress", {
+        chain: toChain?.prettyName ?? "",
+      }),
+      description: t("transfer.taprootAddressNotSupported"),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {
