@@ -1331,5 +1331,6 @@
   "lowLiquidityAlert": {
     "title": "ممکن است معامله شما شکست بخورد",
     "description": "به دلیل نقدینگی پایین {tokenWithLowLiquidity} در تمام استخرها، این معامله ممکن است منجر به لغزش قیمت بالا شود و اجرا نشود."
-  }
+  },
+  "taprootAddressNotSupported": "آدرس‌های Taproot برای برداشت وجه پشتیبانی نمی‌شوند."
 }
