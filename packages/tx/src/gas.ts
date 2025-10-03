@@ -420,7 +420,7 @@ export async function getGasFeeAmount({
     });
 
     // Calculate the raw fee amount first before applying Math.max
-    const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).truncate();
+    const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).roundUp();
 
     // Only skip if the fee amount is greater than balance
     if (new Int(rawFeeAmount.toString()).gt(new Int(amount))) {
