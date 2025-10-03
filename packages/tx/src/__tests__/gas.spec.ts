@@ -327,7 +327,7 @@ describe("getGasFeeAmount", () => {
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .truncate()
+      .roundUp()
       .toString();
 
     expect(queryBalances).toBeCalledWith({
@@ -424,7 +424,7 @@ describe("getGasFeeAmount", () => {
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .truncate()
+      .roundUp()
       .toString();
 
     expect(queryBalances).toBeCalledWith({
@@ -511,7 +511,7 @@ describe("getGasFeeAmount", () => {
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .truncate()
+      .roundUp()
       .toString();
 
     expect(queryBalances).toBeCalledWith({
@@ -597,7 +597,7 @@ describe("getGasFeeAmount", () => {
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .truncate()
+      .roundUp()
       .toString();
 
     expect(queryBalances).toBeCalledWith({
@@ -684,7 +684,7 @@ describe("getGasFeeAmount", () => {
       .quo(new Dec(spotPrice))
       .mul(new Dec(1.01))
       .mul(new Dec(gasLimit))
-      .truncate()
+      .roundUp()
       .toString();
 
     expect(queryBalances).toBeCalledWith({
