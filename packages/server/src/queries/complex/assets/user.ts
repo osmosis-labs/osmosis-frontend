@@ -1,5 +1,5 @@
 import { AssetList, Chain, MinimalAsset } from "@osmosis-labs/types";
-import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import {
   aggregateCoinsByDenom,
   isNil,
@@ -137,16 +137,7 @@ export async function mapGetAssetsWithUserBalances<
     })
     .filter((a): a is Promise<TAsset & MaybeUserAssetCoin> => !!a);
 
-  const userAssets = (await Promise.all(eventualUserAssets)).filter(
-    ({ usdValue, liquidity }) => {
-      if (usdValue) return true;
-
-      if (liquidity instanceof PricePretty)
-        return liquidity.toDec().gt(new Dec(0));
-
-      return liquidity ? liquidity > 0 : false;
-    }
-  );
+  const userAssets = await Promise.all(eventualUserAssets);
 
   // if no search provided, sort by usdValue at head of list by default
   if (!search && sortFiatValueDirection) {
