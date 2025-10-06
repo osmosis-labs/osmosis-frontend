@@ -743,13 +743,16 @@ export const AmountScreen = observer(
           : !toChain || !toAsset));
 
     const isTransferButtonDisabled = useMemo(() => {
-      if (cryptoAmount === "" || cryptoAmount === "0" || !quote.userCanAdvance)
+      if (
+        cryptoAmount === "" ||
+        cryptoAmount === "0" ||
+        (!quote.userCanAdvance && !warnUserOfPriceImpact && !warnUserOfSlippage)
+      )
         return true;
 
       if (warnUserOfPriceImpact || warnUserOfSlippage) {
         return !wishesToProceed;
       }
-
       return false;
     }, [
       cryptoAmount,
