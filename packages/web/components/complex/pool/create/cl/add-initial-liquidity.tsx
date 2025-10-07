@@ -104,7 +104,8 @@ export const AddInitialLiquidity = observer(
         </div>
         {isAmountValid(baseAmount) &&
           isAmountValid(quoteAmount) &&
-          quoteUsdValue && (
+          quoteUsdValue &&
+          new Dec(baseAmount!).gt(new Dec(0)) && (
             <span className="subtitle1 text-osmoverse-300">
               Implied value: 1 {selectedBase.token.coinDenom}{" "}
               <span className="font-bold">
