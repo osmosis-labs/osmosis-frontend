@@ -121,7 +121,8 @@ export function getPoolsFromSidecar({
       const filteredPools = types
         ? pools.filter(
             (pool) =>
-              types.includes(pool.type) || alwaysIncludedTypes.includes(pool.type)
+              types.includes(pool.type) ||
+              alwaysIncludedTypes.includes(pool.type)
           )
         : pools;
 
