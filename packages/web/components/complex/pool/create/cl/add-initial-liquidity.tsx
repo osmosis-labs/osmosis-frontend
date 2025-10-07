@@ -111,9 +111,7 @@ export const AddInitialLiquidity = observer(
             isQuote
           />
         </div>
-        {isAmountValid(baseAmount) &&
-          isAmountValid(quoteAmount) &&
-          quoteUsdValue &&
+        {quoteUsdValue &&
           isPositiveDecAmount(baseAmount) &&
           isPositiveDecAmount(quoteAmount) && (
             <span className="subtitle1 text-osmoverse-300">

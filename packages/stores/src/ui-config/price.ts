@@ -60,21 +60,27 @@ export class PriceConfig {
   input(value: string | Dec) {
     if (value instanceof Dec) {
       this._decRaw = value.toString();
-    } else if (value === "") {
+      return;
+    }
+
+    // Trim and handle empty/whitespace-only input consistently
+    const trimmed = value.trim();
+    if (trimmed === "") {
       this._decRaw = "0";
+      return;
+    }
+
+    // Validate the input - reject invalid characters
+    if (!isValidNumericalRawInput(trimmed)) {
+      // Invalid input - ignore it, keep the previous value
+      return;
+    }
+
+    // Handle leading decimal point after validation
+    if (trimmed.startsWith(".")) {
+      this._decRaw = "0" + trimmed;
     } else {
-      // Validate the input - reject invalid characters
-      const trimmed = value.trim();
-      if (!isValidNumericalRawInput(trimmed)) {
-        // Invalid input - ignore it, keep the previous value
-        return;
-      }
-      // Handle leading decimal point after validation
-      if (trimmed.startsWith(".")) {
-        this._decRaw = "0" + trimmed;
-      } else {
-        this._decRaw = trimmed;
-      }
+      this._decRaw = trimmed;
     }
   }
 
@@ -91,6 +97,9 @@ export class PriceConfig {
 
   /** Current price adjusted based on base and quote currency decimals. */
   readonly toDecWithCurrencyDecimals = computedFn(() => {
+    if (this._decRaw.endsWith(".")) {
+      return new Dec(safeInputToDec(this._decRaw.slice(0, -1)));
+    }
     return new Dec(safeInputToDec(this._decRaw));
   });
 
