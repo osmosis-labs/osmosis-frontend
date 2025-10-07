@@ -60,8 +60,6 @@ export class PriceConfig {
   input(value: string | Dec) {
     if (value instanceof Dec) {
       this._decRaw = value.toString();
-    } else if (value.startsWith(".")) {
-      this._decRaw = "0" + value;
     } else if (value === "") {
       this._decRaw = "0";
     } else {
@@ -71,7 +69,12 @@ export class PriceConfig {
         // Invalid input - ignore it, keep the previous value
         return;
       }
-      this._decRaw = trimmed;
+      // Handle leading decimal point after validation
+      if (trimmed.startsWith(".")) {
+        this._decRaw = "0" + trimmed;
+      } else {
+        this._decRaw = trimmed;
+      }
     }
   }
 
