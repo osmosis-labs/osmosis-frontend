@@ -13,6 +13,9 @@ export function isValidNumericalRawInput(input: string): boolean {
   // Allow empty (user hasn't started) and single dot (user started a decimal)
   if (input === "" || input === ".") return true;
 
+  // Prevent excessively long inputs (reasonable limit for numeric input)
+  if (input.length > 50) return false;
+
   // Only digits with at most one decimal point, no signs, no exponents
   // Allows: "0", "10", "0.5", ".5" (handled above), "10.", "1.00"
   // Rejects: "-", "+", "1..2", "1.2.3", "1e3", "abc"
