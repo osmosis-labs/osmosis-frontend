@@ -40,7 +40,15 @@ interface Props
   styles?: Partial<Record<ClassVariants, React.CSSProperties>>;
   onClick?: () => void;
   /** Input mode for mobile keyboards. Use "decimal" for numeric inputs with decimal support. */
-  inputMode?: "none" | "text" | "tel" | "url" | "email" | "numeric" | "decimal" | "search";
+  inputMode?:
+    | "none"
+    | "text"
+    | "tel"
+    | "url"
+    | "email"
+    | "numeric"
+    | "decimal"
+    | "search";
 }
 
 export const InputBox: FunctionComponent<Props> = ({

@@ -370,7 +370,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         return;
 
       const value =
-        tokenAmount.length > 0 ? new Dec(safeInputToDec(tokenAmount)) : undefined;
+        tokenAmount.length > 0
+          ? new Dec(safeInputToDec(tokenAmount))
+          : undefined;
       const fiatValue = value
         ? swapState.priceState.price.mul(value)
         : undefined;
