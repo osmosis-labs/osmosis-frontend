@@ -1,7 +1,17 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+/** Safely converts a raw input string to a Dec value.
+ * Returns "0" for empty strings or lone decimals that can't be parsed.
+ */
+function safeInputToDec(input: string): string {
+  const trimmed = input.trim();
+  if (trimmed === "" || trimmed === ".") return "0";
+  return trimmed;
+}
 
 /** Manages user input of decimal values, and includes currency decimals in price calculation. */
 export class PriceConfig {
@@ -55,7 +65,13 @@ export class PriceConfig {
     } else if (value === "") {
       this._decRaw = "0";
     } else {
-      this._decRaw = value;
+      // Validate the input - reject invalid characters
+      const trimmed = value.trim();
+      if (!isValidNumericalRawInput(trimmed)) {
+        // Invalid input - ignore it, keep the previous value
+        return;
+      }
+      this._decRaw = trimmed;
     }
   }
 
@@ -63,20 +79,20 @@ export class PriceConfig {
    *  Intended for performing computation. */
   readonly toDec = computedFn(() => {
     if (this._decRaw.endsWith(".")) {
-      return this.removeCurrencyDecimals(this._decRaw.slice(0, -1));
+      return this.removeCurrencyDecimals(safeInputToDec(this._decRaw.slice(0, -1)));
     }
-    return this.removeCurrencyDecimals(this._decRaw);
+    return this.removeCurrencyDecimals(safeInputToDec(this._decRaw));
   });
 
   /** Current price adjusted based on base and quote currency decimals. */
   readonly toDecWithCurrencyDecimals = computedFn(() => {
-    return new Dec(this._decRaw);
+    return new Dec(safeInputToDec(this._decRaw));
   });
 
   /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed.
    *  Includes currency decimals for display. */
   toString() {
-    if (new Dec(this._decRaw).isZero()) return this._decRaw;
+    if (new Dec(safeInputToDec(this._decRaw)).isZero()) return this._decRaw;
     return trimZerosFromEnd(this._decRaw);
   }
 
