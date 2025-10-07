@@ -23,6 +23,15 @@ interface AddInitialLiquidityProps {
 
 const isAmountValid = (amount?: string) => !!amount && !/^0*$/.test(amount);
 
+const isPositiveDecAmount = (amount?: string): boolean => {
+  if (!amount) return false;
+  try {
+    return new Dec(amount).gt(new Dec(0));
+  } catch {
+    return false;
+  }
+};
+
 export const AddInitialLiquidity = observer(
   ({
     selectedBase,
@@ -105,7 +114,7 @@ export const AddInitialLiquidity = observer(
         {isAmountValid(baseAmount) &&
           isAmountValid(quoteAmount) &&
           quoteUsdValue &&
-          new Dec(baseAmount!).gt(new Dec(0)) && (
+          isPositiveDecAmount(baseAmount) && (
             <span className="subtitle1 text-osmoverse-300">
               Implied value: 1 {selectedBase.token.coinDenom}{" "}
               <span className="font-bold">
