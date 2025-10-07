@@ -114,7 +114,8 @@ export const AddInitialLiquidity = observer(
         {isAmountValid(baseAmount) &&
           isAmountValid(quoteAmount) &&
           quoteUsdValue &&
-          isPositiveDecAmount(baseAmount) && (
+          isPositiveDecAmount(baseAmount) &&
+          isPositiveDecAmount(quoteAmount) && (
             <span className="subtitle1 text-osmoverse-300">
               Implied value: 1 {selectedBase.token.coinDenom}{" "}
               <span className="font-bold">
