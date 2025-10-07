@@ -101,15 +101,32 @@ export function getPoolsFromSidecar({
         }
       });
 
-      return {
-        data: sidecarPools.data
-          .map((sidecarPool, index) =>
-            makePoolFromSidecarPool({
-              sidecarPool,
-              reserveCoins: reserveCoins[index] ?? null,
-            })
+      const pools = sidecarPools.data
+        .map((sidecarPool, index) =>
+          makePoolFromSidecarPool({
+            sidecarPool,
+            reserveCoins: reserveCoins[index] ?? null,
+          })
+        )
+        .filter(Boolean) as Pool[];
+
+      // Filter pools by requested types
+      // Since sidecar API can't distinguish cosmwasm subtypes, we filter after type identification
+      // Note: cosmwasm, cosmwasm-astroport-pcl, and cosmwasm-whitewhale are always included
+      const alwaysIncludedTypes: PoolType[] = [
+        "cosmwasm",
+        "cosmwasm-astroport-pcl",
+        "cosmwasm-whitewhale",
+      ];
+      const filteredPools = types
+        ? pools.filter(
+            (pool) =>
+              types.includes(pool.type) || alwaysIncludedTypes.includes(pool.type)
           )
-          .filter(Boolean) as Pool[],
+        : pools;
+
+      return {
+        data: filteredPools,
         total: sidecarPools.meta.total_items,
         nextCursor: sidecarPools.meta.next_cursor,
       };
