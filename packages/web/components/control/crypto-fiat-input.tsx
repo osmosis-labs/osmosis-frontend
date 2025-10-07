@@ -22,6 +22,15 @@ import { trimPlaceholderZeros } from "~/utils/number";
 
 const mulGasSlippage = new Dec("1.1");
 
+/** Safely converts a raw input string to a Dec value.
+ * Returns "0" for empty strings or lone decimals that can't be parsed.
+ */
+function safeInputToDec(input: string): string {
+  const trimmed = input.trim();
+  if (trimmed === "" || trimmed === ".") return "0";
+  return trimmed;
+}
+
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
   setCurrentUnit: (nextValue: "fiat" | "crypto") => void;
@@ -112,7 +121,7 @@ export const CryptoFiatInput: FunctionComponent<{
     if (!assetPrice?.fiatCurrency) return;
     return new PricePretty(
       assetPrice.fiatCurrency,
-      new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
+      new Dec(safeInputToDec(fiatInputRaw))
     );
   }, [assetPrice?.fiatCurrency, fiatInputRaw]);
 
@@ -124,11 +133,9 @@ export const CryptoFiatInput: FunctionComponent<{
         coinDenom: assetWithBalance.denom,
         coinMinimalDenom: assetWithBalance.address,
       },
-      cryptoInputRaw === ""
-        ? new Dec(0)
-        : new Dec(cryptoInputRaw || "0").mul(
-            DecUtils.getTenExponentN(assetWithBalance.decimals)
-          )
+      new Dec(safeInputToDec(cryptoInputRaw)).mul(
+        DecUtils.getTenExponentN(assetWithBalance.decimals)
+      )
     );
   }, [assetWithBalance, cryptoInputRaw]);
 
