@@ -79,7 +79,9 @@ export class PriceConfig {
    *  Intended for performing computation. */
   readonly toDec = computedFn(() => {
     if (this._decRaw.endsWith(".")) {
-      return this.removeCurrencyDecimals(safeInputToDec(this._decRaw.slice(0, -1)));
+      return this.removeCurrencyDecimals(
+        safeInputToDec(this._decRaw.slice(0, -1))
+      );
     }
     return this.removeCurrencyDecimals(safeInputToDec(this._decRaw));
   });
