@@ -89,11 +89,11 @@ export class PriceConfig {
     return new Dec(safeInputToDec(this._decRaw));
   });
 
-  /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed.
-   *  Includes currency decimals for display. */
+  /** Raw value, which may be terminated with a `'.'`.
+   *  Includes currency decimals for display.
+   *  Preserves user input including trailing zeros to allow typing values like "0.0502". */
   toString() {
-    if (new Dec(safeInputToDec(this._decRaw)).isZero()) return this._decRaw;
-    return trimZerosFromEnd(this._decRaw);
+    return this._decRaw;
   }
 
   addCurrencyDecimals(price: Dec | string | number): Dec {
