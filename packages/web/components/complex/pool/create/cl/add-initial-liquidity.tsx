@@ -141,6 +141,8 @@ export const AddInitialLiquidity = observer(
           <button
             disabled={
               isTxLoading ||
+              !isPositiveDecAmount(baseAmount) ||
+              !isPositiveDecAmount(quoteAmount) ||
               safeParseDecOrZero(baseAmount).gt(
                 baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               ) ||
