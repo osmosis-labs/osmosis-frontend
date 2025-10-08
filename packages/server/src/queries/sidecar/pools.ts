@@ -128,12 +128,16 @@ const PoolTypeEnum: PoolType = {
 };
 
 // Function to retrieve integer values from the filter types
-export const getPoolTypeIntegers = (filters: string[]): number[] => {
+export const getPoolTypeIntegers = (
+  filters: string[]
+): number[] | undefined => {
   const integers = filters
     .map((filter) => PoolTypeEnum[filter] ?? -1) // Use -1 for undefined mappings
     .filter((value) => value !== -1); // Exclude invalid mappings
   // Deduplicate since multiple frontend types can map to same sidecar type
-  return Array.from(new Set(integers));
+  const deduplicated = Array.from(new Set(integers));
+  // Return undefined if empty to avoid sending empty filter[type] param
+  return deduplicated.length === 0 ? undefined : deduplicated;
 };
 
 type IncentiveType = Record<string, number>;
@@ -191,7 +195,10 @@ export async function queryPools({
   }
 
   if (types) {
-    params.append("filter[type]", getPoolTypeIntegers(types).join(","));
+    const typeIntegers = getPoolTypeIntegers(types);
+    if (typeIntegers) {
+      params.append("filter[type]", typeIntegers.join(","));
+    }
   }
 
   if (incentives) {
