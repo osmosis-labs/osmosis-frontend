@@ -1,6 +1,7 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -148,7 +149,15 @@ export const AddInitialLiquidity = observer(
               )
             }
             onClick={() => {
-              if (!baseAmount || !quoteAmount) return;
+              if (
+                !baseAmount ||
+                !quoteAmount ||
+                !isValidNumericalRawInput(baseAmount) ||
+                !isValidNumericalRawInput(quoteAmount) ||
+                !isPositiveDecAmount(baseAmount) ||
+                !isPositiveDecAmount(quoteAmount)
+              )
+                return;
 
               setIsTxLoading(true);
               account?.osmosis
