@@ -76,10 +76,16 @@ export class AlloyedPool implements BasePool, RoutablePool {
     const outAmounts = this.raw.tokens
       .filter(({ denom: tokenDenom }) => tokenDenom !== denom)
       .map(({ amount }) => new Int(amount));
-    return outAmounts.reduce(
-      (min, amount) => (amount.lt(min) ? amount : min),
-      new Int(Number.MAX_SAFE_INTEGER)
-    );
+
+    // Handle case where no other tokens exist
+    if (outAmounts.length === 0) {
+      return new Int(0);
+    }
+
+    // Use first element as initial value to compare only Int instances
+    return outAmounts
+      .slice(1)
+      .reduce((min, amount) => (amount.lt(min) ? amount : min), outAmounts[0]);
   }
 
   async getTokenOutByTokenIn(
