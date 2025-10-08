@@ -32,10 +32,14 @@ export type PoolType =
 /**
  * Returns corresponding pool class instance from raw pool data.
  * For CL quotes to succeed, a tick provider must be provided.
+ * @param rawPool The raw pool data
+ * @param tickDataProvider Optional tick data provider for CL pools
+ * @param alloyedCodeIds Optional array of code IDs for alloyed pools (defaults to mainnet values)
  */
 export function makeStaticPoolFromRaw(
   rawPool: PoolRaw,
-  tickDataProvider?: TickDataProvider
+  tickDataProvider?: TickDataProvider,
+  alloyedCodeIds: string[] = ["814", "867", "996"]
 ) {
   if (rawPool["@type"] === STABLE_POOL_TYPE) {
     return new StablePool(rawPool as StablePoolRaw);
@@ -52,11 +56,10 @@ export function makeStaticPoolFromRaw(
   if (rawPool["@type"] === COSMWASM_POOL_TYPE) {
     const cosmwasmPool = rawPool as CosmwasmPoolRaw;
     // Check code_id to determine if it's alloyed or transmuter
-    const alloyedCodeIds = ["814", "867", "996"];
     if (alloyedCodeIds.includes(cosmwasmPool.code_id)) {
       return new AlloyedPool(cosmwasmPool);
     }
-    // Default to transmuter for code_id 148 and others
+    // Default to transmuter for other cosmwasm pools
     return new TransmuterPool(cosmwasmPool);
   }
 

@@ -91,7 +91,8 @@ export class ObservableQueryPools
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
-            poolRaw
+            poolRaw,
+            this.alloyedCodeIds
           )
         );
       }

@@ -40,7 +40,6 @@ import {
   ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
 } from "../../queries/concentrated-liquidity";
-import { Head } from "../../queries/utils";
 import { ObservableQueryExternalBase } from "../base";
 
 /** Query store that can refresh an individual pool's data from the node.
@@ -65,7 +64,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
       this.raw,
       new ConcentratedLiquidityPoolTickDataProvider(
         this.queryLiquiditiesInNetDirection
-      )
+      ),
+      this.alloyedCodeIds
     );
   }
 
@@ -332,7 +332,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
-    raw: PoolRaw
+    raw: PoolRaw,
+    readonly alloyedCodeIds: string[] = ["814", "867", "996"]
   ) {
     super(
       kvStore,
@@ -483,7 +484,9 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
       chainGetter,
       queryLiquiditiesInNetDirection,
       queryBalances,
-    ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
+      _raw,
+      alloyedCodeIds,
+    ]: ConstructorParameters<typeof ObservableQueryPool>
   ): Promise<ObservableQueryPool> {
     try {
       // fetch pool
@@ -505,7 +508,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
         chainGetter,
         queryLiquiditiesInNetDirection,
         queryBalances,
-        data.pool
+        data.pool,
+        alloyedCodeIds
       );
     } catch {
       throw new Error("not-found");
