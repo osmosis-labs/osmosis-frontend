@@ -21,8 +21,6 @@ interface AddInitialLiquidityProps {
   onClose?: () => void;
 }
 
-const isAmountValid = (amount?: string) => !!amount && !/^0*$/.test(amount);
-
 const isPositiveDecAmount = (amount?: string): boolean => {
   if (!amount) return false;
   try {
