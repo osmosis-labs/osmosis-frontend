@@ -32,6 +32,15 @@ const isPositiveDecAmount = (amount?: string): boolean => {
   }
 };
 
+const safeParseDecOrZero = (value?: string | number): Dec => {
+  if (!value) return new Dec(0);
+  try {
+    return new Dec(value);
+  } catch {
+    return new Dec(0);
+  }
+};
+
 export const AddInitialLiquidity = observer(
   ({
     selectedBase,
@@ -133,10 +142,10 @@ export const AddInitialLiquidity = observer(
           <button
             disabled={
               isTxLoading ||
-              new Dec(baseAmount ?? 0).gt(
+              safeParseDecOrZero(baseAmount).gt(
                 baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               ) ||
-              new Dec(quoteAmount ?? 0).gt(
+              safeParseDecOrZero(quoteAmount).gt(
                 quoteAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               )
             }
@@ -270,7 +279,9 @@ const TokenLiquiditySelector = observer(
                 formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
-                    new Dec(value).mul(assetPrice?.toDec() ?? new Dec(0))
+                    safeParseDecOrZero(value).mul(
+                      assetPrice?.toDec() ?? new Dec(0)
+                    )
                   )
                 )}
           </span>
