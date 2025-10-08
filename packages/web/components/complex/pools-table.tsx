@@ -621,26 +621,40 @@ const PoolCompositionCell: PoolCellComponent = ({
   );
 };
 
+function getContractAddress(pool: Pool): string | undefined {
+  const raw = pool.raw as any;
+  return raw?.contract_address;
+}
+
 function getPoolLink(pool: Pool): string {
   if (pool.type === "cosmwasm-alloyed") {
     return `https://alloyed.osmosis.zone/pools/${pool.id}`;
   }
   if (pool.type === "cosmwasm-transmuter") {
-    // Get contract address from raw pool data for cosmwasm pools
-    const contractAddress = (pool.raw as any).contract_address;
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
     return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-astroport-pcl") {
-    // Get contract address from raw pool data for cosmwasm pools
-    const contractAddress = (pool.raw as any).contract_address;
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
     return `https://osmosis.astroport.fi/pools/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-whitewhale") {
     return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
   }
   if (pool.type === "cosmwasm") {
-    // Other cosmwasm pools should also go to celatone with contract address
-    const contractAddress = (pool.raw as any).contract_address;
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
     return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
 
