@@ -4,6 +4,7 @@ import {
   TickDataProvider,
 } from "./concentrated";
 import { AlloyedPool, CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
+import { ALLOYED_POOL_CODE_IDS_MAINNET } from "./pool-constants";
 import { StablePool, StablePoolRaw } from "./stable";
 import { WeightedPool, WeightedPoolRaw } from "./weighted";
 
@@ -39,7 +40,7 @@ export type PoolType =
 export function makeStaticPoolFromRaw(
   rawPool: PoolRaw,
   tickDataProvider?: TickDataProvider,
-  alloyedCodeIds: string[] = ["814", "867", "996"]
+  alloyedCodeIds: string[] = ALLOYED_POOL_CODE_IDS_MAINNET
 ) {
   if (rawPool["@type"] === STABLE_POOL_TYPE) {
     return new StablePool(rawPool as StablePoolRaw);

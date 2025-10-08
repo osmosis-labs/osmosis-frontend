@@ -31,12 +31,12 @@ import {
   toastOnBroadcastFailed,
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
+import { AlloyedPoolCodeIds, TransmuterPoolCodeIds } from "@osmosis-labs/server";
+
 import {
-  AlloyedPoolCodeIds,
   BlacklistedPoolIds,
   HISTORICAL_DATA_URL,
   IS_TESTNET,
-  TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";

@@ -6,6 +6,7 @@ import {
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
 import {
+  ALLOYED_POOL_CODE_IDS_MAINNET,
   BasePool,
   CONCENTRATED_LIQ_POOL_TYPE,
   ConcentratedLiquidityPool,
@@ -333,7 +334,7 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
     raw: PoolRaw,
-    readonly alloyedCodeIds: string[] = ["814", "867", "996"]
+    readonly alloyedCodeIds: string[] = ALLOYED_POOL_CODE_IDS_MAINNET
   ) {
     super(
       kvStore,
