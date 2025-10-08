@@ -113,11 +113,10 @@ export class AlloyedPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenOut.denom, tokenInDenom);
 
-    // Check if pool has enough of the output token
-    const outAssetAmount = this.poolAssets.find(
-      ({ denom }) => denom === tokenOut.denom
+    const inAssetAmount = this.poolAssets.find(
+      ({ denom }) => denom === tokenInDenom
     )?.amount;
-    if (!outAssetAmount || outAssetAmount.lt(tokenOut.amount)) {
+    if (!inAssetAmount || inAssetAmount.lt(tokenOut.amount)) {
       throw new NotEnoughLiquidityError();
     }
 
