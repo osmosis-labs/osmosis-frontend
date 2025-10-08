@@ -31,7 +31,10 @@ import {
   toastOnBroadcastFailed,
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
-import { AlloyedPoolCodeIds, TransmuterPoolCodeIds } from "@osmosis-labs/server";
+import {
+  AlloyedPoolCodeIds,
+  TransmuterPoolCodeIds,
+} from "@osmosis-labs/server";
 
 import {
   BlacklistedPoolIds,
