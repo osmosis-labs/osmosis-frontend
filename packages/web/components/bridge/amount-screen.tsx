@@ -743,13 +743,16 @@ export const AmountScreen = observer(
           : !toChain || !toAsset));
 
     const isTransferButtonDisabled = useMemo(() => {
-      if (cryptoAmount === "" || cryptoAmount === "0" || !quote.userCanAdvance)
+      if (
+        cryptoAmount === "" ||
+        cryptoAmount === "0" ||
+        (!quote.userCanAdvance && !warnUserOfPriceImpact && !warnUserOfSlippage)
+      )
         return true;
 
       if (warnUserOfPriceImpact || warnUserOfSlippage) {
         return !wishesToProceed;
       }
-
       return false;
     }, [
       cryptoAmount,
@@ -1232,8 +1235,6 @@ export const AmountScreen = observer(
               }
               fromChain={fromChain}
               isLoading={isLoadingBridgeQuote}
-              warnUserOfPriceImpact={warnUserOfPriceImpact}
-              warnUserOfSlippage={warnUserOfSlippage}
             />
           )}
 
@@ -1510,26 +1511,19 @@ const TransferDetails: FunctionComponent<{
   quote: BridgeQuote | undefined;
   fromChain: BridgeChainWithDisplayInfo;
   isLoading: boolean;
-  warnUserOfPriceImpact?: boolean;
-  warnUserOfSlippage?: boolean;
-}> = ({
-  quote,
-  fromChain,
-  isLoading,
-  warnUserOfPriceImpact,
-  warnUserOfSlippage,
-}) => {
+}> = ({ quote, fromChain, isLoading }) => {
   const [detailsRef, { height: detailsHeight, y: detailsOffset }] =
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const successfulQuotes = quote?.successfulQuotes ?? [];
+  const isOpen = quote?.warnUserOfPriceImpact || quote?.warnUserOfSlippage;
 
   if (!isLoading && successfulQuotes.length === 0) {
     return null;
   }
 
   return (
-    <Disclosure defaultOpen={warnUserOfPriceImpact || warnUserOfSlippage}>
+    <Disclosure key={`details-disclosure-${isOpen}`} defaultOpen={isOpen}>
       {({ open }) => (
         <div
           className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"

@@ -172,7 +172,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           className="w-full md:h-12"
           onClick={onConfirm}
           disabled={
-            !quote.userCanAdvance || quote.isTxPending || quote.isApprovingToken
+            (!quote.userCanAdvance &&
+              !quote.warnUserOfPriceImpact &&
+              !quote.warnUserOfSlippage) ||
+            quote.isTxPending ||
+            quote.isApprovingToken
           }
         >
           <div className="md:subtitle1 text-h6 font-h6">
@@ -371,7 +375,9 @@ const TransferDetails: FunctionComponent<
   const expandedPadding = isMobile ? 10 : 0;
 
   return (
-    <Disclosure>
+    <Disclosure
+      defaultOpen={quote.warnUserOfPriceImpact || quote.warnUserOfSlippage}
+    >
       {({ open }) => (
         <div
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"
