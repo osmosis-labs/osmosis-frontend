@@ -68,7 +68,9 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 type FormattedValidator = {
   validatorName: string;
+  myStake: Dec;
   formattedMyStake: string;
+  votingPower: Dec;
   formattedVotingPower: string;
   formattedCommissions: string;
   formattedWebsite: string;
@@ -225,7 +227,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
             return {
               validatorName,
+              myStake,
               formattedMyStake,
+              votingPower,
               formattedVotingPower,
               commissions,
               formattedCommissions,
@@ -322,7 +326,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             },
             {
               id: "myStake",
-              accessorKey: "formattedMyStake",
+              accessorKey: "myStake",
+              sortingFn: (rowA, rowB) => {
+                const a = rowA.original.myStake;
+                const b = rowB.original.myStake;
+                return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
+              },
               header: () => t("stake.validatorSquad.column.myStake"),
               cell: observer(
                 (
@@ -338,7 +347,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             },
             {
               id: "votingPower",
-              accessorKey: "formattedVotingPower",
+              accessorKey: "votingPower",
+              sortingFn: (rowA, rowB) => {
+                const a = rowA.original.votingPower;
+                const b = rowB.original.votingPower;
+                return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
+              },
               header: () => t("stake.validatorSquad.column.votingPower"),
               cell: observer(
                 (
