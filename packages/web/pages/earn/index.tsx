@@ -13,6 +13,7 @@ import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
 import { StrategiesTable } from "~/components/earn/table";
+import { getListOptions } from "~/components/earn/table/utils";
 import {
   TabButton,
   TabButtons,
@@ -77,18 +78,16 @@ function Earn() {
   const defaultFilters: Filters = useMemo(
     () => ({
       tokenHolder: isWalletConnected && holdenDenoms?.length ? "my" : "all",
-      strategyMethod: [
-        { label: "Staking", value: "Staking" },
-        { label: "LP (Vault)", value: "LP (Vault)" },
-        { label: "Perps LP", value: "Perps LP" },
-        { label: "Lending", value: "Lending" },
-      ],
-      platform: cmsData?.platforms
-        ? cmsData.platforms.map((platform) => ({
-            label: platform.name,
-            value: platform.name,
-          }))
-        : [],
+      strategyMethod: getListOptions<string>(
+        cmsData?.strategies ?? [],
+        "type",
+        "type"
+      ),
+      platform: getListOptions<string>(
+        cmsData?.strategies ?? [],
+        "platform",
+        "platform"
+      ),
       lockDurationType: "all",
       search: typeof search === "string" ? search : "",
       specialTokens: [],
