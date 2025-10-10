@@ -37,7 +37,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";

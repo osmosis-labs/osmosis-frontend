@@ -64,6 +64,15 @@ interface PlaceLimitToolProps {
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
 }
 
+/** Safely converts a raw input string to a Dec value.
+ * Returns "0" for empty strings or lone decimals that can't be parsed.
+ */
+function safeInputToDec(input: string): string {
+  const trimmed = input.trim();
+  if (trimmed === "" || trimmed === ".") return "0";
+  return trimmed;
+}
+
 /* Roundes a given number to the given precision
  * i.e. roundUpToDecimal(0.23456, 2) = 0.24
  */
@@ -360,7 +369,10 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       )
         return;
 
-      const value = tokenAmount.length > 0 ? new Dec(tokenAmount) : undefined;
+      const value =
+        tokenAmount.length > 0
+          ? new Dec(safeInputToDec(tokenAmount))
+          : undefined;
       const fiatValue = value
         ? swapState.priceState.price.mul(value)
         : undefined;
@@ -388,7 +400,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       const value =
         fiatAmount && fiatAmount.length > 0 ? fiatAmount : undefined;
       const tokenValue = value
-        ? new Dec(value).quo(swapState.priceState.price)
+        ? new Dec(safeInputToDec(value)).quo(swapState.priceState.price)
         : undefined;
 
       // When setting the token amount for a sell we want to round up due to
@@ -635,7 +647,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
         inputValueRaw = fiatAmount;
       }
 
-      const valueDec = new Dec(inputValueRaw || "0");
+      const valueDec = new Dec(safeInputToDec(inputValueRaw));
 
       return !valueDec.isZero() && valueDec.lt(new Dec(0.01));
     }, [

@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@osmosis-labs/unit";
-import { isNil } from "@osmosis-labs/utils";
+import { isNil, isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { mulPrice } from "~/hooks/queries/assets/use-coin-fiat-value";
@@ -225,9 +225,4 @@ export function useAmountInput({
       [fraction]
     ),
   };
-}
-
-export function isValidNumericalRawInput(input: string) {
-  const num = Number(input);
-  return !isNaN(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
 }

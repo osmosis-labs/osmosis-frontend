@@ -858,7 +858,8 @@ const PriceInputBox: FunctionComponent<{
         <InputBox
           className="bg-transparent text-subtitle1 leading-tight"
           style="no-border"
-          type="number"
+          type="text"
+          inputMode="decimal"
           rightEntry
           inputRef={inputRef}
           autoFocus={

@@ -134,7 +134,8 @@ export const DepositAmountGroup: FunctionComponent<{
                 className="bg-transparent text-h5 font-h5"
                 style="no-border"
                 inputClassName="!leading-4"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 currentValue={currentValue}
                 onInput={onUpdate}
                 rightEntry

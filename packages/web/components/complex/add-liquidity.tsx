@@ -223,7 +223,8 @@ const AmountInput: FunctionComponent<{
             <div className="flex flex-col rounded-lg bg-osmoverse-1000 p-1">
               <InputBox
                 style="no-border"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 inputClassName="text-right self-end md:w-16 w-full ml-auto h-6 text-h6 font-h6 md:text-base"
                 currentValue={inputAmount}
                 onInput={onInputAmount}
