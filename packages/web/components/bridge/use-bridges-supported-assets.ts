@@ -292,6 +292,15 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "ripple"
       );
 
+    // Check if this is an ATOM withdrawal to prioritize Cosmos Hub
+    const isAtomWithdrawal =
+      direction === "withdraw" &&
+      assets?.some(
+        (asset) =>
+          asset.coinDenom?.toUpperCase().includes("ATOM") ||
+          asset.coinGeckoId === "cosmos"
+      );
+
     return Array.from(
       // Remove duplicate chains
       new Map(
@@ -335,6 +344,14 @@ export const useBridgesSupportedAssets = ({
                 a.chainId !== "xrplevm_1440000-1" &&
                 b.chainId === "xrplevm_1440000-1"
               )
+                return 1;
+            }
+
+            // For ATOM withdrawals, prioritize Cosmos Hub first
+            if (isAtomWithdrawal) {
+              if (a.chainId === "cosmoshub-4" && b.chainId !== "cosmoshub-4")
+                return -1;
+              if (a.chainId !== "cosmoshub-4" && b.chainId === "cosmoshub-4")
                 return 1;
             }
 
