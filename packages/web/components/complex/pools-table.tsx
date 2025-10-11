@@ -166,7 +166,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             direction: sortParams.allPoolsSortDir,
           }
         : undefined,
-      minLiquidityUsd: 1_000,
+      minLiquidityUsd: 0,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
