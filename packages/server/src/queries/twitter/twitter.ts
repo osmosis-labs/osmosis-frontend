@@ -81,7 +81,7 @@ export class Twitter {
   /**
    * @param cacheExpireTime Expire time in milliseconds. (7 days by default)
    *
-   * It should be enought if we wanna get tweets from 35 tokens every 7 days.
+   * It should be enough if we wanna get tweets from 35 tokens every 7 days.
    */
   constructor(cacheExpireTime: number = DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;

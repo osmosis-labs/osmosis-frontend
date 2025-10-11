@@ -59,7 +59,7 @@ export function getPoolIncentives(poolId: string) {
   return getCachedPoolIncentivesMap().then((map) => map.get(poolId));
 }
 
-/** Checks a pool's incentive data againt a given filter to determine if it's filtered out. */
+/** Checks a pool's incentive data against a given filter to determine if it's filtered out. */
 export function isIncentivePoolFiltered(
   incentives: PoolIncentives,
   filter: IncentivePoolFilter
