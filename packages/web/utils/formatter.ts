@@ -371,6 +371,134 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
 }
 
+/**
+ * Returns the full unformatted decimal value as a string, trimming only trailing zeros.
+ * Used for tooltips to show the complete precision.
+ */
+export function getFullPrecisionPrice(price: Dec): string {
+  if (price.isZero()) return "0";
+
+  const priceStr = price.toString();
+  const [integerPart, decimalPart] = priceStr.split(".");
+
+  if (!decimalPart) return integerPart;
+
+  // Trim only trailing zeros
+  const trimmedDecimal = decimalPart.replace(/0+$/, "");
+
+  if (trimmedDecimal === "") return integerPart;
+
+  return `${integerPart}.${trimmedDecimal}`;
+}
+
+/**
+ * Formats a price preserving the user's original precision.
+ * Shows up to 3 significant decimal places (non-zero), truncating (not rounding).
+ * - Numbers under 10: maintain at least 2 decimal places (e.g., "5.00", "7.50")
+ * - Whole numbers >= 10: no decimal places (e.g., "40", "100")
+ * - Numbers with decimals: preserve up to 3 significant decimals
+ * - Numbers very close to whole numbers (like 99.999 or 100.001) round to the nearest whole
+ */
+export function formatPriceWithUserPrecision(price: Dec): string {
+  if (price.isZero()) return "0";
+
+  const priceStr = price.toString();
+  const [integerPart, decimalPart] = priceStr.split(".");
+
+  const integerValue = parseInt(integerPart, 10);
+
+  // No decimal part - it's a whole number
+  if (!decimalPart) {
+    if (integerValue >= 10) {
+      return integerPart;
+    } else {
+      return `${integerPart}.00`;
+    }
+  }
+
+  // Trim trailing zeros to see if it's actually a whole number
+  const trimmedDecimal = decimalPart.replace(/0+$/, "");
+
+  if (trimmedDecimal === "") {
+    // It's a whole number (like "100.000")
+    if (integerValue >= 10) {
+      return integerPart;
+    } else {
+      return `${integerPart}.00`;
+    }
+  }
+
+  // Count significant (non-zero) decimal places
+  let significantDecimals = 0;
+  let truncateAtIndex = -1;
+
+  for (let i = 0; i < trimmedDecimal.length; i++) {
+    if (trimmedDecimal[i] !== "0") {
+      significantDecimals++;
+      if (significantDecimals === 3) {
+        truncateAtIndex = i;
+        break;
+      }
+    }
+  }
+
+  let resultDecimal: string;
+
+  if (truncateAtIndex === -1) {
+    // 3 or fewer significant decimals - use as is
+    resultDecimal = trimmedDecimal;
+  } else {
+    // More than 3 significant decimals - truncate at 3rd
+    resultDecimal = trimmedDecimal.substring(0, truncateAtIndex + 1);
+  }
+
+  // Check if after truncation, we're very close to a whole number
+  // The threshold scales with magnitude: 1.0001, 10.001, 100.01, etc.
+  const reconstructed = `${integerPart}.${resultDecimal}`;
+  const numericValue = parseFloat(reconstructed);
+  const roundedWhole = Math.round(numericValue);
+
+  // Don't round to 0
+  if (roundedWhole === 0) {
+    // For numbers < 10, ensure at least 2 decimal places
+    if (integerValue < 10 && parseInt(integerPart, 10) === integerValue) {
+      const minDecimalPlaces = 2;
+      resultDecimal = resultDecimal.padEnd(minDecimalPlaces, "0");
+    }
+    return `${integerPart}.${resultDecimal}`;
+  }
+
+  // Determine threshold based on magnitude: 0.0001 for [1-10), 0.001 for [10-100), 0.01 for [100+)
+  let threshold: number;
+  if (roundedWhole < 10) {
+    threshold = 0.0001; // 1.0001
+  } else if (roundedWhole < 100) {
+    threshold = 0.001; // 10.001
+  } else {
+    threshold = 0.01; // 100.01
+  }
+
+  // If we're within threshold of a whole number and all visible decimals are 9s or 0s, round to whole
+  if (Math.abs(numericValue - roundedWhole) < threshold) {
+    // Check if the decimal is all 9s (like .999) or very small (like .001)
+    if (/^9+$/.test(resultDecimal) || parseFloat(`0.${resultDecimal}`) < threshold) {
+      if (roundedWhole >= 10) {
+        return String(roundedWhole);
+      } else {
+        return `${roundedWhole}.00`;
+      }
+    }
+  }
+
+  // For numbers < 10, ensure at least 2 decimal places
+  if (integerValue < 10 && parseInt(integerPart, 10) === integerValue) {
+    const minDecimalPlaces = 2;
+    resultDecimal = resultDecimal.padEnd(minDecimalPlaces, "0");
+  }
+
+  return `${integerPart}.${resultDecimal}`;
+}
+
 export function calcFontSize(numChars: number, isMobile: boolean): string {
   const sizeMapping: { [key: number]: string } = isMobile
     ? {

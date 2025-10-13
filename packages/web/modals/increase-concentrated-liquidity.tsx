@@ -28,7 +28,7 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { formatPretty, formatPriceWithUserPrecision, getFullPrecisionPrice, getPriceExtendedFormatOptions } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () =>
@@ -215,14 +215,16 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 </div>
                 <div className="mb-4 mr-[8px] mt-[55px] flex h-full flex-col items-end justify-between py-4 ">
                   <PriceBox
-                    currentValue={formatPretty(upperPrice).toString()}
+                    currentValue={formatPriceWithUserPrecision(upperPrice)}
+                    fullPrecisionValue={getFullPrecisionPrice(upperPrice)}
                     label={t("clPositions.maxPrice")}
                     infinity={isFullRange}
                   />
                   <PriceBox
                     currentValue={
-                      isFullRange ? "0" : formatPretty(lowerPrice).toString()
+                      isFullRange ? "0" : formatPriceWithUserPrecision(lowerPrice)
                     }
+                    fullPrecisionValue={getFullPrecisionPrice(lowerPrice)}
                     label={t("clPositions.minPrice")}
                   />
                 </div>
@@ -280,8 +282,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 const PriceBox: FunctionComponent<{
   label: string;
   currentValue: string;
+  fullPrecisionValue?: string;
   infinity?: boolean;
-}> = ({ label, currentValue, infinity }) => (
+}> = ({ label, currentValue, fullPrecisionValue, infinity }) => (
   <div className="flex max-w-[6.25rem] flex-col gap-1">
     <span className="pt-2 text-body2 font-body2 text-osmoverse-300">
       {label}
@@ -296,7 +299,10 @@ const PriceBox: FunctionComponent<{
         />
       </div>
     ) : (
-      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight">
+      <h6
+        className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 font-subtitle1 leading-tight"
+        title={fullPrecisionValue}
+      >
         {currentValue}
       </h6>
     )}
