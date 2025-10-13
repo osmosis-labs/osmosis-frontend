@@ -11,6 +11,7 @@ import {
 import {
   getDecimalCount,
   getNumberMagnitude,
+  leadingZerosCount,
   toScientificNotation,
 } from "~/utils/number";
 
@@ -226,6 +227,10 @@ function hasIntlFormatOptions(opts: FormatOptions) {
  *  STARS: $0.03673
  *  HUAHUA: $0.00001231
  *
+ * For very small prices with many leading zeros, we increase significant digits
+ * to ensure meaningful precision for price movements. This typically occurs with pairings with high value quotes such as BTC:
+ *  BABY: 0.0000005123 (7 leading zeros → 7 significant digits)
+ *
  * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
  * BTC: $47,334.21
  * ETH: $3,441.15
@@ -236,25 +241,51 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
    */
   const integerPartLength = value.truncate().toString().length ?? 0;
 
-  const maximumSignificantDigits = value.lt(new Dec(100))
-    ? 4
-    : integerPartLength + 2;
+  let maximumSignificantDigits: number;
 
-  const minimumDecimals = 2;
+  if (value.lt(new Dec(100))) {
+    // For prices < 100, check if we have many leading zeros after decimal point
+    const valueStr = value.toString();
 
-  const maxDecimals = Math.max(
-    getDecimalCount(parseFloat(value.toString())),
-    minimumDecimals
-  );
+    // Only count leading zeros if the value has a decimal part
+    if (valueStr.includes(".")) {
+      const leadingZeros = leadingZerosCount(valueStr);
 
+      // If we have 4+ leading zeros, we need more significant digits to show meaningful precision
+      // e.g., 0.0000005 needs at least 4 sig figs after the leading zeros to show price movements
+      if (leadingZeros >= 4) {
+        // Show 4 significant digits after leading zeros for smooth price tracking
+        // e.g., 0.000000330738247 → 7 leading zeros + 4 sig figs = 0.0000003307
+        maximumSignificantDigits = 4;
+      } else {
+        maximumSignificantDigits = 4;
+      }
+    } else {
+      // No decimal point, use default
+      maximumSignificantDigits = 4;
+    }
+  } else {
+    maximumSignificantDigits = integerPartLength + 2;
+  }
+
+  // For tiny prices with many leading zeros, we need enough maxDecimals to preserve precision
+  // through IntPretty, but maximumSignificantDigits will control the final display
+  const valueStr = value.toString();
+  const actualDecimalCount = getDecimalCount(parseFloat(valueStr));
+
+  // For tiny numbers, ensure maxDecimals is high enough to reach the significant digits
+  // E.g., 0.000000330738247 needs 15 maxDecimals to preserve the "3307" part
+  const leadingZeros = valueStr.includes(".") ? leadingZerosCount(valueStr) : 0;
+  const maxDecimals = leadingZeros >= 4
+    ? Math.max(actualDecimalCount, leadingZeros + maximumSignificantDigits + 2)
+    : Math.max(actualDecimalCount, 2);
+
+  // Note: Don't set minimumSignificantDigits to avoid zero padding
+  // e.g., 0.0000003 shouldn't become 0.000000300000
   return {
     maxDecimals,
     notation: "standard",
     maximumSignificantDigits,
-    minimumSignificantDigits: maximumSignificantDigits,
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
-    disabledTrimZeros: true,
   };
 }
 
@@ -358,7 +389,7 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   }
 
   const splitDec = price.toDec().toString().split(".");
-  const maxDecimalStr = splitDec[0] + "." + splitDec[1].slice(0, maxDecimals);
+  const maxDecimalStr = splitDec[0] + "." + (splitDec[1] || "0").slice(0, maxDecimals);
   const maxDecimalPrice = new PricePretty(
     price.fiatCurrency,
     new Dec(maxDecimalStr)
@@ -368,7 +399,7 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
   }).split(".");
 
-  return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
+  return splitPretty[0] + "." + (splitPretty[1] || "00").slice(0, maxDecimals);
 }
 
 export function calcFontSize(numChars: number, isMobile: boolean): string {
