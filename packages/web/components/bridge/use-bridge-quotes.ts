@@ -23,6 +23,7 @@ import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
+import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
@@ -444,29 +445,7 @@ export const useBridgeQuotes = ({
   // Extract fee details from error message if available (for bridge amount errors)
   const insufficientFeeDetails = useMemo(() => {
     if (!isInsufficientAmountForBridge || !someError?.message) return null;
-
-    const errorMsg = someError.message;
-
-    // Try to extract fee amount from various error patterns:
-    // Pattern 1: "fee of 16.36 USD" or "costs 2.5 ETH"
-    // Pattern 2: "16.36 USD fee"
-    const patterns = [
--      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?(\d+\.?\d*)\s*([A-Z]{2,})/i,
-      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*([A-Z]{2,})/i,
-      /((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
-    ];
-
-    for (const pattern of patterns) {
-      const match = errorMsg.match(pattern);
-      if (match) {
-        return {
-          amount: match[1].replace(/,/g, ''),
-          currency: match[2],
-        };
-      }
-    }
-
-    return null;
+    return extractFeeDetailsFromError(someError.message);
   }, [isInsufficientAmountForBridge, someError]);
 
   const isInvalidAddress = useMemo(() => {
