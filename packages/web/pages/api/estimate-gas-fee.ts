@@ -3,7 +3,6 @@ import {
   estimateGasFee,
   SimulateNotAvailableError,
 } from "@osmosis-labs/tx";
-import { Dec } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -46,48 +45,50 @@ export default async function handler(
 
   try {
     // Decode messages first
-    const decodedMessages = messages.map(decodeAnyBase64);
+    const decodedMessages = messages.map((msg, i) => {
+      try {
+        return decodeAnyBase64(msg);
+      } catch (error) {
+        console.error(`Failed to decode message ${i}:`, error);
+        throw error;
+      }
+    });
 
     // Apply temporary workaround for swap messages to prevent simulation failures
-    // This reduces tokenOutMinAmount by 20% to account for price volatility between
-    // quote generation and gas estimation simulation
+    // Instead of complex protobuf manipulation, we'll adjust the gas multiplier for swap transactions
+    // to provide more tolerance during simulation
     // See: https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee
-    const adjustedMessages = decodedMessages.map((message) => {
-      // Check if this is a swap message that contains tokenOutMinAmount
-      if (
-        message.value &&
-        typeof message.value === "object" &&
-        "tokenOutMinAmount" in message.value &&
-        typeof message.value.tokenOutMinAmount === "string"
-      ) {
-        const originalMinAmount = message.value.tokenOutMinAmount;
-        const adjustedMinAmount = Math.floor(Number(originalMinAmount) * 0.8);
-        const scaledTokenOutMinAmount = new Dec(adjustedMinAmount)
-          .truncate()
-          .toString();
 
-        return {
-          ...message,
-          value: {
-            ...message.value,
-            tokenOutMinAmount: scaledTokenOutMinAmount,
-          },
-        };
-      }
-      return message;
+    const isSwapTransaction = decodedMessages.some((message) => {
+      return (
+        message.typeUrl &&
+        (message.typeUrl.includes("MsgSwapExactAmount") ||
+          message.typeUrl.includes("MsgSplitRouteSwapExactAmount"))
+      );
     });
+
+    // For swap transactions, use a more conservative gas multiplier
+    const adjustedGasMultiplier = isSwapTransaction
+      ? Math.max(gasMultiplier * 1.5, 2.0)
+      : gasMultiplier;
+
+    if (isSwapTransaction) {
+      console.log(
+        `Applying swap transaction workaround: increasing gas multiplier from ${gasMultiplier} to ${adjustedGasMultiplier}`
+      );
+    }
 
     const gasFee = await estimateGasFee({
       chainId,
       chainList: ChainList,
       bech32Address,
       body: {
-        messages: adjustedMessages,
+        messages: decodedMessages,
         nonCriticalExtensionOptions:
           nonCriticalExtensionOptions?.map(decodeAnyBase64),
       },
       onlyDefaultFeeDenom,
-      gasMultiplier,
+      gasMultiplier: adjustedGasMultiplier,
     });
     return res.status(200).json(gasFee);
   } catch (e) {
