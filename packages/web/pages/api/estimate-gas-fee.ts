@@ -3,6 +3,7 @@ import {
   estimateGasFee,
   SimulateNotAvailableError,
 } from "@osmosis-labs/tx";
+import { Dec } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { NextApiRequest, NextApiResponse } from "next";
 
@@ -44,12 +45,44 @@ export default async function handler(
   };
 
   try {
+    // Decode messages first
+    const decodedMessages = messages.map(decodeAnyBase64);
+
+    // Apply temporary workaround for swap messages to prevent simulation failures
+    // This reduces tokenOutMinAmount by 20% to account for price volatility between
+    // quote generation and gas estimation simulation
+    // See: https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee
+    const adjustedMessages = decodedMessages.map((message) => {
+      // Check if this is a swap message that contains tokenOutMinAmount
+      if (
+        message.value &&
+        typeof message.value === "object" &&
+        "tokenOutMinAmount" in message.value &&
+        typeof message.value.tokenOutMinAmount === "string"
+      ) {
+        const originalMinAmount = message.value.tokenOutMinAmount;
+        const adjustedMinAmount = Math.floor(Number(originalMinAmount) * 0.8);
+        const scaledTokenOutMinAmount = new Dec(adjustedMinAmount)
+          .truncate()
+          .toString();
+
+        return {
+          ...message,
+          value: {
+            ...message.value,
+            tokenOutMinAmount: scaledTokenOutMinAmount,
+          },
+        };
+      }
+      return message;
+    });
+
     const gasFee = await estimateGasFee({
       chainId,
       chainList: ChainList,
       bech32Address,
       body: {
-        messages: messages.map(decodeAnyBase64),
+        messages: adjustedMessages,
         nonCriticalExtensionOptions:
           nonCriticalExtensionOptions?.map(decodeAnyBase64),
       },
