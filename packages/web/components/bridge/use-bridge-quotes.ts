@@ -392,14 +392,17 @@ export const useBridgeQuotes = ({
     isTxPending,
   ]);
 
-  // Check if the transfer amount itself is too low to cover bridge fees
-  const isInsufficientAmountForBridge = useMemo(() => {
-    // Check for InsufficientAmountError from bridge providers
+  // Check if transfer amount is insufficient to cover bridge/network fees
+  // This combines two checks:
+  // 1. Bridge provider errors (server-side) - when bridge returns InsufficientAmountError
+  // 2. Client-side calculation - when input amount minus fees is <= 0
+  const isInsufficientFee = useMemo(() => {
+    // First check for bridge provider error responses
+    // These errors come from the getQuoteByBridge edge function
     if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
 
-    // Check for specific error messages from bridge providers
-    // These errors indicate the amount is too low to cover bridge/relay fees
+    // Check for specific error message patterns from various bridge providers
     const errorMsg = someError?.message.toLowerCase() ?? "";
     if (
       errorMsg.includes("input amount is too low to cover") ||
@@ -409,11 +412,7 @@ export const useBridgeQuotes = ({
       return true;
     }
 
-    return false;
-  }, [someError]);
-
-  // Check if user has insufficient balance to pay network fees
-  const isInsufficientFee = useMemo(() => {
+    // Client-side calculation: check if user has enough to cover fees
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
 
     const inputDenom = inputCoin.toCoin().denom;
@@ -440,32 +439,16 @@ export const useBridgeQuotes = ({
     }
 
     return false;
-  }, [inputCoin, selectedQuote]);
+  }, [someError, inputCoin, selectedQuote]);
 
   // Extract fee details from error message if available (for bridge amount errors)
   const insufficientFeeDetails = useMemo(() => {
-    if (!isInsufficientAmountForBridge || !someError?.message) return null;
+    if (!isInsufficientFee || !someError?.message) return null;
     return extractFeeDetailsFromError(someError.message);
-  }, [isInsufficientAmountForBridge, someError]);
+  }, [isInsufficientFee, someError]);
 
   const isInvalidAddress = useMemo(() => {
     return someError?.message.includes("taproot");
-  }, [someError]);
-
-  const isUnsupportedRoute = useMemo(() => {
-    if (someError?.message.includes("UnsupportedQuoteError" as BridgeError))
-      return true;
-
-    const errorMsg = someError?.message.toLowerCase() ?? "";
-    if (
-      errorMsg.includes("doesn't support this quote") ||
-      errorMsg.includes("not supported") ||
-      errorMsg.includes("unsupported")
-    ) {
-      return true;
-    }
-
-    return false;
   }, [someError]);
 
   const bridgeTransaction =
@@ -486,7 +469,6 @@ export const useBridgeQuotes = ({
           inputAmount.isPositive() &&
           !isInsufficientBal &&
           !isInsufficientFee &&
-          !isInsufficientAmountForBridge &&
           Object.values(quoteParams).every((param) => !isNil(param)),
         refetchInterval: 30 * 1000, // 30 seconds
       }
@@ -808,22 +790,20 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
-  if (isInsufficientAmountForBridge) {
+  if (isInsufficientFee) {
     errorBoxMessage = {
-      heading: t("transfer.insufficientAmountForBridge"),
+      heading: t("transfer.insufficientFundsForFees"),
       description: insufficientFeeDetails
-        ? t("transfer.insufficientAmountForBridgeWithFee", {
+        ? t("transfer.youNeedFundsToPayWithFee", {
+            chain:
+              (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
             feeAmount: insufficientFeeDetails.amount,
             feeCurrency: insufficientFeeDetails.currency,
           })
-        : t("transfer.insufficientAmountForBridgeDescription"),
-    };
-  } else if (isInsufficientFee) {
-    errorBoxMessage = {
-      heading: t("transfer.insufficientFundsForFees"),
-      description: t("transfer.youNeedFundsToPay", {
-        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
-      }),
+        : t("transfer.youNeedFundsToPay", {
+            chain:
+              (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+          }),
     };
   } else if (hasNoQuotes) {
     errorBoxMessage = {
@@ -852,11 +832,6 @@ export const useBridgeQuotes = ({
         chain: toChain?.prettyName ?? "",
       }),
       description: t("taprootAddressNotSupported"),
-    };
-  } else if (isUnsupportedRoute) {
-    errorBoxMessage = {
-      heading: t("transfer.unsupportedBridgeRoute"),
-      description: t("transfer.unsupportedBridgeRouteDescription"),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {
