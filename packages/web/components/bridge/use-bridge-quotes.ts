@@ -391,7 +391,8 @@ export const useBridgeQuotes = ({
     isTxPending,
   ]);
 
-  const isInsufficientFee = useMemo(() => {
+  // Check if the transfer amount itself is too low to cover bridge fees
+  const isInsufficientAmountForBridge = useMemo(() => {
     // Check for InsufficientAmountError from bridge providers
     if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
@@ -407,6 +408,11 @@ export const useBridgeQuotes = ({
       return true;
     }
 
+    return false;
+  }, [someError]);
+
+  // Check if user has insufficient balance to pay network fees
+  const isInsufficientFee = useMemo(() => {
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
 
     const inputDenom = inputCoin.toCoin().denom;
@@ -433,11 +439,11 @@ export const useBridgeQuotes = ({
     }
 
     return false;
-  }, [someError, inputCoin, selectedQuote]);
+  }, [inputCoin, selectedQuote]);
 
-  // Extract fee details from error message if available
+  // Extract fee details from error message if available (for bridge amount errors)
   const insufficientFeeDetails = useMemo(() => {
-    if (!isInsufficientFee || !someError?.message) return null;
+    if (!isInsufficientAmountForBridge || !someError?.message) return null;
 
     const errorMsg = someError.message;
 
@@ -460,7 +466,7 @@ export const useBridgeQuotes = ({
     }
 
     return null;
-  }, [isInsufficientFee, someError]);
+  }, [isInsufficientAmountForBridge, someError]);
 
   const isInvalidAddress = useMemo(() => {
     return someError?.message.includes("taproot");
@@ -500,6 +506,7 @@ export const useBridgeQuotes = ({
           inputAmount.isPositive() &&
           !isInsufficientBal &&
           !isInsufficientFee &&
+          !isInsufficientAmountForBridge &&
           Object.values(quoteParams).every((param) => !isNil(param)),
         refetchInterval: 30 * 1000, // 30 seconds
       }
@@ -821,7 +828,7 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
-  if (isInsufficientFee) {
+  if (isInsufficientAmountForBridge) {
     errorBoxMessage = {
       heading: t("transfer.insufficientAmountForBridge"),
       description: insufficientFeeDetails
@@ -830,6 +837,13 @@ export const useBridgeQuotes = ({
             feeCurrency: insufficientFeeDetails.currency,
           })
         : t("transfer.insufficientAmountForBridgeDescription"),
+    };
+  } else if (isInsufficientFee) {
+    errorBoxMessage = {
+      heading: t("transfer.insufficientFundsForFees"),
+      description: t("transfer.youNeedFundsToPay", {
+        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
+      }),
     };
   } else if (hasNoQuotes) {
     errorBoxMessage = {
