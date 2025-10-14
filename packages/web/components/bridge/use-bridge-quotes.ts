@@ -392,8 +392,20 @@ export const useBridgeQuotes = ({
   ]);
 
   const isInsufficientFee = useMemo(() => {
+    // Check for InsufficientAmountError from bridge providers
     if (someError?.message.includes("InsufficientAmountError" as BridgeError))
       return true;
+
+    // Check for specific error messages from bridge providers
+    // These errors indicate the amount is too low to cover bridge/relay fees
+    const errorMsg = someError?.message.toLowerCase() ?? "";
+    if (
+      errorMsg.includes("input amount is too low to cover") ||
+      errorMsg.includes("amount is too low") ||
+      errorMsg.includes("insufficient amount")
+    ) {
+      return true;
+    }
 
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
 
@@ -423,8 +435,51 @@ export const useBridgeQuotes = ({
     return false;
   }, [someError, inputCoin, selectedQuote]);
 
+  // Extract fee details from error message if available
+  const insufficientFeeDetails = useMemo(() => {
+    if (!isInsufficientFee || !someError?.message) return null;
+
+    const errorMsg = someError.message;
+
+    // Try to extract fee amount from various error patterns:
+    // Pattern 1: "fee of 16.36 USD" or "costs 2.5 ETH" (Skip, Squid)
+    // Pattern 2: "16.36 USD fee" (reverse order)
+    const patterns = [
+      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?(\d+\.?\d*)\s*([A-Z]{2,})/i,
+      /(\d+\.?\d*)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
+    ];
+
+    for (const pattern of patterns) {
+      const match = errorMsg.match(pattern);
+      if (match) {
+        return {
+          amount: match[1],
+          currency: match[2],
+        };
+      }
+    }
+
+    return null;
+  }, [isInsufficientFee, someError]);
+
   const isInvalidAddress = useMemo(() => {
     return someError?.message.includes("taproot");
+  }, [someError]);
+
+  const isUnsupportedRoute = useMemo(() => {
+    if (someError?.message.includes("UnsupportedQuoteError" as BridgeError))
+      return true;
+
+    const errorMsg = someError?.message.toLowerCase() ?? "";
+    if (
+      errorMsg.includes("doesn't support this quote") ||
+      errorMsg.includes("not supported") ||
+      errorMsg.includes("unsupported")
+    ) {
+      return true;
+    }
+
+    return false;
   }, [someError]);
 
   const bridgeTransaction =
@@ -768,10 +823,13 @@ export const useBridgeQuotes = ({
   let errorBoxMessage: { heading: string; description: string } | undefined;
   if (isInsufficientFee) {
     errorBoxMessage = {
-      heading: t("transfer.insufficientFundsForFees"),
-      description: t("transfer.youNeedFundsToPay", {
-        chain: (isWithdraw ? toChain?.prettyName : fromChain?.prettyName) ?? "",
-      }),
+      heading: t("transfer.insufficientAmountForBridge"),
+      description: insufficientFeeDetails
+        ? t("transfer.insufficientAmountForBridgeWithFee", {
+            feeAmount: insufficientFeeDetails.amount,
+            feeCurrency: insufficientFeeDetails.currency,
+          })
+        : t("transfer.insufficientAmountForBridgeDescription"),
     };
   } else if (hasNoQuotes) {
     errorBoxMessage = {
@@ -800,6 +858,11 @@ export const useBridgeQuotes = ({
         chain: toChain?.prettyName ?? "",
       }),
       description: t("taprootAddressNotSupported"),
+    };
+  } else if (isUnsupportedRoute) {
+    errorBoxMessage = {
+      heading: t("transfer.unsupportedBridgeRoute"),
+      description: t("transfer.unsupportedBridgeRouteDescription"),
     };
   } else if (bridgeTransaction.error || Boolean(someError)) {
     errorBoxMessage = {
