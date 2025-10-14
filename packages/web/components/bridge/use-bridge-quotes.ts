@@ -448,18 +448,19 @@ export const useBridgeQuotes = ({
     const errorMsg = someError.message;
 
     // Try to extract fee amount from various error patterns:
-    // Pattern 1: "fee of 16.36 USD" or "costs 2.5 ETH" (Skip, Squid)
-    // Pattern 2: "16.36 USD fee" (reverse order)
+    // Pattern 1: "fee of 16.36 USD" or "costs 2.5 ETH"
+    // Pattern 2: "16.36 USD fee"
     const patterns = [
-      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?(\d+\.?\d*)\s*([A-Z]{2,})/i,
-      /(\d+\.?\d*)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
+-      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?(\d+\.?\d*)\s*([A-Z]{2,})/i,
+      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?([\d,]+\.?\d*)\s*([A-Z]{2,})/i,
+      /([\d,]+\.?\d*)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
     ];
 
     for (const pattern of patterns) {
       const match = errorMsg.match(pattern);
       if (match) {
         return {
-          amount: match[1],
+          amount: match[1].replace(/,/g, ''),
           currency: match[2],
         };
       }
