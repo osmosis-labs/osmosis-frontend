@@ -889,6 +889,8 @@
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
     "youNeedFundsToPayWithFee": "Transfer etmeye çalıştığınız miktar, {chain} üzerinde {feeAmount} {feeCurrency} köprüleme ücretini karşılamak için çok düşük. Lütfen daha büyük bir miktar deneyin.",
+    "transferAmountTooLowValueLoss": "Transfer miktarı çok düşük",
+    "valueLossTooHighToBridge": "Ücretlerden sonra transfer miktarı çok düşük. Değer kaybı köprüyü başarıyla tamamlamak için çok yüksek olacaktır. Lütfen daha büyük bir miktar deneyin.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
     "assetWithdrawalsUnavailable": "{asset} çekimleri kullanılamaz",
     "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",

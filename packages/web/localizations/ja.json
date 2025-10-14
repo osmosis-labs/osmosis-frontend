@@ -889,6 +889,8 @@
     "insufficientFundsForFees": "手数料の資金が不足している",
     "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
     "youNeedFundsToPayWithFee": "転送しようとしている金額が低すぎて、{chain}での{feeAmount} {feeCurrency}のブリッジ手数料をカバーできません。より大きな金額をお試しください。",
+    "transferAmountTooLowValueLoss": "送金額が少なすぎます",
+    "valueLossTooHighToBridge": "手数料を差し引いた送金額が少なすぎます。ブリッジを正常に完了するには価値の損失が大きすぎます。より大きな金額をお試しください。",
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",
     "assetWithdrawalsUnavailable": "{asset}引き出しは利用できません",
     "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",

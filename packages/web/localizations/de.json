@@ -889,6 +889,8 @@
     "insufficientFundsForFees": "Unzureichende Mittel für Gebühren",
     "youNeedFundsToPay": "Sie benötigen Guthaben, um Netzwerk- und Überbrückungsgebühren für {chain} zu bezahlen.",
     "youNeedFundsToPayWithFee": "Der Betrag, den Sie zu überweisen versuchen, ist zu niedrig, um die Überbrückungsgebühr von {feeAmount} {feeCurrency} für {chain} zu decken. Bitte versuchen Sie einen größeren Betrag.",
+    "transferAmountTooLowValueLoss": "Überweisungsbetrag zu niedrig",
+    "valueLossTooHighToBridge": "Der Überweisungsbetrag ist nach Abzug der Gebühren zu niedrig. Der Wertverlust wäre zu hoch, um erfolgreich zu überbrücken. Bitte versuchen Sie es mit einem höheren Betrag.",
     "assetsDepositsUnavailable": "{asset} Einlagen sind nicht verfügbar",
     "assetWithdrawalsUnavailable": "{asset} Abhebungen sind nicht verfügbar",
     "noAvailableDeposits": "Derzeit können keine verfügbaren Routen oder Anbieter gefunden werden. Bitte versuchen Sie es später erneut oder verwenden Sie eine alternative Anwendung, um Ihr Geld an Osmosis zu überweisen.",
