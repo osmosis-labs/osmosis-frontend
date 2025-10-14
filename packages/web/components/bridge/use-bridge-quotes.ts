@@ -452,8 +452,8 @@ export const useBridgeQuotes = ({
     // Pattern 2: "16.36 USD fee"
     const patterns = [
 -      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?(\d+\.?\d*)\s*([A-Z]{2,})/i,
-      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?([\d,]+\.?\d*)\s*([A-Z]{2,})/i,
-      /([\d,]+\.?\d*)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
+      /(?:fee|cost)s?\s+(?:of\s+)?(?:\$)?((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*([A-Z]{2,})/i,
+      /((?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)\s*([A-Z]{2,})\s+(?:fee|cost)/i,
     ];
 
     for (const pattern of patterns) {
