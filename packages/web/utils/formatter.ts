@@ -256,7 +256,9 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
       if (leadingZeros >= 4) {
         // Show 4 significant digits after leading zeros for smooth price tracking
         // e.g., 0.000000330738247 → 7 leading zeros + 4 sig figs = 0.0000003307
-        maximumSignificantDigits = 4;
+        // Note: maximumSignificantDigits in Intl.NumberFormat counts all significant digits,
+        // so we use leadingZeros to ensure precision scales with the smallness of the price
+        maximumSignificantDigits = Math.max(leadingZeros, 4);
       } else {
         maximumSignificantDigits = 4;
       }
