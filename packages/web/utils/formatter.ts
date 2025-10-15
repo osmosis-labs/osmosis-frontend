@@ -276,9 +276,13 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
   // For tiny numbers, ensure maxDecimals is high enough to reach the significant digits
   // E.g., 0.000000330738247 needs 15 maxDecimals to preserve the "3307" part
   const leadingZeros = valueStr.includes(".") ? leadingZerosCount(valueStr) : 0;
-  const maxDecimals = leadingZeros >= 4
-    ? Math.max(actualDecimalCount, leadingZeros + maximumSignificantDigits + 2)
-    : Math.max(actualDecimalCount, 2);
+  const maxDecimals =
+    leadingZeros >= 4
+      ? Math.max(
+          actualDecimalCount,
+          leadingZeros + maximumSignificantDigits + 2
+        )
+      : Math.max(actualDecimalCount, 2);
 
   // Note: Don't set minimumSignificantDigits to avoid zero padding
   // e.g., 0.0000003 shouldn't become 0.000000300000
@@ -389,7 +393,8 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   }
 
   const splitDec = price.toDec().toString().split(".");
-  const maxDecimalStr = splitDec[0] + "." + (splitDec[1] || "0").slice(0, maxDecimals);
+  const maxDecimalStr =
+    splitDec[0] + "." + (splitDec[1] || "0").slice(0, maxDecimals);
   const maxDecimalPrice = new PricePretty(
     price.fiatCurrency,
     new Dec(maxDecimalStr)
