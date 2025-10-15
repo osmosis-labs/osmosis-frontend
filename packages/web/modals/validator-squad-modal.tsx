@@ -328,7 +328,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             {
               id: "myStake",
               accessorKey: "myStake",
-              sortingFn: (rowA: Row<FormattedValidator>, rowB: Row<FormattedValidator>) => {
+              sortingFn: (
+                rowA: Row<FormattedValidator>,
+                rowB: Row<FormattedValidator>
+              ) => {
                 const a = rowA.original.myStake;
                 const b = rowB.original.myStake;
                 return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
@@ -349,7 +352,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             {
               id: "votingPower",
               accessorKey: "votingPower",
-              sortingFn: (rowA: Row<FormattedValidator>, rowB: Row<FormattedValidator>) => {
+              sortingFn: (
+                rowA: Row<FormattedValidator>,
+                rowB: Row<FormattedValidator>
+              ) => {
                 const a = rowA.original.votingPower;
                 const b = rowB.original.votingPower;
                 return a.gt(b) ? 1 : a.lt(b) ? -1 : 0;
