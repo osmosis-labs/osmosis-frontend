@@ -404,7 +404,10 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
   }).split(".");
 
-  return splitPretty[0] + "." + (splitPretty[1] || "00").slice(0, maxDecimals);
+  const decimalPart = (splitPretty[1] || "00").slice(0, maxDecimals);
+  const paddedDecimalPart = decimalPart.padEnd(maxDecimals, "0");
+
+  return splitPretty[0] + "." + paddedDecimalPart;
 }
 
 export function calcFontSize(numChars: number, isMobile: boolean): string {
