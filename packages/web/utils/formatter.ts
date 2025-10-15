@@ -54,7 +54,22 @@ export function formatPretty(
   }
 
   if (prettyValue instanceof PricePretty) {
-    return priceFormatter(prettyValue, optsWithDefaults);
+    const formatted = priceFormatter(prettyValue, optsWithDefaults);
+
+    // Pad decimal places to ensure consistent formatting (e.g., $123,456.10 instead of $123,456.1)
+    // Only apply padding when using standard notation with significant digits
+    if (opts.notation === "standard" && opts.maximumSignificantDigits) {
+      const parts = formatted.split(".");
+      if (parts.length === 2) {
+        const decimalPart = parts[1];
+        const targetDecimals = optsWithDefaults.maxDecimals;
+        if (decimalPart.length < targetDecimals) {
+          return parts[0] + "." + decimalPart.padEnd(targetDecimals, "0");
+        }
+      }
+    }
+
+    return formatted;
   } else if (prettyValue instanceof CoinPretty) {
     return coinFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof RatePretty) {
@@ -244,28 +259,14 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
   let maximumSignificantDigits: number;
 
   if (value.lt(new Dec(100))) {
-    // For prices < 100, check if we have many leading zeros after decimal point
-    const valueStr = value.toString();
-
-    // Only count leading zeros if the value has a decimal part
-    if (valueStr.includes(".")) {
-      const leadingZeros = leadingZerosCount(valueStr);
-
-      // If we have 4+ leading zeros, we need more significant digits to show meaningful precision
-      // e.g., 0.0000005 needs at least 4 sig figs after the leading zeros to show price movements
-      if (leadingZeros >= 4) {
-        // Show 4 significant digits after leading zeros for smooth price tracking
-        // e.g., 0.000000330738247 → 7 leading zeros + 4 sig figs = 0.0000003307
-        // Note: maximumSignificantDigits in Intl.NumberFormat counts all significant digits,
-        // so we use leadingZeros to ensure precision scales with the smallness of the price
-        maximumSignificantDigits = Math.max(leadingZeros, 4);
-      } else {
-        maximumSignificantDigits = 4;
-      }
-    } else {
-      // No decimal point, use default
-      maximumSignificantDigits = 4;
-    }
+    // For prices < 100, always use 4 significant digits
+    // This works correctly for both regular and very small prices because
+    // maximumSignificantDigits in Intl.NumberFormat only counts significant figures,
+    // not leading zeros. Examples:
+    // - 1.612 → 4 sig figs → $1.612
+    // - 0.00001231 → 4 sig figs → $0.00001231
+    // - 0.000000330738247 → 4 sig figs → $0.0000003307
+    maximumSignificantDigits = 4;
   } else {
     maximumSignificantDigits = integerPartLength + 2;
   }

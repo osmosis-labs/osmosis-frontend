@@ -126,6 +126,12 @@ cases(
       maxDecimals: 2,
     },
     {
+      name: "Very large value with trailing zero",
+      input: "123456.10",
+      output: "$123,456.10",
+      maxDecimals: 2,
+    },
+    {
       name: "Extremely small value",
       input: "0.000000000012",
       output: "<$0.01",
