@@ -28,7 +28,12 @@ import {
 } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty, formatPriceWithUserPrecision, getFullPrecisionPrice, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatPretty,
+  formatPriceWithUserPrecision,
+  getFullPrecisionPrice,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () =>
@@ -222,7 +227,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   />
                   <PriceBox
                     currentValue={
-                      isFullRange ? "0" : formatPriceWithUserPrecision(lowerPrice)
+                      isFullRange
+                        ? "0"
+                        : formatPriceWithUserPrecision(lowerPrice)
                     }
                     fullPrecisionValue={getFullPrecisionPrice(lowerPrice)}
                     label={t("clPositions.minPrice")}

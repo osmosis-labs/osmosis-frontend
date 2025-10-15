@@ -37,7 +37,12 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
-import { formatPretty, formatPriceWithUserPrecision, getFullPrecisionPrice, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatPretty,
+  formatPriceWithUserPrecision,
+  getFullPrecisionPrice,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
 import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(

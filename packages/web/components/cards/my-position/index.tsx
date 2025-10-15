@@ -15,7 +15,11 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useStore } from "~/stores";
-import { formatPretty, formatPriceWithUserPrecision, getFullPrecisionPrice } from "~/utils/formatter";
+import {
+  formatPretty,
+  formatPriceWithUserPrecision,
+  getFullPrecisionPrice,
+} from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 /** User's concentrated liquidity position.  */
@@ -231,11 +235,17 @@ const RangeDataGroup: FunctionComponent<{
       label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
-          <h6 title={getFullPrecisionPrice(lowerPrice)} className="whitespace-nowrap">
+          <h6
+            title={getFullPrecisionPrice(lowerPrice)}
+            className="whitespace-nowrap"
+          >
             {isFullRange ? "0" : formatPriceWithUserPrecision(lowerPrice)}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={getFullPrecisionPrice(upperPrice)} className="whitespace-nowrap">
+          <h6
+            title={getFullPrecisionPrice(upperPrice)}
+            className="whitespace-nowrap"
+          >
             {isFullRange ? "∞" : formatPriceWithUserPrecision(upperPrice)}
           </h6>
         </div>

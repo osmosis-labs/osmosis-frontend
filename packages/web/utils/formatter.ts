@@ -481,7 +481,10 @@ export function formatPriceWithUserPrecision(price: Dec): string {
   // If we're within threshold of a whole number and all visible decimals are 9s or 0s, round to whole
   if (Math.abs(numericValue - roundedWhole) < threshold) {
     // Check if the decimal is all 9s (like .999) or very small (like .001)
-    if (/^9+$/.test(resultDecimal) || parseFloat(`0.${resultDecimal}`) < threshold) {
+    if (
+      /^9+$/.test(resultDecimal) ||
+      parseFloat(`0.${resultDecimal}`) < threshold
+    ) {
       if (roundedWhole >= 10) {
         return String(roundedWhole);
       } else {
