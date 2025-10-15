@@ -229,7 +229,7 @@ function hasIntlFormatOptions(opts: FormatOptions) {
  *
  * For very small prices with many leading zeros, we increase significant digits
  * to ensure meaningful precision for price movements. This typically occurs with pairings with high value quotes such as BTC:
- *  BABY: 0.0000005123 (7 leading zeros → 7 significant digits)
+ *  BABY: 0.0000005123 (7 leading zeros → 4 significant digits)
  *
  * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
  * BTC: $47,334.21
