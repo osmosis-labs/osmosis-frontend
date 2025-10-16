@@ -139,11 +139,7 @@ export const useBridgeQuotes = ({
   /** NOTE: Debounced amount. */
   const inputAmount = useMemo(
     () =>
-      new Dec(
-        debouncedInputValue === ""
-          ? "0"
-          : (+debouncedInputValue * 0.98).toString()
-      )
+      new Dec(debouncedInputValue === "" ? "0" : debouncedInputValue)
         .mul(
           // CoinPretty only accepts whole amounts
           DecUtils.getTenExponentNInPrecisionRange(fromAsset?.decimals ?? 0)
