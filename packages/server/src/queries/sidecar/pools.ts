@@ -120,14 +120,24 @@ const PoolTypeEnum: PoolType = {
   weighted: 0, // Maps to Balancer
   stable: 1, // Maps to Stableswap
   concentrated: 2, // Maps to Concentrated
-  "cosmwasm-transmuter": 3, // Maps to Transmuter
+  "cosmwasm-transmuter": 3, // Maps to CosmWasm (transmuter is a cosmwasm pool)
+  "cosmwasm-alloyed": 3, // Maps to CosmWasm (alloyed is a cosmwasm pool)
+  "cosmwasm-astroport-pcl": 3, // Maps to CosmWasm (astroport is a cosmwasm pool)
+  "cosmwasm-whitewhale": 3, // Maps to CosmWasm (whitewhale is a cosmwasm pool)
+  cosmwasm: 3, // Maps to CosmWasm (general cosmwasm pool)
 };
 
 // Function to retrieve integer values from the filter types
-export const getPoolTypeIntegers = (filters: string[]): number[] => {
-  return filters
+export const getPoolTypeIntegers = (
+  filters: string[]
+): number[] | undefined => {
+  const integers = filters
     .map((filter) => PoolTypeEnum[filter] ?? -1) // Use -1 for undefined mappings
     .filter((value) => value !== -1); // Exclude invalid mappings
+  // Deduplicate since multiple frontend types can map to same sidecar type
+  const deduplicated = Array.from(new Set(integers));
+  // Return undefined if empty to avoid sending empty filter[type] param
+  return deduplicated.length === 0 ? undefined : deduplicated;
 };
 
 type IncentiveType = Record<string, number>;
@@ -185,7 +195,10 @@ export async function queryPools({
   }
 
   if (types) {
-    params.append("filter[type]", getPoolTypeIntegers(types).join(","));
+    const typeIntegers = getPoolTypeIntegers(types);
+    if (typeIntegers) {
+      params.append("filter[type]", typeIntegers.join(","));
+    }
   }
 
   if (incentives) {

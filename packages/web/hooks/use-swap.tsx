@@ -5,7 +5,6 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { MsgSwapExactAmountIn } from "@osmosis-labs/proto-codecs/build/codegen/osmosis/gamm/v1beta1/tx";
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { ObservableSlippageConfig, SignOptions } from "@osmosis-labs/stores";
 import {
@@ -214,47 +213,8 @@ export function useSwap(
     "in-given-out"
   );
 
-  /**
-   * Temporairly re-scale tokenOutMinAmount as a workaround about a potential SQS
-   * issue with the "/estimate-gas-fees" endpoint failing with error
-   *
-   * ```
-   * failed to execute message;
-   * message index: 0: ibc/... token is lesser than min amount:
-   * calculated amount is lesser than min amount [osmosis-labs/osmosis/v29/x/gamm/keeper/swap.go:72] with gas used: 'XXX'
-   * ```
-   *
-   * [See issue](https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee)
-   */
-  const TEMPORARY_outGivenInQuote = useMemo(
-    () =>
-      (outGivenInQuote
-        ? {
-            ...outGivenInQuote,
-            messages: outGivenInQuote?.messages?.map(({ value, ...rest }) => {
-              const _rawMinAmount = Math.floor(
-                +(value as MsgSwapExactAmountIn).tokenOutMinAmount * 0.8
-              );
-
-              const tokenOutMinAmount = new Dec(_rawMinAmount)
-                .truncate()
-                .toString();
-
-              return {
-                ...rest,
-                value: {
-                  ...value,
-                  tokenOutMinAmount,
-                } as MsgSwapExactAmountIn,
-              };
-            }),
-          }
-        : undefined) as typeof outGivenInQuote | undefined,
-    [outGivenInQuote]
-  );
-
   const quote =
-    quoteType === "in-given-out" ? inGivenOutQuote : TEMPORARY_outGivenInQuote;
+    quoteType === "in-given-out" ? inGivenOutQuote : outGivenInQuote;
 
   useEffect(() => {
     if (

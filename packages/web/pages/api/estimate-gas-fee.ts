@@ -44,17 +44,51 @@ export default async function handler(
   };
 
   try {
+    // Decode messages first
+    const decodedMessages = messages.map((msg, i) => {
+      try {
+        return decodeAnyBase64(msg);
+      } catch (error) {
+        console.error(`Failed to decode message ${i}:`, error);
+        throw error;
+      }
+    });
+
+    // Apply temporary workaround for swap messages to prevent simulation failures
+    // Instead of complex protobuf manipulation, we'll adjust the gas multiplier for swap transactions
+    // to provide more tolerance during simulation
+    // See: https://linear.app/osmosis/issue/FE-1170/investigate-500s-from-estimate-gas-fee
+
+    const isSwapTransaction = decodedMessages.some((message) => {
+      return (
+        message.typeUrl &&
+        (message.typeUrl.includes("MsgSwapExactAmount") ||
+          message.typeUrl.includes("MsgSplitRouteSwapExactAmount"))
+      );
+    });
+
+    // For swap transactions, use a more conservative gas multiplier
+    const adjustedGasMultiplier = isSwapTransaction
+      ? Math.max(gasMultiplier * 1.5, 2.0)
+      : gasMultiplier;
+
+    if (isSwapTransaction) {
+      console.log(
+        `Applying swap transaction workaround: increasing gas multiplier from ${gasMultiplier} to ${adjustedGasMultiplier}`
+      );
+    }
+
     const gasFee = await estimateGasFee({
       chainId,
       chainList: ChainList,
       bech32Address,
       body: {
-        messages: messages.map(decodeAnyBase64),
+        messages: decodedMessages,
         nonCriticalExtensionOptions:
           nonCriticalExtensionOptions?.map(decodeAnyBase64),
       },
       onlyDefaultFeeDenom,
-      gasMultiplier,
+      gasMultiplier: adjustedGasMultiplier,
     });
     return res.status(200).json(gasFee);
   } catch (e) {

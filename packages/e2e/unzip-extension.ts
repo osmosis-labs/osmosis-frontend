@@ -8,7 +8,7 @@ export class UnzipExtension {
     // Unzip keplr-extension-manifest
     const pathToZip = path.join(
       __dirname,
-      "./keplr-extension-manifest-v3-v0.12.270.zip"
+      "./keplr-extension-manifest-v3-v0.12.280.zip"
     );
     const pathToExtension = path.join(__dirname, "./keplr-extension-manifest");
     decompress(pathToZip, pathToExtension);
