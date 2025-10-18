@@ -216,6 +216,7 @@ export function useAmountInput({
     setAmount,
     reset,
     setFraction,
+    maxAmountWithGas,
     toggleMax: useCallback(
       () => setFraction(fraction === 1 ? null : 1),
       [fraction]

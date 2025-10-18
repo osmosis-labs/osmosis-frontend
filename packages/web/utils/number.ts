@@ -84,3 +84,56 @@ export function countDecimals(value: string) {
   }
   return 0;
 }
+
+/* Roundes a given number to the given precision
+ * i.e. roundUpToDecimal(0.23456, 2) = 0.24
+ */
+export function roundUpToDecimal(value: number, precision: number) {
+  const multiplier = Math.pow(10, precision || 0);
+  return Math.ceil(value * multiplier) / multiplier;
+}
+
+/**
+ * Fixes a given string representation of a number to the given decimal count
+ * Rounds to the decimal count if rounding is true
+ */
+export function fixDecimalCount(
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) {
+  if (rounding) {
+    return roundUpToDecimal(parseFloat(value), decimalCount).toString();
+  }
+  const split = value.split(".");
+  const integerPart = split[0];
+  const fractionalPart = split[1] ? split[1].substring(0, decimalCount) : "";
+  const result = integerPart + (decimalCount > 0 ? "." + fractionalPart : "");
+  return result;
+}
+
+/**
+ * Transforms a given amount to the given decimal count and handles period inputs
+ * Rounds to the decimal count if rounding is true
+ */
+export function transformAmount(
+  value: string,
+  decimalCount = 18,
+  rounding = false
+) {
+  let updatedValue = value;
+  if (value.endsWith(".") && value.length === 1) {
+    updatedValue = value + "0";
+  }
+
+  if (value.startsWith(".")) {
+    updatedValue = "0" + value;
+  }
+
+  const decimals = countDecimals(updatedValue);
+  return (
+    decimals > decimalCount
+      ? fixDecimalCount(updatedValue, decimalCount, rounding)
+      : updatedValue
+  ).trim();
+}
