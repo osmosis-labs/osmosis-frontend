@@ -1,7 +1,17 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+/** Safely converts a raw input string to a Dec value.
+ * Returns "0" for empty strings or lone decimals that can't be parsed.
+ */
+function safeInputToDec(input: string): string {
+  const trimmed = input.trim();
+  if (trimmed === "" || trimmed === ".") return "0";
+  return trimmed;
+}
 
 /** Manages user input of decimal values, and includes currency decimals in price calculation. */
 export class PriceConfig {
@@ -50,12 +60,27 @@ export class PriceConfig {
   input(value: string | Dec) {
     if (value instanceof Dec) {
       this._decRaw = value.toString();
-    } else if (value.startsWith(".")) {
-      this._decRaw = "0" + value;
-    } else if (value === "") {
+      return;
+    }
+
+    // Trim and handle empty/whitespace-only input consistently
+    const trimmed = value.trim();
+    if (trimmed === "") {
       this._decRaw = "0";
+      return;
+    }
+
+    // Validate the input - reject invalid characters
+    if (!isValidNumericalRawInput(trimmed)) {
+      // Invalid input - ignore it, keep the previous value
+      return;
+    }
+
+    // Handle leading decimal point after validation
+    if (trimmed.startsWith(".")) {
+      this._decRaw = "0" + trimmed;
     } else {
-      this._decRaw = value;
+      this._decRaw = trimmed;
     }
   }
 
@@ -63,21 +88,26 @@ export class PriceConfig {
    *  Intended for performing computation. */
   readonly toDec = computedFn(() => {
     if (this._decRaw.endsWith(".")) {
-      return this.removeCurrencyDecimals(this._decRaw.slice(0, -1));
+      return this.removeCurrencyDecimals(
+        safeInputToDec(this._decRaw.slice(0, -1))
+      );
     }
-    return this.removeCurrencyDecimals(this._decRaw);
+    return this.removeCurrencyDecimals(safeInputToDec(this._decRaw));
   });
 
   /** Current price adjusted based on base and quote currency decimals. */
   readonly toDecWithCurrencyDecimals = computedFn(() => {
-    return new Dec(this._decRaw);
+    if (this._decRaw.endsWith(".")) {
+      return new Dec(safeInputToDec(this._decRaw.slice(0, -1)));
+    }
+    return new Dec(safeInputToDec(this._decRaw));
   });
 
-  /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed.
-   *  Includes currency decimals for display. */
+  /** Raw value, which may be terminated with a `'.'`.
+   *  Includes currency decimals for display.
+   *  Preserves user input including trailing zeros to allow typing values like "0.0502". */
   toString() {
-    if (new Dec(this._decRaw).isZero()) return this._decRaw;
-    return trimZerosFromEnd(this._decRaw);
+    return this._decRaw;
   }
 
   addCurrencyDecimals(price: Dec | string | number): Dec {
