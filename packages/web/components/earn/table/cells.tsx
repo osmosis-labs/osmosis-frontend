@@ -72,9 +72,10 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
 
       if (assetMaxTvls.length > 0) {
         // Sum up all asset maxTvl values
-        const totalMaxTvl = assetMaxTvls.reduce((acc, maxTvl) => {
+        // Start with first element and reduce over the rest
+        const totalMaxTvl = assetMaxTvls.slice(1).reduce((acc, maxTvl) => {
           return acc.add(maxTvl);
-        }, assetMaxTvls[0].mul(new Dec(0))); // Start with 0 of the same currency
+        }, assetMaxTvls[0]!);
 
         depositCap = totalMaxTvl;
       }
