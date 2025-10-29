@@ -64,8 +64,11 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
     // If not available, aggregate asset-level maxTvl values
     if (!depositCap && item.row.original.tvl.assets) {
       const assetMaxTvls = item.row.original.tvl.assets
-        .map(asset => asset.maxTvl)
-        .filter((maxTvl): maxTvl is typeof item.row.original.tvl.tvlUsd => maxTvl !== undefined);
+        .map((asset) => asset.maxTvl)
+        .filter(
+          (maxTvl): maxTvl is typeof item.row.original.tvl.tvlUsd =>
+            maxTvl !== undefined
+        );
 
       if (assetMaxTvls.length > 0) {
         // Sum up all asset maxTvl values
