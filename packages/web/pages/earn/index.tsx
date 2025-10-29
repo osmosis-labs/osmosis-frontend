@@ -87,7 +87,7 @@ function Earn() {
         cmsData?.strategies ?? [],
         "platform",
         "platform"
-      ),
+      ).filter((option) => option.value !== "Quasar"),
       lockDurationType: "all",
       search: typeof search === "string" ? search : "",
       specialTokens: [],
