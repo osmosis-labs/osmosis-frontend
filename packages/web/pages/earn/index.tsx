@@ -87,13 +87,24 @@ function Earn() {
         cmsData?.strategies ?? [],
         "platform",
         "platform"
-      ).filter((option) => option.value !== "Quasar"),
+      ),
       lockDurationType: "all",
       search: typeof search === "string" ? search : "",
       specialTokens: [],
       rewardType: "all",
     }),
     [holdenDenoms?.length, cmsData, isWalletConnected, search]
+  );
+
+  // Filter out strategies without TVL for display (but keep all for filter options)
+  const displayStrategies = useMemo(
+    () => strategies.filter((strategy) => strategy.tvl?.tvlUsd),
+    [strategies]
+  );
+
+  const displayMyStrategies = useMemo(
+    () => myStrategies.filter((strategy) => strategy.tvl?.tvlUsd),
+    [myStrategies]
   );
 
   useEffect(() => {
@@ -120,7 +131,7 @@ function Earn() {
             <EarnPosition
               setTabIdx={setTabIdx}
               totalBalance={totalBalance.toString()}
-              numberOfPositions={myStrategies.length}
+              numberOfPositions={displayMyStrategies.length}
               isLoading={areBalancesLoading}
             />
 
@@ -220,7 +231,7 @@ function Earn() {
               displayMode="flex"
             >
               <StrategiesTable
-                strategies={strategies}
+                strategies={displayStrategies}
                 showBalance={false}
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
@@ -233,7 +244,7 @@ function Earn() {
               displayMode="flex"
             >
               <StrategiesTable
-                strategies={myStrategies}
+                strategies={displayMyStrategies}
                 showBalance
                 areStrategiesLoading={areStrategiesLoading}
                 isError={isError}
