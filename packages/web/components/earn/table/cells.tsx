@@ -74,7 +74,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
         // Sum up all asset maxTvl values
         // Start with first element and reduce over the rest
         const totalMaxTvl = assetMaxTvls.slice(1).reduce((acc, maxTvl) => {
-          return acc.add(maxTvl);
+          return acc!.add(maxTvl!);
         }, assetMaxTvls[0]!);
 
         depositCap = totalMaxTvl;
@@ -94,7 +94,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
       depositCapOccupied: Math.min(depositCapOccupied, 100),
       depositCap,
     };
-  }, [item.row.original.tvl, tvlUsd]);
+  }, [item.row.original, tvlUsd]);
 
   if (isLoadingTVL) {
     return (
