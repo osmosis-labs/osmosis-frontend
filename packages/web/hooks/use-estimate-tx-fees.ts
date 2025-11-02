@@ -43,35 +43,63 @@ async function estimateTxFeesQueryFn({
 }): Promise<QueryResult> {
   if (!messages.length) throw new Error("No messages");
 
-  const { amount, gas } = await accountStore.estimateFee({
-    wallet,
-    messages,
-    signOptions: {
-      ...wallet.walletInfo?.signOptions,
-      ...signOptions,
-      preferNoSetFee: true, // this will automatically calculate the amount as well.
-    },
-  });
+  try {
+    const { amount, gas } = await accountStore.estimateFee({
+      wallet,
+      messages,
+      signOptions: {
+        ...wallet.walletInfo?.signOptions,
+        ...signOptions,
+        preferNoSetFee: true, // this will automatically calculate the amount as well.
+      },
+    });
 
-  const fee = amount[0];
-  const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
+    const fee = amount[0];
+    const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
 
-  if (!fee || !asset?.currentPrice) {
-    throw new Error("Failed to estimate fees");
+    if (!fee || !asset?.currentPrice) {
+      throw new Error("Failed to estimate fees");
+    }
+
+    const coinAmountDec = new Dec(fee.amount);
+    const usdValue = coinAmountDec
+      .quo(DecUtils.getTenExponentN(asset.coinDecimals))
+      .mul(asset.currentPrice.toDec());
+    const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
+
+    return {
+      gasUsdValueToPay,
+      gasAmount: new CoinPretty(asset, coinAmountDec),
+      gasLimit: gas,
+      amount,
+    };
+  } catch (error) {
+    // If gas estimation fails for any reason, return conservative hardcoded fallback
+    // This is display-only; actual tx fee is calculated at broadcast time
+    const DEFAULT_GAS_LIMIT = 1000000; // Conservative fallback for swaps
+    const DEFAULT_GAS_PRICE_UOSMO = 0.045; // Higher than default 0.035
+
+    const osmoAsset = await getCachedAssetWithPrice(apiUtils, "uosmo");
+
+    if (osmoAsset?.currentPrice) {
+      const feeInUosmo = Math.ceil(DEFAULT_GAS_LIMIT * DEFAULT_GAS_PRICE_UOSMO);
+
+      const coinAmountDec = new Dec(feeInUosmo.toString());
+      const usdValue = coinAmountDec
+        .quo(DecUtils.getTenExponentN(osmoAsset.coinDecimals))
+        .mul(osmoAsset.currentPrice.toDec());
+
+      return {
+        gasUsdValueToPay: new PricePretty(DEFAULT_VS_CURRENCY, usdValue),
+        gasAmount: new CoinPretty(osmoAsset, coinAmountDec),
+        gasLimit: DEFAULT_GAS_LIMIT.toString(),
+        amount: [{ denom: "uosmo", amount: feeInUosmo.toString() }],
+      };
+    }
+
+    // If we couldn't get OSMO price, re-throw the error
+    throw error;
   }
-
-  const coinAmountDec = new Dec(fee.amount);
-  const usdValue = coinAmountDec
-    .quo(DecUtils.getTenExponentN(asset.coinDecimals))
-    .mul(asset.currentPrice.toDec());
-  const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
-
-  return {
-    gasUsdValueToPay,
-    gasAmount: new CoinPretty(asset, coinAmountDec),
-    gasLimit: gas,
-    amount,
-  };
 }
 
 export function useEstimateTxFees({
