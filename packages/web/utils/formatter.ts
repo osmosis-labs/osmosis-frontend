@@ -143,12 +143,20 @@ function priceFormatter(
     num > 0 &&
     !Number.isInteger(num)
   ) {
-    const parts = formatted.split(".");
-    if (parts.length === 2 && parts[1].length < 2) {
-      formatted = parts[0] + "." + parts[1].padEnd(2, "0");
-    } else if (parts.length === 1) {
-      // Has no decimal but is not an integer - add .00
-      formatted = parts[0] + ".00";
+    const parts = formatter.formatToParts(num);
+    const fractionIndex = parts.findIndex((part) => part.type === "fraction");
+    if (fractionIndex >= 0 && parts[fractionIndex].value.length < 2) {
+      parts[fractionIndex] = {
+        ...parts[fractionIndex],
+        value: parts[fractionIndex].value.padEnd(2, "0"),
+      };
+      formatted = parts.map((part) => part.value).join("");
+    } else if (fractionIndex === -1) {
+      const decimalSymbol =
+        formatter
+          .formatToParts(1.1)
+          .find((part) => part.type === "decimal")?.value ?? ".";
+      formatted = `${formatted}${decimalSymbol}00`;
     }
   }
 
