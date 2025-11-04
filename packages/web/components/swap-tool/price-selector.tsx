@@ -448,6 +448,15 @@ const SelectableQuotes = observer(
 
     const { selectableQuoteDenoms } = useOrderbookSelectableDenoms();
 
+    const baseAsset = useMemo(
+      () =>
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          coinMinimalDenom: base,
+        })?.rawAsset as Asset | undefined,
+      [base]
+    );
+
     return selectableQuotes.map(
       ({ name, logoURIs, symbol, coinMinimalDenom }) => {
         const isSelected = quote === coinMinimalDenom;
@@ -499,7 +508,7 @@ const SelectableQuotes = observer(
                       <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
                         <span className="body2 font-light">
                           {t("limitOrders.unavailable", {
-                            denom: base,
+                            denom: baseAsset?.symbol ?? base,
                           })}
                         </span>
                       </p>

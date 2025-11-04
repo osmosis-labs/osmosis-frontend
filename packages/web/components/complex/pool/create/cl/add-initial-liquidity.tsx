@@ -1,6 +1,7 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
@@ -21,7 +22,23 @@ interface AddInitialLiquidityProps {
   onClose?: () => void;
 }
 
-const isAmountValid = (amount?: string) => !!amount && !/^0*$/.test(amount);
+const isPositiveDecAmount = (amount?: string): boolean => {
+  if (!amount) return false;
+  try {
+    return new Dec(amount).gt(new Dec(0));
+  } catch {
+    return false;
+  }
+};
+
+const safeParseDecOrZero = (value?: string | number): Dec => {
+  if (!value) return new Dec(0);
+  try {
+    return new Dec(value);
+  } catch {
+    return new Dec(0);
+  }
+};
 
 export const AddInitialLiquidity = observer(
   ({
@@ -102,9 +119,9 @@ export const AddInitialLiquidity = observer(
             isQuote
           />
         </div>
-        {isAmountValid(baseAmount) &&
-          isAmountValid(quoteAmount) &&
-          quoteUsdValue && (
+        {quoteUsdValue &&
+          isPositiveDecAmount(baseAmount) &&
+          isPositiveDecAmount(quoteAmount) && (
             <span className="subtitle1 text-osmoverse-300">
               Implied value: 1 {selectedBase.token.coinDenom}{" "}
               <span className="font-bold">
@@ -124,15 +141,25 @@ export const AddInitialLiquidity = observer(
           <button
             disabled={
               isTxLoading ||
-              new Dec(baseAmount ?? 0).gt(
+              !isPositiveDecAmount(baseAmount) ||
+              !isPositiveDecAmount(quoteAmount) ||
+              safeParseDecOrZero(baseAmount).gt(
                 baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               ) ||
-              new Dec(quoteAmount ?? 0).gt(
+              safeParseDecOrZero(quoteAmount).gt(
                 quoteAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               )
             }
             onClick={() => {
-              if (!baseAmount || !quoteAmount) return;
+              if (
+                !baseAmount ||
+                !quoteAmount ||
+                !isValidNumericalRawInput(baseAmount) ||
+                !isValidNumericalRawInput(quoteAmount) ||
+                !isPositiveDecAmount(baseAmount) ||
+                !isPositiveDecAmount(quoteAmount)
+              )
+                return;
 
               setIsTxLoading(true);
               account?.osmosis
@@ -228,16 +255,30 @@ const TokenLiquiditySelector = observer(
             </span>
           </button>
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
             placeholder="0"
             value={value}
             onChange={(e) => {
-              // we might have to adjust this treshold
-              if (e.target.value.length > 32) return;
-              if (e.target.value === "") return setter();
+              let inputValue = e.target.value;
 
-              setter(e.target.value);
+              // we might have to adjust this treshold
+              if (inputValue.length > 32) return;
+              if (inputValue === "") return setter();
+
+              // Handle leading decimal point
+              if (inputValue.startsWith(".")) {
+                inputValue = "0" + inputValue;
+              }
+
+              // Validate input: only allow valid numerical input with optional decimal point
+              // Allows: "1", "1.", "1.0", "1.00", ".5", "0.5", etc.
+              // Rejects: "1.2.3", "abc", "1a", etc.
+              const validPattern = /^\d*\.?\d*$/;
+              if (!validPattern.test(inputValue)) return;
+
+              setter(inputValue);
             }}
           />
           <span className="caption h-3.5 text-osmoverse-400">
@@ -247,7 +288,9 @@ const TokenLiquiditySelector = observer(
                 formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
-                    new Dec(value).mul(assetPrice?.toDec() ?? new Dec(0))
+                    safeParseDecOrZero(value).mul(
+                      assetPrice?.toDec() ?? new Dec(0)
+                    )
                   )
                 )}
           </span>
