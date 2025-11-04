@@ -11,6 +11,7 @@ import {
 import {
   getDecimalCount,
   getNumberMagnitude,
+  leadingZerosCount,
   toScientificNotation,
 } from "~/utils/number";
 
@@ -131,7 +132,27 @@ function priceFormatter(
   );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
-  return formatter.format(num);
+  let formatted = formatter.format(num);
+
+  // For values using standard notation with significant digits,
+  // pad to minimum 2 decimal places for consistency (e.g., $12.30 not $12.3, $12,345.10 not $12,345.1)
+  // But don't pad whole numbers (e.g., $119,232 not $119,232.00)
+  if (
+    opts.notation === "standard" &&
+    opts.maximumSignificantDigits &&
+    num > 0 &&
+    !Number.isInteger(num)
+  ) {
+    const parts = formatted.split(".");
+    if (parts.length === 2 && parts[1].length < 2) {
+      formatted = parts[0] + "." + parts[1].padEnd(2, "0");
+    } else if (parts.length === 1) {
+      // Has no decimal but is not an integer - add .00
+      formatted = parts[0] + ".00";
+    }
+  }
+
+  return formatted;
 }
 
 /** Formats a coin as compact by default. i.e. 7.53 ATOM or 265 OSMO. Validate handled by `CoinPretty`. */
@@ -226,6 +247,10 @@ function hasIntlFormatOptions(opts: FormatOptions) {
  *  STARS: $0.03673
  *  HUAHUA: $0.00001231
  *
+ * For very small prices with many leading zeros, we ensure 4 non-zero significant digits
+ * are preserved. This typically occurs with pairings with high value quotes such as BTC:
+ *  BABY: 0.0000002523 (6 leading zeros → 4 non-zero significant digits)
+ *
  * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
  * BTC: $47,334.21
  * ETH: $3,441.15
@@ -240,21 +265,35 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
     ? 4
     : integerPartLength + 2;
 
+  // For very small numbers with many leading zeros (e.g., 0.0000002523),
+  // we need a high maxDecimals to preserve precision through IntPretty conversion.
+  // maximumSignificantDigits will handle the display correctly by showing only
+  // the 4 significant digits without forcing trailing zeros.
+  const valueStr = value.toString();
+  const leadingZeros = valueStr.includes(".") ? leadingZerosCount(valueStr) : 0;
+  const numericValue = parseFloat(valueStr);
+  const isWholeNumber = Math.floor(numericValue) === numericValue;
+
+  let maxDecimals: number;
   const minimumDecimals = 2;
 
-  const maxDecimals = Math.max(
-    getDecimalCount(parseFloat(value.toString())),
-    minimumDecimals
-  );
+  // Check if whole number first, as Dec may have trailing zeros that leadingZerosCount would count
+  if (isWholeNumber) {
+    // For whole numbers (e.g., 119232.00), just use minimum decimals
+    maxDecimals = minimumDecimals;
+  } else if (leadingZeros >= 4) {
+    // For tiny numbers, ensure maxDecimals captures at least 4 non-zero significant digits
+    // Example: 0.0000002523 has 6 leading zeros, needs 10 decimals (6 + 4)
+    maxDecimals = leadingZeros + 4;
+  } else {
+    // For numbers with decimals, get actual decimal count with minimum of 2
+    maxDecimals = Math.max(getDecimalCount(numericValue), minimumDecimals);
+  }
 
   return {
     maxDecimals,
     notation: "standard",
     maximumSignificantDigits,
-    minimumSignificantDigits: maximumSignificantDigits,
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
-    disabledTrimZeros: true,
   };
 }
 
