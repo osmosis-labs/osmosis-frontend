@@ -153,9 +153,8 @@ function priceFormatter(
       formatted = parts.map((part) => part.value).join("");
     } else if (fractionIndex === -1) {
       const decimalSymbol =
-        formatter
-          .formatToParts(1.1)
-          .find((part) => part.type === "decimal")?.value ?? ".";
+        formatter.formatToParts(1.1).find((part) => part.type === "decimal")
+          ?.value ?? ".";
       formatted = `${formatted}${decimalSymbol}00`;
     }
   }
