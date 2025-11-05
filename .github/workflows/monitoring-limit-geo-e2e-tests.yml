@@ -417,11 +417,15 @@ jobs:
           echo "🔍 Sending critical failure metrics to Datadog..."
           
           # Add custom tag to mark this as a critical failure (2nd attempt with multiple failures)
-          datadog-ci tag --level pipeline --tags "critical_failure:true,dd_gh_run_attempt:${{ github.run_attempt }}"
+          datadog-ci tag --level pipeline --tags "critical_failure:true" --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
           
-          # Add measures for unexpected failure counts by region
+          # Add tags for unexpected failure counts by region
           datadog-ci tag --level pipeline \
-            --measures "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }},fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }},fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }},fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }},fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
+            --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
+            --tags "fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }}" \
+            --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
+            --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
+            --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
           
           echo "✅ Metrics sent to Datadog successfully"
 
