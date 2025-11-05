@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
+import { ensureBalances } from "../utils/balance-checker";
 
 test.describe("Test Swap to/from USDC feature", () => {
   let context: BrowserContext;
@@ -22,6 +23,16 @@ test.describe("Test Swap to/from USDC feature", () => {
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
+    
+    // Check balances before running tests - fail fast if insufficient
+    await ensureBalances(_walletId, [
+      { token: "USDC", amount: 0.5 },  // Total needed: 0.1 + 0.1 + 0.2 + 0.1 for swaps to other tokens
+      { token: "ATOM", amount: 0.015 }, // Max needed in single test
+      { token: "TIA", amount: 0.02 },   // Max needed in single test
+      { token: "INJ", amount: 0.01 },   // Max needed in single test
+      { token: "AKT", amount: 0.025 },  // Max needed in single test
+    ], { warnOnly: true });
+    
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();

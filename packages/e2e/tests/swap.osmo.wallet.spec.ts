@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
 import { SetupKeplr } from '../setup-keplr'
+import { ensureBalances } from '../utils/balance-checker'
 
 test.describe('Test Swap to/from OSMO feature', () => {
   let context: BrowserContext
@@ -14,6 +15,13 @@ test.describe('Test Swap to/from OSMO feature', () => {
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
+    
+    // Check balances before running tests - fail fast if insufficient
+    await ensureBalances(_walletId, [
+      { token: 'OSMO', amount: 0.2 },  // Max needed in single test
+      { token: 'ATOM', amount: 0.01 }, // Max needed in single test
+    ], { warnOnly: true })
+    
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
     await tradePage.connectWallet()
