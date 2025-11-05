@@ -33,6 +33,10 @@ test.describe('Test Swap to/from OSMO feature', () => {
     await context.close()
   })
 
+  test.beforeEach(async () => {
+    await tradePage.goto()
+  })
+
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>
   test.afterEach(async ({}, testInfo) => {
     console.log(`Test [${testInfo.title}] status: ${testInfo.status}`)
@@ -43,7 +47,6 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test.skip('User should be able to swap OSMO to WBTC', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('OSMO', 'WBTC')
     await tradePage.enterAmount('0.9')
     await tradePage.showSwapInfo()
@@ -55,7 +58,6 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test('User should be able to swap OSMO to ATOM', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('OSMO', 'ATOM')
     await tradePage.enterAmount('0.2')
     await tradePage.swapAndApprove(context)
@@ -67,7 +69,6 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test('User should be able to swap ATOM to OSMO', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('ATOM', 'OSMO')
     await tradePage.enterAmount('0.01')
     await tradePage.showSwapInfo()
