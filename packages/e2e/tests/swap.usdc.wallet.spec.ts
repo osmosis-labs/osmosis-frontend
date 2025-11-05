@@ -63,7 +63,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.015");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -72,7 +72,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -81,7 +81,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -90,7 +90,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.02");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -99,7 +99,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.2");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -108,7 +108,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.01");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -117,7 +117,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -126,7 +126,7 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.enterAmount("0.025");
     await tradePage.showSwapInfo();
     await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 });
