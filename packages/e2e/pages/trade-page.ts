@@ -400,18 +400,53 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  async swapAndApprove(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalanceForSwap(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    console.log("Swap and Sign now..");
-    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
-      timeout: this.buySellTimeout,
-    });
-    await this.swapBtn.click({ timeout: 4000 });
-    await this.confirmSwapBtn.click({ timeout: 5000 });
-    await this.justApproveIfNeeded(context);
+  async swapAndApprove(context: BrowserContext, maxRetries = 2) {
+    // Retry logic to handle race conditions where quote refreshes and temporarily disables swap button
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        // Make sure to have sufficient balance and swap button is enabled
+        expect(
+          await this.isInsufficientBalanceForSwap(),
+          "Insufficient balance for the swap!"
+        ).toBeFalsy();
+        console.log("Swap and Sign now..");
+        await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
+          timeout: this.buySellTimeout,
+        });
+        await this.swapBtn.click({ timeout: 4000 });
+        await this.confirmSwapBtn.click({ timeout: 5000 });
+        await this.justApproveIfNeeded(context);
+        
+        // Success! Exit retry loop
+        if (attempt > 0) {
+          console.log(`✓ Swap succeeded after ${attempt} retry(ies)`);
+        }
+        return;
+        
+      } catch (error) {
+        const isDisabledError = error.message?.includes('disabled') || 
+                               error.message?.includes('toBeEnabled');
+        
+        if (attempt < maxRetries && isDisabledError) {
+          console.warn(
+            `⚠️  RACE CONDITION DETECTED: Swap button disabled ` +
+            `(attempt ${attempt + 1}/${maxRetries + 1}). ` +
+            `Waiting for quote to stabilize and retrying...`
+          );
+          
+          // Wait for quote/route to finish refreshing
+          await this.page.waitForTimeout(1500);
+          
+          // Log exchange rate to see if it changed
+          const rate = await this.getExchangeRate().catch(() => 'N/A');
+          console.log(`Exchange rate after wait: ${rate}`);
+          
+          continue; // Retry
+        }
+        
+        // Final attempt failed or different error - throw it
+        throw error;
+      }
+    }
   }
 }
