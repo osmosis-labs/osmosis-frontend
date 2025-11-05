@@ -25,6 +25,7 @@ export class TradePage extends BasePage {
   readonly limitTabBtn: Locator;
   readonly orderHistoryLink: Locator;
   readonly limitPrice: Locator;
+  readonly slippageInput: Locator;
   readonly buySellTimeout = 30_000;
 
   constructor(page: Page) {
@@ -52,6 +53,7 @@ export class TradePage extends BasePage {
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
+    this.slippageInput = page.locator('input[type="text"][inputmode="decimal"]').first();
   }
 
   async goto() {
@@ -400,7 +402,41 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  async swapAndApprove(context: BrowserContext, maxRetries = 2) {
+  /**
+   * Sets the slippage tolerance in the review swap modal.
+   * Must be called AFTER clicking swap button but BEFORE clicking confirm.
+   * @param slippagePercent - Slippage percentage as string (e.g., "3" for 3%)
+   */
+  async setSlippageTolerance(slippagePercent: string) {
+    console.log(`⚙️  Setting slippage tolerance to ${slippagePercent}%...`);
+    
+    try {
+      // Wait for review modal and slippage input to be visible
+      await this.slippageInput.waitFor({ state: 'visible', timeout: 5000 });
+      
+      // Click to focus the input
+      await this.slippageInput.click();
+      
+      // Clear and set new value
+      await this.slippageInput.fill(slippagePercent);
+      
+      // Verify the value was actually set
+      await expect(this.slippageInput).toHaveValue(slippagePercent, { timeout: 2000 });
+      
+      console.log(`✓ Slippage tolerance confirmed set to ${slippagePercent}%`);
+    } catch (error: any) {
+      console.warn(`⚠️  Could not set slippage tolerance: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async swapAndApprove(
+    context: BrowserContext, 
+    options?: { maxRetries?: number; slippagePercent?: string }
+  ) {
+    const maxRetries = options?.maxRetries ?? 3;
+    const slippagePercent = options?.slippagePercent;
+    
     // Retry logic to handle race conditions where quote refreshes and temporarily disables swap button
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -414,6 +450,12 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
         await this.swapBtn.click({ timeout: 4000 });
+        
+        // Set slippage tolerance if specified (after swap clicked, before confirm)
+        if (slippagePercent) {
+          await this.setSlippageTolerance(slippagePercent);
+        }
+        
         await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
         
@@ -423,7 +465,7 @@ export class TradePage extends BasePage {
         }
         return;
         
-      } catch (error) {
+      } catch (error: any) {
         const isDisabledError = error.message?.includes('disabled') || 
                                error.message?.includes('toBeEnabled');
         

@@ -60,7 +60,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
   test('User should be able to swap OSMO to ATOM', async () => {
     await tradePage.selectPair('OSMO', 'ATOM')
     await tradePage.enterAmount('0.2')
-    await tradePage.swapAndApprove(context)
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" })
     //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("denom: uosmo");
@@ -72,7 +72,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
     await tradePage.selectPair('ATOM', 'OSMO')
     await tradePage.enterAmount('0.01')
     await tradePage.showSwapInfo()
-    await tradePage.swapAndApprove(context)
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" })
     //expect(msgContent).toContain(`denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("token_out_denom: uosmo");
