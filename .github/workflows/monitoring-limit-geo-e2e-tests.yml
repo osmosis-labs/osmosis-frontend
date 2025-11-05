@@ -420,8 +420,8 @@ jobs:
           datadog-ci tag --level pipeline --tags "critical_failure:true,dd_gh_run_attempt:${{ github.run_attempt }}"
           
           # Add measures for unexpected failure counts by region
-          datadog-ci measure --level pipeline \
-            --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }},fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }},fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }},fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }},fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
+          datadog-ci tag --level pipeline \
+            --measures "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }},fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }},fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }},fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }},fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
           
           echo "✅ Metrics sent to Datadog successfully"
 
