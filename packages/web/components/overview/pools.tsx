@@ -20,11 +20,9 @@ export const PoolsOverview: FunctionComponent<
   const { width } = useWindowSize();
   const { t } = useTranslation();
 
-  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
-    {
-      coinMinimalDenom: "uosmo",
-    }
-  );
+  const { data: osmo, isFetched } = api.edge.assets.getMarketAsset.useQuery({
+    findMinDenomOrSymbol: "OSMO",
+  });
   const { data: epochs } = api.local.params.getEpochs.useQuery();
 
   // update time every second
