@@ -51,7 +51,8 @@ export const NavbarOsmoPrice = observer(() => {
 
             <p className="mt-[3px]">
               {formatPretty(osmo.currentPrice, {
-                maxDecimals: 2,
+                maxDecimals: 3,
+                notation: "standard",
               })}
             </p>
           </div>

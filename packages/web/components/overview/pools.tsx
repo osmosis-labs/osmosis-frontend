@@ -7,6 +7,7 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { SkeletonLoader } from "../loaders/skeleton-loader";
@@ -73,8 +74,10 @@ export const PoolsOverview: FunctionComponent<
             isLoaded={isFetched}
           >
             <h2 className="mt-[3px]">
-              {osmoPrice.fiatCurrency.symbol}
-              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+              {formatPretty(osmoPrice, {
+                maxDecimals: 3,
+                notation: "standard",
+              })}
             </h2>
           </SkeletonLoader>
         )}
