@@ -207,27 +207,35 @@ export class TradePage extends BasePage {
       "//div//button[@data-testid='token-out']//img[@alt]"
     );
     // Select From Token
-    await fromToken.click({ timeout: 4000 });
+    await fromToken.click({ timeout: 10000 });
     // we expect that after 1 second token filter is displayed.
     await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(from);
+    // Allow search to filter results
+    await this.page.waitForTimeout(500);
     const fromLocator = this.page
       .locator(
         `//div/button[@data-testid='token-select-asset']//span[.='${from}']`
       )
       .first();
-    await fromLocator.click({ timeout: 4000 });
+    // Wait for token to be visible before clicking
+    await fromLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await fromLocator.click({ timeout: 10000 });
     // Select To Token
-    await toToken.click({ timeout: 4000 });
+    await toToken.click({ timeout: 10000 });
     // we expect that after 1 second token filter is displayed.
     await this.page.waitForTimeout(1000);
     await this.page.getByPlaceholder("Search").fill(to);
+    // Allow search to filter results
+    await this.page.waitForTimeout(500);
     const toLocator = this.page
       .locator(
         `//div/button[@data-testid='token-select-asset']//span[.='${to}']`
       )
       .first();
-    await toLocator.click();
+    // Wait for token to be visible before clicking
+    await toLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await toLocator.click({ timeout: 10000 });
     // we expect that after 2 seconds exchange rate is populated.
     await this.page.waitForTimeout(2000);
     expect(await this.getExchangeRate()).toContain(from);
