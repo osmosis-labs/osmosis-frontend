@@ -66,14 +66,16 @@ export const PoolsOverview: FunctionComponent<
         <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        {osmoPrice && (
+        {osmo?.currentPrice && (
           <SkeletonLoader
             className={classNames(isFetched ? null : "h-5 w-13")}
             isLoaded={isFetched}
           >
             <h2 className="mt-[3px]">
-              {formatPretty(osmoPrice, {
-                maxDecimals: 3,
+              {formatPretty(osmo.currentPrice, {
+                maxDecimals: 6,
+                maximumSignificantDigits: undefined,
+                maximumFractionDigits: 3,
                 notation: "standard",
               })}
             </h2>
