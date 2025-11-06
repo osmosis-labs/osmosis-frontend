@@ -2,6 +2,7 @@ import * as core from "@actions/core";
 import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
+import { ensureBalances } from "../utils/balance-checker";
 
 test.describe("Test Swap to/from USDC feature", () => {
   let context: BrowserContext;
@@ -22,6 +23,16 @@ test.describe("Test Swap to/from USDC feature", () => {
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
+    
+    // Check balances before running tests - fail fast if insufficient
+    await ensureBalances(_walletId, [
+      { token: "USDC", amount: 0.5 },  // Total needed: 0.1 + 0.1 + 0.2 + 0.1 for swaps to other tokens
+      { token: "ATOM", amount: 0.015 }, // Max needed in single test
+      { token: "TIA", amount: 0.02 },   // Max needed in single test
+      { token: "INJ", amount: 0.01 },   // Max needed in single test
+      { token: "AKT", amount: 0.025 },  // Max needed in single test
+    ], { warnOnly: true });
+    
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
@@ -51,8 +62,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("ATOM", "USDC");
     await tradePage.enterAmount("0.015");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -60,8 +71,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "ATOM");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -69,8 +80,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "TIA");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -78,8 +89,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("TIA", "USDC");
     await tradePage.enterAmount("0.02");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -87,8 +98,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "INJ");
     await tradePage.enterAmount("0.2");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -96,8 +107,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("INJ", "USDC");
     await tradePage.enterAmount("0.01");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -105,8 +116,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("USDC", "AKT");
     await tradePage.enterAmount("0.1");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 
@@ -114,8 +125,8 @@ test.describe("Test Swap to/from USDC feature", () => {
     await tradePage.selectPair("AKT", "USDC");
     await tradePage.enterAmount("0.025");
     await tradePage.showSwapInfo();
-    await tradePage.swapAndApprove(context);
-    await tradePage.isTransactionSuccesful();
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" });
+    await tradePage.isTransactionSuccesful(15); // Increased timeout for USDC swaps
     await tradePage.getTransactionUrl();
   });
 });

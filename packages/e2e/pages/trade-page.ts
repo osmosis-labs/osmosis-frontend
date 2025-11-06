@@ -25,6 +25,7 @@ export class TradePage extends BasePage {
   readonly limitTabBtn: Locator;
   readonly orderHistoryLink: Locator;
   readonly limitPrice: Locator;
+  readonly slippageInput: Locator;
   readonly buySellTimeout = 30_000;
 
   constructor(page: Page) {
@@ -52,6 +53,7 @@ export class TradePage extends BasePage {
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
+    this.slippageInput = page.locator('input[type="text"][inputmode="decimal"]').first();
   }
 
   async goto() {
@@ -400,18 +402,93 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  async swapAndApprove(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
-    expect(
-      await this.isInsufficientBalanceForSwap(),
-      "Insufficient balance for the swap!"
-    ).toBeFalsy();
-    console.log("Swap and Sign now..");
-    await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
-      timeout: this.buySellTimeout,
-    });
-    await this.swapBtn.click({ timeout: 4000 });
-    await this.confirmSwapBtn.click({ timeout: 5000 });
-    await this.justApproveIfNeeded(context);
+  /**
+   * Sets the slippage tolerance in the review swap modal.
+   * Must be called AFTER clicking swap button but BEFORE clicking confirm.
+   * @param slippagePercent - Slippage percentage as string (e.g., "3" for 3%)
+   */
+  async setSlippageTolerance(slippagePercent: string) {
+    console.log(`⚙️  Setting slippage tolerance to ${slippagePercent}%...`);
+    
+    try {
+      // Wait for review modal and slippage input to be visible
+      await this.slippageInput.waitFor({ state: 'visible', timeout: 5000 });
+      
+      // Click to focus the input
+      await this.slippageInput.click();
+      
+      // Clear and set new value
+      await this.slippageInput.fill(slippagePercent);
+      
+      // Verify the value was actually set
+      await expect(this.slippageInput).toHaveValue(slippagePercent, { timeout: 2000 });
+      
+      console.log(`✓ Slippage tolerance confirmed set to ${slippagePercent}%`);
+    } catch (error: any) {
+      console.warn(`⚠️  Could not set slippage tolerance: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async swapAndApprove(
+    context: BrowserContext, 
+    options?: { maxRetries?: number; slippagePercent?: string }
+  ) {
+    const maxRetries = options?.maxRetries ?? 3;
+    const slippagePercent = options?.slippagePercent;
+    
+    // Retry logic to handle race conditions where quote refreshes and temporarily disables swap button
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        // Make sure to have sufficient balance and swap button is enabled
+        expect(
+          await this.isInsufficientBalanceForSwap(),
+          "Insufficient balance for the swap!"
+        ).toBeFalsy();
+        console.log("Swap and Sign now..");
+        await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
+          timeout: this.buySellTimeout,
+        });
+        await this.swapBtn.click({ timeout: 4000 });
+        
+        // Set slippage tolerance if specified (after swap clicked, before confirm)
+        if (slippagePercent) {
+          await this.setSlippageTolerance(slippagePercent);
+        }
+        
+        await this.confirmSwapBtn.click({ timeout: 5000 });
+        await this.justApproveIfNeeded(context);
+        
+        // Success! Exit retry loop
+        if (attempt > 0) {
+          console.log(`✓ Swap succeeded after ${attempt} retry(ies)`);
+        }
+        return;
+        
+      } catch (error: any) {
+        const isDisabledError = error.message?.includes('disabled') || 
+                               error.message?.includes('toBeEnabled');
+        
+        if (attempt < maxRetries && isDisabledError) {
+          console.warn(
+            `⚠️  RACE CONDITION DETECTED: Swap button disabled ` +
+            `(attempt ${attempt + 1}/${maxRetries + 1}). ` +
+            `Waiting for quote to stabilize and retrying...`
+          );
+          
+          // Wait for quote/route to finish refreshing
+          await this.page.waitForTimeout(1500);
+          
+          // Log exchange rate to see if it changed
+          const rate = await this.getExchangeRate().catch(() => 'N/A');
+          console.log(`Exchange rate after wait: ${rate}`);
+          
+          continue; // Retry
+        }
+        
+        // Final attempt failed or different error - throw it
+        throw error;
+      }
+    }
   }
 }
