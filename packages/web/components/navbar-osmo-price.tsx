@@ -23,7 +23,7 @@ export const NavbarOsmoPrice = observer(() => {
   const { chainId } = chainStore.osmosis;
   const wallet = accountStore.getWallet(chainId);
 
-  const { data: osmo } = api.edge.assets.getMarketAsset.useQuery({
+  const { data: osmo } = api.edge.assets.getAssetWithPrice.useQuery({
     findMinDenomOrSymbol: "OSMO",
   });
 
