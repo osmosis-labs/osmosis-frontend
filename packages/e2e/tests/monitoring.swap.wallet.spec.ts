@@ -2,15 +2,25 @@ import * as core from '@actions/core'
 import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
 import { SetupKeplr } from '../setup-keplr'
+import { ensureBalances } from '../utils/balance-checker'
 
 test.describe('Test Swap Stables feature', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'private_key'
+  const walletId = process.env.WALLET_ID ?? 'wallet_id'
   let tradePage: TradePage
   const swapAmount = '0.55'
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
+    
+    // Check balances before running tests - warn only mode
+    await ensureBalances(walletId, [
+      { token: 'USDC', amount: 1.2 },        // Total for USDC swaps
+      { token: 'USDC.eth.axl', amount: 0.6 }, // For USDC.eth.axl swap
+      { token: 'USDT', amount: 0.6 },        // For USDT swap
+    ], { warnOnly: true })
+    
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
     await tradePage.connectWallet()
