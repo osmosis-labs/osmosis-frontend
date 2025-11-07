@@ -49,11 +49,6 @@ export function EntityImage({
   }
 
   return (
-    <Image
-      {...props}
-      src={imageUrl}
-      alt={name}
-      onError={() => setErr(true)}
-    />
+    <Image {...props} src={imageUrl} alt={name} onError={() => setErr(true)} />
   );
 }
