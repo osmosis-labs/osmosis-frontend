@@ -148,7 +148,7 @@ export interface Asset {
   symbol: string;
   name: string;
   decimals: number;
-  logoURIs: LogoURIs;
+  logoURIs?: LogoURIs;
   coingeckoId?: string;
 
   tooltipMessage?: string;
