@@ -187,6 +187,12 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
 
                         const revealAddress = assets[0].denom === asset.denom;
 
+                        // Get the bridge provider for this asset variant
+                        const bridgeProviders = fromAsset.supportedVariants[asset.address]
+                          ? Object.keys(fromAsset.supportedVariants[asset.address])
+                          : [];
+                        const primaryBridge = bridgeProviders[0];
+
                         return (
                           <MenuItem key={asset.denom}>
                             <button
@@ -213,9 +219,9 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                                   <p className="body2 text-osmoverse-300">
                                     {t("transfer.recommended")}
                                   </p>
-                                ) : revealAddress ? (
+                                ) : revealAddress && primaryBridge ? (
                                   <p className="body2 text-osmoverse-300">
-                                    {asset.address}
+                                    {primaryBridge}
                                   </p>
                                 ) : null}
                               </div>
