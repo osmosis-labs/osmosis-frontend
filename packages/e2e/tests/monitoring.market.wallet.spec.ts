@@ -2,15 +2,25 @@ import * as core from '@actions/core'
 import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
 import { SetupKeplr } from '../setup-keplr'
+import { ensureBalances } from '../utils/balance-checker'
 
 test.describe('Test Market Buy/Sell Order feature', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'private_key'
+  const walletId = process.env.WALLET_ID ?? 'wallet_id'
   let tradePage: TradePage
   const TRX_SUCCESS_TIMEOUT = 10000
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
+    
+    // Check balances before running tests - warn only mode
+    await ensureBalances(walletId, [
+      { token: 'USDC', amount: 3.2 },  // For market buy BTC and OSMO (1.55 each)
+      { token: 'BTC', amount: 1.6 },   // For market sell BTC
+      { token: 'OSMO', amount: 1.6 },  // For market sell OSMO
+    ], { warnOnly: true })
+    
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
   })
