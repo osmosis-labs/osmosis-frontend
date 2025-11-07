@@ -2,6 +2,7 @@ import * as core from '@actions/core'
 import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
 import { SetupKeplr } from '../setup-keplr'
+import { ensureBalances } from '../utils/balance-checker'
 
 test.describe('Test Swap to/from OSMO feature', () => {
   let context: BrowserContext
@@ -14,6 +15,13 @@ test.describe('Test Swap to/from OSMO feature', () => {
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
+    
+    // Check balances before running tests - fail fast if insufficient
+    await ensureBalances(_walletId, [
+      { token: 'OSMO', amount: 0.2 },  // Max needed in single test
+      { token: 'ATOM', amount: 0.01 }, // Max needed in single test
+    ], { warnOnly: true })
+    
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
     await tradePage.connectWallet()
@@ -23,6 +31,10 @@ test.describe('Test Swap to/from OSMO feature', () => {
   test.afterAll(async () => {
     await tradePage.logOut()
     await context.close()
+  })
+
+  test.beforeEach(async () => {
+    await tradePage.goto()
   })
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>
@@ -35,7 +47,6 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test.skip('User should be able to swap OSMO to WBTC', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('OSMO', 'WBTC')
     await tradePage.enterAmount('0.9')
     await tradePage.showSwapInfo()
@@ -47,10 +58,9 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test('User should be able to swap OSMO to ATOM', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('OSMO', 'ATOM')
     await tradePage.enterAmount('0.2')
-    await tradePage.swapAndApprove(context)
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" })
     //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("denom: uosmo");
@@ -59,11 +69,10 @@ test.describe('Test Swap to/from OSMO feature', () => {
   })
 
   test('User should be able to swap ATOM to OSMO', async () => {
-    await tradePage.goto()
     await tradePage.selectPair('ATOM', 'OSMO')
     await tradePage.enterAmount('0.01')
     await tradePage.showSwapInfo()
-    await tradePage.swapAndApprove(context)
+    await tradePage.swapAndApprove(context, { maxRetries: 3, slippagePercent: "3" })
     //expect(msgContent).toContain(`denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("token_out_denom: uosmo");

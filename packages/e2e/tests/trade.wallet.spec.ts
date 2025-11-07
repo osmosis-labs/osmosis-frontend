@@ -2,10 +2,13 @@ import { type BrowserContext, expect, test } from '@playwright/test'
 import { TradePage } from '../pages/trade-page'
 import { TransactionsPage } from '../pages/transactions-page'
 import { SetupKeplr } from '../setup-keplr'
+import { ensureBalances } from '../utils/balance-checker'
 
 test.describe('Test Trade feature', () => {
   let context: BrowserContext
   const privateKey = process.env.PRIVATE_KEY ?? 'private_key'
+  const walletId =
+    process.env.WALLET_ID ?? 'osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l'
   let tradePage: TradePage
   const USDC =
     'ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4'
@@ -14,6 +17,13 @@ test.describe('Test Trade feature', () => {
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
+    
+    // Balance pre-check before running tests (warnOnly keeps monitoring runs non-blocking)
+    await ensureBalances(walletId, [
+      { token: 'USDC', amount: 1.12 }, // Max needed for buy test
+      { token: 'ATOM', amount: 2.12 }, // Total needed: 1.11 + 1.01 for sell tests
+      { token: 'OSMO', amount: 1.01 }, // Max needed for limit sell OSMO test
+    ], { warnOnly: true })
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
   })

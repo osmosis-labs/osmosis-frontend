@@ -68,32 +68,32 @@ jobs:
     needs: [fe-quote-tests]
     if: failure() && github.run_attempt == 2
     steps:
-      - name: Send Slack alert if test fails
-        id: slack
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": {
-                    "type": "plain_text",
-                    "text": "🚨 Synthetic Prod Quote Monitoring Tests Failure Alert 🚨"
-                  }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "Click here to view the run: <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|GitHub Actions Run>"
-                  }
-                }
-              ]
-            }
+      - name: Verify Datadog CI Installation
+        run: |
+          echo "🔍 Verifying Datadog CI installation..."
+          datadog-ci version
+          echo "✅ Datadog CI is ready to use"
+
+      - name: Send Datadog alert if test fails
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+          DD_API_KEY: ${{ secrets.DATADOG_API_KEY }}
+          DD_APP_KEY: ${{ secrets.DATADOG_APPLICATION_KEY }}
+          DD_SITE: ${{ secrets.DATADOG_SITE }}
+        run: |
+          echo "🔍 Sending critical failure metrics to Datadog..."
+          
+          # Add custom tag to mark this as a critical failure (2nd attempt with multiple failures)
+          datadog-ci tag --level pipeline --tags "critical_failure:true" --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
+          
+          # Add tags for unexpected failure counts by region
+          datadog-ci tag --level pipeline \
+            --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
+            --tags "fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }}" \
+            --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
+            --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
+            --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
+          
+          echo "✅ Metrics sent to Datadog successfully"
 
   delete-deployments:
     runs-on: ubuntu-latest
