@@ -18,13 +18,12 @@ test.describe('Test Trade feature', () => {
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey)
     
-    // Check balances before running tests - fail fast if insufficient
+    // Balance pre-check before running tests (warnOnly keeps monitoring runs non-blocking)
     await ensureBalances(walletId, [
       { token: 'USDC', amount: 1.12 }, // Max needed for buy test
       { token: 'ATOM', amount: 2.12 }, // Total needed: 1.11 + 1.01 for sell tests
       { token: 'OSMO', amount: 1.01 }, // Max needed for limit sell OSMO test
     ], { warnOnly: true })
-    
     tradePage = new TradePage(context.pages()[0])
     await tradePage.goto()
   })
