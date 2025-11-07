@@ -20,7 +20,7 @@ export function EntityImage({
   } = props;
   const [err, setErr] = useState(false);
 
-  const imageUrl = logoURIs.png || logoURIs.svg;
+  const imageUrl = logoURIs.svg || logoURIs.png;
 
   if (!imageUrl || err) {
     return (
@@ -49,6 +49,11 @@ export function EntityImage({
   }
 
   return (
-    <Image {...props} src={imageUrl} alt={name} onError={() => setErr(true)} />
+    <Image
+      {...props}
+      src={imageUrl}
+      alt={name}
+      onError={() => setErr(true)}
+    />
   );
 }
