@@ -53,7 +53,7 @@ export const RouteLane: FunctionComponent<{
             {route.percentage.inequalitySymbol(false).maxDecimals(0).toString()}
           </span>
         )}
-        <div className="h-7">
+        <div className="h-7 w-7">
           <DenomImage currency={sendCurrency} size={28} />
         </div>
       </div>
@@ -69,7 +69,7 @@ export const RouteLane: FunctionComponent<{
         <Pools {...route} />
       </div>
 
-      <div className="h-7 shrink-0">
+      <div className="h-7 w-7 shrink-0">
         <DenomImage currency={lastOutCurrency} size={28} />
       </div>
     </div>
