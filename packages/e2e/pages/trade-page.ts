@@ -332,29 +332,37 @@ export class TradePage extends BasePage {
     });
     // Handle Pop-up page ->
     await this.buyBtn.click();
-    const pageApprove = context.waitForEvent("page");
+    // Start listening for popup with explicit timeout BEFORE clicking confirm
+    const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+    // Small wait to let UI settle before triggering popup
+    await this.page.waitForTimeout(500);
     await this.confirmSwapBtn.click();
-    await this.page.waitForTimeout(200);
-    const approvePage = await pageApprove;
-    await approvePage.waitForLoadState();
-    const approveBtn = approvePage.getByRole("button", {
-      name: "Approve",
-    });
-    await expect(approveBtn).toBeEnabled();
-    let msgTextLocator = "type: osmosis/poolmanager/";
-    if (limit) {
-      msgTextLocator = "Execute contract";
+
+    try {
+      const approvePage = await pageApprovePromise;
+      await approvePage.waitForLoadState();
+      const approveBtn = approvePage.getByRole("button", {
+        name: "Approve",
+      });
+      await expect(approveBtn).toBeEnabled();
+      let msgTextLocator = "type: osmosis/poolmanager/";
+      if (limit) {
+        msgTextLocator = "Execute contract";
+      }
+      const msgContentAmount = await approvePage
+        .getByText(msgTextLocator)
+        .textContent();
+      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      // Approve trx
+      await approveBtn.click();
+      // wait for trx confirmation
+      await this.page.waitForTimeout(2000);
+      // Handle Pop-up page <-
+      return { msgContentAmount };
+    } catch (error: any) {
+      console.error("Failed to get Keplr approval popup:", error.message);
+      throw new Error("Keplr approval popup did not appear within 15 seconds. Check if wallet extension is properly configured.");
     }
-    const msgContentAmount = await approvePage
-      .getByText(msgTextLocator)
-      .textContent();
-    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-    // Approve trx
-    await approveBtn.click();
-    // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
-    // Handle Pop-up page <-
-    return { msgContentAmount };
   }
 
   async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
@@ -364,29 +372,37 @@ export class TradePage extends BasePage {
     });
     // Handle Pop-up page ->
     await this.sellBtn.click();
-    const pageApprove = context.waitForEvent("page");
+    // Start listening for popup with explicit timeout BEFORE clicking confirm
+    const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+    // Small wait to let UI settle before triggering popup
+    await this.page.waitForTimeout(500);
     await this.confirmSwapBtn.click();
-    await this.page.waitForTimeout(200);
-    const approvePage = await pageApprove;
-    await approvePage.waitForLoadState();
-    const approveBtn = approvePage.getByRole("button", {
-      name: "Approve",
-    });
-    await expect(approveBtn).toBeEnabled();
-    let msgTextLocator = "type: osmosis/poolmanager/";
-    if (limit) {
-      msgTextLocator = "Execute contract";
+
+    try {
+      const approvePage = await pageApprovePromise;
+      await approvePage.waitForLoadState();
+      const approveBtn = approvePage.getByRole("button", {
+        name: "Approve",
+      });
+      await expect(approveBtn).toBeEnabled();
+      let msgTextLocator = "type: osmosis/poolmanager/";
+      if (limit) {
+        msgTextLocator = "Execute contract";
+      }
+      const msgContentAmount = await approvePage
+        .getByText(msgTextLocator)
+        .textContent();
+      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      // Approve trx
+      await approveBtn.click();
+      // wait for trx confirmation
+      await this.page.waitForTimeout(2000);
+      // Handle Pop-up page <-
+      return { msgContentAmount };
+    } catch (error: any) {
+      console.error("Failed to get Keplr approval popup:", error.message);
+      throw new Error("Keplr approval popup did not appear within 15 seconds. Check if wallet extension is properly configured.");
     }
-    const msgContentAmount = await approvePage
-      .getByText(msgTextLocator)
-      .textContent();
-    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-    // Approve trx
-    await approveBtn.click();
-    // wait for trx confirmation
-    await this.page.waitForTimeout(2000);
-    // Handle Pop-up page <-
-    return { msgContentAmount };
   }
 
   async sellAndApprove(context: BrowserContext) {
