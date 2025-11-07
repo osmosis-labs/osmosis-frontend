@@ -215,13 +215,18 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                                 <p className="body1 md:body2">
                                   {t("transfer.withdrawAs")} {asset.denom}
                                 </p>
-                                {isCanonicalAsset ? (
+                                {primaryBridge ? (
+                                  <p className="body2 text-osmoverse-300">
+                                    {primaryBridge}
+                                    {isCanonicalAsset && ` • ${t("transfer.recommended")}`}
+                                  </p>
+                                ) : isCanonicalAsset ? (
                                   <p className="body2 text-osmoverse-300">
                                     {t("transfer.recommended")}
                                   </p>
-                                ) : revealAddress && primaryBridge ? (
+                                ) : revealAddress ? (
                                   <p className="body2 text-osmoverse-300">
-                                    {primaryBridge}
+                                    {asset.address}
                                   </p>
                                 ) : null}
                               </div>
