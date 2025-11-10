@@ -327,82 +327,154 @@ export class TradePage extends BasePage {
   }
 
   async buyAndGetWalletMsg(context: BrowserContext, limit = false) {
-    await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
-      timeout: this.buySellTimeout,
-    });
-    // Handle Pop-up page ->
-    await this.buyBtn.click();
-    // Start listening for popup with explicit timeout BEFORE clicking confirm
-    const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
-    // Small wait to let UI settle before triggering popup
-    await this.page.waitForTimeout(500);
-    await this.confirmSwapBtn.click();
+    const maxRetries = 2; // 3 total attempts
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for buy operation...`);
+        }
+        
+        await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
+          timeout: this.buySellTimeout,
+        });
+        // Handle Pop-up page ->
+        await this.buyBtn.click();
+        // Start listening for popup with explicit timeout BEFORE clicking confirm
+        const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        // Small wait to let UI settle before triggering popup
+        await this.page.waitForTimeout(500);
+        await this.confirmSwapBtn.click();
 
-    try {
-      const approvePage = await pageApprovePromise;
-      await approvePage.waitForLoadState();
-      const approveBtn = approvePage.getByRole("button", {
-        name: "Approve",
-      });
-      await expect(approveBtn).toBeEnabled();
-      let msgTextLocator = "type: osmosis/poolmanager/";
-      if (limit) {
-        msgTextLocator = "Execute contract";
+        try {
+          const approvePage = await pageApprovePromise;
+          await approvePage.waitForLoadState();
+          const approveBtn = approvePage.getByRole("button", {
+            name: "Approve",
+          });
+          await expect(approveBtn).toBeEnabled();
+          let msgTextLocator = "type: osmosis/poolmanager/";
+          if (limit) {
+            msgTextLocator = "Execute contract";
+          }
+          const msgContentAmount = await approvePage
+            .getByText(msgTextLocator)
+            .textContent();
+          console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+          // Approve trx
+          await approveBtn.click();
+          // wait for trx confirmation
+          await this.page.waitForTimeout(2000);
+          // Handle Pop-up page <-
+          
+          // Success! Exit retry loop
+          if (attempt > 0) {
+            console.log(`✓ Buy operation succeeded after ${attempt} retry(ies)`);
+          }
+          return { msgContentAmount };
+        } catch (error: any) {
+          console.error("Failed to get Keplr approval popup:", error.message);
+          throw error; // Re-throw to be caught by outer try-catch
+        }
+      } catch (error: any) {
+        const isLastAttempt = attempt === maxRetries;
+        
+        if (isLastAttempt) {
+          console.error(`❌ Buy operation failed after ${maxRetries + 1} attempts:`, error.message);
+          throw new Error(
+            `Failed to complete buy operation after ${maxRetries + 1} attempts. ` +
+            `Last error: ${error.message}. Check if wallet extension is properly configured.`
+          );
+        }
+        
+        console.warn(
+          `⚠️ Buy operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
+          `Error: ${error.message}. Retrying...`
+        );
+        
+        // Wait before retry to let things settle
+        await this.page.waitForTimeout(2000);
       }
-      const msgContentAmount = await approvePage
-        .getByText(msgTextLocator)
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-      // Approve trx
-      await approveBtn.click();
-      // wait for trx confirmation
-      await this.page.waitForTimeout(2000);
-      // Handle Pop-up page <-
-      return { msgContentAmount };
-    } catch (error: any) {
-      console.error("Failed to get Keplr approval popup:", error.message);
-      throw new Error("Keplr approval popup did not appear within 15 seconds. Check if wallet extension is properly configured.");
     }
+    
+    // TypeScript needs this but it should never reach here
+    throw new Error("Buy operation failed unexpectedly");
   }
 
   async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
-    // Make sure Sell button is enabled
-    await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
-      timeout: this.buySellTimeout,
-    });
-    // Handle Pop-up page ->
-    await this.sellBtn.click();
-    // Start listening for popup with explicit timeout BEFORE clicking confirm
-    const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
-    // Small wait to let UI settle before triggering popup
-    await this.page.waitForTimeout(500);
-    await this.confirmSwapBtn.click();
+    const maxRetries = 2; // 3 total attempts
+    
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for sell operation...`);
+        }
+        
+        // Make sure Sell button is enabled
+        await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
+          timeout: this.buySellTimeout,
+        });
+        // Handle Pop-up page ->
+        await this.sellBtn.click();
+        // Start listening for popup with explicit timeout BEFORE clicking confirm
+        const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        // Small wait to let UI settle before triggering popup
+        await this.page.waitForTimeout(500);
+        await this.confirmSwapBtn.click();
 
-    try {
-      const approvePage = await pageApprovePromise;
-      await approvePage.waitForLoadState();
-      const approveBtn = approvePage.getByRole("button", {
-        name: "Approve",
-      });
-      await expect(approveBtn).toBeEnabled();
-      let msgTextLocator = "type: osmosis/poolmanager/";
-      if (limit) {
-        msgTextLocator = "Execute contract";
+        try {
+          const approvePage = await pageApprovePromise;
+          await approvePage.waitForLoadState();
+          const approveBtn = approvePage.getByRole("button", {
+            name: "Approve",
+          });
+          await expect(approveBtn).toBeEnabled();
+          let msgTextLocator = "type: osmosis/poolmanager/";
+          if (limit) {
+            msgTextLocator = "Execute contract";
+          }
+          const msgContentAmount = await approvePage
+            .getByText(msgTextLocator)
+            .textContent();
+          console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+          // Approve trx
+          await approveBtn.click();
+          // wait for trx confirmation
+          await this.page.waitForTimeout(2000);
+          // Handle Pop-up page <-
+          
+          // Success! Exit retry loop
+          if (attempt > 0) {
+            console.log(`✓ Sell operation succeeded after ${attempt} retry(ies)`);
+          }
+          return { msgContentAmount };
+        } catch (error: any) {
+          console.error("Failed to get Keplr approval popup:", error.message);
+          throw error; // Re-throw to be caught by outer try-catch
+        }
+      } catch (error: any) {
+        const isLastAttempt = attempt === maxRetries;
+        
+        if (isLastAttempt) {
+          console.error(`❌ Sell operation failed after ${maxRetries + 1} attempts:`, error.message);
+          throw new Error(
+            `Failed to complete sell operation after ${maxRetries + 1} attempts. ` +
+            `Last error: ${error.message}. Check if wallet extension is properly configured.`
+          );
+        }
+        
+        console.warn(
+          `⚠️ Sell operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
+          `Error: ${error.message}. Retrying...`
+        );
+        
+        // Wait before retry to let things settle
+        await this.page.waitForTimeout(2000);
       }
-      const msgContentAmount = await approvePage
-        .getByText(msgTextLocator)
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-      // Approve trx
-      await approveBtn.click();
-      // wait for trx confirmation
-      await this.page.waitForTimeout(2000);
-      // Handle Pop-up page <-
-      return { msgContentAmount };
-    } catch (error: any) {
-      console.error("Failed to get Keplr approval popup:", error.message);
-      throw new Error("Keplr approval popup did not appear within 15 seconds. Check if wallet extension is properly configured.");
     }
+    
+    // TypeScript needs this but it should never reach here
+    throw new Error("Sell operation failed unexpectedly");
   }
 
   async sellAndApprove(context: BrowserContext) {
