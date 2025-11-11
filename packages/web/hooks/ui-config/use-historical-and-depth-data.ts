@@ -47,10 +47,20 @@ export function useHistoricalAndLiquidityData(
   );
   if (pool) config.setPool(pool);
 
+  // Check if pool is empty (has no initial liquidity)
+  const poolRaw = pool?.raw as any;
+  const currentSqrtPrice = poolRaw?.current_sqrt_price;
+  const isEmptyPool = !currentSqrtPrice || currentSqrtPrice === "0";
+
   const { data: activeLiquidity } =
-    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery({
-      poolId,
-    });
+    api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
+      {
+        poolId,
+      },
+      {
+        enabled: !isEmptyPool, // Don't fetch liquidity data for empty pools
+      }
+    );
   if (activeLiquidity) config.setActiveLiquidity(activeLiquidity);
 
   const {
@@ -67,7 +77,7 @@ export function useHistoricalAndLiquidityData(
       timeDuration: config.historicalRange,
     },
     {
-      enabled: Boolean(pool),
+      enabled: Boolean(pool) && !isEmptyPool, // Don't fetch historical data for empty pools
       trpc: {
         context: {
           skipBatch: true,

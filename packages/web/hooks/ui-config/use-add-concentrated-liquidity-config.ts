@@ -519,44 +519,57 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const amount1 = new Int(1)
-      .toDec()
-      .mul(
-        DecUtils.getTenExponentN(
-          this._quoteDepositAmountIn.sendCurrency.coinDecimals
+    // Safety check: if pool has no liquidity (currentSqrtPrice is zero), return equal percentages
+    if (this.pool.currentSqrtPrice.isZero()) {
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
+
+    // Safety check: if prices are not loaded yet, return equal percentages
+    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
+
+    try {
+      const amount1 = new Int(1)
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentN(
+            this._quoteDepositAmountIn.sendCurrency.coinDecimals
+          )
         )
-      )
-      .truncate();
+        .truncate();
 
-    const [lowerTick, upperTick] = this.tickRange;
+      const [lowerTick, upperTick] = this.tickRange;
 
-    // calculate proportional amount of other amount
-    const amount0 = calcAmount0(
-      amount1,
-      lowerTick,
-      upperTick,
-      this.pool.currentSqrtPrice
-    );
+      // calculate proportional amount of other amount
+      const amount0 = calcAmount0(
+        amount1,
+        lowerTick,
+        upperTick,
+        this.pool.currentSqrtPrice
+      );
 
-    const amount0Value = this._baseDepositPrice
-      ? this._baseDepositPrice.mul(
-          new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-        )
-      : new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
-    const amount1Value = this._quoteDepositPrice
-      ? this._quoteDepositPrice.mul(
-          new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-        )
-      : new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+      const amount0Value = this._baseDepositPrice.mul(
+        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+      );
+      const amount1Value = this._quoteDepositPrice.mul(
+        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+      );
 
-    const totalValue = amount0Value.toDec().add(amount1Value.toDec());
+      const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
-    if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
+      if (totalValue.isZero())
+        return [new RatePretty(0.5), new RatePretty(0.5)];
 
-    return [
-      new RatePretty(amount0Value.toDec().quo(totalValue)),
-      new RatePretty(amount1Value.toDec().quo(totalValue)),
-    ];
+      return [
+        new RatePretty(amount0Value.toDec().quo(totalValue)),
+        new RatePretty(amount1Value.toDec().quo(totalValue)),
+      ];
+    } catch (error) {
+      // Fallback to equal percentages if calculation fails
+      console.error("Error calculating deposit percentages:", error);
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
   }
 
   get baseDenom(): string {

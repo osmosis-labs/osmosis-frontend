@@ -378,3 +378,138 @@ function makePoolRawResponseFromChainPool(
     code_id: chainPool.code_id?.toString(),
   } as PoolRawResponse;
 }
+
+/** Creates a minimal Currency object for an unlisted asset.
+ *  This is used as a fallback when assets are not in the asset list.
+ *  Note: Defaults to 6 decimals (standard for most Cosmos tokens). This may cause
+ *  display precision issues for tokens with different decimal places, but functionality
+ *  remains intact as the chain handles actual token amounts correctly. */
+function makeUnlistedAssetCurrency(denom: string) {
+  return {
+    coinDenom: denom,
+    coinMinimalDenom: denom,
+    coinDecimals: 6, // Default to 6 decimals, common for most Cosmos tokens
+    coinImageUrl: undefined,
+  };
+}
+
+/** Gets pool denoms from a chain pool (works for both sidecar and direct chain responses) */
+export function getPoolDenomsFromChainPool(chainPool: PoolRawResponse): string[] {
+  if ("pool_assets" in chainPool) {
+    return chainPool.pool_assets.map((asset) => asset.token.denom);
+  }
+
+  if ("pool_liquidity" in chainPool) {
+    return chainPool.pool_liquidity.map(({ denom }) => denom);
+  }
+
+  if ("token0" in chainPool) {
+    return [chainPool.token0, chainPool.token1];
+  }
+
+  return [];
+}
+
+/** Extracts balances from a chain pool response.
+ *  Different pool types store balances differently. */
+export function getBalancesFromChainPool(chainPool: PoolRawResponse): { denom: string; amount: string }[] {
+  // Weighted pools store balances in pool_assets
+  if ("pool_assets" in chainPool) {
+    return chainPool.pool_assets.map((asset) => ({
+      denom: asset.token.denom,
+      amount: asset.token.amount,
+    }));
+  }
+
+  // Stable pools store balances in pool_liquidity
+  if ("pool_liquidity" in chainPool) {
+    return chainPool.pool_liquidity;
+  }
+
+  // Concentrated liquidity pools - query the pool's address balance
+  // For now, return empty and rely on query service to provide balances
+  // TODO: query bank module for pool address balances
+  if ("token0" in chainPool) {
+    return [];
+  }
+
+  // Cosmwasm pools - need to query contract state
+  // For now, return empty
+  return [];
+}
+
+/** Gets reserves from a chain pool, including unlisted assets.
+ *  This doesn't throw when assets are not in the asset list - instead creates minimal currency objects. */
+export function getReservesFromChainPool(
+  assetLists: AssetList[],
+  chainPool: PoolRawResponse,
+  balances: { denom: string; amount: string }[]
+): CoinPretty[] {
+  const poolDenoms = getPoolDenomsFromChainPool(chainPool);
+
+  return poolDenoms.map((denom) => {
+    const amount = balances.find((balance) => balance.denom === denom)?.amount;
+
+    // Try to get the asset from asset lists
+    try {
+      const asset = getAsset({ assetLists, anyDenom: denom });
+      return new CoinPretty(asset, amount ?? "0");
+    } catch {
+      // Asset not in list, create minimal currency
+      const currency = makeUnlistedAssetCurrency(denom);
+      return new CoinPretty(currency, amount ?? "0");
+    }
+  });
+}
+
+/** Converts a chain pool response to Pool type, handling unlisted assets. */
+export function makePoolFromChainPool({
+  chainPool,
+  assetLists,
+}: {
+  chainPool: PoolRawResponse;
+  assetLists: AssetList[];
+}): Pool {
+  const pool_id = "pool_id" in chainPool ? chainPool.pool_id : chainPool.id;
+  const balances = getBalancesFromChainPool(chainPool);
+  const reserveCoins = getReservesFromChainPool(assetLists, chainPool, balances);
+
+  // Get pool type
+  let poolType: PoolType;
+  if ("pool_assets" in chainPool) poolType = "weighted";
+  else if ("scaling_factors" in chainPool) poolType = "stable";
+  else if ("current_sqrt_price" in chainPool) poolType = "concentrated";
+  else if ("code_id" in chainPool) {
+    poolType = getCosmwasmPoolTypeFromCodeId(chainPool.code_id.toString());
+  } else {
+    throw new Error("Unknown pool type: " + JSON.stringify(chainPool));
+  }
+
+  // Get spread factor
+  let spreadFactor = "0";
+  if ("spread_factor" in chainPool) {
+    spreadFactor = chainPool.spread_factor;
+  } else if ("pool_params" in chainPool && chainPool.pool_params?.swap_fee) {
+    spreadFactor = chainPool.pool_params.swap_fee;
+  }
+
+  return {
+    id: pool_id.toString(),
+    type: poolType,
+    raw: chainPool,
+    spreadFactor: new RatePretty(spreadFactor),
+    reserveCoins,
+    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0), // Unknown for chain-only pools
+    // No incentives or market data available from chain
+    incentives: {
+      aprBreakdown: undefined,
+      incentiveTypes: ["none"],
+    },
+    market: {
+      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      feesSpent24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      feesSpent7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    },
+  };
+}
