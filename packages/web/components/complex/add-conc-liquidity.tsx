@@ -680,7 +680,7 @@ const StrategySelectorGroup: FunctionComponent<
           label="Custom"
           className="sm:order-4 sm:w-full"
           highSpotPriceInputRef={props.highSpotPriceInputRef}
-          disabledForInactivePool={props.isInactivePool}
+          disabledForInactivePool={false}
         />
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
@@ -749,7 +749,7 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
-    /** Disabled for inactive pools (to force passive strategy). */
+    /** Disabled for inactive pools (to force passive and custom strategies only). */
     const disabled = disabledForInactivePool === true;
 
     const isSelected = type === currentStrategy;
