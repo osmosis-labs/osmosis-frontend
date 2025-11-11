@@ -472,6 +472,12 @@
     "earnSwapFeesCaption": "Convert your tokens into shares and earn on every swap.",
     "from": "from",
     "incentives": "Incentives",
+    "initializePool": "Initialize pool",
+    "inactivePool": {
+      "title": "Pool Out of Range",
+      "description": "All liquidity positions are out of range at the current price. \n\nAdd a small amount of passive liquidity to this pool to allow the pool to be rebalanced to the current market rate through trading and enable concentrated liquidity positions.\n\nAs a rebalance occurs this initial liquidity may see heavy losses.",
+      "addLiquidity": "Add Passive Liquidity"
+    },
     "learnMore": "Learn more",
     "level": "Level {level}",
     "liquidity": "Pool liquidity",
