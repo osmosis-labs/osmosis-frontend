@@ -68,6 +68,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    // Query pool data for state detection
+    const { data: poolData } = api.local.pools.getPool.useQuery({ poolId });
+
     const { data: superfluidPoolIds } =
       api.edge.pools.getSuperfluidPoolIds.useQuery();
 
@@ -144,6 +147,26 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       [currentPrice]
     );
 
+    // Pool state detection based on liquidity
+    const poolRaw = poolData?.type === "concentrated" ? (poolData.raw as any) : null;
+    const currentSqrtPrice = poolRaw?.current_sqrt_price;
+    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
+    const hasTVL = poolData && !poolData.totalFiatValueLocked.toDec().isZero();
+
+    // Check if values are zero (handles both "0" and "0.000000..." strings)
+    const isSqrtPriceZero = currentSqrtPrice ? parseFloat(currentSqrtPrice) === 0 : false;
+    const isTickLiquidityZero = currentTickLiquidity ? parseFloat(currentTickLiquidity) === 0 : false;
+
+    // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
+    // This happens when all liquidity positions are out of range
+    // Check this FIRST because a pool can have out-of-range liquidity (TVL > 0)
+    // with zero tick liquidity and zero sqrt price
+    const isInactivePool = isTickLiquidityZero && hasTVL;
+
+    // Tier 1: Uninitialized Pool - has never been initialized (no price set)
+    // Only classify as uninitialized if there's NO TVL at all
+    const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
         {pool && activeModal === "add-liquidity" && (
@@ -204,7 +227,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
-                {pool?.market?.volume24hUsd && (
+                {!isUninitializedPool && !isInactivePool && pool?.market?.volume24hUsd && (
                   <PoolDataGroup
                     label={t("pool.24hrTradingVolume")}
                     value={formatPretty(pool.market.volume24hUsd)}
@@ -229,144 +252,173 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
             </div>
-            <div className="flex h-[340px] flex-row">
-              <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {chartConfig.isHistoricalDataLoading ? (
-                  <Spinner className="m-auto" />
-                ) : !chartConfig.historicalChartUnavailable ? (
-                  <>
-                    <ChartHeader config={chartConfig} />
-                    <Chart config={chartConfig} />
-                  </>
-                ) : (
-                  <ChartUnavailable />
-                )}
-              </div>
+            {!isUninitializedPool && !isInactivePool && (
+              <div className="flex h-[340px] flex-row">
+                <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
+                  {chartConfig.isHistoricalDataLoading ? (
+                    <Spinner className="m-auto" />
+                  ) : !chartConfig.historicalChartUnavailable ? (
+                    <>
+                      <ChartHeader config={chartConfig} />
+                      <Chart config={chartConfig} />
+                    </>
+                  ) : (
+                    <ChartUnavailable />
+                  )}
+                </div>
 
-              <div className="flex-shrink-1 relative flex w-[229px] flex-col">
-                <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
-                  <ChartButton
-                    alt="refresh"
-                    icon="refresh-ccw"
-                    selected={false}
-                    onClick={() => resetZoom()}
-                  />
-                  <ChartButton
-                    alt="zoom out"
-                    icon="zoom-out"
-                    selected={false}
-                    onClick={zoomOut}
-                  />
-                  <ChartButton
-                    alt="zoom in"
-                    icon="zoom-in"
-                    selected={false}
-                    onClick={zoomIn}
-                  />
-                </div>
-                <div className="mt-8 flex flex-1 flex-col">
-                  <ConcentratedLiquidityDepthChart
-                    yRange={yRange}
-                    xRange={xRange}
-                    data={depthChartData}
-                    annotationDatum={{
-                      price: currentPrice
-                        ? Number(currentPrice.toString())
-                        : lastChartData?.close ?? 0,
-                      depth: xRange[1],
-                    }}
-                    offset={{
-                      top: 0,
-                      right: currentPrice
-                        ? currentPrice.gt(new Dec(100))
-                          ? 120
-                          : 56
-                        : 36,
-                      bottom: 24 + 28,
-                      left: 0,
-                    }}
-                    horizontal
-                  />
-                </div>
-                {currentPrice && (
-                  <h6
-                    className={classNames(
-                      "absolute right-0 top-[51%] max-w-[2rem] text-right",
-                      {
-                        caption: currentPrice.lt(new Dec(0.01)),
-                      }
-                    )}
-                  >
-                    {formatPretty(currentPrice, formatOpts)}
-                  </h6>
-                )}
-              </div>
-            </div>
-          </div>
-          <UserAssetsAndExternalIncentives poolId={poolId} />
-          <div className="flex flex-col gap-8">
-            <div className="flex flex-row md:flex-wrap md:gap-y-4">
-              <div className="flex flex-grow flex-col gap-3">
-                <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex items-center text-body2 font-body2">
-                  <span className="text-osmoverse-200">
-                    {t("clPositions.yourPositionsDesc")}
-                  </span>
-                  {/* <span className="flex flex-row">
-                    <a
-                      className="mx-1 inline-flex items-center text-wosmongton-300 underline"
-                      href="#"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                <div className="flex-shrink-1 relative flex w-[229px] flex-col">
+                  <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
+                    <ChartButton
+                      alt="refresh"
+                      icon="refresh-ccw"
+                      selected={false}
+                      onClick={() => resetZoom()}
+                    />
+                    <ChartButton
+                      alt="zoom out"
+                      icon="zoom-out"
+                      selected={false}
+                      onClick={zoomOut}
+                    />
+                    <ChartButton
+                      alt="zoom in"
+                      icon="zoom-in"
+                      selected={false}
+                      onClick={zoomIn}
+                    />
+                  </div>
+                  <div className="mt-8 flex flex-1 flex-col">
+                    <ConcentratedLiquidityDepthChart
+                      yRange={yRange}
+                      xRange={xRange}
+                      data={depthChartData}
+                      annotationDatum={{
+                        price: currentPrice
+                          ? Number(currentPrice.toString())
+                          : lastChartData?.close ?? 0,
+                        depth: xRange[1],
+                      }}
+                      offset={{
+                        top: 0,
+                        right: currentPrice
+                          ? currentPrice.gt(new Dec(100))
+                            ? 120
+                            : 56
+                          : 36,
+                        bottom: 24 + 28,
+                        left: 0,
+                      }}
+                      horizontal
+                    />
+                  </div>
+                  {currentPrice && (
+                    <h6
+                      className={classNames(
+                        "absolute right-0 top-[51%] max-w-[2rem] text-right",
+                        {
+                          caption: currentPrice.lt(new Dec(0.01)),
+                        }
+                      )}
                     >
-                      {t("clPositions.learnMoreAboutPools")}
-                    </a>
-                  </span> */}
+                      {formatPretty(currentPrice, formatOpts)}
+                    </h6>
+                  )}
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  className="subtitle1 w-fit"
-                  onClick={onClickCollectAllRewards}
-                  disabled={!hasClaimableRewards}
-                >
-                  {t("clPositions.collectAllRewards")}
-                </Button>
-
-                <Button
-                  variant="outline"
-                  className="subtitle1 w-fit"
-                  onClick={() => {
-                    setActiveModal("add-liquidity");
-                  }}
-                >
-                  {t("clPositions.createAPosition")}
-                </Button>
-              </div>
-            </div>
-            {!userHasPositionInPool && isUserPositionsFetched && (
-              <>
-                <SuperchargePool
-                  title={t("createFirstPositionCta.title")}
-                  caption={t("createFirstPositionCta.caption")}
-                  primaryCta={t("createFirstPositionCta.primaryCta")}
-                  secondaryCta={t("createFirstPositionCta.secondaryCta")}
-                  onCtaClick={() => {
-                    setActiveModal("add-liquidity");
-                  }}
-                  onSecondaryClick={() => {
-                    setActiveModal("learn-more");
-                  }}
-                  className="bg-osmoverse-900"
-                />
-                <ConcentratedLiquidityLearnMoreModal
-                  isOpen={activeModal === "learn-more"}
-                  onRequestClose={() => setActiveModal(null)}
-                />
-              </>
             )}
-            <MyPositionsSection forPoolId={poolId} />
           </div>
+          {!isInactivePool && !isUninitializedPool && (
+            <UserAssetsAndExternalIncentives poolId={poolId} />
+          )}
+          {isUninitializedPool || isInactivePool ? (
+            <div className="flex flex-col items-center gap-4 pt-8">
+              {isInactivePool && (
+                <div className="flex flex-col items-center gap-2 pb-4 text-center">
+                  <h6 className="text-h6 font-h6">
+                    {t("pool.inactivePool.title")}
+                  </h6>
+                  <p className="max-w-md whitespace-pre-line text-body2 text-osmoverse-200">
+                    {t("pool.inactivePool.description")}
+                  </p>
+                </div>
+              )}
+              <Button
+                className="subtitle1 w-fit"
+                onClick={() => {
+                  setActiveModal("add-liquidity");
+                }}
+              >
+                {isInactivePool
+                  ? t("pool.inactivePool.addLiquidity")
+                  : t("pool.initializePool")}
+              </Button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-8">
+              <div className="flex flex-row md:flex-wrap md:gap-y-4">
+                <div className="flex flex-grow flex-col gap-3">
+                  <h6>{t("clPositions.yourPositions")}</h6>
+                  <div className="flex items-center text-body2 font-body2">
+                    <span className="text-osmoverse-200">
+                      {t("clPositions.yourPositionsDesc")}
+                    </span>
+                    {/* <span className="flex flex-row">
+                      <a
+                        className="mx-1 inline-flex items-center text-wosmongton-300 underline"
+                        href="#"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {t("clPositions.learnMoreAboutPools")}
+                      </a>
+                    </span> */}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    className="subtitle1 w-fit"
+                    onClick={onClickCollectAllRewards}
+                    disabled={!hasClaimableRewards}
+                  >
+                    {t("clPositions.collectAllRewards")}
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    className="subtitle1 w-fit"
+                    onClick={() => {
+                      setActiveModal("add-liquidity");
+                    }}
+                  >
+                    {t("clPositions.createAPosition")}
+                  </Button>
+                </div>
+              </div>
+              {!userHasPositionInPool && isUserPositionsFetched && (
+                <>
+                  <SuperchargePool
+                    title={t("createFirstPositionCta.title")}
+                    caption={t("createFirstPositionCta.caption")}
+                    primaryCta={t("createFirstPositionCta.primaryCta")}
+                    secondaryCta={t("createFirstPositionCta.secondaryCta")}
+                    onCtaClick={() => {
+                      setActiveModal("add-liquidity");
+                    }}
+                    onSecondaryClick={() => {
+                      setActiveModal("learn-more");
+                    }}
+                    className="bg-osmoverse-900"
+                  />
+                  <ConcentratedLiquidityLearnMoreModal
+                    isOpen={activeModal === "learn-more"}
+                    onRequestClose={() => setActiveModal(null)}
+                  />
+                </>
+              )}
+              <MyPositionsSection forPoolId={poolId} />
+            </div>
+          )}
         </section>
       </main>
     );
