@@ -209,7 +209,12 @@ export async function ensureBalance(
   const tokenInfo = TOKEN_DENOMS[token];
   
   if (!tokenInfo) {
-    throw new Error(`Unknown token: ${token}. Available tokens: ${Object.keys(TOKEN_DENOMS).join(', ')}`);
+    const errorMsg = `Unknown token: ${token}. Available tokens: ${Object.keys(TOKEN_DENOMS).join(', ')}`;
+    if (warnOnly) {
+      console.warn(`⚠️  ${errorMsg}\n`);
+      return;
+    }
+    throw new Error(errorMsg);
   }
 
   if (skipChecks) {
@@ -217,29 +222,40 @@ export async function ensureBalance(
     return;
   }
 
-  console.log(`Checking balance for ${token}...`);
-  const currentBalance = await getBalance(address, tokenInfo.denom);
+  try {
+    console.log(`Checking balance for ${token}...`);
+    const currentBalance = await getBalance(address, tokenInfo.denom);
 
-  if (currentBalance < minAmount) {
-    const shortfall = minAmount - currentBalance;
-    const maskedAddress = maskAddress(address);
-    const message =
-      `\n❌ Insufficient balance for ${token}:\n` +
-      `   Required:  ${minAmount.toFixed(6)} ${token}\n` +
-      `   Current:   ${currentBalance.toFixed(6)} ${token}\n` +
-      `   Shortfall: ${shortfall.toFixed(6)} ${token}\n` +
-      `\n` +
-      `Please top up wallet: ${maskedAddress}\n`;
-    
+    if (currentBalance < minAmount) {
+      const shortfall = minAmount - currentBalance;
+      const maskedAddress = maskAddress(address);
+      const message =
+        `\n❌ Insufficient balance for ${token}:\n` +
+        `   Required:  ${minAmount.toFixed(6)} ${token}\n` +
+        `   Current:   ${currentBalance.toFixed(6)} ${token}\n` +
+        `   Shortfall: ${shortfall.toFixed(6)} ${token}\n` +
+        `\n` +
+        `Please top up wallet: ${maskedAddress}\n`;
+      
+      if (warnOnly) {
+        console.warn(`⚠️  ${message}`);
+        return;
+      }
+      
+      throw new Error(message);
+    }
+
+    console.log(`✓ ${token} balance sufficient: ${currentBalance.toFixed(6)} (required: ${minAmount})`);
+  } catch (error) {
+    // If warnOnly is enabled, log warning and continue
     if (warnOnly) {
-      console.warn(`⚠️  ${message}`);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.warn(`⚠️  ${errorMsg}\n`);
       return;
     }
-    
-    throw new Error(message);
+    // Otherwise, re-throw the error
+    throw error;
   }
-
-  console.log(`✓ ${token} balance sufficient: ${currentBalance.toFixed(6)} (required: ${minAmount})`);
 }
 
 /**
