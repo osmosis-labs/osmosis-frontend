@@ -389,22 +389,38 @@ export class TradePage extends BasePage {
     return { msgContentAmount };
   }
 
-  async sellAndApprove(context: BrowserContext) {
+  async sellAndApprove(context: BrowserContext, options?: { slippagePercent?: string }) {
+    const slippagePercent = options?.slippagePercent;
+    
     // Make sure Sell button is enabled
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
     await this.sellBtn.click();
+    
+    // Set slippage tolerance if specified (after sell clicked, before confirm)
+    if (slippagePercent) {
+      await this.setSlippageTolerance(slippagePercent);
+    }
+    
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await this.page.waitForTimeout(1000);
   }
 
-  async buyAndApprove(context: BrowserContext, _limit = false) {
+  async buyAndApprove(context: BrowserContext, options?: { slippagePercent?: string }) {
+    const slippagePercent = options?.slippagePercent;
+    
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
     await this.buyBtn.click();
+    
+    // Set slippage tolerance if specified (after buy clicked, before confirm)
+    if (slippagePercent) {
+      await this.setSlippageTolerance(slippagePercent);
+    }
+    
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await this.page.waitForTimeout(1000);
