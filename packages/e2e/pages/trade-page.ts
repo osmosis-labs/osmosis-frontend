@@ -408,7 +408,7 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
-  async buyAndApprove(context: BrowserContext, options?: { limit?: boolean; slippagePercent?: string }) {
+  async buyAndApprove(context: BrowserContext, options?: { slippagePercent?: string }) {
     const slippagePercent = options?.slippagePercent;
     
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
