@@ -321,20 +321,26 @@ export class IbcBridgeProvider implements BridgeProvider {
     );
     const toChain = this.ctx.chainList.find((c) => c.chain_id === toChainId);
 
-    const fromRpc = fromChain?.apis.rpc[0]?.address;
-    const toRpc = toChain?.apis.rpc[0]?.address;
+    // Get all RPC endpoints for automatic fallback
+    const fromRpcUrls = fromChain?.apis.rpc.map((rpc) => rpc.address) ?? [];
+    const toRpcUrls = toChain?.apis.rpc.map((rpc) => rpc.address) ?? [];
 
-    if (!fromChain || !toChain || !fromRpc || !toRpc) {
+    if (
+      !fromChain ||
+      !toChain ||
+      fromRpcUrls.length === 0 ||
+      toRpcUrls.length === 0
+    ) {
       throw new BridgeQuoteError({
         bridgeId: IbcBridgeProvider.ID,
         errorType: "UnsupportedQuoteError",
-        message: "Chain not found",
+        message: "Chain not found or no RPC endpoints available",
       });
     }
 
     const [fromBlockTimeMs, toBlockTimeMs] = await Promise.all([
-      queryRPCStatus({ restUrl: fromRpc }).then(calcAverageBlockTimeMs),
-      queryRPCStatus({ restUrl: toRpc }).then(calcAverageBlockTimeMs),
+      queryRPCStatus({ rpcUrls: fromRpcUrls }).then(calcAverageBlockTimeMs),
+      queryRPCStatus({ rpcUrls: toRpcUrls }).then(calcAverageBlockTimeMs),
     ]);
 
     // convert to seconds
