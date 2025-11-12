@@ -24,6 +24,9 @@ type Listeners = {
  * Subscribes to new blocks and transactions by attaching a WebSocket connection to the
  * chain's RPC endpoint. This allows for real-time updates on the chain's state.
  *
+ * Supports multiple WebSocket endpoints with automatic failover. If the connection fails,
+ * will automatically try the next endpoint with exponential backoff.
+ *
  * Create one instance per block or tx subscription.
  */
 export class TxTracer {
@@ -55,14 +58,43 @@ export class TxTracer {
 
   protected listeners: Listeners = {};
 
+  // Multi-endpoint support
+  protected readonly urls: string[];
+  protected currentUrlIndex: number = 0;
+  protected reconnectAttempts: number = 0;
+  protected maxReconnectAttempts: number = 3;
+  protected reconnectTimeoutId?: NodeJS.Timeout;
+  protected isManualClose: boolean = false;
+
+  /**
+   * @param url - Single RPC URL or array of RPC URLs for multi-endpoint failover
+   * @param wsEndpoint - WebSocket endpoint path (default: "/websocket")
+   * @param options - Additional options including custom WebSocket constructor
+   */
   constructor(
-    protected readonly url: string,
+    url: string | string[],
     protected readonly wsEndpoint: string = "/websocket",
     protected readonly options: {
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
+      /** Maximum reconnect attempts per endpoint before trying next. Default: 3 */
+      maxReconnectAttempts?: number;
     } = {}
   ) {
+    // Support both single string (backward compatible) and array of URLs
+    this.urls = Array.isArray(url) ? url : [url];
+
+    if (this.urls.length === 0) {
+      throw new Error("At least one RPC URL must be provided");
+    }
+
+    this.maxReconnectAttempts = options.maxReconnectAttempts ?? 3;
+
     this.open();
+  }
+
+  /** Get the current RPC URL being used */
+  protected get url(): string {
+    return this.urls[this.currentUrlIndex];
   }
 
   protected getWsEndpoint(): string {
@@ -82,16 +114,73 @@ export class TxTracer {
   }
 
   open() {
+    const wsUrl = this.getWsEndpoint();
+    console.log(`[TxTracer] Connecting to WebSocket: ${wsUrl}`);
+
     this.ws = this.options.wsObject
-      ? new this.options.wsObject(this.getWsEndpoint())
-      : new WebSocket(this.getWsEndpoint());
+      ? new this.options.wsObject(wsUrl)
+      : new WebSocket(wsUrl);
     this.ws.onopen = this.onOpen;
     this.ws.onmessage = this.onMessage;
     this.ws.onclose = this.onClose;
+    this.ws.onerror = this.onError;
   }
 
   close() {
+    this.isManualClose = true;
+    if (this.reconnectTimeoutId) {
+      clearTimeout(this.reconnectTimeoutId);
+      this.reconnectTimeoutId = undefined;
+    }
     this.ws.close();
+  }
+
+  /**
+   * Attempt to reconnect with exponential backoff and endpoint failover.
+   * Tries the current endpoint multiple times before moving to the next one.
+   */
+  protected reconnect() {
+    if (this.isManualClose) {
+      console.log("[TxTracer] Manual close, not reconnecting");
+      return;
+    }
+
+    this.reconnectAttempts++;
+
+    // Check if we should try the next endpoint
+    if (this.reconnectAttempts > this.maxReconnectAttempts) {
+      this.reconnectAttempts = 0;
+      const previousIndex = this.currentUrlIndex;
+      this.currentUrlIndex = (this.currentUrlIndex + 1) % this.urls.length;
+
+      // If we've tried all endpoints, wait longer before cycling again
+      if (this.currentUrlIndex === 0 && this.urls.length > 1) {
+        console.warn(
+          `[TxTracer] All ${this.urls.length} endpoints failed. Cycling back to first endpoint after delay.`
+        );
+        // Wait 10 seconds before trying all endpoints again
+        this.reconnectTimeoutId = setTimeout(() => {
+          this.open();
+        }, 10000);
+        return;
+      }
+
+      console.warn(
+        `[TxTracer] Switching from endpoint ${previousIndex} to ${this.currentUrlIndex}`
+      );
+    }
+
+    // Exponential backoff: 1s, 2s, 4s
+    const backoffDelay = Math.min(Math.pow(2, this.reconnectAttempts - 1) * 1000, 8000);
+
+    console.log(
+      `[TxTracer] Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} ` +
+        `for endpoint ${this.currentUrlIndex} in ${backoffDelay}ms`
+    );
+
+    this.reconnectTimeoutId = setTimeout(() => {
+      this.open();
+    }, backoffDelay);
   }
 
   get numberOfSubscriberOrPendingQuery(): number {
@@ -132,6 +221,12 @@ export class TxTracer {
   }
 
   protected readonly onOpen = (e: Event) => {
+    console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
+
+    // Reset reconnect attempts on successful connection
+    this.reconnectAttempts = 0;
+    this.isManualClose = false;
+
     if (this.newBlockSubscribes.length > 0) {
       this.sendSubscribeBlockRpc();
     }
@@ -210,9 +305,29 @@ export class TxTracer {
   };
 
   protected readonly onClose = (e: CloseEvent) => {
+    console.warn(
+      `[TxTracer] WebSocket closed. Code: ${e.code}, Reason: ${e.reason || "No reason provided"}`
+    );
+
     for (const listener of this.listeners.close ?? []) {
       listener(e);
     }
+
+    // Attempt to reconnect unless this was a manual close
+    if (!this.isManualClose) {
+      this.reconnect();
+    }
+  };
+
+  protected readonly onError = (e: ErrorEvent) => {
+    console.error(`[TxTracer] WebSocket error:`, e.message || e);
+
+    for (const listener of this.listeners.error ?? []) {
+      listener(e);
+    }
+
+    // Note: onError is typically followed by onClose, so reconnection
+    // will be handled there. We just log the error here.
   };
 
   /**
