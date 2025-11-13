@@ -48,7 +48,7 @@ test.describe('Test Filled Limit Order feature', () => {
     await tradePage.selectAsset('OSMO')
     await tradePage.enterAmount('1.08')
     await tradePage.setLimitPriceChange('Market')
-    await tradePage.sellAndApprove(context, { slippagePercent: '3' })
+    await tradePage.sellAndApprove(context)
     await tradePage.isTransactionSuccesful()
     await tradePage.getTransactionUrl()
   })
@@ -65,7 +65,7 @@ test.describe('Test Filled Limit Order feature', () => {
     const limitPrice = Number(await tradePage.getLimitPrice())
     const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4)
     await tradePage.setLimitPrice(String(highLimitPrice))
-    await tradePage.buyAndApprove(context, { slippagePercent: '3' })
+    await tradePage.buyAndApprove(context)
     await tradePage.isTransactionSuccesful()
     await tradePage.getTransactionUrl()
     //await tradePage.gotoOrdersHistory(ORDER_HISTORY_TIMEOUT);
