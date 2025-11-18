@@ -431,8 +431,15 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   setMax() {
     if (this.isSingleAmountIn && this.singleAmountInConfig) {
       const config = this.singleAmountInConfig;
+      // Query fresh balance instead of reading potentially stale config.amount
+      const balance = this._queryBalances
+        .getQueryBech32Address(this.sender)
+        .getBalanceFromCurrency(config.sendCurrency);
       config.setIsMax(true);
-      this.setAmountAt(this._singleAmountInConfigIndex, config.amount);
+      this.setAmountAt(
+        this._singleAmountInConfigIndex,
+        balance.toDec().toString()
+      );
       config.setIsMax(false);
       return;
     }
