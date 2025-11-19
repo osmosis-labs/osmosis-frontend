@@ -73,6 +73,14 @@ export const AssetsInfoTable: FunctionComponent<{
   const selectCategory = useCallback(
     (category: string, highlight?: string) => {
       setCategory(category);
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, category },
+        },
+        undefined,
+        { shallow: true }
+      );
       logEvent([
         EventName.Assets.categorySelected,
         {
@@ -81,11 +89,20 @@ export const AssetsInfoTable: FunctionComponent<{
         },
       ]);
     },
-    [logEvent]
+    [logEvent, router]
   );
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
-  }, []);
+    const { category, ...query } = router.query;
+    router.push(
+      {
+        pathname: router.pathname,
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [router]);
   const onSelectTopGainers = useCallback(() => {
     selectCategory("topGainers", "topGainers");
   }, [selectCategory]);
@@ -102,7 +119,6 @@ export const AssetsInfoTable: FunctionComponent<{
     const category = urlParams.get("category");
     if (category) {
       setCategory(category);
-      removeQueryParam("category");
     }
   });
 
