@@ -13,6 +13,16 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/usdy.svg",
     "/tokens/generated/dydx.svg",
   ],
+  privacy: [
+    "/tokens/generated/nam.svg",
+    "/tokens/generated/um.svg",
+    "/tokens/generated/scrt.svg",
+  ],
+  ai: [
+    "/tokens/generated/akt.svg",
+    "/tokens/generated/fet.svg",
+    "/tokens/generated/orai.svg",
+  ],
   meme: [
     "/tokens/generated/doge.svg",
     "/tokens/generated/huahua.svg",
@@ -22,11 +32,6 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/stosmo.svg",
     "/tokens/generated/milktia.svg",
     "/tokens/generated/statom.svg",
-  ],
-  ai: [
-    "/tokens/generated/akt.svg",
-    "/tokens/generated/fet.svg",
-    "/tokens/generated/orai.svg",
   ],
   stablecoin: [
     "/tokens/generated/usdc.svg",
@@ -67,11 +72,6 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/stars.svg",
     "/tokens/generated/flix.svg",
     "/tokens/generated/lab.svg",
-  ],
-  privacy: [
-    "/tokens/generated/nam.svg",
-    "/tokens/generated/um.svg",
-    "/tokens/generated/scrt.svg",
   ],
   built_on_osmosis: [
     "/tokens/generated/lvn.svg",
