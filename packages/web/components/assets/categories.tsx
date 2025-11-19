@@ -78,6 +78,11 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/mars.svg",
     "/tokens/generated/mbrn.svg",
   ],
+  depin: [
+    "/tokens/generated/akt.svg",
+    "/tokens/generated/fil.svg",
+    "/tokens/generated/synt.svg",
+  ],
 };
 
 export const AssetCategoriesSelectors: FunctionComponent<{
