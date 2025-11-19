@@ -38,6 +38,46 @@ export const HighlightsCategories: FunctionComponent<HighlightsProps> = (
   return <HighlightsGrid {...props} />;
 };
 
+/**
+ * Checks if an upcoming asset has a specific enough launch date to be shown.
+ * Returns true for dates with day, month, or quarter (e.g., "March 2024", "Q2 2024", "March 22, 2024").
+ * Returns false for vague dates like "soon", "H1 2024" (half year), or just "2024" (year only).
+ */
+function hasSpecificLaunchDate(dateText: string | undefined): boolean {
+  if (!dateText) return false;
+
+  const lowerDate = dateText.toLowerCase().trim();
+
+  // Explicit filler values
+  if (lowerDate === "soon" || lowerDate === "tbd" || lowerDate === "tba") {
+    return false;
+  }
+
+  // Half-year format (H1, H2)
+  if (/^h[12]\s*\d{4}$/i.test(lowerDate)) {
+    return false;
+  }
+
+  // Year only (just "2024", "2025", etc.)
+  if (/^\d{4}$/.test(lowerDate)) {
+    return false;
+  }
+
+  // Check for month names (full or abbreviated) - these are specific enough
+  const hasMonth =
+    /(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i.test(
+      lowerDate
+    );
+  if (hasMonth) return true;
+
+  // Check for quarter (Q1, Q2, Q3, Q4) - these are specific enough
+  const hasQuarter = /q[1-4]\s*\d{4}/i.test(lowerDate);
+  if (hasQuarter) return true;
+
+  // Default to false for any other format
+  return false;
+}
+
 const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
   onSelectAllTopGainers,
   className,
@@ -60,10 +100,23 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
       topN: isLargeTablet ? 3 : undefined,
     });
 
+  // Filter upcoming assets to only include those with specific launch dates
+  const qualifyingUpcomingAssets = (topUpcomingAssets ?? []).filter((asset) =>
+    hasSpecificLaunchDate(asset.estimatedLaunchDateUtc)
+  );
+  const hasQualifyingUpcomingAssets =
+    !isTopUpcomingAssetsLoading && qualifyingUpcomingAssets.length > 0;
+
   return (
     <div
       className={classNames(
-        "lg:no-scrollbar grid grid-cols-3 gap-6 xl:grid-cols-2 xl:grid-rows-2 xl:gap-8 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-scroll",
+        "lg:no-scrollbar grid gap-6 xl:gap-8 lg:flex lg:snap-x lg:snap-mandatory lg:overflow-x-scroll",
+        {
+          // When Upcoming is hidden, use 2-column grid with Top Gainers spanning 2 rows
+          "grid-cols-2 xl:grid-rows-2": !hasQualifyingUpcomingAssets,
+          // When Upcoming is shown, use 3-column grid
+          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2": hasQualifyingUpcomingAssets,
+        },
         className
       )}
     >
@@ -83,13 +136,15 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
         onClickSeeAll={onSelectAllTopGainers}
         highlight="topGainers"
       />
-      <AssetHighlights
-        className="lg:w-[80%] lg:shrink-0 lg:snap-center"
-        title={t("assets.highlights.upcoming")}
-        isLoading={isTopUpcomingAssetsLoading}
-        assets={(topUpcomingAssets ?? []).map(highlightUpcomingReleaseAsset)}
-        highlight="upcoming"
-      />
+      {hasQualifyingUpcomingAssets && (
+        <AssetHighlights
+          className="lg:w-[80%] lg:shrink-0 lg:snap-center"
+          title={t("assets.highlights.upcoming")}
+          isLoading={isTopUpcomingAssetsLoading}
+          assets={qualifyingUpcomingAssets.map(highlightUpcomingReleaseAsset)}
+          highlight="upcoming"
+        />
+      )}
     </div>
   );
 };
