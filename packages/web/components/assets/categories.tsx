@@ -16,7 +16,7 @@ const staticCategoryAssetImageSamples = {
   privacy: [
     "/tokens/generated/nam.svg",
     "/tokens/generated/um.svg",
-    "/tokens/generated/scrt.svg",
+    "/tokens/generated/scrt.png",
   ],
   ai: [
     "/tokens/generated/akt.svg",
@@ -41,7 +41,7 @@ const staticCategoryAssetImageSamples = {
   bridges: [
     "/tokens/generated/axl.svg",
     "/tokens/generated/coreum.svg",
-    "/tokens/generated/grav.svg",
+    "/tokens/generated/grav.png",
   ],
   dweb: [
     "/tokens/generated/akt.svg",
@@ -71,7 +71,7 @@ const staticCategoryAssetImageSamples = {
   nft_protocol: [
     "/tokens/generated/stars.svg",
     "/tokens/generated/flix.svg",
-    "/tokens/generated/lab.svg",
+    "/tokens/generated/lab.png",
   ],
   built_on_osmosis: [
     "/tokens/generated/lvn.svg",
