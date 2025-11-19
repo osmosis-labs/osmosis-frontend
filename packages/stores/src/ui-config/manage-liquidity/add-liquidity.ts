@@ -438,7 +438,8 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
       config.setIsMax(true);
       this.setAmountAt(
         this._singleAmountInConfigIndex,
-        balance.toDec().toString()
+		balance.toDec().toString(), 
+		true
       );
       config.setIsMax(false);
       return;
