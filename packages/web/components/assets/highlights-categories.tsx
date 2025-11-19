@@ -115,7 +115,8 @@ const HighlightsGrid: FunctionComponent<HighlightsProps> = ({
           // When Upcoming is hidden, use 2-column grid with Top Gainers spanning 2 rows
           "grid-cols-2 xl:grid-rows-2": !hasQualifyingUpcomingAssets,
           // When Upcoming is shown, use 3-column grid
-          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2": hasQualifyingUpcomingAssets,
+          "grid-cols-3 xl:grid-cols-2 xl:grid-rows-2":
+            hasQualifyingUpcomingAssets,
         },
         className
       )}
