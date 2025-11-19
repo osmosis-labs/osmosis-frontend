@@ -55,7 +55,7 @@ const staticCategoryAssetImageSamples = {
   ],
   gaming: [
     "/tokens/generated/saga.svg",
-    "/tokens/generated/pasg.svg",
+    "/tokens/generated/pasg.png",
     "/tokens/generated/xpla.svg",
   ],
   oracles: [
