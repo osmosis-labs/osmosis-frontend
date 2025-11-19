@@ -26,7 +26,7 @@ const staticCategoryAssetImageSamples = {
   meme: [
     "/tokens/generated/doge.svg",
     "/tokens/generated/huahua.svg",
-    "/tokens/generated/ion.svg",
+    "/tokens/generated/spice.png",
   ],
   liquid_staking: [
     "/tokens/generated/stosmo.svg",
