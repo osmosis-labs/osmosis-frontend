@@ -28,7 +28,7 @@ import {
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
-import { PricePretty } from "@osmosis-labs/unit";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import {
   compareCommon,
   getAllBtcMinimalDenom,
@@ -589,10 +589,42 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { topN }, ctx }) => {
-      const assets = getAssets({
-        ...ctx,
-        onlyVerified: true,
+      // Get full asset list to access categories and variant info
+      const fullAssets = ctx.assetLists
+        .flatMap(({ assets }) => assets)
+        .filter((asset) => !asset.preview && asset.verified);
+
+      // Filter out stablecoins and alloy variants
+      const filteredFullAssets = fullAssets.filter((asset) => {
+        // Exclude stablecoins
+        if (asset.categories?.includes("stablecoin")) return false;
+
+        // Exclude alloy variants (keep only canonical assets)
+        if (
+          asset.variantGroupKey &&
+          asset.variantGroupKey !== asset.coinMinimalDenom
+        ) {
+          return false;
+        }
+
+        return true;
       });
+
+      // Convert to minimal assets for processing
+      const assets = filteredFullAssets.map((asset) => ({
+        coinDenom: asset.symbol,
+        coinMinimalDenom: asset.coinMinimalDenom,
+        coinDecimals: asset.decimals,
+        coinImageUrl: asset.logoURIs?.png ?? asset.logoURIs?.svg,
+        coinGeckoId: asset.coingeckoId,
+        coinName: asset.name,
+        isUnstable: asset.unstable,
+        areTransfersDisabled: asset.disabled,
+        isVerified: asset.verified,
+        isAlloyed: asset.isAlloyed,
+        contract: asset.contract,
+        variantGroupKey: asset.variantGroupKey,
+      }));
 
       const marketAssets = await Promise.all(
         assets.map(async (asset) => {
@@ -603,14 +635,22 @@ export const assetsRouter = createTRPCRouter({
           return {
             ...asset,
             priceChange24h: marketAsset?.price24hChange,
+            liquidity: marketAsset?.liquidity,
           };
         })
       );
 
-      return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
-        "priceChange24h"
-      ).slice(0, topN);
+      // Filter for assets with price change data and at least $10k liquidity
+      const qualifyingAssets = marketAssets.filter((asset) => {
+        if (asset.priceChange24h === undefined) return false;
+
+        const liquidityDec = asset.liquidity?.toDec();
+        if (!liquidityDec) return false;
+
+        return liquidityDec.gte(new Dec(10000));
+      });
+
+      return sort(qualifyingAssets, "priceChange24h").slice(0, topN);
     }),
   getTopUpcomingAssets: publicProcedure
     .input(
