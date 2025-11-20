@@ -34,6 +34,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -76,6 +77,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -121,6 +123,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_1 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -167,6 +170,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -218,6 +222,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -268,6 +273,7 @@ jobs:
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_1 }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -316,6 +322,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -364,6 +371,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
@@ -415,10 +423,10 @@ jobs:
           DD_SITE: ${{ secrets.DATADOG_SITE }}
         run: |
           echo "🔍 Sending critical failure metrics to Datadog..."
-          
+
           # Add custom tag to mark this as a critical failure (2nd attempt with multiple failures)
           datadog-ci tag --level pipeline --tags "critical_failure:true" --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
-          
+
           # Add tags for unexpected failure counts by region
           datadog-ci tag --level pipeline \
             --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
@@ -426,7 +434,7 @@ jobs:
             --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
             --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
             --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
-          
+
           echo "✅ Metrics sent to Datadog successfully"
 
   delete-deployments:
