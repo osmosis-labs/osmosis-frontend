@@ -78,13 +78,45 @@ export async function getMarketAsset<TAsset extends MinimalAsset>({
  *  If no assets provided, they will be fetched and passed the given search params. */
 export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
+  excludeVariants = false,
+  excludeStablecoins = false,
   ...params
 }: {
   assetLists: AssetList[];
   chainList: Chain[];
   assets?: TAsset[];
+  /** Exclude non-canonical variants (keep only assets where variantGroupKey === coinMinimalDenom). Defaults to false. */
+  excludeVariants?: boolean;
+  /** Exclude stablecoins (assets with "stablecoin" category). Defaults to false. */
+  excludeStablecoins?: boolean;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
+
+  // Apply variant filtering if requested
+  if (excludeVariants) {
+    assets = assets.filter((asset) => {
+      // Keep assets that don't have a variant group, or are the canonical variant
+      return (
+        !asset.variantGroupKey ||
+        asset.variantGroupKey === asset.coinMinimalDenom
+      );
+    });
+  }
+
+  // Apply stablecoin filtering if requested
+  if (excludeStablecoins) {
+    // Create a map for efficient category lookups
+    const assetCategoryMap = new Map(
+      params.assetLists
+        .flatMap(({ assets }) => assets)
+        .map((asset) => [asset.coinMinimalDenom, asset.categories])
+    );
+
+    assets = assets.filter((asset) => {
+      const categories = assetCategoryMap.get(asset.coinMinimalDenom);
+      return !categories?.includes("stablecoin");
+    });
+  }
 
   const marketAssets = await Promise.all(
     assets.map((asset) => getMarketAsset({ asset, ...params }))

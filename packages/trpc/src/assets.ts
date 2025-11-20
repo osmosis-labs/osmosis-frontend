@@ -266,6 +266,8 @@ export const assetsRouter = createTRPCRouter({
             "volume24h",
           ] as const).optional(),
           watchListDenoms: z.array(z.string()).optional(),
+          excludeVariants: z.boolean().optional(),
+          excludeStablecoins: z.boolean().optional(),
         })
       )
     )
@@ -280,6 +282,8 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
           includePreview,
+          excludeVariants,
+          excludeStablecoins,
         },
         ctx,
       }) =>
@@ -291,6 +295,8 @@ export const assetsRouter = createTRPCRouter({
               onlyVerified,
               includePreview,
               categories,
+              excludeVariants,
+              excludeStablecoins,
             });
 
             // sorting
@@ -329,6 +335,8 @@ export const assetsRouter = createTRPCRouter({
             watchListDenoms,
             categories,
             includePreview,
+            excludeVariants,
+            excludeStablecoins,
           }),
           cursor,
           limit,
@@ -589,15 +597,26 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { topN }, ctx }) => {
-      // Get full asset list to access categories and variant info
-      const fullAssets = ctx.assetLists
-        .flatMap(({ assets }) => assets)
-        .filter((asset) => !asset.preview && asset.verified);
+      // Use getAssets to get only verified assets (optimized)
+      const assets = getAssets({
+        ...ctx,
+        onlyVerified: true,
+      });
+
+      // Get full asset list to check categories and variant info
+      const fullAssetMap = new Map(
+        ctx.assetLists
+          .flatMap(({ assets }) => assets)
+          .map((asset) => [asset.coinMinimalDenom, asset])
+      );
 
       // Filter out stablecoins and alloy variants
-      const filteredFullAssets = fullAssets.filter((asset) => {
+      const filteredAssets = assets.filter((asset) => {
+        const fullAsset = fullAssetMap.get(asset.coinMinimalDenom);
+        if (!fullAsset) return false;
+
         // Exclude stablecoins
-        if (asset.categories?.includes("stablecoin")) return false;
+        if (fullAsset.categories?.includes("stablecoin")) return false;
 
         // Exclude alloy variants (keep only canonical assets)
         if (
@@ -610,24 +629,8 @@ export const assetsRouter = createTRPCRouter({
         return true;
       });
 
-      // Convert to minimal assets for processing
-      const assets = filteredFullAssets.map((asset) => ({
-        coinDenom: asset.symbol,
-        coinMinimalDenom: asset.coinMinimalDenom,
-        coinDecimals: asset.decimals,
-        coinImageUrl: asset.logoURIs?.png ?? asset.logoURIs?.svg,
-        coinGeckoId: asset.coingeckoId,
-        coinName: asset.name,
-        isUnstable: asset.unstable,
-        areTransfersDisabled: asset.disabled,
-        isVerified: asset.verified,
-        isAlloyed: asset.isAlloyed,
-        contract: asset.contract,
-        variantGroupKey: asset.variantGroupKey,
-      }));
-
       const marketAssets = await Promise.all(
-        assets.map(async (asset) => {
+        filteredAssets.map(async (asset) => {
           const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           );
