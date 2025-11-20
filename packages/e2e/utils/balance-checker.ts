@@ -111,6 +111,42 @@ interface BalanceResponse {
 }
 
 /**
+ * Validate that an address is in the correct format (osmo1...)
+ * @returns true if valid, false if invalid (logs warning instead of throwing)
+ */
+function validateAddress(address: string): boolean {
+  if (!address || address === 'wallet_id') {
+    console.warn('⚠️  WALLET_ID environment variable is not set or is invalid.');
+    console.warn('⚠️  Please provide a valid Osmosis address (osmo1...)');
+    console.warn('⚠️  Skipping balance checks.\n');
+    return false;
+  }
+  
+  if (!address.startsWith('osmo1')) {
+    console.warn(`⚠️  Invalid Osmosis address format: expected address starting with "osmo1", got "${address.substring(0, 10)}..."`);
+    console.warn('⚠️  Skipping balance checks.\n');
+    return false;
+  }
+  
+  // Basic length check (Osmosis addresses are typically 44-45 characters)
+  if (address.length < 39 || address.length > 50) {
+    console.warn(`⚠️  Invalid Osmosis address length: expected 39-50 characters, got ${address.length}`);
+    console.warn('⚠️  Skipping balance checks.\n');
+    return false;
+  }
+  
+  return true;
+}
+
+/**
+ * Mask an address for safe logging (shows first 10 and last 4 characters)
+ * Example: osmo1abc...xyz9
+ */
+function maskAddress(address: string): string {
+  return `${address.substring(0, 10)}...${address.substring(address.length - 4)}`;
+}
+
+/**
  * Get the REST endpoint for Osmosis mainnet
  */
 function getRestEndpoint(): string {
@@ -162,13 +198,23 @@ export async function ensureBalance(
   minAmount: number,
   options?: EnsureBalancesOptions
 ): Promise<void> {
+  // Validate address format - skip checks if invalid
+  if (!validateAddress(address)) {
+    return;
+  }
+  
   const skipChecks = process.env.SKIP_BALANCE_CHECKS === 'true';
   const warnOnly = options?.warnOnly || skipChecks;
   
   const tokenInfo = TOKEN_DENOMS[token];
   
   if (!tokenInfo) {
-    throw new Error(`Unknown token: ${token}. Available tokens: ${Object.keys(TOKEN_DENOMS).join(', ')}`);
+    const errorMsg = `Unknown token: ${token}. Available tokens: ${Object.keys(TOKEN_DENOMS).join(', ')}`;
+    if (warnOnly) {
+      console.warn(`⚠️  ${errorMsg}\n`);
+      return;
+    }
+    throw new Error(errorMsg);
   }
 
   if (skipChecks) {
@@ -176,28 +222,40 @@ export async function ensureBalance(
     return;
   }
 
-  console.log(`Checking balance for ${token}...`);
-  const currentBalance = await getBalance(address, tokenInfo.denom);
+  try {
+    console.log(`Checking balance for ${token}...`);
+    const currentBalance = await getBalance(address, tokenInfo.denom);
 
-  if (currentBalance < minAmount) {
-    const shortfall = minAmount - currentBalance;
-    const message =
-      `\n❌ Insufficient balance for ${token}:\n` +
-      `   Required:  ${minAmount.toFixed(6)} ${token}\n` +
-      `   Current:   ${currentBalance.toFixed(6)} ${token}\n` +
-      `   Shortfall: ${shortfall.toFixed(6)} ${token}\n` +
-      `\n` +
-      `Please top up wallet: ${address}\n`;
-    
+    if (currentBalance < minAmount) {
+      const shortfall = minAmount - currentBalance;
+      const maskedAddress = maskAddress(address);
+      const message =
+        `\n❌ Insufficient balance for ${token}:\n` +
+        `   Required:  ${minAmount.toFixed(6)} ${token}\n` +
+        `   Current:   ${currentBalance.toFixed(6)} ${token}\n` +
+        `   Shortfall: ${shortfall.toFixed(6)} ${token}\n` +
+        `\n` +
+        `Please top up wallet: ${maskedAddress}\n`;
+      
+      if (warnOnly) {
+        console.warn(`⚠️  ${message}`);
+        return;
+      }
+      
+      throw new Error(message);
+    }
+
+    console.log(`✓ ${token} balance sufficient: ${currentBalance.toFixed(6)} (required: ${minAmount})`);
+  } catch (error) {
+    // If warnOnly is enabled, log warning and continue
     if (warnOnly) {
-      console.warn(`⚠️  ${message}`);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.warn(`⚠️  ${errorMsg}\n`);
       return;
     }
-    
-    throw new Error(message);
+    // Otherwise, re-throw the error
+    throw error;
   }
-
-  console.log(`✓ ${token} balance sufficient: ${currentBalance.toFixed(6)} (required: ${minAmount})`);
 }
 
 /**
@@ -226,6 +284,11 @@ export async function ensureBalances(
   requirements: BalanceRequirement[],
   options?: EnsureBalancesOptions
 ): Promise<void> {
+  // Validate address format - skip checks if invalid
+  if (!validateAddress(address)) {
+    return;
+  }
+  
   const skipChecks = process.env.SKIP_BALANCE_CHECKS === 'true';
   const warnOnly = options?.warnOnly || skipChecks;
 
@@ -281,7 +344,10 @@ export async function ensureBalances(
     }
   }
 
-  if (errors.length > 0) {
+  const hasErrors = errors.length > 0;
+  const hasInsufficientBalances = insufficientBalances.length > 0;
+
+  if (hasErrors) {
     const errorMessage = `\nErrors checking balances:\n${errors.join('\n')}\n`;
     if (warnOnly) {
       console.warn(`⚠️  ${errorMessage}`);
@@ -290,7 +356,8 @@ export async function ensureBalances(
     }
   }
 
-  if (insufficientBalances.length > 0) {
+  if (hasInsufficientBalances) {
+    const maskedAddress = maskAddress(address);
     const errorMessage = [
       `\n❌ Insufficient balances detected for ${insufficientBalances.length} token(s):\n`,
       ...insufficientBalances.map(({ token, required, current }) => {
@@ -302,7 +369,7 @@ export async function ensureBalances(
           `    Shortfall: ${shortfall.toFixed(6)} ${token}`
         );
       }),
-      `\nPlease top up wallet: ${address}\n`,
+      `\nPlease top up wallet: ${maskedAddress}\n`,
     ].join('\n');
 
     if (warnOnly) {
@@ -314,6 +381,11 @@ export async function ensureBalances(
     throw new Error(errorMessage);
   }
 
-  console.log(`\n✅ All balance checks passed!\n`);
+  // Only show success if there were no errors or insufficient balances
+  if (warnOnly && hasErrors) {
+    console.log(`\n⚠️  Balance checks completed with API errors (warnOnly mode)\n`);
+  } else {
+    console.log(`\n✅ All balance checks passed!\n`);
+  }
 }
 
