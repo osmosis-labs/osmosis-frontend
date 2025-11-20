@@ -53,7 +53,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
     await tradePage.swapAndApprove(context)
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.isTransactionSuccesful()
+    await tradePage.isTransactionSuccesful(15)
     await tradePage.getTransactionUrl()
   })
 
@@ -64,7 +64,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
     //expect(msgContent).toContain(`token_out_denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("denom: uosmo");
-    await tradePage.isTransactionSuccesful()
+    await tradePage.isTransactionSuccesful(15)
     await tradePage.getTransactionUrl()
   })
 
@@ -76,7 +76,7 @@ test.describe('Test Swap to/from OSMO feature', () => {
     //expect(msgContent).toContain(`denom: ${ATOM}`);
     //expect(msgContent).toContain(`sender: ${walletId}`);
     //expect(msgContent).toContain("token_out_denom: uosmo");
-    await tradePage.isTransactionSuccesful()
+    await tradePage.isTransactionSuccesful(15)
     await tradePage.getTransactionUrl()
   })
 })

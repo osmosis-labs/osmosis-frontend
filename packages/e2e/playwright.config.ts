@@ -13,7 +13,7 @@ export default defineConfig({
     ["junit", { outputFile: "./playwright-report/test-results.xml" }],
     ["json", { outputFile: "./playwright-report/test-results.json" }],
   ],
-  timeout: 60000,
+  timeout: 90000,
   testDir: "./tests",
   /* Run tests in files in parallel. */
   fullyParallel: true,

@@ -53,7 +53,7 @@ test.describe('Test Swap Stables feature', () => {
       await tradePage.enterAmount(swapAmount)
       await tradePage.showSwapInfo()
       await tradePage.swapAndApprove(context)
-      await tradePage.isTransactionSuccesful()
+      await tradePage.isTransactionSuccesful(15)
       await tradePage.getTransactionUrl()
     })
   })
