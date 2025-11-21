@@ -52,6 +52,11 @@ test.describe('Test Swap Stables feature', () => {
       await tradePage.selectPair(from, to)
       await tradePage.enterAmount(swapAmount)
       await tradePage.showSwapInfo()
+      // Slippage tolerance set to 1% for stablecoin swaps.
+      // Stablecoin pairs typically have tighter spreads and more predictable pricing,
+      // so a lower slippage improves trade execution. However, this may increase the risk
+      // of transaction failures during periods of high volatility or network congestion.
+      // Adjust if swap failures become frequent.
       await tradePage.swapAndApprove(context, { slippagePercent: '1' })
       await tradePage.isTransactionSuccesful(15)
       await tradePage.getTransactionUrl()
