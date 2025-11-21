@@ -58,7 +58,6 @@ test.describe("Test Filled Limit Order feature", () => {
 
   test("User should be able to limit buy OSMO", async () => {
     const PRICE_INCREASE_FACTOR = 1.07; // 7% increase for limit price
-    const _ORDER_HISTORY_TIMEOUT = 30; // Seconds to wait for order history
     await tradePage.goto();
     await tradePage.openBuyTab();
     await tradePage.openLimit();
