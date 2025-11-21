@@ -389,23 +389,23 @@ export class TradePage extends BasePage {
             return { msgContentAmount: undefined };
           }
           // Other errors should be retried
-          console.error("Failed to get Keplr approval popup:", error.message);
+          console.error("Failed to get Keplr approval popup:", error.message ?? 'Unknown error');
           throw error; // Re-throw to be caught by outer try-catch
         }
       } catch (error: any) {
         const isLastAttempt = attempt === maxRetries;
         
         if (isLastAttempt) {
-          console.error(`❌ Buy operation failed after ${maxRetries + 1} attempts:`, error.message);
+          console.error(`❌ Buy operation failed after ${maxRetries + 1} attempts:`, error.message ?? 'Unknown error');
           throw new Error(
             `Failed to complete buy operation after ${maxRetries + 1} attempts. ` +
-            `Last error: ${error.message}. Check if wallet extension is properly configured.`
+            `Last error: ${error.message ?? 'Unknown error'}. Check if wallet extension is properly configured.`
           );
         }
         
         console.warn(
           `⚠️ Buy operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
-          `Error: ${error.message}. Retrying...`
+          `Error: ${error.message ?? 'Unknown error'}. Retrying...`
         );
         
         // Wait before retry to let things settle
