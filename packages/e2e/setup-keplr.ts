@@ -6,7 +6,7 @@ import { WalletPage } from "./pages/keplr-page";
 
 export class SetupKeplr {
   async setupWalletKeplr(privateKey: string, headless = false) {
-    const pathToKeplrExtension = new UnzipExtension().getPathToExtension();
+    const pathToKeplrExtension = await new UnzipExtension().getPathToExtension();
     const testConfig = new TestConfig().getBrowserExtensionConfig(
       headless,
       pathToKeplrExtension

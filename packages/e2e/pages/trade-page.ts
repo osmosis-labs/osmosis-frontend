@@ -53,7 +53,9 @@ export class TradePage extends BasePage {
     this.limitTabBtn = page.locator('//div[@class="w-full"]/button[.="Limit"]');
     this.orderHistoryLink = page.getByText("Order history");
     this.limitPrice = page.locator("//div/input[@type='text']");
-    this.slippageInput = page.locator('input[type="text"][inputmode="decimal"]').first();
+    this.slippageInput = page
+      .locator('input[type="text"][inputmode="decimal"]')
+      .first();
   }
 
   async goto() {
@@ -172,7 +174,7 @@ export class TradePage extends BasePage {
     ).toBeFalsy();
     console.log("Swap and Sign now..");
     await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
-      timeout: 7000,
+      timeout: 15000,
     });
     await this.swapBtn.click({ timeout: 4000 });
     // Handle 1-click by default
@@ -219,7 +221,7 @@ export class TradePage extends BasePage {
       )
       .first();
     // Wait for token to be visible before clicking
-    await fromLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await fromLocator.waitFor({ state: "visible", timeout: 10000 });
     await fromLocator.click({ timeout: 10000 });
     // Select To Token
     await toToken.click({ timeout: 10000 });
@@ -234,7 +236,7 @@ export class TradePage extends BasePage {
       )
       .first();
     // Wait for token to be visible before clicking
-    await toLocator.waitFor({ state: 'visible', timeout: 10000 });
+    await toLocator.waitFor({ state: "visible", timeout: 10000 });
     await toLocator.click({ timeout: 10000 });
     // we expect that after 2 seconds exchange rate is populated.
     await this.page.waitForTimeout(2000);
@@ -326,31 +328,78 @@ export class TradePage extends BasePage {
     return `${fromTokenText}/${toTokenText}`;
   }
 
-  async buyAndGetWalletMsg(context: BrowserContext, limit = false) {
+  /**
+   * Initiates a buy transaction and retrieves the wallet message content from Keplr popup.
+   * Supports both market orders and limit orders with configurable retry logic and slippage tolerance.
+   *
+   * @param context - Browser context to handle Keplr popup windows
+   * @param options - Configuration options for the buy operation
+   * @param options.maxRetries - Maximum number of retry attempts on failure (default: 2, meaning 3 total attempts)
+   * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after buy button click.
+   * @param options.limit - Whether this is a limit order (default: false). Affects message validation logic.
+   *
+   * @returns Object containing msgContentAmount (string | undefined)
+   *          - Returns message content if Keplr popup appears (standard wallet approval flow)
+   *          - Returns undefined if no popup appears within 20s (1-click trading or pre-approved)
+   *
+   * @throws Error if buy operation fails after all retry attempts or if insufficient balance
+   *
+   * @remarks
+   * - Checks for sufficient balance before attempting transaction
+   * - Implements automatic retry logic with 2s delay between attempts
+   * - Gracefully handles 1-click trading scenarios (no Keplr popup)
+   * - Automatically waits for blockchain confirmation before returning (40s timeout)
+   * - Each retry attempt gets a fresh success listener to avoid timeout issues
+   */
+  async buyAndGetWalletMsg(
+    context: BrowserContext,
+    options?: { maxRetries?: number; slippagePercent?: string; limit?: boolean }
+  ) {
+    const maxRetries = options?.maxRetries ?? 2;
+    const slippagePercent = options?.slippagePercent;
+    const limit = options?.limit ?? false;
+
     // Check for insufficient balance BEFORE retry loop - no point retrying if balance is low
     expect(
       await this.isInsufficientBalance(),
       "Insufficient balance for buy! Please top up your wallet."
     ).toBeFalsy();
-    
-    const maxRetries = 2; // 3 total attempts
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for buy operation...`);
+          console.log(
+            `🔄 Retry attempt ${attempt}/${maxRetries} for buy operation...`
+          );
         }
-        
+
         await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
         });
+
+        // Start waiting for transaction success BEFORE any UI interactions
+        // Transaction can complete immediately (1-click trading) or after Keplr popup approval flow
+        const successPromise = expect(this.trxSuccessful).toBeVisible({
+          timeout: 40000,
+        });
+
         // Handle Pop-up page ->
         // Start listening for popup with explicit timeout BEFORE clicking any button that may trigger it
-        const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        const pageApprovePromise = context.waitForEvent("page", {
+          timeout: 20000,
+        });
         await this.buyBtn.click();
         // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+
+        // Set slippage tolerance if specified (after buy clicked, before confirm)
+        if (slippagePercent) {
+          await this.setSlippageTolerance(slippagePercent);
+        }
+
         await this.confirmSwapBtn.click();
+
+        let msgContentAmount: string | undefined;
 
         try {
           const approvePage = await pageApprovePromise;
@@ -363,86 +412,150 @@ export class TradePage extends BasePage {
           if (limit) {
             msgTextLocator = "Execute contract";
           }
-          const msgContentAmount = await approvePage
-            .getByText(msgTextLocator)
-            .textContent();
+          msgContentAmount =
+            (await approvePage.getByText(msgTextLocator).textContent()) ??
+            undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           // Approve trx
           await approveBtn.click();
-          // wait for trx confirmation
-          await this.page.waitForTimeout(2000);
           // Handle Pop-up page <-
-          
-          // Success! Exit retry loop
-          if (attempt > 0) {
-            console.log(`✓ Buy operation succeeded after ${attempt} retry(ies)`);
-          }
-          return { msgContentAmount };
         } catch (error: any) {
           // Gracefully handle timeout - popup didn't appear (1-click trading enabled or pre-approved)
-          if (error.name === "TimeoutError" || (error instanceof Error && /timeout/i.test(error.message))) {
-            console.log("✓ Keplr approval popup did not appear within 15s; assuming 1-click trading is enabled or transaction was pre-approved.");
-            await this.page.waitForTimeout(2000);
-            if (attempt > 0) {
-              console.log(`✓ Transaction confirmed after ${attempt} retry(ies) (1-click trading)`);
-            }
-            return { msgContentAmount: undefined };
+          if (
+            error.name === "TimeoutError" ||
+            (error instanceof Error && /timeout/i.test(error.message))
+          ) {
+            console.log(
+              "✓ Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
+            );
+            msgContentAmount = undefined;
+          } else {
+            // Other errors should be retried
+            console.error(
+              "Failed to get Keplr approval popup:",
+              error.message ?? "Unknown error"
+            );
+            throw error; // Re-throw to be caught by outer try-catch
           }
-          // Other errors should be retried
-          console.error("Failed to get Keplr approval popup:", error.message ?? 'Unknown error');
-          throw error; // Re-throw to be caught by outer try-catch
         }
-      } catch (error: any) {
-        const isLastAttempt = attempt === maxRetries;
-        
-        if (isLastAttempt) {
-          console.error(`❌ Buy operation failed after ${maxRetries + 1} attempts:`, error.message ?? 'Unknown error');
-          throw new Error(
-            `Failed to complete buy operation after ${maxRetries + 1} attempts. ` +
-            `Last error: ${error.message ?? 'Unknown error'}. Check if wallet extension is properly configured.`
+
+        // Successfully submitted! Now wait for transaction success
+        if (attempt > 0) {
+          console.log(
+            `✓ Buy transaction submitted after ${attempt} retry(ies)`
           );
         }
-        
+
+        // Wait for transaction confirmation on blockchain
+        await successPromise;
+
+        return { msgContentAmount };
+      } catch (error: any) {
+        const isLastAttempt = attempt === maxRetries;
+
+        if (isLastAttempt) {
+          console.error(
+            `❌ Buy operation failed after ${maxRetries + 1} attempts:`,
+            error.message ?? "Unknown error"
+          );
+          throw new Error(
+            `Failed to complete buy operation after ${
+              maxRetries + 1
+            } attempts. ` +
+              `Last error: ${
+                error.message ?? "Unknown error"
+              }. Check if wallet extension is properly configured.`
+          );
+        }
+
         console.warn(
-          `⚠️ Buy operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
-          `Error: ${error.message ?? 'Unknown error'}. Retrying...`
+          `⚠️ Buy operation failed on attempt ${attempt + 1}/${
+            maxRetries + 1
+          }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
-        
+
         // Wait before retry to let things settle
         await this.page.waitForTimeout(2000);
       }
     }
-    
+
     // TypeScript needs this but it should never reach here
     throw new Error("Buy operation failed unexpectedly");
   }
 
-  async sellAndGetWalletMsg(context: BrowserContext, limit = false) {
+  /**
+   * Initiates a sell transaction and retrieves the wallet message content from Keplr popup.
+   * Supports both market orders and limit orders with configurable retry logic and slippage tolerance.
+   *
+   * @param context - Browser context to handle Keplr popup windows
+   * @param options - Configuration options for the sell operation
+   * @param options.maxRetries - Maximum number of retry attempts on failure (default: 2, meaning 3 total attempts)
+   * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after sell button click.
+   * @param options.limit - Whether this is a limit order (default: false). Affects message validation logic.
+   *
+   * @returns Object containing msgContentAmount (string | undefined)
+   *          - Returns message content if Keplr popup appears (standard wallet approval flow)
+   *          - Returns undefined if no popup appears within 20s (1-click trading or pre-approved)
+   *
+   * @throws Error if sell operation fails after all retry attempts or if insufficient balance
+   *
+   * @remarks
+   * - Checks for sufficient balance before attempting transaction
+   * - Implements automatic retry logic with 2s delay between attempts
+   * - Gracefully handles 1-click trading scenarios (no Keplr popup)
+   * - Automatically waits for blockchain confirmation before returning (40s timeout)
+   * - Each retry attempt gets a fresh success listener to avoid timeout issues
+   */
+  async sellAndGetWalletMsg(
+    context: BrowserContext,
+    options?: { maxRetries?: number; slippagePercent?: string; limit?: boolean }
+  ) {
+    const maxRetries = options?.maxRetries ?? 2;
+    const slippagePercent = options?.slippagePercent;
+    const limit = options?.limit ?? false;
+
     // Check for insufficient balance BEFORE retry loop - no point retrying if balance is low
     expect(
       await this.isInsufficientBalance(),
       "Insufficient balance for sell! Please top up your wallet."
     ).toBeFalsy();
-    
-    const maxRetries = 2; // 3 total attempts
-    
+
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          console.log(`🔄 Retry attempt ${attempt}/${maxRetries} for sell operation...`);
+          console.log(
+            `🔄 Retry attempt ${attempt}/${maxRetries} for sell operation...`
+          );
         }
-        
+
         // Make sure Sell button is enabled
         await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
         });
+
+        // Start waiting for transaction success BEFORE any UI interactions
+        // Transaction can complete immediately (1-click trading) or after Keplr popup approval flow
+        const successPromise = expect(this.trxSuccessful).toBeVisible({
+          timeout: 40000,
+        });
+
         // Handle Pop-up page ->
         // Start listening for popup with explicit timeout BEFORE clicking sell
-        const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        const pageApprovePromise = context.waitForEvent("page", {
+          timeout: 20000,
+        });
         await this.sellBtn.click();
         // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+
+        // Set slippage tolerance if specified (after sell clicked, before confirm)
+        if (slippagePercent) {
+          await this.setSlippageTolerance(slippagePercent);
+        }
+
         await this.confirmSwapBtn.click();
+
+        let msgContentAmount: string | undefined;
 
         try {
           const approvePage = await pageApprovePromise;
@@ -455,95 +568,169 @@ export class TradePage extends BasePage {
           if (limit) {
             msgTextLocator = "Execute contract";
           }
-          const msgContentAmount = await approvePage
-            .getByText(msgTextLocator)
-            .textContent();
+          msgContentAmount =
+            (await approvePage.getByText(msgTextLocator).textContent()) ??
+            undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
           // Approve trx
           await approveBtn.click();
-          // wait for trx confirmation
-          await this.page.waitForTimeout(2000);
           // Handle Pop-up page <-
-          
-          // Success! Exit retry loop
-          if (attempt > 0) {
-            console.log(`✓ Sell operation succeeded after ${attempt} retry(ies)`);
-          }
-          return { msgContentAmount };
         } catch (error: any) {
           // Gracefully handle timeout - popup didn't appear (1-click trading enabled or pre-approved)
-          if (error.name === "TimeoutError" || error.message?.includes("Timeout") || error.message?.includes("timeout")) {
-            console.log("✓ Keplr approval popup did not appear within 15s; assuming 1-click trading is enabled or transaction was pre-approved.");
-            await this.page.waitForTimeout(2000);
-            if (attempt > 0) {
-              console.log(`✓ Sell operation succeeded after ${attempt} retry(ies)`);
-            }
-            return { msgContentAmount: undefined };
+          if (
+            error.name === "TimeoutError" ||
+            error.message?.includes("Timeout") ||
+            error.message?.includes("timeout")
+          ) {
+            console.log(
+              "✓ Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
+            );
+            msgContentAmount = undefined;
+          } else {
+            // Other errors should be retried
+            console.error(
+              "Failed to get Keplr approval popup:",
+              error.message ?? "Unknown error"
+            );
+            throw error; // Re-throw to be caught by outer try-catch
           }
-          // Other errors should be retried
-          console.error("Failed to get Keplr approval popup:", error.message ?? 'Unknown error');
-          throw error; // Re-throw to be caught by outer try-catch
         }
-      } catch (error: any) {
-        const isLastAttempt = attempt === maxRetries;
-        
-        if (isLastAttempt) {
-          console.error(`❌ Sell operation failed after ${maxRetries + 1} attempts:`, error.message ?? 'Unknown error');
-          throw new Error(
-            `Failed to complete sell operation after ${maxRetries + 1} attempts. ` +
-            `Last error: ${error.message ?? 'Unknown error'}. Check if wallet extension is properly configured.`
+
+        // Successfully submitted! Now wait for transaction success
+        if (attempt > 0) {
+          console.log(
+            `✓ Sell transaction submitted after ${attempt} retry(ies)`
           );
         }
-        
+
+        // Wait for transaction confirmation on blockchain
+        await successPromise;
+
+        return { msgContentAmount };
+      } catch (error: any) {
+        const isLastAttempt = attempt === maxRetries;
+
+        if (isLastAttempt) {
+          console.error(
+            `❌ Sell operation failed after ${maxRetries + 1} attempts:`,
+            error.message ?? "Unknown error"
+          );
+          throw new Error(
+            `Failed to complete sell operation after ${
+              maxRetries + 1
+            } attempts. ` +
+              `Last error: ${
+                error.message ?? "Unknown error"
+              }. Check if wallet extension is properly configured.`
+          );
+        }
+
         console.warn(
-          `⚠️ Sell operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
-          `Error: ${error.message ?? 'Unknown error'}. Retrying...`
+          `⚠️ Sell operation failed on attempt ${attempt + 1}/${
+            maxRetries + 1
+          }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
-        
+
         // Wait before retry to let things settle
         await this.page.waitForTimeout(2000);
       }
     }
-    
+
     // TypeScript needs this but it should never reach here
     throw new Error("Sell operation failed unexpectedly");
   }
 
-  async sellAndApprove(context: BrowserContext, options?: { slippagePercent?: string }) {
+  /**
+   * Initiates a sell transaction with simplified approval flow.
+   * Automatically waits for transaction confirmation on blockchain.
+   *
+   * @param context - Browser context to handle potential Keplr popup windows
+   * @param options - Configuration options for the sell operation
+   * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after sell button click.
+   *
+   * @remarks
+   * - Waits for sell button to be enabled before proceeding
+   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Gracefully handles 1-click trading (no popup scenario)
+   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - No retry logic - for retry support, use sellAndGetWalletMsg()
+   */
+  async sellAndApprove(
+    context: BrowserContext,
+    options?: { slippagePercent?: string }
+  ) {
     const slippagePercent = options?.slippagePercent;
-    
+
     // Make sure Sell button is enabled
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
+
+    // Start waiting for transaction success BEFORE any UI interactions
+    // Transaction can complete immediately (1-click trading) or after Keplr popup approval flow
+    const successPromise = expect(this.trxSuccessful).toBeVisible({
+      timeout: 40000,
+    });
+
     await this.sellBtn.click();
-    
+
     // Set slippage tolerance if specified (after sell clicked, before confirm)
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
     }
-    
+
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await this.page.waitForTimeout(1000);
+
+    // Wait for transaction confirmation on blockchain
+    await successPromise;
   }
 
-  async buyAndApprove(context: BrowserContext, options?: { slippagePercent?: string }) {
+  /**
+   * Initiates a buy transaction with simplified approval flow.
+   * Automatically waits for transaction confirmation on blockchain.
+   *
+   * @param context - Browser context to handle potential Keplr popup windows
+   * @param options - Configuration options for the buy operation
+   * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after buy button click.
+   *
+   * @remarks
+   * - Waits for buy button to be enabled before proceeding
+   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Gracefully handles 1-click trading (no popup scenario)
+   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - No retry logic - for retry support, use buyAndGetWalletMsg()
+   */
+  async buyAndApprove(
+    context: BrowserContext,
+    options?: { slippagePercent?: string }
+  ) {
     const slippagePercent = options?.slippagePercent;
-    
+
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
+
+    // Start waiting for transaction success BEFORE any UI interactions
+    // Transaction can complete immediately (1-click trading) or after Keplr popup approval flow
+    const successPromise = expect(this.trxSuccessful).toBeVisible({
+      timeout: 40000,
+    });
+
     await this.buyBtn.click();
-    
+
     // Set slippage tolerance if specified (after buy clicked, before confirm)
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
     }
-    
+
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
     await this.page.waitForTimeout(1000);
+
+    // Wait for transaction confirmation on blockchain
+    await successPromise;
   }
 
   /**
@@ -553,20 +740,22 @@ export class TradePage extends BasePage {
    */
   async setSlippageTolerance(slippagePercent: string) {
     console.log(`⚙️  Setting slippage tolerance to ${slippagePercent}%...`);
-    
+
     try {
       // Wait for review modal and slippage input to be visible
-      await this.slippageInput.waitFor({ state: 'visible', timeout: 5000 });
-      
+      await this.slippageInput.waitFor({ state: "visible", timeout: 5000 });
+
       // Click to focus the input
       await this.slippageInput.click();
-      
+
       // Clear and set new value
       await this.slippageInput.fill(slippagePercent);
-      
+
       // Verify the value was actually set
-      await expect(this.slippageInput).toHaveValue(slippagePercent, { timeout: 2000 });
-      
+      await expect(this.slippageInput).toHaveValue(slippagePercent, {
+        timeout: 2000,
+      });
+
       console.log(`✓ Slippage tolerance confirmed set to ${slippagePercent}%`);
     } catch (error: any) {
       console.warn(`⚠️  Could not set slippage tolerance: ${error.message}`);
@@ -574,13 +763,30 @@ export class TradePage extends BasePage {
     }
   }
 
+  /**
+   * Initiates a swap transaction with retry logic and automatic confirmation.
+   * Handles race conditions where quote refreshes temporarily disable the swap button.
+   *
+   * @param context - Browser context to handle potential Keplr popup windows
+   * @param options - Configuration options for the swap operation
+   * @param options.maxRetries - Maximum number of retry attempts on failure (default: 3, meaning 4 total attempts)
+   * @param options.slippagePercent - Slippage tolerance percentage as string (e.g., "3" for 3%). Applied after swap button click.
+   *
+   * @remarks
+   * - Checks for sufficient balance before attempting swap
+   * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
+   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Gracefully handles 1-click trading (no popup scenario)
+   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Retries only on swap button disabled errors; other errors fail immediately
+   */
   async swapAndApprove(
-    context: BrowserContext, 
+    context: BrowserContext,
     options?: { maxRetries?: number; slippagePercent?: string }
   ) {
     const maxRetries = options?.maxRetries ?? 3;
     const slippagePercent = options?.slippagePercent;
-    
+
     // Retry logic to handle race conditions where quote refreshes and temporarily disables swap button
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
@@ -593,43 +799,56 @@ export class TradePage extends BasePage {
         await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
         });
+
+        // Start waiting for transaction success BEFORE any UI interactions
+        // Transaction can complete immediately (1-click trading) or after Keplr popup approval flow
+        const successPromise = expect(this.trxSuccessful).toBeVisible({
+          timeout: 40000,
+        });
+
         await this.swapBtn.click({ timeout: 4000 });
-        
+
         // Set slippage tolerance if specified (after swap clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
-        
+
         await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
-        
-        // Success! Exit retry loop
+
+        // Successfully submitted! Now wait for transaction success
         if (attempt > 0) {
-          console.log(`✓ Swap succeeded after ${attempt} retry(ies)`);
+          console.log(
+            `✓ Swap transaction submitted after ${attempt} retry(ies)`
+          );
         }
+
+        // Wait for transaction confirmation on blockchain
+        await successPromise;
+
         return;
-        
       } catch (error: any) {
-        const isDisabledError = error.message?.includes('disabled') || 
-                               error.message?.includes('toBeEnabled');
-        
+        const isDisabledError =
+          error.message?.includes("disabled") ||
+          error.message?.includes("toBeEnabled");
+
         if (attempt < maxRetries && isDisabledError) {
           console.warn(
             `⚠️  RACE CONDITION DETECTED: Swap button disabled ` +
-            `(attempt ${attempt + 1}/${maxRetries + 1}). ` +
-            `Waiting for quote to stabilize and retrying...`
+              `(attempt ${attempt + 1}/${maxRetries + 1}). ` +
+              `Waiting for quote to stabilize and retrying...`
           );
-          
+
           // Wait for quote/route to finish refreshing
           await this.page.waitForTimeout(1500);
-          
+
           // Log exchange rate to see if it changed
-          const rate = await this.getExchangeRate().catch(() => 'N/A');
+          const rate = await this.getExchangeRate().catch(() => "N/A");
           console.log(`Exchange rate after wait: ${rate}`);
-          
+
           continue; // Retry
         }
-        
+
         // Final attempt failed or different error - throw it
         throw error;
       }
