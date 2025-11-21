@@ -437,9 +437,9 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
         // Handle Pop-up page ->
-        await this.sellBtn.click();
-        // Start listening for popup with explicit timeout BEFORE clicking confirm
+        // Start listening for popup with explicit timeout BEFORE clicking sell
         const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        await this.sellBtn.click();
         // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
         await this.confirmSwapBtn.click();
