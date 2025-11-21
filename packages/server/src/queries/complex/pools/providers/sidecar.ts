@@ -394,7 +394,9 @@ function makeUnlistedAssetCurrency(denom: string) {
 }
 
 /** Gets pool denoms from a chain pool (works for both sidecar and direct chain responses) */
-export function getPoolDenomsFromChainPool(chainPool: PoolRawResponse): string[] {
+export function getPoolDenomsFromChainPool(
+  chainPool: PoolRawResponse
+): string[] {
   if ("pool_assets" in chainPool) {
     return chainPool.pool_assets.map((asset) => asset.token.denom);
   }
@@ -412,7 +414,9 @@ export function getPoolDenomsFromChainPool(chainPool: PoolRawResponse): string[]
 
 /** Extracts balances from a chain pool response.
  *  Different pool types store balances differently. */
-export function getBalancesFromChainPool(chainPool: PoolRawResponse): { denom: string; amount: string }[] {
+export function getBalancesFromChainPool(
+  chainPool: PoolRawResponse
+): { denom: string; amount: string }[] {
   // Weighted pools store balances in pool_assets
   if ("pool_assets" in chainPool) {
     return chainPool.pool_assets.map((asset) => ({
@@ -472,7 +476,11 @@ export function makePoolFromChainPool({
 }): Pool {
   const pool_id = "pool_id" in chainPool ? chainPool.pool_id : chainPool.id;
   const balances = getBalancesFromChainPool(chainPool);
-  const reserveCoins = getReservesFromChainPool(assetLists, chainPool, balances);
+  const reserveCoins = getReservesFromChainPool(
+    assetLists,
+    chainPool,
+    balances
+  );
 
   // Get pool type
   let poolType: PoolType;

@@ -6,7 +6,7 @@ import { IS_TESTNET } from "../../../env";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
-import { PoolRawResponse,queryPoolChain } from "../../osmosis";
+import { PoolRawResponse, queryPoolChain } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
 import { getPoolsFromSidecar, makePoolFromChainPool } from "./providers";
 
@@ -115,7 +115,9 @@ export async function getPool({
 
   // If not found in Sidecar (likely due to unlisted assets), fallback to direct chain query
   try {
-    console.log(`Pool ${poolId} not found in Sidecar, attempting direct chain query...`);
+    console.log(
+      `Pool ${poolId} not found in Sidecar, attempting direct chain query...`
+    );
     const chainResponse = await queryPoolChain({ poolId, chainList });
 
     if (!chainResponse.pool) {
@@ -128,7 +130,9 @@ export async function getPool({
       assetLists,
     });
 
-    console.log(`Successfully retrieved pool ${poolId} from chain with unlisted assets`);
+    console.log(
+      `Successfully retrieved pool ${poolId} from chain with unlisted assets`
+    );
     return chainPool;
   } catch (error) {
     console.error(`Failed to query pool ${poolId} from chain:`, error);
