@@ -579,8 +579,7 @@ export class TradePage extends BasePage {
           // Gracefully handle timeout - popup didn't appear (1-click trading enabled or pre-approved)
           if (
             error.name === "TimeoutError" ||
-            error.message?.includes("Timeout") ||
-            error.message?.includes("timeout")
+            (error instanceof Error && /timeout/i.test(error.message))
           ) {
             console.log(
               "✓ Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
