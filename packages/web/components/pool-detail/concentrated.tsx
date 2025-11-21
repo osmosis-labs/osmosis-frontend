@@ -1,4 +1,5 @@
 import { Dec } from "@osmosis-labs/unit";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -148,7 +149,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
 
     // Pool state detection based on liquidity
-    const poolRaw = poolData?.type === "concentrated" ? (poolData.raw as any) : null;
+    const poolRaw = poolData?.type === "concentrated" ? (poolData.raw as ConcentratedPoolRawResponse) : null;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL = poolData && !poolData.totalFiatValueLocked.toDec().isZero();

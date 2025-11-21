@@ -1,4 +1,4 @@
-import type { Pool } from "@osmosis-labs/server";
+import type { Pool, ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -81,13 +81,20 @@ export const AddConcLiquidity: FunctionComponent<
     });
 
     // Detect if this is an inactive pool (has TVL but no in range liquidity)
-    const poolRaw = pool?.type === "concentrated" ? (pool.raw as any) : null;
+    const poolRaw = pool?.type === "concentrated" ? (pool.raw as ConcentratedPoolRawResponse) : null;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL = pool && !pool.totalFiatValueLocked.toDec().isZero();
     const isTickLiquidityZero = currentTickLiquidity
       ? parseFloat(currentTickLiquidity) === 0
       : false;
     const isInactivePool = isTickLiquidityZero && hasTVL;
+
+    // Auto-navigate to manual view for inactive pools
+    useEffect(() => {
+      if (isInactivePool && addLiquidityConfig.modalView === "overview") {
+        addLiquidityConfig.setModalView("add_manual");
+      }
+    }, [isInactivePool, addLiquidityConfig]);
 
     const getMagmaUrl = (pool?: Pool) => {
       if (!pool) return "";
@@ -343,22 +350,26 @@ const AddConcLiqView: FunctionComponent<
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <button
-          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
-        >
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-          />
-          <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
-          </span>
-        </button>
+        {!isInactivePool && (
+          <button
+            className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
+            onClick={() => setModalView("overview")}
+          >
+            <Image
+              alt="left"
+              src="/icons/arrow-left.svg"
+              width={24}
+              height={24}
+            />
+            <span className="body2 pl-1 text-osmoverse-100">
+              {t("addConcentratedLiquidity.back")}
+            </span>
+          </button>
+        )}
         <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2Title")}
+          {isInactivePool
+            ? t("addLiquidity.title")
+            : t("addConcentratedLiquidity.step2Title")}
         </h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {

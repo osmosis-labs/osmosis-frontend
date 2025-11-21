@@ -2,6 +2,7 @@ import {
   NotInitializedError,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent } from "react";
@@ -93,7 +94,7 @@ export const AddLiquidityModal: FunctionComponent<
   // add concentrated liquidity
   if (pool?.type === "concentrated") {
     // Pool state detection based on liquidity
-    const poolRaw = pool.raw as any;
+    const poolRaw = pool.raw as ConcentratedPoolRawResponse;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL = !pool.totalFiatValueLocked.toDec().isZero();
@@ -102,14 +103,9 @@ export const AddLiquidityModal: FunctionComponent<
     const isSqrtPriceZero = currentSqrtPrice ? parseFloat(currentSqrtPrice) === 0 : false;
     const isTickLiquidityZero = currentTickLiquidity ? parseFloat(currentTickLiquidity) === 0 : false;
 
-    // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
-    // This happens when all liquidity positions are out of range
-    // Check this FIRST because a pool can have out-of-range liquidity (TVL > 0)
-    // with zero tick liquidity and zero sqrt price
-    const isInactivePool = isTickLiquidityZero && hasTVL;
-
     // Tier 1: Uninitialized Pool - has never been initialized (no price set)
     // Only classify as uninitialized if there's NO TVL at all
+    // Note: Inactive pools (TVL > 0 but zero tick liquidity) are handled inside AddConcLiquidity component
     const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
 
     // For uninitialized pools (but NOT inactive pools), show the initial liquidity addition interface
