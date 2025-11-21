@@ -149,14 +149,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     );
 
     // Pool state detection based on liquidity
-    const poolRaw = poolData?.type === "concentrated" ? (poolData.raw as ConcentratedPoolRawResponse) : null;
+    const poolRaw =
+      poolData?.type === "concentrated"
+        ? (poolData.raw as ConcentratedPoolRawResponse)
+        : null;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL = poolData && !poolData.totalFiatValueLocked.toDec().isZero();
 
     // Check if values are zero (handles both "0" and "0.000000..." strings)
-    const isSqrtPriceZero = currentSqrtPrice ? parseFloat(currentSqrtPrice) === 0 : false;
-    const isTickLiquidityZero = currentTickLiquidity ? parseFloat(currentTickLiquidity) === 0 : false;
+    const isSqrtPriceZero = currentSqrtPrice
+      ? parseFloat(currentSqrtPrice) === 0
+      : false;
+    const isTickLiquidityZero = currentTickLiquidity
+      ? parseFloat(currentTickLiquidity) === 0
+      : false;
 
     // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
     // This happens when all liquidity positions are out of range
@@ -166,7 +173,8 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     // Tier 1: Uninitialized Pool - has never been initialized (no price set)
     // Only classify as uninitialized if there's NO TVL at all
-    const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    const isUninitializedPool =
+      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
@@ -228,12 +236,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
-                {!isUninitializedPool && !isInactivePool && pool?.market?.volume24hUsd && (
-                  <PoolDataGroup
-                    label={t("pool.24hrTradingVolume")}
-                    value={formatPretty(pool.market.volume24hUsd)}
-                  />
-                )}
+                {!isUninitializedPool &&
+                  !isInactivePool &&
+                  pool?.market?.volume24hUsd && (
+                    <PoolDataGroup
+                      label={t("pool.24hrTradingVolume")}
+                      value={formatPretty(pool.market.volume24hUsd)}
+                    />
+                  )}
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={

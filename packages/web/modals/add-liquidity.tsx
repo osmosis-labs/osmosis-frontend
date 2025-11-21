@@ -100,13 +100,18 @@ export const AddLiquidityModal: FunctionComponent<
     const hasTVL = !pool.totalFiatValueLocked.toDec().isZero();
 
     // Check if values are zero (handles both "0" and "0.000000..." strings)
-    const isSqrtPriceZero = currentSqrtPrice ? parseFloat(currentSqrtPrice) === 0 : false;
-    const isTickLiquidityZero = currentTickLiquidity ? parseFloat(currentTickLiquidity) === 0 : false;
+    const isSqrtPriceZero = currentSqrtPrice
+      ? parseFloat(currentSqrtPrice) === 0
+      : false;
+    const isTickLiquidityZero = currentTickLiquidity
+      ? parseFloat(currentTickLiquidity) === 0
+      : false;
 
     // Tier 1: Uninitialized Pool - has never been initialized (no price set)
     // Only classify as uninitialized if there's NO TVL at all
     // Note: Inactive pools (TVL > 0 but zero tick liquidity) are handled inside AddConcLiquidity component
-    const isUninitializedPool = isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    const isUninitializedPool =
+      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
 
     // For uninitialized pools (but NOT inactive pools), show the initial liquidity addition interface
     // Inactive pools already have out-of-range liquidity, so they should use the normal add liquidity flow

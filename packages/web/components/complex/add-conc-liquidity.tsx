@@ -1,7 +1,4 @@
-import type {
-  ConcentratedPoolRawResponse,
-  Pool,
-} from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -84,7 +81,10 @@ export const AddConcLiquidity: FunctionComponent<
     });
 
     // Detect if this is an inactive pool (has TVL but no in range liquidity)
-    const poolRaw = pool?.type === "concentrated" ? (pool.raw as ConcentratedPoolRawResponse) : null;
+    const poolRaw =
+      pool?.type === "concentrated"
+        ? (pool.raw as ConcentratedPoolRawResponse)
+        : null;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL = pool && !pool.totalFiatValueLocked.toDec().isZero();
     const isTickLiquidityZero = currentTickLiquidity
@@ -157,7 +157,13 @@ const Overview: FunctionComponent<
     getMagmaUrl: (pool?: Pool) => string;
     isInactivePool?: boolean;
   } & CustomClasses
-> = ({ addLiquidityConfig, pool, onRequestClose, getMagmaUrl, isInactivePool }) => {
+> = ({
+  addLiquidityConfig,
+  pool,
+  onRequestClose,
+  getMagmaUrl,
+  isInactivePool,
+}) => {
   const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
@@ -239,7 +245,8 @@ const StrategySelector: FunctionComponent<{
   isNew?: boolean;
   disabled?: boolean;
 }> = (props) => {
-  const { selected, onClick, title, description, imgSrc, isNew, disabled } = props;
+  const { selected, onClick, title, description, imgSrc, isNew, disabled } =
+    props;
   const { t } = useTranslation();
   return (
     <div
