@@ -9,7 +9,6 @@ test.describe("Test Market Buy/Sell Order feature", () => {
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   const walletId = process.env.WALLET_ID ?? "wallet_id";
   let tradePage: TradePage;
-  const TRX_SUCCESS_TIMEOUT = 10000;
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
