@@ -345,9 +345,9 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
         // Handle Pop-up page ->
-        await this.buyBtn.click();
-        // Start listening for popup with explicit timeout BEFORE clicking confirm
+        // Start listening for popup with explicit timeout BEFORE clicking any button that may trigger it
         const pageApprovePromise = context.waitForEvent("page", { timeout: 15000 });
+        await this.buyBtn.click();
         // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
         await this.confirmSwapBtn.click();
@@ -380,11 +380,11 @@ export class TradePage extends BasePage {
           return { msgContentAmount };
         } catch (error: any) {
           // Gracefully handle timeout - popup didn't appear (1-click trading enabled or pre-approved)
-          if (error.name === "TimeoutError" || error.message?.includes("Timeout") || error.message?.includes("timeout")) {
+          if (error.name === "TimeoutError" || (error instanceof Error && /timeout/i.test(error.message))) {
             console.log("✓ Keplr approval popup did not appear within 15s; assuming 1-click trading is enabled or transaction was pre-approved.");
             await this.page.waitForTimeout(2000);
             if (attempt > 0) {
-              console.log(`✓ Buy operation succeeded after ${attempt} retry(ies)`);
+              console.log(`✓ Transaction confirmed after ${attempt} retry(ies) (1-click trading)`);
             }
             return { msgContentAmount: undefined };
           }
@@ -481,23 +481,23 @@ export class TradePage extends BasePage {
             return { msgContentAmount: undefined };
           }
           // Other errors should be retried
-          console.error("Failed to get Keplr approval popup:", error.message);
+          console.error("Failed to get Keplr approval popup:", error.message ?? 'Unknown error');
           throw error; // Re-throw to be caught by outer try-catch
         }
       } catch (error: any) {
         const isLastAttempt = attempt === maxRetries;
         
         if (isLastAttempt) {
-          console.error(`❌ Sell operation failed after ${maxRetries + 1} attempts:`, error.message);
+          console.error(`❌ Sell operation failed after ${maxRetries + 1} attempts:`, error.message ?? 'Unknown error');
           throw new Error(
             `Failed to complete sell operation after ${maxRetries + 1} attempts. ` +
-            `Last error: ${error.message}. Check if wallet extension is properly configured.`
+            `Last error: ${error.message ?? 'Unknown error'}. Check if wallet extension is properly configured.`
           );
         }
         
         console.warn(
           `⚠️ Sell operation failed on attempt ${attempt + 1}/${maxRetries + 1}. ` +
-          `Error: ${error.message}. Retrying...`
+          `Error: ${error.message ?? 'Unknown error'}. Retrying...`
         );
         
         // Wait before retry to let things settle
