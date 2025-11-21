@@ -1,4 +1,7 @@
-import type { Pool, ConcentratedPoolRawResponse } from "@osmosis-labs/server";
+import type {
+  ConcentratedPoolRawResponse,
+  Pool,
+} from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";

@@ -1,5 +1,5 @@
-import { Dec } from "@osmosis-labs/unit";
 import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
