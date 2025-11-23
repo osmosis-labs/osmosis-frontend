@@ -17,6 +17,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -58,6 +59,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -105,6 +107,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -153,6 +156,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -206,6 +210,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -258,6 +263,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -310,6 +316,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -360,6 +367,7 @@ jobs:
           sparse-checkout: |
             packages/e2e
             yarn.lock
+          sparse-checkout-cone-mode: false
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
