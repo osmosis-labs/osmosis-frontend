@@ -53,24 +53,24 @@ jobs:
           NEXT_PUBLIC_TIMESERIES_DATA_URL: ${{ matrix.timeseries-url }}
 
       - name: Verify Datadog CI Installation
-        if: failure() && github.run_attempt == 1 
+        if: failure() && github.run_attempt == 1
         run: |
           echo "🔍 Verifying Datadog CI installation..."
           datadog-ci version
           echo "✅ Datadog CI is ready to use"
-  
+
       - name: Send Datadog alert if test fails
-        if: failure() && github.run_attempt == 1 
+        if: failure() && github.run_attempt == 1
         env:
           DD_API_KEY: ${{ secrets.DATADOG_API_KEY }}
           DD_APP_KEY: ${{ secrets.DATADOG_APPLICATION_KEY }}
           DD_SITE: ${{ secrets.DATADOG_SITE }}
         run: |
           echo "🔍 Sending critical failure metrics to Datadog..."
-          
+
           # Add custom tag to mark this as a critical failure (2nd attempt with multiple failures)
           datadog-ci tag --level pipeline --tags "critical_failure:true" --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
-          
+
           # Add tags for unexpected failure counts by region
           datadog-ci tag --level pipeline \
             --tags "fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
@@ -78,9 +78,8 @@ jobs:
             --tags "fe_trade_sg_unexpected:${{ needs.fe-trade-sg.outputs.unexpected }}" \
             --tags "fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
             --tags "fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
-          
-          echo "✅ Metrics sent to Datadog successfully"
 
+          echo "✅ Metrics sent to Datadog successfully"
 
   fe-quote-tests:
     name: ${{ matrix.env }}-quote-tests
@@ -96,7 +95,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e
+            packages/e2e/**
             yarn.lock
           sparse-checkout-cone-mode: false
       - name: Setup Node.js

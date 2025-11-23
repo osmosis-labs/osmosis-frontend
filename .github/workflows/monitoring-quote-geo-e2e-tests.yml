@@ -30,7 +30,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e
+            packages/e2e/**
             yarn.lock
           sparse-checkout-cone-mode: false
       - name: Setup Node.js
