@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
       - id: vercel
         env:
           BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
@@ -41,9 +44,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -90,9 +91,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -140,9 +139,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -182,9 +179,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -223,9 +218,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -266,9 +259,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           sparse-checkout: |
-            packages/e2e/**
-            yarn.lock
-          sparse-checkout-cone-mode: false
+            packages/e2e
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
