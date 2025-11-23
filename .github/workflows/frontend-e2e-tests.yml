@@ -42,6 +42,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -89,6 +90,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: print environment_url and BRANCH_NAME
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
@@ -137,6 +139,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -177,6 +180,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -216,6 +220,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -257,6 +262,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:

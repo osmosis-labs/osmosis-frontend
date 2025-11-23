@@ -40,6 +40,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
           ref: master
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -116,6 +117,7 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
+            yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
