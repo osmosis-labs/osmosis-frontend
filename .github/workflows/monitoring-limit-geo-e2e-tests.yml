@@ -21,7 +21,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -101,7 +101,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -145,7 +145,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -194,7 +194,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -242,7 +242,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -290,7 +290,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
@@ -336,7 +336,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('yarn.lock') }}
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.OS }}-22.x-
       - name: Install Playwright
