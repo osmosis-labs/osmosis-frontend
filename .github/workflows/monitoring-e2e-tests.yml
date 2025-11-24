@@ -97,12 +97,6 @@ jobs:
         with:
           sparse-checkout: |
             packages/e2e
-      - name: Verify yarn.lock exists
-        run: |
-          echo "Checking if yarn.lock exists..."
-          ls -la yarn.lock
-          echo "yarn.lock hash:"
-          shasum yarn.lock
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
