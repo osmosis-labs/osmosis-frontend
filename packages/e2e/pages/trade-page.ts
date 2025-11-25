@@ -14,6 +14,7 @@ export class TradePage extends BasePage {
   readonly flipAssetsBtn: Locator;
   readonly exchangeRate: Locator;
   readonly trxSuccessful: Locator;
+  readonly trxFailed: Locator;
   readonly trxBroadcasting: Locator;
   readonly trxLink: Locator;
   readonly inputAmount: Locator;
@@ -45,6 +46,7 @@ export class TradePage extends BasePage {
     );
     this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
     this.trxSuccessful = page.getByText("Transaction Successful");
+    this.trxFailed = page.getByText("Transaction Failed");
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
     this.inputAmount = page.locator(
@@ -88,6 +90,86 @@ export class TradePage extends BasePage {
     await this.page.waitForTimeout(2000);
 
     console.log("✓ Assets loaded and ready");
+  }
+
+  /**
+   * Waits for either transaction success or failure, whichever comes first.
+   * Throws detailed error if transaction fails or times out.
+   * @param timeoutMs - Maximum time to wait (default 60s)
+   * @returns Promise that resolves on success, rejects on failure
+   */
+  private async waitForTransactionResult(
+    timeoutMs: number = 60000
+  ): Promise<void> {
+    console.log(
+      `⏰ Waiting for transaction confirmation (${timeoutMs / 1000}s timeout)...`
+    );
+
+    const startTime = Date.now();
+
+    try {
+      // Race between success and failure
+      await Promise.race([
+        // Success path
+        expect(this.trxSuccessful)
+          .toBeVisible({ timeout: timeoutMs })
+          .then(() => {
+            const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+            console.log(`✓ Transaction successful after ${elapsed}s`);
+          }),
+
+        // Failure path
+        this.trxFailed.waitFor({ state: "visible", timeout: timeoutMs }).then(() => {
+          throw new Error("Transaction failed on blockchain");
+        }),
+      ]);
+    } catch (error: any) {
+      const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+
+      // Check if it's a failure vs timeout
+      const isFailed = await this.trxFailed
+        .isVisible({ timeout: 100 })
+        .catch(() => false);
+      if (isFailed) {
+        const errorText = await this.trxFailed.textContent();
+        throw new Error(
+          `Transaction failed after ${elapsed}s: ${errorText}`
+        );
+      }
+
+      // Otherwise it's a timeout
+      throw new Error(
+        `Transaction status unknown after ${elapsed}s. ` +
+          `Neither success nor failure message appeared. ` +
+          `Original error: ${error.message}`
+      );
+    }
+  }
+
+  /**
+   * Checks for error messages in toast notifications or alerts.
+   * Call this after transaction submission but before waiting for result.
+   */
+  async checkForTransactionErrors(): Promise<void> {
+    // Check for error toasts/alerts
+    const errorIndicators = [
+      this.page
+        .locator('[role="alert"]')
+        .filter({ hasText: /error|failed/i }),
+      this.page.getByText(/transaction error/i),
+      this.page.getByText(/insufficient/i),
+    ];
+
+    for (const indicator of errorIndicators) {
+      const isVisible = await indicator
+        .isVisible({ timeout: 1000 })
+        .catch(() => false);
+      if (isVisible) {
+        const errorText = await indicator.textContent();
+        console.warn(`⚠️ Error indicator detected: ${errorText}`);
+        throw new Error(`Transaction error: ${errorText}`);
+      }
+    }
   }
 
   async gotoOrdersHistory(timeout = 1) {
@@ -398,12 +480,8 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
 
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
-        });
+        // Start listening for transaction result (success or failure)
+        const resultPromise = this.waitForTransactionResult(60000);
 
         // Handle Pop-up page ->
         // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
@@ -471,10 +549,15 @@ export class TradePage extends BasePage {
           );
         }
 
-        // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-        // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-        // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
-        await successPromise;
+        console.log("✓ Transaction submitted to blockchain");
+        await this.page.waitForTimeout(1000);
+
+        // Check for immediate error indicators
+        await this.checkForTransactionErrors();
+
+        // Wait for result (success or failure)
+        // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
+        await resultPromise;
 
         return { msgContentAmount };
       } catch (error: any) {
@@ -560,12 +643,8 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
 
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
-        });
+        // Start listening for transaction result (success or failure)
+        const resultPromise = this.waitForTransactionResult(60000);
 
         // Handle Pop-up page ->
         // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
@@ -633,10 +712,15 @@ export class TradePage extends BasePage {
           );
         }
 
-        // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-        // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-        // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
-        await successPromise;
+        console.log("✓ Transaction submitted to blockchain");
+        await this.page.waitForTimeout(1000);
+
+        // Check for immediate error indicators
+        await this.checkForTransactionErrors();
+
+        // Wait for result (success or failure)
+        // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
+        await resultPromise;
 
         return { msgContentAmount };
       } catch (error: any) {
@@ -684,7 +768,8 @@ export class TradePage extends BasePage {
    * - Waits for sell button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (7s timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Waits for blockchain confirmation before returning (60s timeout)
+   * - Detects both success and failure states with detailed error messages
    * - No retry logic - for retry support, use sellAndGetWalletMsg()
    */
   async sellAndApprove(
@@ -698,12 +783,8 @@ export class TradePage extends BasePage {
       timeout: this.buySellTimeout,
     });
 
-    // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
+    // Start listening for transaction result
+    const resultPromise = this.waitForTransactionResult(60000);
 
     await this.sellBtn.click();
 
@@ -714,11 +795,14 @@ export class TradePage extends BasePage {
 
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
+    console.log("✓ Transaction submitted to blockchain");
     await this.page.waitForTimeout(1000);
 
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-    await successPromise;
+    // Check for immediate error indicators
+    await this.checkForTransactionErrors();
+
+    // Wait for result (success or failure)
+    await resultPromise;
   }
 
   /**
@@ -733,7 +817,8 @@ export class TradePage extends BasePage {
    * - Waits for buy button to be enabled before proceeding
    * - Automatically approves transaction in Keplr if popup appears (7s timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Waits for blockchain confirmation before returning (60s timeout)
+   * - Detects both success and failure states with detailed error messages
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -746,12 +831,8 @@ export class TradePage extends BasePage {
       timeout: this.buySellTimeout,
     });
 
-    // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
+    // Start listening for transaction result
+    const resultPromise = this.waitForTransactionResult(60000);
 
     await this.buyBtn.click();
 
@@ -762,11 +843,14 @@ export class TradePage extends BasePage {
 
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
+    console.log("✓ Transaction submitted to blockchain");
     await this.page.waitForTimeout(1000);
 
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-    await successPromise;
+    // Check for immediate error indicators
+    await this.checkForTransactionErrors();
+
+    // Wait for result (success or failure)
+    await resultPromise;
   }
 
   /**

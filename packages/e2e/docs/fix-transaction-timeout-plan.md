@@ -1,17 +1,17 @@
 # Fix Market Trade Transaction Timeout Issues
 
-**Status**: Pending Implementation  
-**Related Issues**: Tests 1, 3, 4 timeout waiting for transaction confirmation  
+**Status**: ✅ Implemented  
+**Related Issues**: Multiple trade tests timeout waiting for transaction confirmation  
 **Branch**: `fix/trade-test-asset-loading` (same branch, sequential implementation)
 
 ---
 
 ## Problem
 
-Tests 1, 3, 4 all fail with identical pattern:
-- **Test 1**: Market Buy BTC (57.9s failure)
-- **Test 3**: Market Sell BTC (56.9s failure)
-- **Test 4**: Market Sell OSMO (55.7s failure)
+Three market trade tests all fail with identical pattern:
+- **"Market Buy BTC"**: 57.9s failure
+- **"Market Sell BTC"**: 56.9s failure
+- **"Market Sell OSMO"**: 55.7s failure
 
 ### Common Failure Pattern
 
@@ -252,10 +252,11 @@ If we can capture the transaction hash from UI, we could:
 
 ### Phase 1: Run EU Trade Tests
 ```bash
-# Run monitoring tests in EU region
+# Run individual market trade tests in EU region
 npm run test:e2e:monitoring -- --grep "Market Buy BTC"
 npm run test:e2e:monitoring -- --grep "Market Sell BTC"
 npm run test:e2e:monitoring -- --grep "Market Sell OSMO"
+npm run test:e2e:monitoring -- --grep "Market Buy OSMO"
 ```
 
 ### Phase 2: Analyze Results
@@ -319,10 +320,10 @@ Potential issues to check:
 
 ## Success Criteria
 
-- [ ] Tests 1, 3, 4 either pass or fail with clear error messages
-- [ ] No more "timeout with no information" failures
-- [ ] Logs show transaction timing and status
-- [ ] Error messages are actionable (guide next debugging steps)
+- [x] Market trade tests either pass or fail with clear error messages
+- [x] No more "timeout with no information" failures
+- [x] Logs show transaction timing and status
+- [x] Error messages are actionable (guide next debugging steps)
 - [ ] 60s timeout sufficient for EU region (or we know we need more)
 
 ---

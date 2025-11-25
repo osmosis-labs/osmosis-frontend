@@ -7,7 +7,7 @@
 
 ---
 
-## Test 1: Market Buy BTC (Retry 1)
+## "User should be able to Market Buy BTC" Test (Retry 1)
 
 **Start**: 13:14:07.985Z | **Duration**: 57.9s | **End**: 13:15:05.877Z
 
@@ -74,7 +74,7 @@ T+57.9s └─ Test failed (includes teardown time)
 
 ---
 
-## Test 2: Market Buy OSMO (Retry 1)
+## "User should be able to Market Buy OSMO" Test (Retry 1)
 
 **Start**: 13:15:40.643Z | **Duration**: 7.8s | **End**: 13:15:48.470Z
 
@@ -109,7 +109,7 @@ T+7.8s  └─ Test failed in beforeEach
 
 ---
 
-## Test 3: Market Sell BTC (Retry 1)
+## "User should be able to Market Sell BTC" Test (Retry 1)
 
 **Start**: 13:16:21.425Z | **Duration**: 56.9s | **End**: 13:17:18.302Z
 
@@ -176,7 +176,7 @@ T+56.9s └─ Test failed (includes teardown time)
 
 ---
 
-## Test 4: Market Sell OSMO (Retry 1)
+## "User should be able to Market Sell OSMO" Test (Retry 1)
 
 **Start**: 13:17:53.161Z | **Duration**: 55.7s | **End**: 13:18:48.889Z
 
@@ -252,7 +252,7 @@ T+55.7s └─ Test failed (includes teardown time)
 - Designed to catch immediate 1-click trading confirmations
 - 40-second timeout actively listening throughout the entire operation
 
-### 2. Tests 1, 3, 4 - Identical Failure Pattern
+### 2. Market Buy BTC, Market Sell BTC, Market Sell OSMO Tests - Identical Failure Pattern
 
 **Characteristics:**
 - All UI interactions complete by ~T+8s
@@ -265,7 +265,7 @@ T+55.7s └─ Test failed (includes teardown time)
 - Transaction submission appears successful ✓
 - Blockchain confirmation never arrives ✗
 
-### 3. Test 2 - Unique Failure Mode
+### 3. Market Buy OSMO Test - Unique Failure Mode
 
 **Characteristics:**
 - Fails in `beforeEach` hook, never reaches test logic
@@ -295,14 +295,14 @@ T+55.7s └─ Test failed (includes teardown time)
 
 ### 5. Possible Root Causes
 
-**For Tests 1, 3, 4:**
+**For Market Buy BTC, Market Sell BTC, Market Sell OSMO tests:**
 1. **Gas exhaustion**: Despite 3.0 multiplier, transactions still running out of gas
 2. **Network/RPC issues**: EU region RPC connection slow or timing out
 3. **Transaction rejection**: Slippage, price impact, or other on-chain validation failing
 4. **Missing error detection**: Frontend shows error but test doesn't look for it
 5. **Insufficient timeout**: Transactions need >40s in this environment
 
-**For Test 2:**
+**For Market Buy OSMO test:**
 1. **Asset loading race condition**: Page loads before asset data fully available
 2. **Insufficient wait time**: `goto()` returns before page is truly ready
 3. **Frontend bug**: Token name truncation suggests data parsing issue
@@ -327,7 +327,7 @@ T+55.7s └─ Test failed (includes teardown time)
    - Try 60s or 90s to determine if just slow
    - If still times out, confirms stuck/failed state
 
-4. **Fix Test 2 asset loading issue**
+4. **Fix Market Buy OSMO test asset loading issue**
    - Increase wait time after `goto()`
    - Add explicit wait for asset data to be fully loaded
    - Verify token names are not truncated before proceeding
