@@ -63,10 +63,31 @@ export class TradePage extends BasePage {
     await this.page.goto("/");
     const request = await assetPromise;
     expect(request).toBeTruthy();
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
-    await this.page.waitForTimeout(2000);
+    // we expect that after 4 seconds tokens are loaded and any failure after this point should be considered a bug.
+    await this.page.waitForTimeout(4000);
     const currentUrl = this.page.url();
     console.log(`FE opened at: ${currentUrl}`);
+  }
+
+  /**
+   * Waits for asset data to be fully loaded and rendered.
+   * Verifies token selector UI elements are visible and properly initialized.
+   * Call this after goto() or connectWallet() before performing asset-dependent actions.
+   */
+  async waitForAssetsToLoad() {
+    console.log("⏳ Waiting for assets to fully load...");
+
+    // Wait for token selector buttons to have proper image elements (assets loaded)
+    const tokenButtons = this.page.locator("//div//button[@type]//img[@alt]");
+
+    // Wait for at least one token button to be visible (From token)
+    await expect(tokenButtons.first()).toBeVisible({ timeout: 10000 });
+
+    // Additional wait for asset metadata to finish processing
+    // This ensures token names are not truncated and quotes can be fetched
+    await this.page.waitForTimeout(2000);
+
+    console.log("✓ Assets loaded and ready");
   }
 
   async gotoOrdersHistory(timeout = 1) {

@@ -26,6 +26,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
+    await tradePage.waitForAssetsToLoad();
   });
 
   test.afterAll(async () => {
@@ -34,6 +35,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
   test.beforeEach(async () => {
     await tradePage.connectWallet();
+    await tradePage.waitForAssetsToLoad();
     expect(await tradePage.isError(), "Swap is not available!").toBeFalsy();
   });
 
@@ -54,6 +56,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
   [{ name: "BTC" }, { name: "OSMO" }].forEach(({ name }) => {
     test(`User should be able to Market Buy ${name}`, async () => {
       await tradePage.goto();
+      await tradePage.waitForAssetsToLoad();
       await tradePage.openBuyTab();
       await tradePage.selectAsset(name);
       await tradePage.enterAmount("1.55");
@@ -67,6 +70,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
   // unwrapped market sell tests just in case this affects anything.
   test("User should be able to Market Sell BTC", async () => {
     await tradePage.goto();
+    await tradePage.waitForAssetsToLoad();
     await tradePage.openSellTab();
     await tradePage.selectAsset("BTC");
     await tradePage.enterAmount("1.54");
@@ -78,6 +82,7 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
   test("User should be able to Market Sell OSMO", async () => {
     await tradePage.goto();
+    await tradePage.waitForAssetsToLoad();
     await tradePage.openSellTab();
     await tradePage.selectAsset("OSMO");
     await tradePage.enterAmount("1.54");
