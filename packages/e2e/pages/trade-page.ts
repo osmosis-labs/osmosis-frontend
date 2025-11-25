@@ -46,7 +46,7 @@ export class TradePage extends BasePage {
     );
     this.exchangeRate = page.locator('//span[@data-testid="token-price"]');
     this.trxSuccessful = page.getByText("Transaction Successful");
-    this.trxFailed = page.getByText("Transaction Failed");
+    this.trxFailed = page.getByRole("heading", { name: "Transaction Failed" });
     this.trxLink = page.getByText("View explorer");
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]');
     this.inputAmount = page.locator(
