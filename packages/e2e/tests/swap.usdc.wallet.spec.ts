@@ -70,7 +70,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to ATOM", async () => {
@@ -81,7 +80,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to TIA", async () => {
@@ -92,7 +90,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap TIA to USDC", async () => {
@@ -103,7 +100,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to INJ", async () => {
@@ -114,7 +110,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap INJ to USDC", async () => {
@@ -125,7 +120,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap USDC to AKT", async () => {
@@ -136,7 +130,6 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to swap AKT to USDC", async () => {
@@ -147,6 +140,5 @@ test.describe("Test Swap to/from USDC feature", () => {
       maxRetries: 3,
       slippagePercent: "3",
     });
-    await tradePage.getTransactionUrl();
   });
 });

@@ -60,7 +60,6 @@ test.describe("Test Trade feature", () => {
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
       expect(msgContentAmount).toContain(`denom: ${USDC}`);
     }
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to Sell ATOM", async () => {
@@ -78,7 +77,6 @@ test.describe("Test Trade feature", () => {
       expect(msgContentAmount).toContain("type: osmosis/poolmanager/");
       expect(msgContentAmount).toContain(`denom: ${ATOM}`);
     }
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to limit sell ATOM", async () => {
@@ -100,11 +98,9 @@ test.describe("Test Trade feature", () => {
       expect(msgContentAmount).toContain("place_limit");
       expect(msgContentAmount).toContain('"order_direction": "ask"');
     }
-    await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to cancel limit sell OSMO", async () => {
@@ -126,10 +122,8 @@ test.describe("Test Trade feature", () => {
       expect(msgContentAmount).toContain("place_limit");
       expect(msgContentAmount).toContain('"order_direction": "ask"');
     }
-    await tradePage.getTransactionUrl();
     await tradePage.gotoOrdersHistory();
     const trxPage = new TransactionsPage(context.pages()[0]);
     await trxPage.cancelLimitOrder(`Sell $${amount} of`, limitPrice, context);
-    await tradePage.getTransactionUrl();
   });
 });

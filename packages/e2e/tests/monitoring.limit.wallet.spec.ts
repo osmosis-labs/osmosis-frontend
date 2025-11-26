@@ -53,7 +53,6 @@ test.describe("Test Filled Limit Order feature", () => {
     await tradePage.enterAmount("1.08");
     await tradePage.setLimitPriceChange("Market");
     await tradePage.sellAndApprove(context);
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to limit buy OSMO", async () => {
@@ -68,7 +67,6 @@ test.describe("Test Filled Limit Order feature", () => {
     const highLimitPrice = (limitPrice * PRICE_INCREASE_FACTOR).toFixed(4);
     await tradePage.setLimitPrice(String(highLimitPrice));
     await tradePage.buyAndApprove(context);
-    await tradePage.getTransactionUrl();
     //await tradePage.gotoOrdersHistory(ORDER_HISTORY_TIMEOUT);
     //const p = context.pages()[0]
     //const trxPage = new TransactionsPage(p)

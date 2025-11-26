@@ -378,13 +378,6 @@ export class TradePage extends BasePage {
     });
   }
 
-  async getTransactionUrl() {
-    const trxUrl = await this.trxLink.getAttribute("href");
-    console.log(`Trx url: ${trxUrl}`);
-    await this.page.reload();
-    return trxUrl;
-  }
-
   async isTransactionBroadcasted(delay = 5) {
     console.log(`Wait for a transaction broadcasting for ${delay} seconds.`);
     return await this.trxBroadcasting.isVisible({ timeout: delay * 1000 });
@@ -794,7 +787,7 @@ export class TradePage extends BasePage {
   async sellAndApprove(
     context: BrowserContext,
     options?: { slippagePercent?: string }
-  ) {
+  ): Promise<string | undefined> {
     const slippagePercent = options?.slippagePercent;
 
     // Make sure Sell button is enabled
@@ -820,6 +813,11 @@ export class TradePage extends BasePage {
 
     // Wait for result (success or failure)
     await resultPromise;
+
+    // Log and return transaction URL if available
+    const trxUrl = await this.trxLink.getAttribute("href");
+    console.log(`Trx url: ${trxUrl}`);
+    return trxUrl ?? undefined;
   }
 
   /**
@@ -841,7 +839,7 @@ export class TradePage extends BasePage {
   async buyAndApprove(
     context: BrowserContext,
     options?: { slippagePercent?: string }
-  ) {
+  ): Promise<string | undefined> {
     const slippagePercent = options?.slippagePercent;
 
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
@@ -866,6 +864,11 @@ export class TradePage extends BasePage {
 
     // Wait for result (success or failure)
     await resultPromise;
+
+    // Log and return transaction URL if available
+    const trxUrl = await this.trxLink.getAttribute("href");
+    console.log(`Trx url: ${trxUrl}`);
+    return trxUrl ?? undefined;
   }
 
   /**
@@ -918,7 +921,7 @@ export class TradePage extends BasePage {
   async swapAndApprove(
     context: BrowserContext,
     options?: { maxRetries?: number; slippagePercent?: string }
-  ) {
+  ): Promise<string | undefined> {
     const maxRetries = options?.maxRetries ?? 3;
     const slippagePercent = options?.slippagePercent;
 
@@ -966,7 +969,10 @@ export class TradePage extends BasePage {
         // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
         await resultPromise;
 
-        return;
+        // Log and return transaction URL if available
+        const trxUrl = await this.trxLink.getAttribute("href");
+        console.log(`Trx url: ${trxUrl}`);
+        return trxUrl ?? undefined;
       } catch (error: any) {
         const isDisabledError =
           error.message?.includes("disabled") ||

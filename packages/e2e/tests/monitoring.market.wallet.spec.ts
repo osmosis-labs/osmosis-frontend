@@ -63,7 +63,6 @@ test.describe("Test Market Buy/Sell Order feature", () => {
       await tradePage.isSufficientBalanceForTrade();
       await tradePage.showSwapInfo();
       await tradePage.buyAndApprove(context, { slippagePercent: "3" });
-      await tradePage.getTransactionUrl();
     });
   });
 
@@ -77,7 +76,6 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     await tradePage.sellAndApprove(context, { slippagePercent: "3" });
-    await tradePage.getTransactionUrl();
   });
 
   test("User should be able to Market Sell OSMO", async () => {
@@ -89,6 +87,5 @@ test.describe("Test Market Buy/Sell Order feature", () => {
     await tradePage.isSufficientBalanceForTrade();
     await tradePage.showSwapInfo();
     await tradePage.sellAndApprove(context, { slippagePercent: "3" });
-    await tradePage.getTransactionUrl();
   });
 });

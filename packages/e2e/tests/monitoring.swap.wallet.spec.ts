@@ -62,7 +62,6 @@ test.describe("Test Swap Stables feature", () => {
       // of transaction failures during periods of high volatility or network congestion.
       // Adjust if swap failures become frequent.
       await tradePage.swapAndApprove(context, { slippagePercent: "1" });
-      await tradePage.getTransactionUrl();
     });
   });
 });
