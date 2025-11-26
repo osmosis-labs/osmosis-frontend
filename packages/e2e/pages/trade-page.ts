@@ -102,7 +102,9 @@ export class TradePage extends BasePage {
     timeoutMs: number = 60000
   ): Promise<void> {
     console.log(
-      `⏰ Waiting for transaction confirmation (${timeoutMs / 1000}s timeout)...`
+      `⏰ Waiting for transaction confirmation (${
+        timeoutMs / 1000
+      }s timeout)...`
     );
 
     const startTime = Date.now();
@@ -119,9 +121,11 @@ export class TradePage extends BasePage {
           }),
 
         // Failure path
-        this.trxFailed.waitFor({ state: "visible", timeout: timeoutMs }).then(() => {
-          throw new Error("Transaction failed on blockchain");
-        }),
+        this.trxFailed
+          .waitFor({ state: "visible", timeout: timeoutMs })
+          .then(() => {
+            throw new Error("Transaction failed on blockchain");
+          }),
       ]);
     } catch (error: any) {
       const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
@@ -132,9 +136,7 @@ export class TradePage extends BasePage {
         .catch(() => false);
       if (isFailed) {
         const errorText = await this.trxFailed.textContent();
-        throw new Error(
-          `Transaction failed after ${elapsed}s: ${errorText}`
-        );
+        throw new Error(`Transaction failed after ${elapsed}s: ${errorText}`);
       }
 
       // Otherwise it's a timeout
@@ -147,28 +149,45 @@ export class TradePage extends BasePage {
   }
 
   /**
-   * Checks for error messages in toast notifications or alerts.
-   * Call this after transaction submission but before waiting for result.
+   * Asserts that no transaction error toast/alert appears within the timeout.
+   *
+   * Only considers explicit error patterns:
+   * - [role="alert"] elements containing "error" or "failed"
+   * - Text containing "transaction error"
+   * - Text containing "insufficient"
+   *
+   * Call this after transaction submission but before waiting for the
+   * success/failure heading. If a matching toast appears, the current
+   * test will fail fast with a detailed error message.
    */
-  async checkForTransactionErrors(): Promise<void> {
-    // Check for error toasts/alerts
-    const errorIndicators = [
+  async assertNoTransactionErrorToast(timeoutMs = 5000): Promise<void> {
+    const candidates = [
       this.page
         .locator('[role="alert"]')
-        .filter({ hasText: /error|failed/i }),
+        .filter({ hasText: /error|failed/i })
+        .first(),
       this.page.getByText(/transaction error/i),
       this.page.getByText(/insufficient/i),
     ];
 
-    for (const indicator of errorIndicators) {
-      const isVisible = await indicator
-        .isVisible({ timeout: 1000 })
-        .catch(() => false);
-      if (isVisible) {
-        const errorText = await indicator.textContent();
-        console.warn(`⚠️ Error indicator detected: ${errorText}`);
-        throw new Error(`Transaction error: ${errorText}`);
-      }
+    const visiblePromise = Promise.race(
+      candidates.map((loc) =>
+        loc
+          .waitFor({ state: "visible", timeout: timeoutMs })
+          .then(() => loc)
+          .catch(() => null)
+      )
+    );
+
+    const winner = (await Promise.race([
+      visiblePromise,
+      this.page.waitForTimeout(timeoutMs).then(() => null),
+    ])) as Locator | null;
+
+    if (winner) {
+      const errorText = (await winner.textContent()) ?? "Unknown error";
+      console.warn(`⚠️ Error indicator detected: ${errorText}`);
+      throw new Error(`Transaction error: ${errorText}`);
     }
   }
 
@@ -549,11 +568,11 @@ export class TradePage extends BasePage {
           );
         }
 
-        console.log("✓ Transaction submitted to blockchain");
-        await this.page.waitForTimeout(1000);
-
-        // Check for immediate error indicators
-        await this.checkForTransactionErrors();
+        console.log(
+          "→ Transaction submitted, checking for immediate errors..."
+        );
+        // Check for immediate error indicators (toast/alerts) with timeout
+        await this.assertNoTransactionErrorToast();
 
         // Wait for result (success or failure)
         // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
@@ -712,11 +731,11 @@ export class TradePage extends BasePage {
           );
         }
 
-        console.log("✓ Transaction submitted to blockchain");
-        await this.page.waitForTimeout(1000);
-
-        // Check for immediate error indicators
-        await this.checkForTransactionErrors();
+        console.log(
+          "→ Transaction submitted, checking for immediate errors..."
+        );
+        // Check for immediate error indicators (toast/alerts) with timeout
+        await this.assertNoTransactionErrorToast();
 
         // Wait for result (success or failure)
         // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
@@ -795,11 +814,9 @@ export class TradePage extends BasePage {
 
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
-    console.log("✓ Transaction submitted to blockchain");
-    await this.page.waitForTimeout(1000);
-
-    // Check for immediate error indicators
-    await this.checkForTransactionErrors();
+    console.log("→ Transaction submitted, checking for immediate errors...");
+    // Check for immediate error indicators (toast/alerts) with timeout
+    await this.assertNoTransactionErrorToast();
 
     // Wait for result (success or failure)
     await resultPromise;
@@ -843,11 +860,9 @@ export class TradePage extends BasePage {
 
     await this.confirmSwapBtn.click();
     await this.justApproveIfNeeded(context);
-    console.log("✓ Transaction submitted to blockchain");
-    await this.page.waitForTimeout(1000);
-
-    // Check for immediate error indicators
-    await this.checkForTransactionErrors();
+    console.log("→ Transaction submitted, checking for immediate errors...");
+    // Check for immediate error indicators (toast/alerts) with timeout
+    await this.assertNoTransactionErrorToast();
 
     // Wait for result (success or failure)
     await resultPromise;
@@ -920,12 +935,8 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
 
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
-        });
+        // Start listening for transaction result (success or failure)
+        const resultPromise = this.waitForTransactionResult(60000);
 
         await this.swapBtn.click({ timeout: 4000 });
 
@@ -937,17 +948,23 @@ export class TradePage extends BasePage {
         await this.confirmSwapBtn.click({ timeout: 5000 });
         await this.justApproveIfNeeded(context);
 
-        // Successfully submitted! Now wait for transaction success
+        // Successfully submitted! Now wait for transaction result
         if (attempt > 0) {
           console.log(
             `✓ Swap transaction submitted after ${attempt} retry(ies)`
           );
         }
 
+        console.log(
+          "→ Transaction submitted, checking for immediate errors..."
+        );
+        // Check for immediate error indicators (toast/alerts) with timeout
+        await this.assertNoTransactionErrorToast();
+
         // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
         // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-        // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
-        await successPromise;
+        // Each retry gets a fresh 60s timeout to avoid timeout exhaustion
+        await resultPromise;
 
         return;
       } catch (error: any) {
