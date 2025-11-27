@@ -103,17 +103,23 @@ export class TradePage extends BasePage {
     timeoutMs: number = 60000
   ): Promise<void> {
     console.log(
-      `⏰ Starting transaction result listener (${timeoutMs / 1000}s timeout)...`
+      `⏰ Starting transaction result listener (${
+        timeoutMs / 1000
+      }s timeout)...`
     );
-    console.log(`   ℹ️  Timer starts BEFORE button clicks to catch fast confirmations`);
+    console.log(
+      `   ℹ️  Timer starts BEFORE button clicks to catch fast confirmations`
+    );
 
     const startTime = Date.now();
 
     // Heartbeat logging every 5 seconds to show progress
     const heartbeatInterval = setInterval(() => {
       const elapsed = Math.floor((Date.now() - startTime) / 1000);
-      console.log(`   ⏳ Waiting for transaction result... ${elapsed}s elapsed`);
-    }, 5000);
+      console.log(
+        `   ⏳ Waiting for transaction result... ${elapsed}s elapsed`
+      );
+    }, 1000);
 
     try {
       // Race between success and failure
@@ -123,7 +129,9 @@ export class TradePage extends BasePage {
           .toBeVisible({ timeout: timeoutMs })
           .then(() => {
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`✓ Transaction successful after ${elapsed}s (includes UI interaction time)`);
+            console.log(
+              `✓ Transaction successful after ${elapsed}s (includes UI interaction time)`
+            );
           }),
 
         // Failure path
