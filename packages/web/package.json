@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
-    "@axelar-network/axelarjs-sdk": "0.17.0",
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
