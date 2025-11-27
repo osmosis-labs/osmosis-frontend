@@ -95,6 +95,7 @@ export class TradePage extends BasePage {
   /**
    * Waits for either transaction success or failure, whichever comes first.
    * Throws detailed error if transaction fails or times out.
+   * NOTE: This promise should be started BEFORE button clicks to catch fast confirmations.
    * @param timeoutMs - Maximum time to wait (default 60s)
    * @returns Promise that resolves on success, rejects on failure
    */
@@ -102,12 +103,17 @@ export class TradePage extends BasePage {
     timeoutMs: number = 60000
   ): Promise<void> {
     console.log(
-      `⏰ Waiting for transaction confirmation (${
-        timeoutMs / 1000
-      }s timeout)...`
+      `⏰ Starting transaction result listener (${timeoutMs / 1000}s timeout)...`
     );
+    console.log(`   ℹ️  Timer starts BEFORE button clicks to catch fast confirmations`);
 
     const startTime = Date.now();
+
+    // Heartbeat logging every 5 seconds to show progress
+    const heartbeatInterval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      console.log(`   ⏳ Waiting for transaction result... ${elapsed}s elapsed`);
+    }, 5000);
 
     try {
       // Race between success and failure
@@ -117,7 +123,7 @@ export class TradePage extends BasePage {
           .toBeVisible({ timeout: timeoutMs })
           .then(() => {
             const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
-            console.log(`✓ Transaction successful after ${elapsed}s`);
+            console.log(`✓ Transaction successful after ${elapsed}s (includes UI interaction time)`);
           }),
 
         // Failure path
@@ -141,10 +147,13 @@ export class TradePage extends BasePage {
 
       // Otherwise it's a timeout
       throw new Error(
-        `Transaction status unknown after ${elapsed}s. ` +
+        `Transaction status unknown after ${elapsed}s (includes UI interaction time). ` +
           `Neither success nor failure message appeared. ` +
           `Original error: ${error.message}`
       );
+    } finally {
+      // Always clear the heartbeat interval
+      clearInterval(heartbeatInterval);
     }
   }
 
