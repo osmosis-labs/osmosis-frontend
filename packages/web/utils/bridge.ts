@@ -10,6 +10,7 @@ export const BridgeLogoUrls: Record<Bridge, string> = {
   Nitro: "/bridges/nitro.svg",
   Penumbra: "/networks/penumbra.svg",
   Int3face: "/bridges/int3face.svg",
+  FastUsdc: "/bridges/fast-usdc.svg",
 };
 
 export const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
@@ -23,4 +24,5 @@ export const ExternalBridgeLogoUrls: Record<Bridge | "Generic", string> = {
   Nitro: "/bridges/nitro.svg",
   Penumbra: "/networks/penumbra.svg",
   Int3face: "/bridges/int3face.svg",
+  FastUsdc: "/bridges/fast-usdc.svg",
 };

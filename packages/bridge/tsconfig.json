@@ -4,7 +4,8 @@
     "outDir": "build",
     "declaration": true,
     "rootDir": "src",
-    "module": "esnext"
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
   },
   "include": ["src/**/*"]
 }

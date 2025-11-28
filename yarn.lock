@@ -56,6 +56,16 @@
   resolved "https://registry.yarnpkg.com/@adraffy/ens-normalize/-/ens-normalize-1.11.0.tgz#42cc67c5baa407ac25059fcd7d405cc5ecdb0c33"
   integrity sha512-/3DDPKHqqIqxUULp8yP4zODUY1i+2xvVWsv8A79xGWdCAG+8sb0hRh0Rk2QyOJUnnbyPUAZYcpBuRe3nS2OIUg==
 
+"@agoric/cosmic-proto@^0.5.0-u20.0":
+  version "0.5.0-u20.0"
+  resolved "https://registry.yarnpkg.com/@agoric/cosmic-proto/-/cosmic-proto-0.5.0-u20.0.tgz#17885da66c0940c9901777fb812e7a5d9f035be0"
+  integrity sha512-fskY/M1pxKnkyDOdCCMOkI4jGB906ICpHjIBxQspjKizLsBuv3paCZQck2hN+0IS8Bv4Xdt2IfKzYtip+/ZZ5A==
+  dependencies:
+    "@endo/base64" "^1.0.9"
+    "@endo/init" "^1.1.9"
+    bech32 "^2.0.0"
+    query-string "^9.1.1"
+
 "@amplitude/analytics-browser@^1.2.3":
   version "1.2.3"
   resolved "https://registry.npmjs.org/@amplitude/analytics-browser/-/analytics-browser-1.2.3.tgz"
@@ -3205,6 +3215,47 @@
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
+
+"@endo/base64@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@endo/base64/-/base64-1.0.9.tgz#53a05e8d461a63443097165397a7aef33a11b251"
+  integrity sha512-iUZJSE3EeFxHgk5pRaj83Tv6B0BJHJOpV6UqGv0K3UBn4azQysWRR5IzlXzxcVIpPiSVlOhG/6uCqTxP5cE1ug==
+
+"@endo/env-options@^1.1.8":
+  version "1.1.8"
+  resolved "https://registry.yarnpkg.com/@endo/env-options/-/env-options-1.1.8.tgz#dbfcfbf7574f2a793155281d035c8d6f809f5828"
+  integrity sha512-Xtxw9n33I4guo8q0sDyZiRuxlfaopM454AKiELgU7l3tqsylCut6IBZ0fPy4ltSHsBib7M3yF7OEMoIuLwzWVg==
+
+"@endo/eventual-send@^1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@endo/eventual-send/-/eventual-send-1.3.1.tgz#1204d79b3ad250f92b55a8c3befd9da861823e21"
+  integrity sha512-Xz+baNUArvHea2WQ3VYNzhk/UKTufQy3l7sCyi/wAouwTOwpze4HKEZWphVk9BSSh3vsWXDCLtKVvzNl4EOmRg==
+  dependencies:
+    "@endo/env-options" "^1.1.8"
+
+"@endo/init@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.yarnpkg.com/@endo/init/-/init-1.1.9.tgz#e2506abdb17bcd38ab6685608b75cc7789899e61"
+  integrity sha512-YDl4zHUv54ghuau2tSC08xwSDu/QhmTmOdxWgJNlj29bwe5n3s3G8j5jbzx6FNqdZq0W2ow9uzKdpEczpFy+Uw==
+  dependencies:
+    "@endo/base64" "^1.0.9"
+    "@endo/eventual-send" "^1.3.1"
+    "@endo/lockdown" "^1.0.15"
+    "@endo/promise-kit" "^1.1.10"
+
+"@endo/lockdown@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/@endo/lockdown/-/lockdown-1.0.15.tgz#35030381a34ac7d68031517142b7bca2b261f3d9"
+  integrity sha512-UFnsGkT7n4J4jtkFbgo8f4ENGctcbZqtIvGMWGLEO2p7ZsvCnOZhStuHZKt9Vx1u/5IAv/X8/+RCUkyGTsM03w==
+  dependencies:
+    ses "^1.12.0"
+
+"@endo/promise-kit@^1.1.10":
+  version "1.1.10"
+  resolved "https://registry.yarnpkg.com/@endo/promise-kit/-/promise-kit-1.1.10.tgz#1fa28f5f42ca42b417f5ad9476f58391696de59a"
+  integrity sha512-h1vrL1XLeboaFTUBji8PmPcepPNMVS5aleXOufz5bh0TSBGslaNoMPnpoC3AdBYjKTEF+BFX3qXFUYEoipTfjg==
+  dependencies:
+    ses "^1.12.0"
 
 "@ensdomains/eth-ens-namehash@^2.0.15":
   version "2.0.15"
@@ -11367,6 +11418,11 @@ decode-uri-component@^0.2.2:
   resolved "https://registry.npmjs.org/decode-uri-component/-/decode-uri-component-0.2.2.tgz"
   integrity sha512-FqUYQ+8o158GyGTrMFJms9qh3CqTKvAqgqsTnkLI8sKu0028orqBhxNMFkFen0zGyg6epACD32pjVk58ngIErQ==
 
+decode-uri-component@^0.4.1:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/decode-uri-component/-/decode-uri-component-0.4.1.tgz#2ac4859663c704be22bf7db760a1494a49ab2cc5"
+  integrity sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==
+
 decompress-response@^6.0.0:
   version "6.0.0"
   resolved "https://registry.npmjs.org/decompress-response/-/decompress-response-6.0.0.tgz"
@@ -12982,6 +13038,11 @@ filter-obj@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/filter-obj/-/filter-obj-1.1.0.tgz"
   integrity sha1-mzERErxsYSehbgFsbF1/GeCAXFs=
+
+filter-obj@^5.1.0:
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/filter-obj/-/filter-obj-5.1.0.tgz#5bd89676000a713d7db2e197f660274428e524ed"
+  integrity sha512-qWeTREPoT7I0bifpPUXtxkZJ1XJzxWtfoWWkdVGqa+eCr3SHW/Ocp89o8vLvbUuQnadybJpjOKu4V+RwO6sGng==
 
 find-up@^2.0.0:
   version "2.1.0"
@@ -18997,6 +19058,15 @@ query-string@^6.12.1:
     split-on-first "^1.0.0"
     strict-uri-encode "^2.0.0"
 
+query-string@^9.1.1:
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/query-string/-/query-string-9.1.1.tgz#dbfebb4196aeb2919915f2b2b81b91b965cf03a0"
+  integrity sha512-MWkCOVIcJP9QSKU52Ngow6bsAWAPlPK2MludXvcrS2bGZSl+T1qX9MZvRIkqUIkGLJquMJHWfsT6eRqUpp4aWg==
+  dependencies:
+    decode-uri-component "^0.4.1"
+    filter-obj "^5.1.0"
+    split-on-first "^3.0.0"
+
 querystringify@^2.1.1:
   version "2.2.0"
   resolved "https://registry.npmjs.org/querystringify/-/querystringify-2.2.0.tgz"
@@ -20041,6 +20111,13 @@ seroval@^0.5.0:
   resolved "https://registry.yarnpkg.com/seroval/-/seroval-0.5.1.tgz#e6d17365cdaaae7e50815c7e0bcd7102facdadf3"
   integrity sha512-ZfhQVB59hmIauJG5Ydynupy8KHyr5imGNtdDhbZG68Ufh1Ynkv9KOYOAABf71oVbQxJ8VkWnMHAjEHE7fWkH5g==
 
+ses@^1.12.0:
+  version "1.12.0"
+  resolved "https://registry.yarnpkg.com/ses/-/ses-1.12.0.tgz#f3cf22f67126cbd373aea0c501753952653699b1"
+  integrity sha512-jvmwXE2lFxIIY1j76hFjewIIhYMR9Slo3ynWZGtGl5M7VUCw3EA0wetS+JCIbl2UcSQjAT0yGAHkyxPJreuC9w==
+  dependencies:
+    "@endo/env-options" "^1.1.8"
+
 set-blocking@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/set-blocking/-/set-blocking-2.0.0.tgz"
@@ -20491,6 +20568,11 @@ split-on-first@^1.0.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/split-on-first/-/split-on-first-1.1.0.tgz"
   integrity sha512-43ZssAJaMusuKWL8sKUBQXHWOpq8d6CfN/u1p4gUzfJkM05C8rxTmYrkIPTXapZpORA6LkkzcUulJ8FqA7Uudw==
+
+split-on-first@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/split-on-first/-/split-on-first-3.0.0.tgz#f04959c9ea8101b9b0bbf35a61b9ebea784a23e7"
+  integrity sha512-qxQJTx2ryR0Dw0ITYyekNQWpz6f8dGd7vffGNflQQ3Iqj9NJ6qiZ7ELpZsJ/QBhIVAiDfXdag3+Gp8RvWa62AA==
 
 split2@^3.2.2:
   version "3.2.2"

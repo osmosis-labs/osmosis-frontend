@@ -166,7 +166,7 @@ export class SkipBridgeProvider implements BridgeProvider {
         let transferFee: BridgeCoin & { chainId: number | string } = {
           ...fromAsset,
           coinGeckoId: sourceAsset.coingecko_id,
-          amount: "0",
+          amount: (BigInt(fromAmount) - BigInt(route.amount_out)).toString(),
           chainId: fromChain.chainId,
         };
 
