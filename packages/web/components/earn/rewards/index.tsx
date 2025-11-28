@@ -1,8 +1,8 @@
 import type { EncodeObject } from "@cosmjs/proto-signing";
 
+import { EarnStrategy } from "@osmosis-labs/server";
 const sleep = (seconds: number) =>
   new Promise((resolve) => setTimeout(resolve, seconds * 1000));
-import { EarnStrategy } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,
   makeWithdrawDelegationRewardsMsg,
