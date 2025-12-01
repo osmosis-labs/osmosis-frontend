@@ -22,7 +22,7 @@ export function EntityImage({
   } = props;
   const [err, setErr] = useState(false);
 
-  const imageUrl = logoURIs.png || logoURIs.svg;
+  const imageUrl = logoURIs?.svg || logoURIs?.png;
 
   if (!imageUrl || err) {
     return (
