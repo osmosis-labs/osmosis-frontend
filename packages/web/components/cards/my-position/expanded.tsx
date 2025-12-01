@@ -471,6 +471,10 @@ export const AssetsInfo: FunctionComponent<
                   <div className="h-[24px] w-[24px] flex-shrink-0">
                     <EntityImage
                       logoURIs={{
+                        svg: asset.currency.coinImageUrl?.replace(
+                          /\.png$/,
+                          ".svg"
+                        ),
                         png: asset.currency.coinImageUrl,
                       }}
                       name={asset.currency.coinDenom}
