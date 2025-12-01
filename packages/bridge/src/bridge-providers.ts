@@ -1,4 +1,3 @@
-import { AxelarBridgeProvider } from "./axelar";
 import { IbcBridgeProvider } from "./ibc";
 import { Int3faceBridgeProvider } from "./int3face";
 import { BridgeProviderContext } from "./interface";
@@ -15,7 +14,6 @@ export type Bridge = keyof BridgeProviders["bridges"];
 export class BridgeProviders {
   public readonly bridges: {
     [SquidBridgeProvider.ID]: SquidBridgeProvider;
-    [AxelarBridgeProvider.ID]: AxelarBridgeProvider;
     [SkipBridgeProvider.ID]: SkipBridgeProvider;
     [IbcBridgeProvider.ID]: IbcBridgeProvider;
     [NomicBridgeProvider.ID]: NomicBridgeProvider;
@@ -35,7 +33,6 @@ export class BridgeProviders {
         integratorId,
         commonContext
       ),
-      [AxelarBridgeProvider.ID]: new AxelarBridgeProvider(commonContext),
       [SkipBridgeProvider.ID]: new SkipBridgeProvider(commonContext),
       [IbcBridgeProvider.ID]: new IbcBridgeProvider(commonContext),
       [NomicBridgeProvider.ID]: new NomicBridgeProvider(commonContext),

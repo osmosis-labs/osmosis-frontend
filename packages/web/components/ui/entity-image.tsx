@@ -20,7 +20,7 @@ export function EntityImage({
   } = props;
   const [err, setErr] = useState(false);
 
-  const imageUrl = logoURIs.svg || logoURIs.png;
+  const imageUrl = logoURIs?.png || logoURIs?.svg;
 
   if (!imageUrl || err) {
     return (
