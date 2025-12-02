@@ -179,7 +179,7 @@ export const InputBox: FunctionComponent<Props> = ({
       <div className="flex flex-nowrap gap-2">
         {!rightEntry &&
           labelButtons
-            .slice(0, 2)
+            ?.slice(0, 2)
             .map(
               (
                 { label, onClick, disabled: labelButtonDisabled, className },
