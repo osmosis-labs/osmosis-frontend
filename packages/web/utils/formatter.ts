@@ -404,7 +404,7 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   }
 
   const splitDec = price.toDec().toString().split(".");
-  const maxDecimalStr = splitDec[0] + "." + splitDec[1].slice(0, maxDecimals);
+  const maxDecimalStr = splitDec[0] + "." + (splitDec[1] || "0").slice(0, maxDecimals);
   const maxDecimalPrice = new PricePretty(
     price.fiatCurrency,
     new Dec(maxDecimalStr)
@@ -414,7 +414,7 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
   }).split(".");
 
-  return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
+  return splitPretty[0] + "." + (splitPretty[1] || "0").slice(0, maxDecimals);
 }
 
 /**
