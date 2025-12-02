@@ -20,10 +20,11 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
           <div className="px-1">
             <EntityImage
               logoURIs={{
+                svg: fromAsset?.coinImageUrl?.replace(/\.png$/, ".svg"),
                 png: fromAsset?.coinImageUrl,
               }}
-              name={fromAsset?.coinName}
-              symbol={fromAsset?.coinDenom}
+              name={fromAsset?.coinName ?? ""}
+              symbol={fromAsset?.coinDenom ?? ""}
               width={24}
               height={24}
               className="rounded-full"
