@@ -9,18 +9,20 @@ import { useState } from "react";
 export function EntityImage({
   ...props
 }: Omit<ImageProps, "src" | "alt"> &
-  Pick<Asset, "logoURIs" | "symbol" | "name"> & { isChain?: boolean }) {
+  Pick<Asset, "logoURIs" | "name"> &
+  Partial<Pick<Asset, "symbol">> & { isChain?: boolean; denom?: string }) {
   const {
     logoURIs,
     width = 24,
     height = 24,
     name,
     symbol,
+    denom,
     isChain = false,
   } = props;
   const [err, setErr] = useState(false);
 
-  const imageUrl = logoURIs?.png || logoURIs?.svg;
+  const imageUrl = logoURIs?.svg || logoURIs?.png;
 
   if (!imageUrl || err) {
     return (
@@ -42,7 +44,7 @@ export function EntityImage({
             "text-xxs": +width <= 20,
           })}
         >
-          {isChain ? name[0] : symbol.slice(0, 3)}
+          {isChain ? name[0] : (symbol ?? denom)?.slice(0, 3) ?? "???"}
         </span>
       </div>
     );
