@@ -336,4 +336,84 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["galaxy-station-extension"],
+    mobileDisabled: true,
+    logo: "/wallets/galaxy-station.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/galaxy-station-extension").then(
+        (m) => m.GalaxyStationExtensionWallet
+      ),
+    windowPropertyName: "galaxyStation",
+    supportsChain: async (chainId) => {
+      if (typeof window === "undefined") return true;
+
+      const galaxyStationWallet = (window as any)?.galaxyStation?.keplr as {
+        getChainInfosWithoutEndpoints: () => Promise<{ chainId: string }[]>;
+      };
+
+      if (!galaxyStationWallet) return true;
+
+      const chainInfos =
+        await galaxyStationWallet.getChainInfosWithoutEndpoints();
+      return chainInfos.some((info) => info.chainId === chainId);
+    },
+    stakeUrl: "https://station.hexxagon.io/stake",
+    governanceUrl: "https://station.hexxagon.io/gov",
+    features: [],
+  },
+  {
+    ...CosmosKitWalletList["galaxy-station-mobile"],
+    logo: "/wallets/galaxy-station.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/galaxy-station-mobile").then(
+        (m) => m.GalaxyStationMobileWallet
+      ),
+    supportsChain: async (chainId) => {
+      const galaxyStationMobileAvailableChains: MainnetChainIds[] = [
+        "akashnet-2",
+        "archway-1",
+        "atomone-1",
+        "bitsong-2b",
+        "carbon-1",
+        "celestia",
+        "cheqd-mainnet-1",
+        "chihuahua-1",
+        "columbus-5",
+        "comdex-1",
+        "cosmoshub-4",
+        "crescent-1",
+        "dydx-mainnet-1",
+        "gravity-bridge-3",
+        "injective-1",
+        "irishub-1",
+        "juno-1",
+        "kaiyo-1",
+        "kava_2222-10",
+        "kichain-2",
+        "lum-network-1",
+        "mars-1",
+        "mainnet-3",
+        "migaloo-1",
+        "neutron-1",
+        "noble-1",
+        "osmosis-1",
+        "ssc-1",
+        "pacific-1",
+        "phoenix-1",
+        "sentinelhub-2",
+        "stafihub-1",
+        "stargaze-1",
+        "stride-1",
+        "teritori-1",
+      ];
+
+      return galaxyStationMobileAvailableChains.includes(
+        chainId as MainnetChainIds
+      );
+    },
+    stakeUrl: "https://station.hexxagon.io/stake",
+    governanceUrl: "https://station.hexxagon.io/gov",
+    features: [],
+  },
 ];

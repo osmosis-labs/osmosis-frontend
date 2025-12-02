@@ -2177,6 +2177,16 @@
     bfs-path "^1.0.2"
     cross-fetch "^3.1.5"
 
+"@chain-registry/client@^1.49.11":
+  version "1.53.65"
+  resolved "https://registry.yarnpkg.com/@chain-registry/client/-/client-1.53.65.tgz#8fa3fb741f97b605daf8a33b46a0dadf03d00bdd"
+  integrity sha512-jCK4vSLaGONlbDw2trSgkkva1VgBf+yxw+Z9idefRCMwxHxa5TmQyvmkBRTWYd00rAa4iwwkqHozkAp+jEsdnA==
+  dependencies:
+    "@chain-registry/types" "^0.50.65"
+    "@chain-registry/utils" "^1.51.65"
+    bfs-path "^1.0.2"
+    cross-fetch "^3.1.5"
+
 "@chain-registry/cosmostation@1.66.2":
   version "1.66.2"
   resolved "https://registry.yarnpkg.com/@chain-registry/cosmostation/-/cosmostation-1.66.2.tgz#b2fb61cf353ad121ffc9f5d28efc51f7e7e0e2ee"
@@ -2215,6 +2225,21 @@
     "@keplr-wallet/crypto" "0.12.28"
     semver "^7.5.0"
 
+"@chain-registry/keplr@^1.69.13":
+  version "1.74.116"
+  resolved "https://registry.yarnpkg.com/@chain-registry/keplr/-/keplr-1.74.116.tgz#4852b7e47f7753c8da1dbb17eddcc2726ba93923"
+  integrity sha512-8xCUoIxrPULWhlApkv/fHZnzfE2iL9+d1iw/nWYC797Zf3Dk6+6K/d7wYch28a4D5avVFp5CCiJlterXIIxxgQ==
+  dependencies:
+    "@chain-registry/types" "^0.50.65"
+    "@keplr-wallet/cosmos" "0.12.28"
+    "@keplr-wallet/crypto" "0.12.28"
+    semver "^7.5.0"
+
+"@chain-registry/types@0.46.11":
+  version "0.46.11"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.11.tgz#68efa85ba5ed4d451218a515a06239594b4125dd"
+  integrity sha512-ASeCtZ3i6g4buyP/43qRnkJo2w50bpX6hsZOapkwOYqAGY83ZE+NZMUcv0UUsiVBHKqC3hAWTLjFNF5q7GR4Gg==
+
 "@chain-registry/types@^0.17.0":
   version "0.17.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.17.0.tgz#bbe9176a6d30a491259fab1fcdcee2b7edf6141f"
@@ -2232,6 +2257,16 @@
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.45.12.tgz#1f062a5a31d7b4ac6e9f91ae67cba5dbd75f176a"
   integrity sha512-fBnmMvg1SyUAT8ZkrFj50m59370D1++WonSJooJYLnMm53Ec6aTwPydVFkA/tcT3Y2jaWLy+viVG/+XsGdc1dQ==
 
+"@chain-registry/types@^0.46.11":
+  version "0.46.15"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.46.15.tgz#f4c0219fb7060d97cb224b55f349adb1d436aac9"
+  integrity sha512-gzf+pkAbEZ7fKuTuwmrEAEcx1K/BNrKuCnB9s+WwSo9Ad/3s+GV5LOXcOOxjjHh9Mrs9kvnxKvzKjOwWu8gDJw==
+
+"@chain-registry/types@^0.50.65":
+  version "0.50.65"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.50.65.tgz#b9799ff49d20697d5914a1c53ce79688047e5f36"
+  integrity sha512-QsAfpG3ApGhuoLoi6m8Kir+p9F634mN/dohqX8Z3k4IM8HV9a9qbpWIsI8SY9dKfz4HuqsTEAzsv0/6CVy8kmQ==
+
 "@chain-registry/utils@^1.46.1", "@chain-registry/utils@^1.46.12":
   version "1.46.12"
   resolved "https://registry.yarnpkg.com/@chain-registry/utils/-/utils-1.46.12.tgz#50b34aef662ec928597f87202aa7b55cb52372b6"
@@ -2240,6 +2275,25 @@
     "@chain-registry/types" "^0.45.12"
     bignumber.js "9.1.2"
     sha.js "^2.4.11"
+
+"@chain-registry/utils@^1.51.65":
+  version "1.51.65"
+  resolved "https://registry.yarnpkg.com/@chain-registry/utils/-/utils-1.51.65.tgz#e1fa8daf46920aacd8ff06137b3f76aa664acbe7"
+  integrity sha512-NnFMx+dTLIJka3RyNd9Z3wSH+6CkUmTZXjqQ9rVC41tv6qeOPrHgzT6Aj4PzT7EnVEp/NarP45y0a7UXCJxtyA==
+  dependencies:
+    "@chain-registry/types" "^0.50.65"
+    bignumber.js "9.1.2"
+    sha.js "^2.4.11"
+
+"@classic-terra/terra.proto@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@classic-terra/terra.proto/-/terra.proto-1.1.0.tgz#e314d89f59b49e79a04db25f66f658e5e5aa1890"
+  integrity sha512-bYhQG5LUaGF0KPRY9hYT/HEcd1QExZPQd6zLV/rQkCe/eDxfwFRLzZHpaaAdfWoAAZjsRWqJbUCqCg7gXBbJpw==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
 
 "@coinbase/wallet-sdk@4.0.4":
   version "4.0.4"
@@ -2985,6 +3039,26 @@
     nock "13.5.4"
     uuid "^9.0.1"
 
+"@cosmos-kit/core@^2.15.0", "@cosmos-kit/core@^2.15.4", "@cosmos-kit/core@^2.15.5":
+  version "2.15.5"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.15.5.tgz#35a230dae93fe22529fcef867d7e94523416ecf7"
+  integrity sha512-hsFmsANmkxH8hp2KsgvoZdPBr4BjCogSW2nier3WwqTc5DHO1t84sAqbjcP1OKUNVeBY09dJCOLP7VuqCZHQNQ==
+  dependencies:
+    "@chain-registry/client" "^1.49.11"
+    "@chain-registry/keplr" "^1.69.13"
+    "@chain-registry/types" "^0.46.11"
+    "@cosmjs/amino" "^0.32.3"
+    "@cosmjs/cosmwasm-stargate" "^0.32.3"
+    "@cosmjs/proto-signing" "^0.32.3"
+    "@cosmjs/stargate" "^0.32.3"
+    "@dao-dao/cosmiframe" "^1.0.0-rc.1"
+    "@walletconnect/types" "2.11.0"
+    bowser "2.11.0"
+    cosmjs-types "^0.9.0"
+    events "3.3.0"
+    nock "13.5.4"
+    uuid "^9.0.1"
+
 "@cosmos-kit/cosmostation-extension@^2.12.2":
   version "2.12.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-extension/-/cosmostation-extension-2.12.2.tgz#41e2f6447c88c9783774291b0f35cbbad2cb2ad4"
@@ -3010,6 +3084,33 @@
   dependencies:
     "@cosmos-kit/cosmostation-extension" "^2.12.2"
     "@cosmos-kit/cosmostation-mobile" "^2.11.2"
+
+"@cosmos-kit/galaxy-station-extension@^2.13.7":
+  version "2.13.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-extension/-/galaxy-station-extension-2.13.7.tgz#fcd5338f0d9bd0dbeda5f58a4402e5f6a11f3363"
+  integrity sha512-4d0TylAmSe4OkPRDoBh/O5GO1+gPyjPlLBsTHjhJzO6zVa7fHRP7y4c06JDqd/qATg5D1V07qyWwS9Ujjk9dXg==
+  dependencies:
+    "@chain-registry/types" "0.46.11"
+    "@cosmos-kit/core" "^2.15.0"
+    "@hexxagon/feather.js" "^1.0.9-beta.8"
+    "@hexxagon/station-connector" "^1.0.17"
+
+"@cosmos-kit/galaxy-station-mobile@^2.13.7":
+  version "2.13.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station-mobile/-/galaxy-station-mobile-2.13.7.tgz#49fce4ab5cd71d1786a75f922133fab48682c2c7"
+  integrity sha512-mwwSbyg+obuyciEvvIfXAwK/3c3oTcLGADLaebNRL4oiDKiiQb+Vyxqi2P3eyrikR/krKJWa6dKhP92R+Zqc1w==
+  dependencies:
+    "@chain-registry/keplr" "^1.69.13"
+    "@cosmos-kit/core" "^2.15.4"
+    "@cosmos-kit/walletconnect" "^2.12.4"
+
+"@cosmos-kit/galaxy-station@^2.13.7":
+  version "2.13.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station/-/galaxy-station-2.13.7.tgz#4d6e98131f5566e0e0c1041ace7d61df8588965e"
+  integrity sha512-eEvFTUZElWopLFRdVlSamq0j+mJHFoC/l04m+vjeEJB9Xbx9o5Nd7hkioy1X71cLhNl6KSmBhbcer6UY53YKwg==
+  dependencies:
+    "@cosmos-kit/galaxy-station-extension" "^2.13.7"
+    "@cosmos-kit/galaxy-station-mobile" "^2.13.7"
 
 "@cosmos-kit/keplr-extension@^2.12.2":
   version "2.12.2"
@@ -3142,6 +3243,17 @@
     "@walletconnect/utils" "^2.9.0"
     events "3.3.0"
 
+"@cosmos-kit/walletconnect@^2.12.4":
+  version "2.12.5"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/walletconnect/-/walletconnect-2.12.5.tgz#3aaf12765283bd927055a36155d86fd8b8c22602"
+  integrity sha512-tsLM7CZqHJctl2J1SPpjhxPRcYnnBdsUGRhS8citiW9Xi9Qk+9T/XdJOve9XF3+2oHhmgixbx2vY2zbJ57kNxg==
+  dependencies:
+    "@cosmjs/proto-signing" "^0.32.3"
+    "@cosmos-kit/core" "^2.15.5"
+    "@walletconnect/sign-client" "^2.9.0"
+    "@walletconnect/utils" "^2.9.0"
+    events "3.3.0"
+
 "@cosmos-kit/xdefi-extension@^2.11.2":
   version "2.11.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/xdefi-extension/-/xdefi-extension-2.11.2.tgz#ccffa519c8a12cf888d35f5a90f63904bc709e7a"
@@ -3198,6 +3310,13 @@
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@dao-dao/cosmiframe/-/cosmiframe-0.1.0.tgz#5ba241d0c14a45d62df60cff7d48ba26844ebeac"
   integrity sha512-NW4pGt1ctqDfhn/A6RU2vwnFEu3O4aBNnBMrGnw31n+L35drYNEsA9ZB7KZsHmRRlkNx+jSuJSv2Fv0BFBDDJQ==
+  dependencies:
+    uuid "^9.0.1"
+
+"@dao-dao/cosmiframe@^1.0.0-rc.1":
+  version "1.0.0-rc.1"
+  resolved "https://registry.yarnpkg.com/@dao-dao/cosmiframe/-/cosmiframe-1.0.0-rc.1.tgz#51d4d1801605b8abfd01ae0425c797b6b876991e"
+  integrity sha512-XftJPwbqgS1RWg9SUNBI58vTGnjINZ995OYRwDuUZ6CsuENS2DifAzqgzDgdac+0o5Hqvy/5Aq+HN1Jl/dptTw==
   dependencies:
     uuid "^9.0.1"
 
@@ -3851,6 +3970,34 @@
     "@react-aria/focus" "^3.17.1"
     "@react-aria/interactions" "^3.21.3"
     "@tanstack/react-virtual" "3.5.0"
+
+"@hexxagon/feather.js@^1.0.9-beta.8":
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/@hexxagon/feather.js/-/feather.js-1.0.11.tgz#a16f64275d701b3e49273be83407a1b8453b5062"
+  integrity sha512-PkPV4USLqmu9r+9UdGt3dYAcc1xS6ykZGUt+pfXrso/D0XSQUASKSHk6ZLbnU2Aum1zWjzS+3EJYCeG3IUYOWg==
+  dependencies:
+    "@classic-terra/terra.proto" "^1.1.0"
+    "@terra-money/legacy.proto" "npm:@terra-money/terra.proto@^0.1.7"
+    "@terra-money/terra.proto" "3.0.5"
+    axios "^0.27.2"
+    bech32 "^2.0.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bufferutil "^4.0.3"
+    decimal.js "^10.2.1"
+    jscrypto "^1.0.1"
+    readable-stream "^3.6.0"
+    secp256k1 "^4.0.2"
+    tmp "^0.2.1"
+    utf-8-validate "^5.0.5"
+    ws "^7.5.9"
+
+"@hexxagon/station-connector@^1.0.17":
+  version "1.0.19"
+  resolved "https://registry.yarnpkg.com/@hexxagon/station-connector/-/station-connector-1.0.19.tgz#d04f7e5293dda24edd4014d29aa82149375124aa"
+  integrity sha512-VR84MowCciK+/xvRAAXKXWf8Bc/IAkUQHwBi/MH3p3JNshNdEbUeCYwzriIDJYSVCslZlnIgrA0AgmyIEHyaLQ==
+  dependencies:
+    bech32 "^2.0.0"
 
 "@humanwhocodes/config-array@^0.11.11":
   version "0.11.11"
@@ -7264,6 +7411,16 @@
   integrity sha512-0xQ1haSJnY6ltjhptFoVa1yhNUIBsbCAEQCUukSY93GSo6tt+DN4RAku9i1ulfY/UizXnxH/mn+6aJyTCZGGcg==
   dependencies:
     bech32 "^2.0.0"
+
+"@terra-money/terra.proto@3.0.5":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@terra-money/terra.proto/-/terra.proto-3.0.5.tgz#96f17410a044459412491959b615c52faa2eb338"
+  integrity sha512-8tvT41qte2mpiNoHq2dMmV7soMxwf4ckuJ+F2pMrb7iVcqaBo30/dIfyTdFm5mEH5i5P6cTJggm+UlIZBSPhwQ==
+  dependencies:
+    "@improbable-eng/grpc-web" "^0.14.1"
+    google-protobuf "^3.17.3"
+    long "^4.0.0"
+    protobufjs "~6.11.2"
 
 "@terra-money/terra.proto@^3.1.0-alpha.1":
   version "3.1.0-alpha.1"
