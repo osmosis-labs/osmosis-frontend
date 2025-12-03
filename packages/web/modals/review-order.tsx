@@ -551,11 +551,10 @@ export function ReviewOrder({
                         <div className="flex items-center justify-end">
                           <div
                             className={classNames(
-                              "flex w-fit items-center justify-center overflow-hidden rounded-lg border border-osmoverse-700 bg-osmoverse-850 py-1.5 pl-2 pr-2 text-center transition-all focus-within:border-wosmongton-300 focus-within:bg-osmoverse-900 sm:-my-0.5 sm:h-7",
-                              {
-                                "border-wosmongton-300 bg-osmoverse-900":
-                                  isEditingSlippage,
-                              }
+                              "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
+                              isEditingSlippage
+                                ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2"
+                                : "border border-osmoverse-700 bg-osmoverse-850 pr-2"
                             )}
                           >
                             <AutosizeInput
