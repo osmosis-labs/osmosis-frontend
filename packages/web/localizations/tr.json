@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
     "minimumDeposit": "Minimum mevduat",
     "nomic": {
-      "estimatedTime": "Yaklaşık 1 saat",
+      "estimatedTime": "1 ila 8 saat",
       "awaitingBtc": "BTC bekleniyor",
       "transferringYourBtc": "BTC'nizi transfer etme",
       "depositStatus": "Mevduat durumu",

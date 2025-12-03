@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "estimatedTime": "Aproximativ 1 oră",
+      "estimatedTime": "1 până la 8 ore",
       "awaitingBtc": "În așteptarea BTC",
       "transferringYourBtc": "Transferul dvs. BTC",
       "depositStatus": "Starea depozitului",

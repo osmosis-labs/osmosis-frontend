@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "Esta dirección solo puede recibir {denom} de la red {network} . El envío de otros activos puede provocar una pérdida permanente.",
     "minimumDeposit": "Depósito mínimo",
     "nomic": {
-      "estimatedTime": "Aproximadamente 1 hora",
+      "estimatedTime": "De 1 a 8 horas",
       "awaitingBtc": "Esperando BTC",
       "transferringYourBtc": "Transfiriendo tus BTC",
       "depositStatus": "Estado del depósito",
