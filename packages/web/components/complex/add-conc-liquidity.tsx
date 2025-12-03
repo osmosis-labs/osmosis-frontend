@@ -1,4 +1,4 @@
-import type { Pool } from "@osmosis-labs/server";
+import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -80,6 +80,25 @@ export const AddConcLiquidity: FunctionComponent<
       poolId,
     });
 
+    // Detect if this is an inactive pool (has TVL but no in range liquidity)
+    const poolRaw =
+      pool?.type === "concentrated"
+        ? (pool.raw as ConcentratedPoolRawResponse)
+        : null;
+    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
+    const hasTVL = pool && !pool.totalFiatValueLocked.toDec().isZero();
+    const isTickLiquidityZero = currentTickLiquidity
+      ? parseFloat(currentTickLiquidity) === 0
+      : false;
+    const isInactivePool = isTickLiquidityZero && hasTVL;
+
+    // Auto-navigate to manual view for inactive pools
+    useEffect(() => {
+      if (isInactivePool && addLiquidityConfig.modalView === "overview") {
+        addLiquidityConfig.setModalView("add_manual");
+      }
+    }, [isInactivePool, addLiquidityConfig]);
+
     const getMagmaUrl = (pool?: Pool) => {
       if (!pool) return "";
       const assetDenoms = pool.reserveCoins
@@ -106,6 +125,7 @@ export const AddConcLiquidity: FunctionComponent<
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
                   getMagmaUrl={getMagmaUrl}
+                  isInactivePool={isInactivePool}
                 />
               );
             case "add_manual":
@@ -114,6 +134,7 @@ export const AddConcLiquidity: FunctionComponent<
                   pool={pool}
                   addLiquidityConfig={addLiquidityConfig}
                   actionButton={actionButton}
+                  isInactivePool={isInactivePool}
                 />
               );
             case "add_managed":
@@ -134,8 +155,15 @@ const Overview: FunctionComponent<
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
     getMagmaUrl: (pool?: Pool) => string;
+    isInactivePool?: boolean;
   } & CustomClasses
-> = ({ addLiquidityConfig, pool, onRequestClose, getMagmaUrl }) => {
+> = ({
+  addLiquidityConfig,
+  pool,
+  onRequestClose,
+  getMagmaUrl,
+  isInactivePool,
+}) => {
   const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
@@ -184,6 +212,7 @@ const Overview: FunctionComponent<
               onClick={() => selectView("add_managed")}
               imgSrc="/images/magma-vault.png"
               isNew
+              disabled={isInactivePool}
             />
           </div>
         </div>
@@ -214,19 +243,22 @@ const StrategySelector: FunctionComponent<{
   onClick?: () => void;
   imgSrc: string;
   isNew?: boolean;
+  disabled?: boolean;
 }> = (props) => {
-  const { selected, onClick, title, description, imgSrc, isNew } = props;
+  const { selected, onClick, title, description, imgSrc, isNew, disabled } =
+    props;
   const { t } = useTranslation();
   return (
     <div
       className={classNames(
         "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
         {
-          "bg-supercharged": selected,
-          "cursor-pointer hover:bg-supercharged": onClick,
+          "bg-supercharged": selected && !disabled,
+          "cursor-pointer hover:bg-supercharged": onClick && !disabled,
+          "opacity-40 cursor-not-allowed": disabled,
         }
       )}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       <div
         className={classNames(
@@ -264,8 +296,9 @@ const AddConcLiqView: FunctionComponent<
     pool?: Pool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
+    isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool }) => {
+> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -286,6 +319,7 @@ const AddConcLiqView: FunctionComponent<
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
+    setFullRange,
   } = addLiquidityConfig;
 
   const { t } = useTranslation();
@@ -293,6 +327,13 @@ const AddConcLiqView: FunctionComponent<
 
   const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
+
+  // Default to passive strategy for inactive pools
+  useEffect(() => {
+    if (isInactivePool && !fullRange) {
+      setFullRange(true);
+    }
+  }, [isInactivePool, fullRange, setFullRange]);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
@@ -319,22 +360,26 @@ const AddConcLiqView: FunctionComponent<
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <button
-          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
-        >
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-          />
-          <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
-          </span>
-        </button>
+        {!isInactivePool && (
+          <button
+            className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
+            onClick={() => setModalView("overview")}
+          >
+            <Image
+              alt="left"
+              src="/icons/arrow-left.svg"
+              width={24}
+              height={24}
+            />
+            <span className="body2 pl-1 text-osmoverse-100">
+              {t("addConcentratedLiquidity.back")}
+            </span>
+          </button>
+        )}
         <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2Title")}
+          {isInactivePool
+            ? t("addLiquidity.title")
+            : t("addConcentratedLiquidity.step2Title")}
         </h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {
@@ -473,6 +518,7 @@ const AddConcLiqView: FunctionComponent<
       <StrategySelectorGroup
         addLiquidityConfig={addLiquidityConfig}
         highSpotPriceInputRef={highSpotPriceInputRef}
+        isInactivePool={isInactivePool}
       />
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
@@ -615,6 +661,7 @@ const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
+    isInactivePool?: boolean;
   } & CustomClasses
 > = observer((props) => {
   const { t } = useTranslation();
@@ -654,6 +701,7 @@ const StrategySelectorGroup: FunctionComponent<
           label="Custom"
           className="sm:order-4 sm:w-full"
           highSpotPriceInputRef={props.highSpotPriceInputRef}
+          disabledForInactivePool={false}
         />
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
@@ -662,6 +710,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
+            disabledForInactivePool={false}
           />
           <PresetStrategyCard
             type="moderate"
@@ -669,6 +718,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
           <PresetStrategyCard
             type="aggressive"
@@ -676,6 +726,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
         </div>
       </div>
@@ -692,6 +743,7 @@ const PresetStrategyCard: FunctionComponent<
     width?: number;
     height?: number;
     highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
+    disabledForInactivePool?: boolean;
   } & CustomClasses
 > = observer(
   ({
@@ -703,6 +755,7 @@ const PresetStrategyCard: FunctionComponent<
     addLiquidityConfig,
     className,
     highSpotPriceInputRef,
+    disabledForInactivePool,
   }) => {
     const {
       currentStrategy,
@@ -717,12 +770,8 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
-    /** Disabled of aggressive price range is the same.
-     *  This can happen with pools with pegged currencies with very concentrated liq. */
-    const disabled =
-      "moderate" === type &&
-      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
-      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+    /** Disabled for inactive pools (to force passive and custom strategies only). */
+    const disabled = disabledForInactivePool === true;
 
     const isSelected = type === currentStrategy;
 
@@ -774,20 +823,27 @@ const PresetStrategyCard: FunctionComponent<
       }
     };
 
-    // not an option
-    if (disabled) return null;
+    // Check if disabled for pegged currencies (hide completely)
+    const disabledForPeggedCurrencies =
+      "moderate" === type &&
+      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
+      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+
+    // not an option for pegged currencies
+    if (disabledForPeggedCurrencies) return null;
 
     return (
       <div
         className={classNames(
-          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
+          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
-            "bg-supercharged": isSelected,
-            "cursor-not-allowed opacity-30": disabled,
+            "cursor-pointer hover:bg-supercharged": !disabled,
+            "bg-supercharged": isSelected && !disabled,
+            "cursor-not-allowed opacity-40": disabled,
           },
           className
         )}
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div

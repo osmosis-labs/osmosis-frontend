@@ -6,9 +6,9 @@ import { IS_TESTNET } from "../../../env";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
-import { PoolRawResponse } from "../../osmosis";
+import { PoolRawResponse, queryPoolChain } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
-import { getPoolsFromSidecar } from "./providers";
+import { getPoolsFromSidecar, makePoolFromChainPool } from "./providers";
 
 const allPooltypes = [
   "concentrated",
@@ -105,10 +105,39 @@ export async function getPool({
   chainList: Chain[];
   poolId: string;
 }): Promise<Pool> {
+  // First, try to get pool from Sidecar (includes market data, APRs, etc.)
   const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
   const pool = pools.items.find(({ id }) => id === poolId);
-  if (!pool) throw new Error(poolId + " not found");
-  return pool;
+
+  if (pool) {
+    return pool;
+  }
+
+  // If not found in Sidecar (likely due to unlisted assets), fallback to direct chain query
+  try {
+    console.log(
+      `Pool ${poolId} not found in Sidecar, attempting direct chain query...`
+    );
+    const chainResponse = await queryPoolChain({ poolId, chainList });
+
+    if (!chainResponse.pool) {
+      throw new Error(poolId + " not found on chain");
+    }
+
+    // Convert chain pool to our Pool type, handling unlisted assets
+    const chainPool = makePoolFromChainPool({
+      chainPool: chainResponse.pool,
+      assetLists,
+    });
+
+    console.log(
+      `Successfully retrieved pool ${poolId} from chain with unlisted assets`
+    );
+    return chainPool;
+  } catch (error) {
+    console.error(`Failed to query pool ${poolId} from chain:`, error);
+    throw new Error(poolId + " not found");
+  }
 }
 
 /** Fetches pools and returns them as a more useful and simplified TS type.
