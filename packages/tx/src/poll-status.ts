@@ -11,10 +11,23 @@ export class PollingStatusSubscription {
 
   protected _handlers: StatusHandler[] = [];
 
+  protected readonly rpcUrls: string[];
+
+  /**
+   * @param rpc - Single RPC URL or array of RPC URLs for multi-endpoint support
+   * @param defaultBlockTimeMs - Default block time in milliseconds (default: 7500ms)
+   */
   constructor(
-    protected readonly rpc: string,
+    rpc: string | string[],
     protected readonly defaultBlockTimeMs = 7500
-  ) {}
+  ) {
+    // Support both single string (backward compatible) and array of URLs
+    this.rpcUrls = Array.isArray(rpc) ? rpc : [rpc];
+
+    if (this.rpcUrls.length === 0) {
+      throw new Error("At least one RPC URL must be provided");
+    }
+  }
 
   get subscriptionCount(): number {
     return this._subscriptionCount;
@@ -39,7 +52,12 @@ export class PollingStatusSubscription {
     let timeoutId: NodeJS.Timeout | undefined;
     while (this._subscriptionCount > 0) {
       try {
-        const status = await queryRPCStatus({ restUrl: this.rpc });
+        // Use multi-endpoint support if multiple URLs provided
+        const status =
+          this.rpcUrls.length === 1
+            ? await queryRPCStatus({ restUrl: this.rpcUrls[0] })
+            : await queryRPCStatus({ rpcUrls: this.rpcUrls });
+
         const blockTime = calcAverageBlockTimeMs(
           status,
           this.defaultBlockTimeMs
@@ -49,7 +67,9 @@ export class PollingStatusSubscription {
           timeoutId = setTimeout(resolve, blockTime);
         });
       } catch (e: any) {
-        console.error(`Failed to fetch /status: ${e}`);
+        console.error(
+          `Failed to fetch /status from ${this.rpcUrls.length} endpoint(s): ${e}`
+        );
       }
     }
     if (timeoutId) clearTimeout(timeoutId);
