@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
     "minimumDeposit": "最低入金額",
     "nomic": {
-      "estimatedTime": "1〜8時間",
+      "estimatedTime": "1-8時間",
       "awaitingBtc": "BTCを待つ",
       "transferringYourBtc": "BTCの送金",
       "depositStatus": "預金状況",

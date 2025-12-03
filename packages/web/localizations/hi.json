@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
-      "estimatedTime": "1 से 8 घंटे",
+      "estimatedTime": "1-8 घंटे",
       "awaitingBtc": "बीटीसी की प्रतीक्षा में",
       "transferringYourBtc": "अपना BTC स्थानांतरित करना",
       "depositStatus": "जमा स्थिति",
