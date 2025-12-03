@@ -223,10 +223,16 @@ export const AssetsOverview: FunctionComponent<
         )
       : undefined;
 
+  console.log(totalValue?.toString());
   const totalDisplayValue =
-    dataPoint.value !== undefined
+    dataPoint.value !== undefined && !error
       ? new PricePretty(DEFAULT_VS_CURRENCY, new Dec(dataPoint.value))
       : totalValue?.toString();
+  console.log(
+    totalDisplayValue?.toString(),
+    dataPoint.value,
+    portfolioOverTimeData
+  );
 
   const [isChartMinimized_, setIsChartMinimized] = useLocalStorage(
     "is-portfolio-chart-minimized",
