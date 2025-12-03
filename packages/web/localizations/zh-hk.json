@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "此位址只能從{denom} {network} \"denom\"}。發送任何其他資產可能會導致永久性損失。",
     "minimumDeposit": "最低存款額",
     "nomic": {
-      "estimatedTime": "約1小時",
+      "estimatedTime": "1-8 小時",
       "awaitingBtc": "等待比特幣",
       "transferringYourBtc": "轉移您的比特幣",
       "depositStatus": "存款狀態",

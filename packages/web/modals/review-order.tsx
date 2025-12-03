@@ -9,6 +9,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -37,7 +38,6 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
@@ -552,10 +552,9 @@ export function ReviewOrder({
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
-                              {
-                                "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2":
-                                  isEditingSlippage,
-                              }
+                              isEditingSlippage
+                                ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2"
+                                : "border border-osmoverse-700 bg-osmoverse-850 pr-2"
                             )}
                           >
                             <AutosizeInput

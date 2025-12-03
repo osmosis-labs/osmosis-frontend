@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
     "minimumDeposit": "حداقل سپرده",
     "nomic": {
-      "estimatedTime": "حدود 1 ساعت",
+      "estimatedTime": "۱-۸ ساعت",
       "awaitingBtc": "در انتظار بیت کوین",
       "transferringYourBtc": "انتقال بیت کوین شما",
       "depositStatus": "وضعیت سپرده",
