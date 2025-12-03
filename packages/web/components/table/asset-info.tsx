@@ -200,6 +200,8 @@ export const AssetsInfoTable: FunctionComponent<{
       sort,
       watchListDenoms,
       categories,
+      excludeVariants: selectedCategory === "topGainers",
+      excludeStablecoins: selectedCategory === "topGainers",
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

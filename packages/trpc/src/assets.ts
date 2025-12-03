@@ -28,7 +28,7 @@ import {
   TimeDuration,
   TimeFrame,
 } from "@osmosis-labs/server";
-import { PricePretty } from "@osmosis-labs/unit";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
 import {
   compareCommon,
   getAllBtcMinimalDenom,
@@ -266,6 +266,8 @@ export const assetsRouter = createTRPCRouter({
             "volume24h",
           ] as const).optional(),
           watchListDenoms: z.array(z.string()).optional(),
+          excludeVariants: z.boolean().optional(),
+          excludeStablecoins: z.boolean().optional(),
         })
       )
     )
@@ -280,6 +282,8 @@ export const assetsRouter = createTRPCRouter({
           cursor,
           limit,
           includePreview,
+          excludeVariants,
+          excludeStablecoins,
         },
         ctx,
       }) =>
@@ -291,6 +295,8 @@ export const assetsRouter = createTRPCRouter({
               onlyVerified,
               includePreview,
               categories,
+              excludeVariants,
+              excludeStablecoins,
             });
 
             // sorting
@@ -329,6 +335,8 @@ export const assetsRouter = createTRPCRouter({
             watchListDenoms,
             categories,
             includePreview,
+            excludeVariants,
+            excludeStablecoins,
           }),
           cursor,
           limit,
@@ -589,13 +597,40 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { topN }, ctx }) => {
+      // Use getAssets to get only verified assets (optimized)
       const assets = getAssets({
         ...ctx,
         onlyVerified: true,
       });
 
+      // Get full asset list to check categories and variant info
+      const fullAssetMap = new Map(
+        ctx.assetLists
+          .flatMap(({ assets }) => assets)
+          .map((asset) => [asset.coinMinimalDenom, asset])
+      );
+
+      // Filter out stablecoins and alloy variants
+      const filteredAssets = assets.filter((asset) => {
+        const fullAsset = fullAssetMap.get(asset.coinMinimalDenom);
+        if (!fullAsset) return false;
+
+        // Exclude stablecoins
+        if (fullAsset.categories?.includes("stablecoin")) return false;
+
+        // Exclude alloy variants (keep only canonical assets)
+        if (
+          asset.variantGroupKey &&
+          asset.variantGroupKey !== asset.coinMinimalDenom
+        ) {
+          return false;
+        }
+
+        return true;
+      });
+
       const marketAssets = await Promise.all(
-        assets.map(async (asset) => {
+        filteredAssets.map(async (asset) => {
           const marketAsset = await getAssetMarketActivity(asset).catch((e) =>
             captureErrorAndReturn(e, undefined)
           );
@@ -603,14 +638,22 @@ export const assetsRouter = createTRPCRouter({
           return {
             ...asset,
             priceChange24h: marketAsset?.price24hChange,
+            liquidity: marketAsset?.liquidity,
           };
         })
       );
 
-      return sort(
-        marketAssets.filter((asset) => asset.priceChange24h !== undefined),
-        "priceChange24h"
-      ).slice(0, topN);
+      // Filter for assets with price change data and at least $10k liquidity
+      const qualifyingAssets = marketAssets.filter((asset) => {
+        if (asset.priceChange24h === undefined) return false;
+
+        const liquidityDec = asset.liquidity?.toDec();
+        if (!liquidityDec) return false;
+
+        return liquidityDec.gte(new Dec(10000));
+      });
+
+      return sort(qualifyingAssets, "priceChange24h").slice(0, topN);
     }),
   getTopUpcomingAssets: publicProcedure
     .input(
