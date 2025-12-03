@@ -103,7 +103,7 @@ this.bridges = {
     integratorId,
     context
   ),
-  [AxelarBridgeProvider.providerName]: new AxelarBridgeProvider(context),
+  [NomicBridgeProvider.providerName]: new NomicBridgeProvider(context),
   [MyBridgeProvider.providerName]: new MyBridgeProvider(context),
 };
 ```
