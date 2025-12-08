@@ -195,7 +195,10 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       limit: 50,
       search: searchQuery,
-      onlyVerified: showUnverifiedAssets === false && !searchQuery,
+      onlyVerified:
+        selectedCategory === "topGainers"
+          ? true
+          : showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
       watchListDenoms,

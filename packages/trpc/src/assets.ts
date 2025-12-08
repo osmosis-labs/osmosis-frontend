@@ -647,7 +647,7 @@ export const assetsRouter = createTRPCRouter({
         })
       );
 
-      // Filter for assets with price change data and at least $10k liquidity
+      // Filter for assets with price change data and at least $1k liquidity
       const qualifyingAssets = marketAssets.filter((asset) => {
         if (asset.priceChange24h === undefined) return false;
 
