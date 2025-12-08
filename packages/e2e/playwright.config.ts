@@ -13,7 +13,7 @@ export default defineConfig({
     ["junit", { outputFile: "./playwright-report/test-results.xml" }],
     ["json", { outputFile: "./playwright-report/test-results.json" }],
   ],
-  timeout: 90000, // Increased from 60s to 90s for slippage tolerance + balance checks + network latency
+  timeout: 90000, // Increased from default 60s to 90s for slippage tolerance + balance checks + network latency
   testDir: "./tests",
   /* Run tests in files in parallel. */
   fullyParallel: true,

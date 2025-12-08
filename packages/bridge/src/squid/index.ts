@@ -305,7 +305,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           (t.address.toLowerCase() === asset.address.toLowerCase() ||
             t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
           // squid uses canonical chain IDs (numerical and string)
-          t.chainId === chain.chainId
+          String(t.chainId) === String(chain.chainId)
       );
 
       if (!token) throw new Error("Token not found: " + asset.address);
@@ -333,7 +333,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         const squidToken = tokens.find(
           (t) =>
             t.address.toLowerCase() === address.toLowerCase() &&
-            t.chainId === counterparty.chainId
+            String(t.chainId) === String(counterparty.chainId)
         );
         if (!squidToken) continue;
 
@@ -373,10 +373,12 @@ export class SquidBridgeProvider implements BridgeProvider {
             token.commonKey &&
             t.commonKey === token.commonKey &&
             t.address !== token.address &&
-            t.chainId !== token.chainId
+            String(t.chainId) !== String(token.chainId)
         )
         .map((t) => {
-          const chain = chains.find(({ chainId }) => chainId === t.chainId);
+          const chain = chains.find(
+            ({ chainId }) => String(chainId) === String(t.chainId)
+          );
           if (!chain) return;
           return { ...t, ...chain };
         })
