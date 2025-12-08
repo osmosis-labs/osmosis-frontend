@@ -195,11 +195,17 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       limit: 50,
       search: searchQuery,
-      onlyVerified: showUnverifiedAssets === false && !searchQuery,
+      onlyVerified:
+        selectedCategory === "topGainers"
+          ? true
+          : showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
       watchListDenoms,
       categories,
+      excludeVariants: selectedCategory === "topGainers",
+      excludeStablecoins: selectedCategory === "topGainers",
+      minLiquidity: selectedCategory === "topGainers" ? 1000 : undefined,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
