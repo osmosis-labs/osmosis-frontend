@@ -80,6 +80,7 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   assets,
   excludeVariants = false,
   excludeStablecoins = false,
+  minLiquidity,
   ...params
 }: {
   assetLists: AssetList[];
@@ -89,6 +90,8 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   excludeVariants?: boolean;
   /** Exclude stablecoins (assets with "stablecoin" category). Defaults to false. */
   excludeStablecoins?: boolean;
+  /** Minimum liquidity threshold in USD. If provided, only assets with liquidity >= this value will be included. */
+  minLiquidity?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
@@ -122,10 +125,16 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
     assets.map((asset) => getMarketAsset({ asset, ...params }))
   );
 
-  // Filter only for assets that have liquidity
-  return marketAssets.filter((asset) =>
-    (asset.liquidity?.toDec() ?? new Dec(0)).isPositive()
-  );
+  // Filter for assets that meet liquidity requirements
+  return marketAssets.filter((asset) => {
+    const liquidityDec = asset.liquidity?.toDec() ?? new Dec(0);
+
+    if (minLiquidity !== undefined) {
+      return liquidityDec.gte(new Dec(minLiquidity));
+    }
+
+    return liquidityDec.isPositive();
+  });
 }
 
 const assetCoingeckoCoinCache = new LRUCache<string, CacheEntry>(

@@ -268,6 +268,7 @@ export const assetsRouter = createTRPCRouter({
           watchListDenoms: z.array(z.string()).optional(),
           excludeVariants: z.boolean().optional(),
           excludeStablecoins: z.boolean().optional(),
+          minLiquidity: z.number().optional(),
         })
       )
     )
@@ -284,6 +285,7 @@ export const assetsRouter = createTRPCRouter({
           includePreview,
           excludeVariants,
           excludeStablecoins,
+          minLiquidity,
         },
         ctx,
       }) =>
@@ -297,6 +299,7 @@ export const assetsRouter = createTRPCRouter({
               categories,
               excludeVariants,
               excludeStablecoins,
+              minLiquidity,
             });
 
             // sorting
@@ -337,6 +340,7 @@ export const assetsRouter = createTRPCRouter({
             includePreview,
             excludeVariants,
             excludeStablecoins,
+            minLiquidity,
           }),
           cursor,
           limit,
@@ -650,7 +654,7 @@ export const assetsRouter = createTRPCRouter({
         const liquidityDec = asset.liquidity?.toDec();
         if (!liquidityDec) return false;
 
-        return liquidityDec.gte(new Dec(10000));
+        return liquidityDec.gte(new Dec(1000));
       });
 
       return sort(qualifyingAssets, "priceChange24h").slice(0, topN);

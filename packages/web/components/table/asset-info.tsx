@@ -202,6 +202,7 @@ export const AssetsInfoTable: FunctionComponent<{
       categories,
       excludeVariants: selectedCategory === "topGainers",
       excludeStablecoins: selectedCategory === "topGainers",
+      minLiquidity: selectedCategory === "topGainers" ? 1000 : undefined,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
