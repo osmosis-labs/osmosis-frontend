@@ -198,8 +198,8 @@ export class NomicBridgeProvider implements BridgeProvider {
         }),
       ]);
 
-    // 4 hours
-    const nomicEstimatedTimeSeconds = 4 * 60 * 60;
+    // 1-8 hours (use max for conservative estimate)
+    const nomicEstimatedTimeSeconds = 8 * 60 * 60;
 
     const transferFeeInSats = Math.ceil(
       (nomicCheckpoint as Checkpoint & { minerFee: number }).minerFee * 64 + 546
@@ -439,7 +439,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         coinGeckoId: nomicBtc.coingeckoId,
       },
       providerFee: new RatePretty(new Dec(depositInfo.bridgeFeeRate)),
-      estimatedTime: "transfer.nomic.estimatedTime", // About 1 hour
+      estimatedTime: "transfer.nomic.estimatedTime", // 1-8 hours
     };
   }
 

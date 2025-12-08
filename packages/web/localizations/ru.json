@@ -911,7 +911,7 @@
     "receiveOnlyAsset": "Этот адрес может получать только {denom} из сети {network} . Отправка любых других активов может привести к необратимой потере.",
     "minimumDeposit": "Минимальный депозит",
     "nomic": {
-      "estimatedTime": "Около 1 часа",
+      "estimatedTime": "1-8 ч.",
       "awaitingBtc": "Ожидание BTC",
       "transferringYourBtc": "Перевод ваших BTC",
       "depositStatus": "Статус депозита",
