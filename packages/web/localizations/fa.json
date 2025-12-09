@@ -190,7 +190,9 @@
       "new": "جدید",
       "topGainers": "برترین برندگان",
       "upcoming": "آینده"
-    }
+    },
+    "strandedTokenDepositDisabled": "این دارایی قابل واریز نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست.",
+    "strandedTokenWithdrawDisabled": "این دارایی قابل برداشت نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست."
   },
   "cypherCard": {
     "cypherSpend": "اسمز پرداخت",

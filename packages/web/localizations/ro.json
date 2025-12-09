@@ -190,7 +190,9 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "strandedTokenDepositDisabled": "Acest activ nu poate fi depus deoarece ruta către lanțul său de origine nu mai este activă.",
+    "strandedTokenWithdrawDisabled": "Acest activ nu poate fi retras deoarece ruta către lanțul său de origine nu mai este activă."
   },
   "cypherCard": {
     "cypherSpend": "Plată osmoză",
