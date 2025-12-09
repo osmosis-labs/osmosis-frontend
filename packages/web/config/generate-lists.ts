@@ -207,13 +207,18 @@ async function generateAssetListFile({
 
     /** Check if asset has any transfer methods at all */
     if (!asset.transferMethods || asset.transferMethods.length === 0) {
-      // Asset has no transfer methods - stranded token (e.g., defunct chain or bridge down)
-      // Treat it as an Osmosis asset so it can be listed (tradeable but not bridgeable)
-      console.warn(
-        `[${environment.toUpperCase()}] Asset ${
-          asset.symbol
-        } has no transfer methods - adding as Osmosis-based asset (not bridgeable)`
-      );
+      // Asset has no transfer methods - could be native Osmosis or stranded from defunct chain
+      // If it has counterparty info, it's stranded (warn). Otherwise it's native (silent).
+      const hasCounterparty =
+        asset.counterparty && asset.counterparty.length > 0;
+
+      if (hasCounterparty) {
+        console.warn(
+          `[${environment.toUpperCase()}] Asset ${
+            asset.symbol
+          } has no transfer methods - adding as Osmosis-based asset (not bridgeable)`
+        );
+      }
 
       const osmosisChain = chains.find(
         (chain) => chain.chain_id === osmosisChainId
