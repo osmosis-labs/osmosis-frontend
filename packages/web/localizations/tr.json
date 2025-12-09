@@ -190,7 +190,9 @@
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "strandedTokenDepositDisabled": "Bu varlık, kaynak zincirine giden yol artık etkin olmadığından yatırılamaz",
+    "strandedTokenWithdrawDisabled": "Bu varlık geri çekilemez çünkü kaynak zincirine giden yol artık etkin değil"
   },
   "cypherCard": {
     "cypherSpend": "Osmoz Ödeme",

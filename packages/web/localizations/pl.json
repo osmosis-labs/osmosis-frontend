@@ -190,7 +190,9 @@
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "strandedTokenDepositDisabled": "Tego zasobu nie można zdeponować, ponieważ ścieżka do jego łańcucha źródłowego nie jest już aktywna",
+    "strandedTokenWithdrawDisabled": "Tego zasobu nie można wycofać, ponieważ ścieżka do jego łańcucha źródłowego nie jest już aktywna"
   },
   "cypherCard": {
     "cypherSpend": "Osmoza Płaca",

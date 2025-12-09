@@ -190,7 +190,9 @@
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    }
+    },
+    "strandedTokenDepositDisabled": "Dieses Asset kann nicht hinterlegt werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist.",
+    "strandedTokenWithdrawDisabled": "Dieser Vermögenswert kann nicht abgehoben werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist."
   },
   "cypherCard": {
     "cypherSpend": "Osmose-Bezahlung",

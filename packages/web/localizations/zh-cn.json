@@ -190,7 +190,9 @@
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    }
+    },
+    "strandedTokenDepositDisabled": "由于通往其原始链的路径已失效，因此无法存入该资产。",
+    "strandedTokenWithdrawDisabled": "由于通往其源链的路径已失效，因此该资产无法提取。"
   },
   "cypherCard": {
     "cypherSpend": "渗透支付",

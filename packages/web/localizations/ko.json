@@ -190,7 +190,9 @@
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    }
+    },
+    "strandedTokenDepositDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 입금할 수 없습니다.",
+    "strandedTokenWithdrawDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 인출할 수 없습니다."
   },
   "cypherCard": {
     "cypherSpend": "오스모시스 페이",

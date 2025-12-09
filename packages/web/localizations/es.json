@@ -190,7 +190,9 @@
       "new": "Nuevo",
       "topGainers": "Principales ganadores",
       "upcoming": "Próximo"
-    }
+    },
+    "strandedTokenDepositDisabled": "Este activo no se puede depositar porque la ruta a su cadena de origen ya no está activa",
+    "strandedTokenWithdrawDisabled": "Este activo no se puede retirar porque la ruta a su cadena de origen ya no está activa"
   },
   "cypherCard": {
     "cypherSpend": "Pago por ósmosis",

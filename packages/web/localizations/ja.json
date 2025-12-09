@@ -190,7 +190,9 @@
       "new": "新しい",
       "topGainers": "上位の利益",
       "upcoming": "今後の予定"
-    }
+    },
+    "strandedTokenDepositDisabled": "この資産は、元のチェーンへのルートがアクティブでなくなったため預けることができません",
+    "strandedTokenWithdrawDisabled": "この資産は、その起源チェーンへのルートがアクティブではなくなったため、引き出すことができません。"
   },
   "cypherCard": {
     "cypherSpend": "オズモシスペイ",
