@@ -352,6 +352,16 @@ export class ObservableAddConcentratedLiquidityConfig {
     };
   }
 
+  @computed
+  get isInactivePool(): boolean {
+    if (!this.pool || !this._pool) return false;
+    // Pool has liquidity (TVL > 0) but currentSqrtPrice is zero
+    return (
+      this.pool.currentSqrtPrice.isZero() &&
+      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0))
+    );
+  }
+
   get sender(): string {
     return this._sender;
   }
@@ -847,7 +857,14 @@ export class ObservableAddConcentratedLiquidityConfig {
 
         if (anchor !== "base" || amount0.lte(new Int(0))) return;
 
-        // special case: likely no positions created yet in pool
+        // Special handling for inactive pools when Max is clicked
+        if (this.isInactivePool && this._baseDepositAmountIn.isMax) {
+          this.calculateInactivePoolCounterpartyAmount("base");
+          return;
+        }
+
+        // special case: inactive pools (no in-range liquidity) are handled above
+        // for active pools with no liquidity, return early - cannot calculate proportional amounts
         if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
           return;
         }
@@ -898,7 +915,14 @@ export class ObservableAddConcentratedLiquidityConfig {
 
         if (anchor !== "quote" || amount1.lte(new Int(0))) return;
 
-        // special case: likely no positions created yet in pool
+        // Special handling for inactive pools when Max is clicked
+        if (this.isInactivePool && this._quoteDepositAmountIn.isMax) {
+          this.calculateInactivePoolCounterpartyAmount("quote");
+          return;
+        }
+
+        // special case: inactive pools (no in-range liquidity) are handled above
+        // for active pools with no liquidity, return early - cannot calculate proportional amounts
         if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
           return;
         }
@@ -1013,6 +1037,118 @@ export class ObservableAddConcentratedLiquidityConfig {
     this.baseDepositAmountIn.setIsMax(false);
     this.quoteDepositAmountIn.setIsMax(true);
   };
+
+  @action
+  protected calculateInactivePoolCounterpartyAmount(
+    anchorAsset: "base" | "quote"
+  ) {
+    // Safety check: ensure prices are loaded and valid
+    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
+      console.warn("Prices not loaded for inactive pool calculation");
+      return;
+    }
+
+    // Safety check: ensure prices are not zero (cannot calculate dollar value)
+    if (
+      this._baseDepositPrice.toDec().isZero() ||
+      this._quoteDepositPrice.toDec().isZero()
+    ) {
+      console.warn(
+        "One or both asset prices are zero - cannot calculate equal dollar value"
+      );
+      return;
+    }
+
+    const queryAccountBalances = this.queryBalances.getQueryBech32Address(
+      this.sender
+    );
+
+    if (anchorAsset === "base") {
+      // Base is max, calculate quote to match dollar value
+      const baseAmountRaw =
+        this.baseDepositAmountIn.getAmountPrimitive().amount;
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        new Int(baseAmountRaw)
+      );
+
+      // Calculate dollar value of base amount
+      const baseValue = this._baseDepositPrice.mul(baseCoin);
+
+      // Calculate quote amount with same dollar value: quoteAmount = baseValue / quotePrice
+      const quoteAmount = baseValue
+        .toDec()
+        .quo(this._quoteDepositPrice.toDec());
+
+      // Convert to quote currency decimals
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        quoteAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._quoteDepositAmountIn.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+      );
+
+      // Check if quote amount exceeds balance
+      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._quoteDepositAmountIn.sendCurrency
+      );
+
+      if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
+        // Calculated amount exceeds balance - flip to quote max and recalculate base
+        this.setQuoteDepositAmountMax();
+      } else {
+        // Set the calculated quote amount
+        this._quoteDepositAmountIn.setAmount(
+          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    } else {
+      // Quote is max, calculate base to match dollar value
+      const quoteAmountRaw =
+        this.quoteDepositAmountIn.getAmountPrimitive().amount;
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        new Int(quoteAmountRaw)
+      );
+
+      // Calculate dollar value of quote amount
+      const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
+
+      // Calculate base amount with same dollar value: baseAmount = quoteValue / basePrice
+      const baseAmount = quoteValue.toDec().quo(this._baseDepositPrice.toDec());
+
+      // Convert to base currency decimals
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        baseAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._baseDepositAmountIn.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+      );
+
+      // Check if base amount exceeds balance
+      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._baseDepositAmountIn.sendCurrency
+      );
+
+      if (baseCoin.toDec().gt(baseBalance.toDec())) {
+        // Calculated amount exceeds balance - flip to base max and recalculate quote
+        this.setBaseDepositAmountMax();
+      } else {
+        // Set the calculated base amount
+        this._baseDepositAmountIn.setAmount(
+          baseCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    }
+  }
 
   @action
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {
