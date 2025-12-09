@@ -42,12 +42,15 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
     (method) => method.type === "ibc"
   );
 
-  const transferEnabled = featureFlags.newDepositWithdrawFlow
-    ? hasIbcTransferMethod
-    : Boolean(data?.transferMethods.length);
-
+  // A stranded token has counterparty info but no transfer methods (defunct chain)
   const isStrandedToken =
-    !hasIbcTransferMethod && data?.transferMethods.length === 0;
+    !hasIbcTransferMethod &&
+    data?.transferMethods.length === 0 &&
+    Boolean(data?.counterparty?.length);
+
+  const transferEnabled = featureFlags.newDepositWithdrawFlow
+    ? !isStrandedToken // new flow supports native assets, disable only stranded tokens
+    : Boolean(data?.transferMethods.length); // old flow requires transfer methods
 
   const ConditionalTooltip = ({
     children,
