@@ -2,9 +2,11 @@ import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import { PropsWithChildren, ReactElement } from "react";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -36,12 +38,29 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
     return null;
   }
 
+  const hasIbcTransferMethod = data?.transferMethods.some(
+    (method) => method.type === "ibc"
+  );
+
   const transferEnabled = featureFlags.newDepositWithdrawFlow
-    ? // new flow supports native assets, but it shouldn't be common to transfer them
-      true
-    : // the old flow doesn't support native assets, so if there's no transfer methods it's assumed it
-      // can't be transferred since it's natively issued on Osmosis
-      Boolean(data?.transferMethods.length);
+    ? hasIbcTransferMethod
+    : Boolean(data?.transferMethods.length);
+
+  const isStrandedToken =
+    !hasIbcTransferMethod && data?.transferMethods.length === 0;
+
+  const ConditionalTooltip = ({
+    children,
+    showTooltip,
+    content,
+  }: PropsWithChildren<{ showTooltip: boolean; content: string }>) =>
+    showTooltip ? (
+      <Tooltip content={content} className="h-full w-full">
+        {children as ReactElement}
+      </Tooltip>
+    ) : (
+      <>{children}</>
+    );
 
   return (
     <section
@@ -71,36 +90,47 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
         </p>
       </SkeletonLoader>
 
-      {transferEnabled && (
+      {(transferEnabled || isStrandedToken) && (
         <div className="flex gap-3">
-          <Button
-            size="lg-full"
-            className="flex flex-1 items-center"
-            onClick={() =>
-              bridgeAsset({
-                anyDenom: asset.coinMinimalDenom,
-                direction: "deposit",
-              })
-            }
+          <ConditionalTooltip
+            showTooltip={isStrandedToken}
+            content={t("assets.strandedTokenDepositDisabled")}
           >
-            <Icon className="mr-2" id="deposit" height={16} width={16} />
-            {t("assets.historyTable.colums.deposit")}
-          </Button>
-          <Button
-            size="lg-full"
-            className="flex flex-1 items-center"
-            variant="secondary"
-            onClick={() =>
-              bridgeAsset({
-                anyDenom: asset.coinMinimalDenom,
-                direction: "withdraw",
-              })
-            }
-            disabled={!data?.amount}
+            <Button
+              size="lg-full"
+              className="flex flex-1 items-center"
+              onClick={() =>
+                bridgeAsset({
+                  anyDenom: asset.coinMinimalDenom,
+                  direction: "deposit",
+                })
+              }
+              disabled={!transferEnabled}
+            >
+              <Icon className="mr-2" id="deposit" height={16} width={16} />
+              {t("assets.historyTable.colums.deposit")}
+            </Button>
+          </ConditionalTooltip>
+          <ConditionalTooltip
+            showTooltip={isStrandedToken}
+            content={t("assets.strandedTokenWithdrawDisabled")}
           >
-            <Icon className="mr-2" id="withdraw" height={16} width={16} />
-            {t("assets.historyTable.colums.withdraw")}
-          </Button>
+            <Button
+              size="lg-full"
+              className="flex flex-1 items-center"
+              variant="secondary"
+              onClick={() =>
+                bridgeAsset({
+                  anyDenom: asset.coinMinimalDenom,
+                  direction: "withdraw",
+                })
+              }
+              disabled={!transferEnabled || !data?.amount}
+            >
+              <Icon className="mr-2" id="withdraw" height={16} width={16} />
+              {t("assets.historyTable.colums.withdraw")}
+            </Button>
+          </ConditionalTooltip>
         </div>
       )}
     </section>
