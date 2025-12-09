@@ -214,7 +214,9 @@ async function generateAssetListFile({
       // Asset has no IBC transfer method - likely a "stranded" token from a defunct chain
       // Treat it as an Osmosis asset so it can be listed (tradeable but not bridgeable)
       console.warn(
-        `[${environment.toUpperCase()}] Asset ${asset.symbol} has no IBC transfer method - adding as Osmosis-based asset (not bridgeable)`
+        `[${environment.toUpperCase()}] Asset ${
+          asset.symbol
+        } has no IBC transfer method - adding as Osmosis-based asset (not bridgeable)`
       );
 
       const osmosisChain = chains.find(
