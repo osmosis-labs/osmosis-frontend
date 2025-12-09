@@ -205,15 +205,27 @@ async function generateAssetListFile({
       return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
-    /** Otherwise, assume IBC asset 1 hop counterparty. */
+    /** Otherwise, check if it has IBC transfer method. */
     const cosmosCounterparty = [...asset.transferMethods]
       .reverse()
       .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
 
     if (!cosmosCounterparty) {
-      throw new Error(
-        "Failed to find cosmos counterparty for IBC asset: " + asset.symbol
+      // Asset has no IBC transfer method - likely a "stranded" token from a defunct chain
+      // Treat it as an Osmosis asset so it can be listed (tradeable but not bridgeable)
+      console.warn(
+        `[${environment.toUpperCase()}] Asset ${asset.symbol} has no IBC transfer method - adding as Osmosis-based asset (not bridgeable)`
       );
+
+      const osmosisChain = chains.find(
+        (chain) => chain.chain_id === osmosisChainId
+      );
+
+      if (!osmosisChain) {
+        throw new Error("Failed to find chain osmosis");
+      }
+
+      return createOrAddToAssetList(acc, osmosisChain, asset, environment);
     }
 
     const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
