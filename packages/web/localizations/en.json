@@ -191,8 +191,8 @@
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
     },
-    "strandedTokenDepositDisabled": "This asset cannot be deposited because its origin chain is no longer active",
-    "strandedTokenWithdrawDisabled": "This asset cannot be withdrawn because its origin chain is no longer active"
+    "strandedTokenDepositDisabled": "This asset cannot be deposited because the route to its origin chain is no longer active",
+    "strandedTokenWithdrawDisabled": "This asset cannot be withdrawn because the route to its origin chain is no longer active"
   },
   "cypherCard": {
     "cypherSpend": "Osmosis Pay",

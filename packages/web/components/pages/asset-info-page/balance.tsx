@@ -42,11 +42,16 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
     (method) => method.type === "ibc"
   );
 
+  // Factory tokens are native Osmosis assets (alloyed, liquid staking, etc.)
+  const isFactoryToken = asset.coinMinimalDenom?.startsWith("factory/");
+
   // A stranded token has counterparty info but no transfer methods (defunct chain)
+  // Exclude factory tokens which are intentionally native to Osmosis
   const isStrandedToken =
     !hasIbcTransferMethod &&
     data?.transferMethods.length === 0 &&
-    Boolean(data?.counterparty?.length);
+    Boolean(data?.counterparty?.length) &&
+    !isFactoryToken;
 
   const transferEnabled = featureFlags.newDepositWithdrawFlow
     ? !isStrandedToken // new flow supports native assets, disable only stranded tokens
