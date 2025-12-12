@@ -190,7 +190,9 @@
       "new": "Nowy",
       "topGainers": "Najlepsi zdobywcy",
       "upcoming": "Nadchodzące"
-    }
+    },
+    "strandedTokenDepositDisabled": "Tego zasobu nie można zdeponować, ponieważ ścieżka do jego łańcucha źródłowego nie jest już aktywna",
+    "strandedTokenWithdrawDisabled": "Tego zasobu nie można wycofać, ponieważ ścieżka do jego łańcucha źródłowego nie jest już aktywna"
   },
   "cypherCard": {
     "cypherSpend": "Osmoza Płaca",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "Ten adres może odbierać tylko {denom} z sieci {network} . Wysyłanie innych zasobów może skutkować trwałą utratą.",
     "minimumDeposit": "Minimalny depozyt",
     "nomic": {
-      "estimatedTime": "Około 1 godziny",
+      "estimatedTime": "1-8 godz.",
       "awaitingBtc": "Oczekiwanie na BTC",
       "transferringYourBtc": "Przesyłanie BTC",
       "depositStatus": "Status depozytu",

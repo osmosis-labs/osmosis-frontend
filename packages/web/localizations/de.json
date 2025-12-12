@@ -190,7 +190,9 @@
       "new": "Neu",
       "topGainers": "Top-Gewinner",
       "upcoming": "Bevorstehende"
-    }
+    },
+    "strandedTokenDepositDisabled": "Dieses Asset kann nicht hinterlegt werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist.",
+    "strandedTokenWithdrawDisabled": "Dieser Vermögenswert kann nicht abgehoben werden, da die Route zu seiner Ursprungskette nicht mehr aktiv ist."
   },
   "cypherCard": {
     "cypherSpend": "Osmose-Bezahlung",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "Diese Adresse kann nur {denom} vom Netzwerk {network} empfangen. Das Senden anderer Assets kann zu einem dauerhaften Verlust führen.",
     "minimumDeposit": "Mindesteinzahlung",
     "nomic": {
-      "estimatedTime": "Etwa 1 Stunde",
+      "estimatedTime": "1-8 Std.",
       "awaitingBtc": "Warten auf BTC",
       "transferringYourBtc": "Übertragen Sie Ihre BTC",
       "depositStatus": "Einzahlungsstatus",

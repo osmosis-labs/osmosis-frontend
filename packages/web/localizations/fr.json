@@ -190,7 +190,9 @@
       "new": "Nouveau",
       "topGainers": "Meilleurs gagnants",
       "upcoming": "A venir"
-    }
+    },
+    "strandedTokenDepositDisabled": "Ce actif ne peut être déposé car la route vers sa chaîne d'origine n'est plus active.",
+    "strandedTokenWithdrawDisabled": "Cet actif ne peut être retiré car la route vers sa chaîne d'origine n'est plus active."
   },
   "cypherCard": {
     "cypherSpend": "Paiement par osmose",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
     "minimumDeposit": "Dépôt minimum",
     "nomic": {
-      "estimatedTime": "Environ 1 heure",
+      "estimatedTime": "1-8 h",
       "awaitingBtc": "En attente de BTC",
       "transferringYourBtc": "Transférer votre BTC",
       "depositStatus": "Statut du dépôt",

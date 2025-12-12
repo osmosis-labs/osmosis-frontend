@@ -190,7 +190,9 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "strandedTokenDepositDisabled": "Acest activ nu poate fi depus deoarece ruta către lanțul său de origine nu mai este activă.",
+    "strandedTokenWithdrawDisabled": "Acest activ nu poate fi retras deoarece ruta către lanțul său de origine nu mai este activă."
   },
   "cypherCard": {
     "cypherSpend": "Plată osmoză",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "estimatedTime": "Aproximativ 1 oră",
+      "estimatedTime": "1-8 ore",
       "awaitingBtc": "În așteptarea BTC",
       "transferringYourBtc": "Transferul dvs. BTC",
       "depositStatus": "Starea depozitului",

@@ -190,7 +190,9 @@
       "new": "નવી",
       "topGainers": "ટોચના લાભાર્થીઓ",
       "upcoming": "આગામી"
-    }
+    },
+    "strandedTokenDepositDisabled": "આ સંપત્તિ જમા કરી શકાતી નથી કારણ કે તેની મૂળ શૃંખલાનો માર્ગ હવે સક્રિય નથી.",
+    "strandedTokenWithdrawDisabled": "આ સંપત્તિ ઉપાડી શકાતી નથી કારણ કે તેની મૂળ શૃંખલાનો માર્ગ હવે સક્રિય નથી."
   },
   "cypherCard": {
     "cypherSpend": "ઓસ્મોસિસ પે",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "આ સરનામું ફક્ત {\"type\":\"VariableReference\",\" {network} {denom} મેળવી શકે છે. કોઈપણ અન્ય સંપત્તિ મોકલવાથી કાયમી નુકસાન થઈ શકે છે.",
     "minimumDeposit": "ન્યૂનતમ થાપણ",
     "nomic": {
-      "estimatedTime": "લગભગ 1 કલાક",
+      "estimatedTime": "1-8 કલાક",
       "awaitingBtc": "BTC ની રાહ જોઈ રહ્યા છીએ",
       "transferringYourBtc": "તમારું BTC ટ્રાન્સફર કરી રહ્યાં છીએ",
       "depositStatus": "ડિપોઝિટ સ્થિતિ",
