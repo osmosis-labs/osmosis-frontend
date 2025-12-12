@@ -261,10 +261,14 @@ const AssetHighlightRow: FunctionComponent<{
         <EntityImage
           symbol={coinDenom}
           name={coinName}
-          logoURIs={{
-            png: coinImageUrl,
-            svg: coinImageUrl,
-          }}
+          logoURIs={
+            coinImageUrl
+              ? {
+                  svg: coinImageUrl.replace(/\.(png|svg)$/, ".svg"),
+                  png: coinImageUrl.replace(/\.(png|svg)$/, ".png"),
+                }
+              : {}
+          }
           width={32}
           height={32}
         />

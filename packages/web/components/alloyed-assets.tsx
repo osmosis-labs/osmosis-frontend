@@ -98,7 +98,14 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
             {alloyedAsset.asset.coinImageUrl ? (
               <EntityImage
                 logoURIs={{
-                  png: alloyedAsset.asset.coinImageUrl,
+                  svg: alloyedAsset.asset.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".svg"
+                  ),
+                  png: alloyedAsset.asset.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".png"
+                  ),
                 }}
                 symbol={alloyedAsset.asset.coinDenom}
                 name={alloyedAsset.asset.coinName}

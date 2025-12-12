@@ -140,9 +140,20 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               onClick={onClick}
                             >
                               <EntityImage
-                                logoURIs={{
-                                  png: asset.coinImageUrl,
-                                }}
+                                logoURIs={
+                                  asset.coinImageUrl
+                                    ? {
+                                        svg: asset.coinImageUrl.replace(
+                                          /\.(png|svg)$/,
+                                          ".svg"
+                                        ),
+                                        png: asset.coinImageUrl.replace(
+                                          /\.(png|svg)$/,
+                                          ".png"
+                                        ),
+                                      }
+                                    : {}
+                                }
                                 name={asset.coinName}
                                 symbol={asset.coinDenom}
                                 width={32}
@@ -197,9 +208,20 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               onClick={onClick}
                             >
                               <EntityImage
-                                logoURIs={{
-                                  png: representativeAsset.coinImageUrl,
-                                }}
+                                logoURIs={
+                                  representativeAsset.coinImageUrl
+                                    ? {
+                                        svg: representativeAsset.coinImageUrl.replace(
+                                          /\.(png|svg)$/,
+                                          ".svg"
+                                        ),
+                                        png: representativeAsset.coinImageUrl.replace(
+                                          /\.(png|svg)$/,
+                                          ".png"
+                                        ),
+                                      }
+                                    : {}
+                                }
                                 name={asset.denom}
                                 symbol={asset.denom}
                                 width={32}

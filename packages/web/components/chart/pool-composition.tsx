@@ -14,7 +14,14 @@ export const PoolComposition: FunctionComponent<{
             <div className="mr-2 h-[20px] w-[20px]">
               <EntityImage
                 logoURIs={{
-                  png: asset.currency.coinImageUrl,
+                  svg: asset.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".svg"
+                  ),
+                  png: asset.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".png"
+                  ),
                 }}
                 name={asset.currency.coinDenom}
                 symbol={asset.currency.coinDenom}

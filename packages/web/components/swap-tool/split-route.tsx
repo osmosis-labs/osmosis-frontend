@@ -235,16 +235,19 @@ const DenomImage: FunctionComponent<{
   /** Size in px */
   size?: number;
 }> = ({ currency, size = 20 }) => {
-  // Provide both SVG and PNG paths, EntityImage will prefer SVG
-  // Replace .png with .svg for SVG path since chain registry uses SVG by default
-  const svgUrl = currency.coinImageUrl?.replace(/\.png$/, ".svg");
+  const coinImageUrl = currency.coinImageUrl;
+
+  // Provide both SVG (preferred) and PNG (fallback) paths
+  const logoURIs = coinImageUrl
+    ? {
+        svg: coinImageUrl.replace(/\.(png|svg)$/, ".svg"),
+        png: coinImageUrl.replace(/\.(png|svg)$/, ".png"),
+      }
+    : {};
 
   return (
     <EntityImage
-      logoURIs={{
-        svg: svgUrl,
-        png: currency.coinImageUrl,
-      }}
+      logoURIs={logoURIs}
       name={currency.coinDenom}
       symbol={currency.coinDenom}
       width={size}

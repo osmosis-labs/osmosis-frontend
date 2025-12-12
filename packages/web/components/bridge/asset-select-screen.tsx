@@ -209,9 +209,20 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     })}
                   >
                     <EntityImage
-                      logoURIs={{
-                        png: asset.coinImageUrl,
-                      }}
+                      logoURIs={
+                        asset.coinImageUrl
+                          ? {
+                              svg: asset.coinImageUrl.replace(
+                                /\.(png|svg)$/,
+                                ".svg"
+                              ),
+                              png: asset.coinImageUrl.replace(
+                                /\.(png|svg)$/,
+                                ".png"
+                              ),
+                            }
+                          : {}
+                      }
                       width={isMobile ? 32 : 48}
                       height={isMobile ? 32 : 48}
                       name={asset.coinName}

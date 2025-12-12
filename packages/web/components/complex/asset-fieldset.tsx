@@ -255,10 +255,14 @@ const AssetFieldsetTokenSelector = ({
         {...rest}
       >
         <EntityImage
-          logoURIs={{
-            svg: selectedCoinImageUrl?.replace(/\.png$/, ".svg"),
-            png: selectedCoinImageUrl,
-          }}
+          logoURIs={
+            selectedCoinImageUrl
+              ? {
+                  svg: selectedCoinImageUrl.replace(/\.(png|svg)$/, ".svg"),
+                  png: selectedCoinImageUrl.replace(/\.(png|svg)$/, ".png"),
+                }
+              : {}
+          }
           name={selectedCoinDenom ?? ""}
           symbol={selectedCoinDenom ?? ""}
           width={isMobile ? 24 : 40}

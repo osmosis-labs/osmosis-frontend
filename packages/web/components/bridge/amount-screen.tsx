@@ -992,9 +992,20 @@ export const AmountScreen = observer(
                 onClick={() => setCurrentScreen(BridgeScreen.Asset)}
               >
                 <EntityImage
-                  logoURIs={{
-                    png: canonicalAsset.coinImageUrl,
-                  }}
+                  logoURIs={
+                    canonicalAsset.coinImageUrl
+                      ? {
+                          svg: canonicalAsset.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".svg"
+                          ),
+                          png: canonicalAsset.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".png"
+                          ),
+                        }
+                      : {}
+                  }
                   name={canonicalAsset.coinName}
                   symbol={canonicalAsset.coinDenom}
                   width={32}

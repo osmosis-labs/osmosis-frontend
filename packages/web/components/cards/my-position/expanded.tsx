@@ -470,13 +470,20 @@ export const AssetsInfo: FunctionComponent<
                 <div key={asset.denom} className="flex items-center gap-2">
                   <div className="h-[24px] w-[24px] flex-shrink-0">
                     <EntityImage
-                      logoURIs={{
-                        svg: asset.currency.coinImageUrl?.replace(
-                          /\.png$/,
-                          ".svg"
-                        ),
-                        png: asset.currency.coinImageUrl,
-                      }}
+                      logoURIs={
+                        asset.currency.coinImageUrl
+                          ? {
+                              svg: asset.currency.coinImageUrl.replace(
+                                /\.(png|svg)$/,
+                                ".svg"
+                              ),
+                              png: asset.currency.coinImageUrl.replace(
+                                /\.(png|svg)$/,
+                                ".png"
+                              ),
+                            }
+                          : {}
+                      }
                       name={asset.currency.coinDenom}
                       symbol={asset.currency.coinDenom}
                       height={24}
