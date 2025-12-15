@@ -190,7 +190,9 @@
       "new": "નવી",
       "topGainers": "ટોચના લાભાર્થીઓ",
       "upcoming": "આગામી"
-    }
+    },
+    "strandedTokenDepositDisabled": "આ સંપત્તિ જમા કરી શકાતી નથી કારણ કે તેની મૂળ શૃંખલાનો માર્ગ હવે સક્રિય નથી.",
+    "strandedTokenWithdrawDisabled": "આ સંપત્તિ ઉપાડી શકાતી નથી કારણ કે તેની મૂળ શૃંખલાનો માર્ગ હવે સક્રિય નથી."
   },
   "cypherCard": {
     "cypherSpend": "ઓસ્મોસિસ પે",
