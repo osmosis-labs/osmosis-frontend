@@ -1,13 +1,12 @@
-import { Asset } from "@osmosis-labs/types";
-
 /**
  * Converts a coin image URL to logoURIs object with SVG and PNG variants.
  * @param coinImageUrl - Optional URL to a coin image (can be .svg or .png)
  * @returns LogoURIs object with svg and png properties, or empty object if no URL provided
  */
-export function getLogoURIs(
-  coinImageUrl?: string
-): Pick<Asset["logoURIs"], "svg" | "png"> {
+export function getLogoURIs(coinImageUrl?: string): {
+  svg?: string;
+  png?: string;
+} {
   if (!coinImageUrl) {
     return {};
   }
