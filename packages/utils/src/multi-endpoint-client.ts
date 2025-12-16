@@ -85,19 +85,42 @@ export class MultiEndpointClient {
           const url = `${endpoint.address}${path}`;
 
           // AbortSignal.timeout is only available in Node 17.3+ and modern browsers
-          const timeoutSignal =
-            typeof AbortSignal.timeout === "function"
-              ? AbortSignal.timeout(this.timeout)
-              : undefined;
+          let timeoutSignal: AbortSignal | undefined;
+          let timeoutId: NodeJS.Timeout | undefined;
+          let abortController: AbortController | undefined;
 
-          const result = await apiClient<T>(url, {
-            ...options,
-            ...(timeoutSignal && { signal: timeoutSignal }),
-          });
+          if (typeof AbortSignal.timeout === "function") {
+            timeoutSignal = AbortSignal.timeout(this.timeout);
+          } else if (this.timeout && this.timeout > 0) {
+            // Fallback for older environments
+            abortController = new AbortController();
+            timeoutSignal = abortController.signal;
+            timeoutId = setTimeout(() => {
+              abortController?.abort();
+            }, this.timeout);
+          }
 
-          // Success! Remember this endpoint for future requests
-          this.currentIndex = endpointIndex;
-          return result;
+          try {
+            const result = await apiClient<T>(url, {
+              ...options,
+              ...(timeoutSignal && { signal: timeoutSignal }),
+            });
+
+            // Clear timeout on success to avoid timer leaks
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+
+            // Success! Remember this endpoint for future requests
+            this.currentIndex = endpointIndex;
+            return result;
+          } catch (error) {
+            // Clear timeout on error to avoid timer leaks
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+            throw error;
+          }
         } catch (error) {
           lastError = error as Error;
 
