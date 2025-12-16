@@ -48,9 +48,13 @@ export function useHistoricalAndLiquidityData(
   if (pool) config.setPool(pool);
 
   // Check if pool is empty (has no initial liquidity)
-  const poolRaw = pool?.raw as ConcentratedPoolRawResponse;
-  const currentSqrtPrice = poolRaw?.current_sqrt_price;
-  const isEmptyPool = !currentSqrtPrice || currentSqrtPrice === "0";
+  // Only applies to concentrated liquidity pools
+  let isEmptyPool = false;
+  if (pool?.type === "concentrated") {
+    const poolRaw = pool.raw as ConcentratedPoolRawResponse;
+    const currentSqrtPrice = poolRaw?.current_sqrt_price;
+    isEmptyPool = !currentSqrtPrice || currentSqrtPrice === "0";
+  }
 
   const { data: activeLiquidity } =
     api.local.concentratedLiquidity.getLiquidityPerTickRange.useQuery(
