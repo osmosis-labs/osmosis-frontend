@@ -360,12 +360,18 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @computed
   get isInactivePool(): boolean {
-    if (!this.pool || !this._pool) return false;
-    // Pool has liquidity (TVL > 0) but currentSqrtPrice is zero
-    return (
-      this.pool.currentSqrtPrice.isZero() &&
-      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0))
-    );
+    if (!this._pool || this._pool.type !== "concentrated") return false;
+
+    // Inactive pool: has TVL but no in-range liquidity at current price
+    // This happens when all liquidity positions are out of range
+    const poolRaw = this._pool.raw as ConcentratedPoolRawResponse;
+    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
+    const isTickLiquidityZero = currentTickLiquidity
+      ? parseFloat(currentTickLiquidity) === 0
+      : false;
+    const hasTVL = this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
+
+    return isTickLiquidityZero && hasTVL;
   }
 
   get sender(): string {
