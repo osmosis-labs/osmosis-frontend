@@ -4,9 +4,10 @@ import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import React from "react";
 
-import { FallbackImg, Icon } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
+import { EntityImage } from "~/components/ui/entity-image";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
@@ -92,10 +93,23 @@ export const TransactionTransferRow = ({
         transaction?.direction === "deposit" && (
           <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
         )}
-      <FallbackImg
-        alt={fromAsset.denom}
-        src={fromAsset.currency.coinImageUrl}
-        fallbacksrc="/icons/question-mark.svg"
+      <EntityImage
+        logoURIs={
+          fromAsset.currency.coinImageUrl
+            ? {
+                svg: fromAsset.currency.coinImageUrl.replace(
+                  /\.(png|svg)$/,
+                  ".svg"
+                ),
+                png: fromAsset.currency.coinImageUrl.replace(
+                  /\.(png|svg)$/,
+                  ".png"
+                ),
+              }
+            : {}
+        }
+        name={fromAsset.denom}
+        symbol={fromAsset.denom}
         height={
           simplifiedStatus === "pending" && transaction?.direction === "deposit"
             ? 24
@@ -170,10 +184,23 @@ export const TransactionTransferRow = ({
           transaction?.direction === "deposit" && (
             <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
           )}
-        <FallbackImg
-          alt={fromAsset.denom}
-          src={fromAsset.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
+        <EntityImage
+          logoURIs={
+            fromAsset.currency.coinImageUrl
+              ? {
+                  svg: fromAsset.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".svg"
+                  ),
+                  png: fromAsset.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".png"
+                  ),
+                }
+              : {}
+          }
+          name={fromAsset.denom}
+          symbol={fromAsset.denom}
           height={
             simplifiedStatus === "pending" &&
             transaction?.direction === "deposit"

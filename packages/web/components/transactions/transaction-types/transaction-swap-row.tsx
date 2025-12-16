@@ -2,11 +2,12 @@ import { CoinPretty, PricePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import React from "react";
 
-import { FallbackImg, Icon } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
@@ -58,10 +59,23 @@ export const TransactionSwapRow = ({
   const rightComponent =
     size === "sm" ? (
       <div className="flex items-center justify-end">
-        <FallbackImg
-          alt={transaction.tokenIn.amount.denom}
-          src={transaction.tokenIn.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
+        <EntityImage
+          logoURIs={
+            transaction.tokenIn.amount.currency.coinImageUrl
+              ? {
+                  svg: transaction.tokenIn.amount.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".svg"
+                  ),
+                  png: transaction.tokenIn.amount.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".png"
+                  ),
+                }
+              : {}
+          }
+          name={transaction.tokenIn.amount.denom}
+          symbol={transaction.tokenIn.amount.denom}
           height={32}
           width={32}
         />
@@ -71,10 +85,23 @@ export const TransactionSwapRow = ({
           height={16}
           className="my-[8px] mx-[4px] text-osmoverse-500"
         />
-        <FallbackImg
-          alt={transaction.tokenOut.amount.denom}
-          src={transaction.tokenOut.amount.currency.coinImageUrl}
-          fallbacksrc="/icons/question-mark.svg"
+        <EntityImage
+          logoURIs={
+            transaction.tokenOut.amount.currency.coinImageUrl
+              ? {
+                  svg: transaction.tokenOut.amount.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".svg"
+                  ),
+                  png: transaction.tokenOut.amount.currency.coinImageUrl.replace(
+                    /\.(png|svg)$/,
+                    ".png"
+                  ),
+                }
+              : {}
+          }
+          name={transaction.tokenOut.amount.denom}
+          symbol={transaction.tokenOut.amount.denom}
           height={32}
           width={32}
         />
@@ -98,10 +125,23 @@ export const TransactionSwapRow = ({
                 `- ${formatFiatPrice(transaction.tokenIn.value)}`}
             </div>
           </div>
-          <FallbackImg
-            alt={transaction.tokenIn.amount.denom}
-            src={transaction.tokenIn.amount.currency.coinImageUrl}
-            fallbacksrc="/icons/question-mark.svg"
+          <EntityImage
+            logoURIs={
+              transaction.tokenIn.amount.currency.coinImageUrl
+                ? {
+                    svg: transaction.tokenIn.amount.currency.coinImageUrl.replace(
+                      /\.(png|svg)$/,
+                      ".svg"
+                    ),
+                    png: transaction.tokenIn.amount.currency.coinImageUrl.replace(
+                      /\.(png|svg)$/,
+                      ".png"
+                    ),
+                  }
+                : {}
+            }
+            name={transaction.tokenIn.amount.denom}
+            symbol={transaction.tokenIn.amount.denom}
             height={32}
             width={32}
             className="block md:hidden"
@@ -114,10 +154,23 @@ export const TransactionSwapRow = ({
           className="block text-osmoverse-600 md:hidden"
         />
         <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
-          <FallbackImg
-            alt={transaction.tokenOut.amount.denom}
-            src={transaction.tokenOut.amount.currency.coinImageUrl}
-            fallbacksrc="/icons/question-mark.svg"
+          <EntityImage
+            logoURIs={
+              transaction.tokenOut.amount.currency.coinImageUrl
+                ? {
+                    svg: transaction.tokenOut.amount.currency.coinImageUrl.replace(
+                      /\.(png|svg)$/,
+                      ".svg"
+                    ),
+                    png: transaction.tokenOut.amount.currency.coinImageUrl.replace(
+                      /\.(png|svg)$/,
+                      ".png"
+                    ),
+                  }
+                : {}
+            }
+            name={transaction.tokenOut.amount.denom}
+            symbol={transaction.tokenOut.amount.denom}
             height={32}
             width={32}
             className="block md:hidden"

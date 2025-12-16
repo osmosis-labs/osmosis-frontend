@@ -4,10 +4,10 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { HistorySwapTransaction } from "~/hooks/use-transaction-history";
@@ -114,10 +114,23 @@ export const TransactionSwapDetails = ({
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenIn.token.denom}
-                  src={tokenIn.token.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={
+                    tokenIn.token.currency.coinImageUrl
+                      ? {
+                          svg: tokenIn.token.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".svg"
+                          ),
+                          png: tokenIn.token.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".png"
+                          ),
+                        }
+                      : {}
+                  }
+                  name={tokenIn.token.denom}
+                  symbol={tokenIn.token.denom}
                   height={40}
                   width={40}
                 />
@@ -151,10 +164,23 @@ export const TransactionSwapDetails = ({
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenOut.token.denom}
-                  src={tokenOut.token.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={
+                    tokenOut.token.currency.coinImageUrl
+                      ? {
+                          svg: tokenOut.token.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".svg"
+                          ),
+                          png: tokenOut.token.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".png"
+                          ),
+                        }
+                      : {}
+                  }
+                  name={tokenOut.token.denom}
+                  symbol={tokenOut.token.denom}
                   height={40}
                   width={40}
                 />

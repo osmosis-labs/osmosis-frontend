@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { PoolAssetInfo } from "~/components/assets/types";
+import { EntityImage } from "~/components/ui/entity-image";
 
 interface Props {
   assets: PoolAssetInfo[] | undefined;
@@ -45,17 +46,18 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
               <div className="body1 pl-4 text-white-mid">{`+${
                 assets.length - 3
               }`}</div>
-            ) : coinImageUrl ? (
-              <img
-                src={coinImageUrl}
-                alt={coinDenom}
-                width={size === "md" ? 50 : 40}
-                height={size === "md" ? 50 : 40}
-              />
             ) : (
-              <img
-                src="/icons/question-mark.svg"
-                alt="no token icon"
+              <EntityImage
+                logoURIs={
+                  coinImageUrl
+                    ? {
+                        svg: coinImageUrl.replace(/\.(png|svg)$/, ".svg"),
+                        png: coinImageUrl.replace(/\.(png|svg)$/, ".png"),
+                      }
+                    : {}
+                }
+                name={coinDenom}
+                symbol={coinDenom}
                 width={size === "md" ? 50 : 40}
                 height={size === "md" ? 50 : 40}
               />

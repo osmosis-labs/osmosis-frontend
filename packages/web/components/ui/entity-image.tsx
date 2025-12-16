@@ -20,11 +20,22 @@ export function EntityImage({
     denom,
     isChain = false,
   } = props;
+  const [imgSrc, setImgSrc] = useState<string | undefined>(
+    logoURIs?.svg || logoURIs?.png
+  );
   const [err, setErr] = useState(false);
 
-  const imageUrl = logoURIs?.svg || logoURIs?.png;
+  const handleError = () => {
+    // Try PNG fallback if we were showing SVG
+    if (imgSrc === logoURIs?.svg && logoURIs?.png) {
+      setImgSrc(logoURIs.png);
+    } else {
+      // No more fallbacks, show text
+      setErr(true);
+    }
+  };
 
-  if (!imageUrl || err) {
+  if (!imgSrc || err) {
     return (
       <div
         className={classNames(
@@ -51,6 +62,6 @@ export function EntityImage({
   }
 
   return (
-    <Image {...props} src={imageUrl} alt={name} onError={() => setErr(true)} />
+    <Image {...props} src={imgSrc} alt={name} onError={handleError} />
   );
 }
