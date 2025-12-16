@@ -396,7 +396,7 @@ function makeUnlistedAssetCurrency(denom: string) {
 /** Gets pool denoms from a chain pool (works for both sidecar and direct chain responses) */
 export function getPoolDenomsFromChainPool(
   chainPool: PoolRawResponse
-): string[] {
+): string[] | null {
   if ("pool_assets" in chainPool) {
     return chainPool.pool_assets.map((asset) => asset.token.denom);
   }
@@ -409,14 +409,15 @@ export function getPoolDenomsFromChainPool(
     return [chainPool.token0, chainPool.token1];
   }
 
-  return [];
+  // CosmWasm and CL pools without proper denom info cannot be processed
+  return null;
 }
 
 /** Extracts balances from a chain pool response.
  *  Different pool types store balances differently. */
 export function getBalancesFromChainPool(
   chainPool: PoolRawResponse
-): { denom: string; amount: string }[] {
+): { denom: string; amount: string }[] | null {
   // Weighted pools store balances in pool_assets
   if ("pool_assets" in chainPool) {
     return chainPool.pool_assets.map((asset) => ({
@@ -431,15 +432,15 @@ export function getBalancesFromChainPool(
   }
 
   // Concentrated liquidity pools - query the pool's address balance
-  // For now, return empty and rely on query service to provide balances
   // TODO: query bank module for pool address balances
+  // For now, return null to indicate unsupported pool type
   if ("token0" in chainPool) {
-    return [];
+    return null;
   }
 
   // Cosmwasm pools - need to query contract state
-  // For now, return empty
-  return [];
+  // For now, return null to indicate unsupported pool type
+  return null;
 }
 
 /** Gets reserves from a chain pool, including unlisted assets.
@@ -450,6 +451,11 @@ export function getReservesFromChainPool(
   balances: { denom: string; amount: string }[]
 ): CoinPretty[] {
   const poolDenoms = getPoolDenomsFromChainPool(chainPool);
+
+  // Should not happen if caller validates, but be defensive
+  if (!poolDenoms) {
+    return [];
+  }
 
   return poolDenoms.map((denom) => {
     const amount = balances.find((balance) => balance.denom === denom)?.amount;
@@ -473,9 +479,19 @@ export function makePoolFromChainPool({
 }: {
   chainPool: PoolRawResponse;
   assetLists: AssetList[];
-}): Pool {
+}): Pool | null {
   const pool_id = "pool_id" in chainPool ? chainPool.pool_id : chainPool.id;
   const balances = getBalancesFromChainPool(chainPool);
+  const poolDenoms = getPoolDenomsFromChainPool(chainPool);
+
+  // Cannot construct valid pool without balances or denoms
+  if (balances === null || poolDenoms === null) {
+    console.warn(
+      `Pool ${pool_id} cannot be constructed from chain data: unsupported pool type (CL or CosmWasm)`
+    );
+    return null;
+  }
+
   const reserveCoins = getReservesFromChainPool(
     assetLists,
     chainPool,

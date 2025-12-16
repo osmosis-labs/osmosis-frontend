@@ -130,6 +130,12 @@ export async function getPool({
       assetLists,
     });
 
+    if (!chainPool) {
+      throw new Error(
+        `Pool ${poolId} found on chain but cannot be constructed (likely CL or CosmWasm pool without balance data)`
+      );
+    }
+
     console.log(
       `Successfully retrieved pool ${poolId} from chain with unlisted assets`
     );
