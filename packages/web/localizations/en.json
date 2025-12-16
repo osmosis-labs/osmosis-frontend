@@ -172,10 +172,10 @@
       "meme": "Meme",
       "liquid_staking": "Liquid staking",
       "built_on_osmosis": "Built on Osmosis",
-      "sail_initiative": "Sail Initiative",
       "bridges": "Bridges",
       "nft_protocol": "NFT Protocol",
       "ai": "AI",
+      "depin": "DePIN",
       "privacy": "Privacy",
       "social": "Social",
       "oracles": "Oracles",
@@ -190,7 +190,9 @@
       "new": "New",
       "topGainers": "Top gainers",
       "upcoming": "Upcoming"
-    }
+    },
+    "strandedTokenDepositDisabled": "This asset cannot be deposited because the route to its origin chain is no longer active",
+    "strandedTokenWithdrawDisabled": "This asset cannot be withdrawn because the route to its origin chain is no longer active"
   },
   "cypherCard": {
     "cypherSpend": "Osmosis Pay",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "This address can only receive {denom} from {network} network. Sending any other assets may result in permanent loss.",
     "minimumDeposit": "Minimum deposit",
     "nomic": {
-      "estimatedTime": "About 1 hour",
+      "estimatedTime": "1-8 hr",
       "awaitingBtc": "Awaiting BTC",
       "transferringYourBtc": "Transferring your BTC",
       "depositStatus": "Deposit status",

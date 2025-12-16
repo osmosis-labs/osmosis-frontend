@@ -12,7 +12,6 @@ import { api, RouterOutputs } from "~/utils/trpc";
 const supportedAssetsBridges: Bridge[] = [
   "Skip",
   "Squid",
-  "Axelar",
   "IBC",
   "Nomic",
   "Int3face",

@@ -172,10 +172,10 @@
       "meme": "迷因",
       "liquid_staking": "流動質押",
       "built_on_osmosis": "建立在滲透基礎上",
-      "sail_initiative": "揚帆倡議",
       "bridges": "橋樑",
       "nft_protocol": "NFT協議",
       "ai": "人工智慧",
+      "depin": "DePIN",
       "privacy": "隱私",
       "social": "社會的",
       "oracles": "神諭者",
@@ -190,7 +190,9 @@
       "new": "新的",
       "topGainers": "漲幅居前者",
       "upcoming": "即將推出"
-    }
+    },
+    "strandedTokenDepositDisabled": "由於通往其原始鏈的路徑已失效，因此無法存入該資產。",
+    "strandedTokenWithdrawDisabled": "由於通往其源鏈的路徑已失效，因此該資產無法提取。"
   },
   "cypherCard": {
     "cypherSpend": "滲透支付",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "此位址只能從{denom} {network} \"denom\"}。發送任何其他資產可能會導致永久性損失。",
     "minimumDeposit": "最低存款額",
     "nomic": {
-      "estimatedTime": "約1小時",
+      "estimatedTime": "1-8 小時",
       "awaitingBtc": "等待比特幣",
       "transferringYourBtc": "轉移您的比特幣",
       "depositStatus": "存款狀態",

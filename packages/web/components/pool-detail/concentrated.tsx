@@ -500,6 +500,10 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                 {asset.currency.coinImageUrl && (
                   <EntityImage
                     logoURIs={{
+                      svg: asset.currency.coinImageUrl?.replace(
+                        /\.png$/,
+                        ".svg"
+                      ),
                       png: asset.currency.coinImageUrl,
                     }}
                     width={20}

@@ -35,7 +35,6 @@ const esmModules = [
   "@keplr-wallet/unit",
   "@osmosis-labs/stores",
   "@osmosis-labs/utils",
-  "@axelar-network/axelarjs-sdk",
   "wagmi",
   "@wagmi",
   "@walletconnect/ethereum-provider",
