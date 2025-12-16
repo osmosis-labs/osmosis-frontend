@@ -171,7 +171,10 @@ export class TxTracer {
     }
 
     // Exponential backoff: 1s, 2s, 4s
-    const backoffDelay = Math.min(Math.pow(2, this.reconnectAttempts - 1) * 1000, 8000);
+    const backoffDelay = Math.min(
+      Math.pow(2, this.reconnectAttempts - 1) * 1000,
+      8000
+    );
 
     console.log(
       `[TxTracer] Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} ` +
@@ -306,7 +309,9 @@ export class TxTracer {
 
   protected readonly onClose = (e: CloseEvent) => {
     console.warn(
-      `[TxTracer] WebSocket closed. Code: ${e.code}, Reason: ${e.reason || "No reason provided"}`
+      `[TxTracer] WebSocket closed. Code: ${e.code}, Reason: ${
+        e.reason || "No reason provided"
+      }`
     );
 
     for (const listener of this.listeners.close ?? []) {
