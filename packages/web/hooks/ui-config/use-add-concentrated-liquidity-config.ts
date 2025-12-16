@@ -171,10 +171,13 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                // refresh tick data
-                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                  .invalidate({ poolId })
-                  .then(() => resolve());
+                // refresh pool data and tick data
+                Promise.all([
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                    { poolId }
+                  ),
+                  apiUtils.local.pools.getPool.invalidate({ poolId }),
+                ]).then(() => resolve());
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addLiquidityCompleted,
@@ -235,10 +238,13 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                // refresh tick data
-                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                  .invalidate({ poolId })
-                  .then(() => resolve());
+                // refresh pool data and tick data
+                Promise.all([
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                    { poolId }
+                  ),
+                  apiUtils.local.pools.getPool.invalidate({ poolId }),
+                ]).then(() => resolve());
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,

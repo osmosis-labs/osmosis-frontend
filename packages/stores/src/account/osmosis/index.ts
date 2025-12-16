@@ -603,7 +603,16 @@ export class OsmosisAccountImpl {
   ) {
     const queries = this.queries;
 
-    const queryPool = queries.queryPools.getPool(poolId);
+    // First try to get the pool from cache
+    let queryPool = queries.queryPools.getPool(poolId);
+
+    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
+    // Wait for it to be fetched with minLiquidity: 0
+    if (!queryPool) {
+      await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
+      queryPool = queries.queryPools.getPool(poolId);
+    }
+
     if (!queryPool) {
       throw new Error(`Pool #${poolId} not found`);
     }
