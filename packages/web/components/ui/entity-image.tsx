@@ -61,5 +61,13 @@ export function EntityImage({
     );
   }
 
-  return <Image {...props} src={imgSrc} alt={name} onError={handleError} />;
+  return (
+    <Image
+      {...props}
+      src={imgSrc}
+      alt={name}
+      onError={handleError}
+      className={classNames("object-contain", props.className)}
+    />
+  );
 }
