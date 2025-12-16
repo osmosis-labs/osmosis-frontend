@@ -7,11 +7,11 @@ import React from "react";
 import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
-import { EntityImage } from "~/components/ui/entity-image";
 import {
   LargeTransactionContainer,
   SmallTransactionContainer,
 } from "~/components/transactions/transaction-types/transaction-containers";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";

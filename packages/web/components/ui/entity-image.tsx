@@ -61,7 +61,5 @@ export function EntityImage({
     );
   }
 
-  return (
-    <Image {...props} src={imgSrc} alt={name} onError={handleError} />
-  );
+  return <Image {...props} src={imgSrc} alt={name} onError={handleError} />;
 }
