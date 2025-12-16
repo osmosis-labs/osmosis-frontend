@@ -1,4 +1,4 @@
-import type { ConcentratedPoolRawResponse, Pool } from "@osmosis-labs/server";
+import type { Pool } from "@osmosis-labs/server";
 import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
@@ -80,17 +80,8 @@ export const AddConcLiquidity: FunctionComponent<
       poolId,
     });
 
-    // Detect if this is an inactive pool (has TVL but no in range liquidity)
-    const poolRaw =
-      pool?.type === "concentrated"
-        ? (pool.raw as ConcentratedPoolRawResponse)
-        : null;
-    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const hasTVL = pool && !pool.totalFiatValueLocked.toDec().isZero();
-    const isTickLiquidityZero = currentTickLiquidity
-      ? parseFloat(currentTickLiquidity) === 0
-      : false;
-    const isInactivePool = isTickLiquidityZero && hasTVL;
+    // Use inactive pool detection from config (has TVL but no in-range liquidity)
+    const isInactivePool = addLiquidityConfig.isInactivePool;
 
     // Auto-navigate to manual view for inactive pools
     useEffect(() => {
