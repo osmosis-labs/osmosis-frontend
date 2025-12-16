@@ -172,10 +172,10 @@
       "meme": "MEME",
       "liquid_staking": "तरल दाँव",
       "built_on_osmosis": "ऑस्मोसिस पर निर्मित",
-      "sail_initiative": "सेल पहल",
       "bridges": "पुलों",
       "nft_protocol": "एनएफटी प्रोटोकॉल",
       "ai": "ऐ",
+      "depin": "DePIN",
       "privacy": "गोपनीयता",
       "social": "सामाजिक",
       "oracles": "दैवज्ञ",
@@ -190,7 +190,9 @@
       "new": "नया",
       "topGainers": "शीर्ष लाभार्थी",
       "upcoming": "आगामी"
-    }
+    },
+    "strandedTokenDepositDisabled": "इस परिसंपत्ति को जमा नहीं किया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है",
+    "strandedTokenWithdrawDisabled": "इस परिसंपत्ति को वापस नहीं लिया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है"
   },
   "cypherCard": {
     "cypherSpend": "ऑस्मोसिस पे",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
-      "estimatedTime": "लगभग 1 घंटा",
+      "estimatedTime": "1-8 घंटे",
       "awaitingBtc": "बीटीसी की प्रतीक्षा में",
       "transferringYourBtc": "अपना BTC स्थानांतरित करना",
       "depositStatus": "जमा स्थिति",

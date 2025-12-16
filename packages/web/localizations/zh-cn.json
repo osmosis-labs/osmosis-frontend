@@ -172,10 +172,10 @@
       "meme": "模因",
       "liquid_staking": "流动质押",
       "built_on_osmosis": "建立在 Osmosis 之上",
-      "sail_initiative": "扬帆计划",
       "bridges": "桥梁",
       "nft_protocol": "NFT 协议",
       "ai": "人工智能",
+      "depin": "DePIN",
       "privacy": "隐私",
       "social": "社会的",
       "oracles": "预言机",
@@ -190,7 +190,9 @@
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    }
+    },
+    "strandedTokenDepositDisabled": "由于通往其原始链的路径已失效，因此无法存入该资产。",
+    "strandedTokenWithdrawDisabled": "由于通往其源链的路径已失效，因此该资产无法提取。"
   },
   "cypherCard": {
     "cypherSpend": "渗透支付",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
     "minimumDeposit": "最低存款",
     "nomic": {
-      "estimatedTime": "约1小时",
+      "estimatedTime": "1-8 小时",
       "awaitingBtc": "等待比特币",
       "transferringYourBtc": "转移你的比特币",
       "depositStatus": "存款状态",

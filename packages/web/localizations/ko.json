@@ -172,10 +172,10 @@
       "meme": "나 나",
       "liquid_staking": "리퀴드 스테이킹",
       "built_on_osmosis": "삼투를 기반으로 구축",
-      "sail_initiative": "항해 계획",
       "bridges": "교량",
       "nft_protocol": "NFT 프로토콜",
       "ai": "일체 포함",
+      "depin": "DePIN",
       "privacy": "은둔",
       "social": "사회의",
       "oracles": "오라클",
@@ -190,7 +190,9 @@
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    }
+    },
+    "strandedTokenDepositDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 입금할 수 없습니다.",
+    "strandedTokenWithdrawDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 인출할 수 없습니다."
   },
   "cypherCard": {
     "cypherSpend": "오스모시스 페이",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "이 주소는 {denom} 만 {network} 네트워크에서 수신할 수 있습니다. 다른 자산을 보내면 영구적인 손실이 발생할 수 있습니다.",
     "minimumDeposit": "최소입금",
     "nomic": {
-      "estimatedTime": "약 1시간 정도",
+      "estimatedTime": "1-8시간",
       "awaitingBtc": "BTC를 기다리는 중",
       "transferringYourBtc": "BTC 전송",
       "depositStatus": "입금 상태",

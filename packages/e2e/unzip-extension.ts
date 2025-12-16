@@ -3,7 +3,7 @@ import path from "node:path";
 import fs from "node:fs";
 
 export class UnzipExtension {
-  getPathToExtension() {
+  async getPathToExtension() {
     console.log("Unzip Wallet Extension before tests.");
     // Unzip keplr-extension-manifest
     const pathToZip = path.join(
@@ -11,7 +11,8 @@ export class UnzipExtension {
       "./keplr-extension-manifest-v3-v0.12.280.zip"
     );
     const pathToExtension = path.join(__dirname, "./keplr-extension-manifest");
-    decompress(pathToZip, pathToExtension);
+    await decompress(pathToZip, pathToExtension);
+    console.log("✓ Keplr extension extracted successfully");
     return pathToExtension;
   }
 

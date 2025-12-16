@@ -172,10 +172,10 @@
       "meme": "meme",
       "liquid_staking": "Estaca liquida",
       "built_on_osmosis": "Construido sobre ósmosis",
-      "sail_initiative": "Iniciativa de vela",
       "bridges": "Puentes",
       "nft_protocol": "Protocolo NFT",
       "ai": "AI",
+      "depin": "DePIN",
       "privacy": "Privacidad",
       "social": "Social",
       "oracles": "Oráculos",
@@ -190,7 +190,9 @@
       "new": "Nuevo",
       "topGainers": "Principales ganadores",
       "upcoming": "Próximo"
-    }
+    },
+    "strandedTokenDepositDisabled": "Este activo no se puede depositar porque la ruta a su cadena de origen ya no está activa",
+    "strandedTokenWithdrawDisabled": "Este activo no se puede retirar porque la ruta a su cadena de origen ya no está activa"
   },
   "cypherCard": {
     "cypherSpend": "Pago por ósmosis",
@@ -911,7 +913,7 @@
     "receiveOnlyAsset": "Esta dirección solo puede recibir {denom} de la red {network} . El envío de otros activos puede provocar una pérdida permanente.",
     "minimumDeposit": "Depósito mínimo",
     "nomic": {
-      "estimatedTime": "Aproximadamente 1 hora",
+      "estimatedTime": "1-8 h",
       "awaitingBtc": "Esperando BTC",
       "transferringYourBtc": "Transfiriendo tus BTC",
       "depositStatus": "Estado del depósito",

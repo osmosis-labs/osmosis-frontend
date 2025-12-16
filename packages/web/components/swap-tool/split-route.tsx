@@ -53,7 +53,7 @@ export const RouteLane: FunctionComponent<{
             {route.percentage.inequalitySymbol(false).maxDecimals(0).toString()}
           </span>
         )}
-        <div className="h-7">
+        <div className="h-7 w-7">
           <DenomImage currency={sendCurrency} size={28} />
         </div>
       </div>
@@ -69,7 +69,7 @@ export const RouteLane: FunctionComponent<{
         <Pools {...route} />
       </div>
 
-      <div className="h-7 shrink-0">
+      <div className="h-7 w-7 shrink-0">
         <DenomImage currency={lastOutCurrency} size={28} />
       </div>
     </div>
@@ -234,14 +234,21 @@ const DenomImage: FunctionComponent<{
   currency: AppCurrency | Currency;
   /** Size in px */
   size?: number;
-}> = ({ currency, size = 20 }) => (
-  <EntityImage
-    logoURIs={{
-      png: currency.coinImageUrl,
-    }}
-    name={currency.coinDenom}
-    symbol={currency.coinDenom}
-    width={size}
-    height={size}
-  />
-);
+}> = ({ currency, size = 20 }) => {
+  // Provide both SVG and PNG paths, EntityImage will prefer SVG
+  // Replace .png with .svg for SVG path since chain registry uses SVG by default
+  const svgUrl = currency.coinImageUrl?.replace(/\.png$/, ".svg");
+
+  return (
+    <EntityImage
+      logoURIs={{
+        svg: svgUrl,
+        png: currency.coinImageUrl,
+      }}
+      name={currency.coinDenom}
+      symbol={currency.coinDenom}
+      width={size}
+      height={size}
+    />
+  );
+};
