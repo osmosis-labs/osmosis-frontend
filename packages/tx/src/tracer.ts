@@ -11,7 +11,7 @@ enum WsReadyState {
 
 interface TxEventMap {
   close: (e: CloseEvent) => void;
-  error: (e: ErrorEvent) => void;
+  error: (e: Event) => void;
   message: (e: MessageEvent) => void;
   open: (e: Event) => void;
 }
@@ -319,8 +319,10 @@ export class TxTracer {
     }
   };
 
-  protected readonly onError = (e: ErrorEvent) => {
-    console.error(`[TxTracer] WebSocket error:`, e.message || e);
+  protected readonly onError = (e: Event) => {
+    // Runtime check if the event is an ErrorEvent to access message property
+    const errorMessage = e instanceof ErrorEvent ? e.message : undefined;
+    console.error(`[TxTracer] WebSocket error:`, errorMessage || e);
 
     for (const listener of this.listeners.error ?? []) {
       listener(e);
