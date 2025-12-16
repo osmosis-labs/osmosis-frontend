@@ -78,7 +78,11 @@ export const createNodeQuery =
     let lastError: Error | null = null;
 
     // Try each endpoint with retries
-    for (let endpointIndex = 0; endpointIndex < restEndpoints.length; endpointIndex++) {
+    for (
+      let endpointIndex = 0;
+      endpointIndex < restEndpoints.length;
+      endpointIndex++
+    ) {
       const endpoint = restEndpoints[endpointIndex];
       const baseUrl = endpoint.address;
 
