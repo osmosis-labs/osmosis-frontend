@@ -48,10 +48,7 @@ export class MultiEndpointClient {
   private timeout: number;
   private backoffMultiplier: number;
 
-  constructor(
-    endpoints: EndpointConfig[],
-    options: MultiEndpointOptions = {}
-  ) {
+  constructor(endpoints: EndpointConfig[], options: MultiEndpointOptions = {}) {
     if (!endpoints || endpoints.length === 0) {
       throw new Error("At least one endpoint must be provided");
     }
