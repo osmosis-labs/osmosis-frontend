@@ -29,6 +29,7 @@ import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time"
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import { displayHumanizedTime } from "~/utils/date";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -127,20 +128,7 @@ export const DepositAddressScreen = observer(
                   onClick={() => setCurrentScreen(BridgeScreen.Asset)}
                 >
                   <EntityImage
-                    logoURIs={
-                      canonicalAsset.coinImageUrl
-                        ? {
-                            svg: canonicalAsset.coinImageUrl.replace(
-                              /\.(png|svg)$/,
-                              ".svg"
-                            ),
-                            png: canonicalAsset.coinImageUrl.replace(
-                              /\.(png|svg)$/,
-                              ".png"
-                            ),
-                          }
-                        : {}
-                    }
+                    logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
                     name={canonicalAsset.coinName}
                     symbol={canonicalAsset.coinDenom}
                     width={32}

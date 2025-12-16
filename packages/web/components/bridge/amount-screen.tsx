@@ -48,6 +48,7 @@ import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 import { ChainLogo } from "../assets/chain-logo";
@@ -992,20 +993,7 @@ export const AmountScreen = observer(
                 onClick={() => setCurrentScreen(BridgeScreen.Asset)}
               >
                 <EntityImage
-                  logoURIs={
-                    canonicalAsset.coinImageUrl
-                      ? {
-                          svg: canonicalAsset.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".svg"
-                          ),
-                          png: canonicalAsset.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".png"
-                          ),
-                        }
-                      : {}
-                  }
+                  logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
                   name={canonicalAsset.coinName}
                   symbol={canonicalAsset.coinDenom}
                   width={32}

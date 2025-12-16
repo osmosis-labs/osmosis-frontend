@@ -2,6 +2,7 @@ import { CoinPretty } from "@osmosis-labs/unit";
 import { FunctionComponent } from "react";
 
 import { EntityImage } from "~/components/ui/entity-image";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 export const PoolComposition: FunctionComponent<{
   assets: CoinPretty[];
@@ -13,16 +14,7 @@ export const PoolComposition: FunctionComponent<{
           {asset.currency.coinImageUrl && (
             <div className="mr-2 h-[20px] w-[20px]">
               <EntityImage
-                logoURIs={{
-                  svg: asset.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".svg"
-                  ),
-                  png: asset.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".png"
-                  ),
-                }}
+                logoURIs={getLogoURIs(asset.currency.coinImageUrl)}
                 name={asset.currency.coinDenom}
                 symbol={asset.currency.coinDenom}
                 width={20}

@@ -17,6 +17,7 @@ import { useTranslation } from "~/hooks/language/context";
 import { useCoinFiatValue } from "~/hooks/queries/assets/use-coin-fiat-value";
 import { useTransactionChain } from "~/hooks/use-transaction-chain";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 interface TransactionTransferRowProps {
   size: "sm" | "lg";
@@ -94,20 +95,7 @@ export const TransactionTransferRow = ({
           <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
         )}
       <EntityImage
-        logoURIs={
-          fromAsset.currency.coinImageUrl
-            ? {
-                svg: fromAsset.currency.coinImageUrl.replace(
-                  /\.(png|svg)$/,
-                  ".svg"
-                ),
-                png: fromAsset.currency.coinImageUrl.replace(
-                  /\.(png|svg)$/,
-                  ".png"
-                ),
-              }
-            : {}
-        }
+        logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
         name={fromAsset.denom}
         symbol={fromAsset.denom}
         height={
@@ -185,20 +173,7 @@ export const TransactionTransferRow = ({
             <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
           )}
         <EntityImage
-          logoURIs={
-            fromAsset.currency.coinImageUrl
-              ? {
-                  svg: fromAsset.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".svg"
-                  ),
-                  png: fromAsset.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".png"
-                  ),
-                }
-              : {}
-          }
+          logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
           name={fromAsset.denom}
           symbol={fromAsset.denom}
           height={

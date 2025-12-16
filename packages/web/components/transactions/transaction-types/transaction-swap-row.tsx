@@ -11,6 +11,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { useWindowSize } from "~/hooks";
 import { useTranslation } from "~/hooks/language/context";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 interface TransactionSwapRowProps {
   size: "sm" | "lg";
@@ -60,20 +61,9 @@ export const TransactionSwapRow = ({
     size === "sm" ? (
       <div className="flex items-center justify-end">
         <EntityImage
-          logoURIs={
+          logoURIs={getLogoURIs(
             transaction.tokenIn.amount.currency.coinImageUrl
-              ? {
-                  svg: transaction.tokenIn.amount.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".svg"
-                  ),
-                  png: transaction.tokenIn.amount.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".png"
-                  ),
-                }
-              : {}
-          }
+          )}
           name={transaction.tokenIn.amount.denom}
           symbol={transaction.tokenIn.amount.denom}
           height={32}
@@ -86,20 +76,9 @@ export const TransactionSwapRow = ({
           className="my-[8px] mx-[4px] text-osmoverse-500"
         />
         <EntityImage
-          logoURIs={
+          logoURIs={getLogoURIs(
             transaction.tokenOut.amount.currency.coinImageUrl
-              ? {
-                  svg: transaction.tokenOut.amount.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".svg"
-                  ),
-                  png: transaction.tokenOut.amount.currency.coinImageUrl.replace(
-                    /\.(png|svg)$/,
-                    ".png"
-                  ),
-                }
-              : {}
-          }
+          )}
           name={transaction.tokenOut.amount.denom}
           symbol={transaction.tokenOut.amount.denom}
           height={32}
@@ -126,20 +105,9 @@ export const TransactionSwapRow = ({
             </div>
           </div>
           <EntityImage
-            logoURIs={
+            logoURIs={getLogoURIs(
               transaction.tokenIn.amount.currency.coinImageUrl
-                ? {
-                    svg: transaction.tokenIn.amount.currency.coinImageUrl.replace(
-                      /\.(png|svg)$/,
-                      ".svg"
-                    ),
-                    png: transaction.tokenIn.amount.currency.coinImageUrl.replace(
-                      /\.(png|svg)$/,
-                      ".png"
-                    ),
-                  }
-                : {}
-            }
+            )}
             name={transaction.tokenIn.amount.denom}
             symbol={transaction.tokenIn.amount.denom}
             height={32}
@@ -155,20 +123,9 @@ export const TransactionSwapRow = ({
         />
         <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
           <EntityImage
-            logoURIs={
+            logoURIs={getLogoURIs(
               transaction.tokenOut.amount.currency.coinImageUrl
-                ? {
-                    svg: transaction.tokenOut.amount.currency.coinImageUrl.replace(
-                      /\.(png|svg)$/,
-                      ".svg"
-                    ),
-                    png: transaction.tokenOut.amount.currency.coinImageUrl.replace(
-                      /\.(png|svg)$/,
-                      ".png"
-                    ),
-                  }
-                : {}
-            }
+            )}
             name={transaction.tokenOut.amount.denom}
             symbol={transaction.tokenOut.amount.denom}
             height={32}

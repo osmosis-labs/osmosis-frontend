@@ -20,6 +20,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 interface OrderModalProps {
   order?: MappedLimitOrder;
@@ -253,20 +254,7 @@ const OrderDetails = observer(
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
                 <EntityImage
-                  logoURIs={
-                    tokenIn?.currency.coinImageUrl
-                      ? {
-                          svg: tokenIn.currency.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".svg"
-                          ),
-                          png: tokenIn.currency.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".png"
-                          ),
-                        }
-                      : {}
-                  }
+                  logoURIs={getLogoURIs(tokenIn?.currency.coinImageUrl)}
                   name={tokenIn?.sourceDenom ?? ""}
                   symbol={tokenIn?.sourceDenom ?? ""}
                   height={40}
@@ -311,20 +299,7 @@ const OrderDetails = observer(
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
                 <EntityImage
-                  logoURIs={
-                    tokenOut?.currency.coinImageUrl
-                      ? {
-                          svg: tokenOut.currency.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".svg"
-                          ),
-                          png: tokenOut.currency.coinImageUrl.replace(
-                            /\.(png|svg)$/,
-                            ".png"
-                          ),
-                        }
-                      : {}
-                  }
+                  logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
                   name={tokenOut?.sourceDenom ?? ""}
                   symbol={tokenOut?.sourceDenom ?? ""}
                   height={40}

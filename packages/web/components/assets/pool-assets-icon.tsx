@@ -3,6 +3,7 @@ import { FunctionComponent } from "react";
 
 import { PoolAssetInfo } from "~/components/assets/types";
 import { EntityImage } from "~/components/ui/entity-image";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 interface Props {
   assets: PoolAssetInfo[] | undefined;
@@ -48,14 +49,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
               }`}</div>
             ) : (
               <EntityImage
-                logoURIs={
-                  coinImageUrl
-                    ? {
-                        svg: coinImageUrl.replace(/\.(png|svg)$/, ".svg"),
-                        png: coinImageUrl.replace(/\.(png|svg)$/, ".png"),
-                      }
-                    : {}
-                }
+                logoURIs={getLogoURIs(coinImageUrl)}
                 name={coinDenom}
                 symbol={coinDenom}
                 width={size === "md" ? 50 : 40}
