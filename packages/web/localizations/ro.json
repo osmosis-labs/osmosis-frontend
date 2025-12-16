@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "Converteste-ti activele in actiuni pentru a castiga din fiecare schimb.",
     "from": "de la",
     "incentives": "Recompense",
+    "initializePool": "Adăugați lichiditate",
+    "inactivePool": {
+      "title": "Piscina în afara razei de acoperire",
+      "description": "Toate pozițiile de lichiditate sunt în afara intervalului la prețul actual.\n\nAdăugați o cantitate mică de lichiditate (maxim 1 USD) pentru a permite reechilibrarea la rata actuală a pieței.",
+      "addLiquidity": "Adăugați lichiditate"
+    },
     "learnMore": "Citeste mai multe",
     "level": "Nivel {level}",
     "liquidity": "Lichiditatea",

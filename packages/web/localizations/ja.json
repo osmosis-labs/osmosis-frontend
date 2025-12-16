@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "トークンを株式に変換し、交換するたびに収益を上げます。",
     "from": "から",
     "incentives": "インセンティブ",
+    "initializePool": "流動性を追加する",
+    "inactivePool": {
+      "title": "プール範囲外",
+      "description": "すべての流動性ポジションは現在の価格で範囲外です。\n\n現在の市場レートに合わせてリバランスできるように、少量の流動性（最大 1 ドル）を追加します。",
+      "addLiquidity": "流動性を追加する"
+    },
     "learnMore": "もっと詳しく知る",
     "level": "レベル{level}",
     "liquidity": "プールの流動性",

@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
     "from": "来自",
     "incentives": "奖励",
+    "initializePool": "增加流动性",
+    "inactivePool": {
+      "title": "泳池超出范围",
+      "description": "当前价格下所有流动性头寸均超出范围。\n\n添加少量流动性（最多 1 美元），以便重新平衡至当前市场利率。",
+      "addLiquidity": "增加流动性"
+    },
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "liquidity": "资金池流动性",

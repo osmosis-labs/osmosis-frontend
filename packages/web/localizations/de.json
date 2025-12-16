@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "Wandeln Sie Ihre Token in Aktien um und verdienen Sie bei jedem Tausch.",
     "from": "aus",
     "incentives": "Anreize",
+    "initializePool": "Flüssigkeit hinzufügen",
+    "inactivePool": {
+      "title": "Pool außerhalb der Reichweite",
+      "description": "Alle Liquiditätspositionen liegen beim aktuellen Preis außerhalb des zulässigen Bereichs.\n\nFügen Sie einen kleinen Liquiditätsbetrag (maximal 1 US-Dollar) hinzu, um eine Anpassung an den aktuellen Marktzins zu ermöglichen.",
+      "addLiquidity": "Flüssigkeit hinzufügen"
+    },
     "learnMore": "Erfahren Sie mehr",
     "level": "Ebene {level}",
     "liquidity": "Poolliquidität",

@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "Convierta sus tokens en participaciones y gane en cada intercambio.",
     "from": "de",
     "incentives": "Incentivos",
+    "initializePool": "Añadir liquidez",
+    "inactivePool": {
+      "title": "Piscina fuera de rango",
+      "description": "Todas las posiciones de liquidez están fuera de rango al precio actual.\n\nAgregue una pequeña cantidad de liquidez ($1 máximo) para permitir el reequilibrio a la tasa de mercado actual.",
+      "addLiquidity": "Añadir liquidez"
+    },
     "learnMore": "Aprender más",
     "level": "Nivel {level}",
     "liquidity": "Liquidez",

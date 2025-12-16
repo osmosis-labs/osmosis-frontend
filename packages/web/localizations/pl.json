@@ -474,6 +474,12 @@
     "earnSwapFeesCaption": "Przekształć swoje tokeny w aktywa i zarabiaj na każdej wymianie.",
     "from": "od",
     "incentives": "Premie",
+    "initializePool": "Dodaj płynność",
+    "inactivePool": {
+      "title": "Basen poza zasięgiem",
+      "description": "Wszystkie pozycje płynności są poza zasięgiem przy obecnej cenie.\n\nDodaj niewielką ilość płynności (maksymalnie 1$), aby umożliwić rebalansowanie do bieżącego kursu rynkowego.",
+      "addLiquidity": "Dodaj płynność"
+    },
     "learnMore": "Dowiedz się więcej",
     "level": "Poziom {level}",
     "liquidity": "Płynność puli",
