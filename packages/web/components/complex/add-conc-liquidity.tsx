@@ -324,14 +324,16 @@ const AddConcLiqView: FunctionComponent<
 
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
+  const hasInitializedInactivePool = useRef(false);
 
   const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
 
-  // Default to passive strategy for inactive pools
+  // Default to passive strategy for inactive pools (only on mount)
   useEffect(() => {
-    if (isInactivePool && !fullRange) {
+    if (isInactivePool && !fullRange && !hasInitializedInactivePool.current) {
       setFullRange(true);
+      hasInitializedInactivePool.current = true;
     }
   }, [isInactivePool, fullRange, setFullRange]);
 
