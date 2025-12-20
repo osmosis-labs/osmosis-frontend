@@ -12,6 +12,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { CustomClasses } from "../types";
@@ -317,10 +318,7 @@ const AssetHighlightRow: FunctionComponent<{
         <EntityImage
           symbol={coinDenom}
           name={coinName}
-          logoURIs={{
-            png: coinImageUrl,
-            svg: coinImageUrl,
-          }}
+          logoURIs={getLogoURIs(coinImageUrl)}
           width={32}
           height={32}
         />

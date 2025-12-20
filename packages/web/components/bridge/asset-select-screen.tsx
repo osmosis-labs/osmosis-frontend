@@ -22,6 +22,7 @@ import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverifie
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const variantsNotToBeExcluded = ["WBTC"] satisfies (
@@ -209,9 +210,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     })}
                   >
                     <EntityImage
-                      logoURIs={{
-                        png: asset.coinImageUrl,
-                      }}
+                      logoURIs={getLogoURIs(asset.coinImageUrl)}
                       width={isMobile ? 32 : 48}
                       height={isMobile ? 32 : 48}
                       name={asset.coinName}

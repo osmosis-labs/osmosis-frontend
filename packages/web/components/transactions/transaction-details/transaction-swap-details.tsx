@@ -4,16 +4,17 @@ import dayjs from "dayjs";
 import { useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
-import { FallbackImg } from "~/components/assets";
 import { CopyIconButton } from "~/components/buttons/copy-icon-button";
 import { IconButton } from "~/components/buttons/icon-button";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { HistorySwapTransaction } from "~/hooks/use-transaction-history";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { formatFiatPrice } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 export const TransactionSwapDetails = ({
   onRequestClose,
@@ -114,10 +115,10 @@ export const TransactionSwapDetails = ({
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenIn.token.denom}
-                  src={tokenIn.token.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={getLogoURIs(tokenIn.token.currency.coinImageUrl)}
+                  name={tokenIn.token.denom}
+                  symbol={tokenIn.token.denom}
                   height={40}
                   width={40}
                 />
@@ -151,10 +152,10 @@ export const TransactionSwapDetails = ({
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenOut.token.denom}
-                  src={tokenOut.token.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={getLogoURIs(tokenOut.token.currency.coinImageUrl)}
+                  name={tokenOut.token.denom}
+                  symbol={tokenOut.token.denom}
                   height={40}
                   width={40}
                 />

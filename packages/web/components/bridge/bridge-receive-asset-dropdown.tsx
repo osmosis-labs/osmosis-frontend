@@ -11,6 +11,7 @@ import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 import { SupportedAssetWithAmount } from "./amount-and-review-screen";
 
@@ -140,9 +141,7 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               onClick={onClick}
                             >
                               <EntityImage
-                                logoURIs={{
-                                  png: asset.coinImageUrl,
-                                }}
+                                logoURIs={getLogoURIs(asset.coinImageUrl)}
                                 name={asset.coinName}
                                 symbol={asset.coinDenom}
                                 width={32}
@@ -197,9 +196,9 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               onClick={onClick}
                             >
                               <EntityImage
-                                logoURIs={{
-                                  png: representativeAsset.coinImageUrl,
-                                }}
+                                logoURIs={getLogoURIs(
+                                  representativeAsset.coinImageUrl
+                                )}
                                 name={asset.denom}
                                 symbol={asset.denom}
                                 width={32}

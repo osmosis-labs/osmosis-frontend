@@ -13,6 +13,7 @@ import { CustomClasses } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 import type { RouterOutputs } from "~/utils/trpc";
 
 type SplitOutGivenIn =
@@ -235,16 +236,9 @@ const DenomImage: FunctionComponent<{
   /** Size in px */
   size?: number;
 }> = ({ currency, size = 20 }) => {
-  // Provide both SVG and PNG paths, EntityImage will prefer SVG
-  // Replace .png with .svg for SVG path since chain registry uses SVG by default
-  const svgUrl = currency.coinImageUrl?.replace(/\.png$/, ".svg");
-
   return (
     <EntityImage
-      logoURIs={{
-        svg: svgUrl,
-        png: currency.coinImageUrl,
-      }}
+      logoURIs={getLogoURIs(currency.coinImageUrl)}
       name={currency.coinDenom}
       symbol={currency.coinDenom}
       width={size}

@@ -5,10 +5,11 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { memo, useCallback, useMemo, useState } from "react";
 
-import { FallbackImg, Icon } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { IconButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { t } from "~/hooks";
 import { ModalBase } from "~/modals";
@@ -19,6 +20,7 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 interface OrderModalProps {
   order?: MappedLimitOrder;
@@ -251,10 +253,10 @@ const OrderDetails = observer(
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenIn?.sourceDenom}
-                  src={tokenIn?.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={getLogoURIs(tokenIn?.currency.coinImageUrl)}
+                  name={tokenIn?.sourceDenom ?? ""}
+                  symbol={tokenIn?.sourceDenom ?? ""}
                   height={40}
                   width={40}
                 />
@@ -296,10 +298,10 @@ const OrderDetails = observer(
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
               <div className="h-10 w-10">
-                <FallbackImg
-                  alt={tokenOut?.sourceDenom}
-                  src={tokenOut?.currency.coinImageUrl}
-                  fallbacksrc="/icons/question-mark.svg"
+                <EntityImage
+                  logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
+                  name={tokenOut?.sourceDenom ?? ""}
+                  symbol={tokenOut?.sourceDenom ?? ""}
                   height={40}
                   width={40}
                 />
