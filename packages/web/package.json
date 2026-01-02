@@ -28,6 +28,7 @@
     "@cosmjs/amino": "0.32.3",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
+    "@cosmos-kit/aria": "^2.18.0",
     "@cosmos-kit/cdcwallet": "^2.13.2",
     "@cosmos-kit/core": "^2.13.1",
     "@cosmos-kit/cosmostation": "^2.11.2",
