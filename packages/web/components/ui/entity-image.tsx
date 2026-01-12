@@ -29,7 +29,7 @@ export function EntityImage({
   useEffect(() => {
     setImgSrc(logoURIs?.svg || logoURIs?.png);
     setErr(false);
-  }, [logoURIs]);
+  }, [logoURIs?.png, logoURIs?.svg]);
 
   const handleError = () => {
     // Try PNG fallback if we were showing SVG

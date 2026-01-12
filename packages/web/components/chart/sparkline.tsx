@@ -1,5 +1,5 @@
-import { memo } from "react";
-import { FunctionComponent, useCallback, useEffect, useRef } from "react";
+import { FunctionComponent, memo, useCallback, useEffect, useRef } from "react";
+import { useIsomorphicLayoutEffect } from "react-use";
 
 function invertCoordinates(n: number, height: number) {
   return Math.abs(n - height);
@@ -75,8 +75,10 @@ export const Sparkline: FunctionComponent<{
     ctx.stroke();
   }, [data, lineWidth, trendColor]);
 
-  useEffect(() => {
-    if (shouldFillContainer) resizeCanvas(canvasRef.current!);
+  useIsomorphicLayoutEffect(() => {
+    if (!canvasRef.current) return;
+
+    if (shouldFillContainer) resizeCanvas(canvasRef.current);
     drawSparkline();
   }, [drawSparkline, shouldFillContainer]);
 
