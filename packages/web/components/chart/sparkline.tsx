@@ -86,7 +86,8 @@ export const Sparkline: FunctionComponent<{
     if (!shouldFillContainer) return;
 
     const _resizeCanvas = () => {
-      resizeCanvas(canvasRef.current!);
+      if (!canvasRef.current) return;
+      resizeCanvas(canvasRef.current);
       drawSparkline();
     };
 
