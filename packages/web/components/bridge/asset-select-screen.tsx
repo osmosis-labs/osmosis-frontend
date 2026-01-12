@@ -20,7 +20,7 @@ import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverified-token-confirmation";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
@@ -56,11 +56,14 @@ interface AssetSelectScreenProps {
 
 export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
   observer(({ type, onSelectAsset }) => {
-    const { accountStore, userSettings } = useStore();
+    const { accountStore } = useStore();
     const { showPreviewAssets } = useShowPreviewAssets();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const searchBoxRef = useRef<HTMLInputElement>(null);
+    const shouldShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
 
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -68,13 +71,6 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
     const [assetToActivate, setAssetToActivate] = useState<MinimalAsset | null>(
       null
     );
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const shouldShowUnverifiedAssets =
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     // for some reason, redundant queries would be sent without this memo
     const queryParameters = useMemo(
@@ -138,7 +134,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
           isOpen={Boolean(assetToActivate)}
           onConfirm={() => {
             if (!assetToActivate) return;
-            showUnverifiedAssetsSetting?.setState({
+            useUserSettingsStore.setState({
               showUnverifiedAssets: true,
             });
             onSelectAsset(assetToActivate);

@@ -1,0 +1,117 @@
+/* eslint-disable import/no-extraneous-dependencies */
+import { act, renderHook, waitFor } from "@testing-library/react";
+
+import { mockStoreState } from "~/__tests__/zustand-utils";
+
+import { useProfileStore } from "../profile-store";
+
+describe("ProfileStore (Zustand)", () => {
+  beforeEach(() => {
+    // Clear localStorage before each test
+    localStorage.clear();
+    // Reset the store to initial state
+    useProfileStore.setState({ currentAvatar: "wosmongton" });
+  });
+
+  describe("Initial State", () => {
+    it("should have wosmongton as the default avatar", () => {
+      const { result } = renderHook(() => useProfileStore());
+      expect(result.current.currentAvatar).toBe("wosmongton");
+    });
+  });
+
+  describe("setCurrentAvatar", () => {
+    it("should update avatar to ammelia", () => {
+      const { result } = renderHook(() => useProfileStore());
+
+      act(() => {
+        result.current.setCurrentAvatar("ammelia");
+      });
+
+      expect(result.current.currentAvatar).toBe("ammelia");
+    });
+
+    it("should update avatar back to wosmongton", () => {
+      const { result } = renderHook(() => useProfileStore());
+
+      act(() => {
+        result.current.setCurrentAvatar("ammelia");
+      });
+      expect(result.current.currentAvatar).toBe("ammelia");
+
+      act(() => {
+        result.current.setCurrentAvatar("wosmongton");
+      });
+      expect(result.current.currentAvatar).toBe("wosmongton");
+    });
+  });
+
+  describe("Persistence", () => {
+    it("should persist avatar selection to localStorage", async () => {
+      const { result } = renderHook(() => useProfileStore());
+
+      act(() => {
+        result.current.setCurrentAvatar("ammelia");
+      });
+
+      // Wait for persistence middleware to save to localStorage
+      await waitFor(() => {
+        const storedData = localStorage.getItem("profile-store");
+        expect(storedData).toBeTruthy();
+        const parsed = JSON.parse(storedData!);
+        expect(parsed.state.currentAvatar).toBe("ammelia");
+      });
+    });
+
+    it("should restore avatar from localStorage on initialization", async () => {
+      // Pre-populate localStorage
+      localStorage.setItem(
+        "profile-store",
+        JSON.stringify({
+          state: { currentAvatar: "ammelia" },
+          version: 0,
+        })
+      );
+
+      // Clear the store and re-hydrate
+      useProfileStore.persist.rehydrate();
+
+      await waitFor(() => {
+        const state = useProfileStore.getState();
+        expect(state.currentAvatar).toBe("ammelia");
+      });
+    });
+  });
+
+  describe("Type Safety", () => {
+    it("should only accept valid avatar values", () => {
+      const { result } = renderHook(() => useProfileStore());
+
+      // TypeScript should enforce this at compile time,
+      // but we can verify the store only has valid values
+      act(() => {
+        result.current.setCurrentAvatar("wosmongton");
+      });
+      expect(["wosmongton", "ammelia"]).toContain(result.current.currentAvatar);
+
+      act(() => {
+        result.current.setCurrentAvatar("ammelia");
+      });
+      expect(["wosmongton", "ammelia"]).toContain(result.current.currentAvatar);
+    });
+  });
+
+  describe("mockStoreState helper", () => {
+    it("should allow mocking store state for tests", () => {
+      const restore = mockStoreState(useProfileStore, {
+        currentAvatar: "ammelia",
+      });
+
+      expect(useProfileStore.getState().currentAvatar).toBe("ammelia");
+
+      // Restore original state
+      restore();
+      expect(useProfileStore.getState().currentAvatar).toBe("wosmongton");
+    });
+  });
+});

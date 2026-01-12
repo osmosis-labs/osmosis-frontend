@@ -13,12 +13,11 @@ import { useTranslation, useWindowSize } from "~/hooks";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapState } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 
 import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
-import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
 import { Spinner } from "../loaders/spinner";
 
@@ -39,20 +38,18 @@ export const TokenSelectDrawer: FunctionComponent<{
     showRecommendedTokens = true,
   }) => {
     const { t } = useTranslation();
-    const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
+    const shouldShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
+    const setShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.setShowUnverifiedAssets
+    );
 
     const assets = swapState.selectableAssets;
     const assetsRef = useLatest(assets);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const shouldShowUnverifiedAssets =
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -130,9 +127,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           isOpen={Boolean(confirmUnverifiedAssetDenom)}
           onConfirm={() => {
             if (!confirmUnverifiedAssetDenom) return;
-            showUnverifiedAssetsSetting?.setState({
-              showUnverifiedAssets: true,
-            });
+            setShowUnverifiedAssets(true);
             onSelect(confirmUnverifiedAssetDenom);
           }}
           onRequestClose={() => {

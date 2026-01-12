@@ -42,7 +42,7 @@ import {
 } from "~/modals";
 import { useAssetVariantsModalStore } from "~/modals/variants-conversion";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
@@ -68,7 +68,13 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
 }> = observer(({ tableTopPadding = 0, hideDust, setHideDust }) => {
   const { watchListDenoms, toggleWatchAssetDenom } = useUserWatchlist();
 
-  const { accountStore, userSettings } = useStore();
+  const { accountStore } = useStore();
+  const showUnverifiedAssetsFromStore = useUserSettingsStore(
+    (state) => state.showUnverifiedAssets
+  );
+  const setShowUnverifiedAssets = useUserSettingsStore(
+    (state) => state.setShowUnverifiedAssets
+  );
   const account = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
   const { width, isMobile } = useWindowSize();
@@ -100,11 +106,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
   );
 
   // #region unverified assets
-  const showUnverifiedAssetsSetting =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
-  const showUnverifiedAssets = Boolean(
-    showUnverifiedAssetsSetting?.state.showUnverifiedAssets
-  );
+  const showUnverifiedAssets = showUnverifiedAssetsFromStore;
   const [verifyAsset, setVerifiedAsset] = useState<{
     coinDenom: string;
     coinImageUrl?: string;
@@ -316,9 +318,7 @@ export const PortfolioAssetBalancesTable: FunctionComponent<{
         isOpen={Boolean(verifyAsset)}
         onConfirm={() => {
           if (!verifyAsset) return;
-          showUnverifiedAssetsSetting?.setState({
-            showUnverifiedAssets: true,
-          });
+          setShowUnverifiedAssets(true);
         }}
         onRequestClose={() => {
           setVerifiedAsset(null);
