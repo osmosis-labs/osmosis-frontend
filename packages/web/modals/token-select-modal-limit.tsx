@@ -42,7 +42,6 @@ interface TokenSelectModalLimitProps {
   hasNextPageAssets?: boolean;
   fetchNextPageAssets?: () => void;
   headerTitle: string;
-  hideBalances?: boolean;
   assetQueryInput?: string;
   setAssetQueryInput?: (input: string) => void;
 }
@@ -61,7 +60,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       hasNextPageAssets = false,
       fetchNextPageAssets,
       headerTitle,
-      hideBalances,
       setAssetQueryInput,
       assetQueryInput,
     }) => {
@@ -369,7 +367,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                 </div>
                               </div>
 
-                              {isWalletConnected && !hideBalances && (
+                              {isWalletConnected && (
                                 <div className="flex shrink-0 flex-col items-end gap-1">
                                   {usdValue && (
                                     <p

@@ -6,13 +6,15 @@ import { PropsWithChildren, ReactElement } from "react";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
-import { useFeatureFlags, useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation, useWindowSize } from "~/hooks";
 import { useBridgeStore } from "~/hooks/bridge";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { useStore } from "~/stores";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -22,6 +24,8 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
   const { asset } = useAssetInfo();
   const { t } = useTranslation();
   const featureFlags = useFeatureFlags();
+  const { isMobile } = useWindowSize();
+  const hideBalances = useUserSettingsStore((state) => state.hideBalances);
 
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
@@ -80,18 +84,24 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-2 text-h4 font-h4">
-          {data?.usdValue
-            ? formatPretty(data.usdValue)
-            : new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)).toString()}
+          <DesktopOnlyPrivateText
+            text={
+              data?.usdValue
+                ? formatPretty(data.usdValue)
+                : new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)).toString()
+            }
+          />
         </p>
       </SkeletonLoader>
 
-      <SkeletonLoader isLoaded={!isLoading}>
-        <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
-          {data?.amount ? formatPretty(data.amount) : `0 ${asset.coinDenom}`}{" "}
-          {t("tokenInfos.onOsmosis")}
-        </p>
-      </SkeletonLoader>
+      {!(hideBalances && !isMobile) && (
+        <SkeletonLoader isLoaded={!isLoading}>
+          <p className="mb-6 text-body1 font-body1 text-osmoverse-300">
+            {data?.amount ? formatPretty(data.amount) : `0 ${asset.coinDenom}`}{" "}
+            {t("tokenInfos.onOsmosis")}
+          </p>
+        </SkeletonLoader>
+      )}
 
       {(transferEnabled || isStrandedToken) && (
         <div className="flex gap-3">

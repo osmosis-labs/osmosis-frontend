@@ -25,6 +25,7 @@ import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import { PoolComposition } from "~/components/chart/pool-composition";
 import { Spinner } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { Disableable } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
@@ -522,15 +523,19 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                 <div className="flex place-content-between  gap-6 sm:flex-col sm:items-start">
                   <div className="flex shrink-0 flex-col gap-1">
                     <h4 className="text-osmoverse-100">
-                      {userSharePool.totalValue.toString()}
+                      <DesktopOnlyPrivateText
+                        text={userSharePool.totalValue.toString()}
+                      />
                     </h4>
                     <h6 className="subtitle1 text-osmoverse-300">
-                      {t("pool.sharesAmount", {
-                        shares: userSharePool
-                          .totalShares!.maxDecimals(6)
-                          .hideDenom(true)
-                          .toString(),
-                      })}
+                      <DesktopOnlyPrivateText
+                        text={t("pool.sharesAmount", {
+                          shares: userSharePool
+                            .totalShares!.maxDecimals(6)
+                            .hideDenom(true)
+                            .toString(),
+                        })}
+                      />
                     </h6>
                   </div>
 

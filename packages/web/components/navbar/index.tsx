@@ -27,6 +27,7 @@ import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-trading-toast";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
@@ -458,12 +459,16 @@ const WalletInfo: FunctionComponent<
                   data-testid="wallet-balance"
                   className="caption font-medium tracking-wider text-osmoverse-200"
                 >
-                  {userOsmoAsset?.amount
-                    ?.trim(true)
-                    .maxDecimals(2)
-                    .shrink(true)
-                    .upperCase(true)
-                    .toString()}
+                  <DesktopOnlyPrivateText
+                    text={
+                      userOsmoAsset?.amount
+                        ?.trim(true)
+                        .maxDecimals(2)
+                        .shrink(true)
+                        .upperCase(true)
+                        .toString() ?? ""
+                    }
+                  />
                 </span>
               </div>
             </button>

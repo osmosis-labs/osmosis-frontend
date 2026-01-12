@@ -24,6 +24,7 @@ import {
 import { PortfolioPerformance } from "~/components/complex/portfolio/performance";
 import { DataPoint } from "~/components/complex/portfolio/types";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import {
@@ -278,9 +279,17 @@ export const AssetsOverview: FunctionComponent<
             isLoaded={isTotalValueFetched || totalDisplayValue === undefined}
           >
             {isMobile ? (
-              <h4>{totalDisplayValue?.toString()}</h4>
+              <h4>
+                <DesktopOnlyPrivateText
+                  text={totalDisplayValue?.toString() ?? ""}
+                />
+              </h4>
             ) : (
-              <h3>{totalDisplayValue?.toString()}</h3>
+              <h3>
+                <DesktopOnlyPrivateText
+                  text={totalDisplayValue?.toString() ?? ""}
+                />
+              </h3>
             )}
           </SkeletonLoader>
           <SkeletonLoader

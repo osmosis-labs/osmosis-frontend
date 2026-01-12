@@ -4,7 +4,7 @@ import { ReactElement } from "react-markdown/lib/react-markdown";
 import { useWindowSize } from "~/hooks";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 
-const privateTextPlaceholder = "***";
+const privateTextPlaceholder = "*****";
 
 // DesktopOnlyPrivateText is hidden with the privateTextPlaceholder on desktop devices
 // if hide-balances setting is on. For mobile devices, it is always shown.
