@@ -102,10 +102,12 @@ Files using `useStore()` that need to be updated after each store migration:
 - `packages/web/stores/__tests__/nav-bar-store.spec.ts`
 - `packages/web/stores/__tests__/user-settings-store.spec.ts`
 
-## Known Issues
+## Cleanup Completed
 
-- The old MobX store classes in `packages/web/stores/user-settings/` are still present but no longer used
-- The old `ProfileStore` and `NavBarStore` classes are still present in root.ts but no longer used for data
+- ✅ Deleted old MobX user-settings folder (`packages/web/stores/user-settings/`)
+- ✅ Deleted old `ProfileStore` class (`packages/web/stores/profile.ts`)
+- ✅ Deleted old `NavBarStore` class (`packages/web/stores/nav-bar.ts`)
+- ✅ Removed old store instantiation from `RootStore`
 
 ## Notes
 
