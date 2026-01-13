@@ -4,7 +4,7 @@
 
 - Started: 2026-01-12
 - Target completion: TBD
-- Current tier: 3 (External Queries)
+- Current tier: 2 (complete), Next tier: 3 (External Queries)
 
 ## Migration Approach
 
@@ -89,6 +89,33 @@ Files using `useStore()` that need to be updated after each store migration:
 
 - [x] `packages/web/hooks/use-nav-bar.ts`
 - [x] `packages/web/components/navbar/index.tsx`
+
+### HideDust Consumers (3 files)
+
+- [x] `packages/web/modals/settings.tsx`
+- [x] `packages/web/components/complex/portfolio/portfolio-page.tsx`
+- [x] `packages/web/hooks/user-settings/use-hide-dust-filter.ts`
+
+### HideBalances Consumers (2 files)
+
+- [x] `packages/web/modals/settings.tsx`
+- [x] `packages/web/components/privacy.tsx`
+
+### Language Consumers (3 files)
+
+- [x] `packages/web/modals/settings.tsx`
+- [x] `packages/web/components/control/language-select.tsx`
+- [x] `packages/web/hooks/user-settings/use-current-language.ts`
+
+### UnverifiedAssets Consumers (7 files)
+
+- [x] `packages/web/modals/settings.tsx`
+- [x] `packages/web/components/complex/pool/create/cl/set-base-info.tsx`
+- [x] `packages/web/components/table/asset-info.tsx`
+- [x] `packages/web/components/table/portfolio-asset-balances.tsx`
+- [x] `packages/web/components/drawers/token-select-drawer.tsx`
+- [x] `packages/web/components/bridge/asset-select-screen.tsx`
+- [x] `packages/web/modals/token-select-modal-limit.tsx`
 
 ## New Zustand Stores Created
 
