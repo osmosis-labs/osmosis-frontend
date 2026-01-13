@@ -1,6 +1,7 @@
 import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { LanguageSelect } from "~/components/control";
@@ -47,7 +48,16 @@ const SettingsContent: FunctionComponent<{
     setHideBalances,
     showUnverifiedAssets,
     setShowUnverifiedAssets,
-  } = useUserSettingsStore();
+  } = useUserSettingsStore(
+    useShallow((state) => ({
+      hideDust: state.hideDust,
+      setHideDust: state.setHideDust,
+      hideBalances: state.hideBalances,
+      setHideBalances: state.setHideBalances,
+      showUnverifiedAssets: state.showUnverifiedAssets,
+      setShowUnverifiedAssets: state.setShowUnverifiedAssets,
+    }))
+  );
 
   const [isLanguageSelectOpen, setIsLanguageSelectOpen] = useState(false);
 
