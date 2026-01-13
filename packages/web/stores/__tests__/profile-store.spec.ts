@@ -83,6 +83,56 @@ describe("ProfileStore (Zustand)", () => {
     });
   });
 
+  describe("Backward Compatibility", () => {
+    it("should migrate avatar from legacy localStorage key (raw string)", async () => {
+      localStorage.setItem(
+        "profile_store/profile_store_current_avatar",
+        "ammelia"
+      );
+
+      useProfileStore.persist.rehydrate();
+
+      await waitFor(() => {
+        expect(useProfileStore.getState().currentAvatar).toBe("ammelia");
+      });
+
+      // Legacy key should be removed after migration
+      expect(
+        localStorage.getItem("profile_store/profile_store_current_avatar")
+      ).toBeNull();
+
+      // Migration should also persist to the new zustand key
+      const storedData = localStorage.getItem("profile-store");
+      expect(storedData).toBeTruthy();
+      const parsed = JSON.parse(storedData!);
+      expect(parsed.state.currentAvatar).toBe("ammelia");
+    });
+
+    it("should migrate avatar from legacy localStorage key (JSON string)", async () => {
+      localStorage.setItem(
+        "profile_store/profile_store_current_avatar",
+        JSON.stringify("ammelia")
+      );
+
+      useProfileStore.persist.rehydrate();
+
+      await waitFor(() => {
+        expect(useProfileStore.getState().currentAvatar).toBe("ammelia");
+      });
+
+      // Legacy key should be removed after migration
+      expect(
+        localStorage.getItem("profile_store/profile_store_current_avatar")
+      ).toBeNull();
+
+      // Migration should also persist to the new zustand key
+      const storedData = localStorage.getItem("profile-store");
+      expect(storedData).toBeTruthy();
+      const parsed = JSON.parse(storedData!);
+      expect(parsed.state.currentAvatar).toBe("ammelia");
+    });
+  });
+
   describe("Type Safety", () => {
     it("should only accept valid avatar values", () => {
       const { result } = renderHook(() => useProfileStore());

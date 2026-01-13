@@ -73,56 +73,83 @@ function migrateFromOldStorage(
   const newState = { ...state };
 
   // Try to migrate hide-dust
-  const oldHideDust = localStorage.getItem("hide-dust");
+  const hideDustKey = "hide-dust";
+  const namespacedHideDustKey = "user_setting/hide-dust";
+  const oldHideDustNamespaced = localStorage.getItem(namespacedHideDustKey);
+  const oldHideDustUnprefixed = localStorage.getItem(hideDustKey);
+  const oldHideDust = oldHideDustNamespaced ?? oldHideDustUnprefixed;
   if (oldHideDust) {
     try {
       const parsed = JSON.parse(oldHideDust);
       if (typeof parsed?.hideDust === "boolean") {
         newState.hideDust = parsed.hideDust;
       }
-      localStorage.removeItem("hide-dust");
+      if (oldHideDustNamespaced) localStorage.removeItem(namespacedHideDustKey);
+      if (oldHideDustUnprefixed) localStorage.removeItem(hideDustKey);
     } catch {
       // Ignore parsing errors
     }
   }
 
   // Try to migrate hide-balances
-  const oldHideBalances = localStorage.getItem("hide-balances");
+  const hideBalancesKey = "hide-balances";
+  const namespacedHideBalancesKey = "user_setting/hide-balances";
+  const oldHideBalancesNamespaced = localStorage.getItem(
+    namespacedHideBalancesKey
+  );
+  const oldHideBalancesUnprefixed = localStorage.getItem(hideBalancesKey);
+  const oldHideBalances =
+    oldHideBalancesNamespaced ?? oldHideBalancesUnprefixed;
   if (oldHideBalances) {
     try {
       const parsed = JSON.parse(oldHideBalances);
       if (typeof parsed?.hideBalances === "boolean") {
         newState.hideBalances = parsed.hideBalances;
       }
-      localStorage.removeItem("hide-balances");
+      if (oldHideBalancesNamespaced)
+        localStorage.removeItem(namespacedHideBalancesKey);
+      if (oldHideBalancesUnprefixed) localStorage.removeItem(hideBalancesKey);
     } catch {
       // Ignore parsing errors
     }
   }
 
   // Try to migrate language
-  const oldLanguage = localStorage.getItem("language");
+  const languageKey = "language";
+  const namespacedLanguageKey = "user_setting/language";
+  const oldLanguageNamespaced = localStorage.getItem(namespacedLanguageKey);
+  const oldLanguageUnprefixed = localStorage.getItem(languageKey);
+  const oldLanguage = oldLanguageNamespaced ?? oldLanguageUnprefixed;
   if (oldLanguage) {
     try {
       const parsed = JSON.parse(oldLanguage);
       if (typeof parsed?.language === "string") {
         newState.language = parsed.language;
       }
-      localStorage.removeItem("language");
+      if (oldLanguageNamespaced) localStorage.removeItem(namespacedLanguageKey);
+      if (oldLanguageUnprefixed) localStorage.removeItem(languageKey);
     } catch {
       // Ignore parsing errors
     }
   }
 
   // Try to migrate unverified-assets
-  const oldUnverified = localStorage.getItem("unverified-assets");
+  const unverifiedAssetsKey = "unverified-assets";
+  const namespacedUnverifiedAssetsKey = "user_setting/unverified-assets";
+  const oldUnverifiedNamespaced = localStorage.getItem(
+    namespacedUnverifiedAssetsKey
+  );
+  const oldUnverifiedUnprefixed = localStorage.getItem(unverifiedAssetsKey);
+  const oldUnverified = oldUnverifiedNamespaced ?? oldUnverifiedUnprefixed;
   if (oldUnverified) {
     try {
       const parsed = JSON.parse(oldUnverified);
       if (typeof parsed?.showUnverifiedAssets === "boolean") {
         newState.showUnverifiedAssets = parsed.showUnverifiedAssets;
       }
-      localStorage.removeItem("unverified-assets");
+      if (oldUnverifiedNamespaced)
+        localStorage.removeItem(namespacedUnverifiedAssetsKey);
+      if (oldUnverifiedUnprefixed) localStorage.removeItem(unverifiedAssetsKey);
     } catch {
       // Ignore parsing errors
     }

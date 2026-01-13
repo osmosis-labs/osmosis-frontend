@@ -49,26 +49,32 @@ export const useProfileStore = create<ProfileState>()(
     {
       name: "profile-store",
       // Migrate from old MobX storage format if present
-      onRehydrateStorage: () => (state) => {
-        // Check if old MobX storage key exists and migrate
-        if (typeof window !== "undefined") {
-          const oldKey = "profile_store_current_avatar";
+      onRehydrateStorage: () => () => {
+        if (typeof window === "undefined") return;
+
+        const legacyKeys = [
+          // Legacy MobX key format seen in production localStorage dumps
+          "profile_store/profile_store_current_avatar",
+          // Older/alternate legacy key
+          "profile_store_current_avatar",
+        ];
+
+        for (const oldKey of legacyKeys) {
           const oldValue = localStorage.getItem(oldKey);
-          if (oldValue && state) {
-            try {
-              const parsed = JSON.parse(oldValue);
-              if (parsed === "ammelia" || parsed === "wosmongton") {
-                state.currentAvatar = parsed;
-                // Remove old key after migration
-                localStorage.removeItem(oldKey);
-              }
-            } catch {
-              // If parsing fails, try direct value
-              if (oldValue === '"ammelia"' || oldValue === '"wosmongton"') {
-                state.currentAvatar = oldValue.replace(/"/g, "") as Avatar;
-                localStorage.removeItem(oldKey);
-              }
-            }
+          if (!oldValue) continue;
+
+          let parsedValue: unknown;
+          try {
+            parsedValue = JSON.parse(oldValue);
+          } catch {
+            // If JSON.parse throws, treat oldValue as a raw unquoted string
+            parsedValue = oldValue;
+          }
+
+          if (parsedValue === "ammelia" || parsedValue === "wosmongton") {
+            useProfileStore.setState({ currentAvatar: parsedValue });
+            localStorage.removeItem(oldKey);
+            break;
           }
         }
       },

@@ -5,13 +5,6 @@ import { useUserSettingsStore } from "../../../stores/user-settings-store";
 import { useCurrentLanguage } from "../use-current-language";
 
 // Mock the hooks and imports to avoid side effects
-jest.mock("../../language/context", () => ({
-  useTranslation: () => ({
-    changeLanguage: jest.fn(),
-    changeTranslations: jest.fn(),
-  }),
-}));
-
 jest.mock("../../../hooks", () => ({
   useTranslation: () => ({
     changeLanguage: jest.fn(),
