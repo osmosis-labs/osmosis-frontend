@@ -102,15 +102,3 @@ export const useProfileStore = create<ProfileState>()(
     }
   )
 );
-
-/**
- * Hook to get only the current avatar (for components that only need to read)
- */
-export const useCurrentAvatar = () =>
-  useProfileStore((state) => state.currentAvatar);
-
-/**
- * Hook to get only the setCurrentAvatar function (for components that only need to write)
- */
-export const useSetCurrentAvatar = () =>
-  useProfileStore((state) => state.setCurrentAvatar);
