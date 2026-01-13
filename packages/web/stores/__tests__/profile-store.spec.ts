@@ -5,6 +5,12 @@ import { mockStoreState } from "~/__tests__/zustand-utils";
 
 import { useProfileStore } from "../profile-store";
 
+const LEGACY_MIGRATION_COMPLETE_KEY = "profile-store/legacy-migration-complete";
+const LEGACY_KEYS = [
+  "profile_store/profile_store_current_avatar",
+  "profile_store_current_avatar",
+] as const;
+
 describe("ProfileStore (Zustand)", () => {
   beforeEach(() => {
     // Clear localStorage before each test
@@ -130,6 +136,38 @@ describe("ProfileStore (Zustand)", () => {
       expect(storedData).toBeTruthy();
       const parsed = JSON.parse(storedData!);
       expect(parsed.state.currentAvatar).toBe("ammelia");
+    });
+  });
+
+  describe("Legacy Migration Early Exit", () => {
+    it("should mark legacy migration complete when no legacy keys exist", async () => {
+      useProfileStore.persist.rehydrate();
+
+      await waitFor(() => {
+        expect(localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY)).toBe("1");
+      });
+    });
+
+    it("should skip legacy key reads when legacy migration is marked complete", async () => {
+      localStorage.setItem(LEGACY_MIGRATION_COMPLETE_KEY, "1");
+
+      const getItemSpy = jest.spyOn(Storage.prototype, "getItem");
+      try {
+        useProfileStore.persist.rehydrate();
+
+        // Ensure the early-exit check ran.
+        await waitFor(() => {
+          expect(getItemSpy).toHaveBeenCalledWith(
+            LEGACY_MIGRATION_COMPLETE_KEY
+          );
+        });
+
+        for (const legacyKey of LEGACY_KEYS) {
+          expect(getItemSpy).not.toHaveBeenCalledWith(legacyKey);
+        }
+      } finally {
+        getItemSpy.mockRestore();
+      }
     });
   });
 

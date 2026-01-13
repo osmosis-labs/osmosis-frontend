@@ -2,10 +2,15 @@
 import { renderHook } from "@testing-library/react";
 
 import {
+  SUPPORTED_LANGUAGES,
   SupportedLanguage,
   useUserSettingsStore,
 } from "../../../stores/user-settings-store";
 import { useCurrentLanguage } from "../use-current-language";
+
+const SUPPORTED_LANGUAGE_VALUES = SUPPORTED_LANGUAGES.map(
+  (lang) => lang.value
+) satisfies readonly SupportedLanguage[];
 
 // Mock the hooks and imports to avoid side effects
 jest.mock("../../../hooks", () => ({
@@ -51,15 +56,9 @@ describe("useCurrentLanguage", () => {
     expect(result.current).toBe("en");
   });
 
-  it.each([
-    "fr",
-    "ko",
-    "zh-cn",
-    "de",
-    "ja",
-  ] satisfies readonly SupportedLanguage[])(
+  it.each(SUPPORTED_LANGUAGE_VALUES)(
     "should return %s correctly",
-    (language) => {
+    (language: SupportedLanguage) => {
       useUserSettingsStore.setState({ language });
 
       const { result } = renderHook(() => useCurrentLanguage());

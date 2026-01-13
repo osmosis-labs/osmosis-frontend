@@ -3,6 +3,19 @@ import { act, renderHook } from "@testing-library/react";
 
 import { useUserSettingsStore } from "../user-settings-store";
 
+const LEGACY_MIGRATION_COMPLETE_KEY =
+  "user-settings-store/legacy-migration-complete";
+const LEGACY_KEYS = [
+  "hide-dust",
+  "user_setting/hide-dust",
+  "hide-balances",
+  "user_setting/hide-balances",
+  "language",
+  "user_setting/language",
+  "unverified-assets",
+  "user_setting/unverified-assets",
+] as const;
+
 describe("UserSettingsStore (Zustand)", () => {
   beforeEach(() => {
     // Clear localStorage before each test
@@ -174,6 +187,9 @@ describe("UserSettingsStore (Zustand)", () => {
       expect(state.hideBalances).toBe(true);
       expect(state.language).toBe("es");
       expect(state.showUnverifiedAssets).toBe(true);
+
+      // Should mark legacy migration complete (enables early-exit on future loads)
+      expect(localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY)).toBe("1");
     });
 
     it("should migrate from namespaced legacy localStorage keys", async () => {
@@ -229,6 +245,37 @@ describe("UserSettingsStore (Zustand)", () => {
       expect(parsed.state.hideBalances).toBe(true);
       expect(parsed.state.language).toBe("es");
       expect(parsed.state.showUnverifiedAssets).toBe(true);
+
+      // Should mark legacy migration complete (enables early-exit on future loads)
+      expect(localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY)).toBe("1");
+    });
+  });
+
+  describe("Legacy Migration Early Exit", () => {
+    it("should mark legacy migration complete when no legacy keys exist", async () => {
+      useUserSettingsStore.persist.rehydrate();
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      expect(localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY)).toBe("1");
+    });
+
+    it("should skip legacy key reads when legacy migration is marked complete", async () => {
+      localStorage.setItem(LEGACY_MIGRATION_COMPLETE_KEY, "1");
+
+      const getItemSpy = jest.spyOn(Storage.prototype, "getItem");
+      try {
+        useUserSettingsStore.persist.rehydrate();
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Ensure the early-exit check ran.
+        expect(getItemSpy).toHaveBeenCalledWith(LEGACY_MIGRATION_COMPLETE_KEY);
+
+        for (const legacyKey of LEGACY_KEYS) {
+          expect(getItemSpy).not.toHaveBeenCalledWith(legacyKey);
+        }
+      } finally {
+        getItemSpy.mockRestore();
+      }
     });
   });
 });
