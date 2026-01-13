@@ -33,29 +33,45 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]["value"];
 export const DUST_THRESHOLD = new Dec(0.02);
 
 /**
- * User settings state interface
+ * Runtime type guard for supported languages.
+ * Useful when reading persisted values (localStorage) that may be malformed.
  */
-interface UserSettingsState {
+function isSupportedLanguage(value: unknown): value is SupportedLanguage {
+  return (
+    typeof value === "string" &&
+    SUPPORTED_LANGUAGES.some((lang) => lang.value === value)
+  );
+}
+
+/**
+ * User settings persisted data
+ */
+type UserSettingsData = {
   /** Whether to hide small balances (dust) */
   hideDust: boolean;
   /** Whether to hide all balances for privacy */
   hideBalances: boolean;
   /** Current language setting */
-  language: string;
+  language: SupportedLanguage;
   /** Whether to show unverified assets */
   showUnverifiedAssets: boolean;
+};
 
+/**
+ * User settings state interface (persisted data + actions)
+ */
+interface UserSettingsState extends UserSettingsData {
   /** Set hide dust preference */
   setHideDust: (value: boolean) => void;
   /** Set hide balances preference */
   setHideBalances: (value: boolean) => void;
   /** Set language preference */
-  setLanguage: (value: string) => void;
+  setLanguage: (value: SupportedLanguage) => void;
   /** Set show unverified assets preference */
   setShowUnverifiedAssets: (value: boolean) => void;
 }
 
-const initialState = {
+const initialState: UserSettingsData = {
   hideDust: false,
   hideBalances: false,
   language: "en",
@@ -65,9 +81,7 @@ const initialState = {
 /**
  * Migrate from old MobX storage format
  */
-function migrateFromOldStorage(
-  state: typeof initialState
-): typeof initialState {
+function migrateFromOldStorage(state: UserSettingsData): UserSettingsData {
   if (typeof window === "undefined") return state;
 
   const newState = { ...state };
@@ -123,7 +137,7 @@ function migrateFromOldStorage(
   if (oldLanguage) {
     try {
       const parsed = JSON.parse(oldLanguage);
-      if (typeof parsed?.language === "string") {
+      if (isSupportedLanguage(parsed?.language)) {
         newState.language = parsed.language;
       }
       if (oldLanguageNamespaced) localStorage.removeItem(namespacedLanguageKey);

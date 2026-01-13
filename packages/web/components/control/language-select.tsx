@@ -3,12 +3,16 @@ import classNames from "classnames";
 import React, { FunctionComponent, useEffect } from "react";
 
 import { Icon } from "~/components/assets";
-import { MenuDropdownIconItemProps } from "~/components/control/types";
 import { useTranslation } from "~/hooks";
-import { useUserSettingsStore } from "~/stores/user-settings-store";
+import {
+  SupportedLanguage,
+  useUserSettingsStore,
+} from "~/stores/user-settings-store";
+
+type LanguageOption = { value: SupportedLanguage; display: string };
 
 type LanguageSelectProps = {
-  options: { value: string; display: string }[];
+  options: LanguageOption[];
   onOpenChange?: (isOpen: boolean) => void;
 };
 
@@ -25,7 +29,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = (
     (option) => option.value === currentLanguage
   );
 
-  const onSelect = (option: MenuDropdownIconItemProps) => {
+  const onSelect = (option: LanguageOption) => {
     setLanguage(option.value);
   };
 

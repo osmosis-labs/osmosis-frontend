@@ -1,7 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { renderHook } from "@testing-library/react";
 
-import { useUserSettingsStore } from "../../../stores/user-settings-store";
+import {
+  SupportedLanguage,
+  useUserSettingsStore,
+} from "../../../stores/user-settings-store";
 import { useCurrentLanguage } from "../use-current-language";
 
 // Mock the hooks and imports to avoid side effects
@@ -48,15 +51,20 @@ describe("useCurrentLanguage", () => {
     expect(result.current).toBe("en");
   });
 
-  it("should return different languages correctly", () => {
-    const languages = ["fr", "ko", "zh-cn", "de", "ja"];
-
-    for (const lang of languages) {
-      useUserSettingsStore.setState({ language: lang });
+  it.each([
+    "fr",
+    "ko",
+    "zh-cn",
+    "de",
+    "ja",
+  ] satisfies readonly SupportedLanguage[])(
+    "should return %s correctly",
+    (language) => {
+      useUserSettingsStore.setState({ language });
 
       const { result } = renderHook(() => useCurrentLanguage());
 
-      expect(result.current).toBe(lang);
+      expect(result.current).toBe(language);
     }
-  });
+  );
 });
