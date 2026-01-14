@@ -1,8 +1,6 @@
-import { ReactNode } from "react";
-import { useEffect } from "react";
+import { ReactNode, useEffect } from "react";
 
-import { useStore } from "~/stores";
-import { CallToAction } from "~/stores/nav-bar";
+import { CallToAction, useNavBarStore } from "~/stores/nav-bar-store";
 
 export function useNavBar({
   title,
@@ -12,15 +10,13 @@ export function useNavBar({
   hideTitle?: boolean;
   ctas?: CallToAction[];
 }) {
-  const { navBarStore } = useStore();
-
   useEffect(() => {
-    if (title) navBarStore.title = title;
-    if (ctas) navBarStore.callToActionButtons = ctas;
+    const { setTitle, setCallToActionButtons } = useNavBarStore.getState();
+    if (title) setTitle(title);
+    if (ctas) setCallToActionButtons(ctas);
     return () => {
-      navBarStore.title = undefined;
-      navBarStore.callToActionButtons = [];
+      setTitle(undefined);
+      setCallToActionButtons([]);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, ctas]);
 }

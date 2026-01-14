@@ -1,10 +1,8 @@
-import { observer } from "mobx-react-lite";
 import { Fragment, FunctionComponent } from "react";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 
 import { useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
-import { HideBalancesState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 
 const privateTextPlaceholder = "***";
 
@@ -12,18 +10,14 @@ const privateTextPlaceholder = "***";
 // if hide-balances setting is on. For mobile devices, it is always shown.
 export const DesktopOnlyPrivateText: FunctionComponent<{
   text: string | ReactElement;
-}> = observer(({ text }) => {
-  const { userSettings } = useStore();
+}> = ({ text }) => {
+  const hideBalances = useUserSettingsStore((state) => state.hideBalances);
   const { isMobile } = useWindowSize();
 
-  const hideBalancesSetting =
-    userSettings.getUserSettingById<HideBalancesState>("hide-balances");
-
-  const shouldHideBalances = hideBalancesSetting?.state.hideBalances;
-
-  if (shouldHideBalances && !isMobile) {
-    text = privateTextPlaceholder;
+  let displayText = text;
+  if (hideBalances && !isMobile) {
+    displayText = privateTextPlaceholder;
   }
 
-  return <Fragment>{text}</Fragment>;
-});
+  return <Fragment>{displayText}</Fragment>;
+};

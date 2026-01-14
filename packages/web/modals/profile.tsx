@@ -52,6 +52,7 @@ import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-tra
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { useProfileStore } from "~/stores/profile-store";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -64,7 +65,8 @@ export const ProfileModal: FunctionComponent<
 > = observer((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const { accountStore, profileStore } = useStore();
+  const { accountStore } = useStore();
+  const { currentAvatar, setCurrentAvatar } = useProfileStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
@@ -154,7 +156,7 @@ export const ProfileModal: FunctionComponent<
                 onClose={onCloseAvatarSelect}
               >
                 <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-                  {profileStore.currentAvatar === "ammelia" ? (
+                  {currentAvatar === "ammelia" ? (
                     <AmmeliaAvatar
                       className="mt-10"
                       aria-label="Select avatar"
@@ -175,16 +177,14 @@ export const ProfileModal: FunctionComponent<
                       <div className="text-center">
                         <WosmongtonAvatar
                           isSelectable
-                          isSelected={
-                            profileStore.currentAvatar === "wosmongton"
-                          }
+                          isSelected={currentAvatar === "wosmongton"}
                           onSelect={() => {
                             onCloseAvatarSelect();
                             logEvent([
                               EventName.ProfileModal.selectAvatarClicked,
                               { avatar: "wosmongton" },
                             ]);
-                            profileStore.setCurrentAvatar("wosmongton");
+                            setCurrentAvatar("wosmongton");
                           }}
                           className="outline-none"
                         />
@@ -196,14 +196,14 @@ export const ProfileModal: FunctionComponent<
                       <div className="text-center">
                         <AmmeliaAvatar
                           isSelectable
-                          isSelected={profileStore.currentAvatar === "ammelia"}
+                          isSelected={currentAvatar === "ammelia"}
                           onSelect={() => {
                             onCloseAvatarSelect();
                             logEvent([
                               EventName.ProfileModal.selectAvatarClicked,
                               { avatar: "ammelia" },
                             ]);
-                            profileStore.setCurrentAvatar("ammelia");
+                            setCurrentAvatar("ammelia");
                           }}
                           className="outline-none"
                         />

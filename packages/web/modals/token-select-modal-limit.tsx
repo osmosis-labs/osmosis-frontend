@@ -27,7 +27,7 @@ import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 interface TokenSelectModalLimitProps {
@@ -67,9 +67,12 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
     }) => {
       const { t } = useTranslation();
       const { isMobile } = useWindowSize(Breakpoint.sm);
-      const { userSettings, accountStore } = useStore();
+      const { accountStore } = useStore();
       const { onOpenWalletSelect } = useWalletSelect();
       const recommendedAssets = useRecommendedAssets();
+      const shouldShowUnverifiedAssets = useUserSettingsStore(
+        (state) => state.showUnverifiedAssets
+      );
 
       const isWalletConnected = accountStore.getWallet(
         accountStore.osmosisChainId
@@ -78,13 +81,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       const [_isRequestingClose, setIsRequestingClose] = useState(false);
       const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
         useState<string | null>(null);
-
-      const showUnverifiedAssetsSetting =
-        userSettings.getUserSettingById<UnverifiedAssetsState>(
-          "unverified-assets"
-        );
-      const shouldShowUnverifiedAssets =
-        showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
       const searchBoxRef = useRef<HTMLInputElement>(null);
       const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -194,7 +190,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
             isOpen={Boolean(confirmUnverifiedAssetDenom)}
             onConfirm={() => {
               if (!confirmUnverifiedAssetDenom) return;
-              showUnverifiedAssetsSetting?.setState({
+              useUserSettingsStore.setState({
                 showUnverifiedAssets: true,
               });
               onSelect(confirmUnverifiedAssetDenom);
