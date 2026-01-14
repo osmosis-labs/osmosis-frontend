@@ -69,14 +69,3 @@ export const useNavBarStore = create<NavBarState>()((set) => ({
   setCallToActionButtons: (buttons) => set({ callToActionButtons: buttons }),
   reset: () => set(initialState),
 }));
-
-/**
- * Hook to get only the title (for components that only need to read)
- */
-export const useNavBarTitle = () => useNavBarStore((state) => state.title);
-
-/**
- * Hook to get only the call to action buttons (for components that only need to read)
- */
-export const useNavBarCTAs = () =>
-  useNavBarStore((state) => state.callToActionButtons);

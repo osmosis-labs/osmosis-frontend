@@ -1,6 +1,8 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { noop } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 
 import { Icon } from "~/components/assets";
 import { LanguageSelect } from "~/components/control";
@@ -47,7 +49,16 @@ const SettingsContent: FunctionComponent<{
     setHideBalances,
     showUnverifiedAssets,
     setShowUnverifiedAssets,
-  } = useUserSettingsStore();
+  } = useUserSettingsStore(
+    useShallow((state) => ({
+      hideDust: state.hideDust,
+      setHideDust: state.setHideDust,
+      hideBalances: state.hideBalances,
+      setHideBalances: state.setHideBalances,
+      showUnverifiedAssets: state.showUnverifiedAssets,
+      setShowUnverifiedAssets: state.setShowUnverifiedAssets,
+    }))
+  );
 
   const [isLanguageSelectOpen, setIsLanguageSelectOpen] = useState(false);
 
@@ -74,17 +85,23 @@ const SettingsContent: FunctionComponent<{
         <div className="flex items-center justify-between">
           <Icon id="dust-broom" className="text-osmoverse-200" />
           <Switch
+            aria-labelledby="settings-filter-dust-label"
             checked={hideDust}
             onCheckedChange={() => setHideDust(!hideDust)}
           />
         </div>
         <div className="group flex justify-between text-white-full">
           <div className="flex flex-col gap-1">
-            <span className="subtitle1 text-left tracking-wide">
+            <span
+              id="settings-filter-dust-label"
+              className="subtitle1 text-left tracking-wide"
+            >
               {t("settings.filterDust")}
             </span>
             <span className="caption tracking-wider text-osmoverse-200">
-              {t("settings.titleHideDust", { fiatSymbol: "$" })}
+              {t("settings.titleHideDust", {
+                fiatSymbol: DEFAULT_VS_CURRENCY.symbol,
+              })}
             </span>
           </div>
         </div>
@@ -96,13 +113,17 @@ const SettingsContent: FunctionComponent<{
           <div className="flex items-center justify-between">
             <Icon id="zoom-out" className="text-osmoverse-200" />
             <Switch
+              aria-labelledby="settings-hide-balances-label"
               checked={hideBalances}
               onCheckedChange={() => setHideBalances(!hideBalances)}
             />
           </div>
           <div className="group flex justify-between text-white-full">
             <div className="flex flex-col gap-1">
-              <span className="subtitle1 text-left tracking-wide">
+              <span
+                id="settings-hide-balances-label"
+                className="subtitle1 text-left tracking-wide"
+              >
                 {t("settings.hideBalances")}
               </span>
               <span className="caption tracking-wider text-osmoverse-200">
@@ -118,6 +139,7 @@ const SettingsContent: FunctionComponent<{
         <div className="flex items-center justify-between">
           <Icon id="alert-triangle" className="text-osmoverse-200" />
           <Switch
+            aria-labelledby="settings-unverified-assets-label"
             checked={showUnverifiedAssets}
             onCheckedChange={() =>
               setShowUnverifiedAssets(!showUnverifiedAssets)
@@ -126,7 +148,10 @@ const SettingsContent: FunctionComponent<{
         </div>
         <div className="group flex justify-between text-white-full">
           <div className="flex flex-col gap-1">
-            <span className="subtitle1 text-left tracking-wide">
+            <span
+              id="settings-unverified-assets-label"
+              className="subtitle1 text-left tracking-wide"
+            >
               {t("settings.titleUnverifiedAssets")}
             </span>
             <span className="caption tracking-wider text-osmoverse-200">

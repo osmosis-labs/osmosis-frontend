@@ -1,17 +1,18 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { renderHook } from "@testing-library/react";
 
-import { useUserSettingsStore } from "../../../stores/user-settings-store";
+import {
+  SUPPORTED_LANGUAGES,
+  SupportedLanguage,
+  useUserSettingsStore,
+} from "../../../stores/user-settings-store";
 import { useCurrentLanguage } from "../use-current-language";
 
-// Mock the hooks and imports to avoid side effects
-jest.mock("../../language/context", () => ({
-  useTranslation: () => ({
-    changeLanguage: jest.fn(),
-    changeTranslations: jest.fn(),
-  }),
-}));
+const SUPPORTED_LANGUAGE_VALUES = SUPPORTED_LANGUAGES.map(
+  (lang) => lang.value
+) satisfies readonly SupportedLanguage[];
 
+// Mock the hooks and imports to avoid side effects
 jest.mock("../../../hooks", () => ({
   useTranslation: () => ({
     changeLanguage: jest.fn(),
@@ -55,15 +56,14 @@ describe("useCurrentLanguage", () => {
     expect(result.current).toBe("en");
   });
 
-  it("should return different languages correctly", () => {
-    const languages = ["fr", "ko", "zh-cn", "de", "ja"];
-
-    for (const lang of languages) {
-      useUserSettingsStore.setState({ language: lang });
+  it.each(SUPPORTED_LANGUAGE_VALUES)(
+    "should return %s correctly",
+    (language: SupportedLanguage) => {
+      useUserSettingsStore.setState({ language });
 
       const { result } = renderHook(() => useCurrentLanguage());
 
-      expect(result.current).toBe(lang);
+      expect(result.current).toBe(language);
     }
-  });
+  );
 });

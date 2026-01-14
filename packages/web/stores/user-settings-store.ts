@@ -33,29 +33,45 @@ export type SupportedLanguage = (typeof SUPPORTED_LANGUAGES)[number]["value"];
 export const DUST_THRESHOLD = new Dec(0.02);
 
 /**
- * User settings state interface
+ * Runtime type guard for supported languages.
+ * Useful when reading persisted values (localStorage) that may be malformed.
  */
-interface UserSettingsState {
+function isSupportedLanguage(value: unknown): value is SupportedLanguage {
+  return (
+    typeof value === "string" &&
+    SUPPORTED_LANGUAGES.some((lang) => lang.value === value)
+  );
+}
+
+/**
+ * User settings persisted data
+ */
+type UserSettingsData = {
   /** Whether to hide small balances (dust) */
   hideDust: boolean;
   /** Whether to hide all balances for privacy */
   hideBalances: boolean;
   /** Current language setting */
-  language: string;
+  language: SupportedLanguage;
   /** Whether to show unverified assets */
   showUnverifiedAssets: boolean;
+};
 
+/**
+ * User settings state interface (persisted data + actions)
+ */
+interface UserSettingsState extends UserSettingsData {
   /** Set hide dust preference */
   setHideDust: (value: boolean) => void;
   /** Set hide balances preference */
   setHideBalances: (value: boolean) => void;
   /** Set language preference */
-  setLanguage: (value: string) => void;
+  setLanguage: (value: SupportedLanguage) => void;
   /** Set show unverified assets preference */
   setShowUnverifiedAssets: (value: boolean) => void;
 }
 
-const initialState = {
+const initialState: UserSettingsData = {
   hideDust: false,
   hideBalances: false,
   language: "en",
@@ -63,69 +79,144 @@ const initialState = {
 };
 
 /**
+ * Once legacy MobX keys have been checked/migrated, we can skip future checks.
+ * This avoids repeated localStorage reads on subsequent visits.
+ */
+const LEGACY_MIGRATION_COMPLETE_KEY =
+  "user-settings-store/legacy-migration-complete";
+
+/**
  * Migrate from old MobX storage format
  */
-function migrateFromOldStorage(
-  state: typeof initialState
-): typeof initialState {
+function migrateFromOldStorage(state: UserSettingsData): UserSettingsData {
   if (typeof window === "undefined") return state;
 
-  const newState = { ...state };
+  // If we've already verified/migrated legacy keys, skip further checks.
+  if (localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY) === "1") return state;
+
+  // Read legacy values once so we can early-exit cheaply.
+  const hideDustKey = "hide-dust";
+  const namespacedHideDustKey = "user_setting/hide-dust";
+  const oldHideDustNamespaced = localStorage.getItem(namespacedHideDustKey);
+  const oldHideDustUnprefixed = localStorage.getItem(hideDustKey);
+
+  const hideBalancesKey = "hide-balances";
+  const namespacedHideBalancesKey = "user_setting/hide-balances";
+  const oldHideBalancesNamespaced = localStorage.getItem(
+    namespacedHideBalancesKey
+  );
+  const oldHideBalancesUnprefixed = localStorage.getItem(hideBalancesKey);
+
+  const languageKey = "language";
+  const namespacedLanguageKey = "user_setting/language";
+  const oldLanguageNamespaced = localStorage.getItem(namespacedLanguageKey);
+  const oldLanguageUnprefixed = localStorage.getItem(languageKey);
+
+  const unverifiedAssetsKey = "unverified-assets";
+  const namespacedUnverifiedAssetsKey = "user_setting/unverified-assets";
+  const oldUnverifiedNamespaced = localStorage.getItem(
+    namespacedUnverifiedAssetsKey
+  );
+  const oldUnverifiedUnprefixed = localStorage.getItem(unverifiedAssetsKey);
+
+  const hasAnyLegacyValues =
+    oldHideDustNamespaced !== null ||
+    oldHideDustUnprefixed !== null ||
+    oldHideBalancesNamespaced !== null ||
+    oldHideBalancesUnprefixed !== null ||
+    oldLanguageNamespaced !== null ||
+    oldLanguageUnprefixed !== null ||
+    oldUnverifiedNamespaced !== null ||
+    oldUnverifiedUnprefixed !== null;
+
+  if (!hasAnyLegacyValues) {
+    localStorage.setItem(LEGACY_MIGRATION_COMPLETE_KEY, "1");
+    return state;
+  }
+
+  const newState: UserSettingsData = {
+    hideDust: state.hideDust,
+    hideBalances: state.hideBalances,
+    language: state.language,
+    showUnverifiedAssets: state.showUnverifiedAssets,
+  };
+
+  let didEncounterParseError = false;
 
   // Try to migrate hide-dust
-  const oldHideDust = localStorage.getItem("hide-dust");
-  if (oldHideDust) {
+  const oldHideDust = oldHideDustNamespaced ?? oldHideDustUnprefixed;
+  if (oldHideDust !== null) {
     try {
       const parsed = JSON.parse(oldHideDust);
       if (typeof parsed?.hideDust === "boolean") {
         newState.hideDust = parsed.hideDust;
       }
-      localStorage.removeItem("hide-dust");
+      if (oldHideDustNamespaced !== null)
+        localStorage.removeItem(namespacedHideDustKey);
+      if (oldHideDustUnprefixed !== null) localStorage.removeItem(hideDustKey);
     } catch {
+      didEncounterParseError = true;
       // Ignore parsing errors
     }
   }
 
   // Try to migrate hide-balances
-  const oldHideBalances = localStorage.getItem("hide-balances");
-  if (oldHideBalances) {
+  const oldHideBalances =
+    oldHideBalancesNamespaced ?? oldHideBalancesUnprefixed;
+  if (oldHideBalances !== null) {
     try {
       const parsed = JSON.parse(oldHideBalances);
       if (typeof parsed?.hideBalances === "boolean") {
         newState.hideBalances = parsed.hideBalances;
       }
-      localStorage.removeItem("hide-balances");
+      if (oldHideBalancesNamespaced !== null)
+        localStorage.removeItem(namespacedHideBalancesKey);
+      if (oldHideBalancesUnprefixed !== null)
+        localStorage.removeItem(hideBalancesKey);
     } catch {
+      didEncounterParseError = true;
       // Ignore parsing errors
     }
   }
 
   // Try to migrate language
-  const oldLanguage = localStorage.getItem("language");
-  if (oldLanguage) {
+  const oldLanguage = oldLanguageNamespaced ?? oldLanguageUnprefixed;
+  if (oldLanguage !== null) {
     try {
       const parsed = JSON.parse(oldLanguage);
-      if (typeof parsed?.language === "string") {
+      if (isSupportedLanguage(parsed?.language)) {
         newState.language = parsed.language;
       }
-      localStorage.removeItem("language");
+      if (oldLanguageNamespaced !== null)
+        localStorage.removeItem(namespacedLanguageKey);
+      if (oldLanguageUnprefixed !== null) localStorage.removeItem(languageKey);
     } catch {
+      didEncounterParseError = true;
       // Ignore parsing errors
     }
   }
 
   // Try to migrate unverified-assets
-  const oldUnverified = localStorage.getItem("unverified-assets");
-  if (oldUnverified) {
+  const oldUnverified = oldUnverifiedNamespaced ?? oldUnverifiedUnprefixed;
+  if (oldUnverified !== null) {
     try {
       const parsed = JSON.parse(oldUnverified);
       if (typeof parsed?.showUnverifiedAssets === "boolean") {
         newState.showUnverifiedAssets = parsed.showUnverifiedAssets;
       }
-      localStorage.removeItem("unverified-assets");
+      if (oldUnverifiedNamespaced !== null)
+        localStorage.removeItem(namespacedUnverifiedAssetsKey);
+      if (oldUnverifiedUnprefixed !== null)
+        localStorage.removeItem(unverifiedAssetsKey);
     } catch {
+      didEncounterParseError = true;
       // Ignore parsing errors
     }
+  }
+
+  // Only mark complete if all legacy values were parseable (and thus removed).
+  if (!didEncounterParseError) {
+    localStorage.setItem(LEGACY_MIGRATION_COMPLETE_KEY, "1");
   }
 
   return newState;
@@ -186,41 +277,3 @@ export const useUserSettingsStore = create<UserSettingsState>()(
     }
   )
 );
-
-// ============================================================================
-// Convenience hooks for accessing individual settings
-// ============================================================================
-
-/** Hook to get/set hide dust setting */
-export const useHideDust = () => {
-  const hideDust = useUserSettingsStore((state) => state.hideDust);
-  const setHideDust = useUserSettingsStore((state) => state.setHideDust);
-  return { hideDust, setHideDust };
-};
-
-/** Hook to get/set hide balances setting */
-export const useHideBalances = () => {
-  const hideBalances = useUserSettingsStore((state) => state.hideBalances);
-  const setHideBalances = useUserSettingsStore(
-    (state) => state.setHideBalances
-  );
-  return { hideBalances, setHideBalances };
-};
-
-/** Hook to get/set language setting */
-export const useLanguageSetting = () => {
-  const language = useUserSettingsStore((state) => state.language);
-  const setLanguage = useUserSettingsStore((state) => state.setLanguage);
-  return { language, setLanguage };
-};
-
-/** Hook to get/set show unverified assets setting */
-export const useShowUnverifiedAssets = () => {
-  const showUnverifiedAssets = useUserSettingsStore(
-    (state) => state.showUnverifiedAssets
-  );
-  const setShowUnverifiedAssets = useUserSettingsStore(
-    (state) => state.setShowUnverifiedAssets
-  );
-  return { showUnverifiedAssets, setShowUnverifiedAssets };
-};
