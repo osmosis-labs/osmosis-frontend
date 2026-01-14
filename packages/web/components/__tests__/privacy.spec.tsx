@@ -38,7 +38,7 @@ describe("DesktopOnlyPrivateText", () => {
 
     render(<DesktopOnlyPrivateText text="$1,234.56" />);
 
-    expect(screen.getByText("***")).toBeInTheDocument();
+    expect(screen.getByText("*****")).toBeInTheDocument();
     expect(screen.queryByText("$1,234.56")).not.toBeInTheDocument();
   });
 
@@ -49,7 +49,7 @@ describe("DesktopOnlyPrivateText", () => {
     render(<DesktopOnlyPrivateText text="$1,234.56" />);
 
     expect(screen.getByText("$1,234.56")).toBeInTheDocument();
-    expect(screen.queryByText("***")).not.toBeInTheDocument();
+    expect(screen.queryByText("*****")).not.toBeInTheDocument();
   });
 
   it("should handle ReactElement as text", () => {
@@ -76,6 +76,6 @@ describe("DesktopOnlyPrivateText", () => {
     );
 
     expect(screen.queryByTestId("custom-element")).not.toBeInTheDocument();
-    expect(screen.getByText("***")).toBeInTheDocument();
+    expect(screen.getByText("*****")).toBeInTheDocument();
   });
 });
