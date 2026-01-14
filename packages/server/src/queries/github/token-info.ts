@@ -8,6 +8,10 @@ interface GenericCmsData {
   twitterURL?: string;
   websiteURL?: string;
   stakingURL?: string;
+  telegramURL?: string;
+  discordURL?: string;
+  githubURL?: string;
+  mediumURL?: string;
 }
 export interface TokenCMSData extends GenericCmsData {
   description?: Record<string, string>;
