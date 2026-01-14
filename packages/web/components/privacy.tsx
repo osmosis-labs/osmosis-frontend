@@ -1,21 +1,17 @@
-import { Fragment, FunctionComponent } from "react";
-import { ReactElement } from "react-markdown/lib/react-markdown";
+import { Fragment, FunctionComponent, ReactNode } from "react";
 
-import { useWindowSize } from "~/hooks";
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 
-const privateTextPlaceholder = "***";
+const privateTextPlaceholder = "*****";
 
-// DesktopOnlyPrivateText is hidden with the privateTextPlaceholder on desktop devices
-// if hide-balances setting is on. For mobile devices, it is always shown.
-export const DesktopOnlyPrivateText: FunctionComponent<{
-  text: string | ReactElement;
+// Displays a placeholder when the user has enabled "Hide balances".
+export const PrivateText: FunctionComponent<{
+  text: ReactNode;
 }> = ({ text }) => {
   const hideBalances = useUserSettingsStore((state) => state.hideBalances);
-  const { isMobile } = useWindowSize();
 
   let displayText = text;
-  if (hideBalances && !isMobile) {
+  if (hideBalances) {
     displayText = privateTextPlaceholder;
   }
 

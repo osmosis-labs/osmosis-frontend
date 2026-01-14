@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { NoSearchResultsSplash, SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
@@ -248,12 +249,14 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     asset.amount.toDec().isPositive() && (
                       <div className="flex flex-col text-right">
                         <p className="body1">
-                          {formatPretty(asset.amount.hideDenom(true), {
-                            maxDecimals: 6,
-                          })}
+                          <PrivateText
+                            text={formatPretty(asset.amount.hideDenom(true), {
+                              maxDecimals: 6,
+                            })}
+                          />
                         </p>
                         <span className="body2 font-medium text-osmoverse-400">
-                          {asset.usdValue.toString()}
+                          <PrivateText text={asset.usdValue.toString()} />
                         </span>
                       </div>
                     )}
