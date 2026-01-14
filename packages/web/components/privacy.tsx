@@ -1,13 +1,12 @@
-import { Fragment, FunctionComponent } from "react";
-import { ReactElement } from "react-markdown/lib/react-markdown";
+import { Fragment, FunctionComponent, ReactNode } from "react";
 
 import { useUserSettingsStore } from "~/stores/user-settings-store";
 
 const privateTextPlaceholder = "*****";
 
 // Displays a placeholder when the user has enabled "Hide balances".
-export const DesktopOnlyPrivateText: FunctionComponent<{
-  text: string | ReactElement;
+export const PrivateText: FunctionComponent<{
+  text: ReactNode;
 }> = ({ text }) => {
   const hideBalances = useUserSettingsStore((state) => state.hideBalances);
 

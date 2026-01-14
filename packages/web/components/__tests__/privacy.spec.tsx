@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import React from "react";
 
 import { useUserSettingsStore } from "../../stores/user-settings-store";
-import { DesktopOnlyPrivateText } from "../privacy";
+import { PrivateText } from "../privacy";
 
-describe("DesktopOnlyPrivateText", () => {
+describe("PrivateText", () => {
   beforeEach(() => {
     // Reset store to initial state
     useUserSettingsStore.setState({
@@ -18,7 +18,7 @@ describe("DesktopOnlyPrivateText", () => {
   it("should show text when hideBalances is false", () => {
     useUserSettingsStore.setState({ hideBalances: false });
 
-    render(<DesktopOnlyPrivateText text="$1,234.56" />);
+    render(<PrivateText text="$1,234.56" />);
 
     expect(screen.getByText("$1,234.56")).toBeInTheDocument();
   });
@@ -26,7 +26,7 @@ describe("DesktopOnlyPrivateText", () => {
   it("should show placeholder when hideBalances is true", () => {
     useUserSettingsStore.setState({ hideBalances: true });
 
-    render(<DesktopOnlyPrivateText text="$1,234.56" />);
+    render(<PrivateText text="$1,234.56" />);
 
     expect(screen.getByText("*****")).toBeInTheDocument();
     expect(screen.queryByText("$1,234.56")).not.toBeInTheDocument();
@@ -36,7 +36,7 @@ describe("DesktopOnlyPrivateText", () => {
     useUserSettingsStore.setState({ hideBalances: false });
 
     render(
-      <DesktopOnlyPrivateText
+      <PrivateText
         text={<span data-testid="custom-element">Custom Content</span>}
       />
     );
@@ -49,7 +49,7 @@ describe("DesktopOnlyPrivateText", () => {
     useUserSettingsStore.setState({ hideBalances: true });
 
     render(
-      <DesktopOnlyPrivateText
+      <PrivateText
         text={<span data-testid="custom-element">Custom Content</span>}
       />
     );

@@ -6,7 +6,7 @@ import { PropsWithChildren, ReactElement } from "react";
 
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
-import { DesktopOnlyPrivateText } from "~/components/privacy";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
@@ -84,7 +84,7 @@ export const AssetBalance = observer(({ className }: CustomClasses) => {
 
       <SkeletonLoader isLoaded={!isLoading}>
         <p className="mb-2 text-h4 font-h4">
-          <DesktopOnlyPrivateText
+          <PrivateText
             text={
               data?.usdValue
                 ? formatPretty(data.usdValue)

@@ -6,7 +6,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { AllocationTabs } from "~/components/complex/portfolio/allocation-tabs";
 import { AllocationOptions } from "~/components/complex/portfolio/types";
-import { DesktopOnlyPrivateText } from "~/components/privacy";
+import { PrivateText } from "~/components/privacy";
 import { EventName } from "~/config";
 import {
   Breakpoint,
@@ -155,7 +155,7 @@ export const Allocation: FunctionComponent<{
                     </span>
                   </div>
                   <div>
-                    <DesktopOnlyPrivateText text={formatFiatPrice(fiatValue)} />
+                    <PrivateText text={formatFiatPrice(fiatValue)} />
                   </div>
                 </div>
               );

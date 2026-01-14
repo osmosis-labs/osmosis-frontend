@@ -22,7 +22,7 @@ import {
 } from "react";
 
 import { ATOM_BASE_DENOM } from "~/components/place-limit-tool/defaults";
-import { DesktopOnlyPrivateText } from "~/components/privacy";
+import { PrivateText } from "~/components/privacy";
 import { AssetCell } from "~/components/table/cells/asset";
 import { SpriteIconId } from "~/config";
 import {
@@ -480,11 +480,11 @@ const BalanceCell: AssetCellComponent = ({ amount, usdValue }) => (
   <div className="ml-auto flex flex-col">
     {usdValue && (
       <div>
-        <DesktopOnlyPrivateText text={usdValue.toString()} />
+        <PrivateText text={usdValue.toString()} />
       </div>
     )}
     <div className="body2 whitespace-nowrap text-osmoverse-300">
-      <DesktopOnlyPrivateText
+      <PrivateText
         text={
           amount
             ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 })

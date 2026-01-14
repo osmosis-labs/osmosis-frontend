@@ -38,7 +38,7 @@ import {
 import { Spinner } from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
-import { DesktopOnlyPrivateText } from "~/components/privacy";
+import { PrivateText } from "~/components/privacy";
 import { ArrowButton, Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
@@ -242,7 +242,7 @@ export const ProfileModal: FunctionComponent<
 
                     <div>
                       <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                        <DesktopOnlyPrivateText
+                        <PrivateText
                           text={formatPretty(
                             userOsmoAsset?.usdValue ??
                               new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
@@ -255,7 +255,7 @@ export const ProfileModal: FunctionComponent<
                         />
                       </h6>
                       <p className="text-h5 font-h5">
-                        <DesktopOnlyPrivateText
+                        <PrivateText
                           text={formatPretty(
                             userOsmoAsset?.amount ?? new Dec(0),
                             {

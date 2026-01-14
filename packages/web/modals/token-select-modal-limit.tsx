@@ -13,7 +13,7 @@ import {
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
-import { DesktopOnlyPrivateText } from "~/components/privacy";
+import { PrivateText } from "~/components/privacy";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
   Breakpoint,
@@ -379,7 +379,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                         }
                                       )}
                                     >
-                                      <DesktopOnlyPrivateText
+                                      <PrivateText
                                         text={formatFiatPrice(
                                           usdValue ??
                                             new PricePretty(
@@ -392,7 +392,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                   )}
                                   {amount && (
                                     <span className="body2 text-osmoverse-300">
-                                      <DesktopOnlyPrivateText
+                                      <PrivateText
                                         text={
                                           amount
                                             ? formatPretty(amount).split(" ")[0]
