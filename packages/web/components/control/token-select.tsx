@@ -13,6 +13,7 @@ import {
 } from "~/hooks";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<{
@@ -144,9 +145,7 @@ export const TokenSelect: FunctionComponent<{
           >
             <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-[30px] md:w-[30px]">
               <EntityImage
-                logoURIs={{
-                  png: selectedCurrency.coinImageUrl,
-                }}
+                logoURIs={getLogoURIs(selectedCurrency.coinImageUrl)}
                 name={selectedCurrency.coinDenom}
                 symbol={selectedCurrency.coinDenom}
                 width={isMobile ? 30 : 50}

@@ -23,6 +23,7 @@ import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
@@ -237,9 +238,7 @@ const TokenSelector = observer(
             {selectedAsset ? (
               <>
                 <EntityImage
-                  logoURIs={{
-                    png: selectedAsset.token.coinImageUrl,
-                  }}
+                  logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
                   name={selectedAsset.token.coinDenom}
                   symbol={selectedAsset.token.coinDenom}
                   width={52}
