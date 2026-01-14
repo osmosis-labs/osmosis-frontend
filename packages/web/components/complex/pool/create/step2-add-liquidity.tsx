@@ -6,6 +6,7 @@ import { StepProps } from "~/components/complex/pool/create/types";
 import { InputBox } from "~/components/input";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
@@ -31,9 +32,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                 <div className="flex items-center">
                   <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
                     <EntityImage
-                      logoURIs={{
-                        png: currency.coinImageUrl,
-                      }}
+                      logoURIs={getLogoURIs(currency.coinImageUrl)}
                       name={currency.coinDenom}
                       symbol={currency.coinDenom}
                       width={isMobile ? 30 : 44}
