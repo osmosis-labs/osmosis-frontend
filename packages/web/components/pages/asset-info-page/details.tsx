@@ -114,7 +114,10 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
                   asChild
                 >
                   <Link href={telegramURL} target="_blank" rel="external">
-                    <Icon className="h-4 w-4 stroke-osmoverse-400" id="telegram" />
+                    <Icon
+                      className="h-4 w-4 stroke-osmoverse-400"
+                      id="telegram"
+                    />
                   </Link>
                 </Button>
               ) : null}
