@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { SearchBox } from "~/components/input";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { InputProps } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
@@ -111,10 +112,10 @@ export const TokenSelectModal: FunctionComponent<
                         tokenAmount.length > 10,
                     })}
                   >
-                    {tokenAmount}
+                    <DesktopOnlyPrivateText text={tokenAmount} />
                   </h6>
                   <span className="subtitle1 text-osmoverse-400">
-                    {tokenPrice}
+                    <DesktopOnlyPrivateText text={tokenPrice} />
                   </span>
                 </div>
               )}

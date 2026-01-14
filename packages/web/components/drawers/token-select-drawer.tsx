@@ -7,6 +7,7 @@ import { useLatest } from "react-use";
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
@@ -324,12 +325,16 @@ export const TokenSelectDrawer: FunctionComponent<{
                           amount.toDec().isPositive() && (
                             <div className="flex flex-col text-right">
                               <p className="button">
-                                {formatPretty(amount.hideDenom(true), {
-                                  maxDecimals: 6,
-                                })}
+                                <DesktopOnlyPrivateText
+                                  text={formatPretty(amount.hideDenom(true), {
+                                    maxDecimals: 6,
+                                  })}
+                                />
                               </p>
                               <span className="caption font-medium text-osmoverse-400">
-                                {usdValue.toString()}
+                                <DesktopOnlyPrivateText
+                                  text={usdValue.toString()}
+                                />
                               </span>
                             </div>
                           )}

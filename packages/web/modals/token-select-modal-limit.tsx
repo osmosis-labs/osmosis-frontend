@@ -13,6 +13,7 @@ import {
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { DesktopOnlyPrivateText } from "~/components/privacy";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
   Breakpoint,
@@ -378,20 +379,26 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                         }
                                       )}
                                     >
-                                      {formatFiatPrice(
-                                        usdValue ??
-                                          new PricePretty(
-                                            DEFAULT_VS_CURRENCY,
-                                            0
-                                          )
-                                      )}
+                                      <DesktopOnlyPrivateText
+                                        text={formatFiatPrice(
+                                          usdValue ??
+                                            new PricePretty(
+                                              DEFAULT_VS_CURRENCY,
+                                              0
+                                            )
+                                        )}
+                                      />
                                     </p>
                                   )}
                                   {amount && (
                                     <span className="body2 text-osmoverse-300">
-                                      {amount
-                                        ? formatPretty(amount).split(" ")[0]
-                                        : "0"}
+                                      <DesktopOnlyPrivateText
+                                        text={
+                                          amount
+                                            ? formatPretty(amount).split(" ")[0]
+                                            : "0"
+                                        }
+                                      />
                                     </span>
                                   )}
                                 </div>
