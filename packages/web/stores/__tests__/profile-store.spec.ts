@@ -17,6 +17,8 @@ describe("ProfileStore (Zustand)", () => {
     localStorage.clear();
     // Reset the store to initial state
     useProfileStore.setState({ currentAvatar: "wosmongton" });
+    // Remove persisted data so migration tests start from a clean slate
+    useProfileStore.persist.clearStorage();
   });
 
   describe("Initial State", () => {
@@ -136,6 +138,27 @@ describe("ProfileStore (Zustand)", () => {
       expect(storedData).toBeTruthy();
       const parsed = JSON.parse(storedData!);
       expect(parsed.state.currentAvatar).toBe("ammelia");
+    });
+
+    it("should persist migrated avatar on initial hydration", async () => {
+      localStorage.setItem(
+        "profile_store/profile_store_current_avatar",
+        "ammelia"
+      );
+
+      let isolatedStore: typeof useProfileStore | undefined;
+      jest.isolateModules(() => {
+        ({ useProfileStore: isolatedStore } = require("../profile-store"));
+      });
+
+      await waitFor(() => {
+        const storedData = localStorage.getItem("profile-store");
+        expect(storedData).toBeTruthy();
+        const parsed = JSON.parse(storedData!);
+        expect(parsed.state.currentAvatar).toBe("ammelia");
+      });
+
+      expect(isolatedStore?.getState().currentAvatar).toBe("ammelia");
     });
   });
 
