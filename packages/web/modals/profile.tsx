@@ -38,6 +38,7 @@ import {
 import { Spinner } from "~/components/loaders/spinner";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { ProfileOneClickTradingSettings } from "~/components/one-click-trading/profile-one-click-trading-settings";
+import { PrivateText } from "~/components/privacy";
 import { ArrowButton, Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
@@ -52,6 +53,7 @@ import { useCreateOneClickTradingSession } from "~/hooks/mutations/one-click-tra
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { useProfileStore } from "~/stores/profile-store";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
@@ -64,7 +66,8 @@ export const ProfileModal: FunctionComponent<
 > = observer((props) => {
   const { t } = useTranslation();
   const { width } = useWindowSize();
-  const { accountStore, profileStore } = useStore();
+  const { accountStore } = useStore();
+  const { currentAvatar, setCurrentAvatar } = useProfileStore();
   const { logEvent } = useAmplitudeAnalytics();
   const router = useRouter();
   const fiatRampSelection = useBridgeStore((state) => state.fiatRampSelection);
@@ -154,7 +157,7 @@ export const ProfileModal: FunctionComponent<
                 onClose={onCloseAvatarSelect}
               >
                 <DrawerButton className="transform transition-transform duration-300 ease-in-out hover:scale-105">
-                  {profileStore.currentAvatar === "ammelia" ? (
+                  {currentAvatar === "ammelia" ? (
                     <AmmeliaAvatar
                       className="mt-10"
                       aria-label="Select avatar"
@@ -175,16 +178,14 @@ export const ProfileModal: FunctionComponent<
                       <div className="text-center">
                         <WosmongtonAvatar
                           isSelectable
-                          isSelected={
-                            profileStore.currentAvatar === "wosmongton"
-                          }
+                          isSelected={currentAvatar === "wosmongton"}
                           onSelect={() => {
                             onCloseAvatarSelect();
                             logEvent([
                               EventName.ProfileModal.selectAvatarClicked,
                               { avatar: "wosmongton" },
                             ]);
-                            profileStore.setCurrentAvatar("wosmongton");
+                            setCurrentAvatar("wosmongton");
                           }}
                           className="outline-none"
                         />
@@ -196,14 +197,14 @@ export const ProfileModal: FunctionComponent<
                       <div className="text-center">
                         <AmmeliaAvatar
                           isSelectable
-                          isSelected={profileStore.currentAvatar === "ammelia"}
+                          isSelected={currentAvatar === "ammelia"}
                           onSelect={() => {
                             onCloseAvatarSelect();
                             logEvent([
                               EventName.ProfileModal.selectAvatarClicked,
                               { avatar: "ammelia" },
                             ]);
-                            profileStore.setCurrentAvatar("ammelia");
+                            setCurrentAvatar("ammelia");
                           }}
                           className="outline-none"
                         />
@@ -241,22 +242,29 @@ export const ProfileModal: FunctionComponent<
 
                     <div>
                       <h6 className="mb-[4px] tracking-wide text-osmoverse-100">
-                        {formatPretty(
-                          userOsmoAsset?.usdValue ??
-                            new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
-                          {
-                            minimumFractionDigits: 2,
-                            maximumSignificantDigits: undefined,
-                            notation: "standard",
-                          }
-                        )}
+                        <PrivateText
+                          text={formatPretty(
+                            userOsmoAsset?.usdValue ??
+                              new PricePretty(DEFAULT_VS_CURRENCY, new Dec(0)),
+                            {
+                              minimumFractionDigits: 2,
+                              maximumSignificantDigits: undefined,
+                              notation: "standard",
+                            }
+                          )}
+                        />
                       </h6>
                       <p className="text-h5 font-h5">
-                        {formatPretty(userOsmoAsset?.amount ?? new Dec(0), {
-                          minimumFractionDigits: 2,
-                          maximumSignificantDigits: undefined,
-                          notation: "standard",
-                        })}
+                        <PrivateText
+                          text={formatPretty(
+                            userOsmoAsset?.amount ?? new Dec(0),
+                            {
+                              minimumFractionDigits: 2,
+                              maximumSignificantDigits: undefined,
+                              notation: "standard",
+                            }
+                          )}
+                        />
                       </p>
                     </div>
                   </div>

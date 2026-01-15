@@ -8,7 +8,7 @@ import { create } from "zustand";
 
 // Import useTranslation
 import { Icon } from "~/components/assets";
-import { FallbackImg } from "~/components/assets";
+import { EntityImage } from "~/components/ui/entity-image";
 import { SkeletonLoader } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
@@ -272,10 +272,23 @@ const AssetVariantRow: React.FC<{
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
         <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
           <div className="flex min-w-0 items-center gap-3">
-            <FallbackImg
-              src={variant.amount.currency.coinImageUrl ?? ""}
-              alt={variant.amount.currency.coinDenom ?? ""}
-              fallbacksrc="/icons/question-mark.svg"
+            <EntityImage
+              logoURIs={
+                variant.amount.currency.coinImageUrl
+                  ? {
+                      svg: variant.amount.currency.coinImageUrl.replace(
+                        /\.(png|svg)$/,
+                        ".svg"
+                      ),
+                      png: variant.amount.currency.coinImageUrl.replace(
+                        /\.(png|svg)$/,
+                        ".png"
+                      ),
+                    }
+                  : {}
+              }
+              name={variant.amount.currency.coinDenom ?? ""}
+              symbol={variant.amount.currency.coinDenom ?? ""}
               height={40}
               width={40}
             />
@@ -293,10 +306,23 @@ const AssetVariantRow: React.FC<{
             className="text-osmoverse-700"
           />
           <div className="flex grow items-center gap-3 py-2 px-4">
-            <FallbackImg
-              src={variant?.canonicalAsset?.coinImageUrl ?? ""}
-              alt={variant?.canonicalAsset?.coinDenom ?? ""}
-              fallbacksrc="/icons/question-mark.svg"
+            <EntityImage
+              logoURIs={
+                variant?.canonicalAsset?.coinImageUrl
+                  ? {
+                      svg: variant.canonicalAsset.coinImageUrl.replace(
+                        /\.(png|svg)$/,
+                        ".svg"
+                      ),
+                      png: variant.canonicalAsset.coinImageUrl.replace(
+                        /\.(png|svg)$/,
+                        ".png"
+                      ),
+                    }
+                  : {}
+              }
+              name={variant?.canonicalAsset?.coinDenom ?? ""}
+              symbol={variant?.canonicalAsset?.coinDenom ?? ""}
               height={40}
               width={40}
             />

@@ -21,8 +21,9 @@ import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
@@ -45,18 +46,13 @@ export const SetBaseInfos = observer(
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
-    const { accountStore, userSettings } = useStore();
+    const { accountStore } = useStore();
+    const showUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const { showPreviewAssets } = useShowPreviewAssets();
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const showUnverifiedAssets = Boolean(
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets
-    );
 
     const { data: tokens, isLoading: isLoadingTokens } =
       api.local.concentratedLiquidity.getTokens.useQuery({
@@ -237,9 +233,7 @@ const TokenSelector = observer(
             {selectedAsset ? (
               <>
                 <EntityImage
-                  logoURIs={{
-                    png: selectedAsset.token.coinImageUrl,
-                  }}
+                  logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
                   name={selectedAsset.token.coinDenom}
                   symbol={selectedAsset.token.coinDenom}
                   width={52}

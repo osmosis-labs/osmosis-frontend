@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import Link from "next/link";
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent, ReactNode, useMemo } from "react";
 
 import { PriceChange } from "~/components/assets/price";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
@@ -12,6 +12,7 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { CustomClasses } from "../types";
@@ -311,16 +312,15 @@ const AssetHighlightRow: FunctionComponent<{
   const { coinDenom, coinName, coinImageUrl, href, externalLink } = asset;
   const { logEvent } = useAmplitudeAnalytics();
 
+  const logoURIs = useMemo(() => getLogoURIs(coinImageUrl), [coinImageUrl]);
+
   const AssetContent = (
     <>
       <div className="flex items-center gap-2">
         <EntityImage
           symbol={coinDenom}
           name={coinName}
-          logoURIs={{
-            png: coinImageUrl,
-            svg: coinImageUrl,
-          }}
+          logoURIs={logoURIs}
           width={32}
           height={32}
         />

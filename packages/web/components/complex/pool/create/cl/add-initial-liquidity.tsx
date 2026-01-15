@@ -13,6 +13,7 @@ import { Spinner } from "~/components/loaders";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface AddInitialLiquidityProps {
@@ -223,9 +224,7 @@ const TokenLiquiditySelector = observer(
       <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
         <div className="flex items-center gap-3">
           <EntityImage
-            logoURIs={{
-              png: selectedAsset.token.coinImageUrl,
-            }}
+            logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
             name={selectedAsset.token.coinDenom}
             symbol={selectedAsset.token.coinDenom}
             width={52}

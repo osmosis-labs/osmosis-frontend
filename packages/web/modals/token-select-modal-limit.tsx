@@ -13,6 +13,7 @@ import {
 import { Icon } from "~/components/assets";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
   Breakpoint,
@@ -27,7 +28,7 @@ import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapAsset, useRecommendedAssets } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation, ModalBase } from "~/modals";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatFiatPrice, formatPretty } from "~/utils/formatter";
 
 interface TokenSelectModalLimitProps {
@@ -42,7 +43,6 @@ interface TokenSelectModalLimitProps {
   hasNextPageAssets?: boolean;
   fetchNextPageAssets?: () => void;
   headerTitle: string;
-  hideBalances?: boolean;
   assetQueryInput?: string;
   setAssetQueryInput?: (input: string) => void;
 }
@@ -61,15 +61,17 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       hasNextPageAssets = false,
       fetchNextPageAssets,
       headerTitle,
-      hideBalances,
       setAssetQueryInput,
       assetQueryInput,
     }) => {
       const { t } = useTranslation();
       const { isMobile } = useWindowSize(Breakpoint.sm);
-      const { userSettings, accountStore } = useStore();
+      const { accountStore } = useStore();
       const { onOpenWalletSelect } = useWalletSelect();
       const recommendedAssets = useRecommendedAssets();
+      const shouldShowUnverifiedAssets = useUserSettingsStore(
+        (state) => state.showUnverifiedAssets
+      );
 
       const isWalletConnected = accountStore.getWallet(
         accountStore.osmosisChainId
@@ -78,13 +80,6 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
       const [_isRequestingClose, setIsRequestingClose] = useState(false);
       const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
         useState<string | null>(null);
-
-      const showUnverifiedAssetsSetting =
-        userSettings.getUserSettingById<UnverifiedAssetsState>(
-          "unverified-assets"
-        );
-      const shouldShowUnverifiedAssets =
-        showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
       const searchBoxRef = useRef<HTMLInputElement>(null);
       const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -194,7 +189,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
             isOpen={Boolean(confirmUnverifiedAssetDenom)}
             onConfirm={() => {
               if (!confirmUnverifiedAssetDenom) return;
-              showUnverifiedAssetsSetting?.setState({
+              useUserSettingsStore.setState({
                 showUnverifiedAssets: true,
               });
               onSelect(confirmUnverifiedAssetDenom);
@@ -373,7 +368,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                 </div>
                               </div>
 
-                              {isWalletConnected && !hideBalances && (
+                              {isWalletConnected && (
                                 <div className="flex shrink-0 flex-col items-end gap-1">
                                   {usdValue && (
                                     <p
@@ -384,20 +379,26 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                         }
                                       )}
                                     >
-                                      {formatFiatPrice(
-                                        usdValue ??
-                                          new PricePretty(
-                                            DEFAULT_VS_CURRENCY,
-                                            0
-                                          )
-                                      )}
+                                      <PrivateText
+                                        text={formatFiatPrice(
+                                          usdValue ??
+                                            new PricePretty(
+                                              DEFAULT_VS_CURRENCY,
+                                              0
+                                            )
+                                        )}
+                                      />
                                     </p>
                                   )}
                                   {amount && (
                                     <span className="body2 text-osmoverse-300">
-                                      {amount
-                                        ? formatPretty(amount).split(" ")[0]
-                                        : "0"}
+                                      <PrivateText
+                                        text={
+                                          amount
+                                            ? formatPretty(amount).split(" ")[0]
+                                            : "0"
+                                        }
+                                      />
                                     </span>
                                   )}
                                 </div>

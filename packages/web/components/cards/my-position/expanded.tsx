@@ -43,6 +43,7 @@ import {
   getFullPrecisionPrice,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -470,13 +471,7 @@ export const AssetsInfo: FunctionComponent<
                 <div key={asset.denom} className="flex items-center gap-2">
                   <div className="h-[24px] w-[24px] flex-shrink-0">
                     <EntityImage
-                      logoURIs={{
-                        svg: asset.currency.coinImageUrl?.replace(
-                          /\.png$/,
-                          ".svg"
-                        ),
-                        png: asset.currency.coinImageUrl,
-                      }}
+                      logoURIs={getLogoURIs(asset.currency.coinImageUrl)}
                       name={asset.currency.coinDenom}
                       symbol={asset.currency.coinDenom}
                       height={24}

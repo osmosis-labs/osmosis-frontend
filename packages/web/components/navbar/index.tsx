@@ -27,6 +27,7 @@ import { ClientOnly } from "~/components/client-only";
 import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import { MainLayoutMenu, MainMenu } from "~/components/main-menu";
 import { useOneClickProfileTooltip } from "~/components/one-click-trading/one-click-trading-toast";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
@@ -43,7 +44,9 @@ import {
 } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useNavBarStore } from "~/stores/nav-bar-store";
+import { useProfileStore } from "~/stores/profile-store";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
@@ -64,13 +67,12 @@ export const NavBar: FunctionComponent<
     secondaryMenuItems,
   }) => {
     const {
-      navBarStore,
       chainStore: {
         osmosis: { chainId },
       },
       accountStore,
-      userSettings,
     } = useStore();
+    const { title: navBarTitle, callToActionButtons } = useNavBarStore();
     const { t } = useTranslation();
 
     const featureFlags = useFeatureFlags();
@@ -117,12 +119,10 @@ export const NavBar: FunctionComponent<
     useEffect(() => {
       const UnverifiedAssetsQueryKey = "unverified_assets";
       if (router.query[UnverifiedAssetsQueryKey] === "true") {
-        userSettings
-          .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
-          ?.setState({ showUnverifiedAssets: true });
+        useUserSettingsStore.getState().setShowUnverifiedAssets(true);
         removeQueryParam(UnverifiedAssetsQueryKey);
       }
-    }, [router.query, userSettings]);
+    }, [router.query]);
 
     const wallet = accountStore.getWallet(chainId);
 
@@ -159,7 +159,7 @@ export const NavBar: FunctionComponent<
       // logEvent(EventName.Topnav.tradeClicked);
     };
 
-    const title = navBarStore.title || titleProp;
+    const title = navBarTitle || titleProp;
 
     return (
       <>
@@ -222,19 +222,17 @@ export const NavBar: FunctionComponent<
           <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
             {title && <h4 className="md:text-h6 md:font-h6">{title}</h4>}
             <div className="flex items-center gap-3 lg:gap-1">
-              {navBarStore.callToActionButtons.map(
-                ({ className, ...rest }, index) => (
-                  <Button
-                    size="md"
-                    {...rest}
-                    className={classNames("w-48 1.5lg:w-fit", className)}
-                    variant={index > 0 ? "outline" : "default"}
-                    key={index}
-                  >
-                    <span className="subtitle1 mx-auto">{rest.label}</span>
-                  </Button>
-                )
-              )}
+              {callToActionButtons.map(({ className, ...rest }, index) => (
+                <Button
+                  size="md"
+                  {...rest}
+                  className={classNames("w-48 1.5lg:w-fit", className)}
+                  variant={index > 0 ? "outline" : "default"}
+                  key={index}
+                >
+                  <span className="subtitle1 mx-auto">{rest.label}</span>
+                </Button>
+              ))}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
@@ -314,7 +312,8 @@ export const NavBar: FunctionComponent<
 const WalletInfo: FunctionComponent<
   CustomClasses & { onOpenProfile: () => void; icnsName?: string }
 > = observer(({ className, onOpenProfile, icnsName }) => {
-  const { accountStore, profileStore } = useStore();
+  const { accountStore } = useStore();
+  const currentAvatar = useProfileStore((state) => state.currentAvatar);
   const { onOpenWalletSelect } = useWalletSelect();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const flags = useFeatureFlags();
@@ -432,7 +431,7 @@ const WalletInfo: FunctionComponent<
                     isOneClickTradingEnabled ? "rounded-full" : "rounded-md"
                   )}
                 >
-                  {profileStore.currentAvatar === "ammelia" ? (
+                  {currentAvatar === "ammelia" ? (
                     <Image
                       alt="Wosmongton profile"
                       src="/images/profile-ammelia.svg"
@@ -460,12 +459,16 @@ const WalletInfo: FunctionComponent<
                   data-testid="wallet-balance"
                   className="caption font-medium tracking-wider text-osmoverse-200"
                 >
-                  {userOsmoAsset?.amount
-                    ?.trim(true)
-                    .maxDecimals(2)
-                    .shrink(true)
-                    .upperCase(true)
-                    .toString()}
+                  <PrivateText
+                    text={
+                      userOsmoAsset?.amount
+                        ?.trim(true)
+                        .maxDecimals(2)
+                        .shrink(true)
+                        .upperCase(true)
+                        .toString() ?? ""
+                    }
+                  />
                 </span>
               </div>
             </button>

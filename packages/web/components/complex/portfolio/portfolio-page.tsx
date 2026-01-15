@@ -21,7 +21,7 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useStore } from "~/stores";
-import { HideDustState } from "~/stores/user-settings/hide-dust";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { api } from "~/utils/trpc";
 
 import { CypherCard } from "./cypher-card";
@@ -29,7 +29,9 @@ import { GetStartedWithOsmosis } from "./get-started-with-osmosis";
 
 export const PortfolioPage: FunctionComponent = observer(() => {
   const { t } = useTranslation();
-  const { accountStore, userSettings } = useStore();
+  const { accountStore } = useStore();
+  const hideDust = useUserSettingsStore((state) => state.hideDust);
+  const setHideDust = useUserSettingsStore((state) => state.setHideDust);
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
   const { isLoading: isWalletLoading } = useWalletSelect();
   const featureFlags = useFeatureFlags();
@@ -61,10 +63,6 @@ export const PortfolioPage: FunctionComponent = observer(() => {
 
   const isWalletConnected =
     wallet && wallet.isWalletConnected && wallet.address;
-
-  const hideDustSettingStore =
-    userSettings.getUserSettingById<HideDustState>("hide-dust");
-  const hideDust = Boolean(hideDustSettingStore?.state?.hideDust);
 
   return (
     <div className="flex justify-center p-8 pt-4 1.5xl:flex-col md:p-4">
@@ -136,9 +134,7 @@ export const PortfolioPage: FunctionComponent = observer(() => {
                     <TabPanel>
                       <PortfolioAssetBalancesTable
                         hideDust={Boolean(hideDust)}
-                        setHideDust={(hideDust) =>
-                          hideDustSettingStore?.setState({ hideDust })
-                        }
+                        setHideDust={setHideDust}
                         tableTopPadding={overviewHeight + tabsHeight}
                       />
                     </TabPanel>

@@ -4,6 +4,7 @@ import { Icon } from "~/components/assets";
 import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface AlloyedAssetsSectionProps {
@@ -97,9 +98,7 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
           >
             {alloyedAsset.asset.coinImageUrl ? (
               <EntityImage
-                logoURIs={{
-                  png: alloyedAsset.asset.coinImageUrl,
-                }}
+                logoURIs={getLogoURIs(alloyedAsset.asset.coinImageUrl)}
                 symbol={alloyedAsset.asset.coinDenom}
                 name={alloyedAsset.asset.coinName}
                 width={48}

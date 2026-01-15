@@ -9,6 +9,7 @@ import { Icon } from "~/components/assets";
 import { NoSearchResultsSplash, SearchBox } from "~/components/input";
 import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
@@ -20,8 +21,9 @@ import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals/activate-unverified-token-confirmation";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 const variantsNotToBeExcluded = ["WBTC"] satisfies (
@@ -55,11 +57,14 @@ interface AssetSelectScreenProps {
 
 export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
   observer(({ type, onSelectAsset }) => {
-    const { accountStore, userSettings } = useStore();
+    const { accountStore } = useStore();
     const { showPreviewAssets } = useShowPreviewAssets();
     const { t } = useTranslation();
     const { isMobile } = useWindowSize();
     const searchBoxRef = useRef<HTMLInputElement>(null);
+    const shouldShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
 
     const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
@@ -67,13 +72,6 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
     const [assetToActivate, setAssetToActivate] = useState<MinimalAsset | null>(
       null
     );
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const shouldShowUnverifiedAssets =
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     // for some reason, redundant queries would be sent without this memo
     const queryParameters = useMemo(
@@ -137,7 +135,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
           isOpen={Boolean(assetToActivate)}
           onConfirm={() => {
             if (!assetToActivate) return;
-            showUnverifiedAssetsSetting?.setState({
+            useUserSettingsStore.setState({
               showUnverifiedAssets: true,
             });
             onSelectAsset(assetToActivate);
@@ -209,9 +207,7 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     })}
                   >
                     <EntityImage
-                      logoURIs={{
-                        png: asset.coinImageUrl,
-                      }}
+                      logoURIs={getLogoURIs(asset.coinImageUrl)}
                       width={isMobile ? 32 : 48}
                       height={isMobile ? 32 : 48}
                       name={asset.coinName}
@@ -253,12 +249,14 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                     asset.amount.toDec().isPositive() && (
                       <div className="flex flex-col text-right">
                         <p className="body1">
-                          {formatPretty(asset.amount.hideDenom(true), {
-                            maxDecimals: 6,
-                          })}
+                          <PrivateText
+                            text={formatPretty(asset.amount.hideDenom(true), {
+                              maxDecimals: 6,
+                            })}
+                          />
                         </p>
                         <span className="body2 font-medium text-osmoverse-400">
-                          {asset.usdValue.toString()}
+                          <PrivateText text={asset.usdValue.toString()} />
                         </span>
                       </div>
                     )}

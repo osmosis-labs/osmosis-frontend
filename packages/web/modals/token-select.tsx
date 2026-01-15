@@ -5,11 +5,13 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
 import { SearchBox } from "~/components/input";
+import { PrivateText } from "~/components/privacy";
 import { InputProps } from "~/components/types";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -86,10 +88,7 @@ export const TokenSelectModal: FunctionComponent<
                     <EntityImage
                       symbol={coinDenom}
                       name={coinDenom}
-                      logoURIs={{
-                        png: coinImageUrl,
-                        svg: coinImageUrl,
-                      }}
+                      logoURIs={getLogoURIs(coinImageUrl)}
                       width={32}
                       height={32}
                       className="rounded-full"
@@ -111,10 +110,10 @@ export const TokenSelectModal: FunctionComponent<
                         tokenAmount.length > 10,
                     })}
                   >
-                    {tokenAmount}
+                    <PrivateText text={tokenAmount} />
                   </h6>
                   <span className="subtitle1 text-osmoverse-400">
-                    {tokenPrice}
+                    <PrivateText text={tokenPrice} />
                   </span>
                 </div>
               )}

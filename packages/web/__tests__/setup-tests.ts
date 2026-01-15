@@ -6,5 +6,9 @@ import "~/__mocks__/intersection-observer";
 import { server } from "~/__tests__/msw";
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+afterEach(() => {
+  server.resetHandlers();
+});
+afterAll(() => {
+  server.close();
+});
