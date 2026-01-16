@@ -10,7 +10,7 @@ import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@osmosis-labs/unit";
 import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
 import { Address, createPublicClient, http } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
@@ -27,6 +27,7 @@ import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
 
 const refetchInterval = 30 * 1000; // 30 seconds
+const slowLoadingThreshold = 5 * 1000; // 5 seconds before showing "taking longer than usual"
 
 export type BridgeQuote = ReturnType<typeof useBridgeQuotes>;
 
@@ -93,6 +94,10 @@ export const useBridgeQuotes = ({
     useSendEvmTransaction();
   const { t } = useTranslation();
   const [isBroadcastingTx, setIsBroadcastingTx] = useState(false);
+
+  // Track slow loading for initial fetch
+  const [isInitialLoadTakingLong, setIsInitialLoadTakingLong] = useState(false);
+  const initialLoadTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isDeposit = direction === "deposit";
   const isWithdraw = direction === "withdraw";
@@ -327,6 +332,41 @@ export const useBridgeQuotes = ({
         : undefined,
     [isOneSuccessful, isOneErrored, quoteResults]
   );
+
+  // Check if this is an initial load (no successful data yet)
+  const isInitialFetch = quoteResults.every(
+    (result) => result.dataUpdatedAt === 0
+  );
+  const isCurrentlyLoading = quoteResults.some(
+    (result) => result.isLoading && result.fetchStatus !== "idle"
+  );
+
+  // Manage slow loading indicator timer for initial fetch
+  useEffect(() => {
+    // Only track slow loading for initial fetches
+    if (isInitialFetch && isCurrentlyLoading) {
+      // Start timer if not already running
+      if (!initialLoadTimerRef.current) {
+        initialLoadTimerRef.current = setTimeout(() => {
+          setIsInitialLoadTakingLong(true);
+        }, slowLoadingThreshold);
+      }
+    } else {
+      // Clear timer and reset state when not in initial loading state
+      if (initialLoadTimerRef.current) {
+        clearTimeout(initialLoadTimerRef.current);
+        initialLoadTimerRef.current = null;
+      }
+      setIsInitialLoadTakingLong(false);
+    }
+
+    return () => {
+      if (initialLoadTimerRef.current) {
+        clearTimeout(initialLoadTimerRef.current);
+        initialLoadTimerRef.current = null;
+      }
+    };
+  }, [isInitialFetch, isCurrentlyLoading]);
 
   useEffect(() => {
     const quoteResults_ = [...quoteResults];
@@ -969,5 +1009,6 @@ export const useBridgeQuotes = ({
     isLoadingBridgeQuote,
     isLoadingAnyBridgeQuote,
     isRefetchingQuote: selectedQuoteQuery?.isRefetching ?? false,
+    isInitialLoadTakingLong,
   };
 };

@@ -871,6 +871,7 @@
     "reviewDepositP": "確認する前に入金の詳細を確認してください。入金後は取引を取り消すことはできません。",
     "reviewWithdrawP": "確定する前に出金の詳細を確認してください。出金すると、取引は取り消すことができません。",
     "lookingForBalances": "バランスを探す",
+    "takingLongerThanUsual": "通常より時間がかかっています...",
     "dontForgetFees": "手数料を忘れないでください！",
     "feesReserved": "合計{assetName}残高の少額{networkName}の手数料の支払い用に確保されています。",
     "verifyAddressWarning": "資金を引き出すアドレスを確認してください。間違ったアドレスを入力すると、資金が失われます。",

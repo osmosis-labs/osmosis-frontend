@@ -175,6 +175,7 @@ export const AmountScreen = observer(
       warnUserOfSlippage,
       errorBoxMessage,
       warningBoxMessage,
+      isInitialLoadTakingLong,
     } = quote;
 
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
@@ -1235,6 +1236,12 @@ export const AmountScreen = observer(
               fromChain={fromChain}
               isLoading={isLoadingBridgeQuote}
             />
+          )}
+
+          {isLoadingBridgeQuote && isInitialLoadTakingLong && (
+            <p className="body2 w-full text-center text-osmoverse-300">
+              {t("transfer.takingLongerThanUsual")}
+            </p>
           )}
 
           <div className="flex flex-col items-center gap-4">

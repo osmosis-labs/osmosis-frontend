@@ -871,6 +871,7 @@
     "reviewDepositP": "Vérifiez les détails de votre dépôt avant de confirmer. Une fois déposée, votre transaction est irréversible.",
     "reviewWithdrawP": "Vérifiez les détails de votre retrait avant de confirmer. Une fois retirée, votre transaction est irréversible.",
     "lookingForBalances": "À la recherche de soldes",
+    "takingLongerThanUsual": "Cela prend plus de temps que d'habitude...",
     "dontForgetFees": "N'oubliez pas les frais !",
     "feesReserved": "Un petit montant de votre solde total {assetName} a été réservé pour payer les frais sur {networkName} .",
     "verifyAddressWarning": "Vérifiez l'adresse à laquelle vous retirez vos fonds. Fournir une adresse incorrecte entraînera une perte de fonds.",

@@ -871,6 +871,7 @@
     "reviewDepositP": "Review your deposit details before confirming. Once deposited, your transaction is irreversible.",
     "reviewWithdrawP": "Review your withdraw details before confirming. Once withdrawn, your transaction is irreversible.",
     "lookingForBalances": "Looking for balances",
+    "takingLongerThanUsual": "This is taking longer than usual...",
     "dontForgetFees": "Don't forget about fees!",
     "feesReserved": "A small amount of your total {assetName} balance has been reserved to pay fees on {networkName}.",
     "verifyAddressWarning": "Verify the address you are withdrawing your funds to. Providing an incorrect address will result in loss of funds.",

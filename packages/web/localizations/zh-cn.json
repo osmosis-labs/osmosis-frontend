@@ -871,6 +871,7 @@
     "reviewDepositP": "确认前请检查您的存款详情。一旦存款，您的交易将不可逆转。",
     "reviewWithdrawP": "确认前请检查您的提款详情。一旦提款，您的交易将不可逆转。",
     "lookingForBalances": "寻找平衡",
+    "takingLongerThanUsual": "这比平时花费的时间更长...",
     "dontForgetFees": "不要忘记费用！",
     "feesReserved": "您的总{assetName}余额中的一小部分已被保留用于支付{networkName}费用。",
     "verifyAddressWarning": "验证您要提取资金的地址。提供错误的地址将导致资金损失。",

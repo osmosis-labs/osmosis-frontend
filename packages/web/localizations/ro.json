@@ -871,6 +871,7 @@
     "reviewDepositP": "Verificați detaliile depunerii înainte de a confirma. Odată depusă, tranzacția dvs. este ireversibilă.",
     "reviewWithdrawP": "Verificați detaliile de retragere înainte de a confirma. Odată retrasă, tranzacția dvs. este ireversibilă.",
     "lookingForBalances": "Caut echilibre",
+    "takingLongerThanUsual": "Aceasta durează mai mult decât de obicei...",
     "dontForgetFees": "Nu uita de taxe!",
     "feesReserved": "O mică parte din soldul dvs. total {assetName} a fost rezervată pentru a plăti taxe pentru {networkName} .",
     "verifyAddressWarning": "Verificați adresa la care vă retrageți fondurile. Furnizarea unei adrese incorecte va duce la pierderea de fonduri.",

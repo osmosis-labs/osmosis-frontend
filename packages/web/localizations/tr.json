@@ -871,6 +871,7 @@
     "reviewDepositP": "Onaylamadan önce para yatırma ayrıntılarınızı inceleyin. Para yatırıldıktan sonra işleminiz geri alınamaz.",
     "reviewWithdrawP": "Onaylamadan önce para çekme ayrıntılarınızı gözden geçirin. Geri çekildikten sonra işleminiz geri alınamaz.",
     "lookingForBalances": "Bakiyeler arıyorum",
+    "takingLongerThanUsual": "Bu normalden daha uzun sürüyor...",
     "dontForgetFees": "Ücretleri unutmayın!",
     "feesReserved": "Toplam {assetName} bakiyenizin küçük bir kısmı {networkName} ücretlerini ödemek için ayrıldı.",
     "verifyAddressWarning": "Paranızı çektiğiniz adresi doğrulayın. Yanlış adres verilmesi para kaybına yol açacaktır.",
