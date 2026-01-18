@@ -26,7 +26,7 @@
     "lint-fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\""
   },
   "devDependencies": {
-    "@keplr-wallet/provider-mock": "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/provider-mock": "0.12.12"
   },
   "dependencies": {
     "@cosmjs/encoding": "^0.24.0-alpha.25",
@@ -39,8 +39,8 @@
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/unit": "0.10.24-ibc.go.v7.hot.fix",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "deepmerge": "^4.2.2",
