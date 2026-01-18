@@ -345,5 +345,6 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     stakeUrl: "https://www.exodus.com/staking/",
     governanceUrl: "https://www.exodus.com/",
     features: [],
+    mobileDisabled: false,
   },
 ];
