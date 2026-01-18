@@ -13,7 +13,8 @@ import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/ok
 import { stationExtensionInfo } from "@cosmos-kit/station-extension";
 import { trustExtensionInfo } from "@cosmos-kit/trust-extension";
 import { xdefiExtensionInfo } from "@cosmos-kit/xdefi-extension";
-import { isFunction } from "@osmosis-labs/utils";
+import { exodusExtensionInfo } from "@cosmos-kit/exodus-extension";
+const isFunction = (val: any): val is Function => typeof val === "function";
 import * as prettier from "prettier";
 
 type UpdateWalletMode =
@@ -37,6 +38,7 @@ const CosmosKitWalletList: Wallet[] = [
   xdefiExtensionInfo,
   cosmostationExtensionInfo,
   stationExtensionInfo,
+  exodusExtensionInfo,
   cdcwalletExtensionInfo,
 ];
 
@@ -72,9 +74,8 @@ const getStringifiedWallet = (wallet: Record<any, any>) => {
   const body = Object.entries(wallet).reduce((acc, [key, value]) => {
     return isObject(value)
       ? `${acc}"${key}": { ${stringifyObject(value)} },`
-      : `${acc}"${key}": ${
-          isFunction(value) ? value.toString() : JSON.stringify(value)
-        },`;
+      : `${acc}"${key}": ${isFunction(value) ? value.toString() : JSON.stringify(value)
+      },`;
   }, "");
   return "{" + body + "}";
 };
@@ -99,14 +100,13 @@ async function generateCosmosKitWalletList() {
   const content = `
       import {Wallet} from "@cosmos-kit/core"
       export enum AvailableCosmosWallets {${CosmosKitWalletList.map(
-        (wallet) =>
-          `${wallet.prettyName.replace(/\s/g, "").replace(/\./g, "")} = "${
-            wallet.name
-          }"`
-      ).join(",")}}
+    (wallet) =>
+      `${wallet.prettyName.replace(/\s/g, "").replace(/\./g, "")} = "${wallet.name
+      }"`
+  ).join(",")}}
       export const CosmosKitWalletList: Record<AvailableCosmosWallets, Wallet> = ${getStringifiedWallet(
-        registryObject
-      )}     
+    registryObject
+  )}     
     `;
 
   const prettierConfig = await prettier.resolveConfig("./");

@@ -10,7 +10,9 @@ import { sha256 } from "sha.js";
 export function makeIBCMinimalDenom(path: string, sourceDenom: string): string {
   return (
     "ibc/" +
-    Buffer.from(sha256_fn(Buffer.from(`transfer/${path}/${sourceDenom}`)))
+    Buffer.from(
+      sha256_fn(new Uint8Array(Buffer.from(`transfer/${path}/${sourceDenom}`)))
+    )
       .toString("hex")
       .toUpperCase()
   );

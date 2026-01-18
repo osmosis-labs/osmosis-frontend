@@ -58,7 +58,7 @@ function getMockKeplr(
           throw new Error(txResponse["raw_log"]);
         }
 
-        return Buffer.from(txResponse.txhash, "hex");
+        return new Uint8Array(Buffer.from(txResponse.txhash, "hex"));
       } finally {
         // Sending the other tx right after the response is fetched makes the other tx be failed sometimes,
         // because actually the increased sequence is commited after the block is fully processed.

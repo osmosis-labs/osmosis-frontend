@@ -86,11 +86,11 @@ async function generateChainListFile({
     ...chainList.chains,
     ...(OSMOSIS_CHAIN_ID_OVERWRITE && OSMOSIS_CHAIN_NAME_OVERWRITE
       ? [
-          {
-            chain_id: OSMOSIS_CHAIN_ID_OVERWRITE,
-            chain_name: OSMOSIS_CHAIN_NAME_OVERWRITE,
-          },
-        ]
+        {
+          chain_id: OSMOSIS_CHAIN_ID_OVERWRITE,
+          chain_name: OSMOSIS_CHAIN_NAME_OVERWRITE,
+        },
+      ]
       : []),
   ];
 
@@ -114,13 +114,12 @@ async function generateChainListFile({
     export type ${chainIdTypeName} = ${Array.from(
     new Set(allAvailableChains.map((c) => c.chain_id))
   )
-    .map(
-      (chainId) =>
-        `"${chainId}" /** ${
-          allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-        } */`
-    )
-    .join(" | ")};
+      .map(
+        (chainId) =>
+          `"${chainId}" /** ${allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
+          } */`
+      )
+      .join(" | ")};
   `;
 
   if (
@@ -218,8 +217,7 @@ async function generateAssetListFile({
       // Only warn for truly stranded tokens (not factory tokens)
       if (hasCounterparty && !isFactoryToken) {
         console.warn(
-          `[${environment.toUpperCase()}] Asset ${
-            asset.symbol
+          `[${environment.toUpperCase()}] Asset ${asset.symbol
           } has no transfer methods - adding as Osmosis-based asset (not bridgeable)`
         );
       }
@@ -295,51 +293,48 @@ async function generateAssetListFile({
     content += `
       import type { AssetList } from "@osmosis-labs/types";
       export const AssetLists: AssetList[] = ${JSON.stringify(
-        assetLists,
-        null,
-        2
-      )};    
+      assetLists,
+      null,
+      2
+    )};    
     `;
   }
 
   // create available symbols type
   content += `    
-    export type ${
-      environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
+    export type ${environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
-    .map(
-      (symbol) =>
-        `"${symbol}" /** source denom: ${
-          assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
-        } */`
-    )
-    .join(" | ")};
+      .map(
+        (symbol) =>
+          `"${symbol}" /** source denom: ${assetList.assets.find((asset) => asset.symbol === symbol)!.sourceDenom
+          } */`
+      )
+      .join(" | ")};
   `;
 
   content += `    
-    export type ${
-      environment === "testnet"
-        ? "TestnetVariantGroupKeys"
-        : "MainnetVariantGroupKeys"
+    export type ${environment === "testnet"
+      ? "TestnetVariantGroupKeys"
+      : "MainnetVariantGroupKeys"
     } = ${Array.from(
-    new Set(assetList.assets.map((asset) => asset.variantGroupKey))
-  )
-    .filter((groupKey, index, self) => {
-      if (isNil(groupKey)) {
-        return false;
-      }
-
-      // remove duplicates
-      return self.indexOf(groupKey) === index;
-    })
-    .map(
-      (groupKey) =>
-        `"${groupKey}" /** Symbols: ${assetList.assets
-          .filter((asset) => asset.variantGroupKey === groupKey)!
-          .map((asset) => asset.symbol)
-          .join(",")} */`
+      new Set(assetList.assets.map((asset) => asset.variantGroupKey))
     )
-    .join(" | ")};
+      .filter((groupKey, index, self) => {
+        if (isNil(groupKey)) {
+          return false;
+        }
+
+        // remove duplicates
+        return self.indexOf(groupKey) === index;
+      })
+      .map(
+        (groupKey) =>
+          `"${groupKey}" /** Symbols: ${assetList.assets
+            .filter((asset) => asset.variantGroupKey === groupKey)!
+            .map((asset) => asset.symbol)
+            .join(",")} */`
+      )
+      .join(" | ")};
   `;
 
   const success = await generateTsFile(

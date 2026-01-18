@@ -336,4 +336,14 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["exodus-extension"],
+    logo: "/wallets/exodus.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/exodus-extension").then((m) => m.ExodusExtensionWallet),
+    windowPropertyName: "exodus",
+    stakeUrl: "https://www.exodus.com/staking/",
+    governanceUrl: "https://www.exodus.com/",
+    features: [],
+  },
 ];
