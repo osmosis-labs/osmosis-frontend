@@ -18,6 +18,7 @@ import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { replaceAt } from "~/utils/array";
+import { isSameCoinDenom } from "~/utils/denom";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 const mulGasSlippage = new Dec("1.1");
@@ -250,11 +251,10 @@ export const CryptoFiatInput: FunctionComponent<{
       if (transferGasCost) {
         let maxTransferAmount = new Dec(0);
 
-        const gasFeeMatchesInputDenom =
-          transferGasCost &&
-          transferGasCost.toCoin().denom ===
-            assetWithBalance.amount.toCoin().denom &&
-          transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+        const gasFeeMatchesInputDenom = isSameCoinDenom(
+          transferGasCost,
+          assetWithBalance.amount
+        );
 
         if (gasFeeMatchesInputDenom) {
           maxTransferAmount = assetWithBalance.amount

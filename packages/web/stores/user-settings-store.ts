@@ -1,6 +1,6 @@
 import { Dec } from "@osmosis-labs/unit";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { combine, persist } from "zustand/middleware";
 
 /**
  * Supported language options
@@ -56,20 +56,6 @@ type UserSettingsData = {
   /** Whether to show unverified assets */
   showUnverifiedAssets: boolean;
 };
-
-/**
- * User settings state interface (persisted data + actions)
- */
-interface UserSettingsState extends UserSettingsData {
-  /** Set hide dust preference */
-  setHideDust: (value: boolean) => void;
-  /** Set hide balances preference */
-  setHideBalances: (value: boolean) => void;
-  /** Set language preference */
-  setLanguage: (value: SupportedLanguage) => void;
-  /** Set show unverified assets preference */
-  setShowUnverifiedAssets: (value: boolean) => void;
-}
 
 const initialState: UserSettingsData = {
   hideDust: false,
@@ -250,18 +236,19 @@ function migrateFromOldStorage(state: UserSettingsData): UserSettingsData {
  * }
  * ```
  */
-export const useUserSettingsStore = create<UserSettingsState>()(
+export const useUserSettingsStore = create(
   persist(
-    (set) => ({
-      ...initialState,
-      setHideDust: (value) => set({ hideDust: value }),
-      setHideBalances: (value) => set({ hideBalances: value }),
-      setLanguage: (value) => set({ language: value }),
-      setShowUnverifiedAssets: (value) => set({ showUnverifiedAssets: value }),
-    }),
+    combine(initialState, (set) => ({
+      setHideDust: (value: boolean) => set({ hideDust: value }),
+      setHideBalances: (value: boolean) => set({ hideBalances: value }),
+      setLanguage: (value: SupportedLanguage) => set({ language: value }),
+      setShowUnverifiedAssets: (value: boolean) =>
+        set({ showUnverifiedAssets: value }),
+      setSettings: (settings: UserSettingsData) => set(settings),
+    })),
     {
       name: "user-settings-store",
-      onRehydrateStorage: () => (state) => {
+      onRehydrateStorage: (state) => () => {
         if (state) {
           const migrated = migrateFromOldStorage(state);
           if (
@@ -270,7 +257,16 @@ export const useUserSettingsStore = create<UserSettingsState>()(
             migrated.language !== state.language ||
             migrated.showUnverifiedAssets !== state.showUnverifiedAssets
           ) {
-            useUserSettingsStore.setState(migrated);
+            localStorage.setItem(
+              "user-settings-store",
+              JSON.stringify({
+                state: {
+                  ...state,
+                  ...migrated,
+                },
+              })
+            );
+            state.setSettings(migrated);
           }
         }
       },

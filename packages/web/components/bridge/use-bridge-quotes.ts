@@ -22,6 +22,7 @@ import { IS_TESTNET } from "~/config";
 import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
+import { isSameCoinDenom } from "~/utils/denom";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
@@ -432,24 +433,26 @@ export const useBridgeQuotes = ({
     // Client-side calculation: check if user has enough to cover fees
     if (!inputCoin || !selectedQuote || !selectedQuote.gasCost) return false;
 
-    const inputDenom = inputCoin.toCoin().denom;
-    const gasDenom = selectedQuote.gasCost.toCoin().denom;
-    const feeDenom = selectedQuote.transferFee.toCoin().denom;
+    const isGasSameAsset = isSameCoinDenom(inputCoin, selectedQuote.gasCost);
+    const isFeeSameAsset = isSameCoinDenom(
+      inputCoin,
+      selectedQuote.transferFee
+    );
     const inputAmount = inputCoin.toDec();
 
     let totalFeeCoinAmount = new Dec(0);
-    if (inputDenom === gasDenom) {
+    if (isGasSameAsset) {
       totalFeeCoinAmount = totalFeeCoinAmount.add(
         selectedQuote.gasCost.toDec()
       );
     }
-    if (inputDenom === feeDenom) {
+    if (isFeeSameAsset) {
       totalFeeCoinAmount = totalFeeCoinAmount.add(
         selectedQuote.transferFee.toDec()
       );
     }
 
-    if (inputDenom === gasDenom || inputDenom === feeDenom) {
+    if (isGasSameAsset || isFeeSameAsset) {
       const maxAmount = inputAmount.sub(totalFeeCoinAmount);
 
       if (maxAmount.isNegative() || maxAmount.isZero()) return true;

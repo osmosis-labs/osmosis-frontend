@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 
 import { useUserSettingsStore } from "../user-settings-store";
 
@@ -27,6 +27,8 @@ describe("UserSettingsStore (Zustand)", () => {
       language: "en",
       showUnverifiedAssets: false,
     });
+    // Remove persisted data so migration tests start from a clean slate
+    useUserSettingsStore.persist.clearStorage();
   });
 
   describe("Initial State", () => {
@@ -248,6 +250,32 @@ describe("UserSettingsStore (Zustand)", () => {
 
       // Should mark legacy migration complete (enables early-exit on future loads)
       expect(localStorage.getItem(LEGACY_MIGRATION_COMPLETE_KEY)).toBe("1");
+    });
+
+    it("should persist migrated settings on initial hydration", async () => {
+      localStorage.setItem("hide-dust", JSON.stringify({ hideDust: true }));
+      localStorage.setItem(
+        "language",
+        JSON.stringify({ language: "es", isControlOpen: false })
+      );
+
+      let isolatedStore: typeof useUserSettingsStore | undefined;
+      jest.isolateModules(() => {
+        ({
+          useUserSettingsStore: isolatedStore,
+        } = require("../user-settings-store"));
+      });
+
+      await waitFor(() => {
+        const storedData = localStorage.getItem("user-settings-store");
+        expect(storedData).toBeTruthy();
+        const parsed = JSON.parse(storedData!);
+        expect(parsed.state.hideDust).toBe(true);
+        expect(parsed.state.language).toBe("es");
+      });
+
+      expect(isolatedStore?.getState().hideDust).toBe(true);
+      expect(isolatedStore?.getState().language).toBe("es");
     });
   });
 

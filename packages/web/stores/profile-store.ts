@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { combine, persist } from "zustand/middleware";
 
 /**
  * Avatar type - matches the original MobX ProfileStore
@@ -10,17 +10,8 @@ export type Avatar = "wosmongton" | "ammelia";
  * Once legacy MobX keys have been checked/migrated, we can skip future checks.
  * This avoids repeated localStorage reads on subsequent visits.
  */
+const PROFILE_STORE_KEY = "profile-store";
 const LEGACY_MIGRATION_COMPLETE_KEY = "profile-store/legacy-migration-complete";
-
-/**
- * Profile store state interface
- */
-interface ProfileState {
-  /** Current selected avatar */
-  currentAvatar: Avatar;
-  /** Update the current avatar */
-  setCurrentAvatar: (avatar: Avatar) => void;
-}
 
 /**
  * Zustand store for user profile settings
@@ -46,16 +37,20 @@ interface ProfileState {
  * }
  * ```
  */
-export const useProfileStore = create<ProfileState>()(
+export const useProfileStore = create(
   persist(
-    (set) => ({
-      currentAvatar: "wosmongton",
-      setCurrentAvatar: (avatar: Avatar) => set({ currentAvatar: avatar }),
-    }),
+    combine(
+      {
+        currentAvatar: "wosmongton" as Avatar,
+      },
+      (set) => ({
+        setCurrentAvatar: (avatar: Avatar) => set({ currentAvatar: avatar }),
+      })
+    ),
     {
-      name: "profile-store",
+      name: PROFILE_STORE_KEY,
       // Migrate from old MobX storage format if present
-      onRehydrateStorage: () => () => {
+      onRehydrateStorage: (state) => () => {
         if (typeof window === "undefined") return;
 
         // If we've already verified/migrated legacy keys, skip further checks.
@@ -85,7 +80,16 @@ export const useProfileStore = create<ProfileState>()(
           }
 
           if (parsedValue === "ammelia" || parsedValue === "wosmongton") {
-            useProfileStore.setState({ currentAvatar: parsedValue });
+            localStorage.setItem(
+              PROFILE_STORE_KEY,
+              JSON.stringify({
+                state: {
+                  ...(state ?? { currentAvatar: "wosmongton" }),
+                  currentAvatar: parsedValue,
+                },
+              })
+            );
+            state?.setCurrentAvatar(parsedValue);
             localStorage.removeItem(oldKey);
             didMigrate = true;
             break;
