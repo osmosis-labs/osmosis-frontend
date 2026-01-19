@@ -123,7 +123,6 @@ export function useSwap(
   const featureFlags = useFeatureFlags();
   const { isOneClickTradingEnabled } = useOneClickTradingSession();
   const { t } = useTranslation();
-  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
@@ -168,7 +167,6 @@ export function useSwap(
     inAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.fromAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading &&
     quoteType === "out-given-in";
 
   const inGivenOutQuoteEnabled =
@@ -179,7 +177,6 @@ export function useSwap(
     outAmountInput.amount?.currency.coinMinimalDenom ===
       swapAssets.toAsset?.coinMinimalDenom &&
     !account?.txTypeInProgress &&
-    !isWalletLoading &&
     quoteType === "in-given-out";
 
   const {
@@ -982,7 +979,6 @@ export function useSwapAssets({
 } = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const {
     fromAssetDenom,
@@ -1013,10 +1009,7 @@ export function useSwapAssets({
   const { showPreviewAssets } = useShowPreviewAssets();
 
   const canLoadAssets =
-    !isLoadingWallet &&
-    Boolean(fromAssetDenom) &&
-    Boolean(toAssetDenom) &&
-    useOtherCurrencies;
+    Boolean(fromAssetDenom) && Boolean(toAssetDenom) && useOtherCurrencies;
 
   const {
     data: selectableAssetPages,
