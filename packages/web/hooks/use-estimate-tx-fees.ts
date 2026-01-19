@@ -10,7 +10,10 @@ import {
   SignOptions,
   SwapRequiresError,
 } from "@osmosis-labs/stores";
-import { QuoteStdFee } from "@osmosis-labs/tx";
+import {
+  getFallbackFeeAmountFromBalances,
+  type QuoteStdFee,
+} from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -28,17 +31,25 @@ interface QueryResult {
   amount: QuoteStdFee["amount"];
 }
 
+const DEFAULT_FALLBACK_GAS_LIMIT = 1_000_000; // Conservative fallback for swaps
+const DEFAULT_GAS_PRICE_UOSMO = 0.045; // Higher than default 0.035
+const BASE_GAS_DENOM_UOSMO = "uosmo";
+
 async function estimateTxFeesQueryFn({
   wallet,
   messages,
   apiUtils,
   accountStore,
+  chainStore,
+  chainId,
   signOptions,
 }: {
   wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
   messages: EncodeObject[];
   apiUtils: ReturnType<typeof api.useUtils>;
+  chainStore: ReturnType<typeof useStore>["chainStore"];
+  chainId: string;
   signOptions?: SignOptions;
 }): Promise<QueryResult> {
   if (!messages.length) throw new Error("No messages");
@@ -47,6 +58,7 @@ async function estimateTxFeesQueryFn({
     const { amount, gas } = await accountStore.estimateFee({
       wallet,
       messages,
+      fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT,
       signOptions: {
         ...wallet.walletInfo?.signOptions,
         ...signOptions,
@@ -74,32 +86,127 @@ async function estimateTxFeesQueryFn({
       amount,
     };
   } catch (error) {
-    // If gas estimation fails for any reason, return conservative hardcoded fallback
-    // This is display-only; actual tx fee is calculated at broadcast time
-    const DEFAULT_GAS_LIMIT = 1000000; // Conservative fallback for swaps
-    const DEFAULT_GAS_PRICE_UOSMO = 0.045; // Higher than default 0.035
-
-    const osmoAsset = await getCachedAssetWithPrice(apiUtils, "uosmo");
-
-    if (osmoAsset?.currentPrice) {
-      const feeInUosmo = Math.ceil(DEFAULT_GAS_LIMIT * DEFAULT_GAS_PRICE_UOSMO);
-
-      const coinAmountDec = new Dec(feeInUosmo.toString());
-      const usdValue = coinAmountDec
-        .quo(DecUtils.getTenExponentN(osmoAsset.coinDecimals))
-        .mul(osmoAsset.currentPrice.toDec());
-
-      return {
-        gasUsdValueToPay: new PricePretty(DEFAULT_VS_CURRENCY, usdValue),
-        gasAmount: new CoinPretty(osmoAsset, coinAmountDec),
-        gasLimit: DEFAULT_GAS_LIMIT.toString(),
-        amount: [{ denom: "uosmo", amount: feeInUosmo.toString() }],
-      };
+    if (isInsufficientFeeError(error)) {
+      throw error;
     }
 
-    // If we couldn't get OSMO price, re-throw the error
-    throw error;
+    return getFallbackFeeEstimate({
+      wallet,
+      chainStore,
+      chainId,
+      apiUtils,
+    });
   }
+}
+
+function isInsufficientFeeError(error: unknown) {
+  if (error instanceof InsufficientBalanceForFeeError) {
+    return true;
+  }
+
+  if (!(error instanceof Error)) {
+    return false;
+  }
+
+  const message = error.message.toLowerCase();
+  return (
+    message.includes("no fee tokens found with sufficient balance") ||
+    message.includes("insufficient alternative balance for transaction fees") ||
+    message.includes("insufficient balance for transaction fees") ||
+    message.includes("insufficient funds")
+  );
+}
+
+async function getFallbackFeeEstimate({
+  wallet,
+  chainStore,
+  chainId,
+  apiUtils,
+}: {
+  wallet: AccountStoreWallet<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>;
+  chainStore: ReturnType<typeof useStore>["chainStore"];
+  chainId: string;
+  apiUtils: ReturnType<typeof api.useUtils>;
+}): Promise<QueryResult> {
+  if (!wallet.address) {
+    throw new Error("No wallet address available.");
+  }
+
+  const chain = chainStore.getChain(chainId);
+  const feeDenoms =
+    chain?.feeCurrencies
+      ?.map((currency) => currency.coinMinimalDenom)
+      .filter(Boolean) ?? [];
+
+  const baseFeeDenom = feeDenoms[0] ?? BASE_GAS_DENOM_UOSMO;
+  const baseAsset = await getCachedAssetWithPrice(apiUtils, baseFeeDenom);
+
+  if (!baseAsset?.currentPrice) {
+    throw new Error("Failed to estimate fees");
+  }
+
+  const baseFeeCurrency = chain?.feeCurrencies?.[0] as
+    | { gasPriceStep?: { high?: number } }
+    | undefined;
+  const baseGasPrice =
+    baseFeeDenom === BASE_GAS_DENOM_UOSMO
+      ? DEFAULT_GAS_PRICE_UOSMO
+      : baseFeeCurrency?.gasPriceStep?.high ?? DEFAULT_GAS_PRICE_UOSMO;
+
+  const baseGasPriceDec = new Dec(baseGasPrice.toString());
+  const baseFeeAmountInt = baseGasPriceDec
+    .mul(new Dec(DEFAULT_FALLBACK_GAS_LIMIT.toString()))
+    .roundUp();
+  const baseFeeAmountDec = new Dec(baseFeeAmountInt.toString());
+  const usdValue = baseFeeAmountDec
+    .quo(DecUtils.getTenExponentN(baseAsset.coinDecimals))
+    .mul(baseAsset.currentPrice.toDec());
+  const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
+
+  const balances = await apiUtils.local.balances.getUserBalances.fetch({
+    bech32Address: wallet.address,
+    chainId,
+  });
+
+  const priceByDenom = new Map<string, { price: Dec; coinDecimals: number }>();
+  const denomsToPrice = Array.from(new Set([baseFeeDenom, ...feeDenoms]));
+  await Promise.all(
+    denomsToPrice.map(async (denom) => {
+      const asset = await getCachedAssetWithPrice(apiUtils, denom);
+      if (!asset?.currentPrice) return;
+      priceByDenom.set(denom, {
+        price: asset.currentPrice.toDec(),
+        coinDecimals: asset.coinDecimals,
+      });
+    })
+  );
+
+  const fallbackAmounts = await getFallbackFeeAmountFromBalances({
+    fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT.toString(),
+    baseFeeDenom,
+    baseGasPrice: baseGasPriceDec,
+    feeDenoms,
+    balances,
+    priceByDenom,
+    bech32Address: wallet.address,
+  });
+
+  const fallbackAmount = fallbackAmounts[0];
+  const fallbackAsset = await getCachedAssetWithPrice(
+    apiUtils,
+    fallbackAmount.denom
+  );
+  if (!fallbackAsset?.currentPrice) {
+    throw new Error("Failed to estimate fees");
+  }
+  const fallbackAmountDec = new Dec(fallbackAmount.amount);
+
+  return {
+    gasUsdValueToPay,
+    gasAmount: new CoinPretty(fallbackAsset, fallbackAmountDec),
+    gasLimit: DEFAULT_FALLBACK_GAS_LIMIT.toString(),
+    amount: fallbackAmounts,
+  };
 }
 
 export function useEstimateTxFees({
@@ -113,7 +220,7 @@ export function useEstimateTxFees({
   enabled?: boolean;
   signOptions?: SignOptions;
 }) {
-  const { accountStore } = useStore();
+  const { accountStore, chainStore } = useStore();
   const apiUtils = api.useUtils();
 
   const wallet = accountStore.getWallet(chainId);
@@ -131,6 +238,8 @@ export function useEstimateTxFees({
         accountStore,
         messages: messages!,
         apiUtils,
+        chainStore,
+        chainId,
         signOptions,
       });
     },

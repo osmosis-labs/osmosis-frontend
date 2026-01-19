@@ -15,6 +15,7 @@ import type { Any } from "cosmjs-types/google/protobuf/any";
 import {
   defaultBaseFeeMultiplier,
   getDefaultGasPrice,
+  getFallbackFeeAmountFromBalances,
   getGasFeeAmount,
   getGasPriceByFeeDenom,
   InsufficientFeeError,
@@ -1032,6 +1033,83 @@ describe("getGasFeeAmount", () => {
         "Insufficient alternative balance for transaction fees. Please add funds to continue: osmo1..."
       )
     );
+  });
+});
+
+describe("getFallbackFeeAmountFromBalances", () => {
+  it("returns alternative fee denom based on price ratio", async () => {
+    const result = await getFallbackFeeAmountFromBalances({
+      fallbackGasLimit: "100",
+      baseFeeDenom: "uosmo",
+      baseGasPrice: new Dec("1"),
+      feeDenoms: ["uosmo", "uion"],
+      balances: [
+        { denom: "uosmo", amount: "0" },
+        { denom: "uion", amount: "1000" },
+      ],
+      priceByDenom: new Map([
+        ["uosmo", { price: new Dec("1"), coinDecimals: 6 }],
+        ["uion", { price: new Dec("2"), coinDecimals: 6 }],
+      ]),
+      bech32Address: "osmo1test",
+    });
+
+    expect(result[0]).toEqual({
+      denom: "uion",
+      amount: "50",
+      isSubtractiveFee: false,
+    });
+  });
+
+  it("skips denoms missing prices and falls back to base denom", async () => {
+    const result = await getFallbackFeeAmountFromBalances({
+      fallbackGasLimit: "100",
+      baseFeeDenom: "uosmo",
+      baseGasPrice: new Dec("1"),
+      feeDenoms: ["uosmo", "uion"],
+      balances: [
+        { denom: "uosmo", amount: "1000" },
+        { denom: "uion", amount: "1000" },
+      ],
+      priceByDenom: new Map([
+        ["uosmo", { price: new Dec("1"), coinDecimals: 6 }],
+      ]),
+    });
+
+    expect(result[0]).toEqual({
+      denom: "uosmo",
+      amount: "100",
+      isSubtractiveFee: false,
+    });
+  });
+
+  it("throws when base fee price is missing", async () => {
+    await expect(
+      getFallbackFeeAmountFromBalances({
+        fallbackGasLimit: "100",
+        baseFeeDenom: "uosmo",
+        baseGasPrice: new Dec("1"),
+        feeDenoms: ["uosmo"],
+        balances: [{ denom: "uosmo", amount: "1000" }],
+        priceByDenom: new Map(),
+      })
+    ).rejects.toThrow("Failed to estimate fees");
+  });
+
+  it("throws InsufficientFeeError when no fee balances found", async () => {
+    await expect(
+      getFallbackFeeAmountFromBalances({
+        fallbackGasLimit: "100",
+        baseFeeDenom: "uosmo",
+        baseGasPrice: new Dec("1"),
+        feeDenoms: ["uosmo"],
+        balances: [],
+        priceByDenom: new Map([
+          ["uosmo", { price: new Dec("1"), coinDecimals: 6 }],
+        ]),
+        bech32Address: "osmo1test",
+      })
+    ).rejects.toThrow(InsufficientFeeError);
   });
 });
 
