@@ -139,6 +139,8 @@ async function getFallbackFeeEstimate({
       .filter(Boolean) ?? [];
 
   const baseFeeDenom = feeDenoms[0] ?? BASE_GAS_DENOM_UOSMO;
+  const feeDenomsForFallback =
+    feeDenoms.length > 0 ? feeDenoms : [baseFeeDenom];
   const baseAsset = await getCachedAssetWithPrice(apiUtils, baseFeeDenom);
 
   if (!baseAsset?.currentPrice) {
@@ -154,22 +156,15 @@ async function getFallbackFeeEstimate({
       : baseFeeCurrency?.gasPriceStep?.high ?? DEFAULT_GAS_PRICE_UOSMO;
 
   const baseGasPriceDec = new Dec(baseGasPrice.toString());
-  const baseFeeAmountInt = baseGasPriceDec
-    .mul(new Dec(DEFAULT_FALLBACK_GAS_LIMIT.toString()))
-    .roundUp();
-  const baseFeeAmountDec = new Dec(baseFeeAmountInt.toString());
-  const usdValue = baseFeeAmountDec
-    .quo(DecUtils.getTenExponentN(baseAsset.coinDecimals))
-    .mul(baseAsset.currentPrice.toDec());
-  const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
-
   const balances = await apiUtils.local.balances.getUserBalances.fetch({
     bech32Address: wallet.address,
     chainId,
   });
 
   const priceByDenom = new Map<string, { price: Dec; coinDecimals: number }>();
-  const denomsToPrice = Array.from(new Set([baseFeeDenom, ...feeDenoms]));
+  const denomsToPrice = Array.from(
+    new Set([baseFeeDenom, ...feeDenomsForFallback])
+  );
   await Promise.all(
     denomsToPrice.map(async (denom) => {
       const asset = await getCachedAssetWithPrice(apiUtils, denom);
@@ -185,7 +180,7 @@ async function getFallbackFeeEstimate({
     fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT.toString(),
     baseFeeDenom,
     baseGasPrice: baseGasPriceDec,
-    feeDenoms,
+    feeDenoms: feeDenomsForFallback,
     balances,
     priceByDenom,
     bech32Address: wallet.address,
@@ -200,6 +195,10 @@ async function getFallbackFeeEstimate({
     throw new Error("Failed to estimate fees");
   }
   const fallbackAmountDec = new Dec(fallbackAmount.amount);
+  const usdValue = fallbackAmountDec
+    .quo(DecUtils.getTenExponentN(fallbackAsset.coinDecimals))
+    .mul(fallbackAsset.currentPrice.toDec());
+  const gasUsdValueToPay = new PricePretty(DEFAULT_VS_CURRENCY, usdValue);
 
   return {
     gasUsdValueToPay,

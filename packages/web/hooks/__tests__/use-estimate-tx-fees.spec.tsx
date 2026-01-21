@@ -1,7 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
-import { Dec } from "@osmosis-labs/unit";
+import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import React, { PropsWithChildren } from "react";
@@ -186,6 +186,69 @@ describe("useEstimateTxFees", () => {
 
     await waitFor(() => expect(result.current.data).toBeDefined());
     expect(result.current.data?.amount[0].denom).toBe("uion");
+  });
+
+  it("uses the fallback denom to compute usd value", async () => {
+    const fallbackDenom = "uion-unique";
+    mockGetChain.mockReturnValueOnce({
+      feeCurrencies: [
+        { coinMinimalDenom: "uosmo", gasPriceStep: { high: 0.045 } },
+        { coinMinimalDenom: fallbackDenom },
+      ],
+    });
+    mockEstimateFee.mockRejectedValue(new Error("simulation failed"));
+    mockGetUserBalances.mockResolvedValue([
+      { denom: "uosmo", amount: "0" },
+      { denom: fallbackDenom, amount: "100" },
+    ]);
+    mockGetAssetWithPrice.mockImplementation(
+      ({ findMinDenomOrSymbol }: { findMinDenomOrSymbol: string }) =>
+        Promise.resolve(
+          makeAsset(
+            findMinDenomOrSymbol,
+            findMinDenomOrSymbol === fallbackDenom ? "100000000" : "1"
+          )
+        )
+    );
+
+    const { result } = renderHook(
+      () =>
+        useEstimateTxFees({
+          messages,
+          chainId: "osmosis-1",
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    expect(result.current.data?.amount[0].denom).toBe(fallbackDenom);
+
+    const expectedUsdValue = new Dec("1")
+      .quo(DecUtils.getTenExponentN(6))
+      .mul(new Dec("100000000"));
+    expect(result.current.data?.gasUsdValueToPay.toDec()).toEqual(
+      expectedUsdValue
+    );
+  });
+
+  it("falls back to uosmo when chain has no fee currencies", async () => {
+    mockGetChain.mockReturnValueOnce(undefined);
+    mockEstimateFee.mockRejectedValue(new Error("simulation failed"));
+    mockGetUserBalances.mockResolvedValue([
+      { denom: "uosmo", amount: "100000" },
+    ]);
+
+    const { result } = renderHook(
+      () =>
+        useEstimateTxFees({
+          messages,
+          chainId: "osmosis-1",
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    expect(result.current.data?.amount[0].denom).toBe("uosmo");
   });
 
   it("surfaces insufficient fee balance errors instead of falling back", async () => {
