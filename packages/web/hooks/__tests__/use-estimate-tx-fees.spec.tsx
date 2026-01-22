@@ -294,6 +294,34 @@ describe("useEstimateTxFees", () => {
     );
   });
 
+  it("falls back when estimated fee is missing denom", async () => {
+    mockEstimateFee.mockResolvedValue({
+      amount: [{}],
+      gas: "250000",
+    });
+    mockGetUserBalances.mockResolvedValue([
+      { denom: "uosmo", amount: "0" },
+      { denom: "uion", amount: "100000" },
+    ]);
+
+    const { result } = renderHook(
+      () =>
+        useEstimateTxFees({
+          messages,
+          chainId: "osmosis-1",
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() => expect(result.current.data).toBeDefined());
+    expect(result.current.data?.amount[0].denom).toBe("uion");
+
+    const assetDenoms = mockGetAssetWithPrice.mock.calls.map(
+      ([args]) => args.findMinDenomOrSymbol
+    );
+    expect(assetDenoms).not.toContain(undefined);
+  });
+
   it("surfaces InsufficientFeeError from estimation instead of falling back", async () => {
     mockEstimateFee.mockRejectedValue(
       new InsufficientFeeError("fee token missing")

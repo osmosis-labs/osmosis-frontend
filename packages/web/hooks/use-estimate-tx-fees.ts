@@ -67,10 +67,13 @@ async function estimateTxFeesQueryFn({
       },
     });
 
-    const fee = amount[0];
-    const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
+    const fee = amount?.[0];
+    if (!fee?.denom) {
+      throw new Error("Failed to estimate fees");
+    }
 
-    if (!fee || !asset?.currentPrice) {
+    const asset = await getCachedAssetWithPrice(apiUtils, fee.denom);
+    if (!asset?.currentPrice) {
       throw new Error("Failed to estimate fees");
     }
 
