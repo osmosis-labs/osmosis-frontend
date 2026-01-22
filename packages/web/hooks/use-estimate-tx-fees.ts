@@ -12,6 +12,7 @@ import {
 } from "@osmosis-labs/stores";
 import {
   getFallbackFeeAmountFromBalances,
+  InsufficientFeeError,
   type QuoteStdFee,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
@@ -188,6 +189,9 @@ async function getFallbackFeeEstimate({
       bech32Address: wallet.address,
     });
   } catch (error) {
+    if (error instanceof InsufficientFeeError) {
+      throw error;
+    }
     throw new Error("Failed to estimate fees: fallback selection failed", {
       cause: error,
     });

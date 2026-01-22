@@ -1,6 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
+import {
+  getFallbackFeeAmountFromBalances,
+  InsufficientFeeError,
+} from "@osmosis-labs/tx";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
@@ -13,6 +17,16 @@ const mockEstimateFee = jest.fn();
 const mockGetChain = jest.fn();
 const mockGetAssetWithPrice = jest.fn();
 const mockGetUserBalances = jest.fn();
+
+jest.mock("@osmosis-labs/tx", () => {
+  const actual = jest.requireActual("@osmosis-labs/tx");
+  return {
+    ...actual,
+    getFallbackFeeAmountFromBalances: jest.fn(
+      actual.getFallbackFeeAmountFromBalances
+    ),
+  };
+});
 
 jest.mock("~/stores", () => ({
   useStore: () => ({
@@ -55,6 +69,11 @@ const makeAsset = (denom: string, price = "1") => ({
     toDec: () => new Dec(price),
   },
 });
+
+const mockGetFallbackFeeAmountFromBalances =
+  getFallbackFeeAmountFromBalances as jest.MockedFunction<
+    typeof getFallbackFeeAmountFromBalances
+  >;
 
 const createWrapper = () => {
   const queryClient = new QueryClient({
@@ -249,6 +268,30 @@ describe("useEstimateTxFees", () => {
 
     await waitFor(() => expect(result.current.data).toBeDefined());
     expect(result.current.data?.amount[0].denom).toBe("uosmo");
+  });
+
+  it("surfaces insufficient fee balance errors from fallback selection", async () => {
+    mockEstimateFee.mockRejectedValue(new Error("simulation failed"));
+    mockGetFallbackFeeAmountFromBalances.mockRejectedValueOnce(
+      new InsufficientFeeError(
+        "No fee tokens found with sufficient balance on account for address osmo1testaddress. Please add funds to continue."
+      )
+    );
+
+    const { result } = renderHook(
+      () =>
+        useEstimateTxFees({
+          messages,
+          chainId: "osmosis-1",
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() =>
+      expect(result.current.error).toBeInstanceOf(
+        InsufficientBalanceForFeeError
+      )
+    );
   });
 
   it("surfaces insufficient fee balance errors instead of falling back", async () => {
