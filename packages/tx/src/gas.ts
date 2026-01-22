@@ -507,14 +507,27 @@ export async function getFallbackFeeAmountFromBalances({
   });
   const basePriceEntry = priceByDenom.get(baseFeeDenom);
 
-  if (!basePriceEntry) {
-    throw new Error("Failed to estimate fees");
+  if (basePriceEntry) {
+    if (basePriceEntry.price.isZero() || basePriceEntry.price.isNegative()) {
+      throw new Error("Failed to estimate fees: invalid base fee price");
+    }
   }
 
   const gasPriceByDenom = new Map<string, Dec>();
-  const baseDecimals = DecUtils.getTenExponentN(basePriceEntry.coinDecimals);
+  const baseDecimals = basePriceEntry
+    ? DecUtils.getTenExponentN(basePriceEntry.coinDecimals)
+    : undefined;
 
   for (const { denom } of feeBalances) {
+    if (denom === baseFeeDenom) {
+      gasPriceByDenom.set(denom, baseGasPrice);
+      continue;
+    }
+
+    if (!basePriceEntry || !baseDecimals) {
+      continue;
+    }
+
     const priceEntry = priceByDenom.get(denom);
     if (
       !priceEntry ||
@@ -522,11 +535,6 @@ export async function getFallbackFeeAmountFromBalances({
       priceEntry.price.isNegative()
     )
       continue;
-
-    if (denom === baseFeeDenom) {
-      gasPriceByDenom.set(denom, baseGasPrice);
-      continue;
-    }
 
     const denomDecimals = DecUtils.getTenExponentN(priceEntry.coinDecimals);
     const denomGasPrice = baseGasPrice
@@ -537,13 +545,13 @@ export async function getFallbackFeeAmountFromBalances({
     gasPriceByDenom.set(denom, denomGasPrice);
   }
 
+  if (gasPriceByDenom.size === 0) {
+    throw new Error("Failed to estimate fees");
+  }
+
   const feeBalancesWithPrice = feeBalances.filter(({ denom }) =>
     gasPriceByDenom.has(denom)
   );
-
-  if (feeBalancesWithPrice.length === 0) {
-    throw new Error("Failed to estimate fees");
-  }
 
   return selectFeeAmountFromBalances({
     feeBalances: feeBalancesWithPrice,

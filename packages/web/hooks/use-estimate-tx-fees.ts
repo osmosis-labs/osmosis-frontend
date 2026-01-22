@@ -144,7 +144,7 @@ async function getFallbackFeeEstimate({
   const baseAsset = await getCachedAssetWithPrice(apiUtils, baseFeeDenom);
 
   if (!baseAsset?.currentPrice) {
-    throw new Error("Failed to estimate fees");
+    throw new Error("Failed to estimate fees: missing base fee asset price");
   }
 
   const baseFeeCurrency = chain?.feeCurrencies?.[0] as
@@ -176,15 +176,22 @@ async function getFallbackFeeEstimate({
     })
   );
 
-  const fallbackAmounts = await getFallbackFeeAmountFromBalances({
-    fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT.toString(),
-    baseFeeDenom,
-    baseGasPrice: baseGasPriceDec,
-    feeDenoms: feeDenomsForFallback,
-    balances,
-    priceByDenom,
-    bech32Address: wallet.address,
-  });
+  let fallbackAmounts: QuoteStdFee["amount"];
+  try {
+    fallbackAmounts = await getFallbackFeeAmountFromBalances({
+      fallbackGasLimit: DEFAULT_FALLBACK_GAS_LIMIT.toString(),
+      baseFeeDenom,
+      baseGasPrice: baseGasPriceDec,
+      feeDenoms: feeDenomsForFallback,
+      balances,
+      priceByDenom,
+      bech32Address: wallet.address,
+    });
+  } catch (error) {
+    throw new Error("Failed to estimate fees: fallback selection failed", {
+      cause: error,
+    });
+  }
 
   const fallbackAmount = fallbackAmounts[0];
   const fallbackAsset = await getCachedAssetWithPrice(
@@ -192,7 +199,7 @@ async function getFallbackFeeEstimate({
     fallbackAmount.denom
   );
   if (!fallbackAsset?.currentPrice) {
-    throw new Error("Failed to estimate fees");
+    throw new Error("Failed to estimate fees: missing fallback asset price");
   }
   const fallbackAmountDec = new Dec(fallbackAmount.amount);
   const usdValue = fallbackAmountDec
