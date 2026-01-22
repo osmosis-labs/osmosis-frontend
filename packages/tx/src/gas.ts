@@ -345,8 +345,9 @@ export function getFeeBalancesFromDenoms({
 
   if (!feeBalances.length) {
     throw new InsufficientFeeError(
-      "No fee tokens found with sufficient balance on account. Please add funds to continue" +
-        (bech32Address ? `: ${bech32Address}` : "")
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
     );
   }
 
