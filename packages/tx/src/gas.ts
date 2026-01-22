@@ -381,8 +381,9 @@ export async function selectFeeAmountFromBalances({
 > {
   if (!feeBalances.length) {
     throw new InsufficientFeeError(
-      "No fee tokens found with sufficient balance on account. Please add funds to continue" +
-        (bech32Address ? `: ${bech32Address}` : "")
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
     );
   }
 
@@ -459,8 +460,9 @@ export async function selectFeeAmountFromBalances({
 
   if (subtractiveFeeAmount.length === 0 && alternativeFeeAmount.length === 0) {
     throw new InsufficientFeeError(
-      "Insufficient alternative balance for transaction fees. Please add funds to continue" +
-        (bech32Address ? `: ${bech32Address}` : "")
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
     );
   }
 
