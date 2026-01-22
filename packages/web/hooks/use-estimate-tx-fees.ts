@@ -101,7 +101,10 @@ async function estimateTxFeesQueryFn({
 }
 
 function isInsufficientFeeError(error: unknown) {
-  if (error instanceof InsufficientBalanceForFeeError) {
+  if (
+    error instanceof InsufficientBalanceForFeeError ||
+    error instanceof InsufficientFeeError
+  ) {
     return true;
   }
 

@@ -294,6 +294,27 @@ describe("useEstimateTxFees", () => {
     );
   });
 
+  it("surfaces InsufficientFeeError from estimation instead of falling back", async () => {
+    mockEstimateFee.mockRejectedValue(
+      new InsufficientFeeError("fee token missing")
+    );
+
+    const { result } = renderHook(
+      () =>
+        useEstimateTxFees({
+          messages,
+          chainId: "osmosis-1",
+        }),
+      { wrapper: createWrapper() }
+    );
+
+    await waitFor(() =>
+      expect(result.current.error).toBeInstanceOf(InsufficientFeeError)
+    );
+    expect(mockGetUserBalances).not.toHaveBeenCalled();
+    expect(mockGetFallbackFeeAmountFromBalances).not.toHaveBeenCalled();
+  });
+
   it("surfaces insufficient fee balance errors instead of falling back", async () => {
     mockEstimateFee.mockRejectedValue(
       new InsufficientBalanceForFeeError("No fee tokens found")
