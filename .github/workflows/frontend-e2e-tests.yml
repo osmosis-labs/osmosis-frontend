@@ -9,6 +9,13 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
+# DigitalOcean endpoint configuration for DO-validation branch
+# When running on jason/do-endpoints-e2e branch, balance checks use DO LCD
+env:
+  # REST_ENDPOINT is used by packages/e2e/utils/balance-checker.ts
+  # Set to DO LCD for the DO-validation branch; defaults to mainnet LCD otherwise
+  REST_ENDPOINT: ${{ github.ref_name == 'jason/do-endpoints-e2e' && 'https://lcd-do-glb.osmosis.zone' || 'https://lcd.osmosis.zone' }}
+
 jobs:
   wait-for-deployment:
     runs-on: ubuntu-latest

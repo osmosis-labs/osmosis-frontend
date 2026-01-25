@@ -5,6 +5,7 @@ on:
       [
         "Synthetic Geo Monitoring Frontend tests",
         "Synthetic Quote Geo Monitoring Frontend tests",
+        "Synthetic DO Infrastructure Monitoring tests",
       ]
     types:
       - completed
