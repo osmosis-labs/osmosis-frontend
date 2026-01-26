@@ -1,8 +1,9 @@
-name: Synthetic DO Infrastructure Monitoring tests
+name: Synthetic DO Load Balanced Infrastructure Monitoring tests
 
 # This workflow validates the DigitalOcean global infrastructure endpoints
 # by running e2e tests against a Vercel preview configured to use DO RPC/LCD/SQS.
 # Used for migration validation before shifting traffic from GCP to DO.
+# Note: DO endpoints are globally load balanced, so we only need one test per type.
 
 on:
   workflow_dispatch:
@@ -86,10 +87,10 @@ jobs:
           NEXT_PUBLIC_SIDECAR_BASE_URL: ${{ env.DO_SQS_ENDPOINT }}
           NEXT_PUBLIC_TIMESERIES_DATA_URL: https://data.app.osmosis.zone
 
-  # FE swap monitoring tests (US region - no proxy)
-  fe-swap-us:
+  # FE swap monitoring test
+  fe-swap:
     timeout-minutes: 15
-    name: do-fe-swap-us
+    name: do-fe-swap
     needs: resolve-do-preview
     runs-on: macos-14
     steps:
@@ -114,7 +115,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests (US) against DO preview
+      - name: Run Swap tests against DO preview
         env:
           BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
           REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
@@ -128,110 +129,14 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: do-us-swap-test-results-${{ github.run_id }}
+          name: do-swap-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
-  # FE swap monitoring tests (EU region via proxy)
-  fe-swap-eu:
-    timeout-minutes: 15
-    name: do-fe-swap-eu
-    needs: resolve-do-preview
-    runs-on: macos-14
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests (EU) against DO preview
-        env:
-          BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
-          REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
-          USE_TEST_PROXY: "use"
-        run: |
-          echo "Testing DO preview at: $BASE_URL (via EU proxy)"
-          cd packages/e2e
-          npx playwright test monitoring.swap
-      - name: upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-eu-swap-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  # FE swap monitoring tests (SG/Asia region via proxy)
-  fe-swap-sg:
-    timeout-minutes: 15
-    name: do-fe-swap-sg
-    needs: resolve-do-preview
-    runs-on: macos-14
-    steps:
-      - name: Echo IP
-        run: curl -L "https://ipinfo.io" -s
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap tests (SG) against DO preview
-        env:
-          BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
-          REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
-          TEST_PROXY: "http://139.59.218.19:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_1 }}
-          USE_TEST_PROXY: "use"
-        run: |
-          echo "Testing DO preview at: $BASE_URL (via SG proxy)"
-          cd packages/e2e
-          npx playwright test monitoring.swap
-      - name: upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-sg-swap-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  # FE market order tests (US region)
-  fe-trade-us:
+  # FE market order test
+  fe-trade:
     timeout-minutes: 12
-    needs: [resolve-do-preview, fe-swap-us]
-    name: do-fe-trade-us
+    needs: [resolve-do-preview, fe-swap]
+    name: do-fe-trade
     runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
@@ -255,7 +160,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Market tests (US) against DO preview
+      - name: Run Market tests against DO preview
         env:
           BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
           REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
@@ -272,67 +177,15 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: do-us-trade-test-results-${{ github.run_id }}
+          name: do-trade-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
-  # FE market order tests (EU region)
-  fe-trade-eu:
-    timeout-minutes: 12
-    needs: [resolve-do-preview, fe-swap-eu]
-    name: do-fe-trade-eu
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Market tests (EU) against DO preview
-        env:
-          BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
-          REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
-          USE_TEST_PROXY: "use"
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.market --timeout 180000
-      - name: set-output
-        if: failure() || success()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-eu-trade-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  # FE limit order tests (US region)
-  fe-limit-us:
+  # FE limit order test
+  fe-limit:
     timeout-minutes: 15
     if: failure() || success()
-    needs: [resolve-do-preview, fe-trade-us]
-    name: do-fe-limit-us
+    needs: [resolve-do-preview, fe-trade]
+    name: do-fe-limit
     runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
@@ -356,7 +209,7 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Limit tests (US) against DO preview
+      - name: Run Limit tests against DO preview
         env:
           BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
           REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
@@ -373,74 +226,14 @@ jobs:
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: do-us-limit-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
-  # FE limit order tests (EU region)
-  fe-limit-eu:
-    timeout-minutes: 15
-    if: failure() || success()
-    needs: [resolve-do-preview, fe-trade-eu]
-    name: do-fe-limit-eu
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Limit tests (EU) against DO preview
-        env:
-          BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
-          REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
-          TEST_PROXY: "http://138.68.112.16:8888"
-          TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
-          TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
-          USE_TEST_PROXY: "use"
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.limit --timeout 180000
-      - name: set-output
-        if: failure() || success()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-eu-limit-test-results-${{ github.run_id }}
+          name: do-limit-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
   # Alert on critical failures (2nd attempt with multiple failures)
   fe-bot-alert:
     runs-on: ubuntu-latest
-    needs:
-      [
-        server-e2e-tests,
-        fe-trade-eu,
-        fe-trade-us,
-        fe-limit-us,
-        fe-limit-eu,
-      ]
-    if: failure() && github.run_attempt == 2 && (needs.fe-trade-eu.outputs.unexpected > 1 || needs.fe-trade-us.outputs.unexpected > 1 || needs.fe-limit-eu.outputs.unexpected > 1 || needs.fe-limit-us.outputs.unexpected > 1)
+    needs: [server-e2e-tests, fe-trade, fe-limit]
+    if: failure() && github.run_attempt == 2 && (needs.fe-trade.outputs.unexpected > 1 || needs.fe-limit.outputs.unexpected > 1)
     steps:
       - name: Install Datadog CI
         run: |
@@ -469,12 +262,10 @@ jobs:
             --tags "infrastructure:digitalocean" \
             --tags "dd_gh_run_attempt:${{ github.run_attempt }}"
 
-          # Add tags for unexpected failure counts by region
+          # Add tags for unexpected failure counts
           datadog-ci tag --level pipeline \
-            --tags "do_fe_trade_eu_unexpected:${{ needs.fe-trade-eu.outputs.unexpected }}" \
-            --tags "do_fe_trade_us_unexpected:${{ needs.fe-trade-us.outputs.unexpected }}" \
-            --tags "do_fe_limit_eu_unexpected:${{ needs.fe-limit-eu.outputs.unexpected }}" \
-            --tags "do_fe_limit_us_unexpected:${{ needs.fe-limit-us.outputs.unexpected }}"
+            --tags "do_fe_trade_unexpected:${{ needs.fe-trade.outputs.unexpected }}" \
+            --tags "do_fe_limit_unexpected:${{ needs.fe-limit.outputs.unexpected }}"
 
           echo "Metrics sent to Datadog successfully"
 
@@ -482,15 +273,7 @@ jobs:
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
-    needs:
-      [
-        server-e2e-tests,
-        fe-trade-eu,
-        fe-trade-us,
-        fe-limit-us,
-        fe-limit-eu,
-        fe-bot-alert,
-      ]
+    needs: [server-e2e-tests, fe-trade, fe-limit, fe-bot-alert]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7
