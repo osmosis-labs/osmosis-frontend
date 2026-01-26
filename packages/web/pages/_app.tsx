@@ -1,8 +1,6 @@
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 
-import { apiClient } from "@osmosis-labs/utils";
-import { useQuery } from "@tanstack/react-query";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
@@ -15,7 +13,6 @@ import utc from "dayjs/plugin/utc";
 import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import {
   ComponentType,
@@ -38,7 +35,6 @@ import { AmplitudeEvent, EventName } from "~/config";
 import { wagmiConfig } from "~/config/wagmi";
 import {
   MultiLanguageProvider,
-  useDisclosure,
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
@@ -47,7 +43,6 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/use-wallet-select";
-import { ExternalLinkModal, handleExternalLink } from "~/modals";
 import { SEO } from "~/next-seo.config";
 import { api } from "~/utils/trpc";
 
@@ -115,97 +110,18 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export interface LevanaGeoBlockedResponse {
-  allowed: boolean;
-  countryCode: string;
-}
-
 const MainLayoutWrapper: FunctionComponent<{
   children: ReactNode;
 }> = observer(({ children }) => {
   const { t } = useTranslation();
   const flags = useFeatureFlags();
-  const { data: levanaGeoblock, error } = useQuery(
-    ["levana-geoblocked"],
-    () =>
-      apiClient<LevanaGeoBlockedResponse>("https://geoblocked.levana.finance/"),
-    {
-      staleTime: Infinity,
-      cacheTime: Infinity,
-      retry: false,
-    }
-  );
 
   const { accountStore, chainStore } = useStore();
   const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
-  // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
-  const {
-    isOpen: isLeavingOsmosisToMarsOpen,
-    onOpen: onOpenLeavingOsmosisToMars,
-    onClose: onCloseLeavingOsmosisToMars,
-  } = useDisclosure();
-  const {
-    isOpen: isLeavingOsmosisToLevanaOpen,
-    onOpen: onOpenLeavingOsmosisToLevana,
-    onClose: onCloseLeavingOsmosisToLevana,
-  } = useDisclosure();
 
   const menus = useMemo(() => {
-    let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
-
     if (!flags._isInitialized) {
       return [];
-    }
-
-    if (!levanaGeoblock && !error) {
-      return [];
-    }
-
-    if (levanaGeoblock?.allowed) {
-      conditionalMenuItems.push(
-        {
-          label: t("menu.margin"),
-          link: (e) => {
-            e.preventDefault();
-            handleExternalLink({
-              url: "https://osmosis.marsprotocol.io/",
-              openModal: onOpenLeavingOsmosisToMars,
-            });
-          },
-          icon: <Icon id="margin" className="h-6 w-6" />,
-          amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
-          secondaryLogo: (
-            <Image
-              src="/logos/mars-logo.png"
-              width={24}
-              height={24}
-              alt="mars logo"
-            />
-          ),
-          subtext: t("menu.marsSubtext"),
-        },
-        {
-          label: t("menu.perpetuals"),
-          link: (e) => {
-            e.preventDefault();
-            handleExternalLink({
-              url: "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
-              openModal: onOpenLeavingOsmosisToLevana,
-            });
-          },
-          icon: <Icon id="perps" className="h-6 w-6" />,
-          amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
-          secondaryLogo: (
-            <Image
-              src="/logos/levana-logo.png"
-              width={24}
-              height={24}
-              alt="mars logo"
-            />
-          ),
-          subtext: t("menu.levanaSubtext"),
-        }
-      );
     }
 
     let menuItems: (MainLayoutMenu | null)[] = [
@@ -251,7 +167,6 @@ const MainLayoutWrapper: FunctionComponent<{
             icon: <Icon id="ticket" className="h-6 w-6" />,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           },
-      ...conditionalMenuItems,
       {
         label: t("menu.pools"),
         link: "/pools",
@@ -275,15 +190,11 @@ const MainLayoutWrapper: FunctionComponent<{
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [
-    levanaGeoblock,
-    error,
     flags.earnPage,
     flags.staking,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
     t,
-    onOpenLeavingOsmosisToLevana,
-    onOpenLeavingOsmosisToMars,
   ]);
 
   const secondaryMenuItems = useMemo<MainLayoutMenu[]>(
@@ -320,20 +231,6 @@ const MainLayoutWrapper: FunctionComponent<{
   return (
     <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
       {children}
-      <ExternalLinkModal
-        url="https://osmosis.marsprotocol.io/"
-        isOpen={isLeavingOsmosisToMarsOpen}
-        onRequestClose={() => {
-          onCloseLeavingOsmosisToMars();
-        }}
-      />
-      <ExternalLinkModal
-        url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
-        isOpen={isLeavingOsmosisToLevanaOpen}
-        onRequestClose={() => {
-          onCloseLeavingOsmosisToLevana();
-        }}
-      />
       {flags.cypherCard && !flags.alloyedAssets && <CypherCardToast />}
     </MainLayout>
   );
