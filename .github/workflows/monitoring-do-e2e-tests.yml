@@ -76,7 +76,8 @@ jobs:
         run: yarn install --frozen-lockfile
 
       - name: Echo DO SQS Server URL
-        run: echo "Testing SQS Server URL: ${{ env.DO_SQS_ENDPOINT }}"
+        run: |
+          echo "Testing SQS Server URL: ${{ env.DO_SQS_ENDPOINT }}"
 
       - name: Run Server Tests against DO SQS
         id: tests
