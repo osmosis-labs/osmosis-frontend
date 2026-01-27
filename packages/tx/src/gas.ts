@@ -12,7 +12,7 @@ import {
   VestingAccount,
 } from "@osmosis-labs/server";
 import type { Chain } from "@osmosis-labs/types";
-import { Dec, Int } from "@osmosis-labs/unit";
+import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
 import { ApiClientError } from "@osmosis-labs/utils";
 import { Buffer } from "buffer/";
 import cachified, { CacheEntry } from "cachified";
@@ -321,35 +321,53 @@ export async function simulateCosmosTxBody({
 
 export class InsufficientFeeError extends Error {}
 
-/**
- * Gets the gas fee payment asset amounts for the given chain.
- * If an address is provided, it will attempt to provide amounts from the available fee coin balances
- * at that account address. Otherwise it will use the default fee coin amount(s).
- *
- * If `coinsSpent` are provided, the fee token selection process will account for any spent fee coins.
- * Note: partial fee amounts are not currently supported (mainly by wallet UIs) so for now only single full fee amounts are returned.
- *
- * Can be expanded to handle paying with multiple fee tokens in the future.
- *
- * @throws `InsufficientFeeError` if the user does not have enough balance with any gas token to pay the fee.
- * @throws If chain not found.
- */
-export async function getGasFeeAmount({
-  chainId,
-  chainList,
-  gasLimit,
+export type FeeTokenBalance = { denom: string; amount: string };
+export type FeeTokenPrice = { price: Dec; coinDecimals: number };
+
+export function getFeeBalancesFromDenoms({
+  feeDenoms,
+  balances,
   bech32Address,
-  gasMultiplier = 1.5,
-  coinsSpent = [],
 }: {
-  chainId: string;
-  chainList: ChainWithFeatures[];
-  bech32Address: string;
+  feeDenoms: string[];
+  balances: FeeTokenBalance[];
+  bech32Address?: string;
+}): FeeTokenBalance[] {
+  const feeBalances: FeeTokenBalance[] = [];
+
+  // iterate in order of fee denoms
+  for (const denom of feeDenoms) {
+    const balance = balances.find((balance) => balance.denom === denom);
+    if (balance) {
+      feeBalances.push(balance);
+    }
+  }
+
+  if (!feeBalances.length) {
+    throw new InsufficientFeeError(
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
+    );
+  }
+
+  return feeBalances;
+}
+
+export async function selectFeeAmountFromBalances({
+  feeBalances,
+  gasLimit,
+  coinsSpent = [],
+  getGasPriceByDenom,
+  bech32Address,
+}: {
+  feeBalances: FeeTokenBalance[];
   gasLimit: string;
-  gasMultiplier?: number;
-  /** Coins being spent in applicable transaction.
-   *  Will be cross checked with available fee coins on chain and from account if given. */
   coinsSpent?: { denom: string; amount: string }[];
+  getGasPriceByDenom: (
+    denom: string
+  ) => Promise<{ gasPrice: Dec }> | { gasPrice: Dec };
+  bech32Address?: string;
 }): Promise<
   {
     denom: string;
@@ -361,39 +379,11 @@ export async function getGasFeeAmount({
     isSubtractiveFee?: boolean;
   }[]
 > {
-  const chain = chainList.find((chain) => chain.chain_id === chainId);
-  if (!chain) throw new Error("Chain not found: " + chainId);
-
-  // Need to reconcile
-  // * Available fee tokens
-  // * Account fee token balances
-  // * Spent fee tokens
-
-  const [chainFeeDenoms, { balances }] = await Promise.all([
-    getChainSupportedFeeDenoms({
-      chainId,
-      chainList,
-    }),
-    queryBalances({
-      chainId,
-      chainList,
-      bech32Address,
-    }),
-  ]);
-  const feeBalances: { denom: string; amount: string }[] = [];
-
-  // iterate in order of fee denoms
-  for (const denom of chainFeeDenoms) {
-    const balance = balances.find((balance) => balance.denom === denom);
-    if (balance) {
-      feeBalances.push(balance);
-    }
-  }
-
   if (!feeBalances.length) {
     throw new InsufficientFeeError(
-      "No fee tokens found with sufficient balance on account. Please add funds to continue: " +
-        bech32Address
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
     );
   }
 
@@ -412,12 +402,7 @@ export async function getGasFeeAmount({
   }[] = [];
 
   for (const { amount, denom } of feeBalances) {
-    const { gasPrice: feeDenomGasPrice } = await getGasPriceByFeeDenom({
-      chainId,
-      chainList,
-      feeDenom: denom,
-      gasMultiplier,
-    });
+    const { gasPrice: feeDenomGasPrice } = await getGasPriceByDenom(denom);
 
     // Calculate the raw fee amount first before applying Math.max
     const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).roundUp();
@@ -475,8 +460,9 @@ export async function getGasFeeAmount({
 
   if (subtractiveFeeAmount.length === 0 && alternativeFeeAmount.length === 0) {
     throw new InsufficientFeeError(
-      "Insufficient alternative balance for transaction fees. Please add funds to continue: " +
-        bech32Address
+      `No fee tokens found with sufficient balance on account${
+        bech32Address ? ` for address ${bech32Address}` : ""
+      }. Please add funds to continue.`
     );
   }
 
@@ -487,6 +473,177 @@ export async function getGasFeeAmount({
   return alternativeFeeAmount.length > 0
     ? alternativeFeeAmount
     : subtractiveFeeAmount;
+}
+
+export async function getFallbackFeeAmountFromBalances({
+  fallbackGasLimit,
+  baseFeeDenom,
+  baseGasPrice,
+  feeDenoms,
+  balances,
+  coinsSpent = [],
+  priceByDenom,
+  bech32Address,
+}: {
+  fallbackGasLimit: string;
+  baseFeeDenom: string;
+  baseGasPrice: Dec;
+  feeDenoms: string[];
+  balances: FeeTokenBalance[];
+  coinsSpent?: { denom: string; amount: string }[];
+  priceByDenom: Map<string, FeeTokenPrice>;
+  bech32Address?: string;
+}): Promise<
+  {
+    denom: string;
+    amount: string;
+    isSubtractiveFee?: boolean;
+  }[]
+> {
+  const feeBalances = getFeeBalancesFromDenoms({
+    feeDenoms,
+    balances,
+    bech32Address,
+  });
+  const basePriceEntry = priceByDenom.get(baseFeeDenom);
+
+  if (basePriceEntry) {
+    if (basePriceEntry.price.isZero() || basePriceEntry.price.isNegative()) {
+      throw new Error("Failed to estimate fees: invalid base fee price");
+    }
+  }
+
+  const gasPriceByDenom = new Map<string, Dec>();
+  const baseDecimals = basePriceEntry
+    ? DecUtils.getTenExponentN(basePriceEntry.coinDecimals)
+    : undefined;
+
+  for (const { denom } of feeBalances) {
+    if (denom === baseFeeDenom) {
+      gasPriceByDenom.set(denom, baseGasPrice);
+      continue;
+    }
+
+    if (!basePriceEntry || !baseDecimals) {
+      continue;
+    }
+
+    const priceEntry = priceByDenom.get(denom);
+    if (
+      !priceEntry ||
+      priceEntry.price.isZero() ||
+      priceEntry.price.isNegative()
+    )
+      continue;
+
+    const denomDecimals = DecUtils.getTenExponentN(priceEntry.coinDecimals);
+    const denomGasPrice = baseGasPrice
+      .mul(basePriceEntry.price)
+      .mul(denomDecimals)
+      .quo(priceEntry.price)
+      .quo(baseDecimals);
+    gasPriceByDenom.set(denom, denomGasPrice);
+  }
+
+  if (gasPriceByDenom.size === 0) {
+    throw new Error("Failed to estimate fees");
+  }
+
+  const feeBalancesWithPrice = feeBalances.filter(({ denom }) =>
+    gasPriceByDenom.has(denom)
+  );
+
+  return selectFeeAmountFromBalances({
+    feeBalances: feeBalancesWithPrice,
+    gasLimit: fallbackGasLimit,
+    coinsSpent,
+    bech32Address,
+    getGasPriceByDenom: (denom) => ({
+      gasPrice: gasPriceByDenom.get(denom)!,
+    }),
+  });
+}
+
+/**
+ * Gets the gas fee payment asset amounts for the given chain.
+ * If an address is provided, it will attempt to provide amounts from the available fee coin balances
+ * at that account address. Otherwise it will use the default fee coin amount(s).
+ *
+ * If `coinsSpent` are provided, the fee token selection process will account for any spent fee coins.
+ * Note: partial fee amounts are not currently supported (mainly by wallet UIs) so for now only single full fee amounts are returned.
+ *
+ * Can be expanded to handle paying with multiple fee tokens in the future.
+ *
+ * @throws `InsufficientFeeError` if the user does not have enough balance with any gas token to pay the fee.
+ * @throws If chain not found.
+ */
+export async function getGasFeeAmount({
+  chainId,
+  chainList,
+  gasLimit,
+  bech32Address,
+  gasMultiplier = 1.5,
+  coinsSpent = [],
+}: {
+  chainId: string;
+  chainList: ChainWithFeatures[];
+  bech32Address: string;
+  gasLimit: string;
+  gasMultiplier?: number;
+  /** Coins being spent in applicable transaction.
+   *  Will be cross checked with available fee coins on chain and from account if given. */
+  coinsSpent?: { denom: string; amount: string }[];
+}): Promise<
+  {
+    denom: string;
+    amount: string;
+    /** Returns `true` if this fee applies to the edge case where the amount was
+     *  spent by the given spent coins list.
+     *  Likely, the spent amount needs to be adjusted by subtracting this amount.
+     */
+    isSubtractiveFee?: boolean;
+  }[]
+> {
+  const chain = chainList.find((chain) => chain.chain_id === chainId);
+  if (!chain) throw new Error("Chain not found: " + chainId);
+
+  // Need to reconcile
+  // * Available fee tokens
+  // * Account fee token balances
+  // * Spent fee tokens
+
+  const [chainFeeDenomsRaw, { balances }] = await Promise.all([
+    getChainSupportedFeeDenoms({
+      chainId,
+      chainList,
+    }),
+    queryBalances({
+      chainId,
+      chainList,
+      bech32Address,
+    }),
+  ]);
+  const chainFeeDenoms = chainFeeDenomsRaw.filter(Boolean) as string[];
+  const feeBalances = getFeeBalancesFromDenoms({
+    feeDenoms: chainFeeDenoms,
+    balances,
+    bech32Address,
+  });
+
+  return selectFeeAmountFromBalances({
+    feeBalances,
+    gasLimit,
+    coinsSpent,
+    bech32Address,
+    getGasPriceByDenom: async (denom) => {
+      return getGasPriceByFeeDenom({
+        chainId,
+        chainList,
+        feeDenom: denom,
+        gasMultiplier,
+      });
+    },
+  });
 }
 
 /**
