@@ -28,5 +28,7 @@ export interface MobileProps {
   isMobile?: boolean;
 }
 
+export type ListOption<T> = { value: T; label: string };
+
 export type StakeOrUnstake = "Stake" | "Unstake";
 export type StakeOrEdit = "stake" | "edit";

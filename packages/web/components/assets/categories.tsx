@@ -73,11 +73,7 @@ const staticCategoryAssetImageSamples = {
     "/tokens/generated/flix.svg",
     "/tokens/generated/lab.png",
   ],
-  built_on_osmosis: [
-    "/tokens/generated/lvn.svg",
-    "/tokens/generated/mars.svg",
-    "/tokens/generated/mbrn.svg",
-  ],
+  built_on_osmosis: ["/tokens/generated/mbrn.svg"],
   depin: [
     "/tokens/generated/akt.svg",
     "/tokens/generated/fil.svg",

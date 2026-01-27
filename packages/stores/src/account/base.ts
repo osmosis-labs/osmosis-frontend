@@ -1384,11 +1384,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet,
     messages,
     signOptions = {},
+    fallbackGasLimit,
   }: {
     wallet: AccountStoreWallet;
     messages: readonly EncodeObject[];
     initialFee?: Optional<StdFee, "gas">;
     signOptions?: SignOptions;
+    fallbackGasLimit?: number;
   }): Promise<StdFee> {
     if (!wallet.address) throw new Error("No wallet address available.");
 
@@ -1414,6 +1416,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
             nonCriticalExtensionOptions?.map(encodeAnyBase64),
           bech32Address: wallet.address,
           gasMultiplier: GasMultiplier,
+          fallbackGasLimit,
         } satisfies {
           chainId: string;
           messages: { typeUrl: string; value: string }[];
@@ -1421,6 +1424,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           bech32Address: string;
           onlyDefaultFeeDenom?: boolean;
           gasMultiplier: number;
+          fallbackGasLimit?: number;
         },
       });
 

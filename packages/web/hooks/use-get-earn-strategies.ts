@@ -8,8 +8,12 @@ import { apiClient } from "@osmosis-labs/utils";
 import { useQueries } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { LevanaGeoBlockedResponse } from "~/pages/_app";
 import { api } from "~/utils/trpc";
+
+type LevanaGeoBlockedResponse = {
+  allowed: boolean;
+  countryCode: string;
+};
 
 export const useGetEarnStrategies = (
   userOsmoAddress: string,

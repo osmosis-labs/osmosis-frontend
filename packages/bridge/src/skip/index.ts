@@ -616,13 +616,18 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     for (const skipAsset of chainAssets[chainID].assets) {
       if (chain.chainType === "evm") {
+        // For the chain's native EVM token, only match assets without token_contract.
+        // For Ethereum specifically, Skip may have two ETH entries: one with token_contract
+        // (not routable) and one without (native, which is routable).
         if (
-          asset.address === NativeEVMTokenConstantAddress &&
-          !skipAsset.token_contract
+          asset.address.toLowerCase() ===
+          NativeEVMTokenConstantAddress.toLowerCase()
         ) {
-          return skipAsset;
+          if (!skipAsset.token_contract) return skipAsset;
+          continue;
         }
 
+        // For ERC20 tokens, match by token_contract
         if (
           asset.address.toLowerCase() ===
           skipAsset.token_contract?.toLowerCase()
