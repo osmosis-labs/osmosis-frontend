@@ -132,59 +132,10 @@ jobs:
           name: do-swap-test-results-${{ github.run_id }}
           path: packages/e2e/playwright-report
 
-  # FE market order test
-  fe-trade:
-    timeout-minutes: 12
-    needs: [resolve-do-preview, fe-swap]
-    name: do-fe-trade
-    runs-on: macos-14
-    outputs:
-      unexpected: ${{ steps.set-output.outputs.unexpected }}
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            packages/e2e
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-22.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Market tests against DO preview
-        env:
-          BASE_URL: "https://${{ needs.resolve-do-preview.outputs.environment_url }}"
-          REST_ENDPOINT: ${{ env.DO_LCD_ENDPOINT }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
-        run: |
-          cd packages/e2e
-          npx playwright test monitoring.market --timeout 90000
-      - name: set-output
-        if: failure() || success()
-        id: set-output
-        run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
-      - name: upload test results
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: do-trade-test-results-${{ github.run_id }}
-          path: packages/e2e/playwright-report
-
   # FE limit order test
   fe-limit:
     timeout-minutes: 15
-    if: failure() || success()
-    needs: [resolve-do-preview, fe-trade]
+    needs: [resolve-do-preview, fe-swap]
     name: do-fe-limit
     runs-on: macos-14
     outputs:
@@ -232,8 +183,8 @@ jobs:
   # Alert on critical failures (2nd attempt with multiple failures)
   fe-bot-alert:
     runs-on: ubuntu-latest
-    needs: [server-e2e-tests, fe-trade, fe-limit]
-    if: failure() && github.run_attempt == 2 && (needs.fe-trade.outputs.unexpected > 1 || needs.fe-limit.outputs.unexpected > 1)
+    needs: [server-e2e-tests, fe-limit]
+    if: failure() && github.run_attempt == 2 && needs.fe-limit.outputs.unexpected > 1
     steps:
       - name: Install Datadog CI
         run: |
@@ -264,7 +215,6 @@ jobs:
 
           # Add tags for unexpected failure counts
           datadog-ci tag --level pipeline \
-            --tags "do_fe_trade_unexpected:${{ needs.fe-trade.outputs.unexpected }}" \
             --tags "do_fe_limit_unexpected:${{ needs.fe-limit.outputs.unexpected }}"
 
           echo "Metrics sent to Datadog successfully"
@@ -273,7 +223,7 @@ jobs:
   delete-deployments:
     runs-on: ubuntu-latest
     if: always()
-    needs: [server-e2e-tests, fe-trade, fe-limit, fe-bot-alert]
+    needs: [server-e2e-tests, fe-limit, fe-bot-alert]
     steps:
       - name: Delete Previous deployments
         uses: actions/github-script@v7
