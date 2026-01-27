@@ -134,9 +134,7 @@ const MenuLink: FunctionComponent<{
       href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
-      className={classNames("flex w-full items-center", {
-        "h-12 px-5 py-3 md:px-3 md:py-2": !showMore,
-      })}
+      className="flex w-full items-center h-12 px-5 py-3 md:px-3 md:py-2"
       {...hoverHandlers}
       onClick={onClickLink}
     >
