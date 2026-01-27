@@ -1,0 +1,26 @@
+name: Dispatch DO Monitoring
+
+# Triggers the DO infrastructure monitoring workflow on the feature branch
+# every 20 minutes. This allows scheduled monitoring without merging to stage.
+
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch: # Allow manual triggers for testing
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger DO monitoring on feature branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            console.log('Dispatching DO monitoring workflow to jason/do-endpoints-e2e branch...');
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'monitoring-do-e2e-tests.yml',
+              ref: 'jason/do-endpoints-e2e'
+            });
+            console.log('Workflow dispatched successfully');
