@@ -13,9 +13,7 @@ on:
         required: false
         default: 'false'
         type: boolean
-  schedule:
-    # Run every 30 minutes for continuous validation
-    - cron: "*/30 * * * *"
+  # Schedule removed - triggered by dispatch-do-monitoring.yml on stage branch
 
 # DO endpoint configuration
 env:
