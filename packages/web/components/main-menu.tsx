@@ -116,6 +116,19 @@ const MenuLink: FunctionComponent<{
 
   const selected = selectionTest ? selectionTest.test(router.pathname) : false;
 
+  const hoverHandlers = {
+    onMouseEnter: () => shouldShowHover && setShowSubTitle(true),
+    onMouseLeave: () => shouldShowHover && setShowSubTitle(false),
+  };
+
+  if (showMore) {
+    return (
+      <div className="flex w-full items-center" {...hoverHandlers}>
+        {runIfFn(children, { showSubTitle, selected })}
+      </div>
+    );
+  }
+
   return (
     <Link
       href={typeof href === "string" ? href : "/"}
@@ -124,8 +137,7 @@ const MenuLink: FunctionComponent<{
       className={classNames("flex w-full items-center", {
         "h-12 px-5 py-3 md:px-3 md:py-2": !showMore,
       })}
-      onMouseEnter={() => shouldShowHover && setShowSubTitle(true)}
-      onMouseLeave={() => shouldShowHover && setShowSubTitle(false)}
+      {...hoverHandlers}
       onClick={onClickLink}
     >
       {runIfFn(children, { showSubTitle, selected })}
