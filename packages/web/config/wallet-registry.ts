@@ -338,7 +338,7 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["exodus-extension"],
-    logo: "/wallets/exodus.png",
+    logo: "/wallets/exodus.svg",
     lazyInstall: () =>
       import("@cosmos-kit/exodus-extension").then(
         (m) => m.ExodusExtensionWallet
