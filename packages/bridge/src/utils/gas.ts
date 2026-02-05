@@ -21,10 +21,27 @@ export async function getGasAsset({
   chainList: OsmosisTypesChain[];
   cache: Cache;
 }): Promise<BridgeAsset | undefined> {
+  const denomLower = denom.toLowerCase();
+
   // try to get asset list fee asset first, or otherwise the chain fee currency
   const assetListAsset = assetLists
     .flatMap(({ assets }) => assets)
-    .find((asset) => asset.sourceDenom.toLowerCase() === denom.toLowerCase());
+    .find((asset) => {
+      // Denoms used for fees can be either the Osmosis-side minimal denom
+      // (e.g. `ibc/...`, `uosmo`) or the origin/source denom (e.g. `uatom`).
+      // Some asset list entries can be malformed/missing fields, so guard.
+      const coinMinimalDenomLower =
+        typeof asset.coinMinimalDenom === "string"
+          ? asset.coinMinimalDenom.toLowerCase()
+          : "";
+      const sourceDenomLower =
+        typeof asset.sourceDenom === "string"
+          ? asset.sourceDenom.toLowerCase()
+          : "";
+      return (
+        coinMinimalDenomLower === denomLower || sourceDenomLower === denomLower
+      );
+    });
 
   if (assetListAsset) {
     return {
@@ -39,7 +56,8 @@ export async function getGasAsset({
   const chain = chains.find((c) => c.chain_id === fromChainId);
   const feeCurrency = chain?.feeCurrencies.find(
     ({ chainSuggestionDenom }) =>
-      chainSuggestionDenom.toLowerCase() === denom.toLowerCase()
+      typeof chainSuggestionDenom === "string" &&
+      chainSuggestionDenom.toLowerCase() === denomLower
   );
 
   if (feeCurrency) {
