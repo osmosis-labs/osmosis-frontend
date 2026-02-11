@@ -4,8 +4,25 @@ import {
   type GetRoute as SquidGetRouteParams,
   type RouteResponse,
   type TokensResponse,
-  type TransactionRequest,
 } from "@0xsquid/sdk";
+
+/**
+ * The v2 Squid API returns `target` instead of `targetAddress` and no longer
+ * includes `routeType`. The bundled `@0xsquid/sdk@1.x` types are stale.
+ *
+ * TODO: Upgrade `@0xsquid/sdk` to v2 and use the official types from
+ * `@0xsquid/squid-types` (`OnChainExecutionData`). That major bump touches
+ * ethers v5→v6 and reshapes several other types, so it needs its own PR.
+ */
+interface SquidTransactionRequest {
+  target: string;
+  data: string;
+  value: string;
+  gasLimit: string;
+  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+}
 import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
@@ -183,7 +200,8 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        const transactionRequest = data.route.transactionRequest;
+        const transactionRequest = data.route
+          .transactionRequest as unknown as SquidTransactionRequest;
         const isEvmTransaction = fromChain.chainType === "evm";
 
         if (!aggregatePriceImpact) {
@@ -433,7 +451,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromChain: BridgeChain;
     fromAddress: string;
     estimateFromAmount: string;
-    transactionRequest: TransactionRequest;
+    transactionRequest: SquidTransactionRequest;
   }): Promise<EvmBridgeTransactionRequest> {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
@@ -470,7 +488,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         fromChain,
         isFromAssetNative,
         fromTokenContract,
-        targetAddress: transactionRequest.targetAddress as Address,
+        targetAddress: transactionRequest.target as Address,
         tokenAddress: fromAsset.address as Address,
       });
     } catch (e) {
@@ -483,12 +501,9 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     return {
       type: "evm",
-      to: transactionRequest.targetAddress as Address,
+      to: transactionRequest.target as Address,
       data: transactionRequest.data as Address,
-      value:
-        transactionRequest.routeType !== "SEND"
-          ? numberToHex(BigInt(transactionRequest.value))
-          : undefined,
+      value: numberToHex(BigInt(transactionRequest.value)),
       ...(transactionRequest.maxPriorityFeePerGas
         ? {
             gas: numberToHex(BigInt(transactionRequest.gasLimit)),
