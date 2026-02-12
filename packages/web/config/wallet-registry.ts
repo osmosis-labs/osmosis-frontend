@@ -352,13 +352,15 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
         "cosmoshub-4", // Cosmos Hub
         "kava_2222-10", // Kava
         "injective-1", // Injective
-        "crypto-org-chain-mainnet-1", // Cronos
+        "crypto-org-chain-mainnet-1", // Crypto.org Chain
         "axelar-dojo-1", // Axelar (ending April 29, 2026)
       ];
       return exodusSupportedChains.includes(chainId as MainnetChainIds);
     },
-    stakeUrl: "https://wallet.exodus.com/cosmos/staking",
-    governanceUrl: "https://wallet.exodus.com/cosmos/governance",
+    // Note: Exodus does not support ATOM staking/governance on wallet.exodus.com
+    // ATOM staking is only available in Exodus Desktop/Mobile apps
+    // Governance voting is not implemented in any Exodus platform
+    // stakeUrl and governanceUrl removed to avoid broken links
     features: [],
   },
 ];
