@@ -9,6 +9,19 @@ import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
+    ...CosmosKitWalletList["exodus-extension"],
+    logo: "/wallets/exodus.svg",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("@cosmos-kit/exodus-extension").then(
+        (m) => m.ExodusExtensionWallet
+      ),
+    windowPropertyName: "exodus",
+    stakeUrl: "https://wallet.exodus.com/osmosis/staking",
+    governanceUrl: "https://wallet.exodus.com/osmosis/governance",
+    features: ["notifications"],
+  },
+  {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
     logo: "/wallets/keplr.svg",
