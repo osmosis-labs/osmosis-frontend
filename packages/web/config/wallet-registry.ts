@@ -9,19 +9,6 @@ import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
   {
-    ...CosmosKitWalletList["exodus-extension"],
-    logo: "/wallets/exodus.svg",
-    mobileDisabled: false,
-    lazyInstall: () =>
-      import("@cosmos-kit/exodus-extension").then(
-        (m) => m.ExodusExtensionWallet
-      ),
-    windowPropertyName: "exodus",
-    stakeUrl: "https://wallet.exodus.com/osmosis/staking",
-    governanceUrl: "https://wallet.exodus.com/osmosis/governance",
-    features: ["notifications"],
-  },
-  {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
     logo: "/wallets/keplr.svg",
@@ -347,6 +334,31 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     signOptions: {
       preferNoSetFee: true,
     },
+    features: [],
+  },
+  {
+    ...CosmosKitWalletList["exodus-extension"],
+    logo: "/wallets/exodus.svg",
+    mobileDisabled: false,
+    lazyInstall: () =>
+      import("@cosmos-kit/exodus-extension").then(
+        (m) => m.ExodusExtensionWallet
+      ),
+    windowPropertyName: "exodus",
+    async supportsChain(chainId) {
+      // Exodus no longer supports Osmosis (ended August 18, 2025)
+      // Only return true for chains that Exodus actually supports
+      const exodusSupportedChains: MainnetChainIds[] = [
+        "cosmoshub-4", // Cosmos Hub
+        "kava_2222-10", // Kava
+        "injective-1", // Injective
+        "crypto-org-chain-mainnet-1", // Cronos
+        "axelar-dojo-1", // Axelar (ending April 29, 2026)
+      ];
+      return exodusSupportedChains.includes(chainId as MainnetChainIds);
+    },
+    stakeUrl: "https://wallet.exodus.com/cosmos/staking",
+    governanceUrl: "https://wallet.exodus.com/cosmos/governance",
     features: [],
   },
 ];
