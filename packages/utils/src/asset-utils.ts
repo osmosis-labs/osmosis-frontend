@@ -71,6 +71,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     isAlloyed,
     contract,
     variantGroupKey,
+    tooltipMessage,
   } = assetListAsset;
 
   return {
@@ -86,6 +87,7 @@ export function makeMinimalAsset(assetListAsset: Asset): MinimalAsset {
     variantGroupKey,
     isAlloyed,
     contract,
+    tooltipMessage,
   };
 }
 

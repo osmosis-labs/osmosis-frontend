@@ -2,6 +2,7 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { LinkifiedText } from "~/components/linkified-text";
 import { Tooltip } from "~/components/tooltip";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
@@ -13,6 +14,7 @@ export const AssetCell: FunctionComponent<
     coinName: string;
     coinImageUrl: string;
     warnUnverified: boolean;
+    tooltipMessage?: string;
     isInUserWatchlist: boolean;
     onClickWatchlist: () => void;
   }>
@@ -21,6 +23,7 @@ export const AssetCell: FunctionComponent<
   coinName,
   coinImageUrl,
   warnUnverified = false,
+  tooltipMessage,
   isInUserWatchlist,
   onClickWatchlist,
 }) => {
@@ -68,6 +71,11 @@ export const AssetCell: FunctionComponent<
                   id="alert-triangle"
                   className="h-5 w-5 text-osmoverse-300"
                 />
+              </Tooltip>
+            )}
+            {tooltipMessage && (
+              <Tooltip content={<LinkifiedText text={tooltipMessage} />}>
+                <Icon id="info" className="h-4 w-4 text-osmoverse-300" />
               </Tooltip>
             )}
           </div>
