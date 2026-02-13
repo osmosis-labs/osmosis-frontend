@@ -64,8 +64,9 @@ export class SkipApiClient {
           ...options,
           cumulative_affiliate_fee_bps:
             options.cumulative_affiliate_fee_bps ?? "0",
-          smart_swap_options: options.smart_swap_options ?? {
+          smart_swap_options: {
             evm_swaps: true,
+            ...options.smart_swap_options,
           },
         }),
       }
