@@ -74,7 +74,10 @@ export const AssetCell: FunctionComponent<
               </Tooltip>
             )}
             {tooltipMessage && (
-              <Tooltip content={<LinkifiedText text={tooltipMessage} />}>
+              <Tooltip
+                content={<LinkifiedText text={tooltipMessage} />}
+                interactive={true}
+              >
                 <Icon id="info" className="h-4 w-4 text-osmoverse-300" />
               </Tooltip>
             )}
