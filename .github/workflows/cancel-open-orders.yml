@@ -1,0 +1,155 @@
+name: Cancel Open Limit Orders (E2E Test Accounts)
+
+# Manually triggered workflow to cancel all open limit orders for every e2e test account.
+#
+# Use this when monitoring tests have accumulated uncancelled open orders.
+# All four jobs run in parallel, one per test account.
+#
+# To run a dry run (no transactions sent), set DRY_RUN to "true" in the job env below.
+#
+# For future reuse: these jobs can be added as `needs:` precursors before
+# limit order test jobs in monitoring-e2e-tests.yml or monitoring-limit-geo-e2e-tests.yml.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cancel-limit-orders-e2e-test-account:
+    name: Cancel orders — E2E Test Account
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Cancel open limit orders
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          ACCOUNT_LABEL: "E2E Test Account"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cancel-orders-e2e-test-account-logs
+          path: packages/e2e/playwright-report
+
+  cancel-limit-orders-monitoring-sg:
+    name: Cancel orders — Monitoring SG
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Cancel open limit orders
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          ACCOUNT_LABEL: "Monitoring SG"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cancel-orders-monitoring-sg-logs
+          path: packages/e2e/playwright-report
+
+  cancel-limit-orders-monitoring-eu:
+    name: Cancel orders — Monitoring EU
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Cancel open limit orders
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          ACCOUNT_LABEL: "Monitoring EU"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cancel-orders-monitoring-eu-logs
+          path: packages/e2e/playwright-report
+
+  cancel-limit-orders-monitoring-us:
+    name: Cancel orders — Monitoring US
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Cancel open limit orders
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          ACCOUNT_LABEL: "Monitoring US"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cancel-orders-monitoring-us-logs
+          path: packages/e2e/playwright-report

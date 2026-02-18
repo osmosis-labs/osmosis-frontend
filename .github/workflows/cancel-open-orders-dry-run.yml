@@ -1,0 +1,130 @@
+name: Cancel Open Limit Orders — Dry Run (E2E Test Accounts)
+
+# Dry run version of cancel-open-orders.yml.
+# No transactions are sent — this only logs what orders exist and what would be cancelled.
+# Safe to run at any time. Use this to verify the scripts work correctly on GitHub Actions
+# before triggering the real cancel workflow.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  cancel-limit-orders-e2e-test-account:
+    name: Dry run — E2E Test Account
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Dry run — list and preview cancel
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          ACCOUNT_LABEL: "E2E Test Account"
+          DRY_RUN: "true"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+
+  cancel-limit-orders-monitoring-sg:
+    name: Dry run — Monitoring SG
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Dry run — list and preview cancel
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          ACCOUNT_LABEL: "Monitoring SG"
+          DRY_RUN: "true"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+
+  cancel-limit-orders-monitoring-eu:
+    name: Dry run — Monitoring EU
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Dry run — list and preview cancel
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          ACCOUNT_LABEL: "Monitoring EU"
+          DRY_RUN: "true"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
+
+  cancel-limit-orders-monitoring-us:
+    name: Dry run — Monitoring US
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Dry run — list and preview cancel
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          ACCOUNT_LABEL: "Monitoring US"
+          DRY_RUN: "true"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
