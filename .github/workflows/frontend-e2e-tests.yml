@@ -231,6 +231,12 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Cancel leftover open orders
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          ACCOUNT_LABEL: "E2E Test Account (pre-test cleanup)"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"

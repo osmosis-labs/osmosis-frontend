@@ -91,7 +91,7 @@ npx tsx scripts/get-active-orders.ts
 ```
 
 Example output:
-```
+```text
 === Active Orders: Monitoring EU ===
 Derived address: osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv
 
@@ -138,7 +138,7 @@ $env:PRIVATE_KEY="<key-2>"; npx tsx scripts/cancel-all-orders.ts
 ### Local Setup
 
 1. Add your key to `packages/e2e/.env` (already gitignored):
-   ```
+   ```env
    PRIVATE_KEY=<your-hex-private-key>
    ACCOUNT_LABEL=Local Test
    ```
@@ -160,6 +160,18 @@ Both run all four test accounts in parallel.
 1. Trigger the dry run first from the GitHub Actions tab → **Cancel Open Limit Orders — Dry Run (E2E Test Accounts)** → **Run workflow**
 2. Review the logs to confirm address derivation and order listing work correctly
 3. Trigger the real workflow → **Cancel Open Limit Orders (E2E Test Accounts)** → **Run workflow**
+
+### Automatic Pre-Test Cleanup in CI
+
+The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step** before executing limit order tests. This ensures each test run starts with a clean slate, preventing order buildup from prior failed runs.
+
+| Workflow | Job(s) | Account cleaned |
+|---|---|---|
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | `TEST_PRIVATE_KEY_2` (Monitoring EU) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | `TEST_PRIVATE_KEY_3` (Monitoring US) |
+| `frontend-e2e-tests.yml` | `preview-trade-tests` | `TEST_PRIVATE_KEY` (E2E Test Account) |
+
+The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
 
 ---
 

@@ -45,12 +45,6 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           ACCOUNT_LABEL: "E2E Test Account"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cancel-orders-e2e-test-account-logs
-          path: packages/e2e/playwright-report
 
   cancel-limit-orders-monitoring-sg:
     name: Cancel orders — Monitoring SG
@@ -80,12 +74,6 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           ACCOUNT_LABEL: "Monitoring SG"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cancel-orders-monitoring-sg-logs
-          path: packages/e2e/playwright-report
 
   cancel-limit-orders-monitoring-eu:
     name: Cancel orders — Monitoring EU
@@ -115,12 +103,6 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cancel-orders-monitoring-eu-logs
-          path: packages/e2e/playwright-report
 
   cancel-limit-orders-monitoring-us:
     name: Cancel orders — Monitoring US
@@ -150,9 +132,3 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           ACCOUNT_LABEL: "Monitoring US"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
-      - name: Upload logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cancel-orders-monitoring-us-logs
-          path: packages/e2e/playwright-report
