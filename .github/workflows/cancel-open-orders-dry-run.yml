@@ -1,5 +1,8 @@
 name: Cancel Open Limit Orders — Dry Run (E2E Test Accounts)
 
+permissions:
+  contents: read
+
 # Dry run version of cancel-open-orders.yml.
 # No transactions are sent — this only logs what orders exist and what would be cancelled.
 # Safe to run at any time. Use this to verify the scripts work correctly on GitHub Actions
