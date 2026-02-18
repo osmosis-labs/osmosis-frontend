@@ -13,6 +13,9 @@ name: Cancel Open Limit Orders (E2E Test Accounts)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   cancel-limit-orders-e2e-test-account:
     name: Cancel orders — E2E Test Account
