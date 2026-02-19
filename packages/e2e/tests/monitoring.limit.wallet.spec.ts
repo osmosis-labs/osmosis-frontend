@@ -3,25 +3,21 @@ import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Filled Limit Order feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
-  const walletId = process.env.WALLET_ID ?? "wallet_id";
   let tradePage: TradePage;
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
-    // Check balances before running tests - warn only mode
-    await ensureBalances(
-      walletId,
-      [
-        { token: "OSMO", amount: 1.1 }, // For limit sell OSMO
-        { token: "USDC", amount: 1.1 }, // For limit buy OSMO
-      ],
-      { warnOnly: true }
-    );
+    const { address } = await deriveAddress(privateKey);
+    await ensureBalances(address, [
+      { token: "OSMO", amount: 1.1 },
+      { token: "USDC", amount: 1.1, unit: "usd" },
+    ]);
 
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();

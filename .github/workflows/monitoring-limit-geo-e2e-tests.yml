@@ -215,6 +215,50 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Check account balances
+        id: balance-check
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          ACCOUNT_LABEL: "Monitoring EU"
+        run: npx tsx packages/e2e/scripts/check-balances.ts
+      - name: Send low-balance Slack alert
+        if: steps.balance-check.outcome == 'failure'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "E2E Low Balance Warning",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "E2E Low Balance Warning" }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Account:* Monitoring EU\n*Workflow:* monitoring-limit-geo / fe-limit-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Fail if balance critically low
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome' balance-report.json)
+            if [ "$OUTCOME" = "fail" ]; then
+              echo "Critical balance shortage — blocking test run."
+              exit 1
+            fi
+            echo "Low balance warning — proceeding with tests."
+          else
+            echo "Balance check failed but no report — proceeding with tests."
+          fi
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
@@ -372,6 +416,50 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Check account balances
+        id: balance-check
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          ACCOUNT_LABEL: "Monitoring US"
+        run: npx tsx packages/e2e/scripts/check-balances.ts
+      - name: Send low-balance Slack alert
+        if: steps.balance-check.outcome == 'failure'
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "E2E Low Balance Warning",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "E2E Low Balance Warning" }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Account:* Monitoring US\n*Workflow:* monitoring-limit-geo / fe-limit-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Fail if balance critically low
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome' balance-report.json)
+            if [ "$OUTCOME" = "fail" ]; then
+              echo "Critical balance shortage — blocking test run."
+              exit 1
+            fi
+            echo "Low balance warning — proceeding with tests."
+          else
+            echo "Balance check failed but no report — proceeding with tests."
+          fi
       - name: Cancel leftover open orders
         continue-on-error: true
         env:

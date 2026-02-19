@@ -5,7 +5,8 @@
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf .next",
     "test": "npx playwright test",
-    "setup": "yarn install && npx playwright install --with-deps chromium"
+    "setup": "yarn install && npx playwright install --with-deps chromium",
+    "check-balances": "npx tsx scripts/check-balances.ts"
   },
   "dependencies": {
     "@actions/core": "1.11.1",

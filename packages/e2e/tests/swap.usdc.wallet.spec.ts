@@ -3,11 +3,10 @@ import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Swap to/from USDC feature", () => {
   let context: BrowserContext;
-  const _walletId =
-    process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
   const _USDC =
@@ -24,18 +23,14 @@ test.describe("Test Swap to/from USDC feature", () => {
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
-    // Check balances before running tests - fail fast if insufficient
-    await ensureBalances(
-      _walletId,
-      [
-        { token: "USDC", amount: 0.5 }, // Total needed: 0.1 + 0.1 + 0.2 + 0.1 for swaps to other tokens
-        { token: "ATOM", amount: 0.015 }, // Max needed in single test
-        { token: "TIA", amount: 0.02 }, // Max needed in single test
-        { token: "INJ", amount: 0.01 }, // Max needed in single test
-        { token: "AKT", amount: 0.025 }, // Max needed in single test
-      ],
-      { warnOnly: true }
-    );
+    const { address } = await deriveAddress(privateKey);
+    await ensureBalances(address, [
+      { token: "USDC", amount: 0.5 },
+      { token: "ATOM", amount: 0.015 },
+      { token: "TIA", amount: 0.02 },
+      { token: "INJ", amount: 0.01 },
+      { token: "AKT", amount: 0.025 },
+    ]);
 
     // Switch to Application
     tradePage = new TradePage(context.pages()[0]);

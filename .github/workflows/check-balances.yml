@@ -1,0 +1,96 @@
+name: Check E2E Account Balances
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-e2e-test-account:
+    name: E2E Test Account
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Check balances
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          ACCOUNT_LABEL: "E2E Test Account"
+        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+
+  check-monitoring-sg:
+    name: Monitoring SG
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Check balances
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          ACCOUNT_LABEL: "Monitoring SG"
+        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+
+  check-monitoring-eu:
+    name: Monitoring EU
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Check balances
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          ACCOUNT_LABEL: "Monitoring EU"
+        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+
+  check-monitoring-us:
+    name: Monitoring US
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Check balances
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          ACCOUNT_LABEL: "Monitoring US"
+        run: npx tsx packages/e2e/scripts/check-balances.ts || true
