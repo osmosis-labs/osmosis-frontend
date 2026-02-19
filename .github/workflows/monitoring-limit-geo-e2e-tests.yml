@@ -249,8 +249,8 @@ jobs:
       - name: Fail if balance critically low
         if: steps.balance-check.outcome == 'failure'
         run: |
-          if [ -f balance-report.json ]; then
-            OUTCOME=$(jq -r '.outcome' balance-report.json)
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "fail" ]; then
               echo "Critical balance shortage — blocking test run."
               exit 1
@@ -450,8 +450,8 @@ jobs:
       - name: Fail if balance critically low
         if: steps.balance-check.outcome == 'failure'
         run: |
-          if [ -f balance-report.json ]; then
-            OUTCOME=$(jq -r '.outcome' balance-report.json)
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "fail" ]; then
               echo "Critical balance shortage — blocking test run."
               exit 1

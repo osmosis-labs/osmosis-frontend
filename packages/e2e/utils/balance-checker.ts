@@ -265,9 +265,8 @@ async function resolveUsdRequirements(
     const price = prices[info.denom];
     if (!price || price <= 0) {
       console.warn(
-        `  No price available for ${req.token}, using raw amount ${req.amount}`
+        `  No price available for ${req.token}; skipping USD-denominated requirement of $${req.amount}.`
       );
-      resolved.push({ token: req.token, requiredTokens: req.amount });
       continue;
     }
     const tokensNeeded = (req.amount * PRICE_BUFFER) / price;
