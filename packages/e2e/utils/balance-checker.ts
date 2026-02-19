@@ -255,12 +255,9 @@ async function resolveUsdRequirements(
     prices = await fetchTokenPrices(denoms);
   } catch (e) {
     console.warn(
-      `  Could not fetch prices for USD conversion, falling back to raw amounts: ${e instanceof Error ? e.message : e}`
+      `  Could not fetch prices for USD conversion; USD-denominated requirements will be skipped. Reason: ${e instanceof Error ? e.message : e}`
     );
-    return [
-      ...resolved,
-      ...usdReqs.map((r) => ({ token: r.token, requiredTokens: r.amount })),
-    ];
+    return resolved;
   }
 
   for (const req of usdReqs) {

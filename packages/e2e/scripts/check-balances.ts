@@ -53,14 +53,6 @@ const DRY_RUN = process.env.DRY_RUN === "true";
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Finds the human-readable symbol for a denom, or returns the denom itself. */
-function symbolForDenom(denom: string): string {
-  for (const [symbol, info] of Object.entries(TOKEN_DENOMS)) {
-    if (info.denom === denom) return symbol;
-  }
-  return denom.length > 20 ? `${denom.substring(0, 16)}...` : denom;
-}
-
 /** Returns the display decimal places for a token (matches on-chain precision, capped at 8). */
 function decimalsFor(token: string): number {
   const info = TOKEN_DENOMS[token];

@@ -16,6 +16,9 @@
 
 import { SQS_BASE_URL } from "./config";
 
+const USDC_DENOM =
+  "ibc/498A0751C798A0D9A389AA3691123DADA57DAA4FE165D5C75894505B876BA6E4";
+
 type SQSPriceResponse = Record<
   string,
   Record<string, string>
@@ -51,9 +54,12 @@ export async function fetchTokenPrices(
 
   const result: Record<string, number> = {};
   for (const [denom, priceMap] of Object.entries(data)) {
-    const usdcPrice = Object.values(priceMap)[0];
+    const usdcPrice = priceMap[USDC_DENOM] ?? Object.values(priceMap)[0];
     if (usdcPrice) {
-      result[denom] = parseFloat(usdcPrice);
+      const parsed = parseFloat(usdcPrice);
+      if (!isNaN(parsed)) {
+        result[denom] = parsed;
+      }
     }
   }
   return result;

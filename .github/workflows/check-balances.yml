@@ -27,7 +27,7 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           ACCOUNT_LABEL: "E2E Test Account"
-        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+        run: yarn --cwd packages/e2e check-balances || true
 
   check-monitoring-sg:
     name: Monitoring SG
@@ -49,7 +49,7 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           ACCOUNT_LABEL: "Monitoring SG"
-        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+        run: yarn --cwd packages/e2e check-balances || true
 
   check-monitoring-eu:
     name: Monitoring EU
@@ -71,7 +71,7 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           ACCOUNT_LABEL: "Monitoring EU"
-        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+        run: yarn --cwd packages/e2e check-balances || true
 
   check-monitoring-us:
     name: Monitoring US
@@ -93,4 +93,4 @@ jobs:
         env:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           ACCOUNT_LABEL: "Monitoring US"
-        run: npx tsx packages/e2e/scripts/check-balances.ts || true
+        run: yarn --cwd packages/e2e check-balances || true
