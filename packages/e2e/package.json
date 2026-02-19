@@ -5,13 +5,16 @@
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf .next",
     "test": "npx playwright test",
-    "setup": "yarn install && npx playwright install --with-deps chromium"
+    "setup": "yarn install && npx playwright install --with-deps chromium",
+    "check-balances": "npx tsx scripts/check-balances.ts"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
+    "@cosmjs/proto-signing": "0.32.3",
     "@playwright/test": "1.52.0",
     "decompress": "4.2.1",
-    "dotenv": "17.2.1"
+    "dotenv": "17.2.1",
+    "tsx": "^4.6.2"
   },
   "devDependencies": {
     "@types/node": "22.17.1",
