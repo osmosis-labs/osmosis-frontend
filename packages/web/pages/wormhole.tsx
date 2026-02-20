@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { AlertBanner } from "~/components/alert-banner";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
@@ -399,17 +398,20 @@ const Wormhole: FunctionComponent = () => {
   return (
     <>
       <div className="mx-auto max-w-2xl px-4 pt-8">
-        <AlertBanner
-          className="!h-auto !gap-4 !px-6 !py-4"
-          title={t("wormhole.deprecationTitle")}
-          subtitle={t("wormhole.deprecationSubtitle")}
-          image={
-            <Icon
-              id="alert-triangle"
-              className="h-6 w-6 shrink-0 text-rust-400"
-            />
-          }
-        />
+        <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
+          <Icon
+            id="alert-triangle"
+            className="h-6 w-6 shrink-0 text-rust-600"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="body2 text-rust-500">
+              {t("wormhole.deprecationTitle")}
+            </h1>
+            <p className="body2 text-osmoverse-300">
+              {t("wormhole.deprecationSubtitle")}
+            </p>
+          </div>
+        </div>
       </div>
       {!scriptLoaded && (
         <div className="flex h-screen w-full items-center justify-center">
