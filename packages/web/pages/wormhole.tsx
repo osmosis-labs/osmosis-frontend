@@ -1,6 +1,8 @@
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { AlertBanner } from "~/components/alert-banner";
+import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -395,6 +397,18 @@ const Wormhole: FunctionComponent = () => {
 
   return (
     <>
+      <div className="mx-auto max-w-xl px-4 pt-8">
+        <AlertBanner
+          title="Wormhole support is being deprecated"
+          subtitle="We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis."
+          image={
+            <Icon
+              id="alert-triangle"
+              className="h-8 w-8 shrink-0 text-rust-400"
+            />
+          }
+        />
+      </div>
       {!scriptLoaded && (
         <div className="flex h-screen w-full items-center justify-center">
           <Spinner />
