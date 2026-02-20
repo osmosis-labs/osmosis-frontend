@@ -396,7 +396,7 @@ const Wormhole: FunctionComponent = () => {
   }, []);
 
   return (
-    <>
+    <div style={{ backgroundColor: "rgb(20, 15, 52)" }}>
       <div className="mx-auto max-w-2xl px-4 pt-8">
         <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
           <Icon
@@ -404,7 +404,7 @@ const Wormhole: FunctionComponent = () => {
             className="h-6 w-6 shrink-0 text-rust-600"
           />
           <div className="flex flex-col gap-1">
-            <h1 className="body2 text-rust-500">
+            <h1 className="body2 text-white-full">
               {t("wormhole.deprecationTitle")}
             </h1>
             <p className="body2 text-osmoverse-300">
@@ -434,7 +434,7 @@ const Wormhole: FunctionComponent = () => {
         integrity="sha384-BTkX2AhTeIfxDRFsJbLtR26TQ9QKKpi7EMe807JdfQQBTAkUT9a2mSGwf/5CJ4bF"
         crossOrigin="anonymous"
       />
-    </>
+    </div>
   );
 };
 
