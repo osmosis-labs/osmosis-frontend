@@ -1333,5 +1333,9 @@
     "title": "你的交易可能会失败",
     "description": "由于所有资金池的{tokenWithLowLiquidity}流动性较低，该交易可能会导致高滑点，并且可能无法执行。"
   },
-  "taprootAddressNotSupported": "Taproot 地址不支持提现"
+  "taprootAddressNotSupported": "Taproot 地址不支持提现",
+  "wormhole": {
+    "deprecationTitle": "Wormhole 支持正在被弃用",
+    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。"
+  }
 }

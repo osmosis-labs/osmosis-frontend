@@ -1333,5 +1333,9 @@
     "title": "取引が失敗する可能性がある",
     "description": "すべてのプールにおける{tokenWithLowLiquidity}の流動性が低いため、この取引は大きなスリッページを引き起こし、実行されない可能性があります。"
   },
-  "taprootAddressNotSupported": "Taprootアドレスは出金には対応していません"
+  "taprootAddressNotSupported": "Taprootアドレスは出金には対応していません",
+  "wormhole": {
+    "deprecationTitle": "Wormholeサポートは廃止予定です",
+    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。"
+  }
 }

@@ -1333,5 +1333,9 @@
     "title": "Su operación puede fracasar",
     "description": "Debido a la baja liquidez de {tokenWithLowLiquidity} en todos los grupos, esta operación puede generar un alto deslizamiento y es posible que no se ejecute."
   },
-  "taprootAddressNotSupported": "Las direcciones Taproot no son compatibles con los retiros"
+  "taprootAddressNotSupported": "Las direcciones Taproot no son compatibles con los retiros",
+  "wormhole": {
+    "deprecationTitle": "La compatibilidad con Wormhole se está descontinuando",
+    "deprecationSubtitle": "No recomendamos enviar activos adicionales a Osmosis a través de Wormhole. Esta página está disponible para ayudarle a retirar activos existentes bridgeados mediante Wormhole de Osmosis."
+  }
 }

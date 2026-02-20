@@ -1333,5 +1333,9 @@
     "title": "તમારો વેપાર નિષ્ફળ થઈ શકે છે",
     "description": "બધા પૂલમાં {tokenWithLowLiquidity} ની ઓછી તરલતાને કારણે, આ વેપારમાં ઉચ્ચ સ્લિપેજ થઈ શકે છે અને તે અમલમાં ન પણ આવી શકે."
   },
-  "taprootAddressNotSupported": "ઉપાડ માટે ટેપરૂટ સરનામાંઓ સમર્થિત નથી."
+  "taprootAddressNotSupported": "ઉપાડ માટે ટેપરૂટ સરનામાંઓ સમર્થિત નથી.",
+  "wormhole": {
+    "deprecationTitle": "Wormhole સપોર્ટ બંધ કરવામાં આવી રહ્યો છે",
+    "deprecationSubtitle": "અમે Wormhole મારફતે Osmosis માં વધારાની સંપત્તિ બ્રિજ કરવાની ભલામણ કરતા નથી. આ પૃષ્ઠ Osmosis માંથી હાલની Wormhole-બ્રિજ કરેલી સંપત્તિ ઉપાડવામાં તમને સહાય કરવા માટે ઉપલબ્ધ છે."
+  }
 }

@@ -5,7 +5,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
 type PaletteColor = {
@@ -244,6 +244,7 @@ interface WormholeConnectConfig {
 
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
@@ -400,8 +401,8 @@ const Wormhole: FunctionComponent = () => {
       <div className="mx-auto max-w-2xl px-4 pt-8">
         <AlertBanner
           className="!h-auto !gap-4 !px-6 !py-4"
-          title="Wormhole support is being deprecated"
-          subtitle="We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis."
+          title={t("wormhole.deprecationTitle")}
+          subtitle={t("wormhole.deprecationSubtitle")}
           image={
             <Icon
               id="alert-triangle"

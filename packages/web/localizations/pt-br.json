@@ -1333,5 +1333,9 @@
     "title": "Seu negócio pode falhar",
     "description": "Devido à baixa liquidez de {tokenWithLowLiquidity} em todos os pools, esta negociação pode resultar em alto deslizamento e pode não ser executada."
   },
-  "taprootAddressNotSupported": "Endereços Taproot não são suportados para retiradas"
+  "taprootAddressNotSupported": "Endereços Taproot não são suportados para retiradas",
+  "wormhole": {
+    "deprecationTitle": "O suporte ao Wormhole está sendo descontinuado",
+    "deprecationSubtitle": "Não recomendamos transferir ativos adicionais para Osmosis via Wormhole. Esta página está disponível para ajudá-lo a retirar ativos existentes bridgeados pelo Wormhole de Osmosis."
+  }
 }
