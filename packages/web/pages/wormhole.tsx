@@ -397,15 +397,15 @@ const Wormhole: FunctionComponent = () => {
 
   return (
     <>
-      <div className="mx-auto max-w-xl px-4 pt-8">
+      <div className="mx-auto max-w-2xl px-4 pt-8">
         <AlertBanner
-          className="!h-auto"
+          className="!h-auto !gap-4 !px-6 !py-4"
           title="Wormhole support is being deprecated"
           subtitle="We do not recommend bridging additional assets to Osmosis via Wormhole. This page is available to help you withdraw existing Wormhole-bridged assets from Osmosis."
           image={
             <Icon
               id="alert-triangle"
-              className="h-8 w-8 shrink-0 text-rust-400"
+              className="h-6 w-6 shrink-0 text-rust-400"
             />
           }
         />
