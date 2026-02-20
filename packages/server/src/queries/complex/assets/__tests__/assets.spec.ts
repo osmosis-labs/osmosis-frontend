@@ -107,6 +107,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -121,6 +122,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -135,6 +137,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -149,6 +152,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -163,6 +167,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -177,6 +182,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
         {
@@ -191,6 +197,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "USDC",
         },
       ]
@@ -226,6 +233,7 @@ describe("getAssetWithVariants", () => {
           "isAlloyed": false,
           "isUnstable": false,
           "isVerified": true,
+          "tooltipMessage": undefined,
           "variantGroupKey": "ATOM",
         },
       ]
