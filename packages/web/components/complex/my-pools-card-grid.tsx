@@ -93,7 +93,9 @@ export const MyPoolsCardsGrid = observer(() => {
                 reserveCoins,
                 isSuperfluid,
               }) => {
-                const poolLiqudity_ = formatPretty(poolLiquidity);
+                const poolLiqudity_ = poolLiquidity
+                  ? formatPretty(poolLiquidity)
+                  : "";
 
                 let myPoolMetrics = [
                   {

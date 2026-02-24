@@ -177,7 +177,9 @@ export function useAddConcentratedLiquidityConfig(
                     { poolId }
                   ),
                   apiUtils.local.pools.getPool.invalidate({ poolId }),
-                ]).then(() => resolve());
+                ])
+                  .then(() => resolve())
+                  .catch(reject);
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addLiquidityCompleted,
@@ -244,7 +246,9 @@ export function useAddConcentratedLiquidityConfig(
                     { poolId }
                   ),
                   apiUtils.local.pools.getPool.invalidate({ poolId }),
-                ]).then(() => resolve());
+                ])
+                  .then(() => resolve())
+                  .catch(reject);
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
