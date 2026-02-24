@@ -53,7 +53,16 @@ export function useHistoricalAndLiquidityData(
   if (pool?.type === "concentrated") {
     const poolRaw = pool.raw as ConcentratedPoolRawResponse;
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
-    isEmptyPool = !currentSqrtPrice || currentSqrtPrice === "0";
+    if (!currentSqrtPrice) {
+      isEmptyPool = true;
+    } else {
+      try {
+        isEmptyPool = new BigDec(currentSqrtPrice).isZero();
+      } catch {
+        // If the value cannot be parsed as a BigDec, fall back to treating it as non-empty
+        isEmptyPool = false;
+      }
+    }
   }
 
   const { data: activeLiquidity } =
