@@ -224,6 +224,7 @@ jobs:
         run: yarn --cwd packages/e2e check-balances
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
@@ -247,7 +248,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Fail if balance critically low
-        if: steps.balance-check.outcome == 'failure'
+        if: always() && steps.balance-check.outcome == 'failure'
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)
@@ -425,6 +426,7 @@ jobs:
         run: yarn --cwd packages/e2e check-balances
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
           payload: |
@@ -448,7 +450,7 @@ jobs:
           SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Fail if balance critically low
-        if: steps.balance-check.outcome == 'failure'
+        if: always() && steps.balance-check.outcome == 'failure'
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)

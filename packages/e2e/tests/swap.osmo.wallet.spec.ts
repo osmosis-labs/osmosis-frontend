@@ -17,8 +17,8 @@ test.describe("Test Swap to/from OSMO feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "OSMO", amount: 0.2 },
-      { token: "ATOM", amount: 0.01 },
+      { token: "OSMO", amount: 0.2 }, // Max needed in single test
+      { token: "ATOM", amount: 0.01 }, // Max needed in single test
     ]);
 
     tradePage = new TradePage(context.pages()[0]);

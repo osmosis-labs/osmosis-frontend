@@ -19,9 +19,9 @@ test.describe("Test Trade feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 1.12, unit: "usd" },
-      { token: "ATOM", amount: 2.12 },
-      { token: "OSMO", amount: 1.01 },
+      { token: "USDC", amount: 1.12, unit: "usd" }, // Max needed for buy test
+      { token: "ATOM", amount: 2.12 }, // Total needed: 1.11 + 1.01 for sell tests
+      { token: "OSMO", amount: 1.01 }, // Max needed for limit sell OSMO test
     ]);
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();

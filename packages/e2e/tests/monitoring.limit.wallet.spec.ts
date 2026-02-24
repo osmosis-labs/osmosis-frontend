@@ -15,8 +15,8 @@ test.describe("Test Filled Limit Order feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "OSMO", amount: 1.1 },
-      { token: "USDC", amount: 1.1, unit: "usd" },
+      { token: "OSMO", amount: 1.1 }, // For limit sell OSMO
+      { token: "USDC", amount: 1.1, unit: "usd" }, // For limit buy OSMO
     ]);
 
     tradePage = new TradePage(context.pages()[0]);

@@ -16,9 +16,9 @@ test.describe("Test Swap Stables feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 1.2 },
-      { token: "USDC.eth.axl", amount: 0.6 },
-      { token: "USDT", amount: 0.6 },
+      { token: "USDC", amount: 1.2 }, // Total for USDC swaps
+      { token: "USDC.eth.axl", amount: 0.6 }, // For USDC.eth.axl swap
+      { token: "USDT", amount: 0.6 }, // For USDT swap
     ]);
 
     tradePage = new TradePage(context.pages()[0]);

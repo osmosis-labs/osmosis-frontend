@@ -15,9 +15,9 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 3.2, unit: "usd" },
-      { token: "BTC", amount: 1.6, unit: "usd" },
-      { token: "OSMO", amount: 1.6, unit: "usd" },
+      { token: "USDC", amount: 3.2, unit: "usd" }, // For market buy BTC and OSMO (1.55 each)
+      { token: "BTC", amount: 1.6, unit: "usd" }, // For market sell BTC
+      { token: "OSMO", amount: 1.6, unit: "usd" }, // For market sell OSMO
     ]);
 
     tradePage = new TradePage(context.pages()[0]);

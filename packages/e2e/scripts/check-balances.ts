@@ -41,17 +41,9 @@ import { getAllBalances, getBalance, TOKEN_DENOMS } from "../utils/balance-check
 import { fetchTokenPrices } from "../utils/price-utils";
 import { deriveAddress } from "../utils/wallet-utils";
 
-// ---------------------------------------------------------------------------
-// Config
-// ---------------------------------------------------------------------------
-
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const ACCOUNT_LABEL = process.env.ACCOUNT_LABEL ?? "";
 const DRY_RUN = process.env.DRY_RUN === "true";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 /** Returns the display decimal places for a token (matches on-chain precision, capped at 8). */
 function decimalsFor(token: string): number {
@@ -62,10 +54,6 @@ function decimalsFor(token: string): number {
 function fmtBalance(amount: number, token: string): string {
   return amount.toFixed(decimalsFor(token));
 }
-
-// ---------------------------------------------------------------------------
-// Main
-// ---------------------------------------------------------------------------
 
 async function main(): Promise<void> {
   console.log("=== E2E Account Balance Check ===\n");

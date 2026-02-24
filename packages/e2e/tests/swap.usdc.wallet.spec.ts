@@ -25,11 +25,11 @@ test.describe("Test Swap to/from USDC feature", () => {
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 0.5 },
-      { token: "ATOM", amount: 0.015 },
-      { token: "TIA", amount: 0.02 },
-      { token: "INJ", amount: 0.01 },
-      { token: "AKT", amount: 0.025 },
+      { token: "USDC", amount: 0.5 }, // Total needed: 0.1 + 0.1 + 0.2 + 0.1 for swaps to other tokens
+      { token: "ATOM", amount: 0.015 }, // Max needed in single test
+      { token: "TIA", amount: 0.02 }, // Max needed in single test
+      { token: "INJ", amount: 0.01 }, // Max needed in single test
+      { token: "AKT", amount: 0.025 }, // Max needed in single test
     ]);
 
     // Switch to Application
