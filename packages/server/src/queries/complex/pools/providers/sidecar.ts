@@ -484,10 +484,27 @@ export function makePoolFromChainPool({
   const balances = getBalancesFromChainPool(chainPool);
   const poolDenoms = getPoolDenomsFromChainPool(chainPool);
 
-  // Cannot construct valid pool without balances or denoms
-  if (balances === null || poolDenoms === null) {
+  // Cannot construct valid pool without denoms at all
+  if (poolDenoms === null) {
     console.warn(
-      `Pool ${pool_id} cannot be constructed from chain data: unsupported pool type (CL or CosmWasm)`
+      `Pool ${pool_id} cannot be constructed from chain data: missing pool denoms (unsupported pool type or malformed data)`
+    );
+    return null;
+  }
+
+  // For concentrated liquidity pools, balances may not be directly available from the chain
+  // response. In that case, synthesize zero balances for each denom so we can still construct
+  // a minimal Pool object for the chain fallback path.
+  const effectiveBalances =
+    balances ??
+    ("current_sqrt_price" in chainPool
+      ? poolDenoms.map((denom) => ({ denom, amount: "0" }))
+      : null);
+
+  // For non-concentrated pools, we still require actual balances.
+  if (effectiveBalances === null) {
+    console.warn(
+      `Pool ${pool_id} cannot be constructed from chain data: missing balances (unsupported pool type or incomplete data)`
     );
     return null;
   }
@@ -495,7 +512,7 @@ export function makePoolFromChainPool({
   const reserveCoins = getReservesFromChainPool(
     assetLists,
     chainPool,
-    balances
+    effectiveBalances
   );
 
   // Get pool type
