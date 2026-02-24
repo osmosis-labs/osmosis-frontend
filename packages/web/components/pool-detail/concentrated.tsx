@@ -69,6 +69,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    // Query pool data for state detection
+    const { data: poolData } = api.local.pools.getPool.useQuery({ poolId });
+
     const { data: superfluidPoolIds } =
       api.edge.pools.getSuperfluidPoolIds.useQuery();
 
