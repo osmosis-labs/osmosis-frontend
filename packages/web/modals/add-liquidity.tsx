@@ -2,7 +2,6 @@ import {
   NotInitializedError,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent } from "react";
@@ -20,6 +19,7 @@ import {
 } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { getConcentratedPoolState } from "~/utils/pool-state";
 import { api } from "~/utils/trpc";
 
 import { SuperfluidValidatorModal } from "./superfluid-validator";
@@ -93,25 +93,9 @@ export const AddLiquidityModal: FunctionComponent<
 
   // add concentrated liquidity
   if (pool?.type === "concentrated") {
-    // Pool state detection based on liquidity
-    const poolRaw = pool.raw as ConcentratedPoolRawResponse;
-    const currentSqrtPrice = poolRaw?.current_sqrt_price;
-    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const hasTVL = !pool.totalFiatValueLocked.toDec().isZero();
-
-    // Check if values are zero (handles both "0" and "0.000000..." strings)
-    const isSqrtPriceZero = currentSqrtPrice
-      ? parseFloat(currentSqrtPrice) === 0
-      : false;
-    const isTickLiquidityZero = currentTickLiquidity
-      ? parseFloat(currentTickLiquidity) === 0
-      : false;
-
-    // Tier 1: Uninitialized Pool - has never been initialized (no price set)
-    // Only classify as uninitialized if there's NO TVL at all
-    // Note: Inactive pools (TVL > 0 but zero tick liquidity) are handled inside AddConcLiquidity component
-    const isUninitializedPool =
-      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    // Pool state detection using shared utility
+    const { isUninitialized: isUninitializedPool } =
+      getConcentratedPoolState(pool);
 
     // For uninitialized pools (but NOT inactive pools), show the initial liquidity addition interface
     // Inactive pools already have out-of-range liquidity, so they should use the normal add liquidity flow

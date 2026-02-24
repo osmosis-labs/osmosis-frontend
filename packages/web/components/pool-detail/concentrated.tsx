@@ -1,4 +1,3 @@
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -32,6 +31,7 @@ import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import { getConcentratedPoolState } from "~/utils/pool-state";
 import { api } from "~/utils/trpc";
 import { removeQueryParam } from "~/utils/url";
 
@@ -145,33 +145,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       [currentPrice]
     );
 
-    // Pool state detection based on liquidity
-    const poolRaw =
-      poolData?.type === "concentrated"
-        ? (poolData.raw as ConcentratedPoolRawResponse)
-        : null;
-    const currentSqrtPrice = poolRaw?.current_sqrt_price;
-    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
-    const hasTVL = poolData && !poolData.totalFiatValueLocked.toDec().isZero();
-
-    // Check if values are zero (handles both "0" and "0.000000..." strings)
-    const isSqrtPriceZero = currentSqrtPrice
-      ? parseFloat(currentSqrtPrice) === 0
-      : false;
-    const isTickLiquidityZero = currentTickLiquidity
-      ? parseFloat(currentTickLiquidity) === 0
-      : false;
-
-    // Tier 2: Inactive Pool - has TVL but no in range liquidity at current price
-    // This happens when all liquidity positions are out of range
-    // Check this FIRST because a pool can have out-of-range liquidity (TVL > 0)
-    // with zero tick liquidity and zero sqrt price
-    const isInactivePool = isTickLiquidityZero && hasTVL;
-
-    // Tier 1: Uninitialized Pool - has never been initialized (no price set)
-    // Only classify as uninitialized if there's NO TVL at all
-    const isUninitializedPool =
-      isSqrtPriceZero && isTickLiquidityZero && !hasTVL;
+    // Pool state detection using shared utility
+    const { isUninitialized: isUninitializedPool, isInactive: isInactivePool } =
+      getConcentratedPoolState(pool);
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
