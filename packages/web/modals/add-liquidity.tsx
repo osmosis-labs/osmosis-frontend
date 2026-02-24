@@ -98,8 +98,7 @@ export const AddLiquidityModal: FunctionComponent<
     const currentSqrtPrice = poolRaw?.current_sqrt_price;
     const currentTickLiquidity = poolRaw?.current_tick_liquidity;
     const hasTVL =
-      pool.tvlUnknown ||
-      pool.totalFiatValueLocked?.toDec().isZero() === false;
+      pool.tvlUnknown || pool.totalFiatValueLocked?.toDec().isZero() === false;
 
     // Check if values are zero (handles both "0" and "0.000000..." strings)
     const isSqrtPriceZero = currentSqrtPrice

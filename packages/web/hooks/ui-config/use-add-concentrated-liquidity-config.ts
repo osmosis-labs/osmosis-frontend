@@ -329,7 +329,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   @observable
   protected _maxHistoricalPrice: number | null = null;
 
-
   @computed
   get pool() {
     if (this._pool?.type !== "concentrated") return null;
@@ -1158,9 +1157,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       );
 
       const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
-      const baseAmount = quoteValue
-        .toDec()
-        .quo(this._baseDepositPrice.toDec());
+      const baseAmount = quoteValue.toDec().quo(this._baseDepositPrice.toDec());
 
       const baseCoin = new CoinPretty(
         this._baseDepositAmountIn.sendCurrency,

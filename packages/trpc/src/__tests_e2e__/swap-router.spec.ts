@@ -382,8 +382,8 @@ it("Sidecar — Should return valid quote for medium volume token", async () => 
   });
 
   // Desired price is 10% of the total fiat value locked in the pool
-  const desiredPrice = mediumVolumePool.totalFiatValueLocked!
-    .toDec()
+  const desiredPrice = mediumVolumePool
+    .totalFiatValueLocked!.toDec()
     .mul(new Dec(0.1));
 
   // Token in amount is the desired price divided by the token price
@@ -439,8 +439,8 @@ it("Sidecar — Should return valid quote for low volume token", async () => {
   });
 
   // Desired price is 10% of the total fiat value locked in the pool
-  const desiredPrice = lowVolumeTokenPool.totalFiatValueLocked!
-    .toDec()
+  const desiredPrice = lowVolumeTokenPool
+    .totalFiatValueLocked!.toDec()
     .mul(new Dec(0.1));
 
   // Token in amount is the desired price divided by the token price
