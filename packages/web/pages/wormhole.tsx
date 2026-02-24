@@ -396,7 +396,7 @@ const Wormhole: FunctionComponent = () => {
   }, []);
 
   return (
-    <div style={{ backgroundColor: "rgb(20, 15, 52)" }}>
+    <div className="bg-osmoverse-900">
       <div className="mx-auto max-w-2xl px-4 pt-8">
         <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
           <Icon
