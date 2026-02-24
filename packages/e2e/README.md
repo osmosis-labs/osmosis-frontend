@@ -14,14 +14,14 @@ All you need to add is a private key for the wallet being used:
 
 ### CI Secrets — Account Mapping
 
-| Secret | Address | Used In |
-|---|---|---|
-| `TEST_PRIVATE_KEY` | `osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l` | Frontend E2E tests (preview + prod) |
-| `TEST_PRIVATE_KEY_1` | `osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c` | Monitoring SG region (swap, trade, limit) |
-| `TEST_PRIVATE_KEY_2` | `osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv` | Monitoring EU region (swap, trade, limit) |
-| `TEST_PRIVATE_KEY_3` | derived at runtime | Monitoring US region (swap, trade, limit) |
+| Secret | Used In |
+|---|---|
+| `TEST_PRIVATE_KEY` | Frontend E2E tests (preview + prod) |
+| `TEST_PRIVATE_KEY_1` | Monitoring SG region (swap, trade, limit) |
+| `TEST_PRIVATE_KEY_2` | Monitoring EU region (swap, trade, limit) |
+| `TEST_PRIVATE_KEY_3` | Monitoring US region (swap, trade, limit) |
 
-> `TEST_WALLET_ID_*` secrets mirror the addresses above but are not required by the scripts in this package — addresses are derived from the private key automatically.
+> Wallet addresses are derived from each private key at runtime. `TEST_WALLET_ID_*` secrets are not required by scripts in this package.
 
 ### Run E2E Tests
 
@@ -35,7 +35,7 @@ Tests can be executed locally in a browser by changing `headless: true` to `head
 
 ### Frontend E2E Test Wallet
 
-The wallet for `TEST_PRIVATE_KEY` (`osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l`) must contain:
+The wallet for `TEST_PRIVATE_KEY` must contain:
 
 - OSMO > 10
 - ATOM > 1
@@ -61,9 +61,9 @@ Tokens marked as `> 0` are needed for a portfolio balances test.
 Monitoring tests run from three geographic regions using separate accounts.
 In CI secrets they are referenced as:
 
-- `TEST_PRIVATE_KEY_1` for `osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c` (SG region)
-- `TEST_PRIVATE_KEY_2` for `osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv` (EU region)
-- `TEST_PRIVATE_KEY_3` — address derived at runtime (US region)
+- `TEST_PRIVATE_KEY_1` — SG region
+- `TEST_PRIVATE_KEY_2` — EU region
+- `TEST_PRIVATE_KEY_3` — US region
 
 Each monitoring test wallet must contain:
 
@@ -93,7 +93,7 @@ npx tsx scripts/get-active-orders.ts
 Example output:
 ```text
 === Active Orders: Monitoring EU ===
-Derived address: osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv
+Derived address: osmo1...
 
 3 active orders found:
 
@@ -147,19 +147,19 @@ $env:PRIVATE_KEY="<key-2>"; npx tsx scripts/cancel-all-orders.ts
 
 ### GitHub Actions Workflows
 
-Two manually-triggered workflows are available:
+A single manually-triggered workflow handles both dry runs and real cancellations:
 
-| Workflow | File | Effect |
-|---|---|---|
-| **Cancel Open Limit Orders — Dry Run** | `cancel-open-orders-dry-run.yml` | Lists open orders and previews what would be cancelled. No transactions sent. |
-| **Cancel Open Limit Orders** | `cancel-open-orders.yml` | Cancels all open orders for all test accounts. Sends real transactions. |
+| Workflow | File |
+|---|---|
+| **Cancel Open Limit Orders (E2E Test Accounts)** | `cancel-open-orders.yml` |
 
-Both run all four test accounts in parallel.
+The workflow has a **Dry run** checkbox (checked by default) so the safe path is always the default.
+All four test accounts run in parallel via matrix strategy.
 
 **Recommended flow:**
-1. Trigger the dry run first from the GitHub Actions tab → **Cancel Open Limit Orders — Dry Run (E2E Test Accounts)** → **Run workflow**
+1. Trigger from the GitHub Actions tab → **Cancel Open Limit Orders (E2E Test Accounts)** → **Run workflow** (leave "Dry run" checked)
 2. Review the logs to confirm address derivation and order listing work correctly
-3. Trigger the real workflow → **Cancel Open Limit Orders (E2E Test Accounts)** → **Run workflow**
+3. Trigger again with "Dry run" **unchecked** to send real cancel transactions
 
 ### Automatic Pre-Test Cleanup in CI
 

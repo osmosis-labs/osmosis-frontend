@@ -71,7 +71,7 @@ async function main(): Promise<void> {
   const client = isDryRun ? null : await createSigningClient(wallet);
 
   let totalCancelledAcrossRounds = 0;
-  let totalFoundAcrossRounds = 0;
+  let totalFoundOnFirstRound = 0;
 
   for (let round = 1; round <= MAX_ROUNDS; round++) {
     console.log(`Round ${round}/${MAX_ROUNDS}:`);
@@ -84,13 +84,13 @@ async function main(): Promise<void> {
         console.log("  No active orders found. Nothing to cancel.");
       } else {
         console.log(
-          `  No open orders. ${totalCancelledAcrossRounds} of ${totalFoundAcrossRounds} successfully cancelled.`
+          `  No open orders. ${totalCancelledAcrossRounds} of ${totalFoundOnFirstRound} successfully cancelled.`
         );
       }
       return;
     }
 
-    totalFoundAcrossRounds += orders.length;
+    if (round === 1) totalFoundOnFirstRound = orders.length;
 
     console.log(
       `  ${orders.length} order${orders.length === 1 ? "" : "s"} found.`
@@ -145,7 +145,7 @@ async function main(): Promise<void> {
 
     if (remaining.length === 0) {
       console.log(
-        `  No open orders. ${totalCancelledAcrossRounds} of ${totalFoundAcrossRounds} successfully cancelled.`
+        `  No open orders. ${totalCancelledAcrossRounds} of ${totalFoundOnFirstRound} successfully cancelled.`
       );
       return;
     }
