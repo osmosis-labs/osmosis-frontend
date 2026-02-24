@@ -329,8 +329,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   @observable
   protected _maxHistoricalPrice: number | null = null;
 
-  // Guard to prevent infinite loop when adjusting amounts for balance limits
-  protected _isAdjustingForBalance = false;
 
   @computed
   get pool() {
@@ -1080,83 +1078,50 @@ export class ObservableAddConcentratedLiquidityConfig {
       this.sender
     );
 
-    // Set guard to prevent infinite loop when both balances are insufficient
-    const wasAdjusting = this._isAdjustingForBalance;
-    this._isAdjustingForBalance = true;
+    if (anchorAsset === "base") {
+      // Base is max — calculate the quote amount that matches its dollar value.
+      const baseAmountRaw =
+        this.baseDepositAmountIn.getAmountPrimitive().amount;
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        new Int(baseAmountRaw)
+      );
 
-    try {
-      if (anchorAsset === "base") {
-        // Base is max, calculate quote to match dollar value
-        const baseAmountRaw =
-          this.baseDepositAmountIn.getAmountPrimitive().amount;
-        const baseCoin = new CoinPretty(
-          this._baseDepositAmountIn.sendCurrency,
-          new Int(baseAmountRaw)
-        );
+      const baseValue = this._baseDepositPrice.mul(baseCoin);
+      const quoteAmount = baseValue
+        .toDec()
+        .quo(this._quoteDepositPrice.toDec());
 
-        // Calculate dollar value of base amount
-        const baseValue = this._baseDepositPrice.mul(baseCoin);
-
-        // Calculate quote amount with same dollar value: quoteAmount = baseValue / quotePrice
-        const quoteAmount = baseValue
-          .toDec()
-          .quo(this._quoteDepositPrice.toDec());
-
-        // Convert to quote currency decimals
-        const quoteCoin = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          quoteAmount
-            .mul(
-              DecUtils.getTenExponentN(
-                this._quoteDepositAmountIn.sendCurrency.coinDecimals
-              )
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        quoteAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._quoteDepositAmountIn.sendCurrency.coinDecimals
             )
-            .truncate()
+          )
+          .truncate()
+      );
+
+      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._quoteDepositAmountIn.sendCurrency
+      );
+
+      if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
+        // Quote overflows. Pre-check whether flipping to quote-as-anchor would also overflow
+        // base. MobX defers autorun reactions until after the current @action completes, so a
+        // simple boolean flag reset in `finally` cannot guard against the re-entrant call —
+        // the flag is always false by the time the deferred reaction fires. Instead, resolve
+        // the both-overflow case entirely within this action without flipping the anchor.
+        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+          this._baseDepositAmountIn.sendCurrency
         );
-
-        // Check if quote amount exceeds balance
-        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._quoteDepositAmountIn.sendCurrency
-        );
-
-        if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
-          // Calculated amount exceeds balance
-          if (!wasAdjusting) {
-            // First adjustment - flip to quote max and recalculate base
-            this.setQuoteDepositAmountMax();
-          } else {
-            // Already adjusting - cap to balance to prevent infinite loop
-            this._quoteDepositAmountIn.setAmount(
-              quoteBalance.trim(true).hideDenom(true).locale(false).toString()
-            );
-          }
-        } else {
-          // Set the calculated quote amount
-          this._quoteDepositAmountIn.setAmount(
-            quoteCoin.hideDenom(true).locale(false).trim(true).toString()
-          );
-        }
-      } else {
-        // Quote is max, calculate base to match dollar value
-        const quoteAmountRaw =
-          this.quoteDepositAmountIn.getAmountPrimitive().amount;
-        const quoteCoin = new CoinPretty(
-          this._quoteDepositAmountIn.sendCurrency,
-          new Int(quoteAmountRaw)
-        );
-
-        // Calculate dollar value of quote amount
-        const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
-
-        // Calculate base amount with same dollar value: baseAmount = quoteValue / basePrice
-        const baseAmount = quoteValue
-          .toDec()
-          .quo(this._baseDepositPrice.toDec());
-
-        // Convert to base currency decimals
-        const baseCoin = new CoinPretty(
+        const baseValueFromQuoteMax = this._quoteDepositPrice.mul(quoteBalance);
+        const baseCoinFromQuoteMax = new CoinPretty(
           this._baseDepositAmountIn.sendCurrency,
-          baseAmount
+          baseValueFromQuoteMax
+            .toDec()
+            .quo(this._baseDepositPrice.toDec())
             .mul(
               DecUtils.getTenExponentN(
                 this._baseDepositAmountIn.sendCurrency.coinDecimals
@@ -1165,32 +1130,90 @@ export class ObservableAddConcentratedLiquidityConfig {
             .truncate()
         );
 
-        // Check if base amount exceeds balance
-        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
-          this._baseDepositAmountIn.sendCurrency
+        if (baseCoinFromQuoteMax.toDec().gt(baseBalance.toDec())) {
+          // Both assets overflow each other — cap both to their balances in one action.
+          this._baseDepositAmountIn.setAmount(
+            baseBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+          this._quoteDepositAmountIn.setAmount(
+            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+        } else {
+          // Only quote overflows — flip anchor to quote; the autorun will correctly
+          // calculate the reduced base amount from the quote max balance.
+          this.setQuoteDepositAmountMax();
+        }
+      } else {
+        this._quoteDepositAmountIn.setAmount(
+          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    } else {
+      // Quote is max — calculate the base amount that matches its dollar value.
+      const quoteAmountRaw =
+        this.quoteDepositAmountIn.getAmountPrimitive().amount;
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        new Int(quoteAmountRaw)
+      );
+
+      const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
+      const baseAmount = quoteValue
+        .toDec()
+        .quo(this._baseDepositPrice.toDec());
+
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        baseAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._baseDepositAmountIn.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+      );
+
+      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._baseDepositAmountIn.sendCurrency
+      );
+
+      if (baseCoin.toDec().gt(baseBalance.toDec())) {
+        // Base overflows. Same pre-check as above for the symmetric case.
+        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+          this._quoteDepositAmountIn.sendCurrency
+        );
+        const quoteValueFromBaseMax = this._baseDepositPrice.mul(baseBalance);
+        const quoteCoinFromBaseMax = new CoinPretty(
+          this._quoteDepositAmountIn.sendCurrency,
+          quoteValueFromBaseMax
+            .toDec()
+            .quo(this._quoteDepositPrice.toDec())
+            .mul(
+              DecUtils.getTenExponentN(
+                this._quoteDepositAmountIn.sendCurrency.coinDecimals
+              )
+            )
+            .truncate()
         );
 
-        if (baseCoin.toDec().gt(baseBalance.toDec())) {
-          // Calculated amount exceeds balance
-          if (!wasAdjusting) {
-            // First adjustment - flip to base max and recalculate quote
-            this.setBaseDepositAmountMax();
-          } else {
-            // Already adjusting - cap to balance to prevent infinite loop
-            this._baseDepositAmountIn.setAmount(
-              baseBalance.trim(true).hideDenom(true).locale(false).toString()
-            );
-          }
-        } else {
-          // Set the calculated base amount
-          this._baseDepositAmountIn.setAmount(
-            baseCoin.hideDenom(true).locale(false).trim(true).toString()
+        if (quoteCoinFromBaseMax.toDec().gt(quoteBalance.toDec())) {
+          // Both assets overflow each other — cap both to their balances in one action.
+          this._quoteDepositAmountIn.setAmount(
+            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
           );
+          this._baseDepositAmountIn.setAmount(
+            baseBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+        } else {
+          // Only base overflows — flip anchor to base; the autorun will correctly
+          // calculate the reduced quote amount from the base max balance.
+          this.setBaseDepositAmountMax();
         }
+      } else {
+        this._baseDepositAmountIn.setAmount(
+          baseCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
       }
-    } finally {
-      // Reset guard flag
-      this._isAdjustingForBalance = wasAdjusting;
     }
   }
 
