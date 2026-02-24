@@ -36,6 +36,7 @@ export class BasePage {
     // PopUp page is auto-closed
     // Handle Pop-up page <-
     await this.getWalletBalance()
+    await this.dismissVariantsPopupIfPresent()
   }
 
   async gotoPortfolio() {
@@ -62,6 +63,17 @@ export class BasePage {
     const balance = await this.walletBalance.textContent({ timeout: 2000 })
     console.log(`Wallet balance: ${balance}`)
     return balance
+  }
+
+  async dismissVariantsPopupIfPresent() {
+    try {
+      const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
+      await dismissBtn.waitFor({ state: 'visible', timeout: 4000 })
+      await dismissBtn.click()
+      console.log('Dismissed "Variants Detected" popup.')
+    } catch {
+      // Modal not present — continue normally
+    }
   }
 
   async logOut() {

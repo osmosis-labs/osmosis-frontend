@@ -34,6 +34,7 @@ export class PoolsPage extends BasePage {
     const locRows = '//tr/td/a[contains(@href, "pool/1464")]/../..'
     await this.page.locator(locRows).hover({ timeout: 10000 })
     await super.printUrl()
+    await this.dismissVariantsPopupIfPresent()
   }
 
   async viewPool(id: number, pair: string) {
