@@ -142,7 +142,7 @@ export async function getPool({
     return chainPool;
   } catch (error) {
     console.error(`Failed to query pool ${poolId} from chain:`, error);
-    throw new Error(poolId + " not found");
+    throw error;
   }
 }
 
