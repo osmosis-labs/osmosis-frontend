@@ -40,7 +40,10 @@ export type Pool = {
   raw: Omit<PoolRawResponse, "@type">;
   spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
-  totalFiatValueLocked: PricePretty;
+  /** Undefined when TVL cannot be determined (e.g. CL pools fetched from chain without Sidecar). Check tvlUnknown before treating a missing/zero value as authoritative. */
+  totalFiatValueLocked?: PricePretty;
+  /** True when the pool was constructed from chain data with synthesized balances and actual TVL is unavailable. Consumers should treat TVL as potentially non-zero when this flag is set. */
+  tvlUnknown?: boolean;
   incentives?: PoolIncentives;
   market?: PoolMarketMetrics;
 };

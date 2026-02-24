@@ -492,12 +492,16 @@ export function makePoolFromChainPool({
     return null;
   }
 
-  // For concentrated liquidity pools, balances may not be directly available from the chain
-  // response. In that case, synthesize zero balances for each denom so we can still construct
-  // a minimal Pool object for the chain fallback path.
+  // For concentrated liquidity pools, balances are not directly available from the chain pool
+  // manager response. Synthesize zero-amount entries so we can still construct a minimal Pool
+  // for the chain fallback path. Track whether this synthesis occurred so consumers know the
+  // resulting TVL figure is unknown rather than genuinely zero.
+  const balancesSynthed =
+    balances === null && "current_sqrt_price" in chainPool;
+
   const effectiveBalances =
     balances ??
-    ("current_sqrt_price" in chainPool
+    (balancesSynthed
       ? poolDenoms.map((denom) => ({ denom, amount: "0" }))
       : null);
 
@@ -540,7 +544,13 @@ export function makePoolFromChainPool({
     raw: chainPool,
     spreadFactor: new RatePretty(spreadFactor),
     reserveCoins,
-    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0), // Unknown for chain-only pools
+    // totalFiatValueLocked is undefined when balances were synthesized: the pool exists but its
+    // actual TVL is not queryable without a bank module call. Set tvlUnknown so consumers can
+    // treat the missing value as "unknown" rather than "confirmed zero".
+    totalFiatValueLocked: balancesSynthed
+      ? undefined
+      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    tvlUnknown: balancesSynthed,
     // No incentives or market data available from chain
     incentives: {
       aprBreakdown: undefined,
