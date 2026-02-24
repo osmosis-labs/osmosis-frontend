@@ -394,7 +394,7 @@ function makeUnlistedAssetCurrency(denom: string) {
 }
 
 /** Gets pool denoms from a chain pool (works for both sidecar and direct chain responses) */
-export function getPoolDenomsFromChainPool(
+function getPoolDenomsFromChainPool(
   chainPool: PoolRawResponse
 ): string[] | null {
   if ("pool_assets" in chainPool) {
@@ -415,7 +415,7 @@ export function getPoolDenomsFromChainPool(
 
 /** Extracts balances from a chain pool response.
  *  Different pool types store balances differently. */
-export function getBalancesFromChainPool(
+function getBalancesFromChainPool(
   chainPool: PoolRawResponse
 ): { denom: string; amount: string }[] | null {
   // Weighted pools store balances in pool_assets
@@ -445,7 +445,7 @@ export function getBalancesFromChainPool(
 
 /** Gets reserves from a chain pool, including unlisted assets.
  *  This doesn't throw when assets are not in the asset list - instead creates minimal currency objects. */
-export function getReservesFromChainPool(
+function getReservesFromChainPool(
   assetLists: AssetList[],
   chainPool: PoolRawResponse,
   balances: { denom: string; amount: string }[]
