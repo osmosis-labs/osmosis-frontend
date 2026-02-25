@@ -23,22 +23,22 @@ permissions:
 
 jobs:
   cancel-limit-orders:
-    name: "${{ inputs.dry_run && 'Dry run' || 'Cancel orders' }} — ${{ matrix.account_label }}"
+    name: "${{ inputs.dry_run && 'Dry run' || 'Cancel orders' }} — ${{ matrix.account.label }}"
     timeout-minutes: 10
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - account_label: "E2E Test Account"
-            private_key_secret: "TEST_PRIVATE_KEY"
-          - account_label: "Monitoring SG"
-            private_key_secret: "TEST_PRIVATE_KEY_1"
-          - account_label: "Monitoring EU"
-            private_key_secret: "TEST_PRIVATE_KEY_2"
-          - account_label: "Monitoring US"
-            private_key_secret: "TEST_PRIVATE_KEY_3"
+        account:
+          - label: "E2E Test Account"
+            key_id: e2e
+          - label: "Monitoring SG"
+            key_id: sg
+          - label: "Monitoring EU"
+            key_id: eu
+          - label: "Monitoring US"
+            key_id: us
 
     steps:
       - name: Check out repository
@@ -63,9 +63,27 @@ jobs:
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
 
+      - name: Resolve private key
+        env:
+          KEY_ID: ${{ matrix.account.key_id }}
+          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          case "$KEY_ID" in
+            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
+            eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
+            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unknown key_id: $KEY_ID" >&2
+              exit 1
+              ;;
+          esac
+
       - name: Cancel open limit orders
         env:
           DRY_RUN: ${{ inputs.dry_run && 'true' || '' }}
-          PRIVATE_KEY: ${{ secrets[matrix.private_key_secret] }}
-          ACCOUNT_LABEL: ${{ matrix.account_label }}
+          ACCOUNT_LABEL: ${{ matrix.account.label }}
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
