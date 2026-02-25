@@ -1333,5 +1333,9 @@
     "title": "Votre transaction peut échouer",
     "description": "En raison de la faible liquidité de {tokenWithLowLiquidity} dans tous les pools, cette transaction peut entraîner un glissement élevé et peut ne pas être exécutée."
   },
-  "taprootAddressNotSupported": "Les adresses de racine pivotante ne sont pas prises en charge pour les retraits"
+  "taprootAddressNotSupported": "Les adresses de racine pivotante ne sont pas prises en charge pour les retraits",
+  "wormhole": {
+    "deprecationTitle": "Le support de Wormhole est en cours de dépréciation",
+    "deprecationSubtitle": "Nous ne recommandons pas de transférer des actifs supplémentaires vers Osmosis via Wormhole. Cette page est disponible pour vous aider à retirer les actifs existants bridgés par Wormhole depuis Osmosis."
+  }
 }

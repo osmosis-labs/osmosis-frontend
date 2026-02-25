@@ -1,9 +1,10 @@
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 
 type PaletteColor = {
@@ -242,6 +243,7 @@ interface WormholeConnectConfig {
 
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
@@ -394,7 +396,23 @@ const Wormhole: FunctionComponent = () => {
   }, []);
 
   return (
-    <>
+    <div className="bg-osmoverse-900">
+      <div className="mx-auto max-w-2xl px-4 pt-8">
+        <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
+          <Icon
+            id="alert-triangle"
+            className="h-6 w-6 shrink-0 text-rust-600"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="body2 text-white-full">
+              {t("wormhole.deprecationTitle")}
+            </h1>
+            <p className="body2 text-osmoverse-300">
+              {t("wormhole.deprecationSubtitle")}
+            </p>
+          </div>
+        </div>
+      </div>
       {!scriptLoaded && (
         <div className="flex h-screen w-full items-center justify-center">
           <Spinner />
@@ -416,7 +434,7 @@ const Wormhole: FunctionComponent = () => {
         integrity="sha384-BTkX2AhTeIfxDRFsJbLtR26TQ9QKKpi7EMe807JdfQQBTAkUT9a2mSGwf/5CJ4bF"
         crossOrigin="anonymous"
       />
-    </>
+    </div>
   );
 };
 

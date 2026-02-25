@@ -1333,5 +1333,9 @@
     "title": "İşleminiz başarısız olabilir",
     "description": "Tüm havuzlarda {tokenWithLowLiquidity} likiditesinin düşük olması nedeniyle, bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
   },
-  "taprootAddressNotSupported": "Taproot adresleri çekimler için desteklenmiyor"
+  "taprootAddressNotSupported": "Taproot adresleri çekimler için desteklenmiyor",
+  "wormhole": {
+    "deprecationTitle": "Wormhole desteği kaldırılıyor",
+    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir."
+  }
 }
