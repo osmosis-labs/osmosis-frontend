@@ -15,13 +15,13 @@ jobs:
       matrix:
         account:
           - label: E2E Test Account
-            private_key_secret: TEST_PRIVATE_KEY
+            key_id: e2e
           - label: Monitoring SG
-            private_key_secret: TEST_PRIVATE_KEY_1
+            key_id: sg
           - label: Monitoring EU
-            private_key_secret: TEST_PRIVATE_KEY_2
+            key_id: eu
           - label: Monitoring US
-            private_key_secret: TEST_PRIVATE_KEY_3
+            key_id: us
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -34,8 +34,25 @@ jobs:
           node-version: 22.x
       - name: Install dependencies
         run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Resolve private key
+        env:
+          KEY_ID: ${{ matrix.account.key_id }}
+          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          case "$KEY_ID" in
+            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
+            eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
+            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unknown key_id: $KEY_ID" >&2
+              exit 1
+              ;;
+          esac
       - name: Check balances
         env:
-          PRIVATE_KEY: ${{ secrets[matrix.account.private_key_secret] }}
           ACCOUNT_LABEL: ${{ matrix.account.label }}
         run: yarn --cwd packages/e2e check-balances || true
