@@ -55,8 +55,6 @@ export const SQS_BASE_URL = (
 
 /**
  * Maximum number of orders to include in a single transaction.
- * Partially filled orders produce two messages (claim + cancel), so the actual
- * message count per batch may be up to 2x this value.
  */
 export const CANCEL_BATCH_SIZE = 20;
 
@@ -184,47 +182,48 @@ export async function createSigningClient(
 }
 
 /**
- * Builds an array of `ExecuteInstruction` objects for cancelling the given orders.
+ * Builds `claim_limit` instructions for orders that have unclaimed fills.
  *
- * For partially filled orders (percentFilled > percentClaimed), a `claim_limit` message
- * is prepended before the `cancel_limit` so the filled portion is claimed first --
- * the on-chain contract rejects cancel on orders that have been partially or fully filled.
- *
- * @param orders - Array of active orders to cancel.
- * @returns Array of `ExecuteInstruction` objects ready for `client.executeMultiple`.
- *
- * @example
- * ```ts
- * const msgs = buildCancelMessages(orders)
- * const result = await client.executeMultiple(address, msgs, CANCEL_GAS_MULTIPLIER)
- * ```
+ * Must be sent in a SEPARATE transaction before cancel messages because
+ * fully-filled orders are removed from the contract after claiming, which
+ * would cause a subsequent `cancel_limit` in the same atomic tx to revert
+ * the entire batch with "Order not found".
+ */
+export function buildClaimMessages(
+  orders: SQSActiveOrder[]
+): ExecuteInstruction[] {
+  return orders
+    .filter(
+      (o) => parseFloat(o.percentFilled) > parseFloat(o.percentClaimed)
+    )
+    .map((order) => ({
+      contractAddress: order.orderbookAddress,
+      msg: {
+        claim_limit: {
+          order_id: order.order_id,
+          tick_id: order.tick_id,
+        },
+      },
+      funds: [],
+    }));
+}
+
+/**
+ * Builds `cancel_limit` instructions for the given orders.
  */
 export function buildCancelMessages(
   orders: SQSActiveOrder[]
 ): ExecuteInstruction[] {
-  return orders.flatMap((order) => {
-    const msgs: ExecuteInstruction[] = [];
-    const tickAndOrder = {
-      order_id: order.order_id,
-      tick_id: order.tick_id,
-    };
-
-    if (parseFloat(order.percentFilled) > parseFloat(order.percentClaimed)) {
-      msgs.push({
-        contractAddress: order.orderbookAddress,
-        msg: { claim_limit: tickAndOrder },
-        funds: [],
-      });
-    }
-
-    msgs.push({
-      contractAddress: order.orderbookAddress,
-      msg: { cancel_limit: tickAndOrder },
-      funds: [],
-    });
-
-    return msgs;
-  });
+  return orders.map((order) => ({
+    contractAddress: order.orderbookAddress,
+    msg: {
+      cancel_limit: {
+        order_id: order.order_id,
+        tick_id: order.tick_id,
+      },
+    },
+    funds: [],
+  }));
 }
 
 /**
