@@ -60,6 +60,12 @@ export const SQS_BASE_URL = (
 export const CANCEL_BATCH_SIZE = 20;
 
 /**
+ * Gas multiplier passed to `executeMultiple` instead of `"auto"` (which defaults to 1.4x).
+ * Set to 2.0 to provide sufficient headroom for batch cancel transactions.
+ */
+export const CANCEL_GAS_MULTIPLIER = 2.0;
+
+/**
  * Represents an active limit order returned by the SQS passthrough API.
  * Mirrors the shape from `packages/server/src/queries/sidecar/orderbooks.ts`.
  */
@@ -172,13 +178,16 @@ export async function createSigningClient(
   wallet: DirectSecp256k1Wallet
 ): Promise<SigningCosmWasmClient> {
   return SigningCosmWasmClient.connectWithSigner(OSMOSIS_RPC, wallet, {
-    gasPrice: GasPrice.fromString("0.025uosmo"),
+    gasPrice: GasPrice.fromString("0.035uosmo"),
   });
 }
 
 /**
  * Builds an array of `ExecuteInstruction` objects for cancelling the given orders.
- * Each instruction targets the order's own `orderbookAddress` with a `cancel_limit` message.
+ *
+ * For partially filled orders (percentFilled > percentClaimed), a `claim_limit` message
+ * is prepended before the `cancel_limit` so the filled portion is claimed first --
+ * the on-chain contract rejects cancel on orders that have been partially or fully filled.
  *
  * @param orders - Array of active orders to cancel.
  * @returns Array of `ExecuteInstruction` objects ready for `client.executeMultiple`.
@@ -186,22 +195,35 @@ export async function createSigningClient(
  * @example
  * ```ts
  * const msgs = buildCancelMessages(orders)
- * const result = await client.executeMultiple(address, msgs, 'auto')
+ * const result = await client.executeMultiple(address, msgs, CANCEL_GAS_MULTIPLIER)
  * ```
  */
 export function buildCancelMessages(
   orders: SQSActiveOrder[]
 ): ExecuteInstruction[] {
-  return orders.map((order) => ({
-    contractAddress: order.orderbookAddress,
-    msg: {
-      cancel_limit: {
-        order_id: order.order_id,
-        tick_id: order.tick_id,
-      },
-    },
-    funds: [],
-  }));
+  return orders.flatMap((order) => {
+    const msgs: ExecuteInstruction[] = [];
+    const tickAndOrder = {
+      order_id: order.order_id,
+      tick_id: order.tick_id,
+    };
+
+    if (parseFloat(order.percentFilled) > parseFloat(order.percentClaimed)) {
+      msgs.push({
+        contractAddress: order.orderbookAddress,
+        msg: { claim_limit: tickAndOrder },
+        funds: [],
+      });
+    }
+
+    msgs.push({
+      contractAddress: order.orderbookAddress,
+      msg: { cancel_limit: tickAndOrder },
+      funds: [],
+    });
+
+    return msgs;
+  });
 }
 
 /**
