@@ -28,6 +28,7 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 import {
   CANCEL_BATCH_SIZE,
+  CANCEL_GAS_MULTIPLIER,
   OSMOSIS_RPC,
   SQS_BASE_URL,
   buildCancelMessages,
@@ -125,7 +126,11 @@ async function main(): Promise<void> {
       const batchEnd = batchStart + batch.length - 1;
 
       try {
-        const result = await client!.executeMultiple(address, batch, "auto");
+        const result = await client!.executeMultiple(
+          address,
+          batch,
+          CANCEL_GAS_MULTIPLIER
+        );
         cancelledThisRound += batch.length;
         totalCancelledAcrossRounds += batch.length;
         console.log(
