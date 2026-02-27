@@ -215,6 +215,12 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Cancel leftover open orders
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          ACCOUNT_LABEL: "Monitoring EU (pre-test cleanup)"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Limit tests in EU
         env:
           BASE_URL: "https://app.osmosis.zone"
@@ -366,6 +372,12 @@ jobs:
       - name: Install Playwright
         run: |
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Cancel leftover open orders
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          ACCOUNT_LABEL: "Monitoring US (pre-test cleanup)"
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Limit tests in US
         id: run-us
         env:

@@ -1,0 +1,89 @@
+name: Cancel Open Limit Orders (E2E Test Accounts)
+
+# Manually triggered workflow to cancel all open limit orders for every e2e test account.
+#
+# Use this when monitoring tests have accumulated uncancelled open orders.
+# Each matrix entry runs in parallel, one per test account.
+#
+# Defaults to dry run (no transactions sent). Uncheck "Dry run" to send real cancel transactions.
+#
+# For future reuse: this job can be added as a `needs:` precursor before
+# limit order test jobs in monitoring-e2e-tests.yml or monitoring-limit-geo-e2e-tests.yml.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no transactions sent)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  cancel-limit-orders:
+    name: "${{ inputs.dry_run && 'Dry run' || 'Cancel orders' }} — ${{ matrix.account.label }}"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        account:
+          - label: "E2E Test Account"
+            key_id: e2e
+          - label: "Monitoring SG"
+            key_id: sg
+          - label: "Monitoring EU"
+            key_id: eu
+          - label: "Monitoring US"
+            key_id: us
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Resolve private key
+        env:
+          KEY_ID: ${{ matrix.account.key_id }}
+          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          case "$KEY_ID" in
+            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
+            eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
+            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unknown key_id: $KEY_ID" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Cancel open limit orders
+        env:
+          DRY_RUN: ${{ inputs.dry_run && 'true' || '' }}
+          ACCOUNT_LABEL: ${{ matrix.account.label }}
+        run: npx tsx packages/e2e/scripts/cancel-all-orders.ts

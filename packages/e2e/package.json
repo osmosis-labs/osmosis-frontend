@@ -10,11 +10,15 @@
   "dependencies": {
     "@actions/core": "1.11.1",
     "@playwright/test": "1.52.0",
-    "decompress": "4.2.1",
-    "dotenv": "17.2.1"
+    "decompress": "4.2.1"
   },
   "devDependencies": {
+    "@cosmjs/cosmwasm-stargate": "0.32.3",
+    "@cosmjs/proto-signing": "0.32.3",
+    "@cosmjs/stargate": "0.32.3",
     "@types/node": "22.17.1",
+    "dotenv": "17.2.1",
+    "tsx": "^4.6.2",
     "typescript": "5.9.2"
   }
 }
