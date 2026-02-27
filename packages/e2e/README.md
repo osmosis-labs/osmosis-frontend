@@ -14,12 +14,12 @@ All you need to add is a private key for the wallet being used:
 
 ### CI Secrets — Account Mapping
 
-| Secret | Used In |
-|---|---|
-| `TEST_PRIVATE_KEY` | Frontend E2E tests (preview + prod) |
-| `TEST_PRIVATE_KEY_1` | Monitoring SG region (swap, trade, limit) |
-| `TEST_PRIVATE_KEY_2` | Monitoring EU region (swap, trade, limit) |
-| `TEST_PRIVATE_KEY_3` | Monitoring US region (swap, trade, limit) |
+| Secret | Wallet Address | Used In |
+|---|---|---|
+| `TEST_PRIVATE_KEY` | `osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l` | Frontend E2E tests (preview + prod) |
+| `TEST_PRIVATE_KEY_1` | `osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c` | Monitoring SG region (swap, trade, limit) |
+| `TEST_PRIVATE_KEY_2` | `osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv` | Monitoring EU region (swap, trade, limit) |
+| `TEST_PRIVATE_KEY_3` | `osmo18z7usvh8dj2cwptw8wa38wsj60de34s9nvr7mu` | Monitoring US region (swap, trade, limit) |
 
 > Wallet addresses are derived from each private key at runtime. `TEST_WALLET_ID_*` secrets are not required by scripts in this package.
 
