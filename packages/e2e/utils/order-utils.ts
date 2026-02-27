@@ -54,8 +54,9 @@ export const SQS_BASE_URL = (
 ).replace(/\/+$/, "");
 
 /**
- * Maximum number of cancel messages to include in a single transaction.
- * Kept at 20 to stay well within gas limits.
+ * Maximum number of orders to include in a single transaction.
+ * Partially filled orders produce two messages (claim + cancel), so the actual
+ * message count per batch may be up to 2x this value.
  */
 export const CANCEL_BATCH_SIZE = 20;
 

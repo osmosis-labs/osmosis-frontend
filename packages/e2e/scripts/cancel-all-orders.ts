@@ -97,7 +97,7 @@ async function main(): Promise<void> {
       `  ${orders.length} order${orders.length === 1 ? "" : "s"} found.`
     );
 
-    const batches = chunk(buildCancelMessages(orders), CANCEL_BATCH_SIZE);
+    const batches = chunk(orders, CANCEL_BATCH_SIZE).map(buildCancelMessages);
 
     if (isDryRun) {
       console.log(
