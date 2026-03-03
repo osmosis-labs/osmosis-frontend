@@ -47,8 +47,8 @@ function parseReserves(): ReserveConfig {
   const osmo = parseFloat(process.env.RESERVE_OSMO ?? "5");
   const usdc = parseFloat(process.env.RESERVE_USDC ?? "500");
   return {
-    osmo: Number.isFinite(osmo) ? osmo : 5,
-    usdc: Number.isFinite(usdc) ? usdc : 500,
+    osmo: Math.max(0, Number.isFinite(osmo) ? osmo : 5),
+    usdc: Math.max(0, Number.isFinite(usdc) ? usdc : 500),
   };
 }
 
@@ -157,6 +157,7 @@ async function main(): Promise<void> {
   // Re-fetches both topup and target balances between sends so that
   // a partial prior run is detected and already-funded accounts are skipped.
   const client = await createSigningClient(topupWallet);
+  let hasFailures = false;
 
   for (const target of targets) {
     const freshTopup = await fetchAllKnownBalances(topupAddress);
@@ -193,6 +194,7 @@ async function main(): Promise<void> {
       );
       console.log(`  ✅ TX: ${result.transactionHash}`);
     } catch (err) {
+      hasFailures = true;
       console.error(
         `  ❌ Failed:`,
         err instanceof Error ? err.message : err
@@ -202,6 +204,12 @@ async function main(): Promise<void> {
 
   const remaining = await fetchAllKnownBalances(topupAddress);
   printBalanceTable("Remaining topup account balances", remaining);
+
+  if (hasFailures) {
+    console.error("\n  ❌ One or more transfers failed.");
+    process.exit(1);
+  }
+
   console.log("\n  Topup complete.");
 }
 
