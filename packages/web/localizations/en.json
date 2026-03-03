@@ -1,9 +1,9 @@
 {
   "404": {
-    "title": "Not found"
+    "title": "Not found 222"
   },
   "addLiquidity": {
-    "allAssets": "All assets",
+    "allAssets": "All assets yes",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
     "available": "Available",
     "scalingFactor": "scaling factor",
