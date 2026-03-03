@@ -3,11 +3,10 @@ import { type BrowserContext, expect, test } from "@playwright/test";
 import { TradePage } from "../pages/trade-page";
 import { SetupKeplr } from "../setup-keplr";
 import { ensureBalances } from "../utils/balance-checker";
+import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Swap to/from OSMO feature", () => {
   let context: BrowserContext;
-  const _walletId =
-    process.env.WALLET_ID ?? "osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l";
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
   const _ATOM =
@@ -16,15 +15,11 @@ test.describe("Test Swap to/from OSMO feature", () => {
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
-    // Check balances before running tests - fail fast if insufficient
-    await ensureBalances(
-      _walletId,
-      [
-        { token: "OSMO", amount: 0.2 }, // Max needed in single test
-        { token: "ATOM", amount: 0.01 }, // Max needed in single test
-      ],
-      { warnOnly: true }
-    );
+    const { address } = await deriveAddress(privateKey);
+    await ensureBalances(address, [
+      { token: "OSMO", amount: 0.2 }, // Max needed in single test
+      { token: "ATOM", amount: 0.01 }, // Max needed in single test
+    ]);
 
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();

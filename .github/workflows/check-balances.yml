@@ -1,0 +1,58 @@
+name: Check E2E Account Balances
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-balances:
+    name: ${{ matrix.account.label }}
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        account:
+          - label: E2E Test Account
+            key_id: e2e
+          - label: Monitoring SG
+            key_id: sg
+          - label: Monitoring EU
+            key_id: eu
+          - label: Monitoring US
+            key_id: us
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Resolve private key
+        env:
+          KEY_ID: ${{ matrix.account.key_id }}
+          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          case "$KEY_ID" in
+            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
+            eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
+            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unknown key_id: $KEY_ID" >&2
+              exit 1
+              ;;
+          esac
+      - name: Check balances
+        env:
+          ACCOUNT_LABEL: ${{ matrix.account.label }}
+        run: yarn --cwd packages/e2e check-balances || true
