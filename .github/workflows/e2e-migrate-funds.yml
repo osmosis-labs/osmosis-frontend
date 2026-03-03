@@ -1,0 +1,150 @@
+name: "E2E: Migrate Funds"
+
+# One-time workflow for wallet rotation.
+#
+# Phase 1 (extract): Drains old accounts into the topup holding account (4 parallel jobs).
+# Phase 2 (distribute): Splits topup account funds across new accounts by warnAmount ratios.
+#
+# Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
+
+on:
+  workflow_dispatch:
+    inputs:
+      phase:
+        description: "Phase to run"
+        type: choice
+        options:
+          - extract
+          - distribute
+        default: extract
+      dry_run:
+        description: "Dry run (no transactions sent)"
+        type: boolean
+        default: true
+      reserve_osmo:
+        description: "OSMO to reserve in source/topup account"
+        type: string
+        default: "5"
+      reserve_usdc:
+        description: "USDC to reserve in source/topup account"
+        type: string
+        default: "500"
+
+permissions:
+  contents: read
+
+jobs:
+  # ---------- Phase 1: Extract from old accounts to temp ----------
+  extract:
+    if: inputs.phase == 'extract'
+    name: "${{ inputs.dry_run && 'Dry run' || 'Extract' }} — ${{ matrix.account.label }}"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        account:
+          - label: "E2E Test Account"
+            key_id: e2e
+          - label: "Monitoring SG"
+            key_id: sg
+          - label: "Monitoring EU"
+            key_id: eu
+          - label: "Monitoring US"
+            key_id: us
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Resolve private key
+        env:
+          KEY_ID: ${{ matrix.account.key_id }}
+          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+        run: |
+          case "$KEY_ID" in
+            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
+            eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
+            us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;
+            *)
+              echo "Unknown key_id: $KEY_ID" >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Extract funds to temp
+        env:
+          PHASE: extract
+          DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          ACCOUNT_LABEL: ${{ matrix.account.label }}
+          RESERVE_OSMO: ${{ inputs.reserve_osmo }}
+          RESERVE_USDC: ${{ inputs.reserve_usdc }}
+        run: npx tsx packages/e2e/scripts/migrate-funds.ts
+
+  # ---------- Phase 2: Distribute from temp to new accounts ----------
+  distribute:
+    if: inputs.phase == 'distribute'
+    name: "${{ inputs.dry_run && 'Dry run' || 'Distribute' }} — All new accounts"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Distribute funds
+        env:
+          PHASE: distribute
+          DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          RESERVE_OSMO: ${{ inputs.reserve_osmo }}
+          RESERVE_USDC: ${{ inputs.reserve_usdc }}
+        run: npx tsx packages/e2e/scripts/migrate-funds.ts
