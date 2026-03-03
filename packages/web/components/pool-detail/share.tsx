@@ -443,7 +443,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       {t("pool.liquidity")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {pool.totalFiatValueLocked?.toString() ?? ""}
+                      {pool.totalFiatValueLocked.toString()}
                     </h4>
                   </div>
                   <div className="space-y-2">
@@ -679,12 +679,7 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                     <>
                       <h4 className="text-osmoverse-100">
                         {new PricePretty(
-                          pool.totalFiatValueLocked?.fiatCurrency ?? {
-                            currency: "usd",
-                            symbol: "$",
-                            maxDecimals: 2,
-                            locale: "en-US",
-                          },
+                          pool.totalFiatValueLocked.fiatCurrency,
                           0
                         ).toString()}
                       </h4>

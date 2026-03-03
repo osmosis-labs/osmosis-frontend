@@ -375,7 +375,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       : false;
     const hasTVL =
       this._pool.tvlUnknown ||
-      (this._pool.totalFiatValueLocked?.toDec().gt(new Dec(0)) ?? false);
+      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
 
     return isTickLiquidityZero && hasTVL;
   }

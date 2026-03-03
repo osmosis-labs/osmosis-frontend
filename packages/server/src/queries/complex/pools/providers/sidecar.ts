@@ -544,12 +544,7 @@ export function makePoolFromChainPool({
     raw: chainPool,
     spreadFactor: new RatePretty(spreadFactor),
     reserveCoins,
-    // totalFiatValueLocked is undefined when balances were synthesized: the pool exists but its
-    // actual TVL is not queryable without a bank module call. Set tvlUnknown so consumers can
-    // treat the missing value as "unknown" rather than "confirmed zero".
-    totalFiatValueLocked: balancesSynthed
-      ? undefined
-      : new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0),
     tvlUnknown: balancesSynthed,
     // No incentives or market data available from chain
     incentives: {

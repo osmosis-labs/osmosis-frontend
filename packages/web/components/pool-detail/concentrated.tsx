@@ -158,7 +158,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const hasTVL =
       poolData &&
       (poolData.tvlUnknown ||
-        poolData.totalFiatValueLocked?.toDec().isZero() === false);
+        !poolData.totalFiatValueLocked.toDec().isZero());
 
     // Check if values are zero (handles both "0" and "0.000000..." strings)
     const isSqrtPriceZero = currentSqrtPrice

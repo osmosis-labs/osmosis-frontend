@@ -117,7 +117,7 @@ export async function getUserPools(params: {
         if (rawShare) {
           const userValueAmount = totalShareAmount.isZero()
             ? new Dec(0)
-            : (totalFiatValueLocked ?? new PricePretty(DEFAULT_VS_CURRENCY, 0))
+            : totalFiatValueLocked
                 .mul(
                   new IntPretty(new Dec(rawShare.amount).quo(totalShareAmount))
                 )
