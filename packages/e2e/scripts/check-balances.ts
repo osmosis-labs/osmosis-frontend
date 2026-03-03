@@ -37,7 +37,7 @@ import {
   ACCOUNT_REQUIREMENTS,
   type AccountBalanceRequirement,
 } from "../utils/balance-config";
-import { getAllBalances, getBalance, TOKEN_DENOMS } from "../utils/balance-checker";
+import { getAllBalances, TOKEN_DENOMS } from "../utils/balance-checker";
 import { fetchTokenPrices } from "../utils/price-utils";
 import { deriveAddress } from "../utils/wallet-utils";
 
@@ -170,12 +170,7 @@ async function main(): Promise<void> {
       continue;
     }
 
-    let balance: number;
-    if (allBalances[tokenInfo.denom] !== undefined) {
-      balance = allBalances[tokenInfo.denom];
-    } else {
-      balance = await getBalance(address, tokenInfo.denom);
-    }
+    const balance = allBalances[tokenInfo.denom] ?? 0;
 
     const price = prices[tokenInfo.denom];
     const usdValue = price ? balance * price : undefined;
@@ -212,21 +207,25 @@ async function main(): Promise<void> {
   const outcome = hasCritical ? "fail" : hasWarning ? "warn" : "pass";
   const fs = await import("fs");
   const reportPath = "balance-report.json";
-  fs.writeFileSync(
-    reportPath,
-    JSON.stringify(
-      {
-        outcome,
-        account: ACCOUNT_LABEL,
-        address,
-        details: reportLines,
-        timestamp: new Date().toISOString(),
-      },
-      null,
-      2
-    )
+  const reportJson = JSON.stringify(
+    {
+      outcome,
+      account: ACCOUNT_LABEL,
+      address,
+      details: reportLines,
+      timestamp: new Date().toISOString(),
+    },
+    null,
+    2
   );
-  console.log(`\nReport written to ${reportPath}`);
+  try {
+    fs.writeFileSync(reportPath, reportJson);
+    console.log(`\nReport written to ${reportPath}`);
+  } catch (err) {
+    console.error(`\nFailed to write report to ${reportPath}:`, err);
+    console.log("\nBalance report JSON (stdout fallback):");
+    console.log(reportJson);
+  }
 
   // Exit with appropriate code
   if (hasCritical) {

@@ -325,27 +325,33 @@ export async function ensureBalances(
     );
   }
 
-  const results = await Promise.allSettled(
-    resolved.map(async ({ token, requiredTokens }) => {
-      const tokenInfo = TOKEN_DENOMS[token];
-      if (!tokenInfo) throw new Error(`Unknown token: ${token}`);
-      const currentBalance = await getBalance(address, tokenInfo.denom);
-      return { token, required: requiredTokens, current: currentBalance };
-    })
-  );
+  let allBalances: Record<string, number>;
+  try {
+    allBalances = await getAllBalances(address);
+  } catch (e) {
+    console.warn(
+      `  Failed to fetch balances: ${e instanceof Error ? e.message : e}\n`
+    );
+    return;
+  }
+
+  const results = resolved.map(({ token, requiredTokens }) => {
+    const tokenInfo = TOKEN_DENOMS[token];
+    if (!tokenInfo) return { token, required: requiredTokens, current: 0, error: `Unknown token: ${token}` };
+    const currentBalance = allBalances[tokenInfo.denom] ?? 0;
+    return { token, required: requiredTokens, current: currentBalance };
+  });
 
   const insufficientTokens: string[] = [];
 
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
-    const { token } = resolved[i];
+  for (const result of results) {
+    const { token, required, current } = result;
 
-    if (result.status === "rejected") {
-      console.warn(`  Failed to check ${token}: ${result.reason}`);
+    if ("error" in result) {
+      console.warn(`  Failed to check ${token}: ${result.error}`);
       continue;
     }
 
-    const { required, current } = result.value;
     const d = Math.min(TOKEN_DENOMS[token]?.decimals ?? 6, 8);
     if (current >= required) {
       console.log(
