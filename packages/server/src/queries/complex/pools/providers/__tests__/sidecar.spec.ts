@@ -5,7 +5,7 @@ import { setupServer } from "msw/node";
 
 import { SIDECAR_BASE_URL } from "../../../../../env";
 import { calcAssetValue, calcSumCoinsValue, getAsset } from "../../../assets";
-import { getPoolTypeFromChainPool } from "../sidecar";
+import { getPoolTypeFromChainPool, makePoolFromChainPool } from "../sidecar";
 
 export const server = setupServer();
 
@@ -75,6 +75,56 @@ describe("getPoolsFromSidecar", () => {
     const pool = mockSidecarResponse[4];
     const poolType = getPoolTypeFromChainPool(pool.chain_model as any);
     expect(poolType).toBe("cosmwasm");
+  });
+});
+
+describe("makePoolFromChainPool", () => {
+  beforeEach(() => {
+    (getAsset as jest.Mock).mockImplementation(() => mockAsset);
+  });
+
+  it("marks uninitialized CL chain-fallback pools as known zero TVL", () => {
+    const pool = makePoolFromChainPool({
+      chainPool: {
+        address: "osmo1testpooladdress",
+        id: 9999,
+        current_tick_liquidity: "0",
+        token0: "uosmo",
+        token1: "uatom",
+        current_sqrt_price: "0",
+        current_tick: 0,
+        tick_spacing: 100,
+        exponent_at_price_one: -6,
+        spread_factor: "0.002000000000000000",
+        last_liquidity_update: "2026-01-01T00:00:00.000000000Z",
+      } as any,
+      assetLists: [],
+    });
+
+    expect(pool).not.toBeNull();
+    expect(pool?.tvlUnknown).toBe(false);
+  });
+
+  it("keeps CL chain-fallback TVL unknown when pool is initialized", () => {
+    const pool = makePoolFromChainPool({
+      chainPool: {
+        address: "osmo1testpooladdress",
+        id: 10000,
+        current_tick_liquidity: "1",
+        token0: "uosmo",
+        token1: "uatom",
+        current_sqrt_price: "1.000000000000000000",
+        current_tick: 0,
+        tick_spacing: 100,
+        exponent_at_price_one: -6,
+        spread_factor: "0.002000000000000000",
+        last_liquidity_update: "2026-01-01T00:00:00.000000000Z",
+      } as any,
+      assetLists: [],
+    });
+
+    expect(pool).not.toBeNull();
+    expect(pool?.tvlUnknown).toBe(true);
   });
 });
 
