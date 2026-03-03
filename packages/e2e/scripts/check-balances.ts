@@ -143,8 +143,13 @@ async function main(): Promise<void> {
     console.log(`\n(${unknownDenoms.length} other denom(s) with balance not shown)`);
   }
 
-  // If no requirements, we're done (display-only mode)
   if (!requirements) {
+    if (ACCOUNT_LABEL) {
+      console.error(
+        `\nACCOUNT_LABEL "${ACCOUNT_LABEL}" not found in ACCOUNT_REQUIREMENTS. Exiting.\n`
+      );
+      process.exit(1);
+    }
     console.log("\nNo ACCOUNT_LABEL set — display-only mode. Exiting.\n");
     process.exit(0);
   }

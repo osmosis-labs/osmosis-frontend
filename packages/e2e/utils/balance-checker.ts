@@ -228,8 +228,8 @@ export async function resolveAddress(
 // USD → token conversion
 // ---------------------------------------------------------------------------
 
-const PRICE_BUFFER =
-  1 + (parseFloat(process.env.PRICE_BUFFER_PERCENT ?? "1") / 100);
+const _rawBuffer = parseFloat(process.env.PRICE_BUFFER_PERCENT ?? "1");
+const PRICE_BUFFER = 1 + ((Number.isFinite(_rawBuffer) ? _rawBuffer : 1) / 100);
 
 async function resolveUsdRequirements(
   requirements: BalanceRequirement[]
@@ -318,6 +318,13 @@ export async function ensureBalances(
     return;
   }
 
+  const skippedCount = requirements.length - resolved.length;
+  if (skippedCount > 0) {
+    console.warn(
+      `  ${skippedCount} USD-denominated requirement(s) could not be validated (price fetch failed).`
+    );
+  }
+
   const results = await Promise.allSettled(
     resolved.map(async ({ token, requiredTokens }) => {
       const tokenInfo = TOKEN_DENOMS[token];
@@ -357,6 +364,10 @@ export async function ensureBalances(
     console.warn(
       `\n  Insufficient balances for: ${insufficientTokens.join(", ")}` +
         `\n  Wallet: ${address}\n`
+    );
+  } else if (skippedCount > 0) {
+    console.warn(
+      `\n  Token-unit checks passed, but ${skippedCount} USD requirement(s) were skipped.\n`
     );
   } else {
     console.log(`\n  All balance checks passed.\n`);

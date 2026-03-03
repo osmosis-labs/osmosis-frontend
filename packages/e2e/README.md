@@ -111,6 +111,12 @@ The following workflows run `check-balances.ts` before Playwright:
 | Workflow | Job | Account |
 |----------|-----|---------|
 | `frontend-e2e-tests.yml` | `preview-trade-tests` | E2E Test Account (`TEST_PRIVATE_KEY`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-sg` | Monitoring SG (`TEST_PRIVATE_KEY_1`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_1`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
 

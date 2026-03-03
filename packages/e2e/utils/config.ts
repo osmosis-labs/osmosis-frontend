@@ -32,15 +32,3 @@ export const SQS_BASE_URL = (
 export const REST_ENDPOINT =
   process.env.REST_ENDPOINT ?? "https://lcd.osmosis.zone";
 
-/**
- * Osmosis RPC endpoint used for signing transactions.
- *
- * Resolution order:
- * 1. `OSMOSIS_RPC` (explicit override)
- * 2. `NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE` (frontend var)
- * 3. `https://rpc.osmosis.zone`
- */
-export const OSMOSIS_RPC =
-  process.env.OSMOSIS_RPC ??
-  process.env.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE ??
-  "https://rpc.osmosis.zone";
