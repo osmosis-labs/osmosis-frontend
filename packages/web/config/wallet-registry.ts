@@ -336,4 +336,33 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["exodus-extension"],
+    logo: "/wallets/exodus.svg",
+    lazyInstall: () =>
+      import("@cosmos-kit/exodus-extension").then(
+        (m) => m.ExodusExtensionWallet
+      ),
+    windowPropertyName: "exodus",
+    async supportsChain(chainId) {
+      const exodusAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "juno-1",
+        "stargaze-1",
+        "axelar-dojo-1",
+        "stride-1",
+        "evmos_9001-2",
+        "injective-1",
+        "kava_2222-10",
+        "secret-4",
+        "umee-1",
+        "agoric-3",
+        "akashnet-2",
+        "neutron-1",
+      ];
+      return exodusAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    features: [],
+  },
 ];
