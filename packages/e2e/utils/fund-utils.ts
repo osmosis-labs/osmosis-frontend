@@ -268,16 +268,17 @@ export function calculateTopup(
       const avail = distributableRaw[tokenInfo.denom];
       if (!avail || avail.remaining.lte(0)) continue;
 
-      const targetAmount = req.warnAmount * multiplier;
-      const current =
-        target.currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
-      const deficit = targetAmount - current;
+      const scale = new Big(10).pow(tokenInfo.decimals);
+      const targetRaw = new Big(req.warnAmount)
+        .times(multiplier)
+        .times(scale)
+        .round(0, Big.roundDown);
+      const currentRaw = new Big(
+        target.currentBalances.find((b) => b.symbol === req.token)?.rawAmount ?? "0"
+      );
+      const deficitRaw = targetRaw.minus(currentRaw);
 
-      if (deficit <= 0) continue;
-
-      const deficitRaw = new Big(deficit)
-        .times(new Big(10).pow(tokenInfo.decimals))
-        .round(0, Big.roundUp);
+      if (deficitRaw.lte(0)) continue;
       const rawToSend = deficitRaw.lt(avail.remaining)
         ? deficitRaw
         : avail.remaining;
