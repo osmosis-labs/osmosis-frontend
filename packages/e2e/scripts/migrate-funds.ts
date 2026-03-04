@@ -42,6 +42,7 @@ import {
   calculateDistribution,
   computeSwapGaps,
   fetchAllKnownBalances,
+  parseReserves,
   printBalanceTable,
   printDistributionPlan,
   printReserves,
@@ -49,15 +50,6 @@ import {
 } from "../utils/fund-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
-
-function parseReserves(): ReserveConfig {
-  const osmo = parseFloat(process.env.RESERVE_OSMO ?? "5");
-  const usdc = parseFloat(process.env.RESERVE_USDC ?? "500");
-  return {
-    osmo: Math.max(0, Number.isFinite(osmo) ? osmo : 5),
-    usdc: Math.max(0, Number.isFinite(usdc) ? usdc : 500),
-  };
-}
 
 const NEW_ACCOUNTS = [
   { envVar: "E2E_PRIVATE_KEY_PREVIEW", label: "E2E Test Account" },

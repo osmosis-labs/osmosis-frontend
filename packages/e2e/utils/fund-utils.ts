@@ -15,8 +15,6 @@ import type { Coin } from "@cosmjs/stargate";
 import { TOKEN_DENOMS } from "./balance-checker";
 import { REST_ENDPOINT } from "./config";
 
-Big.RM = Big.roundDown;
-
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
@@ -427,4 +425,13 @@ export function printDistributionPlan(entries: DistributionEntry[]): void {
 
 export function printReserves(reserves: ReserveConfig): void {
   console.log(`  Reserves: ${reserves.osmo} OSMO, ${reserves.usdc} USDC`);
+}
+
+export function parseReserves(): ReserveConfig {
+  const osmo = parseFloat(process.env.RESERVE_OSMO ?? "5");
+  const usdc = parseFloat(process.env.RESERVE_USDC ?? "500");
+  return {
+    osmo: Math.max(0, Number.isFinite(osmo) ? osmo : 5),
+    usdc: Math.max(0, Number.isFinite(usdc) ? usdc : 500),
+  };
 }
