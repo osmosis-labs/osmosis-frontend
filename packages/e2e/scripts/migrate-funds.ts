@@ -25,6 +25,7 @@
  * @requires RESERVE_USDC       - (optional) USDC to keep in source/temp. Default: 500.
  */
 
+import Big from "big.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
@@ -254,11 +255,11 @@ async function runDistribute(
       .map((coin) => {
         const existing = targetBalances.find((b) => b.denom === coin.denom);
         if (!existing) return coin;
-        const existingRaw = parseInt(existing.rawAmount, 10);
-        const planned = parseInt(coin.amount, 10);
-        const adjusted = planned - existingRaw;
-        if (adjusted <= 0) return null;
-        return { denom: coin.denom, amount: adjusted.toString() };
+        const existingRaw = new Big(existing.rawAmount);
+        const planned = new Big(coin.amount);
+        const adjusted = planned.minus(existingRaw);
+        if (adjusted.lte(0)) return null;
+        return { denom: coin.denom, amount: adjusted.toFixed(0) };
       })
       .filter((c): c is NonNullable<typeof c> => c !== null);
 
