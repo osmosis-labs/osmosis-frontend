@@ -2,8 +2,10 @@ name: "E2E: Migrate Funds"
 
 # One-time workflow for wallet rotation.
 #
-# Phase 1 (extract): Drains old accounts into the topup holding account (4 parallel jobs).
-# Phase 2 (distribute): Splits topup account funds across new accounts by warnAmount ratios.
+# Phase 1 (extract): Drains old accounts into the topup holding account, keeping
+#   only 1 OSMO for gas in each old account (4 parallel jobs).
+# Phase 2 (distribute): Splits topup account funds across new accounts by warnAmount
+#   ratios, keeping RESERVE_OSMO and RESERVE_USDC in the topup account.
 #
 # Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
 
@@ -22,11 +24,11 @@ on:
         type: boolean
         default: true
       reserve_osmo:
-        description: "OSMO to reserve in source/topup account"
+        description: "OSMO to reserve in topup account (distribute phase only)"
         type: string
         default: "5"
       reserve_usdc:
-        description: "USDC to reserve in source/topup account"
+        description: "USDC to reserve in topup account (distribute phase only)"
         type: string
         default: "500"
 
@@ -102,8 +104,6 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
           E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
           ACCOUNT_LABEL: ${{ matrix.account.label }}
-          RESERVE_OSMO: ${{ inputs.reserve_osmo }}
-          RESERVE_USDC: ${{ inputs.reserve_usdc }}
         run: npx tsx packages/e2e/scripts/migrate-funds.ts
 
   # ---------- Phase 2: Distribute from temp to new accounts ----------

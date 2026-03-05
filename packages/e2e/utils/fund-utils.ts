@@ -135,11 +135,12 @@ export interface AccountTarget {
 }
 
 /**
- * Distributes ALL available funds (after reserves) across target accounts
+ * Distributes available funds (after reserves) across target accounts
  * proportionally by their `warnAmount` ratios.
  *
  * Unlike topup, this does NOT cap at warnAmount — every available token is
- * split by ratio so nothing is left idle in the topup account.
+ * split by ratio so the topup account retains only the configured reserves.
+ * Per-target amounts are floored (roundDown) so rounding dust may remain.
  */
 export function calculateDistribution(
   available: TokenBalance[],

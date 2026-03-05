@@ -22,8 +22,8 @@
  * @requires TEST_PRIVATE_KEY_US     - (distribute) Hex key of new Monitoring US.
  * @requires ACCOUNT_LABEL      - (extract, optional) Label for logging.
  * @requires DRY_RUN            - (optional) Defaults to "true". Set to "false" to send.
- * @requires RESERVE_OSMO       - (optional) OSMO to keep in source/temp. Default: 5.
- * @requires RESERVE_USDC       - (optional) USDC to keep in source/temp. Default: 500.
+ * @requires RESERVE_OSMO       - (distribute only) OSMO to keep in topup account. Default: 5.
+ * @requires RESERVE_USDC       - (distribute only) USDC to keep in topup account. Default: 500.
  */
 
 import Big from "big.js";

@@ -295,7 +295,8 @@ on-chain balances) and only sends the remainder — no double-sends will occur.
 | **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
 | **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
 
-Both workflows default to **dry run** and expose `RESERVE_OSMO` / `RESERVE_USDC` inputs.
+Both workflows default to **dry run**. The `RESERVE_OSMO` / `RESERVE_USDC` inputs
+control how much to keep in the **topup account** during distribute and topup phases.
 
 **Required secrets:**
 
@@ -316,8 +317,8 @@ Both workflows default to **dry run** and expose `RESERVE_OSMO` / `RESERVE_USDC`
 | Input | Default | Description |
 |---|---|---|
 | `dry_run` | `true` | Simulate without broadcasting transactions |
-| `reserve_osmo` | `5` | OSMO to keep in source/topup account (for gas) |
-| `reserve_usdc` | `500` | USDC to keep in topup account (war chest for future topups) |
+| `reserve_osmo` | `5` | OSMO to keep in topup account (distribute/topup phases) |
+| `reserve_usdc` | `500` | USDC to keep in topup account (distribute/topup phases) |
 | `topup_multiplier` | `1.5` | Target = warnAmount x this (topup workflow only) |
 
 ### Migration flow (one-time)
