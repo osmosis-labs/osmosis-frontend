@@ -261,7 +261,7 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SERVER_E2E_TESTS_SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'

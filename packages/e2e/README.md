@@ -61,7 +61,7 @@ Each account/token pair has two thresholds defined in `utils/balance-config.ts`:
 - **`warnAmount`** — soft floor (~20 % above minAmount). If the balance is
   between minAmount and warnAmount, a Slack alert is sent but tests proceed.
 
-Slack alerts use the existing `SERVER_E2E_TESTS_SLACK_WEBHOOK_URL` secret.
+Slack alerts use the `E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW` secret.
 
 ### Updating Requirements
 
