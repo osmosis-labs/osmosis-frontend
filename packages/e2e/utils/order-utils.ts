@@ -2,8 +2,9 @@
  * @file order-utils.ts
  * @description Reusable utilities for querying and cancelling Osmosis limit orders on-chain.
  *
- * Provides address derivation from a raw secp256k1 private key, active order fetching via
- * the SQS passthrough API, a signing client factory, and cancel message builders.
+ * Provides active order fetching via the SQS passthrough API, a signing client factory,
+ * and cancel message builders. Re-exports `deriveAddress` from `wallet-utils.ts` for
+ * convenience so callers don't need to import from two modules.
  *
  * This module has no side effects and is safe to import from any script or test file.
  *
@@ -105,31 +106,7 @@ export interface SQSActiveOrder {
   base_asset: { symbol: string };
 }
 
-/**
- * Derives an Osmosis wallet and bech32 address from a raw hex-encoded secp256k1 private key.
- *
- * Accepts keys with or without a leading `0x` prefix.
- *
- * @param privateKeyHex - Hex-encoded secp256k1 private key (with or without `0x` prefix).
- * @returns An object containing the `DirectSecp256k1Wallet` and the derived `address` (osmo1...).
- * @throws {Error} If the private key is missing or not valid hex.
- *
- * @example
- * ```ts
- * const { wallet, address } = await deriveAddress('44886ab5033ff99ab2...')
- * console.log(address) // osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c
- * ```
- */
-export async function deriveAddress(privateKeyHex: string): Promise<{
-  wallet: DirectSecp256k1Wallet;
-  address: string;
-}> {
-  const normalized = privateKeyHex.replace(/^0x/, "");
-  const keyBytes = Uint8Array.from(Buffer.from(normalized, "hex"));
-  const wallet = await DirectSecp256k1Wallet.fromKey(keyBytes, "osmo");
-  const [account] = await wallet.getAccounts();
-  return { wallet, address: account.address };
-}
+export { deriveAddress } from "./wallet-utils";
 
 /**
  * Fetches all active (open or partially filled) limit orders for a given Osmosis address
