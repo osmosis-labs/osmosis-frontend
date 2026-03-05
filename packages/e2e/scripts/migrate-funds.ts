@@ -4,8 +4,9 @@
  *
  * Two phases (set via PHASE env var):
  *
- *   extract    — Drain all known tokens from an old account to the topup account.
- *                Runs once per old account (workflow uses 4 parallel matrix jobs).
+ *   extract    — Drain all known tokens from an old account to the topup account,
+ *                keeping only 1 OSMO for gas. Runs once per old account
+ *                (workflow uses 4 parallel matrix jobs).
  *
  *   distribute — Split all topup account funds across new accounts proportionally
  *                by their warnAmount ratios. Reserves OSMO and USDC in the topup account.
@@ -62,10 +63,9 @@ const NEW_ACCOUNTS = [
 // Extract phase
 // ---------------------------------------------------------------------------
 
-async function runExtract(
-  isDryRun: boolean,
-  reserves: ReserveConfig
-): Promise<void> {
+const EXTRACT_GAS_RESERVE: ReserveConfig = { osmo: 1, usdc: 0 };
+
+async function runExtract(isDryRun: boolean): Promise<void> {
   const privateKey = process.env.PRIVATE_KEY;
   const topupPrivateKey = process.env.E2E_PRIVATE_KEY_TOPUP;
   const label = process.env.ACCOUNT_LABEL;
@@ -84,7 +84,7 @@ async function runExtract(
     ? `Extract Funds: ${label}${dryTag}`
     : `Extract Funds${dryTag}`;
   console.log(`\n=== ${header} ===`);
-  printReserves(reserves);
+  console.log(`  Gas reserve: ${EXTRACT_GAS_RESERVE.osmo} OSMO`);
 
   const { wallet: sourceWallet, address: sourceAddress } =
     await deriveAddress(privateKey);
@@ -102,7 +102,7 @@ async function runExtract(
     return;
   }
 
-  const coins = buildSendCoins(balances, reserves);
+  const coins = buildSendCoins(balances, EXTRACT_GAS_RESERVE);
 
   if (coins.length === 0) {
     console.log("\n  All balances within reserve thresholds. Nothing to send.");
@@ -303,7 +303,7 @@ async function main(): Promise<void> {
   const reserves = parseReserves();
 
   if (phase === "extract") {
-    await runExtract(isDryRun, reserves);
+    await runExtract(isDryRun);
   } else if (phase === "distribute") {
     await runDistribute(isDryRun, reserves);
   } else {
