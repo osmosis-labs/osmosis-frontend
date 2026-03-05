@@ -74,10 +74,10 @@ async function main(): Promise<void> {
     ACCOUNT_LABEL ? ACCOUNT_REQUIREMENTS[ACCOUNT_LABEL] : undefined;
 
   if (ACCOUNT_LABEL && !requirements) {
-    console.warn(
+    console.log(
       `No balance requirements found for label "${ACCOUNT_LABEL}".`
     );
-    console.warn(
+    console.log(
       `Available labels: ${Object.keys(ACCOUNT_REQUIREMENTS).join(", ")}\n`
     );
   }
@@ -112,7 +112,7 @@ async function main(): Promise<void> {
     try {
       prices = await fetchTokenPrices(denomsWithBalance);
     } catch (e) {
-      console.warn(
+      console.log(
         `Could not fetch prices: ${e instanceof Error ? e.message : e}\n`
       );
     }
@@ -166,7 +166,7 @@ async function main(): Promise<void> {
   for (const req of requirements) {
     const tokenInfo = TOKEN_DENOMS[req.token];
     if (!tokenInfo) {
-      console.warn(`  Unknown token in requirements: ${req.token}`);
+      console.log(`  Unknown token in requirements: ${req.token}`);
       continue;
     }
 
@@ -184,7 +184,7 @@ async function main(): Promise<void> {
         `  🚨 ${req.token.padEnd(14)} ` +
         `${balance.toFixed(d)}${usdStr} < min ${req.minAmount} ` +
         `(need ${shortfall.toFixed(d)} more)`;
-      console.error(line);
+      console.log(line);
       reportLines.push(line);
       criticalTokens.push(`${req.token} (need ${shortfall.toFixed(d)} more)`);
     } else if (balance < req.warnAmount) {
@@ -192,7 +192,7 @@ async function main(): Promise<void> {
       const line =
         `  ⚠️  ${req.token.padEnd(14)} ` +
         `${balance.toFixed(decimalsFor(req.token))}${usdStr} < warn ${req.warnAmount}`;
-      console.warn(line);
+      console.log(line);
       reportLines.push(line);
       lowTokens.push(req.token);
     } else {
