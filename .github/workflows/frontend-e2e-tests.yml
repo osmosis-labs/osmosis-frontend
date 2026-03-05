@@ -249,7 +249,6 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
           else
             echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "address=" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
