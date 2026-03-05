@@ -37,6 +37,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -54,7 +67,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring US\n*Workflow:* monitoring-limit-geo / fe-swap-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring US\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-swap-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -122,6 +135,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -139,7 +165,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring EU\n*Workflow:* monitoring-limit-geo / fe-swap-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring EU\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-swap-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -213,6 +239,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           ACCOUNT_LABEL: "Monitoring SG"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -230,7 +269,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring SG\n*Workflow:* monitoring-limit-geo / fe-swap-sg\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring SG\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-swap-sg\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -305,6 +344,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -322,7 +374,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring EU\n*Workflow:* monitoring-limit-geo / fe-trade-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring EU\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-trade-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -402,6 +454,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -419,7 +484,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring EU\n*Workflow:* monitoring-limit-geo / fe-limit-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring EU\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-limit-eu\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -504,6 +569,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
           ACCOUNT_LABEL: "Monitoring SG"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -521,7 +599,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring SG\n*Workflow:* monitoring-limit-geo / fe-trade-sg\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring SG\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-trade-sg\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -600,6 +678,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -617,7 +708,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring US\n*Workflow:* monitoring-limit-geo / fe-trade-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring US\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-trade-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -694,6 +785,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -711,7 +815,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* Monitoring US\n*Workflow:* monitoring-limit-geo / fe-limit-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* Monitoring US\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* monitoring-limit-geo / fe-limit-us\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]

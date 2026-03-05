@@ -238,6 +238,19 @@ jobs:
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
           ACCOUNT_LABEL: "E2E Test Account"
         run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "address=" >> "$GITHUB_OUTPUT"
+          fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
         continue-on-error: true
@@ -255,7 +268,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* E2E Test Account\n*Workflow:* frontend-e2e-tests / preview-trade-tests\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* E2E Test Account\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* frontend-e2e-tests / preview-trade-tests\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
