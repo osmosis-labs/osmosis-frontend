@@ -40,6 +40,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -137,6 +138,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -240,6 +242,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -344,6 +347,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -453,6 +457,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -567,6 +572,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -675,6 +681,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
@@ -781,6 +788,7 @@ jobs:
       - name: Extract balance details
         id: balance-details
         if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
