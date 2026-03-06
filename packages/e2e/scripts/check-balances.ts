@@ -101,16 +101,21 @@ async function main(): Promise<void> {
   console.log("Fetching on-chain balances...");
   const allBalances = await getAllBalances(address);
 
-  // Fetch prices for known tokens that have a balance
+  // Fetch prices for known tokens that have a balance, plus any tokens
+  // needed for USD-denominated requirement conversions (even if balance is zero).
   const knownDenoms = Object.values(TOKEN_DENOMS).map((t) => t.denom);
   const denomsWithBalance = Object.keys(allBalances).filter((d) =>
     knownDenoms.includes(d)
   );
+  const usdRequiredDenoms = (requirements ?? [])
+    .filter((r) => r.unit === "usd" && TOKEN_DENOMS[r.token])
+    .map((r) => TOKEN_DENOMS[r.token].denom);
+  const denomsToPrice = [...new Set([...denomsWithBalance, ...usdRequiredDenoms])];
 
   let prices: Record<string, number> = {};
-  if (denomsWithBalance.length > 0) {
+  if (denomsToPrice.length > 0) {
     try {
-      prices = await fetchTokenPrices(denomsWithBalance);
+      prices = await fetchTokenPrices(denomsToPrice);
     } catch (e) {
       console.log(
         `Could not fetch prices: ${e instanceof Error ? e.message : e}\n`
@@ -175,30 +180,59 @@ async function main(): Promise<void> {
     const price = prices[tokenInfo.denom];
     const usdValue = price ? balance * price : undefined;
     const usdStr = usdValue !== undefined ? ` ($${usdValue.toFixed(2)})` : "";
+    const d = decimalsFor(req.token);
 
-    if (balance < req.minAmount) {
+    let minTokens = req.minAmount;
+    let warnTokens = req.warnAmount;
+
+    if (req.unit === "usd") {
+      if (!price || price <= 0) {
+        const line =
+          `  ⚠️  ${req.token.padEnd(14)} skipped — no price available for USD conversion`;
+        console.log(line);
+        reportLines.push(line);
+        hasWarning = true;
+        lowTokens.push(req.token);
+        continue;
+      }
+      minTokens = req.minAmount / price;
+      warnTokens = req.warnAmount / price;
+    }
+
+    if (balance < minTokens) {
       hasCritical = true;
-      const shortfall = req.minAmount - balance;
-      const d = decimalsFor(req.token);
+      const shortfall = minTokens - balance;
+      const minDisplay = req.unit === "usd"
+        ? `$${req.minAmount} (${minTokens.toFixed(d)} ${req.token})`
+        : `${minTokens}`;
+      const needDisplay = req.unit === "usd"
+        ? `$${(shortfall * price!).toFixed(2)} / ${shortfall.toFixed(d)} ${req.token}`
+        : `${shortfall.toFixed(d)} more`;
       const line =
         `  🚨 ${req.token.padEnd(14)} ` +
-        `${balance.toFixed(d)}${usdStr} < min ${req.minAmount} ` +
-        `(need ${shortfall.toFixed(d)} more)`;
+        `${balance.toFixed(d)}${usdStr} < min ${minDisplay} ` +
+        `(need ${needDisplay})`;
       console.log(line);
       reportLines.push(line);
-      criticalTokens.push(`${req.token} (need ${shortfall.toFixed(d)} more)`);
-    } else if (balance < req.warnAmount) {
+      criticalTokens.push(`${req.token} (need ${needDisplay})`);
+    } else if (balance < warnTokens) {
       hasWarning = true;
+      const warnDisplay = req.unit === "usd"
+        ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
+        : `${warnTokens}`;
       const line =
         `  ⚠️  ${req.token.padEnd(14)} ` +
-        `${balance.toFixed(decimalsFor(req.token))}${usdStr} < warn ${req.warnAmount}`;
+        `${balance.toFixed(d)}${usdStr} < warn ${warnDisplay}`;
       console.log(line);
       reportLines.push(line);
       lowTokens.push(req.token);
     } else {
+      const passDisplay = req.unit === "usd"
+        ? `$${req.warnAmount} (${warnTokens.toFixed(d)} ${req.token})`
+        : `${warnTokens}`;
       console.log(
         `  ✅ ${req.token.padEnd(14)} ` +
-          `${balance.toFixed(decimalsFor(req.token))}${usdStr} >= ${req.warnAmount}`
+          `${balance.toFixed(d)}${usdStr} >= ${passDisplay}`
       );
     }
   }
