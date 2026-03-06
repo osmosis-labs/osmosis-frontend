@@ -246,10 +246,13 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+            echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
             echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "outcome=warn" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
         if: steps.balance-check.outcome == 'failure'
@@ -258,11 +261,11 @@ jobs:
         with:
           payload: |
             {
-              "text": "E2E Low Balance Warning",
+              "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
               "blocks": [
                 {
                   "type": "header",
-                  "text": { "type": "plain_text", "text": "E2E Low Balance Warning" }
+                  "text": { "type": "plain_text", "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}", "emoji": true }
                 },
                 {
                   "type": "section",
@@ -274,7 +277,7 @@ jobs:
               ]
             }
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'

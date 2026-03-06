@@ -3,11 +3,15 @@
  * @description Centralised balance requirements for all e2e test accounts.
  *
  * Each account has a two-threshold model per token:
- * - `minAmount`  — hard floor in token units. The precursor script exits
- *   non-zero when the on-chain balance is below this value.
- * - `warnAmount` — soft floor (~20 % above minAmount). When the balance is
- *   between minAmount and warnAmount, the precursor sends a Slack alert
- *   but lets the tests proceed.
+ * - `minAmount`  — hard floor. The precursor script exits non-zero when the
+ *   on-chain balance is below this value.
+ * - `warnAmount` — soft floor. When the balance is between minAmount and
+ *   warnAmount, the precursor sends a Slack alert but lets the tests proceed.
+ *
+ * Thresholds default to **token units** but can be set to **USD** via
+ * `unit: "usd"`. USD thresholds are converted to token amounts at runtime
+ * using the current SQS price. Use USD for volatile assets (BTC, OSMO)
+ * where fixed token amounts would quickly become stale.
  *
  * ## Maintenance
  *
@@ -25,10 +29,12 @@
 export interface AccountBalanceRequirement {
   /** Token symbol (must match a key in TOKEN_DENOMS). */
   token: string;
-  /** Hard minimum in token units — FAIL if below. */
+  /** Hard minimum — FAIL if below. */
   minAmount: number;
-  /** Warning threshold in token units (~20 % above minAmount) — Slack alert if below. */
+  /** Warning threshold — Slack alert if below. */
   warnAmount: number;
+  /** `"token"` (default) = amounts in token units; `"usd"` = amounts in US dollars, converted at runtime. */
+  unit?: "token" | "usd";
   /** Which tests / workflows consume this token. */
   note?: string;
 }
@@ -66,20 +72,22 @@ export const ACCOUNT_REQUIREMENTS: Record<
     // monitoring.swap.wallet.spec.ts + monitoring.market.wallet.spec.ts
     {
       token: "USDC",
-      minAmount: 6,
-      warnAmount: 7.2,
+      minAmount: 7,
+      warnAmount: 8.4,
       note: "market buy + swap stables",
     },
     {
       token: "OSMO",
-      minAmount: 3,
-      warnAmount: 3.6,
+      minAmount: 2,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell OSMO",
     },
     {
       token: "BTC",
-      minAmount: 0.001,
-      warnAmount: 0.0012,
+      minAmount: 1.6,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell BTC (fiat-mode ~$1.60)",
     },
     {
@@ -101,14 +109,16 @@ export const ACCOUNT_REQUIREMENTS: Record<
     },
     {
       token: "OSMO",
-      minAmount: 4,
-      warnAmount: 4.8,
+      minAmount: 2,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell + limit sell OSMO",
     },
     {
       token: "BTC",
-      minAmount: 0.001,
-      warnAmount: 0.0012,
+      minAmount: 1.6,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell BTC (fiat-mode ~$1.60)",
     },
     {
@@ -130,14 +140,16 @@ export const ACCOUNT_REQUIREMENTS: Record<
     },
     {
       token: "OSMO",
-      minAmount: 4,
-      warnAmount: 4.8,
+      minAmount: 2,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell + limit sell OSMO",
     },
     {
       token: "BTC",
-      minAmount: 0.001,
-      warnAmount: 0.0012,
+      minAmount: 1.6,
+      warnAmount: 5,
+      unit: "usd",
       note: "market sell BTC (fiat-mode ~$1.60)",
     },
     {

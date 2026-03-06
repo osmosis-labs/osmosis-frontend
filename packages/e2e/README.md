@@ -58,10 +58,15 @@ Each account/token pair has two thresholds defined in `utils/balance-config.ts`:
 
 - **`minAmount`** — hard floor. If on-chain balance is below this, the CI job
   is aborted with a clear "please top up" message.
-- **`warnAmount`** — soft floor (~20 % above minAmount). If the balance is
+- **`warnAmount`** — soft floor / recommended top-up level above `minAmount`. If the balance is
   between minAmount and warnAmount, a Slack alert is sent but tests proceed.
 
-Slack alerts use the `E2E_SLACK_WEBHOOK_MONITOR_CHAIN_LOW` secret.
+Thresholds default to **token units** but can be set to **USD** via `unit: "usd"`.
+USD thresholds are converted to token amounts at runtime using the current price
+from SQS. This is used for volatile assets like BTC and OSMO where a fixed token
+amount would quickly become stale.
+
+Slack alerts use the `E2E_SLACK_WEBHOOK_BALANCE_ALERTS` secret.
 
 ### Updating Requirements
 
@@ -69,21 +74,31 @@ When adding or modifying a test that uses tokens, update the requirements in
 `utils/balance-config.ts`. Each entry documents which tests consume the token:
 
 ```typescript
+// Token-unit threshold (default) — for stablecoins or fixed-amount tests
 { token: "USDC", minAmount: 5, warnAmount: 6, note: "trade buy tests" },
+
+// USD-denominated threshold — for volatile assets where tests use dollar amounts
+{ token: "BTC", minAmount: 1.6, warnAmount: 5, unit: "usd", note: "market sell BTC" },
 ```
 
 ### Price-Aware Checks
 
-For tests that enter dollar amounts (Buy tab), requirements can use `unit: "usd"`:
+Both `balance-config.ts` (CI precursor) and `ensureBalances()` (inline test
+checks) support `unit: "usd"` for dollar-denominated requirements:
 
 ```typescript
+// In balance-config.ts (CI precursor thresholds)
+{ token: "BTC", minAmount: 1.6, warnAmount: 5, unit: "usd", note: "market sell BTC" },
+
+// In test files (inline ensureBalances)
 await ensureBalances(address, [
   { token: "BTC", amount: 1.6, unit: "usd" },  // need $1.60 worth of BTC
 ]);
 ```
 
-The checker fetches the current price from SQS and converts to token amounts
-with a 1 % buffer (configurable via `PRICE_BUFFER_PERCENT` env var).
+The checker fetches the current price from the Osmosis SQS API (`/tokens/prices`)
+and converts to token amounts. `ensureBalances()` adds a 1 % buffer (configurable
+via `PRICE_BUFFER_PERCENT` env var).
 
 ### Running Locally
 
@@ -132,24 +147,26 @@ The following workflows run `check-balances.ts` before Playwright:
 
 ### E2E Test Account (`TEST_PRIVATE_KEY`)
 
-| Token | Min Balance | Used By |
-|-------|------------|---------|
-| OSMO | 3 | limit sell + swap tests |
-| USDC | 5 | trade buy + swaps |
-| ATOM | 3 | trade sell + swap tests |
-| TIA | 0.1 | swap tests |
-| INJ | 0.05 | swap tests |
-| AKT | 0.1 | swap tests |
+| Token | Min | Warn | Unit | Used By |
+|-------|-----|------|------|---------|
+| USDC | 5 | 6 | token | trade buy + swaps |
+| ATOM | 3 | 3.6 | token | trade sell + swap tests |
+| OSMO | 3 | 3.6 | token | limit sell + swap tests |
+| TIA | 0.1 | 0.12 | token | swap tests |
+| INJ | 0.05 | 0.06 | token | swap tests |
+| AKT | 0.1 | 0.12 | token | swap tests |
 
 ### Monitoring Accounts (`TEST_PRIVATE_KEY_1` / `_2` / `_3`)
 
-| Token | Min Balance | Used By |
-|-------|------------|---------|
-| OSMO | 3–4 | market sell + limit sell |
-| USDC | 6–7 | market buy + limit buy + swap stables |
-| BTC | 0.001 | market sell BTC |
-| USDC.eth.axl | 1 | swap stables |
-| USDT | 1 | swap stables |
+All three monitoring accounts (SG, EU, US) share the same thresholds:
+
+| Token | Min | Warn | Unit | Used By |
+|-------|-----|------|------|---------|
+| USDC | 7 | 8.4 | token | market buy + limit buy + swap stables |
+| OSMO | $2 | $5 | USD | market sell + limit sell OSMO |
+| BTC | $1.60 | $5 | USD | market sell BTC |
+| USDC.eth.axl | 1 | 1.2 | token | swap stables |
+| USDT | 1 | 1.2 | token | swap stables |
 
 ---
 
