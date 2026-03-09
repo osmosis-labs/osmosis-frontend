@@ -9,7 +9,7 @@
  * Used by `scripts/migrate-funds.ts` and `scripts/topup-accounts.ts`.
  */
 
-import Big from "big.js";
+import BigNumber from "bignumber.js";
 import type { Coin } from "@cosmjs/stargate";
 
 import type { AccountBalanceRequirement } from "./balance-config";
@@ -157,19 +157,19 @@ export function buildSendCoins(
   const coins: Coin[] = [];
 
   for (const bal of balances) {
-    let raw = new Big(bal.rawAmount);
+    let raw = new BigNumber(bal.rawAmount);
 
     if (bal.symbol === "OSMO" && reserves.osmo > 0) {
-      const reserveRaw = new Big(reserves.osmo)
-        .times(new Big(10).pow(bal.decimals))
-        .round(0, Big.roundUp);
+      const reserveRaw = new BigNumber(reserves.osmo)
+        .times(new BigNumber(10).pow(bal.decimals))
+        .integerValue(BigNumber.ROUND_UP);
       raw = raw.minus(reserveRaw);
     }
 
     if (bal.symbol === "USDC" && reserves.usdc > 0) {
-      const reserveRaw = new Big(reserves.usdc)
-        .times(new Big(10).pow(bal.decimals))
-        .round(0, Big.roundUp);
+      const reserveRaw = new BigNumber(reserves.usdc)
+        .times(new BigNumber(10).pow(bal.decimals))
+        .integerValue(BigNumber.ROUND_UP);
       raw = raw.minus(reserveRaw);
     }
 
@@ -203,18 +203,18 @@ export function calculateDistribution(
   targets: AccountTarget[],
   reserves: ReserveConfig
 ): DistributionEntry[] {
-  const distributableRaw: Record<string, { raw: Big; decimals: number }> = {};
+  const distributableRaw: Record<string, { raw: BigNumber; decimals: number }> = {};
   for (const b of available) {
-    let raw = new Big(b.rawAmount);
+    let raw = new BigNumber(b.rawAmount);
 
     if (b.symbol === "OSMO" && reserves.osmo > 0) {
       raw = raw.minus(
-        new Big(reserves.osmo).times(new Big(10).pow(b.decimals)).round(0, Big.roundUp)
+        new BigNumber(reserves.osmo).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
       );
     }
     if (b.symbol === "USDC" && reserves.usdc > 0) {
       raw = raw.minus(
-        new Big(reserves.usdc).times(new Big(10).pow(b.decimals)).round(0, Big.roundUp)
+        new BigNumber(reserves.usdc).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
       );
     }
 
@@ -250,14 +250,14 @@ export function calculateDistribution(
       const rawToSend = avail.raw
         .times(req.warnAmount)
         .div(totalNeeded)
-        .round(0, Big.roundDown);
+        .integerValue(BigNumber.ROUND_DOWN);
 
       if (rawToSend.lte(0)) continue;
 
       coins.push({ denom: tokenInfo.denom, amount: rawToSend.toFixed(0) });
       summary.push({
         symbol: req.token,
-        amount: Number(rawToSend.div(new Big(10).pow(tokenInfo.decimals))),
+        amount: Number(rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))),
       });
     }
 
@@ -291,19 +291,19 @@ export function calculateTopup(
   reserves: ReserveConfig,
   multiplier: number = 1.5
 ): DistributionEntry[] {
-  const distributableRaw: Record<string, { remaining: Big; decimals: number }> =
+  const distributableRaw: Record<string, { remaining: BigNumber; decimals: number }> =
     {};
   for (const b of topupBalances) {
-    let raw = new Big(b.rawAmount);
+    let raw = new BigNumber(b.rawAmount);
 
     if (b.symbol === "OSMO" && reserves.osmo > 0) {
       raw = raw.minus(
-        new Big(reserves.osmo).times(new Big(10).pow(b.decimals)).round(0, Big.roundUp)
+        new BigNumber(reserves.osmo).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
       );
     }
     if (b.symbol === "USDC" && reserves.usdc > 0) {
       raw = raw.minus(
-        new Big(reserves.usdc).times(new Big(10).pow(b.decimals)).round(0, Big.roundUp)
+        new BigNumber(reserves.usdc).times(new BigNumber(10).pow(b.decimals)).integerValue(BigNumber.ROUND_UP)
       );
     }
 
@@ -325,12 +325,12 @@ export function calculateTopup(
       const avail = distributableRaw[tokenInfo.denom];
       if (!avail || avail.remaining.lte(0)) continue;
 
-      const scale = new Big(10).pow(tokenInfo.decimals);
-      const targetRaw = new Big(req.warnAmount)
+      const scale = new BigNumber(10).pow(tokenInfo.decimals);
+      const targetRaw = new BigNumber(req.warnAmount)
         .times(multiplier)
         .times(scale)
-        .round(0, Big.roundDown);
-      const currentRaw = new Big(
+        .integerValue(BigNumber.ROUND_DOWN);
+      const currentRaw = new BigNumber(
         target.currentBalances.find((b) => b.symbol === req.token)?.rawAmount ?? "0"
       );
       const deficitRaw = targetRaw.minus(currentRaw);
@@ -346,7 +346,7 @@ export function calculateTopup(
       coins.push({ denom: tokenInfo.denom, amount: rawToSend.toFixed(0) });
       summary.push({
         symbol: req.token,
-        amount: Number(rawToSend.div(new Big(10).pow(tokenInfo.decimals))),
+        amount: Number(rawToSend.div(new BigNumber(10).pow(tokenInfo.decimals))),
       });
     }
 

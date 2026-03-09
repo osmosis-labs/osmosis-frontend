@@ -26,7 +26,7 @@
  * @requires RESERVE_USDC       - (distribute only) USDC to keep in topup account. Default: 500.
  */
 
-import Big from "big.js";
+import BigNumber from "bignumber.js";
 import * as dotenv from "dotenv";
 import * as path from "path";
 
@@ -246,8 +246,8 @@ async function runDistribute(
       .map((coin) => {
         const existing = targetBalances.find((b) => b.denom === coin.denom);
         if (!existing) return coin;
-        const existingRaw = new Big(existing.rawAmount);
-        const planned = new Big(coin.amount);
+        const existingRaw = new BigNumber(existing.rawAmount);
+        const planned = new BigNumber(coin.amount);
         const adjusted = planned.minus(existingRaw);
         if (adjusted.lte(0)) return null;
         return { denom: coin.denom, amount: adjusted.toFixed(0) };
