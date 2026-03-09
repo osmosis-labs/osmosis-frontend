@@ -29,12 +29,12 @@ All you need to add is a private key for the wallet being used:
 
 | Secret | Label | Address |
 |--------|-------|---------|
-| `TEST_PRIVATE_KEY` | E2E Test Account | `osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l` |
-| `TEST_PRIVATE_KEY_1` | Monitoring SG | `osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c` |
-| `TEST_PRIVATE_KEY_2` | Monitoring EU | `osmo1fapvfx64af2eperkggnwd6zmpzdvvnq4xjc2dv` |
-| `TEST_PRIVATE_KEY_3` | Monitoring US | derived at runtime from key |
+| `E2E_PRIVATE_KEY_PREVIEW` | E2E Test Account (preview + prod frontend tests) | `TBD` |
+| `TEST_PRIVATE_KEY_SG` | Monitoring SG region (swap, trade) | `TBD` |
+| `TEST_PRIVATE_KEY_EU` | Monitoring EU region (swap, trade, limit) | `TBD` |
+| `TEST_PRIVATE_KEY_US` | Monitoring US region (swap, trade, limit) | `TBD` |
 
-Addresses are derived from the private key using `deriveAddress()` in `utils/wallet-utils.ts`.
+All wallet addresses are derived from the private key at runtime using `deriveAddress()` in `utils/wallet-utils.ts`.
 
 ## Running Tests
 
@@ -136,17 +136,12 @@ always succeeds — it's purely informational with no alerts or blocking.
 
 The following workflows run `check-balances.ts` before Playwright:
 
-| Workflow | Job | Account |
-|----------|-----|---------|
-| `frontend-e2e-tests.yml` | `preview-trade-tests` | E2E Test Account (`TEST_PRIVATE_KEY`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-sg` | Monitoring SG (`TEST_PRIVATE_KEY_1`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_1`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-trade-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_2`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_3`) |
+| Workflow | Jobs | Account |
+|----------|------|---------|
+| `frontend-e2e-tests.yml` | `preview-trade-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
 
 ### Exit Codes
 
@@ -158,7 +153,7 @@ The following workflows run `check-balances.ts` before Playwright:
 
 ## Required Token Balances
 
-### E2E Test Account (`TEST_PRIVATE_KEY`)
+### E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`)
 
 | Token | Min | Warn | Unit | Used By |
 |-------|-----|------|------|---------|
@@ -169,7 +164,7 @@ The following workflows run `check-balances.ts` before Playwright:
 | INJ | 0.05 | 0.06 | token | swap tests |
 | AKT | 0.1 | 0.12 | token | swap tests |
 
-### Monitoring Accounts (`TEST_PRIVATE_KEY_1` / `_2` / `_3`)
+### Monitoring Accounts (`TEST_PRIVATE_KEY_SG` / `_EU` / `_US`)
 
 All three monitoring accounts (SG, EU, US) share the same thresholds:
 
@@ -274,9 +269,9 @@ The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step**
 
 | Workflow | Job(s) | Account cleaned |
 |---|---|---|
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | `TEST_PRIVATE_KEY_2` (Monitoring EU) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | `TEST_PRIVATE_KEY_3` (Monitoring US) |
-| `frontend-e2e-tests.yml` | `preview-trade-tests` | `TEST_PRIVATE_KEY` (E2E Test Account) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-eu` | `TEST_PRIVATE_KEY_EU` (Monitoring EU) |
+| `monitoring-limit-geo-e2e-tests.yml` | `fe-limit-us` | `TEST_PRIVATE_KEY_US` (Monitoring US) |
+| `frontend-e2e-tests.yml` | `preview-trade-tests` | `E2E_PRIVATE_KEY_PREVIEW` (E2E Test Account) |
 
 The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
 

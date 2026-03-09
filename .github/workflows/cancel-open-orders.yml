@@ -66,13 +66,13 @@ jobs:
       - name: Resolve private key
         env:
           KEY_ID: ${{ matrix.account.key_id }}
-          PK_E2E: ${{ secrets.TEST_PRIVATE_KEY }}
-          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          PK_US: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PK_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          PK_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+          PK_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          PK_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
         run: |
           case "$KEY_ID" in
-            e2e) echo "PRIVATE_KEY=$PK_E2E" >> "$GITHUB_ENV" ;;
+            e2e) echo "PRIVATE_KEY=$PK_PREVIEW" >> "$GITHUB_ENV" ;;
             sg)  echo "PRIVATE_KEY=$PK_SG" >> "$GITHUB_ENV" ;;
             eu)  echo "PRIVATE_KEY=$PK_EU" >> "$GITHUB_ENV" ;;
             us)  echo "PRIVATE_KEY=$PK_US" >> "$GITHUB_ENV" ;;

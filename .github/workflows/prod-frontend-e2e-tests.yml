@@ -58,8 +58,7 @@ jobs:
       - name: Run Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test transactions portfolio swap.osmo.wallet

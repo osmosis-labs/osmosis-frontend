@@ -34,7 +34,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -94,8 +94,7 @@ jobs:
       - name: Run Swap tests in US
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -135,7 +134,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -198,8 +197,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -242,7 +240,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           ACCOUNT_LABEL: "Monitoring SG"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -305,8 +303,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -350,7 +347,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -413,8 +410,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -463,7 +459,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           ACCOUNT_LABEL: "Monitoring EU"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -523,7 +519,7 @@ jobs:
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           ACCOUNT_LABEL: "Monitoring EU (pre-test cleanup)"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Limit tests in EU
@@ -532,8 +528,7 @@ jobs:
           TEST_PROXY: "http://138.68.112.16:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_2 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_2 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -581,7 +576,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           ACCOUNT_LABEL: "Monitoring SG"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -644,8 +639,7 @@ jobs:
           TEST_PROXY: "http://139.59.218.19:8888"
           TEST_PROXY_USERNAME: ${{ secrets.TEST_PROXY_USERNAME }}
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_1 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_1 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
         run: |
           cd packages/e2e
@@ -693,7 +687,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -754,8 +748,7 @@ jobs:
         id: run-us
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -803,7 +796,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
           ACCOUNT_LABEL: "Monitoring US"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -863,15 +856,14 @@ jobs:
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
           ACCOUNT_LABEL: "Monitoring US (pre-test cleanup)"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Limit tests in US
         id: run-us
         env:
           BASE_URL: "https://app.osmosis.zone"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_3 }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID_3 }}
+          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000

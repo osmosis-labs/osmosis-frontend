@@ -60,8 +60,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
@@ -114,8 +113,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test swap.usdc.wallet
@@ -154,8 +152,7 @@ jobs:
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test portfolio transactions
@@ -235,7 +232,7 @@ jobs:
         id: balance-check
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
           ACCOUNT_LABEL: "E2E Test Account"
         run: yarn --cwd packages/e2e check-balances
       - name: Extract balance details
@@ -295,14 +292,13 @@ jobs:
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
           ACCOUNT_LABEL: "E2E Test Account (pre-test cleanup)"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test trade
@@ -342,8 +338,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test claim
