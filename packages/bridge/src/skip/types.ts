@@ -40,6 +40,10 @@ export type SkipRouteRequestBase = {
 
   cumulative_affiliate_fee_bps?: string;
   client_id?: string;
+  smart_swap_options?: {
+    evm_swaps?: boolean;
+    split_routes?: boolean;
+  };
 };
 
 export type SkipRouteRequestGivenIn = SkipRouteRequestBase & {

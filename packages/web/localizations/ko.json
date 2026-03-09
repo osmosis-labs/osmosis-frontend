@@ -1333,5 +1333,9 @@
     "title": "당신의 거래는 실패할 수 있습니다",
     "description": "모든 풀에서 {tokenWithLowLiquidity} 의 유동성이 낮기 때문에 이 거래는 높은 슬리피지를 초래할 수 있으며 실행되지 않을 수 있습니다."
   },
-  "taprootAddressNotSupported": "Taproot 주소는 출금에 지원되지 않습니다."
+  "taprootAddressNotSupported": "Taproot 주소는 출금에 지원되지 않습니다.",
+  "wormhole": {
+    "deprecationTitle": "Wormhole 지원이 중단될 예정입니다",
+    "deprecationSubtitle": "Wormhole을 통해 Osmosis로 추가 자산을 브리징하는 것을 권장하지 않습니다. 이 페이지는 Osmosis에서 기존 Wormhole 브리징 자산을 인출하는 데 도움을 드리기 위해 제공됩니다."
+  }
 }

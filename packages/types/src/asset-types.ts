@@ -219,4 +219,6 @@ export type MinimalAsset = {
   /** Contract address of alloyed asset CW pool. */
   contract?: string;
   variantGroupKey: string | undefined;
+  /** Optional tooltip message to display for this asset. */
+  tooltipMessage?: string;
 };

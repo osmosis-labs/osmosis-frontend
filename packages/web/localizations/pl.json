@@ -1333,5 +1333,9 @@
     "title": "Twój handel może się nie powieść",
     "description": "Ze względu na niską płynność {tokenWithLowLiquidity} we wszystkich pulach, transakcja ta może skutkować dużym poślizgiem i może nie zostać zrealizowana."
   },
-  "taprootAddressNotSupported": "Adresy Taproot nie są obsługiwane w przypadku wypłat"
+  "taprootAddressNotSupported": "Adresy Taproot nie są obsługiwane w przypadku wypłat",
+  "wormhole": {
+    "deprecationTitle": "Wsparcie dla Wormhole jest wycofywane",
+    "deprecationSubtitle": "Nie zalecamy przesyłania dodatkowych aktywów do Osmosis za pośrednictwem Wormhole. Ta strona jest dostępna, aby pomóc Ci wypłacić istniejące aktywa Wormhole z Osmosis."
+  }
 }
