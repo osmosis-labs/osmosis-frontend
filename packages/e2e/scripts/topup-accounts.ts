@@ -39,6 +39,7 @@ import {
   printBalanceTable,
   printDistributionPlan,
   printReserves,
+  resolveRequirementsToTokenUnits,
 } from "../utils/fund-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -89,22 +90,19 @@ async function main(): Promise<void> {
     }
 
     const currentBalances = await fetchAllKnownBalances(address);
+    const resolvedReqs = await resolveRequirementsToTokenUnits(reqs);
 
     targets.push({
       label: acct.label,
       address,
-      requirements: reqs.map((r) => ({
-        token: r.token,
-        warnAmount: r.warnAmount,
-      })),
+      requirements: resolvedReqs,
       currentBalances,
     });
 
     console.log(`  ${acct.label}: ${address}`);
     printBalanceTable("  Current balances (target = warnAmount x " + multiplier + ")", currentBalances);
 
-    // Show per-token status
-    for (const req of reqs) {
+    for (const req of resolvedReqs) {
       const current = currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
       const target = req.warnAmount * multiplier;
       const deficit = target - current;

@@ -48,6 +48,7 @@ import {
   printDistributionPlan,
   printReserves,
   printSwapReport,
+  resolveRequirementsToTokenUnits,
 } from "../utils/fund-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -174,13 +175,11 @@ async function runDistribute(
       console.warn(`  ⚠ No requirements for "${acct.label}". Skipping.`);
       continue;
     }
+    const resolvedReqs = await resolveRequirementsToTokenUnits(reqs);
     targets.push({
       label: acct.label,
       address,
-      requirements: reqs.map((r) => ({
-        token: r.token,
-        warnAmount: r.warnAmount,
-      })),
+      requirements: resolvedReqs,
     });
     console.log(`  ${acct.label}: ${address}`);
   }

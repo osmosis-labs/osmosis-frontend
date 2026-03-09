@@ -12,8 +12,10 @@
 import Big from "big.js";
 import type { Coin } from "@cosmjs/stargate";
 
+import type { AccountBalanceRequirement } from "./balance-config";
 import { TOKEN_DENOMS } from "./balance-checker";
 import { REST_ENDPOINT } from "./config";
+import { fetchTokenPrices } from "./price-utils";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -39,6 +41,60 @@ export interface DistributionEntry {
 export interface ReserveConfig {
   osmo: number;
   usdc: number;
+}
+
+// ---------------------------------------------------------------------------
+// USD → token resolution for requirements
+// ---------------------------------------------------------------------------
+
+/**
+ * Converts an array of balance requirements (which may use `unit: "usd"`)
+ * into token-unit `{ token, warnAmount }` pairs suitable for fund-utils
+ * functions.
+ *
+ * Token-unit requirements pass through unchanged. USD requirements are
+ * converted to token amounts using live SQS prices. Throws on price
+ * fetch failure or missing prices — fund scripts must not proceed with
+ * unconverted USD amounts as that would send wildly wrong quantities.
+ */
+export async function resolveRequirementsToTokenUnits(
+  reqs: AccountBalanceRequirement[]
+): Promise<{ token: string; warnAmount: number }[]> {
+  const tokenReqs = reqs.filter((r) => r.unit !== "usd");
+  const usdReqs = reqs.filter((r) => r.unit === "usd");
+
+  const resolved = tokenReqs.map((r) => ({
+    token: r.token,
+    warnAmount: r.warnAmount,
+  }));
+
+  if (usdReqs.length === 0) return resolved;
+
+  const denomsNeeded = usdReqs.map((r) => {
+    const info = TOKEN_DENOMS[r.token];
+    if (!info) throw new Error(`Unknown token in requirements: ${r.token}`);
+    return info.denom;
+  });
+
+  const prices = await fetchTokenPrices(denomsNeeded);
+
+  for (const req of usdReqs) {
+    const info = TOKEN_DENOMS[req.token]!;
+    const price = prices[info.denom];
+    if (!price || price <= 0) {
+      throw new Error(
+        `No price for ${req.token}; cannot convert USD warnAmount ($${req.warnAmount}) to token units.`
+      );
+    }
+    const tokenAmount = req.warnAmount / price;
+    const d = Math.min(info.decimals, 8);
+    console.log(
+      `  ${req.token}: warnAmount $${req.warnAmount} @ $${price.toFixed(4)}/${req.token} → ${tokenAmount.toFixed(d)} ${req.token}`
+    );
+    resolved.push({ token: req.token, warnAmount: tokenAmount });
+  }
+
+  return resolved;
 }
 
 // ---------------------------------------------------------------------------
