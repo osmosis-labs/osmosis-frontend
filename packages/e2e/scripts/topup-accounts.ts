@@ -116,7 +116,7 @@ async function main(): Promise<void> {
     }
   }
 
-  // Fetch temp balances
+  // Fetch topup account balances
   const topupBalances = await fetchAllKnownBalances(topupAddress);
   printBalanceTable("Topup account balances", topupBalances);
 
