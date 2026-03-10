@@ -1,3 +1,4 @@
+import { fallback, http } from "viem";
 import {
   arbitrum,
   avalanche,
@@ -171,6 +172,16 @@ export const EthereumChainInfo = [
     relativeLogoUrl: "/networks/optimism.svg",
   }),
 ] as const;
+
+/**
+ * Builds a viem fallback transport from a chain's default RPC URLs.
+ * Falls through each URL in order on failure.
+ */
+export function getEvmRpcTransport(chain: {
+  rpcUrls: { default: { http: readonly string[] } };
+}) {
+  return fallback(chain.rpcUrls.default.http.map((url) => http(url)));
+}
 
 export function getEvmExplorerUrl({
   hash,
