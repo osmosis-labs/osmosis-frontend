@@ -47,15 +47,21 @@ export interface ReserveConfig {
 // USD → token resolution for requirements
 // ---------------------------------------------------------------------------
 
+const _priceCache: Record<string, number> = {};
+
 /**
  * Converts an array of balance requirements (which may use `unit: "usd"`)
  * into token-unit `{ token, warnAmount }` pairs suitable for fund-utils
  * functions.
  *
  * Token-unit requirements pass through unchanged. USD requirements are
- * converted to token amounts using live SQS prices. Throws on price
- * fetch failure or missing prices — fund scripts must not proceed with
- * unconverted USD amounts as that would send wildly wrong quantities.
+ * converted to token amounts using live SQS prices. Prices are cached
+ * for the lifetime of the process so repeated calls (one per account)
+ * don't make redundant API requests.
+ *
+ * Throws on price fetch failure or missing prices — fund scripts must
+ * not proceed with unconverted USD amounts as that would send wildly
+ * wrong quantities.
  */
 export async function resolveRequirementsToTokenUnits(
   reqs: AccountBalanceRequirement[]
@@ -70,17 +76,21 @@ export async function resolveRequirementsToTokenUnits(
 
   if (usdReqs.length === 0) return resolved;
 
-  const denomsNeeded = usdReqs.map((r) => {
+  const missingDenoms: string[] = [];
+  for (const r of usdReqs) {
     const info = TOKEN_DENOMS[r.token];
     if (!info) throw new Error(`Unknown token in requirements: ${r.token}`);
-    return info.denom;
-  });
+    if (_priceCache[info.denom] === undefined) missingDenoms.push(info.denom);
+  }
 
-  const prices = await fetchTokenPrices(denomsNeeded);
+  if (missingDenoms.length > 0) {
+    const fresh = await fetchTokenPrices(missingDenoms);
+    Object.assign(_priceCache, fresh);
+  }
 
   for (const req of usdReqs) {
     const info = TOKEN_DENOMS[req.token]!;
-    const price = prices[info.denom];
+    const price = _priceCache[info.denom];
     if (!price || price <= 0) {
       throw new Error(
         `No price for ${req.token}; cannot convert USD warnAmount ($${req.warnAmount}) to token units.`
@@ -203,7 +213,7 @@ export function calculateDistribution(
   targets: AccountTarget[],
   reserves: ReserveConfig
 ): DistributionEntry[] {
-  const distributableRaw: Record<string, { raw: BigNumber; decimals: number }> = {};
+  const distributableRaw: Record<string, BigNumber> = {};
   for (const b of available) {
     let raw = new BigNumber(b.rawAmount);
 
@@ -219,7 +229,7 @@ export function calculateDistribution(
     }
 
     if (raw.gt(0)) {
-      distributableRaw[b.denom] = { raw, decimals: b.decimals };
+      distributableRaw[b.denom] = raw;
     }
   }
 
@@ -242,12 +252,12 @@ export function calculateDistribution(
       if (!tokenInfo) continue;
 
       const avail = distributableRaw[tokenInfo.denom];
-      if (!avail || avail.raw.lte(0)) continue;
+      if (!avail || avail.lte(0)) continue;
 
       const totalNeeded = totalNeededByToken[req.token] ?? 0;
       if (totalNeeded <= 0) continue;
 
-      const rawToSend = avail.raw
+      const rawToSend = avail
         .times(req.warnAmount)
         .div(totalNeeded)
         .integerValue(BigNumber.ROUND_DOWN);
@@ -291,8 +301,7 @@ export function calculateTopup(
   reserves: ReserveConfig,
   multiplier: number = 1.5
 ): DistributionEntry[] {
-  const distributableRaw: Record<string, { remaining: BigNumber; decimals: number }> =
-    {};
+  const distributableRaw: Record<string, BigNumber> = {};
   for (const b of topupBalances) {
     let raw = new BigNumber(b.rawAmount);
 
@@ -308,7 +317,7 @@ export function calculateTopup(
     }
 
     if (raw.gt(0)) {
-      distributableRaw[b.denom] = { remaining: raw, decimals: b.decimals };
+      distributableRaw[b.denom] = raw;
     }
   }
 
@@ -322,8 +331,8 @@ export function calculateTopup(
       const tokenInfo = TOKEN_DENOMS[req.token];
       if (!tokenInfo) continue;
 
-      const avail = distributableRaw[tokenInfo.denom];
-      if (!avail || avail.remaining.lte(0)) continue;
+      let avail = distributableRaw[tokenInfo.denom];
+      if (!avail || avail.lte(0)) continue;
 
       const scale = new BigNumber(10).pow(tokenInfo.decimals);
       const targetRaw = new BigNumber(req.warnAmount)
@@ -336,13 +345,13 @@ export function calculateTopup(
       const deficitRaw = targetRaw.minus(currentRaw);
 
       if (deficitRaw.lte(0)) continue;
-      const rawToSend = deficitRaw.lt(avail.remaining)
+      const rawToSend = deficitRaw.lt(avail)
         ? deficitRaw
-        : avail.remaining;
+        : avail;
 
       if (rawToSend.lte(0)) continue;
 
-      avail.remaining = avail.remaining.minus(rawToSend);
+      distributableRaw[tokenInfo.denom] = avail.minus(rawToSend);
       coins.push({ denom: tokenInfo.denom, amount: rawToSend.toFixed(0) });
       summary.push({
         symbol: req.token,
