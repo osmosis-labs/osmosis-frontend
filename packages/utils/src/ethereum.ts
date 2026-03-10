@@ -47,8 +47,23 @@ function mapChainInfo<Chain>({
 }
 
 export const EthereumChainInfo = [
+  // Override viem's default mainnet RPC (eth.merkle.io, 25 req/s free-tier cap)
+  // with more reliable public endpoints. Order matters: first URL is primary.
   mapChainInfo({
-    chain: mainnet,
+    chain: {
+      ...mainnet,
+      rpcUrls: {
+        ...mainnet.rpcUrls,
+        default: {
+          ...mainnet.rpcUrls.default,
+          http: [
+            "https://ethereum-rpc.publicnode.com",
+            "https://evm-1.keplr.app",
+            "https://eth.merkle.io",
+          ],
+        },
+      },
+    },
     clientChainId: "Ethereum Main Network",
     color: "#454973",
     relativeLogoUrl: "/networks/ethereum.svg",
