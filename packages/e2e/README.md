@@ -3,6 +3,19 @@
 This package contains the Playwright E2E tests and a Keplr wallet extension for browser automation,
 as well as standalone utility scripts for on-chain operations (e.g. cancelling open limit orders).
 
+## Table of Contents
+
+- [Environment Variables](#environment-variables)
+- [Running Tests](#running-tests)
+- [Balance Checking](#balance-checking)
+- [Required Token Balances](#required-token-balances)
+- [Order Cleanup Scripts](#order-cleanup-scripts)
+- [Fund Management](#fund-management)
+  - [GitHub Actions Workflows](#github-actions-workflows-1)
+  - [Migration flow (one-time)](#migration-flow-one-time)
+  - [Topup flow (ongoing)](#topup-flow-ongoing)
+- [Compromised Wallets](#compromised-wallets)
+
 ## Environment Variables
 
 By default, configuration is pointing to the [Stage](https://stage.osmosis.zone) environment. Tests will automatically install a wallet.
@@ -266,6 +279,73 @@ The following CI workflows run `cancel-all-orders.ts` as a **prerequisite step**
 | `frontend-e2e-tests.yml` | `preview-trade-tests` | `TEST_PRIVATE_KEY` (E2E Test Account) |
 
 The cleanup step uses `continue-on-error: true` so that a transient RPC failure does not block the test run.
+
+---
+
+## Fund Management
+
+All fund management scripts default to **dry run** and are **safe to re-run**.
+If a run is interrupted, re-running detects what was already sent (by checking
+on-chain balances) and only sends the remainder — no double-sends will occur.
+
+### GitHub Actions Workflows
+
+| Workflow | File | Purpose |
+|---|---|---|
+| **E2E: Migrate Funds** | `e2e-migrate-funds.yml` | One-time extract/distribute for wallet rotation |
+| **E2E: Topup Test Accounts** | `e2e-topup-accounts.yml` | Ongoing topup when accounts run low |
+
+Both workflows default to **dry run**. The `RESERVE_OSMO` / `RESERVE_USDC` inputs
+control how much to keep in the **topup account** during distribute and topup phases.
+
+**Required secrets:**
+
+| Secret | Used by |
+|---|---|
+| `E2E_PRIVATE_KEY_TOPUP` | Both workflows (topup/funding account) |
+| `E2E_PRIVATE_KEY_PREVIEW` | Both workflows (new E2E Test Account) |
+| `TEST_PRIVATE_KEY_SG` | Both workflows (new Monitoring SG) |
+| `TEST_PRIVATE_KEY_EU` | Both workflows (new Monitoring EU) |
+| `TEST_PRIVATE_KEY_US` | Both workflows (new Monitoring US) |
+| `TEST_PRIVATE_KEY` | Migrate only (old E2E Test Account) |
+| `TEST_PRIVATE_KEY_1` | Migrate only (old Monitoring SG) |
+| `TEST_PRIVATE_KEY_2` | Migrate only (old Monitoring EU) |
+| `TEST_PRIVATE_KEY_3` | Migrate only (old Monitoring US) |
+
+**Workflow inputs:**
+
+| Input | Default | Description |
+|---|---|---|
+| `dry_run` | `true` | Simulate without broadcasting transactions |
+| `reserve_osmo` | `5` | OSMO to keep in topup account (distribute/topup phases) |
+| `reserve_usdc` | `500` | USDC to keep in topup account (distribute/topup phases) |
+| `topup_multiplier` | `1.5` | Target = warnAmount x this (topup workflow only) |
+
+### Migration flow (one-time)
+
+`scripts/migrate-funds.ts` — drains old accounts and distributes to new ones via
+the topup holding account.
+
+1. Add new secrets to GitHub
+2. Run **extract** with dry run → verify derived addresses and amounts
+3. Run **extract** live → funds move to topup account
+4. Run **distribute** with dry run → review swap gap report + distribution plan
+5. Do manual swaps on the Osmosis frontend if the gap report shows deficits
+6. Run **distribute** live → funds split to new accounts by `warnAmount` ratio
+7. If any step fails, re-run safely — already-completed transfers are detected and skipped
+
+**Extract** drains one old account per invocation (4 parallel jobs in CI).
+**Distribute** splits all available funds (after reserves) proportionally — nothing
+is capped, so all funds are utilized.
+
+### Topup flow (ongoing)
+
+`scripts/topup-accounts.ts` — checks each account's current balance and sends only
+enough from the topup account to bring it up to `warnAmount × topup_multiplier` (default 1.5).
+
+1. Run with dry run → see per-account balances, targets, and deficits
+2. Run live → sends only the deficits
+3. If interrupted, re-run safely — already-topped-up accounts are skipped
 
 ---
 
