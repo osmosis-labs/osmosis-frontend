@@ -44,31 +44,46 @@ export interface ReserveConfig {
 }
 
 // ---------------------------------------------------------------------------
-// Private key validation
+// Private key / mnemonic validation
 // ---------------------------------------------------------------------------
 
 /**
- * Validates that a private key env var contains a well-formed secp256k1 hex
- * key (64 hex chars, optionally 0x-prefixed). Logs only the env var name
- * and safe metadata on failure — never the key itself.
+ * Validates that a secret env var contains a well-formed hex private key
+ * (64 hex chars, optionally 0x-prefixed). Also gracefully handles BIP39
+ * mnemonic phrases (12 or 24 words) as a fallback format.
+ *
+ * Logs only the env var name and safe metadata on failure — never the
+ * secret itself.
  */
 export function validatePrivateKey(
   value: string,
   envVarName: string,
   label?: string
 ): void {
-  const normalized = value.replace(/^0x/, "");
+  const trimmed = value.trim();
   const tag = label ? `${envVarName} (${label})` : envVarName;
 
+  if (trimmed.includes(" ")) {
+    const wordCount = trimmed.split(/\s+/).length;
+    if (wordCount !== 12 && wordCount !== 24) {
+      console.error(
+        `❌ ${tag}: mnemonic must be 12 or 24 words, got ${wordCount}.`
+      );
+      process.exit(1);
+    }
+    return;
+  }
+
+  const normalized = trimmed.replace(/^0x/, "");
   if (!/^[0-9a-fA-F]+$/.test(normalized)) {
     console.error(
-      `❌ ${tag}: value contains non-hex characters (length=${value.length}).`
+      `❌ ${tag}: value is not valid hex and not a mnemonic (length=${trimmed.length}).`
     );
     process.exit(1);
   }
   if (normalized.length !== 64) {
     console.error(
-      `❌ ${tag}: expected 64 hex chars, got ${normalized.length}.`
+      `❌ ${tag}: hex key must be 64 chars, got ${normalized.length}.`
     );
     process.exit(1);
   }

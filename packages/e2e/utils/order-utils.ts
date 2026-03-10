@@ -23,7 +23,11 @@ import {
   SigningCosmWasmClient,
   type ExecuteInstruction,
 } from "@cosmjs/cosmwasm-stargate";
-import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
+import {
+  DirectSecp256k1HdWallet,
+  DirectSecp256k1Wallet,
+  type OfflineDirectSigner,
+} from "@cosmjs/proto-signing";
 import { GasPrice } from "@cosmjs/stargate";
 
 /**
@@ -106,25 +110,37 @@ export interface SQSActiveOrder {
 }
 
 /**
- * Derives an Osmosis wallet and bech32 address from a raw hex-encoded secp256k1 private key.
+ * Derives an Osmosis wallet and bech32 address from either a hex-encoded
+ * secp256k1 private key or a BIP39 mnemonic phrase.
  *
- * Accepts keys with or without a leading `0x` prefix.
+ * Auto-detects the format: if the input contains spaces it is treated as a
+ * mnemonic (using the default Cosmos HD path m/44'/118'/0'/0/0), otherwise
+ * as a hex private key (with or without `0x` prefix).
  *
- * @param privateKeyHex - Hex-encoded secp256k1 private key (with or without `0x` prefix).
- * @returns An object containing the `DirectSecp256k1Wallet` and the derived `address` (osmo1...).
- * @throws {Error} If the private key is missing or not valid hex.
+ * @param privateKeyOrMnemonic - Hex private key or BIP39 mnemonic.
+ * @returns The wallet signer and derived `address` (osmo1...).
  *
  * @example
  * ```ts
  * const { wallet, address } = await deriveAddress('44886ab5033ff99ab2...')
- * console.log(address) // osmo1dkmsds5j6q9l9lv4dkhas68767tlqfx8ls5j0c
+ * const { wallet, address } = await deriveAddress('word1 word2 ... word12')
  * ```
  */
-export async function deriveAddress(privateKeyHex: string): Promise<{
-  wallet: DirectSecp256k1Wallet;
+export async function deriveAddress(privateKeyOrMnemonic: string): Promise<{
+  wallet: OfflineDirectSigner;
   address: string;
 }> {
-  const normalized = privateKeyHex.replace(/^0x/, "");
+  const input = privateKeyOrMnemonic.trim();
+
+  if (input.includes(" ")) {
+    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(input, {
+      prefix: "osmo",
+    });
+    const [account] = await wallet.getAccounts();
+    return { wallet, address: account.address };
+  }
+
+  const normalized = input.replace(/^0x/, "");
   const keyBytes = Uint8Array.from(Buffer.from(normalized, "hex"));
   const wallet = await DirectSecp256k1Wallet.fromKey(keyBytes, "osmo");
   const [account] = await wallet.getAccounts();
@@ -163,7 +179,7 @@ export async function fetchActiveOrders(
  * Creates a `SigningCosmWasmClient` connected to the Osmosis mainnet RPC,
  * configured with the given wallet and a default gas price.
  *
- * @param wallet - A `DirectSecp256k1Wallet` instance (e.g. from `deriveAddress`).
+ * @param wallet - An `OfflineDirectSigner` instance (e.g. from `deriveAddress`).
  * @returns A connected `SigningCosmWasmClient` ready to broadcast transactions.
  * @throws {Error} If the RPC connection cannot be established.
  *
@@ -174,7 +190,7 @@ export async function fetchActiveOrders(
  * ```
  */
 export async function createSigningClient(
-  wallet: DirectSecp256k1Wallet
+  wallet: OfflineDirectSigner
 ): Promise<SigningCosmWasmClient> {
   return SigningCosmWasmClient.connectWithSigner(OSMOSIS_RPC, wallet, {
     gasPrice: GasPrice.fromString("0.035uosmo"),
