@@ -593,7 +593,7 @@ export const useBridgeQuotes = ({
   const signAndBroadcastEvmTx = async (
     quote: NonNullable<typeof selectedQuote>["quote"]
   ) => {
-    if (!isEvmWalletConnected || !evmAddress || !evmConnector)
+    if (!isEvmWalletConnected || !evmAddress || !evmConnector || !currentEvmChain)
       throw new Error("No ETH wallet account is connected");
 
     const transactionRequest =
