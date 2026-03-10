@@ -49,6 +49,7 @@ import {
   printReserves,
   printSwapReport,
   resolveRequirementsToTokenUnits,
+  validatePrivateKey,
 } from "../utils/fund-utils";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -79,6 +80,8 @@ async function runExtract(isDryRun: boolean): Promise<void> {
     console.error("❌ E2E_PRIVATE_KEY_TOPUP is not set.");
     process.exit(1);
   }
+  validatePrivateKey(privateKey, "PRIVATE_KEY", label ?? undefined);
+  validatePrivateKey(topupPrivateKey, "E2E_PRIVATE_KEY_TOPUP");
 
   const dryTag = isDryRun ? " [DRY RUN]" : "";
   const header = label
@@ -150,6 +153,7 @@ async function runDistribute(
     console.error("❌ E2E_PRIVATE_KEY_TOPUP is not set.");
     process.exit(1);
   }
+  validatePrivateKey(topupPrivateKey, "E2E_PRIVATE_KEY_TOPUP");
 
   const dryTag = isDryRun ? " [DRY RUN]" : "";
   console.log(`\n=== Distribute Funds${dryTag} ===`);
@@ -169,7 +173,17 @@ async function runDistribute(
       console.error(`❌ ${acct.envVar} is not set.`);
       process.exit(1);
     }
-    const { address } = await deriveAddress(key);
+    validatePrivateKey(key, acct.envVar, acct.label);
+
+    let address: string;
+    try {
+      ({ address } = await deriveAddress(key));
+    } catch (err) {
+      console.error(
+        `❌ ${acct.envVar} (${acct.label}): failed to derive address — ${err instanceof Error ? err.message : err}`
+      );
+      process.exit(1);
+    }
     const reqs = ACCOUNT_REQUIREMENTS[acct.label];
     if (!reqs) {
       console.warn(`  ⚠ No requirements for "${acct.label}". Skipping.`);

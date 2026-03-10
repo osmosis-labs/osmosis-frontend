@@ -44,6 +44,37 @@ export interface ReserveConfig {
 }
 
 // ---------------------------------------------------------------------------
+// Private key validation
+// ---------------------------------------------------------------------------
+
+/**
+ * Validates that a private key env var contains a well-formed secp256k1 hex
+ * key (64 hex chars, optionally 0x-prefixed). Logs only the env var name
+ * and safe metadata on failure — never the key itself.
+ */
+export function validatePrivateKey(
+  value: string,
+  envVarName: string,
+  label?: string
+): void {
+  const normalized = value.replace(/^0x/, "");
+  const tag = label ? `${envVarName} (${label})` : envVarName;
+
+  if (!/^[0-9a-fA-F]+$/.test(normalized)) {
+    console.error(
+      `❌ ${tag}: value contains non-hex characters (length=${value.length}).`
+    );
+    process.exit(1);
+  }
+  if (normalized.length !== 64) {
+    console.error(
+      `❌ ${tag}: expected 64 hex chars, got ${normalized.length}.`
+    );
+    process.exit(1);
+  }
+}
+
+// ---------------------------------------------------------------------------
 // USD → token resolution for requirements
 // ---------------------------------------------------------------------------
 
