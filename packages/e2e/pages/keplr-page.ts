@@ -91,13 +91,14 @@ export class WalletPage {
         .click()
     }
 
-    await this.page.waitForTimeout(2000)
+    // Keplr renders word inputs as text/password and appends 3 number inputs
+    // (derivation path). In 12-word mode word 1 is text; in 24-word mode all
+    // start as password (flipping to text on fill). Target all non-number inputs.
+    const wordInputs = this.page.locator('input:not([type="number"])')
+    await wordInputs.nth(wordCount - 1).waitFor({ state: 'visible', timeout: 5000 })
 
-    // First word uses a text input, remaining words use password inputs
-    await this.page.locator('//input[@type="text"]').first().fill(words[0])
-    const passwordInputs = '//input[@type="password"]'
-    for (let i = 1; i < wordCount; i++) {
-      await this.page.locator(passwordInputs).nth(i - 1).fill(words[i])
+    for (let i = 0; i < wordCount; i++) {
+      await wordInputs.nth(i).fill(words[i])
       await this.page.waitForTimeout(200)
     }
 
