@@ -43,6 +43,7 @@ import {
   createPublicClient,
   encodeFunctionData,
   erc20Abi,
+  fallback,
   http,
   numberToHex,
 } from "viem";
@@ -479,7 +480,9 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
+        transport: fallback(
+          evmChain.rpcUrls.default.http.map((url) => http(url))
+        ),
       });
 
       approvalTx = await this.getApprovalTx({

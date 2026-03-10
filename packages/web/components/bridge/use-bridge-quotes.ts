@@ -12,7 +12,7 @@ import { getNomicRelayerUrl, isNil } from "@osmosis-labs/utils";
 import dayjs from "dayjs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useDebounce, useUnmount } from "react-use";
-import { Address, createPublicClient, http } from "viem";
+import { Address, createPublicClient, fallback, http } from "viem";
 import { waitForTransactionReceipt } from "viem/actions";
 import { BaseError } from "wagmi";
 
@@ -600,7 +600,9 @@ export const useBridgeQuotes = ({
       quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
       const publicClient = createPublicClient({
-        transport: http(),
+        transport: fallback(
+          currentEvmChain.rpcUrls.default.http.map((url) => http(url))
+        ),
         chain: currentEvmChain,
       });
 

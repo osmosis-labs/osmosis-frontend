@@ -17,6 +17,7 @@ import {
   encodeFunctionData,
   encodePacked,
   erc20Abi,
+  fallback,
   http,
   keccak256,
   maxUint256,
@@ -565,7 +566,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const provider = createPublicClient({
       chain: evmChain,
-      transport: http(evmChain.rpcUrls.default.http[0]),
+      transport: fallback(
+        evmChain.rpcUrls.default.http.map((url) => http(url))
+      ),
     });
 
     return provider;
@@ -812,7 +815,9 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       const provider = createPublicClient({
         chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
+        transport: fallback(
+          evmChain.rpcUrls.default.http.map((url) => http(url))
+        ),
       });
 
       const estimatedGas = await this.estimateEvmGasWithStateOverrides(
