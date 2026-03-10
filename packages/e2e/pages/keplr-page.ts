@@ -50,6 +50,20 @@ export class WalletPage {
     }
   }
 
+  /**
+   * Auto-detects whether `secret` is a BIP39 mnemonic phrase (contains
+   * whitespace) or a hex private key and uses the appropriate Keplr
+   * import flow. Accepts either format transparently.
+   */
+  async importWallet(secret: string) {
+    const trimmed = secret.trim()
+    if (/\s/.test(trimmed)) {
+      await this.importWalletFromSeed(trimmed)
+    } else {
+      await this.importWalletWithPrivateKey(trimmed)
+    }
+  }
+
   async importWalletWithPrivateKey(privateKey: string) {
     await this.startImport()
     await this.privateKeyBtn.click()
@@ -62,35 +76,31 @@ export class WalletPage {
 
   async importWalletFromSeed(seed: string) {
     await this.startImport()
-    console.log('Import Wallet from a Seed.')
-    await this.page.waitForTimeout(7000)
-    // enter 12 words seed
-    const seedArray: string[] = seed.split(' ')
-    expect(seedArray, 'Seed phrase is missing or incomplete!').toHaveLength(12)
-    const locInputs = '//input[@type="password"]'
-    await this.page.locator('//input[@type="text"]').first().fill(seedArray[0])
-    // for loop does not work here, some magic..
-    await this.page.locator(locInputs).nth(0).fill(seedArray[1])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(1).fill(seedArray[2])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(2).fill(seedArray[3])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(3).fill(seedArray[4])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(4).fill(seedArray[5])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(5).fill(seedArray[6])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(6).fill(seedArray[7])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(7).fill(seedArray[8])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(8).fill(seedArray[9])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(9).fill(seedArray[10])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(10).fill(seedArray[11])
+    const words = seed.trim().split(/\s+/)
+    const wordCount = words.length
+    if (wordCount !== 12 && wordCount !== 24) {
+      throw new Error(
+        `Mnemonic must be 12 or 24 words, got ${wordCount}.`,
+      )
+    }
+    console.log(`Import Wallet from a ${wordCount}-word seed.`)
+
+    if (wordCount === 24) {
+      await this.page
+        .getByRole('button', { name: '24 words', exact: true })
+        .click()
+    }
+
+    await this.page.waitForTimeout(2000)
+
+    // First word uses a text input, remaining words use password inputs
+    await this.page.locator('//input[@type="text"]').first().fill(words[0])
+    const passwordInputs = '//input[@type="password"]'
+    for (let i = 1; i < wordCount; i++) {
+      await this.page.locator(passwordInputs).nth(i - 1).fill(words[i])
+      await this.page.waitForTimeout(200)
+    }
+
     await this.importBtn.click()
     await this.setWalletNameAndPassword('Keplr')
     await this.selectChainsAndSave()
