@@ -1,10 +1,10 @@
 /**
  * @file wallet-utils.ts
- * @description Wallet address derivation from raw secp256k1 private keys.
+ * @description Wallet address derivation from hex private keys or BIP39 mnemonics.
  *
  * Used by the balance checker, standalone scripts, and test files to derive
- * an osmo1... bech32 address from a hex-encoded private key, removing the
- * need for a separate WALLET_ID environment variable.
+ * an osmo1... bech32 address from a hex-encoded private key or a mnemonic
+ * phrase, removing the need for a separate WALLET_ID environment variable.
  *
  * @example
  * ```ts
@@ -14,20 +14,44 @@
  * ```
  */
 
-import { DirectSecp256k1Wallet } from "@cosmjs/proto-signing";
+import {
+  DirectSecp256k1HdWallet,
+  DirectSecp256k1Wallet,
+  type OfflineDirectSigner,
+} from "@cosmjs/proto-signing";
 
 /**
- * Derives an Osmosis wallet and bech32 address from a hex-encoded secp256k1 private key.
+ * Derives an Osmosis wallet and bech32 address from either a hex-encoded
+ * secp256k1 private key or a BIP39 mnemonic phrase.
  *
- * @param privateKeyHex - Hex-encoded secp256k1 private key (with or without `0x` prefix).
- * @returns The derived `address` (osmo1...) and the `DirectSecp256k1Wallet` instance.
- * @throws {Error} If the key is missing or invalid hex.
+ * Auto-detects the format: if the input contains spaces it is treated as a
+ * mnemonic (using the default Cosmos HD path m/44'/118'/0'/0/0), otherwise
+ * as a hex private key (with or without `0x` prefix).
+ *
+ * @param privateKeyOrMnemonic - Hex private key or BIP39 mnemonic.
+ * @returns The wallet signer and derived `address` (osmo1...).
+ *
+ * @example
+ * ```ts
+ * const { wallet, address } = await deriveAddress('44886ab5033ff99ab2...')
+ * const { wallet, address } = await deriveAddress('word1 word2 ... word12')
+ * ```
  */
-export async function deriveAddress(privateKeyHex: string): Promise<{
-  wallet: DirectSecp256k1Wallet;
+export async function deriveAddress(privateKeyOrMnemonic: string): Promise<{
+  wallet: OfflineDirectSigner;
   address: string;
 }> {
-  const normalized = privateKeyHex.replace(/^0x/, "");
+  const input = privateKeyOrMnemonic.trim();
+
+  if (input.includes(" ")) {
+    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(input, {
+      prefix: "osmo",
+    });
+    const [account] = await wallet.getAccounts();
+    return { wallet, address: account.address };
+  }
+
+  const normalized = input.replace(/^0x/, "");
   const keyBytes = Uint8Array.from(Buffer.from(normalized, "hex"));
   const wallet = await DirectSecp256k1Wallet.fromKey(keyBytes, "osmo");
   const [account] = await wallet.getAccounts();
