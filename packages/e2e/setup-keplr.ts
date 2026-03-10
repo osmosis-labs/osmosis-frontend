@@ -5,7 +5,8 @@ import { fail } from "assert";
 import { WalletPage } from "./pages/keplr-page";
 
 export class SetupKeplr {
-  async setupWalletKeplr(privateKey: string, headless = false) {
+  /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
+  async setupWalletKeplr(secret: string, headless = false) {
     const pathToKeplrExtension = await new UnzipExtension().getPathToExtension();
     const testConfig = new TestConfig().getBrowserExtensionConfig(
       headless,
@@ -24,7 +25,7 @@ export class SetupKeplr {
         timeout: 5000,
       });
       const walletPage = new WalletPage(page);
-      await walletPage.importWallet(privateKey);
+      await walletPage.importWallet(secret);
       return context;
     } catch (error) {
       console.error("Error in SetupKeplrWallet: ", error);
@@ -33,12 +34,13 @@ export class SetupKeplr {
     }
   }
 
-  async setupWallet(testSeed: string, headless = false) {
+  /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
+  async setupWallet(secret: string, headless = false) {
     try {
-      return await this.setupWalletKeplr(testSeed, headless);
+      return await this.setupWalletKeplr(secret, headless);
     } catch (error) {
       console.error("2nd Error in setupWallet: ", error);
-      return await this.setupWalletKeplr(testSeed, headless);
+      return await this.setupWalletKeplr(secret, headless);
     }
   }
 }

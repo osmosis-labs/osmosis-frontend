@@ -51,12 +51,13 @@ export class WalletPage {
   }
 
   /**
-   * Auto-detects whether `secret` is a mnemonic phrase (contains spaces)
-   * or a hex private key and uses the appropriate Keplr import flow.
+   * Auto-detects whether `secret` is a BIP39 mnemonic phrase (contains
+   * whitespace) or a hex private key and uses the appropriate Keplr
+   * import flow. Accepts either format transparently.
    */
   async importWallet(secret: string) {
     const trimmed = secret.trim()
-    if (trimmed.includes(' ')) {
+    if (/\s/.test(trimmed)) {
       await this.importWalletFromSeed(trimmed)
     } else {
       await this.importWalletWithPrivateKey(trimmed)
