@@ -24,7 +24,7 @@ export class SetupKeplr {
         timeout: 5000,
       });
       const walletPage = new WalletPage(page);
-      await walletPage.importWalletWithPrivateKey(privateKey);
+      await walletPage.importWallet(privateKey);
       return context;
     } catch (error) {
       console.error("Error in SetupKeplrWallet: ", error);
