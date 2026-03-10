@@ -70,8 +70,16 @@ async function main(): Promise<void> {
   console.log(`  Target: warnAmount x ${multiplier}`);
   printReserves(reserves);
 
-  const { wallet: topupWallet, address: topupAddress } =
-    await deriveAddress(topupPrivateKey);
+  let topupWallet, topupAddress: string;
+  try {
+    ({ wallet: topupWallet, address: topupAddress } =
+      await deriveAddress(topupPrivateKey));
+  } catch (err) {
+    console.error(
+      `❌ E2E_PRIVATE_KEY_TOPUP: failed to derive address — ${err instanceof Error ? err.message : err}`
+    );
+    process.exit(1);
+  }
   console.log(`\n  Topup: ${topupAddress}`);
   console.log(`  RPC:  ${OSMOSIS_RPC}`);
 

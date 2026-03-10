@@ -90,9 +90,24 @@ async function runExtract(isDryRun: boolean): Promise<void> {
   console.log(`\n=== ${header} ===`);
   console.log(`  Gas reserve: ${EXTRACT_GAS_RESERVE.osmo} OSMO`);
 
-  const { wallet: sourceWallet, address: sourceAddress } =
-    await deriveAddress(privateKey);
-  const { address: topupAddress } = await deriveAddress(topupPrivateKey);
+  let sourceWallet, sourceAddress: string, topupAddress: string;
+  try {
+    ({ wallet: sourceWallet, address: sourceAddress } =
+      await deriveAddress(privateKey));
+  } catch (err) {
+    console.error(
+      `❌ PRIVATE_KEY${label ? ` (${label})` : ""}: failed to derive address — ${err instanceof Error ? err.message : err}`
+    );
+    process.exit(1);
+  }
+  try {
+    ({ address: topupAddress } = await deriveAddress(topupPrivateKey));
+  } catch (err) {
+    console.error(
+      `❌ E2E_PRIVATE_KEY_TOPUP: failed to derive address — ${err instanceof Error ? err.message : err}`
+    );
+    process.exit(1);
+  }
 
   console.log(`\n  Source:  ${sourceAddress}`);
   console.log(`  Topup:    ${topupAddress}`);
@@ -159,8 +174,16 @@ async function runDistribute(
   console.log(`\n=== Distribute Funds${dryTag} ===`);
   printReserves(reserves);
 
-  const { wallet: topupWallet, address: topupAddress } =
-    await deriveAddress(topupPrivateKey);
+  let topupWallet, topupAddress: string;
+  try {
+    ({ wallet: topupWallet, address: topupAddress } =
+      await deriveAddress(topupPrivateKey));
+  } catch (err) {
+    console.error(
+      `❌ E2E_PRIVATE_KEY_TOPUP: failed to derive address — ${err instanceof Error ? err.message : err}`
+    );
+    process.exit(1);
+  }
   console.log(`\n  Topup: ${topupAddress}`);
   console.log(`  RPC:  ${OSMOSIS_RPC}`);
 
