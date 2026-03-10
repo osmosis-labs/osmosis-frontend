@@ -25,6 +25,8 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
+import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
+
 import {
   OSMOSIS_RPC,
   createSigningClient,
@@ -70,7 +72,8 @@ async function main(): Promise<void> {
   console.log(`  Target: warnAmount x ${multiplier}`);
   printReserves(reserves);
 
-  let topupWallet, topupAddress: string;
+  let topupWallet: OfflineDirectSigner;
+  let topupAddress: string;
   try {
     ({ wallet: topupWallet, address: topupAddress } =
       await deriveAddress(topupPrivateKey));

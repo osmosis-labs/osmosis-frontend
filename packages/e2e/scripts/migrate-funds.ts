@@ -31,6 +31,8 @@ import * as dotenv from "dotenv";
 import * as path from "path";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
+import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
+
 import {
   OSMOSIS_RPC,
   createSigningClient,
@@ -90,7 +92,9 @@ async function runExtract(isDryRun: boolean): Promise<void> {
   console.log(`\n=== ${header} ===`);
   console.log(`  Gas reserve: ${EXTRACT_GAS_RESERVE.osmo} OSMO`);
 
-  let sourceWallet, sourceAddress: string, topupAddress: string;
+  let sourceWallet: OfflineDirectSigner;
+  let sourceAddress: string;
+  let topupAddress: string;
   try {
     ({ wallet: sourceWallet, address: sourceAddress } =
       await deriveAddress(privateKey));
@@ -174,7 +178,8 @@ async function runDistribute(
   console.log(`\n=== Distribute Funds${dryTag} ===`);
   printReserves(reserves);
 
-  let topupWallet, topupAddress: string;
+  let topupWallet: OfflineDirectSigner;
+  let topupAddress: string;
   try {
     ({ wallet: topupWallet, address: topupAddress } =
       await deriveAddress(topupPrivateKey));
