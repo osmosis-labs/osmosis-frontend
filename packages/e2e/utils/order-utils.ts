@@ -23,11 +23,7 @@ import {
   SigningCosmWasmClient,
   type ExecuteInstruction,
 } from "@cosmjs/cosmwasm-stargate";
-import {
-  DirectSecp256k1HdWallet,
-  DirectSecp256k1Wallet,
-  type OfflineDirectSigner,
-} from "@cosmjs/proto-signing";
+import { type OfflineDirectSigner } from "@cosmjs/proto-signing";
 import { GasPrice } from "@cosmjs/stargate";
 
 /**
@@ -109,43 +105,7 @@ export interface SQSActiveOrder {
   base_asset: { symbol: string };
 }
 
-/**
- * Derives an Osmosis wallet and bech32 address from either a hex-encoded
- * secp256k1 private key or a BIP39 mnemonic phrase.
- *
- * Auto-detects the format: if the input contains spaces it is treated as a
- * mnemonic (using the default Cosmos HD path m/44'/118'/0'/0/0), otherwise
- * as a hex private key (with or without `0x` prefix).
- *
- * @param privateKeyOrMnemonic - Hex private key or BIP39 mnemonic.
- * @returns The wallet signer and derived `address` (osmo1...).
- *
- * @example
- * ```ts
- * const { wallet, address } = await deriveAddress('44886ab5033ff99ab2...')
- * const { wallet, address } = await deriveAddress('word1 word2 ... word12')
- * ```
- */
-export async function deriveAddress(privateKeyOrMnemonic: string): Promise<{
-  wallet: OfflineDirectSigner;
-  address: string;
-}> {
-  const input = privateKeyOrMnemonic.trim();
-
-  if (input.includes(" ")) {
-    const wallet = await DirectSecp256k1HdWallet.fromMnemonic(input, {
-      prefix: "osmo",
-    });
-    const [account] = await wallet.getAccounts();
-    return { wallet, address: account.address };
-  }
-
-  const normalized = input.replace(/^0x/, "");
-  const keyBytes = Uint8Array.from(Buffer.from(normalized, "hex"));
-  const wallet = await DirectSecp256k1Wallet.fromKey(keyBytes, "osmo");
-  const [account] = await wallet.getAccounts();
-  return { wallet, address: account.address };
-}
+export { deriveAddress } from "./wallet-utils";
 
 /**
  * Fetches all active (open or partially filled) limit orders for a given Osmosis address
