@@ -233,7 +233,8 @@ export function buildSendCoins(
     coins.push({ denom: bal.denom, amount: raw.toFixed(0) });
   }
 
-  return coins;
+  // Cosmos SDK requires coins sorted lexicographically by denom
+  return coins.sort((a, b) => a.denom.localeCompare(b.denom));
 }
 
 // ---------------------------------------------------------------------------
@@ -320,7 +321,7 @@ export function calculateDistribution(
     distribution.push({
       label: target.label,
       address: target.address,
-      coins,
+      coins: coins.sort((a, b) => a.denom.localeCompare(b.denom)),
       summary,
     });
   }
@@ -408,7 +409,7 @@ export function calculateTopup(
     distribution.push({
       label: target.label,
       address: target.address,
-      coins,
+      coins: coins.sort((a, b) => a.denom.localeCompare(b.denom)),
       summary,
     });
   }
