@@ -470,6 +470,12 @@
     "earnSwapFeesCaption": "Tokenlerinizi hisseye dönüştürün ve her takasta kazanın.",
     "from": "kimden",
     "incentives": "Teşvikler",
+    "initializePool": "Likidite Ekle",
+    "inactivePool": {
+      "title": "Havuz Erişim Alanı Dışında",
+      "description": "Mevcut fiyatta tüm likidite pozisyonları erişim aralığının dışındadır.\n\nMevcut piyasa kuruna göre yeniden dengeleme yapılmasına olanak sağlamak için az miktarda likidite (en fazla 1 dolar) ekleyin.",
+      "addLiquidity": "Likidite Ekle"
+    },
     "learnMore": "Daha fazla öğren",
     "level": "Seviye {level}",
     "liquidity": "Havuzdaki likidite",

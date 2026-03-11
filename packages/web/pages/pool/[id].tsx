@@ -26,7 +26,11 @@ const Pool: FunctionComponent<Props> = ({
   const { t } = useTranslation();
   const { isMobile } = useWindowSize();
 
-  const { data: pool, isError } = api.local.pools.getPool.useQuery({ poolId });
+  const {
+    data: pool,
+    isError,
+    error,
+  } = api.local.pools.getPool.useQuery({ poolId });
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 
@@ -74,9 +78,13 @@ const Pool: FunctionComponent<Props> = ({
   }, [pool, poolId, isValidPoolId]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {
+      // Log error for debugging
+      if (isError && error) {
+        console.error("Pool fetch error:", error);
+      }
       router.push("/pools");
     }
-  }, [isValidPoolId, isError, router]);
+  }, [isValidPoolId, isError, router, error]);
 
   return (
     <>

@@ -470,6 +470,12 @@
     "earnSwapFeesCaption": "轉換你的代幣成流動性池份額並賺取每次兌換的兌換費",
     "from": "來自",
     "incentives": "獎勵",
+    "initializePool": "增加流動性",
+    "inactivePool": {
+      "title": "泳池超出範圍",
+      "description": "目前價格下所有流動性頭寸均超出範圍。\n\n添加少量流動性（最多 1 美元），以便重新平衡至當前市場利率。",
+      "addLiquidity": "增加流動性"
+    },
     "learnMore": "了解更多",
     "level": "等級 {level}",
     "liquidity": "流動性",

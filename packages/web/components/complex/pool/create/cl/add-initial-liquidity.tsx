@@ -102,7 +102,7 @@ export const AddInitialLiquidity = observer(
             Initial liquidity will be deposited as a full range position
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           <TokenLiquiditySelector
             selectedAsset={selectedBase}
             value={baseAmount}
@@ -138,7 +138,7 @@ export const AddInitialLiquidity = observer(
               </span>
             </span>
           )}
-        <div className="flex flex-col gap-[26px]">
+        <div className="flex flex-col items-center gap-[26px]">
           <button
             disabled={
               isTxLoading ||
@@ -221,7 +221,7 @@ const TokenLiquiditySelector = observer(
     if (!selectedAsset) return;
 
     return (
-      <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
+      <div className="flex flex-1 items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
         <div className="flex items-center gap-3">
           <EntityImage
             logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
@@ -231,7 +231,10 @@ const TokenLiquiditySelector = observer(
             height={52}
             className="rounded-full"
           />
-          <h5 className="max-w-[90px] truncate">
+          <h5
+            className="max-w-[120px] truncate"
+            title={selectedAsset.token.coinDenom}
+          >
             {selectedAsset.token.coinDenom}
           </h5>
         </div>

@@ -6,9 +6,9 @@ import { IS_TESTNET } from "../../../env";
 import { CursorPaginationSchema } from "../../../utils/pagination";
 import { SearchSchema } from "../../../utils/search";
 import { SortSchema } from "../../../utils/sort";
-import { PoolRawResponse } from "../../osmosis";
+import { PoolRawResponse, queryPoolChain } from "../../osmosis";
 import { PoolIncentives } from "./incentives";
-import { getPoolsFromSidecar } from "./providers";
+import { getPoolsFromSidecar, makePoolFromChainPool } from "./providers";
 
 const allPooltypes = [
   "concentrated",
@@ -41,6 +41,8 @@ export type Pool = {
   spreadFactor: RatePretty;
   reserveCoins: CoinPretty[];
   totalFiatValueLocked: PricePretty;
+  /** True when the pool was constructed from chain data with synthesized balances and actual TVL is unavailable. Consumers should treat TVL as potentially non-zero when this flag is set. */
+  tvlUnknown?: boolean;
   incentives?: PoolIncentives;
   market?: PoolMarketMetrics;
 };
@@ -105,10 +107,45 @@ export async function getPool({
   chainList: Chain[];
   poolId: string;
 }): Promise<Pool> {
+  // First, try to get pool from Sidecar (includes market data, APRs, etc.)
   const pools = await getPools({ assetLists, chainList, poolIds: [poolId] });
   const pool = pools.items.find(({ id }) => id === poolId);
-  if (!pool) throw new Error(poolId + " not found");
-  return pool;
+
+  if (pool) {
+    return pool;
+  }
+
+  // If not found in Sidecar (likely due to unlisted assets), fallback to direct chain query
+  try {
+    console.log(
+      `Pool ${poolId} not found in Sidecar, attempting direct chain query...`
+    );
+    const chainResponse = await queryPoolChain({ poolId, chainList });
+
+    if (!chainResponse.pool) {
+      throw new Error(poolId + " not found on chain");
+    }
+
+    // Convert chain pool to our Pool type, handling unlisted assets
+    const chainPool = makePoolFromChainPool({
+      chainPool: chainResponse.pool,
+      assetLists,
+    });
+
+    if (!chainPool) {
+      throw new Error(
+        `Pool ${poolId} found on chain but cannot be constructed (likely CL or CosmWasm pool without balance data)`
+      );
+    }
+
+    console.log(
+      `Successfully retrieved pool ${poolId} from chain with unlisted assets`
+    );
+    return chainPool;
+  } catch (error) {
+    console.error(`Failed to query pool ${poolId} from chain:`, error);
+    throw error;
+  }
 }
 
 /** Fetches pools and returns them as a more useful and simplified TS type.

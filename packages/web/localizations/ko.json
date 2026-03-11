@@ -470,6 +470,12 @@
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 교환이 발생하면 수수료를 받으세요",
     "from": "출처:",
     "incentives": "인센티브",
+    "initializePool": "유동성 추가",
+    "inactivePool": {
+      "title": "수영장이 범위를 벗어났습니다",
+      "description": "현재 가격에서 모든 유동성 포지션이 거래 범위를 벗어났습니다.\n\n현재 시장 금리로 재조정할 수 있도록 소량의 유동성(최대 1달러)을 추가하세요.",
+      "addLiquidity": "유동성 추가"
+    },
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "liquidity": "유동성",
