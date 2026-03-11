@@ -124,17 +124,25 @@ export class WalletPage {
     await this.page
       .getByText('All Native Chains')
       .click({ timeout: 9000, force: true })
-    try {
-      console.log('Import whatever is available.')
-      await this.importBtn.click({ timeout: 2000 })
-    } catch {
-      console.log('No Import button, ignore.')
+
+    const accountCreated = this.page.getByText('Account Created!')
+
+    for (let i = 0; i < 10; i++) {
+      if (await accountCreated.isVisible().catch(() => false)) break
+
+      if (await this.importBtn.isVisible().catch(() => false)) {
+        console.log('Import whatever is available.')
+        await this.importBtn.click({ timeout: 2000 })
+      } else if (await this.saveBtn.isVisible().catch(() => false)) {
+        console.log('Save chain selection.')
+        await this.saveBtn.click({ timeout: 2000 })
+      }
+
+      await this.page.waitForTimeout(1000)
     }
-    await this.page.waitForTimeout(2000)
-    await this.saveBtn.click({ timeout: 3000 })
-    await this.page.waitForTimeout(2000)
+
     await expect(
-      this.page.getByText('Account Created!'),
+      accountCreated,
       'Account is not created!',
     ).toBeVisible({ timeout: 9000 })
   }
