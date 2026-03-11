@@ -88,7 +88,7 @@ When adding or modifying a test that uses tokens, update the requirements in
 
 ```typescript
 // Token-unit threshold (default) — for stablecoins or fixed-amount tests
-{ token: "USDC", minAmount: 5, warnAmount: 6, note: "trade buy tests" },
+{ token: "USDC", minAmount: 1.7, warnAmount: 3.5, note: "~1.62 consumed (trade buy + swaps)" },
 
 // USD-denominated threshold — for volatile assets where tests use dollar amounts
 { token: "BTC", minAmount: 1.6, warnAmount: 5, unit: "usd", note: "market sell BTC" },
@@ -138,7 +138,8 @@ The following workflows run `check-balances.ts` before Playwright:
 
 | Workflow | Jobs | Account |
 |----------|------|---------|
-| `frontend-e2e-tests.yml` | `preview-trade-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| `frontend-e2e-tests.yml` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| `prod-frontend-e2e-tests.yml` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
 | `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
@@ -157,12 +158,12 @@ The following workflows run `check-balances.ts` before Playwright:
 
 | Token | Min | Warn | Unit | Used By |
 |-------|-----|------|------|---------|
-| USDC | 5 | 6 | token | trade buy + swaps |
-| ATOM | 3 | 3.6 | token | trade sell + swap tests |
-| OSMO | 3 | 3.6 | token | limit sell + swap tests |
-| TIA | 0.1 | 0.12 | token | swap tests |
-| INJ | 0.05 | 0.06 | token | swap tests |
-| AKT | 0.1 | 0.12 | token | swap tests |
+| USDC | 1.7 | 3.5 | token | ~1.62 consumed (trade buy + swaps) |
+| ATOM | 2.27 | 4.5 | token | ~2.16 consumed (trade sell + limit + swaps) |
+| OSMO | 1.27 | 2.5 | token | ~1.21 consumed (limit sell + swap) |
+| TIA | 0.022 | 0.05 | token | ~0.02 consumed (swap TIA) |
+| INJ | 0.011 | 0.025 | token | ~0.01 consumed (swap INJ) |
+| AKT | 0.027 | 0.06 | token | ~0.025 consumed (swap AKT) |
 
 ### Monitoring Accounts (`TEST_PRIVATE_KEY_SG` / `_EU` / `_US`)
 

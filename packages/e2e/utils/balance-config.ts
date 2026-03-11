@@ -49,23 +49,17 @@ export const ACCOUNT_REQUIREMENTS: Record<
   AccountBalanceRequirement[]
 > = {
   "E2E Test Account": [
-    // trade.wallet.spec.ts + swap.usdc.wallet.spec.ts + swap.osmo.wallet.spec.ts
-    { token: "USDC", minAmount: 5, warnAmount: 6, note: "trade buy + swaps" },
-    {
-      token: "ATOM",
-      minAmount: 3,
-      warnAmount: 3.6,
-      note: "trade sell + swap ATOM tests",
-    },
-    {
-      token: "OSMO",
-      minAmount: 3,
-      warnAmount: 3.6,
-      note: "limit sell + swap OSMO tests",
-    },
-    { token: "TIA", minAmount: 0.1, warnAmount: 0.12, note: "swap TIA tests" },
-    { token: "INJ", minAmount: 0.05, warnAmount: 0.06, note: "swap INJ tests" },
-    { token: "AKT", minAmount: 0.1, warnAmount: 0.12, note: "swap AKT tests" },
+    // minAmount = actual consumed + 5% buffer (only fail when tests would genuinely fail)
+    // warnAmount = ~2x consumed (top-up reminder before it becomes critical)
+    // trade.wallet.spec.ts: buy 1.12 USDC, sell 1.11+1.01 ATOM, limit 1.01 OSMO
+    // swap.usdc.wallet.spec.ts: 0.5 USDC, 0.015 ATOM, 0.02 TIA, 0.01 INJ, 0.025 AKT
+    // swap.osmo.wallet.spec.ts: 0.2 OSMO, 0.01 ATOM
+    { token: "USDC", minAmount: 1.7, warnAmount: 3.5, note: "~1.62 consumed (trade buy + swaps)" },
+    { token: "ATOM", minAmount: 2.27, warnAmount: 4.5, note: "~2.16 consumed (trade sell + limit + swaps)" },
+    { token: "OSMO", minAmount: 1.27, warnAmount: 2.5, note: "~1.21 consumed (limit sell + swap)" },
+    { token: "TIA", minAmount: 0.022, warnAmount: 0.05, note: "~0.02 consumed (swap TIA)" },
+    { token: "INJ", minAmount: 0.011, warnAmount: 0.025, note: "~0.01 consumed (swap INJ)" },
+    { token: "AKT", minAmount: 0.027, warnAmount: 0.06, note: "~0.025 consumed (swap AKT)" },
   ],
 
   "Monitoring SG": [
