@@ -116,11 +116,6 @@ interface BalanceResponse {
 // ---------------------------------------------------------------------------
 
 function validateAddress(address: string): boolean {
-  if (!address || address === "wallet_id") {
-    console.warn("  WALLET_ID / PRIVATE_KEY is not set or is invalid.");
-    console.warn("  Skipping balance checks.\n");
-    return false;
-  }
   if (!address.startsWith("osmo1")) {
     console.warn(
       `  Invalid Osmosis address format: expected "osmo1...", got "${address.substring(0, 10)}..."`

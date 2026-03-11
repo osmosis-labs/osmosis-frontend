@@ -30,10 +30,86 @@ jobs:
           environment_url: ${{ steps.vercel.outputs.environment_url }}
         run: echo "$environment_url"
 
+  check-balances:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+      - name: Check account balances
+        id: balance-check
+        continue-on-error: true
+        env:
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          ACCOUNT_LABEL: "E2E Test Account"
+        run: yarn --cwd packages/e2e check-balances
+      - name: Extract balance details
+        id: balance-details
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
+            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
+            OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
+            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
+            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
+            echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+          else
+            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
+            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Send low-balance Slack alert
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          payload: |
+            {
+              "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": { "type": "plain_text", "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}", "emoji": true }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*Account:* E2E Preview Test Account\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* frontend-e2e-tests / check-balances\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Fail if balance critically low
+        if: always() && steps.balance-check.outcome == 'failure'
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "fail" ]; then
+              echo "Critical balance shortage — blocking test run."
+              exit 1
+            fi
+            echo "Low balance warning — proceeding with tests."
+          else
+            echo "Balance check failed but no report — proceeding with tests."
+          fi
+
   preview-swap-osmo-tests:
     timeout-minutes: 15
     runs-on: macos-14
-    needs: wait-for-deployment
+    needs: [wait-for-deployment, check-balances]
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -60,8 +136,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
@@ -82,7 +157,7 @@ jobs:
   preview-swap-usdc-tests:
     timeout-minutes: 15
     runs-on: macos-14
-    needs: [wait-for-deployment, preview-swap-osmo-tests]
+    needs: [wait-for-deployment, preview-swap-osmo-tests, check-balances]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -114,8 +189,7 @@ jobs:
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test swap.usdc.wallet
@@ -154,8 +228,7 @@ jobs:
       - name: Run Portfolio tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test portfolio transactions
@@ -209,7 +282,7 @@ jobs:
     timeout-minutes: 15
     runs-on: macos-14
     needs:
-      [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests]
+      [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -231,78 +304,16 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Check account balances
-        id: balance-check
-        continue-on-error: true
-        env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          ACCOUNT_LABEL: "E2E Test Account"
-        run: yarn --cwd packages/e2e check-balances
-      - name: Extract balance details
-        id: balance-details
-        if: steps.balance-check.outcome == 'failure'
-        continue-on-error: true
-        run: |
-          if [ -f packages/e2e/balance-report.json ]; then
-            SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
-            ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
-            OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
-            echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
-            echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
-            echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
-          else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
-          fi
-      - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
-        continue-on-error: true
-        uses: slackapi/slack-github-action@v1.26.0
-        with:
-          payload: |
-            {
-              "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}",
-              "blocks": [
-                {
-                  "type": "header",
-                  "text": { "type": "plain_text", "text": "${{ steps.balance-details.outputs.outcome == 'fail' && '🚨 E2E Critical Balance Alert' || '⚠️ E2E Low Balance Warning' }}", "emoji": true }
-                },
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "*Account:* E2E Test Account\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* frontend-e2e-tests / preview-trade-tests\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
-          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
-      - name: Fail if balance critically low
-        if: always() && steps.balance-check.outcome == 'failure'
-        run: |
-          if [ -f packages/e2e/balance-report.json ]; then
-            OUTCOME=$(jq -r '.outcome' packages/e2e/balance-report.json)
-            if [ "$OUTCOME" = "fail" ]; then
-              echo "Critical balance shortage — blocking test run."
-              exit 1
-            fi
-            echo "Low balance warning — proceeding with tests."
-          else
-            echo "Balance check failed but no report — proceeding with tests."
-          fi
       - name: Cancel leftover open orders
         continue-on-error: true
         env:
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
           ACCOUNT_LABEL: "E2E Test Account (pre-test cleanup)"
         run: npx tsx packages/e2e/scripts/cancel-all-orders.ts
       - name: Run Swap Pair tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test trade
@@ -317,7 +328,7 @@ jobs:
   preview-claim-tests:
     timeout-minutes: 10
     runs-on: macos-14
-    needs: wait-for-deployment
+    needs: [wait-for-deployment, check-balances]
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -339,11 +350,10 @@ jobs:
         run: |
           echo "$GITHUB_OUTPUT"
           yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
-      - name: Run Swap Pair tests
+      - name: Run Claim tests
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
-          PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY }}
-          WALLET_ID: ${{ secrets.TEST_WALLET_ID }}
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
         run: |
           cd packages/e2e
           npx playwright test claim
