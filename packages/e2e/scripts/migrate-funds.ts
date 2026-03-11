@@ -294,7 +294,8 @@ async function runDistribute(
         if (adjusted.lte(0)) return null;
         return { denom: coin.denom, amount: adjusted.toFixed(0) };
       })
-      .filter((c): c is NonNullable<typeof c> => c !== null);
+      .filter((c): c is NonNullable<typeof c> => c !== null)
+      .sort((a, b) => a.denom.localeCompare(b.denom));
 
     if (adjustedCoins.length === 0) {
       console.log(
