@@ -134,15 +134,18 @@ always succeeds — it's purely informational with no alerts or blocking.
 
 ### Automatic Pre-Test Checks in CI
 
-The following workflows run `check-balances.ts` before Playwright:
+The following workflows run `check-balances.ts` as a dedicated `check-balances`
+job before any Playwright tests. All wallet-dependent test jobs depend on
+`check-balances` via `needs`, so a single check gates every test — one Slack
+alert at most per workflow run.
 
-| Workflow | Jobs | Account |
-|----------|------|---------|
-| `frontend-e2e-tests.yml` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `prod-frontend-e2e-tests.yml` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
-| `monitoring-limit-geo-e2e-tests.yml` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
+| Workflow | Check job | Gates test jobs | Account |
+|----------|-----------|----------------|---------|
+| `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| `prod-frontend-e2e-tests.yml` | `check-balances` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
+| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
+| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
+| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
 
 ### Exit Codes
 

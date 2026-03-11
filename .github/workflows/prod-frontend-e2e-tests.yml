@@ -28,12 +28,8 @@ jobs:
           environment_url: ${{ steps.vercel.outputs.environment_url }}
         run: echo "$environment_url"
 
-  prod-e2e-tests:
-    runs-on: macos-14
-    timeout-minutes: 20
-    needs: wait-for-deployment
-    environment:
-      name: prod_swap_test
+  check-balances:
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -45,16 +41,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: "**/node_modules"
-          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.OS }}-20.x-
-      - name: Install Playwright
-        run: |
-          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
       - name: Check account balances
         id: balance-check
         continue-on-error: true
@@ -95,7 +83,7 @@ jobs:
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*Account:* E2E Preview Test Account\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* prod-frontend-e2e-tests / prod-e2e-tests\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
+                    "text": "*Account:* E2E Preview Test Account\n*Address:* ${{ steps.balance-details.outputs.address }}\n*Shortages:*\n${{ steps.balance-details.outputs.summary }}\n*Workflow:* prod-frontend-e2e-tests / check-balances\n*Details:* <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View run logs>"
                   }
                 }
               ]
@@ -116,6 +104,34 @@ jobs:
           else
             echo "Balance check failed but no report — proceeding with tests."
           fi
+
+  prod-e2e-tests:
+    runs-on: macos-14
+    timeout-minutes: 20
+    needs: [wait-for-deployment, check-balances]
+    environment:
+      name: prod_swap_test
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+          ref: master
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-20.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-20.x-
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
       - name: Run Swap Pair tests on Master
         env:
           BASE_URL: "https://app.osmosis.zone"
