@@ -833,6 +833,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       autorun(() => {
         if (
           this.pool &&
+          !this.isInactivePool &&
           this._baseDepositAmountIn.sendCurrency &&
           this._quoteDepositAmountIn.sendCurrency &&
           this._minHistoricalPrice !== null &&
