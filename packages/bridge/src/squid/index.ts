@@ -33,6 +33,7 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
+  getEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
@@ -43,7 +44,6 @@ import {
   createPublicClient,
   encodeFunctionData,
   erc20Abi,
-  http,
   numberToHex,
 } from "viem";
 
@@ -479,7 +479,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
+        transport: getEvmRpcTransport(evmChain),
       });
 
       approvalTx = await this.getApprovalTx({

@@ -1,5 +1,5 @@
-import { EthereumChainInfo } from "@osmosis-labs/utils";
-import { createConfig, http } from "wagmi";
+import { EthereumChainInfo, getEvmRpcTransport } from "@osmosis-labs/utils";
+import { createConfig } from "wagmi";
 import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors";
 
 import { WALLETCONNECT_PROJECT_KEY } from "~/config/env";
@@ -14,7 +14,7 @@ declare module "wagmi" {
 export const wagmiConfig = createConfig({
   chains: EthereumChainInfo,
   transports: Object.fromEntries(
-    EthereumChainInfo.map((info) => [info.id, http()])
+    EthereumChainInfo.map((info) => [info.id, getEvmRpcTransport(info)])
   ),
   connectors: [
     metaMask({

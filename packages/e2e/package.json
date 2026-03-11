@@ -6,7 +6,9 @@
     "clean": "rm -rf node_modules; rm -rf .next",
     "test": "npx playwright test",
     "setup": "yarn install && npx playwright install --with-deps chromium",
-    "check-balances": "npx tsx scripts/check-balances.ts"
+    "check-balances": "npx tsx scripts/check-balances.ts",
+    "migrate-funds": "npx tsx scripts/migrate-funds.ts",
+    "topup-accounts": "npx tsx scripts/topup-accounts.ts"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
@@ -18,6 +20,7 @@
     "@cosmjs/proto-signing": "0.32.3",
     "@cosmjs/stargate": "0.32.3",
     "@types/node": "22.17.1",
+    "bignumber.js": "9.1.2",
     "dotenv": "17.2.1",
     "tsx": "^4.6.2",
     "typescript": "5.9.2"

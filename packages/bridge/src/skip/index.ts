@@ -7,6 +7,7 @@ import {
 import { CosmosCounterparty, EVMCounterparty } from "@osmosis-labs/types";
 import {
   EthereumChainInfo,
+  getEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
@@ -17,7 +18,6 @@ import {
   encodeFunctionData,
   encodePacked,
   erc20Abi,
-  http,
   keccak256,
   maxUint256,
   numberToHex,
@@ -565,7 +565,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
     const provider = createPublicClient({
       chain: evmChain,
-      transport: http(evmChain.rpcUrls.default.http[0]),
+      transport: getEvmRpcTransport(evmChain),
     });
 
     return provider;
@@ -812,7 +812,7 @@ export class SkipBridgeProvider implements BridgeProvider {
 
       const provider = createPublicClient({
         chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
+        transport: getEvmRpcTransport(evmChain),
       });
 
       const estimatedGas = await this.estimateEvmGasWithStateOverrides(

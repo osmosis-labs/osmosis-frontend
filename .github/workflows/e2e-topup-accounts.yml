@@ -1,0 +1,74 @@
+name: "E2E: Topup Test Accounts"
+
+# Tops up E2E test accounts from the topup holding account.
+#
+# Checks each account's current balance and sends only enough to reach
+# warnAmount * 1.5 for each required token. Accounts already at or above
+# the target are skipped.
+#
+# Defaults to dry run. Uncheck "Dry run" to broadcast real transactions.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (no transactions sent)"
+        type: boolean
+        default: true
+      topup_multiplier:
+        description: "Target = warnAmount x this (e.g. 1.5, 2, 3)"
+        type: string
+        default: "1.5"
+      reserve_osmo:
+        description: "OSMO to reserve in topup account"
+        type: string
+        default: "5"
+      reserve_usdc:
+        description: "USDC to reserve in topup account"
+        type: string
+        default: "500"
+
+permissions:
+  contents: read
+
+jobs:
+  topup:
+    name: "${{ inputs.dry_run && 'Dry run' || 'Topup' }} — All accounts"
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-22.x-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-22.x-
+
+      - name: Install dependencies
+        run: yarn --cwd packages/e2e install --frozen-lockfile
+
+      - name: Topup accounts
+        env:
+          DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+          E2E_PRIVATE_KEY_TOPUP: ${{ secrets.E2E_PRIVATE_KEY_TOPUP }}
+          E2E_PRIVATE_KEY_PREVIEW: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          TEST_PRIVATE_KEY_SG: ${{ secrets.TEST_PRIVATE_KEY_SG }}
+          TEST_PRIVATE_KEY_EU: ${{ secrets.TEST_PRIVATE_KEY_EU }}
+          TEST_PRIVATE_KEY_US: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          TOPUP_MULTIPLIER: ${{ inputs.topup_multiplier }}
+          RESERVE_OSMO: ${{ inputs.reserve_osmo }}
+          RESERVE_USDC: ${{ inputs.reserve_usdc }}
+        run: npx tsx packages/e2e/scripts/topup-accounts.ts
