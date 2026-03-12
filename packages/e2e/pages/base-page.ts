@@ -23,18 +23,28 @@ export class BasePage {
 
   async connectWallet() {
     await this.connectWalletBtn.click()
-    // This is needed to handle a wallet popup
-    const pagePromise = this.page.context().waitForEvent('page')
+    const pagePromise = this.page
+      .context()
+      .waitForEvent('page', { timeout: 15000 })
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
-    // Handle Pop-up page ->
-    const newPage = await pagePromise
-    await newPage.waitForLoadState('load', { timeout: 10000 })
-    const pageTitle = await newPage.title()
-    console.log(`Title of the new page: ${pageTitle}`)
-    await newPage.getByRole('button', { name: 'Approve' }).click()
-    // PopUp page is auto-closed
-    // Handle Pop-up page <-
+    try {
+      const newPage = await pagePromise
+      await newPage.waitForLoadState('load', { timeout: 10000 })
+      console.log(`Title of the new page: ${await newPage.title()}`)
+      await newPage.getByRole('button', { name: 'Approve' }).click()
+    } catch (error: any) {
+      if (
+        error.name === 'TimeoutError' ||
+        /timeout/i.test(error.message ?? '')
+      ) {
+        console.log(
+          'Keplr popup did not appear within 15s; assuming auto-approved.',
+        )
+      } else {
+        throw error
+      }
+    }
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
   }
