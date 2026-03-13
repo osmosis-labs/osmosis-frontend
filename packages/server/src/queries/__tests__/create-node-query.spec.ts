@@ -25,7 +25,8 @@ describe("createNodeQuery", () => {
     const result = await query({ chainList: MockChains, ...params });
 
     expect(apiClient).toHaveBeenCalledWith(
-      `https://lcd-osmosis.keplr.app${path}`
+      `https://lcd-osmosis.keplr.app${path}`,
+      expect.any(Object)
     );
     expect(result).toEqual(mockResult);
   });
@@ -45,7 +46,8 @@ describe("createNodeQuery", () => {
     const result = await query({ chainList: MockChains, ...params });
 
     expect(apiClient).toHaveBeenCalledWith(
-      `https://lcd-osmosis.keplr.app${path(params)}`
+      `https://lcd-osmosis.keplr.app${path(params)}`,
+      expect.any(Object)
     );
     expect(result).toEqual(mockResult);
   });
@@ -83,7 +85,8 @@ describe("createNodeQuery", () => {
     const result = await query({ chainList: MockChains, ...params });
 
     expect(apiClient).toHaveBeenCalledWith(
-      `https://lcd-cosmoshub.keplr.app${path(params)}`
+      `https://lcd-cosmoshub.keplr.app${path(params)}`,
+      expect.any(Object)
     );
     expect(result).toEqual(mockResult);
   });
@@ -109,8 +112,136 @@ describe("createNodeQuery", () => {
 
     expect(apiClient).toHaveBeenCalledWith(
       `https://lcd-cosmoshub.keplr.app${path(params)}`,
-      { body: "stringBody" }
+      expect.objectContaining({
+        body: "stringBody",
+      })
     );
     expect(result).toEqual(mockResult);
+  });
+
+  describe("multi-endpoint retry logic", () => {
+    it("should retry on first endpoint failure and succeed on second attempt", async () => {
+      const mockResult = { data: "test" };
+      (apiClient as jest.Mock)
+        .mockRejectedValueOnce(new Error("Network timeout"))
+        .mockResolvedValueOnce(mockResult);
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        maxRetries: 2,
+      });
+
+      const result = await query({ chainList: MockChains });
+
+      // Should have been called twice (first failure, then success)
+      expect(apiClient).toHaveBeenCalledTimes(2);
+      expect(result).toEqual(mockResult);
+    });
+
+    it("should fallback to second endpoint when first endpoint fails all retries", async () => {
+      const mockResult = { data: "success" };
+      const mockChains = [
+        {
+          ...MockChains[0],
+          apis: {
+            rest: [
+              { address: "https://endpoint1.com" },
+              { address: "https://endpoint2.com" },
+            ],
+            rpc: [],
+          },
+        },
+      ];
+
+      // First endpoint fails 2 times, second endpoint succeeds
+      (apiClient as jest.Mock)
+        .mockRejectedValueOnce(new Error("Endpoint 1 fail"))
+        .mockRejectedValueOnce(new Error("Endpoint 1 fail again"))
+        .mockResolvedValueOnce(mockResult);
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        maxRetries: 2,
+      });
+
+      const result = await query({ chainList: mockChains });
+
+      expect(apiClient).toHaveBeenCalledTimes(3);
+      // Verify second endpoint was called
+      expect(apiClient).toHaveBeenCalledWith(
+        "https://endpoint2.com/test",
+        expect.any(Object)
+      );
+      expect(result).toEqual(mockResult);
+    });
+
+    it("should throw error when all endpoints are exhausted", async () => {
+      const mockChains = [
+        {
+          ...MockChains[0],
+          apis: {
+            rest: [
+              { address: "https://endpoint1.com" },
+              { address: "https://endpoint2.com" },
+            ],
+            rpc: [],
+          },
+        },
+      ];
+
+      // All attempts fail
+      (apiClient as jest.Mock).mockRejectedValue(new Error("All failed"));
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        maxRetries: 2,
+      });
+
+      await expect(query({ chainList: mockChains })).rejects.toThrow(
+        /All 2 REST endpoints failed/
+      );
+
+      // Should have tried: endpoint1 (2 times) + endpoint2 (2 times) = 4 calls
+      expect(apiClient).toHaveBeenCalledTimes(4);
+    });
+
+    it("should respect custom timeout parameter", async () => {
+      const mockResult = { data: "test" };
+      (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+      const customTimeout = 10000;
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        timeout: customTimeout,
+      });
+
+      await query({ chainList: MockChains });
+
+      // Should be called with some options
+      expect(apiClient).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(Object)
+      );
+    });
+
+    it("should throw error when chain has no REST endpoints", async () => {
+      const mockChains = [
+        {
+          ...MockChains[0],
+          apis: {
+            rest: [],
+            rpc: [],
+          },
+        },
+      ];
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+      });
+
+      await expect(query({ chainList: mockChains })).rejects.toThrow(
+        /No REST endpoints available/
+      );
+    });
   });
 });

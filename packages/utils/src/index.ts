@@ -17,6 +17,7 @@ export * from "./gas-utils";
 export * from "./ibc-utils";
 export * from "./litecoin";
 export * from "./math";
+export * from "./multi-endpoint-client";
 export * from "./object";
 export * from "./pengu";
 export * from "./penumbra";
