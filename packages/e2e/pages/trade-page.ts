@@ -155,10 +155,17 @@ export class TradePage extends BasePage {
     let approvePage: import("@playwright/test").Page | null = null;
     try {
       approvePage = await context.waitForEvent("page", { timeout: 10000 });
-    } catch {
-      console.log(
-        "Keplr approval popup did not appear within 10s; assuming 1-click trading or pre-approved."
-      );
+    } catch (error: any) {
+      if (
+        error.name === "TimeoutError" ||
+        (error instanceof Error && /timeout/i.test(error.message))
+      ) {
+        console.log(
+          "Keplr approval popup did not appear within 10s; assuming 1-click trading or pre-approved."
+        );
+      } else {
+        throw error;
+      }
     }
 
     if (approvePage) {
