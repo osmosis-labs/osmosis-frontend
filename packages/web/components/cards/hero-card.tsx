@@ -70,8 +70,8 @@ export const HeroCard: React.FunctionComponent<{
             <h4 className=" text-h4 font-h4">{title}</h4>
             <div className="flex items-center gap-2">
               {!!twitterUrl && (
-                <IconLink url={twitterUrl} ariaLabel="Twitter">
-                  <Icon id="twitter" height="16px" width="16px" fill="white" />
+                <IconLink url={twitterUrl} ariaLabel="X">
+                  <Icon id="X" height="16px" width="16px" fill="white" />
                 </IconLink>
               )}
               {!!mediumUrl && (

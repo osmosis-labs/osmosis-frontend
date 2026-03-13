@@ -28,6 +28,10 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
     title,
     websiteURL,
     twitterUrl,
+    telegramURL,
+    discordURL,
+    githubURL,
+    mediumURL,
     coingeckoURL,
     details,
     asset,
@@ -61,18 +65,6 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
           <div className="flex items-center gap-3 1.5xs:flex-col 1.5xs:items-start 1.5xs:gap-4">
             <h5>{t("tokenInfos.aboutDenom", { name: title })}</h5>
             <div className="flex items-center gap-2">
-              {twitterUrl ? (
-                <Button
-                  size="sm-icon"
-                  variant="secondary"
-                  aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-                  asChild
-                >
-                  <Link href={twitterUrl} target="_blank" rel="external">
-                    <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
-                  </Link>
-                </Button>
-              ) : null}
               {websiteURL ? (
                 <Button
                   size="sm-icon"
@@ -81,7 +73,7 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
                   asChild
                 >
                   <Link href={websiteURL} target="_blank" rel="external">
-                    <Icon className="h-4 w-4 text-osmoverse-400" id="web" />
+                    <Icon className="h-4 w-4 fill-osmoverse-400" id="web" />
                   </Link>
                 </Button>
               ) : null}
@@ -96,9 +88,72 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
                 >
                   <Link href={coingeckoURL} target="_blank" rel="external">
                     <Icon
-                      className="h-4 w-4 text-osmoverse-400"
+                      className="h-4 w-4 fill-osmoverse-400"
                       id="coingecko"
                     />
+                  </Link>
+                </Button>
+              ) : null}
+              {twitterUrl ? (
+                <Button
+                  size="sm-icon"
+                  variant="secondary"
+                  aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
+                  asChild
+                >
+                  <Link href={twitterUrl} target="_blank" rel="external">
+                    <Icon className="h-4 w-4 fill-osmoverse-400" id="X" />
+                  </Link>
+                </Button>
+              ) : null}
+              {telegramURL ? (
+                <Button
+                  size="sm-icon"
+                  variant="secondary"
+                  aria-label={t("tokenInfos.ariaViewOn", { name: "Telegram" })}
+                  asChild
+                >
+                  <Link href={telegramURL} target="_blank" rel="external">
+                    <Icon
+                      className="h-4 w-4 stroke-osmoverse-400"
+                      id="telegram"
+                    />
+                  </Link>
+                </Button>
+              ) : null}
+              {discordURL ? (
+                <Button
+                  size="sm-icon"
+                  variant="secondary"
+                  aria-label={t("tokenInfos.ariaViewOn", { name: "Discord" })}
+                  asChild
+                >
+                  <Link href={discordURL} target="_blank" rel="external">
+                    <Icon className="h-4 w-4 fill-osmoverse-400" id="discord" />
+                  </Link>
+                </Button>
+              ) : null}
+              {githubURL ? (
+                <Button
+                  size="sm-icon"
+                  variant="secondary"
+                  aria-label={t("tokenInfos.ariaViewOn", { name: "GitHub" })}
+                  asChild
+                >
+                  <Link href={githubURL} target="_blank" rel="external">
+                    <Icon className="h-4 w-4 fill-osmoverse-400" id="github" />
+                  </Link>
+                </Button>
+              ) : null}
+              {mediumURL ? (
+                <Button
+                  size="sm-icon"
+                  variant="secondary"
+                  aria-label={t("tokenInfos.ariaViewOn", { name: "Medium" })}
+                  asChild
+                >
+                  <Link href={mediumURL} target="_blank" rel="external">
+                    <Icon className="h-4 w-4 fill-osmoverse-400" id="medium" />
                   </Link>
                 </Button>
               ) : null}
