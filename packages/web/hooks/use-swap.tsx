@@ -1139,11 +1139,6 @@ function useSwapAmountInput({
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
 
-  const inAmountInput = useAmountInput({
-    currency: swapAssets.fromAsset,
-    gasAmount: gasAmount,
-  });
-
   const balanceQuoteQueryEnabled =
     featureFlags.swapToolSimulateFee &&
     !isLoadingWallet &&
@@ -1151,14 +1146,9 @@ function useSwapAmountInput({
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     // since the in amount is debounced, the asset could be wrong when switching assets
-    inAmountInput.debouncedInAmount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset!.coinMinimalDenom &&
-    inAmountInput.amount?.currency.coinMinimalDenom ===
-      swapAssets.fromAsset!.coinMinimalDenom &&
-    !!inAmountInput.balance &&
-    !inAmountInput.balance.toDec().isZero() &&
-    inAmountInput.balance.currency.coinMinimalDenom ===
-      swapAssets.fromAsset?.coinMinimalDenom;
+    !!swapAssets.fromAsset &&
+    !!swapAssets.toAsset;
+
   const {
     data: quoteForCurrentBalance,
     isLoading: isQuoteForCurrentBalanceLoading_,
@@ -1167,12 +1157,26 @@ function useSwapAmountInput({
     {
       tokenIn: swapAssets.fromAsset!,
       tokenOut: swapAssets.toAsset!,
-      tokenInAmount: inAmountInput.balance?.toCoin().amount!,
+      tokenInAmount: swapAssets.fromAsset?.coinMinimalDenom
+        ? new CoinPretty(
+            swapAssets.fromAsset,
+            new Dec(1).mul(
+              DecUtils.getTenExponentN(swapAssets.fromAsset.coinDecimals)
+            )
+          )
+            .toCoin().amount
+        : "0",
       forcePoolId: forceSwapInPoolId,
       maxSlippage,
     },
     balanceQuoteQueryEnabled
   );
+
+  const inAmountInput = useAmountInput({
+    currency: swapAssets.fromAsset,
+    gasAmount: gasAmount,
+    swapFeeAmount: quoteForCurrentBalance?.tokenInFeeAmount,
+  });
   const isQuoteForCurrentBalanceLoading =
     isQuoteForCurrentBalanceLoading_ && balanceQuoteQueryEnabled;
 

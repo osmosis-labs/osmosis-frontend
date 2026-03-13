@@ -29,7 +29,11 @@ const config = {
         headers: [
           {
             key: "Cache-Control",
-            value: "public, max-age=864000", // Cache for 10 days
+            value: "public, max-age=31536000, immutable", // Cache for 1 year, immutable
+          },
+          {
+            key: "Vary",
+            value: "Accept-Encoding",
           },
         ],
       },

@@ -20,18 +20,22 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 /** Manages user input for a currency, with helpers for selecting
- *  the user’s currency balance as input. Includes support for debounce on input.
+ *  the user's currency balance as input. Includes support for debounce on input.
  *  If provided a gas amount and it is the same as the input currency,
  *  the gas fee will be subtracted if the user is inputting the max amount.
+ *  If provided a swap fee amount and it is the same as the input currency,
+ *  the swap fee will also be subtracted when the user selects max amount.
  */
 export function useAmountInput({
   currency,
   inputDebounceMs = 200,
   gasAmount,
+  swapFeeAmount,
 }: {
   currency: Currency | undefined;
   inputDebounceMs?: number;
   gasAmount?: CoinPretty;
+  swapFeeAmount?: CoinPretty;
 }) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
@@ -103,10 +107,24 @@ export function useAmountInput({
       }
     }
 
-    return maxValue;
-  }, [balance, gasAmount, currency]);
+    // Deduct swap fee when using MAX (fraction = 1)
+    if (
+      maxValue &&
+      swapFeeAmount?.currency.coinMinimalDenom === currency?.coinMinimalDenom &&
+      swapFeeAmount
+    ) {
+      const valueWithFee = maxValue.sub(swapFeeAmount);
+      if (valueWithFee.toDec().gte(new Dec(0))) {
+        maxValue = valueWithFee;
+      } else {
+        maxValue = new CoinPretty(currency, 0);
+      }
+    }
 
-  /** Amount derived from user input or from a fraction of the user’s balance. */
+    return maxValue;
+  }, [balance, gasAmount, swapFeeAmount, currency]);
+
+  /** Amount derived from user input or from a fraction of the user's balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
       let amountInt =
