@@ -28,11 +28,9 @@ export class BasePage {
       .waitForEvent('page', { timeout: 15000 })
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
+    let newPage: Page | null = null
     try {
-      const newPage = await pagePromise
-      await newPage.waitForLoadState('load', { timeout: 10000 })
-      console.log(`Title of the new page: ${await newPage.title()}`)
-      await newPage.getByRole('button', { name: 'Approve' }).click()
+      newPage = await pagePromise
     } catch (error: any) {
       if (
         error.name === 'TimeoutError' ||
@@ -44,6 +42,12 @@ export class BasePage {
       } else {
         throw error
       }
+    }
+
+    if (newPage) {
+      await newPage.waitForLoadState('load', { timeout: 10000 })
+      console.log(`Title of the new page: ${await newPage.title()}`)
+      await newPage.getByRole('button', { name: 'Approve' }).click()
     }
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
