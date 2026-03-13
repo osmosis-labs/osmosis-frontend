@@ -89,11 +89,10 @@ export class TransactionsPage extends BasePage {
    *
    * @remarks
    * - Locates cancel button using xpath with amount and price selectors
-   * - Checks button visibility first to fail fast if not found (avoids hanging promises)
-   * - Starts success listener BEFORE clicking to catch immediate confirmations (1-click trading)
-   * - Waits for Keplr approval popup with 20s timeout (gracefully handles 1-click scenarios)
+   * - Checks button visibility first to fail fast if not found
+   * - Waits for Keplr approval popup with 10s event-driven timeout (gracefully handles 1-click scenarios)
    * - Validates that the transaction message contains 'cancel_limit'
-   * - Waits for actual blockchain confirmation (40s timeout) instead of arbitrary delays
+   * - Waits for blockchain confirmation (40s timeout, starts after action click, parallel with approval)
    */
   async cancelLimitOrder(
     amount: string,
@@ -103,28 +102,19 @@ export class TransactionsPage extends BasePage {
     const cancelBtn = `//td//span[.='${amount}']/../../../../..//td//p[.='$${price}']/../../..//button`;
     console.log(`Use locator for a cancel btn: ${cancelBtn}`);
 
-    // IMPORTANT: Check button exists first before starting success listener
-    // This prevents hanging promises if button is not found (fail-fast pattern)
     const cancelBtnLocator = this.page.locator(cancelBtn).first();
     await expect(cancelBtnLocator, "Cancel button not found!").toBeVisible({
       timeout: 5000,
     });
 
-    // IMPORTANT: Start listening for transaction success BEFORE clicking cancel button
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({
-      timeout: 40000,
-    });
-
     await cancelBtnLocator.click();
 
-    // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
-    // If Keplr popup doesn't appear (1-click trading enabled), this will timeout gracefully
+    const successPromise = expect(
+      this.page.getByText("Transaction Successful")
+    ).toBeVisible({ timeout: 40000 });
+
     const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 20000,
+      timeout: 10000,
     });
 
     try {
@@ -138,35 +128,22 @@ export class TransactionsPage extends BasePage {
         .getByText("Execute contract")
         .textContent();
       console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-      // Approve trx
       await approveBtn.click();
-      // Expect that this is a cancel limit call
       expect(msgContentAmount).toContain("cancel_limit");
     } catch (error: any) {
-      // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-      // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-      // This is expected behavior, not an error - transaction is still submitted on-chain
       if (
         error.name === "TimeoutError" ||
         error.message?.includes("Timeout") ||
         error.message?.includes("timeout")
       ) {
         console.log(
-          "✓ Keplr approval popup did not appear within 20s for cancel operation; assuming 1-click trading is enabled or transaction was pre-approved."
+          "Keplr popup did not appear within 10s for cancel; assuming 1-click trading."
         );
       } else {
-        // Other errors (button not found, page closed, etc.) should fail the test
-        console.error(
-          "Failed to get Keplr approval popup for cancel:",
-          error.message ?? "Unknown error"
-        );
         throw error;
       }
     }
 
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-    // Replaces old pattern: await this.page.waitForTimeout(2000)
     await successPromise;
   }
 
@@ -188,21 +165,14 @@ export class TransactionsPage extends BasePage {
       return;
     }
 
-    // IMPORTANT: Start listening for transaction success BEFORE clicking button
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({
-      timeout: 40000,
-    });
-
     await this.claimAndClose.first().click();
 
-    // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
-    // If Keplr popup doesn't appear (1-click trading enabled), this will timeout gracefully
+    const successPromise = expect(
+      this.page.getByText("Transaction Successful")
+    ).toBeVisible({ timeout: 40000 });
+
     const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 20000,
+      timeout: 10000,
     });
 
     try {
@@ -223,54 +193,35 @@ export class TransactionsPage extends BasePage {
       console.log(
         `Wallet is approving this msg: \n${msgContentAmount1}---- \n${msgContentAmount2}`
       );
-      // Approve trx
       await approveBtn.click();
       expect(msgContentAmount1).toContain("claim_limit");
       expect(msgContentAmount2).toContain("cancel_limit");
     } catch (error: any) {
-      // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-      // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-      // This is expected behavior, not an error - transaction is still submitted on-chain
       if (
         error.name === "TimeoutError" ||
         error.message?.includes("Timeout") ||
         error.message?.includes("timeout")
       ) {
         console.log(
-          "✓ Keplr approval popup did not appear within 20s for claim and close; assuming 1-click trading is enabled or transaction was pre-approved."
+          "Keplr popup did not appear within 10s for claim and close; assuming 1-click trading."
         );
       } else {
-        // Other errors (button not found, page closed, etc.) should fail the test
-        console.error(
-          "Failed to get Keplr approval popup for claim and close:",
-          error.message ?? "Unknown error"
-        );
         throw error;
       }
     }
 
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-    // Replaces old pattern: await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT)
     await successPromise;
   }
 
   async claimAll(context: BrowserContext) {
-    // IMPORTANT: Start listening for transaction success BEFORE clicking button
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(
-      this.page.getByText("Transaction Successful")
-    ).toBeVisible({
-      timeout: 40000,
-    });
-
     await this.claimAllBtn.click();
 
-    // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
-    // If Keplr popup doesn't appear (1-click trading enabled), this will timeout gracefully
+    const successPromise = expect(
+      this.page.getByText("Transaction Successful")
+    ).toBeVisible({ timeout: 40000 });
+
     const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 20000,
+      timeout: 10000,
     });
 
     try {
@@ -280,33 +231,21 @@ export class TransactionsPage extends BasePage {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
-      // Approve trx
       await approveBtn.click();
     } catch (error: any) {
-      // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-      // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-      // This is expected behavior, not an error - transaction is still submitted on-chain
       if (
         error.name === "TimeoutError" ||
         error.message?.includes("Timeout") ||
         error.message?.includes("timeout")
       ) {
         console.log(
-          "✓ Keplr approval popup did not appear within 20s for claim all; assuming 1-click trading is enabled or transaction was pre-approved."
+          "Keplr popup did not appear within 10s for claim all; assuming 1-click trading."
         );
       } else {
-        // Other errors (button not found, page closed, etc.) should fail the test
-        console.error(
-          "Failed to get Keplr approval popup for claim all:",
-          error.message ?? "Unknown error"
-        );
         throw error;
       }
     }
 
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-    // Replaces old pattern: await this.page.waitForTimeout(TRANSACTION_CONFIRMATION_TIMEOUT)
     await successPromise;
   }
 

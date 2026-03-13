@@ -152,19 +152,22 @@ export class TradePage extends BasePage {
   }
 
   async justApproveIfNeeded(context: BrowserContext) {
-    console.log("Wait for 7 seconds for any popup");
-    await this.page.waitForTimeout(7_000);
-    const pages = context.pages();
-    console.log(`Number of Open Pages: ${pages.length}`);
-    if (pages.length === 2) {
-      const approvePage = pages[1];
-      const approvePageTitle = approvePage.url();
-      console.log(`Approve page is opened at: ${approvePageTitle}`);
+    let approvePage: import("@playwright/test").Page | null = null;
+    try {
+      approvePage = await context.waitForEvent("page", { timeout: 10000 });
+    } catch {
+      console.log(
+        "Keplr approval popup did not appear within 10s; assuming 1-click trading or pre-approved."
+      );
+    }
+
+    if (approvePage) {
+      await approvePage.waitForLoadState("load", { timeout: 10000 });
+      console.log(`Approve page is opened at: ${approvePage.url()}`);
       await approvePage
         .getByRole("button", { name: "Approve" })
         .click({ timeout: 4000 });
     }
-    console.log("Second page was not opened in 7 seconds.");
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
@@ -299,9 +302,9 @@ export class TradePage extends BasePage {
   async showSwapInfo() {
     const swapInfo = this.page.locator("//button//span[.='Show details']");
     await expect(swapInfo, "Show Swap Info button not visible!").toBeVisible({
-      timeout: 4000,
+      timeout: 10000,
     });
-    await swapInfo.click({ timeout: 2000 });
+    await swapInfo.click({ timeout: 5000 });
   }
 
   async getPriceInpact() {
@@ -662,9 +665,9 @@ export class TradePage extends BasePage {
    *
    * @remarks
    * - Waits for sell button to be enabled before proceeding
-   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
    * - No retry logic - for retry support, use sellAndGetWalletMsg()
    */
   async sellAndApprove(
@@ -673,31 +676,21 @@ export class TradePage extends BasePage {
   ) {
     const slippagePercent = options?.slippagePercent;
 
-    // Make sure Sell button is enabled
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
 
-    // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
-
     await this.sellBtn.click();
 
-    // Set slippage tolerance if specified (after sell clicked, before confirm)
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
     }
 
     await this.confirmSwapBtn.click();
+    const successPromise = expect(this.trxSuccessful).toBeVisible({
+      timeout: 40000,
+    });
     await this.justApproveIfNeeded(context);
-    await this.page.waitForTimeout(1000);
-
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
     await successPromise;
   }
 
@@ -711,9 +704,9 @@ export class TradePage extends BasePage {
    *
    * @remarks
    * - Waits for buy button to be enabled before proceeding
-   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
    * - No retry logic - for retry support, use buyAndGetWalletMsg()
    */
   async buyAndApprove(
@@ -726,26 +719,17 @@ export class TradePage extends BasePage {
       timeout: this.buySellTimeout,
     });
 
-    // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-    // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-    // The promise runs in parallel with subsequent operations to minimize total wait time
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
-
     await this.buyBtn.click();
 
-    // Set slippage tolerance if specified (after buy clicked, before confirm)
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
     }
 
     await this.confirmSwapBtn.click();
+    const successPromise = expect(this.trxSuccessful).toBeVisible({
+      timeout: 40000,
+    });
     await this.justApproveIfNeeded(context);
-    await this.page.waitForTimeout(1000);
-
-    // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-    // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
     await successPromise;
   }
 
@@ -791,9 +775,9 @@ export class TradePage extends BasePage {
    * @remarks
    * - Checks for sufficient balance before attempting swap
    * - Implements automatic retry logic with 1.5s delay for quote refresh race conditions
-   * - Automatically approves transaction in Keplr if popup appears (7s timeout)
+   * - Automatically approves transaction in Keplr if popup appears (10s event-driven timeout)
    * - Gracefully handles 1-click trading (no popup scenario)
-   * - Waits for blockchain confirmation before returning (40s timeout)
+   * - Waits for blockchain confirmation (40s timeout, starts after confirm click, parallel with approval)
    * - Retries only on swap button disabled errors; other errors fail immediately
    */
   async swapAndApprove(
@@ -803,10 +787,8 @@ export class TradePage extends BasePage {
     const maxRetries = options?.maxRetries ?? 3;
     const slippagePercent = options?.slippagePercent;
 
-    // Retry logic to handle race conditions where quote refreshes and temporarily disables swap button
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
-        // Make sure to have sufficient balance and swap button is enabled
         expect(
           await this.isInsufficientBalanceForSwap(),
           "Insufficient balance for the swap!"
@@ -816,33 +798,24 @@ export class TradePage extends BasePage {
           timeout: this.buySellTimeout,
         });
 
-        // IMPORTANT: Start listening for transaction success BEFORE any UI interactions
-        // This ensures we don't miss immediate confirmations (1-click trading can be very fast)
-        // The promise runs in parallel with subsequent operations to minimize total wait time
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
-        });
-
         await this.swapBtn.click({ timeout: 4000 });
 
-        // Set slippage tolerance if specified (after swap clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
 
         await this.confirmSwapBtn.click({ timeout: 5000 });
+        const successPromise = expect(this.trxSuccessful).toBeVisible({
+          timeout: 40000,
+        });
         await this.justApproveIfNeeded(context);
 
-        // Successfully submitted! Now wait for transaction success
         if (attempt > 0) {
           console.log(
             `✓ Swap transaction submitted after ${attempt} retry(ies)`
           );
         }
 
-        // IMPORTANT: Wait for actual blockchain confirmation instead of arbitrary timeout
-        // This ensures transaction is actually confirmed on-chain (or fails) before proceeding
-        // Each retry gets a fresh 40s timeout to avoid timeout exhaustion
         await successPromise;
 
         return;
@@ -858,17 +831,14 @@ export class TradePage extends BasePage {
               `Waiting for quote to stabilize and retrying...`
           );
 
-          // Wait for quote/route to finish refreshing
           await this.page.waitForTimeout(1500);
 
-          // Log exchange rate to see if it changed
           const rate = await this.getExchangeRate().catch(() => "N/A");
           console.log(`Exchange rate after wait: ${rate}`);
 
-          continue; // Retry
+          continue;
         }
 
-        // Final attempt failed or different error - throw it
         throw error;
       }
     }
