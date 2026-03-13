@@ -2,6 +2,8 @@
 import * as fs from "node:fs";
 import path from "node:path";
 
+import { ariaExtensionInfo } from "@cosmos-kit/aria-extension";
+import { AriaMobileInfo as ariaMobileInfo } from "@cosmos-kit/aria-mobile";
 import { cdcwalletExtensionInfo } from "@cosmos-kit/cdcwallet-extension";
 import { Wallet as DefaultWallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
@@ -38,6 +40,8 @@ const CosmosKitWalletList: Wallet[] = [
   cosmostationExtensionInfo,
   stationExtensionInfo,
   cdcwalletExtensionInfo,
+  ariaExtensionInfo,
+  ariaMobileInfo,
 ];
 
 function isObject(value: any): value is Record<any, any> {

@@ -336,4 +336,21 @@ export const CosmosWalletRegistry: CosmosRegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["aria-extension"],
+    logo: "/wallets/aria.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/aria-extension").then((m) => m.AriaExtensionWallet),
+    mobileDisabled: false,
+    windowPropertyName: "aria",
+    features: [],
+    mode: "extension",
+  },
+  {
+    ...CosmosKitWalletList["aria-mobile"],
+    logo: "/wallets/aria.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/aria-mobile").then((m) => m.AriaMobileWallet),
+    features: [],
+  },
 ];
