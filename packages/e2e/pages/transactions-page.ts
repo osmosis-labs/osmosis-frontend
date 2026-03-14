@@ -113,12 +113,27 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 10000,
-    });
+    let approvePage: Page | null =
+      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
 
-    try {
-      const approvePage = await pageApprovePromise;
+    if (!approvePage) {
+      try {
+        approvePage = await context.waitForEvent("page", { timeout: 10000 });
+      } catch (error: any) {
+        if (
+          error.name === "TimeoutError" ||
+          /timeout/i.test(error.message ?? "")
+        ) {
+          console.log(
+            "Keplr popup did not appear within 10s for cancel; assuming 1-click trading."
+          );
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    if (approvePage) {
       await approvePage.waitForLoadState();
       const approveBtn = approvePage.getByRole("button", {
         name: "Approve",
@@ -130,18 +145,6 @@ export class TransactionsPage extends BasePage {
       console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
       await approveBtn.click();
       expect(msgContentAmount).toContain("cancel_limit");
-    } catch (error: any) {
-      if (
-        error.name === "TimeoutError" ||
-        error.message?.includes("Timeout") ||
-        error.message?.includes("timeout")
-      ) {
-        console.log(
-          "Keplr popup did not appear within 10s for cancel; assuming 1-click trading."
-        );
-      } else {
-        throw error;
-      }
     }
 
     await successPromise;
@@ -171,12 +174,27 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 10000,
-    });
+    let approvePage: Page | null =
+      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
 
-    try {
-      const approvePage = await pageApprovePromise;
+    if (!approvePage) {
+      try {
+        approvePage = await context.waitForEvent("page", { timeout: 10000 });
+      } catch (error: any) {
+        if (
+          error.name === "TimeoutError" ||
+          /timeout/i.test(error.message ?? "")
+        ) {
+          console.log(
+            "Keplr popup did not appear within 10s for claim and close; assuming 1-click trading."
+          );
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    if (approvePage) {
       await approvePage.waitForLoadState();
       const approveBtn = approvePage.getByRole("button", {
         name: "Approve",
@@ -196,18 +214,6 @@ export class TransactionsPage extends BasePage {
       await approveBtn.click();
       expect(msgContentAmount1).toContain("claim_limit");
       expect(msgContentAmount2).toContain("cancel_limit");
-    } catch (error: any) {
-      if (
-        error.name === "TimeoutError" ||
-        error.message?.includes("Timeout") ||
-        error.message?.includes("timeout")
-      ) {
-        console.log(
-          "Keplr popup did not appear within 10s for claim and close; assuming 1-click trading."
-        );
-      } else {
-        throw error;
-      }
     }
 
     await successPromise;
@@ -220,30 +226,33 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const pageApprovePromise = context.waitForEvent("page", {
-      timeout: 10000,
-    });
+    let approvePage: Page | null =
+      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
 
-    try {
-      const approvePage = await pageApprovePromise;
+    if (!approvePage) {
+      try {
+        approvePage = await context.waitForEvent("page", { timeout: 10000 });
+      } catch (error: any) {
+        if (
+          error.name === "TimeoutError" ||
+          /timeout/i.test(error.message ?? "")
+        ) {
+          console.log(
+            "Keplr popup did not appear within 10s for claim all; assuming 1-click trading."
+          );
+        } else {
+          throw error;
+        }
+      }
+    }
+
+    if (approvePage) {
       await approvePage.waitForLoadState();
       const approveBtn = approvePage.getByRole("button", {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
       await approveBtn.click();
-    } catch (error: any) {
-      if (
-        error.name === "TimeoutError" ||
-        error.message?.includes("Timeout") ||
-        error.message?.includes("timeout")
-      ) {
-        console.log(
-          "Keplr popup did not appear within 10s for claim all; assuming 1-click trading."
-        );
-      } else {
-        throw error;
-      }
     }
 
     await successPromise;
