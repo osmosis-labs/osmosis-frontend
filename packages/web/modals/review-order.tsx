@@ -32,7 +32,7 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
-import { DefaultSlippage } from "~/config/swap";
+import { DefaultSlippage, ExtremeValueDisparityThreshold } from "~/config/swap";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -116,6 +116,8 @@ export const ReviewOrder = observer(function ReviewOrder({
   const { logEvent } = useAmplitudeAnalytics();
   const [manualSlippage, setManualSlippage] = useState("");
   const [isEditingSlippage, setIsEditingSlippage] = useState(false);
+  const [hasAcknowledgedDisparity, setHasAcknowledgedDisparity] =
+    useState(false);
   const [tab] = useQueryState("tab", parseAsString.withDefault("swap"));
 
   const [showOneClickTradingSettings, setShowOneClickTradingSettings] =
@@ -177,6 +179,19 @@ export const ReviewOrder = observer(function ReviewOrder({
       slippageConfig.slippage.toDec().gt(new Dec(0.01)));
   const isManualSlippageTooLow =
     displayedSlippage !== "" && +displayedSlippage < 0.1;
+
+  const inputUsdNum = Number(inAmountFiat?.toDec().toString() ?? "0");
+  const minimumOutputUsdNum = Number(
+    fiatAmountWithSlippage?.toDec().toString() ?? "0"
+  );
+  const isExtremeValueDisparity =
+    inputUsdNum > 1 &&
+    minimumOutputUsdNum > 0 &&
+    minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
+
+  useEffect(() => {
+    if (!isExtremeValueDisparity) setHasAcknowledgedDisparity(false);
+  }, [isExtremeValueDisparity]);
 
   //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
@@ -836,22 +851,47 @@ export const ReviewOrder = observer(function ReviewOrder({
                 />
               )}
               {!diffGteSlippage && (
-                <div className="flex w-full justify-between gap-3 pt-3">
-                  <Button
-                    mode="primary"
-                    onClick={() => {
-                      confirmAction();
-                    }}
-                    disabled={
-                      isConfirmationDisabled ||
-                      wouldExceedSpendLimit ||
-                      hasInsufficientFeeTokens
-                    }
-                    className="body2 sm:caption !rounded-2xl"
-                  >
-                    <h6>{t("limitOrders.confirm")}</h6>
-                  </Button>
-                </div>
+                <>
+                  {isExtremeValueDisparity && (
+                    <div className="flex items-start gap-3 rounded-xl bg-rust-800 p-4">
+                      <input
+                        type="checkbox"
+                        id="extreme-disparity-ack"
+                        className="mt-0.5 h-4 w-4 accent-rust-400 cursor-pointer"
+                        checked={hasAcknowledgedDisparity}
+                        onChange={(e) =>
+                          setHasAcknowledgedDisparity(e.target.checked)
+                        }
+                      />
+                      <label
+                        htmlFor="extreme-disparity-ack"
+                        className="text-sm text-rust-200 cursor-pointer"
+                      >
+                        {t(
+                          "swap.extremeDisparityAcknowledgement",
+                          "I understand I am receiving significantly less value than I am sending."
+                        )}
+                      </label>
+                    </div>
+                  )}
+                  <div className="flex w-full justify-between gap-3 pt-3">
+                    <Button
+                      mode="primary"
+                      onClick={() => {
+                        confirmAction();
+                      }}
+                      disabled={
+                        isConfirmationDisabled ||
+                        wouldExceedSpendLimit ||
+                        hasInsufficientFeeTokens ||
+                        (isExtremeValueDisparity && !hasAcknowledgedDisparity)
+                      }
+                      className="body2 sm:caption !rounded-2xl"
+                    >
+                      <h6>{t("limitOrders.confirm")}</h6>
+                    </Button>
+                  </div>
+                </>
               )}
             </div>
           </div>
