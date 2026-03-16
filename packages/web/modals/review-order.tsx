@@ -17,6 +17,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { observer } from "mobx-react-lite";
 import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
@@ -31,6 +32,7 @@ import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
 import { EventName, EventPage } from "~/config/analytics-events";
+import { DefaultSlippage } from "~/config/swap";
 import {
   Breakpoint,
   MultiLanguageT,
@@ -81,7 +83,7 @@ interface ReviewOrderProps {
   overspendErrorParams?: ReturnType<typeof useSwap>["overspendErrorParams"];
 }
 
-export function ReviewOrder({
+export const ReviewOrder = observer(function ReviewOrder({
   isOpen,
   onClose: onCloseProp,
   confirmAction,
@@ -157,12 +159,24 @@ export function ReviewOrder({
   );
   const { isMobile } = useWindowSize(Breakpoint.sm);
 
+  // If the user hasn't typed anything, show the auto-adjusted default as the actual value
+  // rather than relying on the placeholder (which doesn't always update reactively).
+  const displayedSlippage =
+    manualSlippage !== ""
+      ? manualSlippage
+      : slippageConfig &&
+          slippageConfig.defaultManualSlippage !== DefaultSlippage &&
+          !isEditingSlippage
+        ? slippageConfig.defaultManualSlippage
+        : "";
+
   const isManualSlippageTooHigh =
-    (!!manualSlippage && parseInt(manualSlippage) > 1) ||
-    (!manualSlippage &&
+    (!!displayedSlippage && parseInt(displayedSlippage) > 1) ||
+    (!displayedSlippage &&
       !!slippageConfig &&
       slippageConfig.slippage.toDec().gt(new Dec(0.01)));
-  const isManualSlippageTooLow = manualSlippage !== "" && +manualSlippage < 0.1;
+  const isManualSlippageTooLow =
+    displayedSlippage !== "" && +displayedSlippage < 0.1;
 
   //Value is memoized as it must be frozen when the component is mounted
   const initialOutput = useMemo(
@@ -589,7 +603,21 @@ export function ReviewOrder({
                     <RecapRow
                       left={t("swap.settings.slippage")}
                       right={
-                        <div className="flex items-center justify-end">
+                        <div className="flex items-center justify-end gap-2">
+                          {slippageConfig.defaultManualSlippage !==
+                            DefaultSlippage && (
+                            <GenericDisclaimer
+                              title="Slippage auto-adjusted"
+                              body="This trade's default slippage has been raised due to high price impact or low liquidity."
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                width={16}
+                                height={16}
+                                className="text-ammelia-400"
+                              />
+                            </GenericDisclaimer>
+                          )}
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
@@ -613,7 +641,7 @@ export function ReviewOrder({
                                     isManualSlippageTooHigh,
                                 }
                               )}
-                              value={manualSlippage}
+                              value={displayedSlippage}
                               onFocus={() => {
                                 slippageConfig?.setIsManualSlippage(true);
                                 setIsEditingSlippage(true);
@@ -645,7 +673,7 @@ export function ReviewOrder({
                                 ]);
                               }}
                             />
-                            {manualSlippage !== "" && (
+                            {displayedSlippage !== "" && (
                               <span
                                 className={classNames({
                                   "text-rust-400": isManualSlippageTooHigh,
@@ -855,7 +883,7 @@ export function ReviewOrder({
       )}
     </ModalBase>
   );
-}
+});
 
 const OneClickTradingPanel = ({
   t,
