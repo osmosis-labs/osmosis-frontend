@@ -49,6 +49,7 @@ import {
   validatePrivateKey,
 } from "../utils/fund-utils";
 import { TOKEN_DENOMS } from "../utils/balance-checker";
+import BigNumber from "bignumber.js";
 
 const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
 
@@ -68,9 +69,9 @@ function coinSummary(coins: Coin[]): string {
       );
       if (!entry) return `${c.amount} ${c.denom}`;
       const [symbol, info] = entry;
-      const human = (parseInt(c.amount, 10) / 10 ** info.decimals).toFixed(
-        Math.min(info.decimals, 4)
-      );
+      const human = new BigNumber(c.amount)
+        .div(new BigNumber(10).pow(info.decimals))
+        .toFixed(Math.min(info.decimals, 4));
       return `+${human} ${symbol}`;
     })
     .join("  |  ");
@@ -109,43 +110,54 @@ async function sendSlackSummary(
     lines.push(`*${label}:* Already funded — skipped\n`);
   }
 
-  // Remaining topup balances with swap-needed flags
-  if (remaining.length > 0) {
-    const gaps = computeSwapGaps(remaining, targets, reserves);
-    const gapBySymbol = new Map(gaps.map((g) => [g.symbol, g]));
+  // Remaining topup balances with swap-needed flags.
+  // Scale warnAmount by multiplier so gap detection matches the actual topup target.
+  const scaledTargets = targets.map((t) => ({
+    ...t,
+    requirements: t.requirements.map((r) => ({
+      ...r,
+      warnAmount: r.warnAmount * multiplier,
+    })),
+  }));
+  const gaps = computeSwapGaps(remaining, scaledTargets, reserves);
+  const gapBySymbol = new Map(gaps.map((g) => [g.symbol, g]));
 
-    lines.push("*Remaining topup account balances:*");
-    lines.push("```");
+  const allSymbols = [
+    ...remaining.map((b) => b.symbol),
+    ...gaps
+      .filter((g) => g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol))
+      .map((g) => g.symbol),
+  ];
+  const maxSym = Math.max(...allSymbols.map((s) => s.length), 6);
 
-    const maxSym = Math.max(...remaining.map((b) => b.symbol.length), 6);
+  lines.push("*Remaining topup account balances:*");
+  lines.push("```");
+  lines.push(
+    `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`
+  );
+  lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
+
+  for (const b of remaining) {
+    const d = Math.min(b.decimals, 8);
+    const gap = gapBySymbol.get(b.symbol);
+    let status = "";
+    if (gap && gap.gap < -0.0001) {
+      status = `⚠ NEED SWAP (short ${Math.abs(gap.gap).toFixed(d)})`;
+    }
     lines.push(
-      `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`
+      `${b.symbol.padEnd(maxSym)}  ${b.amount.toFixed(d).padStart(16)}  ${status}`
     );
-    lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
+  }
 
-    for (const b of remaining) {
-      const d = Math.min(b.decimals, 8);
-      const gap = gapBySymbol.get(b.symbol);
-      let status = "";
-      if (gap && gap.gap < -0.0001) {
-        status = `⚠ NEED SWAP (short ${Math.abs(gap.gap).toFixed(d)})`;
-      }
+  for (const g of gaps) {
+    if (g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)) {
       lines.push(
-        `${b.symbol.padEnd(maxSym)}  ${b.amount.toFixed(d).padStart(16)}  ${status}`
+        `${g.symbol.padEnd(maxSym)}  ${"0".padStart(16)}  ⚠ NEED SWAP (short ${Math.abs(g.gap).toFixed(4)})`
       );
     }
-
-    // Tokens needed by targets but not held at all
-    for (const g of gaps) {
-      if (g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)) {
-        lines.push(
-          `${g.symbol.padEnd(Math.max(...remaining.map((b) => b.symbol.length), 6))}  ${"0".padStart(16)}  ⚠ NEED SWAP (short ${Math.abs(g.gap).toFixed(4)})`
-        );
-      }
-    }
-
-    lines.push("```");
   }
+
+  lines.push("```");
 
   const payload = {
     text: headerText,
