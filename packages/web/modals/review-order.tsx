@@ -867,10 +867,7 @@ export const ReviewOrder = observer(function ReviewOrder({
                         htmlFor="extreme-disparity-ack"
                         className="text-sm text-rust-200 cursor-pointer"
                       >
-                        {t(
-                          "swap.extremeDisparityAcknowledgement",
-                          "I understand I am receiving significantly less value than I am sending."
-                        )}
+                        {t("swap.extremeDisparityAcknowledgement")}
                       </label>
                     </div>
                   )}
