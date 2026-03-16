@@ -50,6 +50,7 @@ import {
 import {
   useAmountWithSlippage,
   useDynamicSlippageConfig,
+  useDynamicSlippageFromQuote,
   useSwap,
 } from "~/hooks/use-swap";
 import { AddFundsModal } from "~/modals/add-funds";
@@ -138,6 +139,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       slippageConfig,
       feeError: swapState.networkFeeError,
       quoteType,
+    });
+
+    useDynamicSlippageFromQuote({
+      quote: swapState.quote,
+      slippageConfig,
     });
 
     if (
