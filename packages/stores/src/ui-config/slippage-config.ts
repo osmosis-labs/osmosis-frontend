@@ -4,23 +4,11 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { InvalidSlippageError, NegativeSlippageError } from "./errors";
 
 export class ObservableSlippageConfig {
-  static readonly defaultSelectableSlippages: ReadonlyArray<Dec> = [
-    // 0.5%
-    new Dec("0.005"),
-    // 1%
-    new Dec("0.01"),
-    // 3%
-    new Dec("0.03"),
-    // 5%
-    new Dec("0.05"),
-  ];
-
   @observable
   protected _defaultManualSlippage: string = "0.5";
 
   @observable.shallow
-  protected _selectableSlippages: ReadonlyArray<Dec> =
-    ObservableSlippageConfig.defaultSelectableSlippages;
+  protected _selectableSlippages: ReadonlyArray<Dec> = [];
 
   @observable
   protected _selectedIndex: number = 0;
