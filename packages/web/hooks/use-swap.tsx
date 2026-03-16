@@ -29,7 +29,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
 
@@ -1734,6 +1734,82 @@ export function useDynamicSlippageConfig({
       }
     }
   }, [feeError, slippageConfig, quoteType]);
+}
+
+// Single source of truth for all slippage tiers.
+// Values are also used to populate selectableSlippages on ObservableSlippageConfig.
+export const DYNAMIC_SLIPPAGE_TIERS = [
+  { slippage: "0.2", minPriceImpact: new Dec(0.003), maxLiquidityCap: new Dec(50000) },
+  { slippage: "0.3", minPriceImpact: new Dec(0.006), maxLiquidityCap: new Dec(25000) },
+  { slippage: "0.5", minPriceImpact: new Dec(0.01),  maxLiquidityCap: new Dec(10000) },
+  { slippage: "1.0", minPriceImpact: new Dec(0.03),  maxLiquidityCap: new Dec(3000)  },
+  { slippage: "2.0", minPriceImpact: new Dec(0.05),  maxLiquidityCap: new Dec(1000)  },
+  { slippage: "3.0", minPriceImpact: new Dec(0.10),  maxLiquidityCap: new Dec(300)   },
+  { slippage: "5.0", minPriceImpact: new Dec(0.20),  maxLiquidityCap: new Dec(100)   },
+];
+
+/** Proactively adjusts slippage based on price impact and liquidity cap from the quote */
+export function useDynamicSlippageFromQuote({
+  quote,
+  slippageConfig,
+}: {
+  quote: SwapState["quote"];
+  slippageConfig: ObservableSlippageConfig;
+}) {
+  // Populate selectableSlippages from tiers on mount so the error hook
+  // (useDynamicSlippageConfig) draws from the same list as the proactive hook.
+  useEffect(() => {
+    slippageConfig.setSelectableSlippages(
+      DYNAMIC_SLIPPAGE_TIERS.map(({ slippage }) =>
+        new Dec(slippage).quo(DecUtils.getTenExponentN(2))
+      )
+    );
+  }, [slippageConfig]);
+
+  // Track the last value we auto-set so we can distinguish it from a user override
+  const lastAutoSet = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!quote) return;
+
+    if (lastAutoSet.current !== null) {
+      // If isManualSlippage flipped back to false, useDynamicSlippageConfig (error hook)
+      // has called select() — don't override its correction
+      if (!slippageConfig.isManualSlippage) return;
+
+      // If the value differs from what we set, the user typed in the box — respect that
+      if (slippageConfig.manualSlippageStr !== lastAutoSet.current) return;
+    }
+
+    const priceImpact = quote.priceImpactTokenOut?.toDec().abs() ?? new Dec(0);
+    const tokens = quote.tokens;
+    const lowestLiquidityCap =
+      tokens && tokens.length > 0
+        ? tokens.reduce((min, t) => {
+            const cap = new Dec(t.liquidity_cap);
+            return cap.lt(min) ? cap : min;
+          }, new Dec(Number.MAX_SAFE_INTEGER))
+        : undefined;
+
+    let suggested = DefaultSlippage;
+    for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
+      if (
+        priceImpact.gte(tier.minPriceImpact) ||
+        (lowestLiquidityCap !== undefined &&
+          lowestLiquidityCap.lte(tier.maxLiquidityCap))
+      ) {
+        suggested = tier.slippage;
+        break;
+      }
+    }
+
+    lastAutoSet.current = suggested;
+    // setDefaultSlippage updates the placeholder shown in the review modal input
+    slippageConfig.setDefaultSlippage(suggested);
+    // setManualSlippage sets the actual slippage value (also sets isManualSlippage = true
+    // so the slippage getter uses this value rather than the preset buttons)
+    slippageConfig.setManualSlippage(suggested);
+  }, [quote, slippageConfig]);
 }
 
 /** Extracts the numerical values from the swap required error
