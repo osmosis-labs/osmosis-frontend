@@ -19,6 +19,7 @@
  * @requires TOPUP_MULTIPLIER        - (optional) Target = warnAmount × this. Default: 1.5.
  * @requires RESERVE_OSMO            - (optional) OSMO to keep in topup account. Default: 5.
  * @requires RESERVE_USDC            - (optional) USDC to keep in topup account. Default: 500.
+ * @requires SLACK_WEBHOOK_URL       - (optional) Slack incoming-webhook URL for topup summary.
  */
 
 import * as dotenv from "dotenv";
@@ -26,6 +27,7 @@ import * as path from "path";
 
 import { ACCOUNT_REQUIREMENTS } from "../utils/balance-config";
 import type { OfflineDirectSigner } from "@cosmjs/proto-signing";
+import type { Coin } from "@cosmjs/stargate";
 
 import {
   OSMOSIS_RPC,
@@ -34,8 +36,10 @@ import {
 } from "../utils/order-utils";
 import {
   type AccountTarget,
+  type ReserveConfig,
   type TokenBalance,
   calculateTopup,
+  computeSwapGaps,
   fetchAllKnownBalances,
   parseReserves,
   printBalanceTable,
@@ -44,6 +48,140 @@ import {
   resolveRequirementsToTokenUnits,
   validatePrivateKey,
 } from "../utils/fund-utils";
+import { TOKEN_DENOMS } from "../utils/balance-checker";
+
+const MINTSCAN_TX_URL = "https://www.mintscan.io/osmosis/txs";
+
+interface TransferResult {
+  label: string;
+  address: string;
+  coins: Coin[];
+  txHash?: string;
+  error?: string;
+}
+
+function coinSummary(coins: Coin[]): string {
+  return coins
+    .map((c) => {
+      const entry = Object.entries(TOKEN_DENOMS).find(
+        ([, info]) => info.denom === c.denom
+      );
+      if (!entry) return `${c.amount} ${c.denom}`;
+      const [symbol, info] = entry;
+      const human = (parseInt(c.amount, 10) / 10 ** info.decimals).toFixed(
+        Math.min(info.decimals, 4)
+      );
+      return `+${human} ${symbol}`;
+    })
+    .join("  |  ");
+}
+
+async function sendSlackSummary(
+  results: TransferResult[],
+  skippedLabels: string[],
+  remaining: TokenBalance[],
+  targets: AccountTarget[],
+  reserves: ReserveConfig,
+  multiplier: number,
+  hasFailures: boolean
+): Promise<void> {
+  const webhookUrl = process.env.SLACK_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const headerText = hasFailures
+    ? "⚠️ E2E Topup Complete (Partial Failure)"
+    : "✅ E2E Topup Complete";
+
+  const lines: string[] = [`*Multiplier:* ${multiplier}x warnAmount\n`];
+
+  for (const r of results) {
+    lines.push(`*${r.label}* (\`${r.address}\`):`);
+    lines.push(`  ${coinSummary(r.coins)}`);
+    if (r.txHash) {
+      lines.push(`  <${MINTSCAN_TX_URL}/${r.txHash}|View TX on Mintscan>`);
+    } else if (r.error) {
+      lines.push(`  :x: Failed: ${r.error}`);
+    }
+    lines.push("");
+  }
+
+  for (const label of skippedLabels) {
+    lines.push(`*${label}:* Already funded — skipped\n`);
+  }
+
+  // Remaining topup balances with swap-needed flags
+  if (remaining.length > 0) {
+    const gaps = computeSwapGaps(remaining, targets, reserves);
+    const gapBySymbol = new Map(gaps.map((g) => [g.symbol, g]));
+
+    lines.push("*Remaining topup account balances:*");
+    lines.push("```");
+
+    const maxSym = Math.max(...remaining.map((b) => b.symbol.length), 6);
+    lines.push(
+      `${"Token".padEnd(maxSym)}  ${"Amount".padStart(16)}  Status`
+    );
+    lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
+
+    for (const b of remaining) {
+      const d = Math.min(b.decimals, 8);
+      const gap = gapBySymbol.get(b.symbol);
+      let status = "";
+      if (gap && gap.gap < -0.0001) {
+        status = `⚠ NEED SWAP (short ${Math.abs(gap.gap).toFixed(d)})`;
+      }
+      lines.push(
+        `${b.symbol.padEnd(maxSym)}  ${b.amount.toFixed(d).padStart(16)}  ${status}`
+      );
+    }
+
+    // Tokens needed by targets but not held at all
+    for (const g of gaps) {
+      if (g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)) {
+        lines.push(
+          `${g.symbol.padEnd(Math.max(...remaining.map((b) => b.symbol.length), 6))}  ${"0".padStart(16)}  ⚠ NEED SWAP (short ${Math.abs(g.gap).toFixed(4)})`
+        );
+      }
+    }
+
+    lines.push("```");
+  }
+
+  const payload = {
+    text: headerText,
+    blocks: [
+      {
+        type: "header",
+        text: { type: "plain_text", text: headerText, emoji: true },
+      },
+      {
+        type: "section",
+        text: { type: "mrkdwn", text: lines.join("\n") },
+      },
+    ],
+  };
+
+  try {
+    const resp = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(15_000),
+    });
+    if (!resp.ok) {
+      console.error(
+        `  ⚠ Slack webhook responded ${resp.status}: ${await resp.text()}`
+      );
+    } else {
+      console.log("  Slack summary sent.");
+    }
+  } catch (err) {
+    console.error(
+      "  ⚠ Failed to send Slack summary:",
+      err instanceof Error ? err.message : err
+    );
+  }
+}
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -170,6 +308,8 @@ async function main(): Promise<void> {
   // a partial prior run is detected and already-funded accounts are skipped.
   const client = await createSigningClient(topupWallet);
   let hasFailures = false;
+  const transferResults: TransferResult[] = [];
+  const skippedLabels: string[] = [];
 
   for (const target of targets) {
     const freshTopup = await fetchAllKnownBalances(topupAddress);
@@ -189,6 +329,7 @@ async function main(): Promise<void> {
 
     if (!entry || entry.coins.length === 0) {
       console.log(`\n  ${target.label}: fully funded, skipping.`);
+      skippedLabels.push(target.label);
       continue;
     }
 
@@ -205,17 +346,39 @@ async function main(): Promise<void> {
         "auto"
       );
       console.log(`  ✅ TX: ${result.transactionHash}`);
+      transferResults.push({
+        label: target.label,
+        address: target.address,
+        coins: entry.coins,
+        txHash: result.transactionHash,
+      });
     } catch (err) {
       hasFailures = true;
-      console.error(
-        `  ❌ Failed:`,
-        err instanceof Error ? err.message : err
-      );
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      console.error(`  ❌ Failed:`, errorMsg);
+      transferResults.push({
+        label: target.label,
+        address: target.address,
+        coins: entry.coins,
+        error: errorMsg,
+      });
     }
   }
 
   const remaining = await fetchAllKnownBalances(topupAddress);
   printBalanceTable("Remaining topup account balances", remaining);
+
+  if (transferResults.length > 0) {
+    await sendSlackSummary(
+      transferResults,
+      skippedLabels,
+      remaining,
+      targets,
+      reserves,
+      multiplier,
+      hasFailures
+    );
+  }
 
   if (hasFailures) {
     console.error("\n  ❌ One or more transfers failed.");

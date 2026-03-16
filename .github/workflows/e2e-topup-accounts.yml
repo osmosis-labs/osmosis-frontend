@@ -71,4 +71,5 @@ jobs:
           TOPUP_MULTIPLIER: ${{ inputs.topup_multiplier }}
           RESERVE_OSMO: ${{ inputs.reserve_osmo }}
           RESERVE_USDC: ${{ inputs.reserve_usdc }}
+          SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
         run: npx tsx packages/e2e/scripts/topup-accounts.ts
