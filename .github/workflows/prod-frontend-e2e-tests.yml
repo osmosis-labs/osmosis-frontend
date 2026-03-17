@@ -103,13 +103,18 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              gh workflow run "E2E: Topup Test Accounts" \
-                --ref stage \
-                -f dry_run=false \
-                -f topup_multiplier=1.5 \
-                -f reserve_osmo=5 \
-                -f reserve_usdc=500
-              echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
             else
               echo "Skipping topup — balance outcome: $OUTCOME"
             fi
