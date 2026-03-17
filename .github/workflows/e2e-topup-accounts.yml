@@ -28,6 +28,10 @@ on:
         type: string
         default: "500"
 
+concurrency:
+  group: e2e-topup
+  cancel-in-progress: false
+
 permissions:
   contents: read
 

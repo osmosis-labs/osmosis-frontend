@@ -91,6 +91,18 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run "E2E: Topup Test Accounts" \
+            --ref stage \
+            -f dry_run=false \
+            -f topup_multiplier=1.5 \
+            -f reserve_osmo=5 \
+            -f reserve_usdc=500
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
