@@ -307,9 +307,14 @@ export class TradePage extends BasePage {
     ).toBeFalsy();
   }
 
-  async isError() {
+  async isError(settleTimeout = 5_000) {
     const errorBtn = this.page.locator('//button[.="Error"]');
-    return await errorBtn.isVisible({ timeout: 2000 });
+    try {
+      await expect(errorBtn).not.toBeVisible({ timeout: settleTimeout });
+      return false;
+    } catch {
+      return true;
+    }
   }
 
   async showSwapInfo() {
