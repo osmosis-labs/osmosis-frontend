@@ -647,11 +647,20 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           timestamp: string;
           events: unknown[];
         };
-      }>(this.options?.broadcastUrl ?? "/api/broadcast-transaction", {
-        restEndpoint: removeLastSlash(restEndpoint),
-        tx_bytes: Buffer.from(encodedTx).toString("base64"),
-        mode: "BROADCAST_MODE_SYNC",
-      });
+      }>(
+        this.options?.broadcastUrl ?? "/api/broadcast-transaction",
+        {
+          restEndpoint: removeLastSlash(restEndpoint),
+          tx_bytes: Buffer.from(encodedTx).toString("base64"),
+          mode: "BROADCAST_MODE_SYNC",
+        },
+        {
+          // Disable XSRF cookie reading — the broadcast endpoint doesn't use
+          // XSRF tokens, and some mobile wallet WebViews restrict
+          // document.cookie access, causing axios to crash.
+          xsrfCookieName: "",
+        }
+      );
 
       const broadcasted = res.data.tx_response;
 
