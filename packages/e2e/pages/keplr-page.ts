@@ -127,12 +127,12 @@ export class WalletPage {
         await allChains.waitFor({ state: 'visible', timeout: 20_000 })
         await allChains.click({ timeout: 5_000 })
         break
-      } catch {
-        const screenshotPath = `keplr-chains-debug-attempt-${attempt}.png`
+      } catch (err) {
+        const screenshotPath = `test-results/keplr-chains-debug-attempt-${attempt}-${Date.now()}.png`
         await this.page.screenshot({ path: screenshotPath, fullPage: true })
         console.error(
           `'All Native Chains' not visible or not clickable (attempt ${attempt + 1}/3). ` +
-          `Screenshot: ${screenshotPath} | URL: ${this.page.url()}`
+          `Screenshot: ${screenshotPath} | URL: ${this.page.url()} | Error: ${err}`
         )
         if (attempt < 2) {
           // Don't reload -- Keplr is a hash-routed SPA so reload resets to the
@@ -140,8 +140,8 @@ export class WalletPage {
           await this.page.waitForTimeout(5_000)
         } else {
           throw new Error(
-            "'All Native Chains' never appeared/clickable after 3 attempts. " +
-            'Check debug screenshots for page state.',
+            `'All Native Chains' never appeared/clickable after 3 attempts. ` +
+            `Last error: ${err}`,
           )
         }
       }

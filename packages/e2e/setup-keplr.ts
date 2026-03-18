@@ -20,9 +20,8 @@ export class SetupKeplr {
       const page =
         existingPages[1] ??
         (await context.waitForEvent("page", { timeout: 15_000 }));
-      await page.waitForTimeout(4000);
       await page.waitForURL("**/register.html#", {
-        timeout: 10_000,
+        timeout: 15_000,
       });
       const walletPage = new WalletPage(page);
       await walletPage.importWallet(secret);
