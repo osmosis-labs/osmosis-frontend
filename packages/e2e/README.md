@@ -177,7 +177,7 @@ All three monitoring accounts (SG, EU, US) share the same thresholds:
 | USDC | 7 | 8.4 | token | market buy + limit buy + swap stables |
 | OSMO | $2 | $5 | USD | market sell + limit sell OSMO |
 | BTC | $1.60 | $5 | USD | market sell BTC |
-| USDC.eth.axl | 1 | 1.2 | token | swap stables |
+| USDC.eth.axl | 1 | 2 | token | swap stables |
 | USDT | 1 | 1.2 | token | swap stables |
 
 ---
