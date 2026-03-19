@@ -120,9 +120,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const account = accountStore.getWallet(chainId);
     const slippageConfig = useSlippageConfig({
-      defaultSlippage:
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage,
-      selectedIndex: quoteType === "in-given-out" ? 0 : 0,
+      defaultSlippage: DefaultSlippage,
+      selectedIndex: 0,
     });
 
     const swapState = useSwap({
@@ -208,17 +207,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [setBuyOpen, setSellOpen]);
 
     const resetSlippage = useCallback(() => {
-      const defaultSlippage =
-        quoteType === "in-given-out" ? DefaultSlippage : DefaultSlippage;
       if (
         slippageConfig.slippage.toDec() ===
-        new Dec(defaultSlippage).quo(DecUtils.getTenExponentN(2))
+        new Dec(DefaultSlippage).quo(DecUtils.getTenExponentN(2))
       ) {
         return;
       }
-      slippageConfig.select(quoteType === "in-given-out" ? 0 : 0);
-      slippageConfig.setDefaultSlippage(defaultSlippage);
-    }, [quoteType, slippageConfig]);
+      slippageConfig.select(0);
+      slippageConfig.setDefaultSlippage(DefaultSlippage);
+    }, [slippageConfig]);
 
     const { amountWithSlippage, fiatAmountWithSlippage } =
       useAmountWithSlippage({
