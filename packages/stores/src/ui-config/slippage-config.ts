@@ -65,7 +65,7 @@ export class ObservableSlippageConfig {
 
     // within bound
     const strDec = new Dec(str);
-    if (strDec.gte(new Dec(100)) || strDec.lt(new Dec(0))) return;
+    if (strDec.gt(new Dec(100)) || strDec.lt(new Dec(0))) return;
 
     this._isManualSlippage = true;
     this._manualSlippage = str;
