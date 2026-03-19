@@ -87,7 +87,7 @@ export const ACCOUNT_REQUIREMENTS: Record<
     {
       token: "USDC.eth.axl",
       minAmount: 1,
-      warnAmount: 1.2,
+      warnAmount: 2,
       note: "swap stables",
     },
     { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
@@ -118,7 +118,7 @@ export const ACCOUNT_REQUIREMENTS: Record<
     {
       token: "USDC.eth.axl",
       minAmount: 1,
-      warnAmount: 1.2,
+      warnAmount: 2,
       note: "swap stables",
     },
     { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },
@@ -149,7 +149,7 @@ export const ACCOUNT_REQUIREMENTS: Record<
     {
       token: "USDC.eth.axl",
       minAmount: 1,
-      warnAmount: 1.2,
+      warnAmount: 2,
       note: "swap stables",
     },
     { token: "USDT", minAmount: 1, warnAmount: 1.2, note: "swap stables" },

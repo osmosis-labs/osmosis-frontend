@@ -9,16 +9,15 @@ test.describe("Test Swap Stables feature", () => {
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
-  const swapAmount = "0.55";
 
   test.beforeAll(async () => {
     context = await new SetupKeplr().setupWallet(privateKey);
 
     const { address } = await deriveAddress(privateKey);
     await ensureBalances(address, [
-      { token: "USDC", amount: 1.2 }, // Total for USDC swaps
-      { token: "USDC.eth.axl", amount: 0.6 }, // For USDC.eth.axl swap
-      { token: "USDT", amount: 0.6 }, // For USDT swap
+      { token: "USDC", amount: 1.15 }, // Total for USDC forward legs (0.55 x2)
+      { token: "USDC.eth.axl", amount: 0.59 }, // For USDC.eth.axl return leg
+      { token: "USDT", amount: 0.59 }, // For USDT return leg
     ]);
 
     tradePage = new TradePage(context.pages()[0]);
@@ -42,15 +41,15 @@ test.describe("Test Swap Stables feature", () => {
 
   // biome-ignore lint/complexity/noForEach: <explanation>
   [
-    { from: "USDC", to: "USDC.eth.axl" },
-    { from: "USDC.eth.axl", to: "USDC" },
-    { from: "USDC", to: "USDT" },
-    { from: "USDT", to: "USDC" },
-  ].forEach(({ from, to }) => {
+    { from: "USDC", to: "USDC.eth.axl", amount: "0.55" },
+    { from: "USDC.eth.axl", to: "USDC", amount: "0.54" },
+    { from: "USDC", to: "USDT", amount: "0.55" },
+    { from: "USDT", to: "USDC", amount: "0.54" },
+  ].forEach(({ from, to, amount }) => {
     test(`User should be able to swap ${from} to ${to}`, async () => {
       await tradePage.goto();
       await tradePage.selectPair(from, to);
-      await tradePage.enterAmount(swapAmount);
+      await tradePage.enterAmount(amount);
       await tradePage.showSwapInfo();
       // Slippage tolerance set to 1% for stablecoin swaps.
       // Stablecoin pairs typically have tighter spreads and more predictable pricing,
