@@ -204,7 +204,7 @@ export const ReviewOrder = observer(function ReviewOrder({
   );
   const isExtremeValueDisparity =
     inputUsdNum > 1 &&
-    minimumOutputUsdNum > 0 &&
+    fiatAmountWithSlippage !== undefined &&
     minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
 
   useEffect(() => {
