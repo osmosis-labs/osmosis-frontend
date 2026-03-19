@@ -191,10 +191,10 @@ export const ReviewOrder = observer(function ReviewOrder({
   }, [autoAdjustedSlippage]);
 
   const isManualSlippageTooHigh =
-    (!!displayedSlippage && parseFloat(displayedSlippage) > 1) ||
+    (!!displayedSlippage && parseFloat(displayedSlippage) > 25) ||
     (!displayedSlippage &&
       !!slippageConfig &&
-      slippageConfig.slippage.toDec().gt(new Dec(0.01)));
+      slippageConfig.slippage.toDec().gt(new Dec(0.25)));
   const isManualSlippageTooLow =
     displayedSlippage !== "" && +displayedSlippage < 0.1;
 
