@@ -1748,7 +1748,6 @@ export const DYNAMIC_SLIPPAGE_TIERS = [
   { slippage: "5.0", minPriceImpact: new Dec(0.20),  maxLiquidityCap: new Dec(100)   },
 ];
 
-/** Proactively adjusts slippage based on price impact and liquidity cap from the quote */
 /** Computes the suggested slippage tier from a quote (pure, no side effects). */
 function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   if (!quote) return DefaultSlippage;
@@ -1757,10 +1756,10 @@ function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   const tokens = quote.tokens;
   const lowestLiquidityCap =
     tokens && tokens.length > 0
-      ? tokens.reduce((min, t) => {
+      ? tokens.slice(1).reduce((min, t) => {
           const cap = new Dec(t.liquidity_cap);
           return cap.lt(min) ? cap : min;
-        }, new Dec(Number.MAX_SAFE_INTEGER))
+        }, new Dec(tokens[0].liquidity_cap))
       : undefined;
 
   for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
@@ -1776,6 +1775,7 @@ function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   return DefaultSlippage;
 }
 
+/** Proactively adjusts slippage based on price impact and liquidity cap from the quote. */
 export function useDynamicSlippageFromQuote({
   quote,
   slippageConfig,
