@@ -141,7 +141,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
-    useDynamicSlippageFromQuote({
+    const { autoAdjustedSlippage } = useDynamicSlippageFromQuote({
       quote: swapState.quote,
       slippageConfig,
     });
@@ -848,6 +848,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         <ReviewOrder
           title={t("limitOrders.reviewTrade")}
           isOpen={showSwapReviewModal}
+          autoAdjustedSlippage={autoAdjustedSlippage}
           onClose={() => setShowSwapReviewModal(false)}
           confirmAction={sendSwapTx}
           isConfirmationDisabled={isConfirmationDisabled}
