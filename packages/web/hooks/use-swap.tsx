@@ -1749,6 +1749,33 @@ export const DYNAMIC_SLIPPAGE_TIERS = [
 ];
 
 /** Proactively adjusts slippage based on price impact and liquidity cap from the quote */
+/** Computes the suggested slippage tier from a quote (pure, no side effects). */
+function computeSuggestedSlippage(quote: SwapState["quote"]): string {
+  if (!quote) return DefaultSlippage;
+
+  const priceImpact = quote.priceImpactTokenOut?.toDec().abs() ?? new Dec(0);
+  const tokens = quote.tokens;
+  const lowestLiquidityCap =
+    tokens && tokens.length > 0
+      ? tokens.reduce((min, t) => {
+          const cap = new Dec(t.liquidity_cap);
+          return cap.lt(min) ? cap : min;
+        }, new Dec(Number.MAX_SAFE_INTEGER))
+      : undefined;
+
+  for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
+    if (
+      priceImpact.gte(tier.minPriceImpact) ||
+      (lowestLiquidityCap !== undefined &&
+        lowestLiquidityCap.lte(tier.maxLiquidityCap))
+    ) {
+      return tier.slippage;
+    }
+  }
+
+  return DefaultSlippage;
+}
+
 export function useDynamicSlippageFromQuote({
   quote,
   slippageConfig,
@@ -1766,9 +1793,18 @@ export function useDynamicSlippageFromQuote({
     );
   }, [slippageConfig]);
 
+  // Synchronously compute the display value from the current quote so it updates
+  // in the same React render cycle as the quote/gas display, not one cycle later.
+  const autoAdjustedSlippage = useMemo(
+    () => computeSuggestedSlippage(quote),
+    [quote]
+  );
+
   // Track the last value we auto-set so we can distinguish it from a user override
   const lastAutoSet = useRef<string | null>(null);
 
+  // Keep the config in sync (for the actual transaction slippage).
+  // Runs asynchronously after render — guarded against user overrides.
   useEffect(() => {
     if (!quote) return;
 
@@ -1781,35 +1817,16 @@ export function useDynamicSlippageFromQuote({
       if (slippageConfig.manualSlippageStr !== lastAutoSet.current) return;
     }
 
-    const priceImpact = quote.priceImpactTokenOut?.toDec().abs() ?? new Dec(0);
-    const tokens = quote.tokens;
-    const lowestLiquidityCap =
-      tokens && tokens.length > 0
-        ? tokens.reduce((min, t) => {
-            const cap = new Dec(t.liquidity_cap);
-            return cap.lt(min) ? cap : min;
-          }, new Dec(Number.MAX_SAFE_INTEGER))
-        : undefined;
-
-    let suggested = DefaultSlippage;
-    for (const tier of [...DYNAMIC_SLIPPAGE_TIERS].reverse()) {
-      if (
-        priceImpact.gte(tier.minPriceImpact) ||
-        (lowestLiquidityCap !== undefined &&
-          lowestLiquidityCap.lte(tier.maxLiquidityCap))
-      ) {
-        suggested = tier.slippage;
-        break;
-      }
-    }
+    const suggested = computeSuggestedSlippage(quote);
 
     lastAutoSet.current = suggested;
-    // setDefaultSlippage updates the placeholder shown in the review modal input
-    slippageConfig.setDefaultSlippage(suggested);
     // setManualSlippage sets the actual slippage value (also sets isManualSlippage = true
-    // so the slippage getter uses this value rather than the preset buttons)
+    // so the slippage getter uses this value rather than the preset buttons).
+    // Display is handled by autoAdjustedSlippage (computed synchronously via useMemo).
     slippageConfig.setManualSlippage(suggested);
   }, [quote, slippageConfig]);
+
+  return { autoAdjustedSlippage };
 }
 
 /** Extracts the numerical values from the swap required error
