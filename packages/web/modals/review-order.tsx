@@ -22,6 +22,7 @@ import AutosizeInput from "react-input-autosize";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { Checkbox } from "~/components/ui/checkbox";
 import { OneClickTradingRemainingTime } from "~/components/one-click-trading/one-click-remaining-time";
 import { OneClickTradingSettings } from "~/components/one-click-trading/one-click-trading-settings";
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
@@ -190,7 +191,7 @@ export const ReviewOrder = observer(function ReviewOrder({
   }, [autoAdjustedSlippage]);
 
   const isManualSlippageTooHigh =
-    (!!displayedSlippage && parseInt(displayedSlippage) > 1) ||
+    (!!displayedSlippage && parseFloat(displayedSlippage) > 1) ||
     (!displayedSlippage &&
       !!slippageConfig &&
       slippageConfig.slippage.toDec().gt(new Dec(0.01)));
@@ -638,8 +639,8 @@ export const ReviewOrder = observer(function ReviewOrder({
                         <div className="flex items-center justify-end gap-2">
                           {isAutoAdjusted && (
                             <GenericDisclaimer
-                              title="Slippage auto-adjusted"
-                              body="This trade's default slippage has been raised due to high price impact or low liquidity."
+                              title={t("swap.slippageAutoAdjustedTitle")}
+                              body={t("swap.slippageAutoAdjustedBody")}
                             >
                               <Icon
                                 id="alert-triangle"
@@ -676,14 +677,6 @@ export const ReviewOrder = observer(function ReviewOrder({
                                 setIsEditingSlippage(true);
                               }}
                               onBlur={() => {
-                                if (
-                                  isManualSlippageTooHigh &&
-                                  +manualSlippage > 50
-                                ) {
-                                  handleManualSlippageChange(
-                                    (+manualSlippage).toString().split("")[0]
-                                  );
-                                }
                                 setIsEditingSlippage(false);
                               }}
                               onChange={(e) => {
@@ -867,23 +860,22 @@ export const ReviewOrder = observer(function ReviewOrder({
               {!diffGteSlippage && (
                 <>
                   {isExtremeValueDisparity && (
-                    <div className="flex items-start gap-3 rounded-xl bg-rust-800 p-4">
-                      <input
-                        type="checkbox"
+                    <label
+                      htmlFor="extreme-disparity-ack"
+                      className="flex cursor-pointer items-start gap-3 rounded-xl bg-rust-800 p-4"
+                    >
+                      <Checkbox
                         id="extreme-disparity-ack"
-                        className="mt-0.5 h-4 w-4 accent-rust-400 cursor-pointer"
+                        className="mt-0.5 shrink-0"
                         checked={hasAcknowledgedDisparity}
-                        onChange={(e) =>
-                          setHasAcknowledgedDisparity(e.target.checked)
+                        onCheckedChange={(checked) =>
+                          setHasAcknowledgedDisparity(checked === true)
                         }
                       />
-                      <label
-                        htmlFor="extreme-disparity-ack"
-                        className="text-sm text-rust-200 cursor-pointer"
-                      >
+                      <span className="text-sm text-rust-200">
                         {t("swap.extremeDisparityAcknowledgement")}
-                      </label>
-                    </div>
+                      </span>
+                    </label>
                   )}
                   <div className="flex w-full justify-between gap-3 pt-3">
                     <Button
