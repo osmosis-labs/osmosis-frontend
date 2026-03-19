@@ -16,13 +16,12 @@ export class SetupKeplr {
     try {
       const context = await chromium.launchPersistentContext("", testConfig);
       context.setDefaultNavigationTimeout(30_000);
-      const pagePromise = context.waitForEvent("page", { timeout: 10_000 });
-      const emptyPage = await pagePromise;
-      // Playwright is too fast to decide that page is not opened.
-      await emptyPage.waitForTimeout(4000);
-      const page = context.pages()[1];
+      const existingPages = context.pages();
+      const page =
+        existingPages[1] ??
+        (await context.waitForEvent("page", { timeout: 15_000 }));
       await page.waitForURL("**/register.html#", {
-        timeout: 5000,
+        timeout: 15_000,
       });
       const walletPage = new WalletPage(page);
       await walletPage.importWallet(secret);
