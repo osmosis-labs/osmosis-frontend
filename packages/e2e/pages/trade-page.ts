@@ -502,7 +502,12 @@ export class TradePage extends BasePage {
           }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
 
-        // Wait before retry to let things settle
+        // Dismiss any lingering "Review trade" modal so the next attempt starts clean
+        await this.page.keyboard.press("Escape");
+        await this.page
+          .locator(".ReactModal__Overlay")
+          .waitFor({ state: "hidden", timeout: 2000 })
+          .catch(() => {});
         await this.page.waitForTimeout(2000);
       }
     }
@@ -664,7 +669,12 @@ export class TradePage extends BasePage {
           }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
 
-        // Wait before retry to let things settle
+        // Dismiss any lingering "Review trade" modal so the next attempt starts clean
+        await this.page.keyboard.press("Escape");
+        await this.page
+          .locator(".ReactModal__Overlay")
+          .waitFor({ state: "hidden", timeout: 2000 })
+          .catch(() => {});
         await this.page.waitForTimeout(2000);
       }
     }
