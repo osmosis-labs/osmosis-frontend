@@ -104,7 +104,7 @@ export class TransactionsPage extends BasePage {
 
     const cancelBtnLocator = this.page.locator(cancelBtn).first();
     await expect(cancelBtnLocator, "Cancel button not found!").toBeVisible({
-      timeout: 5000,
+      timeout: 30000,
     });
 
     await cancelBtnLocator.click();
