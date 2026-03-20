@@ -151,6 +151,15 @@ export class TradePage extends BasePage {
     console.log("Second page was not opened in 5 seconds.");
   }
 
+  async disable1CTIfNeeded() {
+    const oneClickToggle =
+      '//div[@role="dialog"]//button[@data-state="checked"]';
+    if (await this.page.locator(oneClickToggle).isVisible({ timeout: 500 })) {
+      await this.page.locator(oneClickToggle).click({ timeout: 3000 });
+      console.log("Disabled 1-Click Trading toggle.");
+    }
+  }
+
   async justApproveIfNeeded(context: BrowserContext) {
     let approvePage: import("@playwright/test").Page | null =
       context
@@ -194,11 +203,7 @@ export class TradePage extends BasePage {
       timeout: 15000,
     });
     await this.swapBtn.click({ timeout: 4000 });
-    // Handle 1-click by default
-    const oneClick = '//div[@role="dialog"]//button[@data-state="checked"]';
-    if (await this.page.locator(oneClick).isVisible({ timeout: 2000 })) {
-      await this.page.locator(oneClick).click({ timeout: 3000 });
-    }
+    await this.disable1CTIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
     return await this.approveInKeplrAndGetMsg(context);
   }
@@ -274,7 +279,7 @@ export class TradePage extends BasePage {
   }
 
   async getTransactionUrl() {
-    const trxUrl = await this.trxLink.getAttribute("href");
+    const trxUrl = await this.trxLink.getAttribute("href", { timeout: 10000 });
     console.log(`Trx url: ${trxUrl}`);
     await this.page.reload();
     return trxUrl;
@@ -413,10 +418,9 @@ export class TradePage extends BasePage {
           timeout: 20000,
         });
         await this.buyBtn.click();
-        // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+        await this.disable1CTIfNeeded();
 
-        // Set slippage tolerance if specified (after buy clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
@@ -440,13 +444,8 @@ export class TradePage extends BasePage {
             (await approvePage.getByText(msgTextLocator).textContent()) ??
             undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-          // Approve trx
           await approveBtn.click();
-          // Handle Pop-up page <-
         } catch (error: any) {
-          // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-          // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-          // This is expected behavior, not an error - transaction is still submitted on-chain
           if (
             error.name === "TimeoutError" ||
             (error instanceof Error && /timeout/i.test(error.message))
@@ -456,12 +455,11 @@ export class TradePage extends BasePage {
             );
             msgContentAmount = undefined;
           } else {
-            // Other errors (button not found, page closed, etc.) should be retried
             console.error(
               "Failed to get Keplr approval popup:",
               error.message ?? "Unknown error"
             );
-            throw error; // Re-throw to be caught by outer try-catch
+            throw error;
           }
         }
 
@@ -580,10 +578,9 @@ export class TradePage extends BasePage {
           timeout: 20000,
         });
         await this.sellBtn.click();
-        // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+        await this.disable1CTIfNeeded();
 
-        // Set slippage tolerance if specified (after sell clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
@@ -607,13 +604,8 @@ export class TradePage extends BasePage {
             (await approvePage.getByText(msgTextLocator).textContent()) ??
             undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-          // Approve trx
           await approveBtn.click();
-          // Handle Pop-up page <-
         } catch (error: any) {
-          // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-          // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-          // This is expected behavior, not an error - transaction is still submitted on-chain
           if (
             error.name === "TimeoutError" ||
             (error instanceof Error && /timeout/i.test(error.message))
@@ -623,12 +615,11 @@ export class TradePage extends BasePage {
             );
             msgContentAmount = undefined;
           } else {
-            // Other errors (button not found, page closed, etc.) should be retried
             console.error(
               "Failed to get Keplr approval popup:",
               error.message ?? "Unknown error"
             );
-            throw error; // Re-throw to be caught by outer try-catch
+            throw error;
           }
         }
 
@@ -710,6 +701,8 @@ export class TradePage extends BasePage {
 
     await this.sellBtn.click();
 
+    await this.disable1CTIfNeeded();
+
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
     }
@@ -748,6 +741,8 @@ export class TradePage extends BasePage {
     });
 
     await this.buyBtn.click();
+
+    await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
@@ -827,6 +822,8 @@ export class TradePage extends BasePage {
         });
 
         await this.swapBtn.click({ timeout: 4000 });
+
+        await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);

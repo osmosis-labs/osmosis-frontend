@@ -113,41 +113,33 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    let approvePage: Page | null =
-      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
 
-    if (!approvePage) {
-      try {
-        approvePage = await context.waitForEvent("page", { timeout: 10000 });
-      } catch (error: any) {
-        if (
-          error.name === "TimeoutError" ||
-          /timeout/i.test(error.message ?? "")
-        ) {
-          console.log(
-            "Keplr popup did not appear within 10s for cancel; assuming 1-click trading."
-          );
-        } else {
-          throw error;
-        }
-      }
-    }
+    const result = await Promise.race([
+      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      successPromise.then(() => ({ type: "success" as const, page: null })),
+    ]);
 
-    if (approvePage) {
-      await approvePage.waitForLoadState();
-      const approveBtn = approvePage.getByRole("button", {
+    if (result.type === "popup" && result.page) {
+      await result.page.waitForLoadState();
+      const approveBtn = result.page.getByRole("button", {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
-      const msgContentAmount = await approvePage
+      const msgContentAmount = await result.page
         .getByText("Execute contract")
         .textContent();
       console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
       await approveBtn.click();
       expect(msgContentAmount).toContain("cancel_limit");
+      await successPromise;
+    } else {
+      console.log(
+        "Transaction succeeded via 1-click trading (cancel limit order)."
+      );
     }
-
-    await successPromise;
   }
 
   async isFilledByLimitPrice(price: string | number) {
@@ -174,37 +166,26 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    let approvePage: Page | null =
-      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
 
-    if (!approvePage) {
-      try {
-        approvePage = await context.waitForEvent("page", { timeout: 10000 });
-      } catch (error: any) {
-        if (
-          error.name === "TimeoutError" ||
-          /timeout/i.test(error.message ?? "")
-        ) {
-          console.log(
-            "Keplr popup did not appear within 10s for claim and close; assuming 1-click trading."
-          );
-        } else {
-          throw error;
-        }
-      }
-    }
+    const result = await Promise.race([
+      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      successPromise.then(() => ({ type: "success" as const, page: null })),
+    ]);
 
-    if (approvePage) {
-      await approvePage.waitForLoadState();
-      const approveBtn = approvePage.getByRole("button", {
+    if (result.type === "popup" && result.page) {
+      await result.page.waitForLoadState();
+      const approveBtn = result.page.getByRole("button", {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
-      const msgContentAmount1 = await approvePage
+      const msgContentAmount1 = await result.page
         .getByText("Execute contract")
         .first()
         .textContent();
-      const msgContentAmount2 = await approvePage
+      const msgContentAmount2 = await result.page
         .getByText("Execute contract")
         .last()
         .textContent();
@@ -214,9 +195,12 @@ export class TransactionsPage extends BasePage {
       await approveBtn.click();
       expect(msgContentAmount1).toContain("claim_limit");
       expect(msgContentAmount2).toContain("cancel_limit");
+      await successPromise;
+    } else {
+      console.log(
+        "Transaction succeeded via 1-click trading (claim and close)."
+      );
     }
-
-    await successPromise;
   }
 
   async claimAll(context: BrowserContext) {
@@ -226,36 +210,26 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    let approvePage: Page | null =
-      context.pages().find((p) => p !== this.page && !p.isClosed()) ?? null;
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
 
-    if (!approvePage) {
-      try {
-        approvePage = await context.waitForEvent("page", { timeout: 10000 });
-      } catch (error: any) {
-        if (
-          error.name === "TimeoutError" ||
-          /timeout/i.test(error.message ?? "")
-        ) {
-          console.log(
-            "Keplr popup did not appear within 10s for claim all; assuming 1-click trading."
-          );
-        } else {
-          throw error;
-        }
-      }
-    }
+    const result = await Promise.race([
+      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      successPromise.then(() => ({ type: "success" as const, page: null })),
+    ]);
 
-    if (approvePage) {
-      await approvePage.waitForLoadState();
-      const approveBtn = approvePage.getByRole("button", {
+    if (result.type === "popup" && result.page) {
+      await result.page.waitForLoadState();
+      const approveBtn = result.page.getByRole("button", {
         name: "Approve",
       });
       await expect(approveBtn).toBeEnabled();
       await approveBtn.click();
+      await successPromise;
+    } else {
+      console.log("Transaction succeeded via 1-click trading (claim all).");
     }
-
-    await successPromise;
   }
 
   async claimAllIfPresent(context: BrowserContext) {
