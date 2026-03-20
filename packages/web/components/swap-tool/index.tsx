@@ -208,12 +208,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const resetSlippage = useCallback(() => {
       if (
-        slippageConfig.slippage.toDec() ===
-        new Dec(DefaultSlippage).quo(DecUtils.getTenExponentN(2))
+        slippageConfig.slippage
+          .toDec()
+          .equals(new Dec(DefaultSlippage).quo(DecUtils.getTenExponentN(2)))
       ) {
         return;
       }
-      slippageConfig.select(0);
+      slippageConfig.setManualSlippage(DefaultSlippage);
       slippageConfig.setDefaultSlippage(DefaultSlippage);
     }, [slippageConfig]);
 
