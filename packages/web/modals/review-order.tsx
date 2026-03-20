@@ -16,7 +16,7 @@ import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { observer } from "mobx-react-lite";
 import AutosizeInput from "react-input-autosize";
 
@@ -177,18 +177,6 @@ export const ReviewOrder = observer(function ReviewOrder({
         ? autoAdjustedSlippage!
         : "";
 
-  // Keep an up-to-date ref to isEditingSlippage for use inside the effect below.
-  const isEditingSlippageRef = useRef(false);
-  isEditingSlippageRef.current = isEditingSlippage;
-
-  // When the auto-adjusted tier changes, clear any locally-typed value so the
-  // display reflects the new suggestion (the config useEffect guards user overrides).
-  useEffect(() => {
-    if (!isEditingSlippageRef.current) {
-      setManualSlippage("");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoAdjustedSlippage]);
 
   const isManualSlippageTooHigh =
     (!!displayedSlippage && parseFloat(displayedSlippage) > 25) ||
