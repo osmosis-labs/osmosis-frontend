@@ -139,6 +139,7 @@ export class TransactionsPage extends BasePage {
       console.log(
         "Transaction succeeded via 1-click trading (cancel limit order)."
       );
+      await successPromise;
     }
   }
 
@@ -200,6 +201,7 @@ export class TransactionsPage extends BasePage {
       console.log(
         "Transaction succeeded via 1-click trading (claim and close)."
       );
+      await successPromise;
     }
   }
 
@@ -229,6 +231,7 @@ export class TransactionsPage extends BasePage {
       await successPromise;
     } else {
       console.log("Transaction succeeded via 1-click trading (claim all).");
+      await successPromise;
     }
   }
 
