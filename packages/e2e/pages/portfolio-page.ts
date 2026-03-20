@@ -43,6 +43,7 @@ export class PortfolioPage extends BasePage {
     const bal = this.page
       .locator(`//tbody/tr//a[contains(@href, "/assets/${minimalDenom}")]`)
       .nth(1)
+    await bal.waitFor({ state: 'visible', timeout: 20000 })
     const tokenBalance: string = await bal.innerText()
     console.log(`Balance for ${name}: ${tokenBalance}`)
     return tokenBalance
