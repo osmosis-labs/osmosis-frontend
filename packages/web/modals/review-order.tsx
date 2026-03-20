@@ -186,13 +186,20 @@ export const ReviewOrder = observer(function ReviewOrder({
   const isManualSlippageTooLow =
     displayedSlippage !== "" && +displayedSlippage < 0.1;
 
-  const inputUsdNum = Number(inAmountFiat?.toDec().toString() ?? "0");
-  const minimumOutputUsdNum = Number(
-    fiatAmountWithSlippage?.toDec().toString() ?? "0"
-  );
+  // For out-given-in: compare minimum output against input sent.
+  // For in-given-out: compare fixed output received against maximum input paid.
+  const inputUsdNum =
+    quoteType === "in-given-out"
+      ? Number(fiatAmountWithSlippage?.toDec().toString() ?? "0")
+      : Number(inAmountFiat?.toDec().toString() ?? "0");
+  const minimumOutputUsdNum =
+    quoteType === "in-given-out"
+      ? Number(expectedOutputFiat?.toDec().toString() ?? "0")
+      : Number(fiatAmountWithSlippage?.toDec().toString() ?? "0");
   const isExtremeValueDisparity =
     inputUsdNum > 1 &&
-    fiatAmountWithSlippage !== undefined &&
+    (quoteType === "in-given-out" ? expectedOutputFiat : fiatAmountWithSlippage) !==
+      undefined &&
     minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
 
   useEffect(() => {
