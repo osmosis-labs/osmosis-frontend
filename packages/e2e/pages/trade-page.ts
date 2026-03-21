@@ -203,6 +203,7 @@ export class TradePage extends BasePage {
       timeout: 15000,
     });
     await this.swapBtn.click({ timeout: 4000 });
+    await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
     return await this.approveInKeplrAndGetMsg(context);
@@ -700,7 +701,7 @@ export class TradePage extends BasePage {
     });
 
     await this.sellBtn.click();
-
+    await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -741,7 +742,7 @@ export class TradePage extends BasePage {
     });
 
     await this.buyBtn.click();
-
+    await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
@@ -822,7 +823,7 @@ export class TradePage extends BasePage {
         });
 
         await this.swapBtn.click({ timeout: 4000 });
-
+        await this.page.waitForTimeout(500);
         await this.disable1CTIfNeeded();
 
         if (slippagePercent) {

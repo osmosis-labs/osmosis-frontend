@@ -135,9 +135,14 @@ export class TransactionsPage extends BasePage {
       await approveBtn.click();
       expect(msgContentAmount).toContain("cancel_limit");
       await successPromise;
+    } else if (result.type === "success") {
+      console.log(
+        "Success toast appeared before Keplr popup (cancel limit order)."
+      );
+      await successPromise;
     } else {
       console.log(
-        "Transaction succeeded via 1-click trading (cancel limit order)."
+        "No Keplr popup observed; waiting for success confirmation (cancel limit order)."
       );
       await successPromise;
     }
@@ -197,9 +202,14 @@ export class TransactionsPage extends BasePage {
       expect(msgContentAmount1).toContain("claim_limit");
       expect(msgContentAmount2).toContain("cancel_limit");
       await successPromise;
+    } else if (result.type === "success") {
+      console.log(
+        "Success toast appeared before Keplr popup (claim and close)."
+      );
+      await successPromise;
     } else {
       console.log(
-        "Transaction succeeded via 1-click trading (claim and close)."
+        "No Keplr popup observed; waiting for success confirmation (claim and close)."
       );
       await successPromise;
     }
@@ -229,8 +239,13 @@ export class TransactionsPage extends BasePage {
       await expect(approveBtn).toBeEnabled();
       await approveBtn.click();
       await successPromise;
+    } else if (result.type === "success") {
+      console.log("Success toast appeared before Keplr popup (claim all).");
+      await successPromise;
     } else {
-      console.log("Transaction succeeded via 1-click trading (claim all).");
+      console.log(
+        "No Keplr popup observed; waiting for success confirmation (claim all)."
+      );
       await successPromise;
     }
   }
