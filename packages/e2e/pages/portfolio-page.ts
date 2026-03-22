@@ -39,11 +39,14 @@ export class PortfolioPage extends BasePage {
     name: string
     minimalDenom: string
   }) {
-    await this.page.evaluate(() => window.scrollBy(0, 250))
-    const bal = this.page
-      .locator(`//tbody/tr//a[contains(@href, "/assets/${minimalDenom}")]`)
-      .nth(1)
-    await bal.waitFor({ state: 'visible', timeout: 20000 })
+    const row = this.page
+      .locator(
+        `//tbody/tr[.//a[contains(@href, "/assets/${minimalDenom}")]]`,
+      )
+      .first()
+    await row.waitFor({ state: 'visible', timeout: 20000 })
+    const bal = row.locator('td').nth(1).locator('a')
+    await bal.scrollIntoViewIfNeeded()
     const tokenBalance: string = await bal.innerText()
     console.log(`Balance for ${name}: ${tokenBalance}`)
     return tokenBalance
@@ -72,8 +75,9 @@ export class PortfolioPage extends BasePage {
   }
 
   async searchForToken(tokenName: string) {
+    await this.searchInput.clear()
+    await this.page.waitForTimeout(1000)
     await this.searchInput.fill(tokenName)
-    // we expect that after 2 seconds tokens are loaded and any failure after this point should be considered a bug.
     await this.page.waitForTimeout(2000)
   }
 }

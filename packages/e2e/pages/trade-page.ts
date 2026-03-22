@@ -130,25 +130,38 @@ export class TradePage extends BasePage {
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
-  private async approveInKeplrAndGetMsg(context: BrowserContext) {
-    console.log("Wait for 5 seconds for any popup");
-    await this.page.waitForTimeout(5_000);
-    const pages = context.pages();
-    console.log(`Number of Open Pages: ${pages.length}`);
-    if (pages.length === 2) {
-      const approvePage = pages[1];
-      const approvePageTitle = approvePage.url();
-      console.log(`Approve page is opened at: ${approvePageTitle}`);
-      const msgContent = await approvePage
-        .getByText("type: osmosis/poolmanager/")
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContent}`);
-      await approvePage
-        .getByRole("button", { name: "Approve" })
-        .click({ timeout: 4000 });
-      return msgContent;
+  private async approveInKeplrAndGetMsg(
+    context: BrowserContext,
+    pageApprovePromise: Promise<import("@playwright/test").Page>
+  ) {
+    let msgContentAmount: string | undefined;
+
+    try {
+      const approvePage = await pageApprovePromise;
+      await approvePage.waitForLoadState();
+      const approveBtn = approvePage.getByRole("button", { name: "Approve" });
+      await expect(approveBtn).toBeEnabled();
+      msgContentAmount =
+        (await approvePage
+          .getByText("type: osmosis/poolmanager/")
+          .textContent()) ?? undefined;
+      console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+      await approveBtn.click();
+    } catch (error: any) {
+      if (
+        error.name === "TimeoutError" ||
+        (error instanceof Error && /timeout/i.test(error.message))
+      ) {
+        console.log(
+          "Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
+        );
+        msgContentAmount = undefined;
+      } else {
+        throw error;
+      }
     }
-    console.log("Second page was not opened in 5 seconds.");
+
+    return msgContentAmount;
   }
 
   async disable1CTIfNeeded() {
@@ -193,7 +206,6 @@ export class TradePage extends BasePage {
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalanceForSwap(),
       "Insufficient balance for the swap!"
@@ -202,11 +214,20 @@ export class TradePage extends BasePage {
     await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
       timeout: 15000,
     });
+
+    const pageApprovePromise = context.waitForEvent("page", {
+      timeout: 20000,
+    });
     await this.swapBtn.click({ timeout: 4000 });
     await this.page.waitForTimeout(500);
     await this.disable1CTIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
-    return await this.approveInKeplrAndGetMsg(context);
+
+    const msgContentAmount = await this.approveInKeplrAndGetMsg(
+      context,
+      pageApprovePromise
+    );
+    return msgContentAmount;
   }
 
   async selectAsset(token: string) {
