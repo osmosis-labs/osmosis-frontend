@@ -92,7 +92,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -219,7 +219,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -352,7 +352,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -486,7 +486,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -625,7 +625,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -769,7 +769,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -907,7 +907,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
@@ -1043,7 +1043,7 @@ jobs:
           if [ -f packages/e2e/balance-report.json ]; then
             OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
             if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
-              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --status queued --status in_progress --json databaseId --jq 'length')
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
               if [ "$PENDING" -gt 0 ]; then
                 echo "Topup workflow already queued/in-progress — skipping dispatch."
               else
