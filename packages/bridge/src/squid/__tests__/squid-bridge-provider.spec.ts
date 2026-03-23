@@ -419,6 +419,15 @@ describe("SquidBridgeProvider", () => {
     expect(result.type).toBe("cosmos");
     expect(result.msgs).toHaveLength(1);
     expect(result.msgs[0].typeUrl).toBe("/cosmwasm.wasm.v1.MsgExecuteContract");
+
+    const msg = result.msgs[0];
+    expect(msg.value.contract).toBe(
+      "osmo1x0fn7u7qlhxn6cl47hfnsyq0ymga57fz3mn7yccsaywqxpahq2pqs3na3m"
+    );
+    expect(msg.value.sender).toBe(
+      "osmo107vyuer6wzfe7nrrsujppa0pvx35fvplp4t7tx"
+    );
+    expect(msg.value.funds).toEqual([{ denom: "uatom", amount: "1000000" }]);
   });
 
   it("should get chains", async () => {
