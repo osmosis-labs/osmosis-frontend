@@ -8,6 +8,11 @@ import {
 
 import { BasePage } from './base-page'
 
+/**
+ * Page object for the legacy /swap view (pre-trade-page UI).
+ * Uses the simpler Keplr popup flow (no Promise.race) -- if the popup doesn't
+ * appear within 10s the method returns undefined, assuming 1-Click Trading.
+ */
 export class SwapPage extends BasePage {
   readonly page: Page
   readonly swapBtn: Locator
@@ -98,8 +103,14 @@ export class SwapPage extends BasePage {
     return { msgContentAmount }
   }
 
+  /**
+   * Selects a trading pair, optimising for the common cases:
+   *   1. Pair already matches -> no-op
+   *   2. Pair is the reverse  -> single flip
+   *   3. One token overlaps   -> flip first to avoid the token-picker hiding
+   *      already-selected tokens, then search/select the remaining one(s).
+   */
   async selectPair(from: string, to: string) {
-    // Filter does not show already selected tokens
     console.log(`Select pair ${from} to ${to}`)
     const tokenLocator =
       '//img[@alt="token icon"]/../..//h5 | //img[@alt="token icon"]/../..//span[@class="subtitle1"]'
@@ -123,6 +134,8 @@ export class SwapPage extends BasePage {
       return
     }
 
+    // Flip first when one of the desired tokens sits on the wrong side,
+    // because the token picker hides the already-selected counterpart.
     if (from === toTokenText || to === fromTokenText) {
       await this.flipTokenPair()
     }

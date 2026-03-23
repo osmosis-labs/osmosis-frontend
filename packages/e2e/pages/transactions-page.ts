@@ -6,8 +6,24 @@ import {
 } from "@playwright/test";
 
 import { BasePage } from "./base-page";
-const TRANSACTION_CONFIRMATION_TIMEOUT = 2000;
 
+/**
+ * Page object for the /transactions view and limit-order actions (cancel, claim).
+ *
+ * Keplr popup handling pattern (used by cancelLimitOrder, claimAndCloseAny, claimAll):
+ *   Each method uses Promise.race between the Keplr popup and a "Transaction
+ *   Successful" toast. This handles three scenarios:
+ *     1. Keplr popup appears  -> approve manually, then wait for success toast
+ *     2. Success toast first  -> 1-Click Trading handled it automatically
+ *     3. Popup resolves null  -> no popup observed; still waits for success toast
+ *        (prevents false positives -- the test will fail if the tx truly didn't succeed)
+ *
+ *   Two defensive guards are applied before each action click:
+ *     - Stale toast dismissal: waits for any lingering success toast to hide so the
+ *       Promise.race doesn't short-circuit on DOM state from a previous transaction.
+ *     - Early listener registration: context.waitForEvent("page") is started BEFORE
+ *       the click so fast-opening Keplr popups are never missed.
+ */
 export class TransactionsPage extends BasePage {
   readonly transactionRow: Locator;
   readonly viewExplorerLink: Locator;
@@ -42,8 +58,11 @@ export class TransactionsPage extends BasePage {
     await this.page.waitForTimeout(1000);
   }
 
+  /**
+   * Locates and clicks a transaction row by its swap amount.
+   * Waits up to ~60s with a mid-point reload because on-chain indexing can lag.
+   */
   async viewBySwapAmount(amount: string | number) {
-    // Transactions need some time to get loaded, wait for 30 seconds.
     await this.page.waitForTimeout(30000);
     await this.page.reload();
     const loc = `//div/div[@class="subtitle1 text-osmoverse-100" and contains(text(), "${amount}")]`;
@@ -107,15 +126,24 @@ export class TransactionsPage extends BasePage {
       timeout: 30000,
     });
 
+    // Dismiss any lingering success toast from a previous transaction so
+    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
+    await this.page
+      .getByText("Transaction Successful")
+      .waitFor({ state: "hidden", timeout: 3000 })
+      .catch(() => {});
+
+    // Register the popup listener BEFORE the click so we never miss a
+    // fast-opening Keplr approval window.
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
+
     await cancelBtnLocator.click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
-
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
@@ -166,15 +194,24 @@ export class TransactionsPage extends BasePage {
       return;
     }
 
+    // Dismiss any lingering success toast from a previous transaction so
+    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
+    await this.page
+      .getByText("Transaction Successful")
+      .waitFor({ state: "hidden", timeout: 3000 })
+      .catch(() => {});
+
+    // Register the popup listener BEFORE the click so we never miss a
+    // fast-opening Keplr approval window.
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
+
     await this.claimAndClose.first().click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
-
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
@@ -216,15 +253,24 @@ export class TransactionsPage extends BasePage {
   }
 
   async claimAll(context: BrowserContext) {
+    // Dismiss any lingering success toast from a previous transaction so
+    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
+    await this.page
+      .getByText("Transaction Successful")
+      .waitFor({ state: "hidden", timeout: 3000 })
+      .catch(() => {});
+
+    // Register the popup listener BEFORE the click so we never miss a
+    // fast-opening Keplr approval window.
+    const keplrPopup = context
+      .waitForEvent("page", { timeout: 40000 })
+      .catch(() => null);
+
     await this.claimAllBtn.click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
-
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),

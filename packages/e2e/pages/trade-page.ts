@@ -7,6 +7,19 @@ import {
 
 import { BasePage } from "./base-page";
 
+/**
+ * Page object for the /trade view (swap, buy, sell, limit orders).
+ *
+ * Transaction methods come in two flavours:
+ *   - *AndGetWalletMsg  (e.g. buyAndGetWalletMsg) -- full flow with retry logic,
+ *     returns the raw Keplr message content for test assertions.
+ *   - *AndApprove       (e.g. buyAndApprove) -- simplified fire-and-forget flow
+ *     with no retries; use when you only need to confirm the tx succeeded.
+ *
+ * All methods handle the Keplr / 1-Click Trading duality: if no popup appears
+ * within the timeout, the code assumes 1CT processed the transaction and
+ * continues to wait for the on-chain success toast.
+ */
 export class TradePage extends BasePage {
   readonly page: Page;
   readonly swapBtn: Locator;
@@ -130,8 +143,12 @@ export class TradePage extends BasePage {
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
+  /**
+   * Awaits a pre-registered Keplr popup promise, approves the transaction, and
+   * returns the raw message content. If the popup times out (1CT active), returns
+   * undefined instead of throwing.
+   */
   private async approveInKeplrAndGetMsg(
-    context: BrowserContext,
     pageApprovePromise: Promise<import("@playwright/test").Page>
   ) {
     let msgContentAmount: string | undefined;
@@ -164,6 +181,12 @@ export class TradePage extends BasePage {
     return msgContentAmount;
   }
 
+  /**
+   * If the review-trade dialog shows a 1-Click Trading toggle in the "checked"
+   * state, disable it so the test exercises the full Keplr approval flow.
+   * Uses a short 500ms visibility check -- call sites add a 500ms waitForTimeout
+   * before invoking this, giving ~1s total for the dialog to render.
+   */
   async disable1CTIfNeeded() {
     const oneClickToggle =
       '//div[@role="dialog"]//button[@data-state="checked"]';
@@ -173,6 +196,12 @@ export class TradePage extends BasePage {
     }
   }
 
+  /**
+   * Lightweight Keplr approval helper used by the *AndApprove methods.
+   * Two-phase lookup: first checks if a popup tab already exists (may have opened
+   * before this call), then falls back to waitForEvent with a 10s timeout.
+   * Does nothing if no popup appears (1CT / pre-approved scenario).
+   */
   async justApproveIfNeeded(context: BrowserContext) {
     let approvePage: import("@playwright/test").Page | null =
       context
@@ -224,7 +253,6 @@ export class TradePage extends BasePage {
     await this.confirmSwapBtn.click({ timeout: 5000 });
 
     const msgContentAmount = await this.approveInKeplrAndGetMsg(
-      context,
       pageApprovePromise
     );
     return msgContentAmount;

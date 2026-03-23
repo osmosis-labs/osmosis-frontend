@@ -4,6 +4,7 @@ import type { Locator, Page } from '@playwright/test'
 import { BasePage } from './base-page'
 import { TransactionsPage } from './transactions-page'
 
+/** Page object for the /portfolio view -- token balances, search, and navigation to transactions. */
 export class PortfolioPage extends BasePage {
   readonly hideZeros: Locator
   readonly viewMore: Locator
