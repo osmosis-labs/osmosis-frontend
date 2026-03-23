@@ -418,9 +418,7 @@ describe("SquidBridgeProvider", () => {
     expect(result).toBeDefined();
     expect(result.type).toBe("cosmos");
     expect(result.msgs).toHaveLength(1);
-    expect(result.msgs[0].typeUrl).toBe(
-      "/cosmwasm.wasm.v1.MsgExecuteContract"
-    );
+    expect(result.msgs[0].typeUrl).toBe("/cosmwasm.wasm.v1.MsgExecuteContract");
   });
 
   it("should get chains", async () => {
