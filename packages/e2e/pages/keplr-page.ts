@@ -36,18 +36,10 @@ export class WalletPage {
   }
 
   async startImport() {
-    try {
-      await this.page.waitForTimeout(1000)
-      await this.importWalletBtn.click({
-        timeout: 5000,
-      })
-      await this.useRecoveryBtn.click()
-    } catch {
-      expect(
-        this.importWalletBtn,
-        'Import Keplr wallet button is not visible!',
-      ).toBeVisible({ timeout: 2000 })
-    }
+    await this.importWalletBtn.waitFor({ state: 'visible', timeout: 10_000 })
+    await this.importWalletBtn.click({ timeout: 5_000 })
+    await this.useRecoveryBtn.waitFor({ state: 'visible', timeout: 10_000 })
+    await this.useRecoveryBtn.click({ timeout: 5_000 })
   }
 
   /**
@@ -68,7 +60,9 @@ export class WalletPage {
     await this.startImport()
     await this.privateKeyBtn.click()
     await this.privateKeyInput.fill(privateKey)
-    await this.importBtn.click({ timeout: 4000 })
+    await this.importBtn.click({ timeout: 4_000 })
+    // Confirm the SPA navigated to the name/password step before proceeding
+    await this.walletNameInput.waitFor({ state: 'visible', timeout: 10_000 })
     await this.setWalletNameAndPassword('Keplr')
     await this.selectChainsAndSave()
     await this.finish()
@@ -103,6 +97,8 @@ export class WalletPage {
     }
 
     await this.importBtn.click()
+    // Confirm the SPA navigated to the name/password step before proceeding
+    await this.walletNameInput.waitFor({ state: 'visible', timeout: 10_000 })
     await this.setWalletNameAndPassword('Keplr')
     await this.selectChainsAndSave()
     await this.finish()
@@ -117,13 +113,39 @@ export class WalletPage {
     await this.walletPassInput.fill(password)
     await this.walletRePassInput.fill(password)
     await this.nextBtn.click()
+    // Keplr uses hash-based SPA routing so waitForLoadState resolves instantly.
+    // Instead, confirm the name input disappears to verify actual page transition.
+    await this.walletNameInput.waitFor({ state: 'hidden', timeout: 10_000 })
   }
 
   async selectChainsAndSave() {
     console.log('Select all Native chains and save.')
-    await this.page
-      .getByText('All Native Chains')
-      .click({ timeout: 9000, force: true })
+    const allChains = this.page.getByText('All Native Chains')
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await allChains.waitFor({ state: 'visible', timeout: 20_000 })
+        await allChains.click({ timeout: 5_000 })
+        break
+      } catch (err) {
+        const screenshotPath = `test-results/keplr-chains-debug-attempt-${attempt}-${Date.now()}.png`
+        await this.page.screenshot({ path: screenshotPath, fullPage: true })
+        console.error(
+          `'All Native Chains' not visible or not clickable (attempt ${attempt + 1}/3). ` +
+          `Screenshot: ${screenshotPath} | URL: ${this.page.url()} | Error: ${err}`
+        )
+        if (attempt < 2) {
+          // Don't reload -- Keplr is a hash-routed SPA so reload resets to the
+          // welcome page, destroying all import progress. Just wait and retry.
+          await this.page.waitForTimeout(5_000)
+        } else {
+          throw new Error(
+            `'All Native Chains' never appeared/clickable after 3 attempts. ` +
+            `Last error: ${err}`,
+          )
+        }
+      }
+    }
 
     const accountCreated = this.page.getByText('Account Created!')
 
@@ -144,7 +166,7 @@ export class WalletPage {
     await expect(
       accountCreated,
       'Account is not created!',
-    ).toBeVisible({ timeout: 9000 })
+    ).toBeVisible({ timeout: 20_000 })
   }
 
   async takeScreenshot() {

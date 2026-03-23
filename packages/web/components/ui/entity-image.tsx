@@ -7,19 +7,17 @@ import { useEffect, useState } from "react";
  * Component to display an image for an entity, either a chain or a token, and a fallback for it.
  */
 export function EntityImage({
-  ...props
+  logoURIs,
+  width = 24,
+  height = 24,
+  name,
+  symbol,
+  denom,
+  isChain = false,
+  ...imageProps
 }: Omit<ImageProps, "src" | "alt"> &
   Pick<Asset, "logoURIs" | "name"> &
   Partial<Pick<Asset, "symbol">> & { isChain?: boolean; denom?: string }) {
-  const {
-    logoURIs,
-    width = 24,
-    height = 24,
-    name,
-    symbol,
-    denom,
-    isChain = false,
-  } = props;
   const [imgSrc, setImgSrc] = useState<string | undefined>(
     logoURIs?.svg || logoURIs?.png
   );
@@ -49,7 +47,7 @@ export function EntityImage({
           {
             "rounded-lg": isChain,
           },
-          props.className
+          imageProps.className
         )}
         style={{
           width,
@@ -69,11 +67,13 @@ export function EntityImage({
 
   return (
     <Image
-      {...props}
+      {...imageProps}
+      width={width}
+      height={height}
       src={imgSrc}
       alt={name}
       onError={handleError}
-      className={classNames("object-contain", props.className)}
+      className={classNames("object-contain", imageProps.className)}
     />
   );
 }

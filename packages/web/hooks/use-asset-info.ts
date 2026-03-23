@@ -77,6 +77,22 @@ export const useAssetInfo = () => {
     }
   }, [coinGeckoId]);
 
+  const telegramURL = useMemo(() => {
+    return details?.telegramURL;
+  }, [details?.telegramURL]);
+
+  const discordURL = useMemo(() => {
+    return details?.discordURL;
+  }, [details?.discordURL]);
+
+  const githubURL = useMemo(() => {
+    return details?.githubURL;
+  }, [details?.githubURL]);
+
+  const mediumURL = useMemo(() => {
+    return details?.mediumURL;
+  }, [details?.mediumURL]);
+
   const title = useMemo(() => {
     if (details) {
       return details.name;
@@ -90,6 +106,10 @@ export const useAssetInfo = () => {
     details,
     twitterUrl,
     websiteURL,
+    telegramURL,
+    discordURL,
+    githubURL,
+    mediumURL,
     coingeckoURL,
     coinGeckoId,
     asset: asset!,
