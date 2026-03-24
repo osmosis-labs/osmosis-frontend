@@ -127,13 +127,15 @@ export const DepositAddressScreen = observer(
                   className="flex items-center gap-3"
                   onClick={() => setCurrentScreen(BridgeScreen.Asset)}
                 >
-                  <EntityImage
-                    logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
-                    name={canonicalAsset.coinName}
-                    symbol={canonicalAsset.coinDenom}
-                    width={32}
-                    height={32}
-                  />
+                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
+                      name={canonicalAsset.coinName}
+                      symbol={canonicalAsset.coinDenom}
+                      width={32}
+                      height={32}
+                    />
+                  </div>
                   <span>
                     {canonicalAsset.coinName} ({canonicalAsset.coinDenom})
                   </span>

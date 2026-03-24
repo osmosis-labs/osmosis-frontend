@@ -551,14 +551,15 @@ const TableOrderRow = memo(
                   )}{" "}
                   {t("limitOrders.of")}
                 </span>
-                <EntityImage
-                  width={20}
-                  height={20}
-                  logoURIs={baseAsset?.rawAsset.logoURIs ?? { png: undefined }}
-                  name={baseAsset?.rawAsset.name ?? ""}
-                  symbol={baseAsset?.rawAsset.symbol ?? ""}
-                  className="h-5 w-5"
-                />
+                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    width={20}
+                    height={20}
+                    logoURIs={baseAsset?.rawAsset.logoURIs ?? { png: undefined }}
+                    name={baseAsset?.rawAsset.name ?? ""}
+                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                  />
+                </div>
                 <span>{baseAsset?.symbol}</span>
               </div>
             </div>

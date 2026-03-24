@@ -140,13 +140,15 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               )}
                               onClick={onClick}
                             >
-                              <EntityImage
-                                logoURIs={getLogoURIs(asset.coinImageUrl)}
-                                name={asset.coinName}
-                                symbol={asset.coinDenom}
-                                width={32}
-                                height={32}
-                              />
+                              <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                                <EntityImage
+                                  logoURIs={getLogoURIs(asset.coinImageUrl)}
+                                  name={asset.coinName}
+                                  symbol={asset.coinDenom}
+                                  width={32}
+                                  height={32}
+                                />
+                              </div>
                               <div className="flex flex-col">
                                 <p className="body1 md:body2">
                                   {isConvert
@@ -195,15 +197,17 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               )}
                               onClick={onClick}
                             >
-                              <EntityImage
-                                logoURIs={getLogoURIs(
-                                  representativeAsset.coinImageUrl
-                                )}
-                                name={asset.denom}
-                                symbol={asset.denom}
-                                width={32}
-                                height={32}
-                              />
+                              <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                                <EntityImage
+                                  logoURIs={getLogoURIs(
+                                    representativeAsset.coinImageUrl
+                                  )}
+                                  name={asset.denom}
+                                  symbol={asset.denom}
+                                  width={32}
+                                  height={32}
+                                />
+                              </div>
                               <div className="flex flex-col">
                                 <p className="body1 md:body2">
                                   {t("transfer.withdrawAs")} {asset.denom}

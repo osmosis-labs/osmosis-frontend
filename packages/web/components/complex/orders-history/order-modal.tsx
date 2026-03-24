@@ -252,7 +252,7 @@ const OrderDetails = observer(
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10">
+              <div className="h-10 w-10 overflow-hidden rounded-full">
                 <EntityImage
                   logoURIs={getLogoURIs(tokenIn?.currency.coinImageUrl)}
                   name={tokenIn?.sourceDenom ?? ""}
@@ -297,7 +297,7 @@ const OrderDetails = observer(
           </div>
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10">
+              <div className="h-10 w-10 overflow-hidden rounded-full">
                 <EntityImage
                   logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
                   name={tokenOut?.sourceDenom ?? ""}

@@ -229,7 +229,7 @@ const TokenLiquiditySelector = observer(
             symbol={selectedAsset.token.coinDenom}
             width={52}
             height={52}
-            className="rounded-full"
+            className="overflow-hidden rounded-full"
           />
           <h5 className="max-w-[90px] truncate">
             {selectedAsset.token.coinDenom}
