@@ -1686,6 +1686,18 @@ export function useAmountWithSlippage({
   };
 }
 
+// Single source of truth for all slippage tiers.
+// Values are used to populate selectableSlippages and to compute suggested slippage.
+export const DYNAMIC_SLIPPAGE_TIERS = [
+  { slippage: "0.2", minPriceImpact: new Dec(0.003), maxLiquidityCap: new Dec(50000) },
+  { slippage: "0.3", minPriceImpact: new Dec(0.006), maxLiquidityCap: new Dec(25000) },
+  { slippage: "0.5", minPriceImpact: new Dec(0.01),  maxLiquidityCap: new Dec(10000) },
+  { slippage: "1.0", minPriceImpact: new Dec(0.03),  maxLiquidityCap: new Dec(3000)  },
+  { slippage: "2.0", minPriceImpact: new Dec(0.05),  maxLiquidityCap: new Dec(1000)  },
+  { slippage: "3.0", minPriceImpact: new Dec(0.10),  maxLiquidityCap: new Dec(300)   },
+  { slippage: "5.0", minPriceImpact: new Dec(0.20),  maxLiquidityCap: new Dec(100)   },
+];
+
 /** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */
 export function useDynamicSlippageConfig({
   slippageConfig,
@@ -1696,6 +1708,17 @@ export function useDynamicSlippageConfig({
   feeError?: Error | null;
   quoteType: QuoteDirection;
 }) {
+  // Populate selectable slippage tiers so getSmallestSlippage works for any
+  // consumer of this hook (e.g. place-limit-tool that doesn't call
+  // useDynamicSlippageFromQuote).
+  useEffect(() => {
+    slippageConfig.setSelectableSlippages(
+      DYNAMIC_SLIPPAGE_TIERS.map(({ slippage }) =>
+        new Dec(slippage).quo(DecUtils.getTenExponentN(2))
+      )
+    );
+  }, [slippageConfig]);
+
   useEffect(() => {
     if (feeError) {
       if (
@@ -1736,18 +1759,6 @@ export function useDynamicSlippageConfig({
   }, [feeError, slippageConfig, quoteType]);
 }
 
-// Single source of truth for all slippage tiers.
-// Values are also used to populate selectableSlippages on ObservableSlippageConfig.
-export const DYNAMIC_SLIPPAGE_TIERS = [
-  { slippage: "0.2", minPriceImpact: new Dec(0.003), maxLiquidityCap: new Dec(50000) },
-  { slippage: "0.3", minPriceImpact: new Dec(0.006), maxLiquidityCap: new Dec(25000) },
-  { slippage: "0.5", minPriceImpact: new Dec(0.01),  maxLiquidityCap: new Dec(10000) },
-  { slippage: "1.0", minPriceImpact: new Dec(0.03),  maxLiquidityCap: new Dec(3000)  },
-  { slippage: "2.0", minPriceImpact: new Dec(0.05),  maxLiquidityCap: new Dec(1000)  },
-  { slippage: "3.0", minPriceImpact: new Dec(0.10),  maxLiquidityCap: new Dec(300)   },
-  { slippage: "5.0", minPriceImpact: new Dec(0.20),  maxLiquidityCap: new Dec(100)   },
-];
-
 /** Computes the suggested slippage tier from a quote (pure, no side effects). */
 function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   if (!quote) return DefaultSlippage;
@@ -1783,16 +1794,6 @@ export function useDynamicSlippageFromQuote({
   quote: SwapState["quote"];
   slippageConfig: ObservableSlippageConfig;
 }) {
-  // Populate selectableSlippages from tiers on mount so the error hook
-  // (useDynamicSlippageConfig) draws from the same list as the proactive hook.
-  useEffect(() => {
-    slippageConfig.setSelectableSlippages(
-      DYNAMIC_SLIPPAGE_TIERS.map(({ slippage }) =>
-        new Dec(slippage).quo(DecUtils.getTenExponentN(2))
-      )
-    );
-  }, [slippageConfig]);
-
   // Synchronously compute the display value from the current quote so it updates
   // in the same React render cycle as the quote/gas display, not one cycle later.
   const autoAdjustedSlippage = useMemo(
@@ -1826,7 +1827,14 @@ export function useDynamicSlippageFromQuote({
     slippageConfig.setManualSlippage(suggested);
   }, [quote, slippageConfig]);
 
-  return { autoAdjustedSlippage };
+  // Call this when slippage is externally reset (e.g. resetSlippage in swap-tool)
+  // so the hook treats the next quote update as a fresh auto-adjust rather than
+  // a user override.
+  const resetAutoAdjust = useCallback(() => {
+    lastAutoSet.current = null;
+  }, []);
+
+  return { autoAdjustedSlippage, resetAutoAdjust };
 }
 
 /** Extracts the numerical values from the swap required error

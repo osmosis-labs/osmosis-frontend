@@ -140,7 +140,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
-    const { autoAdjustedSlippage } = useDynamicSlippageFromQuote({
+    const { autoAdjustedSlippage, resetAutoAdjust } = useDynamicSlippageFromQuote({
       quote: swapState.quote,
       slippageConfig,
     });
@@ -214,9 +214,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       ) {
         return;
       }
+      // Clear the auto-adjust sentinel so the hook re-engages on the next quote
+      // update rather than treating DefaultSlippage as a user override.
+      resetAutoAdjust();
       slippageConfig.setManualSlippage(DefaultSlippage);
       slippageConfig.setDefaultSlippage(DefaultSlippage);
-    }, [slippageConfig]);
+    }, [slippageConfig, resetAutoAdjust]);
 
     const { amountWithSlippage, fiatAmountWithSlippage } =
       useAmountWithSlippage({
