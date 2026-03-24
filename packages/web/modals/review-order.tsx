@@ -244,6 +244,8 @@ export const ReviewOrder = observer(function ReviewOrder({
     (value: string) => {
       if (value === "") {
         setManualSlippage("");
+        // User cleared the field — hand control back to the auto-adjust hook
+        slippageConfig?.clearUserOverride();
         slippageConfig?.setManualSlippage(
           autoAdjustedSlippage ?? DefaultSlippage
         );
@@ -261,6 +263,9 @@ export const ReviewOrder = observer(function ReviewOrder({
       // Cap at 100%
       const effectiveValue = +value > 100 ? "100" : value;
       setManualSlippage(effectiveValue);
+      // Mark as user override before writing so the auto-adjust hook won't
+      // overwrite the value even if it happens to equal the current tier string.
+      slippageConfig?.markUserOverride();
       slippageConfig?.setManualSlippage(new Dec(+effectiveValue).toString());
     },
     [slippageConfig, autoAdjustedSlippage]

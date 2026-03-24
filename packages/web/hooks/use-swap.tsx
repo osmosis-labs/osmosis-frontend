@@ -1801,7 +1801,9 @@ export function useDynamicSlippageFromQuote({
     [quote]
   );
 
-  // Track the last value we auto-set so we can distinguish it from a user override
+  // Tracks the last value written by this hook — used only as an optimisation to
+  // skip redundant setManualSlippage calls when the suggestion hasn't changed.
+  // It is NOT used to detect user overrides; that is the job of userOverrodeSlippage.
   const lastAutoSet = useRef<string | null>(null);
 
   // Keep the config in sync (for the actual transaction slippage).
@@ -1809,16 +1811,18 @@ export function useDynamicSlippageFromQuote({
   useEffect(() => {
     if (!quote) return;
 
-    if (lastAutoSet.current !== null) {
-      // If isManualSlippage flipped back to false, useDynamicSlippageConfig (error hook)
-      // has called select() — don't override its correction
-      if (!slippageConfig.isManualSlippage) return;
+    // If useDynamicSlippageConfig (error hook) has called select() — don't override
+    if (!slippageConfig.isManualSlippage) return;
 
-      // If the value differs from what we set, the user typed in the box — respect that
-      if (slippageConfig.manualSlippageStr !== lastAutoSet.current) return;
-    }
+    // Explicit user override takes precedence — string equality is too fragile
+    // (e.g. user types "0.5" which matches the tier string) so we rely on the
+    // dedicated flag that review-order sets when the user edits the field.
+    if (slippageConfig.userOverrodeSlippage) return;
 
     const suggested = computeSuggestedSlippage(quote);
+
+    // Skip the write if the suggestion is unchanged (avoids a MobX reaction cycle)
+    if (suggested === lastAutoSet.current) return;
 
     lastAutoSet.current = suggested;
     // setManualSlippage sets the actual slippage value (also sets isManualSlippage = true
@@ -1832,7 +1836,8 @@ export function useDynamicSlippageFromQuote({
   // a user override.
   const resetAutoAdjust = useCallback(() => {
     lastAutoSet.current = null;
-  }, []);
+    slippageConfig.clearUserOverride();
+  }, [slippageConfig]);
 
   return { autoAdjustedSlippage, resetAutoAdjust };
 }
