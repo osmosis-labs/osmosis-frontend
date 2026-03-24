@@ -1,0 +1,93 @@
+name: Test Linux Headless E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      iterations:
+        description: "Number of parallel iterations for flakiness measurement"
+        required: false
+        default: "5"
+        type: choice
+        options:
+          - "1"
+          - "3"
+          - "5"
+          - "10"
+
+jobs:
+  linux-headless-claim:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        run: [1, 2, 3, 4, 5]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            packages/e2e
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.x
+      - name: Install Playwright
+        run: |
+          yarn --cwd packages/e2e install --frozen-lockfile && npx playwright install --with-deps chromium
+      - name: Run Claim tests (headless on Linux)
+        env:
+          BASE_URL: https://app.osmosis.zone
+          PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
+        run: |
+          cd packages/e2e
+          npx playwright test claim
+      - name: upload test results
+        if: failure() || success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-headless-claim-run-${{ matrix.run }}
+          path: packages/e2e/playwright-report
+
+  summarize:
+    if: always()
+    needs: linux-headless-claim
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Summarize results
+        run: |
+          echo "## Linux Headless E2E Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          total=0
+          passed=0
+          failed=0
+          for dir in artifacts/linux-headless-claim-run-*/; do
+            run_name=$(basename "$dir")
+            total=$((total + 1))
+            if [ -f "$dir/test-results.json" ]; then
+              unexpected=$(jq -r '.stats.unexpected // 0' "$dir/test-results.json")
+              expected=$(jq -r '.stats.expected // 0' "$dir/test-results.json")
+              if [ "$unexpected" = "0" ]; then
+                passed=$((passed + 1))
+                echo "- **$run_name**: PASSED ($expected expected, $unexpected unexpected)" >> $GITHUB_STEP_SUMMARY
+              else
+                failed=$((failed + 1))
+                echo "- **$run_name**: FAILED ($expected expected, $unexpected unexpected)" >> $GITHUB_STEP_SUMMARY
+              fi
+            else
+              failed=$((failed + 1))
+              echo "- **$run_name**: FAILED (no test-results.json)" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Summary: $passed/$total passed ($failed failed)**" >> $GITHUB_STEP_SUMMARY
+          rate=0
+          if [ "$total" -gt 0 ]; then
+            rate=$((failed * 100 / total))
+          fi
+          echo "**Flakiness rate: ${rate}%**" >> $GITHUB_STEP_SUMMARY

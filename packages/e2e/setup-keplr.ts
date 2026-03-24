@@ -6,7 +6,10 @@ import { WalletPage } from "./pages/keplr-page";
 
 export class SetupKeplr {
   /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
-  async setupWalletKeplr(secret: string, headless = false) {
+  async setupWalletKeplr(
+    secret: string,
+    headless = process.env.HEADLESS === "true",
+  ) {
     const pathToKeplrExtension = await new UnzipExtension().getPathToExtension();
     const testConfig = new TestConfig().getBrowserExtensionConfig(
       headless,
@@ -34,7 +37,10 @@ export class SetupKeplr {
   }
 
   /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */
-  async setupWallet(secret: string, headless = false) {
+  async setupWallet(
+    secret: string,
+    headless = process.env.HEADLESS === "true",
+  ) {
     try {
       return await this.setupWalletKeplr(secret, headless);
     } catch (error) {
