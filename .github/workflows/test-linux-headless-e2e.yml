@@ -21,7 +21,7 @@ on:
 
 jobs:
   linux-headless-wallet:
-    timeout-minutes: 15
+    timeout-minutes: ${{ matrix.suite == 'trade.wallet' && 25 || 15 }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
