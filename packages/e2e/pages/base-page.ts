@@ -1,4 +1,5 @@
 import { type Locator, type Page, expect } from '@playwright/test'
+import { waitForKeplrApproval } from './keplr-helper'
 
 /**
  * Base page object shared by all E2E page classes.
@@ -37,34 +38,9 @@ export class BasePage {
    */
   async connectWallet() {
     await this.connectWalletBtn.click()
-    // Start listening for the Keplr popup BEFORE clicking the wallet button
-    // to avoid a race where the popup opens faster than the listener attaches.
-    const pagePromise = this.page
-      .context()
-      .waitForEvent('page', { timeout: 15000 })
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
-    let newPage: Page | null = null
-    try {
-      newPage = await pagePromise
-    } catch (error: any) {
-      if (
-        error.name === 'TimeoutError' ||
-        /timeout/i.test(error.message ?? '')
-      ) {
-        console.log(
-          'Keplr popup did not appear within 15s; assuming auto-approved.',
-        )
-      } else {
-        throw error
-      }
-    }
-
-    if (newPage) {
-      await newPage.waitForLoadState('load', { timeout: 10000 })
-      console.log(`Title of the new page: ${await newPage.title()}`)
-      await newPage.getByRole('button', { name: 'Approve' }).click()
-    }
+    await waitForKeplrApproval(this.page.context())
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
   }
