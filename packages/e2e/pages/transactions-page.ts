@@ -16,8 +16,8 @@ import { getKeplrPopupPage } from "./keplr-helper";
  *   Successful" toast. This handles three scenarios:
  *     1. Keplr popup appears  -> approve manually, then wait for success toast
  *     2. Success toast first  -> 1-Click Trading handled it automatically
- *     3. Popup resolves null  -> no popup observed; still waits for success toast
- *        (prevents false positives -- the test will fail if the tx truly didn't succeed)
+ *     3. Popup resolves null  -> promise hangs (never wins the race), so the
+ *        test correctly waits for the success toast instead of falsely assuming 1CT
  *
  *   Two defensive guards are applied before each action click:
  *     - Stale toast dismissal: waits for any lingering success toast to hide so the
@@ -138,10 +138,15 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
+      (p) =>
+        p
+          ? { type: "popup" as const, page: p }
+          : new Promise<never>(() => {})
+    );
 
     const result = await Promise.race([
-      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      keplrPopup,
       successPromise.then(() => ({ type: "success" as const, page: null })),
     ]);
 
@@ -194,10 +199,15 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
+      (p) =>
+        p
+          ? { type: "popup" as const, page: p }
+          : new Promise<never>(() => {})
+    );
 
     const result = await Promise.race([
-      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      keplrPopup,
       successPromise.then(() => ({ type: "success" as const, page: null })),
     ]);
 
@@ -241,10 +251,15 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
+      (p) =>
+        p
+          ? { type: "popup" as const, page: p }
+          : new Promise<never>(() => {})
+    );
 
     const result = await Promise.race([
-      keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
+      keplrPopup,
       successPromise.then(() => ({ type: "success" as const, page: null })),
     ]);
 
