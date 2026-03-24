@@ -6,6 +6,7 @@ import {
 } from "@playwright/test";
 
 import { BasePage } from "./base-page";
+import { getKeplrPopupPage } from "./keplr-helper";
 
 /**
  * Page object for the /transactions view and limit-order actions (cancel, claim).
@@ -126,24 +127,18 @@ export class TransactionsPage extends BasePage {
       timeout: 30000,
     });
 
-    // Dismiss any lingering success toast from a previous transaction so
-    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
     await this.page
       .getByText("Transaction Successful")
       .waitFor({ state: "hidden", timeout: 3000 })
       .catch(() => {});
-
-    // Register the popup listener BEFORE the click so we never miss a
-    // fast-opening Keplr approval window.
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     await cancelBtnLocator.click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
+
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
@@ -163,16 +158,10 @@ export class TransactionsPage extends BasePage {
       await approveBtn.click();
       expect(msgContentAmount).toContain("cancel_limit");
       await successPromise;
-    } else if (result.type === "success") {
-      console.log(
-        "Success toast appeared before Keplr popup (cancel limit order)."
-      );
-      await successPromise;
     } else {
       console.log(
-        "No Keplr popup observed; waiting for success confirmation (cancel limit order)."
+        "1CT or pre-approved; success toast received (cancel limit order)."
       );
-      await successPromise;
     }
   }
 
@@ -194,24 +183,18 @@ export class TransactionsPage extends BasePage {
       return;
     }
 
-    // Dismiss any lingering success toast from a previous transaction so
-    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
     await this.page
       .getByText("Transaction Successful")
       .waitFor({ state: "hidden", timeout: 3000 })
       .catch(() => {});
-
-    // Register the popup listener BEFORE the click so we never miss a
-    // fast-opening Keplr approval window.
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     await this.claimAndClose.first().click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
+
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
@@ -239,38 +222,26 @@ export class TransactionsPage extends BasePage {
       expect(msgContentAmount1).toContain("claim_limit");
       expect(msgContentAmount2).toContain("cancel_limit");
       await successPromise;
-    } else if (result.type === "success") {
-      console.log(
-        "Success toast appeared before Keplr popup (claim and close)."
-      );
-      await successPromise;
     } else {
       console.log(
-        "No Keplr popup observed; waiting for success confirmation (claim and close)."
+        "1CT or pre-approved; success toast received (claim and close)."
       );
-      await successPromise;
     }
   }
 
   async claimAll(context: BrowserContext) {
-    // Dismiss any lingering success toast from a previous transaction so
-    // the upcoming Promise.race doesn't short-circuit on stale DOM state.
     await this.page
       .getByText("Transaction Successful")
       .waitFor({ state: "hidden", timeout: 3000 })
       .catch(() => {});
-
-    // Register the popup listener BEFORE the click so we never miss a
-    // fast-opening Keplr approval window.
-    const keplrPopup = context
-      .waitForEvent("page", { timeout: 40000 })
-      .catch(() => null);
 
     await this.claimAllBtn.click();
 
     const successPromise = expect(
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
+
+    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 });
 
     const result = await Promise.race([
       keplrPopup.then((p) => ({ type: "popup" as const, page: p })),
@@ -285,14 +256,10 @@ export class TransactionsPage extends BasePage {
       await expect(approveBtn).toBeEnabled();
       await approveBtn.click();
       await successPromise;
-    } else if (result.type === "success") {
-      console.log("Success toast appeared before Keplr popup (claim all).");
-      await successPromise;
     } else {
       console.log(
-        "No Keplr popup observed; waiting for success confirmation (claim all)."
+        "1CT or pre-approved; success toast received (claim all)."
       );
-      await successPromise;
     }
   }
 

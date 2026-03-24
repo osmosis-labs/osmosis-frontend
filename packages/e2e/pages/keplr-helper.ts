@@ -45,6 +45,42 @@ export async function openKeplrPopupDirect(
 }
 
 /**
+ * Returns the Keplr popup Page without clicking anything.
+ *
+ * Tries `context.waitForEvent("page")` first (headed mode), then falls
+ * back to direct `chrome-extension://` navigation (headless Linux).
+ * Returns null if no popup could be obtained.
+ *
+ * Use this when caller code needs to inspect popup content (e.g. read
+ * transaction message) before clicking Approve.
+ */
+export async function getKeplrPopupPage(
+  context: BrowserContext,
+  opts: { timeout?: number } = {}
+): Promise<Page | null> {
+  const { timeout = 15_000 } = opts;
+
+  try {
+    return await context.waitForEvent("page", { timeout });
+  } catch {
+    console.log(
+      "Keplr popup did not appear as page event; trying direct navigation."
+    );
+  }
+
+  const extensionId = await getKeplrExtensionId(context);
+  if (extensionId) {
+    try {
+      return await openKeplrPopupDirect(context, extensionId);
+    } catch (e) {
+      console.log(`Failed to open Keplr popup directly: ${e}`);
+    }
+  }
+
+  return null;
+}
+
+/**
  * Waits for a Keplr approval popup and clicks "Approve".
  *
  * Tries `context.waitForEvent("page")` first (works in headed mode).
@@ -55,29 +91,11 @@ export async function openKeplrPopupDirect(
  */
 export async function waitForKeplrApproval(
   context: BrowserContext,
-  opts: { timeout?: number; clickApprove?: boolean } = {}
+  opts: { timeout?: number } = {}
 ): Promise<Page | null> {
-  const { timeout = 15_000, clickApprove = true } = opts;
+  const popupPage = await getKeplrPopupPage(context, opts);
 
-  let popupPage: Page | null = null;
-
-  try {
-    popupPage = await context.waitForEvent("page", { timeout });
-  } catch {
-    console.log(
-      "Keplr popup did not appear as page event; trying direct navigation."
-    );
-    const extensionId = await getKeplrExtensionId(context);
-    if (extensionId) {
-      try {
-        popupPage = await openKeplrPopupDirect(context, extensionId);
-      } catch (e) {
-        console.log(`Failed to open Keplr popup directly: ${e}`);
-      }
-    }
-  }
-
-  if (popupPage && clickApprove) {
+  if (popupPage) {
     try {
       await popupPage.waitForLoadState("load", { timeout: 10_000 });
       const approveBtn = popupPage.getByRole("button", { name: "Approve" });
