@@ -159,6 +159,15 @@ async function sendSlackSummary(
 
   lines.push("```");
 
+  const serverUrl = process.env.GITHUB_SERVER_URL;
+  const repo = process.env.GITHUB_REPOSITORY;
+  const runId = process.env.GITHUB_RUN_ID;
+  if (serverUrl && repo && runId) {
+    lines.push(
+      `*Details:* <${serverUrl}/${repo}/actions/runs/${runId}|View run logs>`
+    );
+  }
+
   const payload = {
     text: headerText,
     blocks: [
