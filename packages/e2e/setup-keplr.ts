@@ -3,6 +3,7 @@ import { TestConfig } from "./test-config";
 import { type BrowserContext, chromium } from "playwright";
 import { fail } from "assert";
 import { WalletPage } from "./pages/keplr-page";
+import { getKeplrExtensionId } from "./pages/keplr-helper";
 
 export class SetupKeplr {
   /**
@@ -47,7 +48,9 @@ export class SetupKeplr {
       );
     }
 
-    const extensionId = await this.discoverExtensionId(context);
+    const extensionId = await getKeplrExtensionId(context, {
+      swTimeout: 10_000,
+    });
     if (extensionId) {
       const page = existingPages[0] ?? (await context.newPage());
       const registerUrl = `chrome-extension://${extensionId}/register.html#`;
@@ -59,31 +62,6 @@ export class SetupKeplr {
     throw new Error(
       "Could not locate Keplr register page via any strategy (existing pages, page event, or service worker)."
     );
-  }
-
-  private async discoverExtensionId(
-    context: BrowserContext
-  ): Promise<string | null> {
-    let workers = context.serviceWorkers();
-    if (workers.length === 0) {
-      console.log("Waiting for Keplr service worker to register...");
-      try {
-        await context.waitForEvent("serviceworker", { timeout: 10_000 });
-      } catch {
-        console.log("No service worker event received within 10s.");
-      }
-      workers = context.serviceWorkers();
-    }
-
-    for (const sw of workers) {
-      const match = sw.url().match(/^chrome-extension:\/\/([^/]+)/);
-      if (match) {
-        console.log(`Discovered extension ID: ${match[1]}`);
-        return match[1];
-      }
-    }
-    console.log("No chrome-extension service workers found.");
-    return null;
   }
 
   /** @param secret - Hex private key or BIP39 mnemonic (12/24 words). */

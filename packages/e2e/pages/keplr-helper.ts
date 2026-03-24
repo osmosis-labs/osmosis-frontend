@@ -3,24 +3,37 @@ import { type BrowserContext, type Page } from "@playwright/test";
 /**
  * Resolves the Keplr extension ID from the browser context's service workers.
  * Returns null if no Keplr service worker is found.
+ *
+ * @param swTimeout - How long to wait for a service worker to register (ms).
+ *   Default 5s is fine for popup helpers; callers like SetupKeplr that run
+ *   during initial browser launch may want a longer timeout (e.g. 10_000).
  */
 export async function getKeplrExtensionId(
-  context: BrowserContext
+  context: BrowserContext,
+  opts: { swTimeout?: number } = {}
 ): Promise<string | null> {
+  const { swTimeout = 5_000 } = opts;
   let workers = context.serviceWorkers();
   if (workers.length === 0) {
+    console.log("Waiting for Keplr service worker to register...");
     try {
-      await context.waitForEvent("serviceworker", { timeout: 5_000 });
+      await context.waitForEvent("serviceworker", { timeout: swTimeout });
     } catch {
-      // Extension may have already registered before we started listening.
+      console.log(
+        `No service worker event received within ${swTimeout / 1000}s.`
+      );
     }
     workers = context.serviceWorkers();
   }
 
   for (const sw of workers) {
     const match = sw.url().match(/^chrome-extension:\/\/([^/]+)/);
-    if (match) return match[1];
+    if (match) {
+      console.log(`Discovered extension ID: ${match[1]}`);
+      return match[1];
+    }
   }
+  console.log("No chrome-extension service workers found.");
   return null;
 }
 
@@ -47,8 +60,12 @@ export async function openKeplrPopupDirect(
 /**
  * Returns the Keplr popup Page without clicking anything.
  *
- * Tries `context.waitForEvent("page")` first (headed mode), then falls
- * back to direct `chrome-extension://` navigation (headless Linux).
+ * Strategy order:
+ *   1. Check `context.pages()` for an already-open Keplr popup (handles
+ *      fast-opening popups when the helper is called after the click).
+ *   2. `context.waitForEvent("page")` (headed mode on macOS).
+ *   3. Direct `chrome-extension://` navigation (headless Linux fallback).
+ *
  * Returns null if no popup could be obtained.
  *
  * Use this when caller code needs to inspect popup content (e.g. read
@@ -59,6 +76,18 @@ export async function getKeplrPopupPage(
   opts: { timeout?: number } = {}
 ): Promise<Page | null> {
   const { timeout = 15_000 } = opts;
+
+  const existing = context
+    .pages()
+    .find(
+      (p) =>
+        p.url().includes("chrome-extension://") &&
+        p.url().includes("/popup.html")
+    );
+  if (existing) {
+    console.log(`Found already-open Keplr popup: ${existing.url()}`);
+    return existing;
+  }
 
   try {
     return await context.waitForEvent("page", { timeout });
@@ -83,11 +112,12 @@ export async function getKeplrPopupPage(
 /**
  * Waits for a Keplr approval popup and clicks "Approve".
  *
- * Tries `context.waitForEvent("page")` first (works in headed mode).
- * If that times out, falls back to opening the popup directly via the
- * extension URL (required for headless mode on Linux).
+ * Delegates to `getKeplrPopupPage()` (which checks existing pages, waits
+ * for event, then falls back to direct navigation).
  *
  * Returns the popup Page, or null if no approval was needed (1CT / auto-approve).
+ * Throws if the popup was found but the Approve button could not be clicked
+ * (prevents silent failures that would surface as misleading timeouts later).
  */
 export async function waitForKeplrApproval(
   context: BrowserContext,
@@ -96,17 +126,11 @@ export async function waitForKeplrApproval(
   const popupPage = await getKeplrPopupPage(context, opts);
 
   if (popupPage) {
-    try {
-      await popupPage.waitForLoadState("load", { timeout: 10_000 });
-      const approveBtn = popupPage.getByRole("button", { name: "Approve" });
-      await approveBtn.waitFor({ state: "visible", timeout: 10_000 });
-      console.log("Clicking Approve in Keplr popup.");
-      await approveBtn.click();
-    } catch (e) {
-      console.log(
-        `Approve button not found or not clickable in Keplr popup: ${e}`
-      );
-    }
+    await popupPage.waitForLoadState("load", { timeout: 10_000 });
+    const approveBtn = popupPage.getByRole("button", { name: "Approve" });
+    await approveBtn.waitFor({ state: "visible", timeout: 10_000 });
+    console.log("Clicking Approve in Keplr popup.");
+    await approveBtn.click();
   }
 
   return popupPage;
