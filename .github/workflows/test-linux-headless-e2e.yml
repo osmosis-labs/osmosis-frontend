@@ -4,7 +4,7 @@ on:
   # push trigger scoped to this experiment branch (remove after validation)
   push:
     branches:
-      - test/linux-headless-e2e
+      - test/linux-headless-e2e-v2
   workflow_dispatch:
     inputs:
       iterations:
