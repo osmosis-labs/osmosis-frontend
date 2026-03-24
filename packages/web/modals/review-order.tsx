@@ -170,12 +170,22 @@ export const ReviewOrder = observer(function ReviewOrder({
     autoAdjustedSlippage !== undefined &&
     autoAdjustedSlippage !== DefaultSlippage;
 
+  // When the error hook (useDynamicSlippageConfig) has called select(), isManualSlippage
+  // is false and the transaction uses the selected preset — show that value so the
+  // display stays consistent with what will actually be submitted.
+  const presetSlippagePct =
+    slippageConfig && !slippageConfig.isManualSlippage
+      ? String(parseFloat(slippageConfig.slippage.toDec().toString()) * 100)
+      : undefined;
+
   const displayedSlippage =
     manualSlippage !== ""
       ? manualSlippage
-      : isAutoAdjusted && !isEditingSlippage
-        ? autoAdjustedSlippage!
-        : "";
+      : presetSlippagePct !== undefined
+        ? presetSlippagePct
+        : isAutoAdjusted && !isEditingSlippage
+          ? autoAdjustedSlippage!
+          : "";
 
 
   const isManualSlippageTooHigh =
@@ -677,7 +687,11 @@ export const ReviewOrder = observer(function ReviewOrder({
                               )}
                               value={displayedSlippage}
                               onFocus={() => {
-                                slippageConfig?.setIsManualSlippage(true);
+                                // Do NOT force isManualSlippage=true here — the error
+                                // hook may have called select() to correct slippage and
+                                // forcing manual mode would silently discard that
+                                // correction. Manual mode is set only when the user
+                                // actually types (handleManualSlippageChange).
                                 setIsEditingSlippage(true);
                               }}
                               onBlur={() => {
