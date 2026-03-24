@@ -1,5 +1,8 @@
 name: Test Linux Headless E2E
 
+permissions:
+  contents: read
+
 on:
   # push trigger scoped to this experiment branch (remove after validation)
   push:
