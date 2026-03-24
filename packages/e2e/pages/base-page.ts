@@ -84,6 +84,7 @@ export class BasePage {
   }
 
   async logOut() {
+    await this.dismissAllToasts()
     await expect(
       this.connectedWalletBtn,
       'Wallet should be connected.',
@@ -93,5 +94,21 @@ export class BasePage {
     await logoutBtn.click({ timeout: 2000 })
     await this.page.waitForTimeout(2000)
     await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
+  }
+
+  /**
+   * Removes all react-toastify notifications from the DOM.
+   * The toast close button is invisible in headless mode (CSS :hover only),
+   * so we clear them via JS to prevent them from intercepting pointer events
+   * on the wallet button in the top-right header area.
+   */
+  async dismissAllToasts() {
+    await this.page
+      .evaluate(() => {
+        document
+          .querySelectorAll('.Toastify__toast')
+          .forEach((el) => el.remove())
+      })
+      .catch(() => {})
   }
 }
