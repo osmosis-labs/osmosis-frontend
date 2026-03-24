@@ -114,7 +114,7 @@ export const TransactionSwapDetails = ({
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10">
+              <div className="h-10 w-10 overflow-hidden rounded-full">
                 <EntityImage
                   logoURIs={getLogoURIs(tokenIn.token.currency.coinImageUrl)}
                   name={tokenIn.token.denom}
@@ -151,7 +151,7 @@ export const TransactionSwapDetails = ({
           </div>
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10">
+              <div className="h-10 w-10 overflow-hidden rounded-full">
                 <EntityImage
                   logoURIs={getLogoURIs(tokenOut.token.currency.coinImageUrl)}
                   name={tokenOut.token.denom}

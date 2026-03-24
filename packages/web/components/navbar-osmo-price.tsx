@@ -37,7 +37,7 @@ export const NavbarOsmoPrice = observer(() => {
           className="min-w-[70px]"
         >
           <div className="flex items-center gap-1">
-            <div className="h-[20px] w-[20px]">
+            <div className="h-[20px] w-[20px] overflow-hidden rounded-full">
               <EntityImage
                 name={osmo.coinName}
                 symbol={osmo.coinDenom}

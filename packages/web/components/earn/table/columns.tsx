@@ -88,20 +88,24 @@ export const tableColumns = [
         )}
       >
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
-          <EntityImage
+          <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            symbol={coinDenom}
-            name={coinDenom}
-            logoURIs={{
-              png: coinImageUrl,
-              svg: coinImageUrl,
-            }}
-            width={36}
-            height={36}
-            className={classNames("h-9 min-w-[36px] rounded-full", {
-              "-ml-4": i > 0,
-            })}
-          />
+            className={classNames(
+              "h-9 w-9 shrink-0 overflow-hidden rounded-full",
+              { "-ml-4": i > 0 }
+            )}
+          >
+            <EntityImage
+              symbol={coinDenom}
+              name={coinDenom}
+              logoURIs={{
+                png: coinImageUrl,
+                svg: coinImageUrl,
+              }}
+              width={36}
+              height={36}
+            />
+          </div>
         ))}
       </div>
     ),
@@ -154,21 +158,27 @@ export const tableColumns = [
     cell: (item) => (
       <div className="relative flex items-center justify-end">
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
-          <EntityImage
+          <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            symbol={coinDenom}
-            name={coinDenom}
-            logoURIs={{
-              png: coinImageUrl,
-              svg: coinImageUrl,
-            }}
-            width={24}
-            height={24}
-            className={classNames("h-6 w-6 rounded-full", {
-              "-ml-2": i > 0,
-              "mr-2": item.getValue().length === 1,
-            })}
-          />
+            className={classNames(
+              "h-6 w-6 shrink-0 overflow-hidden rounded-full",
+              {
+                "-ml-2": i > 0,
+                "mr-2": item.getValue().length === 1,
+              }
+            )}
+          >
+            <EntityImage
+              symbol={coinDenom}
+              name={coinDenom}
+              logoURIs={{
+                png: coinImageUrl,
+                svg: coinImageUrl,
+              }}
+              width={24}
+              height={24}
+            />
+          </div>
         ))}
       </div>
     ),
