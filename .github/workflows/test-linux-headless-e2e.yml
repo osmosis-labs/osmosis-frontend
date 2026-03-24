@@ -1,6 +1,10 @@
 name: Test Linux Headless E2E
 
 on:
+  # push trigger scoped to this experiment branch (remove after validation)
+  push:
+    branches:
+      - test/linux-headless-e2e
   workflow_dispatch:
     inputs:
       iterations:
