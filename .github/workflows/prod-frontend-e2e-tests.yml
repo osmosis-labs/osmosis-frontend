@@ -65,12 +65,14 @@ jobs:
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -136,7 +138,7 @@ jobs:
           fi
 
   prod-e2e-tests:
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [wait-for-deployment, check-balances]
     environment:
@@ -166,6 +168,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test transactions portfolio swap.osmo.wallet

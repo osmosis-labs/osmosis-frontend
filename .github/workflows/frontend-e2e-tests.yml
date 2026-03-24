@@ -66,12 +66,14 @@ jobs:
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -138,7 +140,7 @@ jobs:
 
   preview-swap-osmo-tests:
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     needs: [wait-for-deployment, check-balances]
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
@@ -167,6 +169,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
@@ -186,7 +189,7 @@ jobs:
 
   preview-swap-usdc-tests:
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     needs: [wait-for-deployment, preview-swap-osmo-tests, check-balances]
     steps:
       - name: Check out repository
@@ -220,6 +223,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test swap.usdc.wallet
@@ -234,7 +238,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -259,6 +263,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test portfolio transactions
@@ -310,7 +315,7 @@ jobs:
 
   preview-trade-tests:
     timeout-minutes: 15
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     needs:
       [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
     steps:
@@ -344,6 +349,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test trade
@@ -357,7 +363,7 @@ jobs:
 
   preview-claim-tests:
     timeout-minutes: 10
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     needs: [wait-for-deployment, check-balances]
     steps:
       - name: Check out repository
@@ -384,6 +390,7 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test claim
