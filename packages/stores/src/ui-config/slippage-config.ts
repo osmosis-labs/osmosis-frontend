@@ -19,6 +19,9 @@ export class ObservableSlippageConfig {
   @observable
   protected _manualSlippage: string = "0.5";
 
+  @observable
+  protected _userOverrodeSlippage: boolean = false;
+
   constructor() {
     makeObservable(this);
   }
@@ -69,6 +72,23 @@ export class ObservableSlippageConfig {
 
     this._isManualSlippage = true;
     this._manualSlippage = str;
+  }
+
+  /** True when the user has explicitly typed a slippage value.
+   *  Call markUserOverride() on user input and clearUserOverride() when
+   *  the auto-adjust hook writes or the user clears the field. */
+  get userOverrodeSlippage(): boolean {
+    return this._userOverrodeSlippage;
+  }
+
+  @action
+  markUserOverride() {
+    this._userOverrodeSlippage = true;
+  }
+
+  @action
+  clearUserOverride() {
+    this._userOverrodeSlippage = false;
   }
 
   @computed
