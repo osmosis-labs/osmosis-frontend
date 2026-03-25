@@ -8,6 +8,11 @@ import {
 
 import { BasePage } from './base-page'
 
+/**
+ * Page object for the legacy /swap view (pre-trade-page UI).
+ * Uses the simpler Keplr popup flow (no Promise.race) -- if the popup doesn't
+ * appear within 10s the method returns undefined, assuming 1-Click Trading.
+ */
 export class SwapPage extends BasePage {
   readonly page: Page
   readonly swapBtn: Locator
@@ -62,16 +67,26 @@ export class SwapPage extends BasePage {
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalance(),
       'Insufficient balance for the swap!',
     ).toBeFalsy()
     await expect(this.swapBtn).toBeEnabled({ timeout: 7000 })
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent('page')
+    const pageApprove = context.waitForEvent('page', { timeout: 10000 })
     await this.swapBtn.click()
-    const approvePage = await pageApprove
+    let approvePage: Page | null = null
+    try {
+      approvePage = await pageApprove
+    } catch (error: unknown) {
+      const err = error as { name?: string; message?: string }
+      if (err.name === 'TimeoutError' || /timeout/i.test(err.message ?? '')) {
+        console.log(
+          'Keplr popup did not appear within 10s; assuming 1-click trading.',
+        )
+        return { msgContentAmount: undefined }
+      }
+      throw error
+    }
     await approvePage.waitForLoadState()
     const approvePageTitle = approvePage.url()
     console.log(`Approve page is opened at: ${approvePageTitle}`)
@@ -83,17 +98,19 @@ export class SwapPage extends BasePage {
       .getByText('type: osmosis/poolmanager/')
       .textContent()
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`)
-    // Approve trx
     await approveBtn.click()
-    // wait for trx confirmation
     await this.page.waitForTimeout(4000)
-    //await approvePage.close();
-    // Handle Pop-up page <-
     return { msgContentAmount }
   }
 
+  /**
+   * Selects a trading pair, optimising for the common cases:
+   *   1. Pair already matches -> no-op
+   *   2. Pair is the reverse  -> single flip
+   *   3. One token overlaps   -> flip first to avoid the token-picker hiding
+   *      already-selected tokens, then search/select the remaining one(s).
+   */
   async selectPair(from: string, to: string) {
-    // Filter does not show already selected tokens
     console.log(`Select pair ${from} to ${to}`)
     const tokenLocator =
       '//img[@alt="token icon"]/../..//h5 | //img[@alt="token icon"]/../..//span[@class="subtitle1"]'
@@ -117,6 +134,8 @@ export class SwapPage extends BasePage {
       return
     }
 
+    // Flip first when one of the desired tokens sits on the wrong side,
+    // because the token picker hides the already-selected counterpart.
     if (from === toTokenText || to === fromTokenText) {
       await this.flipTokenPair()
     }

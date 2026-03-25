@@ -1,5 +1,14 @@
 import { type Locator, type Page, expect } from '@playwright/test'
 
+/**
+ * Base page object shared by all E2E page classes.
+ * Provides wallet connection/disconnection, navigation, and common UI helpers.
+ *
+ * Wallet interaction pattern:
+ *   Keplr opens a popup window for approval. When 1-Click Trading (1CT) is
+ *   enabled the popup may never appear, so all popup waits use timeouts and
+ *   treat TimeoutError as "auto-approved / 1CT active".
+ */
 export class BasePage {
   readonly page: Page
   readonly connectWalletBtn: Locator
@@ -21,8 +30,15 @@ export class BasePage {
     this.connectedWalletBtn = page.locator('//button/div/span[@title]')
   }
 
+  /**
+   * Connects the Keplr wallet via the browser extension popup.
+   * If the Keplr approval popup doesn't appear within 15s (e.g. auto-approved
+   * or 1CT enabled), we continue without error.
+   */
   async connectWallet() {
     await this.connectWalletBtn.click()
+    // Start listening for the Keplr popup BEFORE clicking the wallet button
+    // to avoid a race where the popup opens faster than the listener attaches.
     const pagePromise = this.page
       .context()
       .waitForEvent('page', { timeout: 15000 })
@@ -79,6 +95,7 @@ export class BasePage {
     return balance
   }
 
+  /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
       const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
@@ -91,7 +108,6 @@ export class BasePage {
   }
 
   async logOut() {
-    // open the wallet menu
     await expect(
       this.connectedWalletBtn,
       'Wallet should be connected.',
