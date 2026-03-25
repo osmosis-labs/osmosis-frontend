@@ -97,8 +97,9 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
             className="flex"
           >
             {alloyedAsset.asset.coinImageUrl ? (
-              <div className="h-12 w-12 min-w-[48px] shrink-0 overflow-hidden rounded-full">
+              <div className="min-w-[48px] shrink-0">
                 <EntityImage
+                  circular
                   logoURIs={getLogoURIs(alloyedAsset.asset.coinImageUrl)}
                   symbol={alloyedAsset.asset.coinDenom}
                   name={alloyedAsset.asset.coinName}

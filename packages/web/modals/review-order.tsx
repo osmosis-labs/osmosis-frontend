@@ -386,8 +386,9 @@ export function ReviewOrder({
             >
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                  <div className="shrink-0">
                     <EntityImage
+                      circular
                       logoURIs={{
                         png: fromAsset?.coinImageUrl,
                       }}
@@ -429,8 +430,9 @@ export function ReviewOrder({
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
                   {toAsset && (
-                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                    <div className="shrink-0">
                       <EntityImage
+                        circular
                         logoURIs={{
                           png: toAsset.coinImageUrl,
                         }}

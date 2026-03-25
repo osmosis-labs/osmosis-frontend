@@ -297,8 +297,9 @@ const AssetBox: FunctionComponent<{
     <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
       <div className="flex place-content-between items-center p-6 md:p-3">
         <div className="flex items-center gap-4 md:gap-2">
-          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
+          <div className="shrink-0">
             <EntityImage
+              circular
               logoURIs={{
                 png: assetImageUrl,
               }}

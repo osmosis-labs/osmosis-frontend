@@ -67,8 +67,9 @@ export const RemoveLiquidity: FunctionComponent<
                 className="flex items-center gap-2"
                 key={asset.currency.coinDenom}
               >
-                <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full">
+                <div className="shrink-0">
                   <EntityImage
+                    circular
                     logoURIs={{
                       png: asset.currency.coinImageUrl,
                     }}

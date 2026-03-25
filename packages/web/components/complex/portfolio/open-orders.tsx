@@ -94,8 +94,9 @@ export const OpenOrders: FunctionComponent = () => {
 
             return (
               <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
-                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                <div className="shrink-0">
                   <EntityImage
+                    circular
                     width={32}
                     height={32}
                     logoURIs={

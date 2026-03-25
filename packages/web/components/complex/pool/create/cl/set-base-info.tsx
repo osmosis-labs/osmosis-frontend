@@ -238,7 +238,7 @@ const TokenSelector = observer(
                   symbol={selectedAsset.token.coinDenom}
                   width={52}
                   height={52}
-                  className="overflow-hidden rounded-full"
+                  circular
                 />
                 <h5 className="max-w-[130px] truncate">
                   {selectedAsset.token.coinDenom}

@@ -26,7 +26,7 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
               symbol={fromAsset?.coinDenom}
               width={24}
               height={24}
-              className="overflow-hidden rounded-full"
+              circular
             />
           </div>
           <span className="text-[#F8F6F2]">{fromAsset?.coinDenom ?? ""}</span>

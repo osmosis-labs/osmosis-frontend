@@ -469,8 +469,9 @@ export const AssetsInfo: FunctionComponent<
             <div className="flex flex-wrap gap-x-5 gap-y-3">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
-                  <div className="h-[24px] w-[24px] flex-shrink-0 overflow-hidden rounded-full">
+                  <div className="flex-shrink-0">
                     <EntityImage
+                      circular
                       logoURIs={getLogoURIs(asset.currency.coinImageUrl)}
                       name={asset.currency.coinDenom}
                       symbol={asset.currency.coinDenom}

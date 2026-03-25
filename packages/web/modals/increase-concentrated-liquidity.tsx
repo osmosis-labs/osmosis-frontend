@@ -123,8 +123,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         </div>
         <div className="mb-2 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
           <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
-            <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full">
+            <div className="shrink-0">
               <EntityImage
+                circular
                 logoURIs={{
                   png: baseCoin.currency.coinImageUrl,
                 }}
@@ -138,8 +139,9 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           <div className="flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2">
             {quoteCoin.currency.coinImageUrl && (
-              <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full">
+              <div className="shrink-0">
                 <EntityImage
+                  circular
                   logoURIs={{
                     png: quoteCoin.currency.coinImageUrl,
                   }}

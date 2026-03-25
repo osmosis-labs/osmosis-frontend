@@ -114,15 +114,14 @@ export const TransactionSwapDetails = ({
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 overflow-hidden rounded-full">
-                <EntityImage
-                  logoURIs={getLogoURIs(tokenIn.token.currency.coinImageUrl)}
-                  name={tokenIn.token.denom}
-                  symbol={tokenIn.token.denom}
-                  height={40}
-                  width={40}
-                />
-              </div>
+              <EntityImage
+                circular
+                logoURIs={getLogoURIs(tokenIn.token.currency.coinImageUrl)}
+                name={tokenIn.token.denom}
+                symbol={tokenIn.token.denom}
+                height={40}
+                width={40}
+              />
               <div className="flex flex-col">
                 <div className="subtitle1">{t("transactions.sold")}</div>
                 <div className="body1 text-osmoverse-300">
@@ -151,15 +150,14 @@ export const TransactionSwapDetails = ({
           </div>
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 overflow-hidden rounded-full">
-                <EntityImage
-                  logoURIs={getLogoURIs(tokenOut.token.currency.coinImageUrl)}
-                  name={tokenOut.token.denom}
-                  symbol={tokenOut.token.denom}
-                  height={40}
-                  width={40}
-                />
-              </div>
+              <EntityImage
+                circular
+                logoURIs={getLogoURIs(tokenOut.token.currency.coinImageUrl)}
+                name={tokenOut.token.denom}
+                symbol={tokenOut.token.denom}
+                height={40}
+                width={40}
+              />
               <div className="flex flex-col">
                 <div className="subtitle1">{t("transactions.bought")}</div>
                 <div className="body1 text-osmoverse-300">

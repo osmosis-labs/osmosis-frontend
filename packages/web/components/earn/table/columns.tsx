@@ -91,11 +91,12 @@ export const tableColumns = [
           <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
             className={classNames(
-              "h-9 w-9 shrink-0 overflow-hidden rounded-full",
+              "shrink-0",
               { "-ml-4": i > 0 }
             )}
           >
             <EntityImage
+              circular
               symbol={coinDenom}
               name={coinDenom}
               logoURIs={{
@@ -161,7 +162,7 @@ export const tableColumns = [
           <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
             className={classNames(
-              "h-6 w-6 shrink-0 overflow-hidden rounded-full",
+              "shrink-0",
               {
                 "-ml-2": i > 0,
                 "mr-2": item.getValue().length === 1,
@@ -169,6 +170,7 @@ export const tableColumns = [
             )}
           >
             <EntityImage
+              circular
               symbol={coinDenom}
               name={coinDenom}
               logoURIs={{

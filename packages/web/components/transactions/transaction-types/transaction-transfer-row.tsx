@@ -94,31 +94,30 @@ export const TransactionTransferRow = ({
         transaction?.direction === "deposit" && (
           <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
         )}
-      <div className="h-8 w-8 overflow-hidden rounded-full">
-        <EntityImage
-          logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
-          name={fromAsset.denom}
-          symbol={fromAsset.denom}
-          height={
-            simplifiedStatus === "pending" &&
-            transaction?.direction === "deposit"
-              ? 24
-              : 32
-          }
-          width={
-            simplifiedStatus === "pending" &&
-            transaction?.direction === "deposit"
-              ? 24
-              : 32
-          }
-          className={
-            simplifiedStatus !== "success" &&
-            transaction?.direction === "deposit"
-              ? "opacity-50"
-              : undefined
-          }
-        />
-      </div>
+      <EntityImage
+        circular
+        logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
+        name={fromAsset.denom}
+        symbol={fromAsset.denom}
+        height={
+          simplifiedStatus === "pending" &&
+          transaction?.direction === "deposit"
+            ? 24
+            : 32
+        }
+        width={
+          simplifiedStatus === "pending" &&
+          transaction?.direction === "deposit"
+            ? 24
+            : 32
+        }
+        className={
+          simplifiedStatus !== "success" &&
+          transaction?.direction === "deposit"
+            ? "opacity-50"
+            : undefined
+        }
+      />
     </div>,
     <Icon
       key="icon-arrow-right"
@@ -177,31 +176,30 @@ export const TransactionTransferRow = ({
           transaction?.direction === "deposit" && (
             <Spinner className="absolute inset-0 !w-full !h-full text-wosmongton-500" />
           )}
-        <div className="h-8 w-8 overflow-hidden rounded-full">
-          <EntityImage
-            logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
-            name={fromAsset.denom}
-            symbol={fromAsset.denom}
-            height={
-              simplifiedStatus === "pending" &&
-              transaction?.direction === "deposit"
-                ? 24
-                : 32
-            }
-            width={
-              simplifiedStatus === "pending" &&
-              transaction?.direction === "deposit"
-                ? 24
-                : 32
-            }
-            className={
-              simplifiedStatus !== "success" &&
-              transaction?.direction === "deposit"
-                ? "opacity-50"
-                : undefined
-            }
-          />
-        </div>
+        <EntityImage
+          circular
+          logoURIs={getLogoURIs(fromAsset.currency.coinImageUrl)}
+          name={fromAsset.denom}
+          symbol={fromAsset.denom}
+          height={
+            simplifiedStatus === "pending" &&
+            transaction?.direction === "deposit"
+              ? 24
+              : 32
+          }
+          width={
+            simplifiedStatus === "pending" &&
+            transaction?.direction === "deposit"
+              ? 24
+              : 32
+          }
+          className={
+            simplifiedStatus !== "success" &&
+            transaction?.direction === "deposit"
+              ? "opacity-50"
+              : undefined
+          }
+        />
       </div>
       {transaction.direction === "deposit" && (
         <div className="flex flex-col">

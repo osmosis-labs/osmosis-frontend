@@ -60,8 +60,9 @@ export const TransactionSwapRow = ({
   const rightComponent =
     size === "sm" ? (
       <div className="flex items-center justify-end">
-        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+        <div className="shrink-0">
           <EntityImage
+            circular
             logoURIs={getLogoURIs(
               transaction.tokenIn.amount.currency.coinImageUrl
             )}
@@ -77,8 +78,9 @@ export const TransactionSwapRow = ({
           height={16}
           className="my-[8px] mx-[4px] text-osmoverse-500"
         />
-        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+        <div className="shrink-0">
           <EntityImage
+            circular
             logoURIs={getLogoURIs(
               transaction.tokenOut.amount.currency.coinImageUrl
             )}
@@ -108,8 +110,9 @@ export const TransactionSwapRow = ({
                 `- ${formatFiatPrice(transaction.tokenIn.value)}`}
             </div>
           </div>
-          <div className="block h-8 w-8 shrink-0 overflow-hidden rounded-full md:hidden">
+          <div className="block shrink-0 md:hidden">
             <EntityImage
+              circular
               logoURIs={getLogoURIs(
                 transaction.tokenIn.amount.currency.coinImageUrl
               )}
@@ -127,8 +130,9 @@ export const TransactionSwapRow = ({
           className="block text-osmoverse-600 md:hidden"
         />
         <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
-          <div className="block h-8 w-8 shrink-0 overflow-hidden rounded-full md:hidden">
+          <div className="block shrink-0 md:hidden">
             <EntityImage
+              circular
               logoURIs={getLogoURIs(
                 transaction.tokenOut.amount.currency.coinImageUrl
               )}

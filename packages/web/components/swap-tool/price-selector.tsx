@@ -247,8 +247,9 @@ export const PriceSelector = memo(
                       </span>
                       <div className="flex items-center gap-2 py-1 pl-1 pr-3 sm:gap-1 sm:py-1.5">
                         {quoteAsset.logoURIs && (
-                          <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full md:h-6 md:w-6">
+                          <div className="shrink-0">
                             <EntityImage
+                              circular
                               width={isMobile ? 20 : 24}
                               height={isMobile ? 20 : 24}
                               logoURIs={quoteAsset.logoURIs}

@@ -252,15 +252,14 @@ const OrderDetails = observer(
         <div className="flex flex-col rounded-2xl border border-osmoverse-700 p-2">
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 overflow-hidden rounded-full">
-                <EntityImage
-                  logoURIs={getLogoURIs(tokenIn?.currency.coinImageUrl)}
-                  name={tokenIn?.sourceDenom ?? ""}
-                  symbol={tokenIn?.sourceDenom ?? ""}
-                  height={40}
-                  width={40}
-                />
-              </div>
+              <EntityImage
+                circular
+                logoURIs={getLogoURIs(tokenIn?.currency.coinImageUrl)}
+                name={tokenIn?.sourceDenom ?? ""}
+                symbol={tokenIn?.sourceDenom ?? ""}
+                height={40}
+                width={40}
+              />
               <div className="flex flex-col">
                 <div className="subtitle1 sm:body2">{topText}</div>
                 <div className="body1 sm:body2 text-osmoverse-300">
@@ -297,15 +296,14 @@ const OrderDetails = observer(
           </div>
           <div className="flex justify-between p-2">
             <div className="flex items-center gap-4">
-              <div className="h-10 w-10 overflow-hidden rounded-full">
-                <EntityImage
-                  logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
-                  name={tokenOut?.sourceDenom ?? ""}
-                  symbol={tokenOut?.sourceDenom ?? ""}
-                  height={40}
-                  width={40}
-                />
-              </div>
+              <EntityImage
+                circular
+                logoURIs={getLogoURIs(tokenOut?.currency.coinImageUrl)}
+                name={tokenOut?.sourceDenom ?? ""}
+                symbol={tokenOut?.sourceDenom ?? ""}
+                height={40}
+                width={40}
+              />
               <div className="flex flex-col">
                 <div className="subtitle1 sm:body2">{bottomText}</div>
                 <div className="body1 sm:body2 text-osmoverse-300">

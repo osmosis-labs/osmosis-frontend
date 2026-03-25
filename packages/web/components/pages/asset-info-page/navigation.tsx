@@ -17,8 +17,9 @@ export const AssetNavigation: FunctionComponent = observer(() => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-center gap-4">
-        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+        <div className="shrink-0">
           <EntityImage
+            circular
             logoURIs={{
               png: token.coinImageUrl,
             }}
