@@ -48,6 +48,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -55,11 +56,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -175,6 +177,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -182,11 +185,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -308,6 +312,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -315,11 +320,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -442,6 +448,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -449,11 +456,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -581,6 +589,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -588,11 +597,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -725,6 +735,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -732,11 +743,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -863,6 +875,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -870,11 +883,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -999,6 +1013,7 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
@@ -1006,11 +1021,12 @@ jobs:
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
