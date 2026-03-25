@@ -73,9 +73,9 @@ export async function openKeplrPopupDirect(
  */
 export async function getKeplrPopupPage(
   context: BrowserContext,
-  opts: { timeout?: number } = {}
+  opts: { timeout?: number; signal?: AbortSignal } = {}
 ): Promise<Page | null> {
-  const { timeout = 15_000 } = opts;
+  const { timeout = 15_000, signal } = opts;
 
   const existing = context
     .pages()
@@ -89,16 +89,30 @@ export async function getKeplrPopupPage(
     return existing;
   }
 
+  if (signal?.aborted) {
+    return null;
+  }
+
   try {
     return await context.waitForEvent("page", { timeout });
   } catch {
+    if (signal?.aborted) {
+      return null;
+    }
     console.log(
       "Keplr popup did not appear as page event; trying direct navigation."
     );
   }
 
+  if (signal?.aborted) {
+    return null;
+  }
+
   const extensionId = await getKeplrExtensionId(context);
   if (extensionId) {
+    if (signal?.aborted) {
+      return null;
+    }
     try {
       return await openKeplrPopupDirect(context, extensionId);
     } catch (e) {

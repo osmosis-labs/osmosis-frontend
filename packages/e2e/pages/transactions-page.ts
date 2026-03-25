@@ -138,16 +138,20 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
-      (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+    const abortController = new AbortController();
+    const keplrPopup = getKeplrPopupPage(context, {
+      timeout: 15_000,
+      signal: abortController.signal,
+    }).then((p) =>
+      p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
       keplrPopup,
-      successPromise.then(() => ({ type: "success" as const, page: null })),
+      successPromise.then(() => {
+        abortController.abort();
+        return { type: "success" as const, page: null };
+      }),
     ]);
 
     if (result.type === "popup" && result.page) {
@@ -199,16 +203,20 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
-      (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+    const abortController = new AbortController();
+    const keplrPopup = getKeplrPopupPage(context, {
+      timeout: 15_000,
+      signal: abortController.signal,
+    }).then((p) =>
+      p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
       keplrPopup,
-      successPromise.then(() => ({ type: "success" as const, page: null })),
+      successPromise.then(() => {
+        abortController.abort();
+        return { type: "success" as const, page: null };
+      }),
     ]);
 
     if (result.type === "popup" && result.page) {
@@ -251,16 +259,20 @@ export class TransactionsPage extends BasePage {
       this.page.getByText("Transaction Successful")
     ).toBeVisible({ timeout: 40000 });
 
-    const keplrPopup = getKeplrPopupPage(context, { timeout: 15_000 }).then(
-      (p) =>
-        p
-          ? { type: "popup" as const, page: p }
-          : new Promise<never>(() => {})
+    const abortController = new AbortController();
+    const keplrPopup = getKeplrPopupPage(context, {
+      timeout: 15_000,
+      signal: abortController.signal,
+    }).then((p) =>
+      p ? { type: "popup" as const, page: p } : new Promise<never>(() => {})
     );
 
     const result = await Promise.race([
       keplrPopup,
-      successPromise.then(() => ({ type: "success" as const, page: null })),
+      successPromise.then(() => {
+        abortController.abort();
+        return { type: "success" as const, page: null };
+      }),
     ]);
 
     if (result.type === "popup" && result.page) {
