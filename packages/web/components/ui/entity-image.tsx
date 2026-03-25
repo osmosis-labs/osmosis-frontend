@@ -80,7 +80,7 @@ export function EntityImage({
             src={imgSrc}
             alt={name}
             onError={handleError}
-            className={classNames("object-contain", imageProps.className)}
+            className="object-contain"
           />
         )}
       </div>
