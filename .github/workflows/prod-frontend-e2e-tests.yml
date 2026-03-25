@@ -59,13 +59,13 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
-            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
             echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
             echo "outcome=error" >> "$GITHUB_OUTPUT"
