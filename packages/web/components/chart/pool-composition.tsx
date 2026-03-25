@@ -12,9 +12,8 @@ export const PoolComposition: FunctionComponent<{
       {assets.map((asset) => (
         <li key={asset.denom} className="flex items-center tracking-wide">
           {asset.currency.coinImageUrl && (
-            <div className="mr-2">
+            <div className="mr-2 h-[20px] w-[20px] overflow-hidden rounded-full">
               <EntityImage
-                circular
                 logoURIs={getLogoURIs(asset.currency.coinImageUrl)}
                 name={asset.currency.coinDenom}
                 symbol={asset.currency.coinDenom}

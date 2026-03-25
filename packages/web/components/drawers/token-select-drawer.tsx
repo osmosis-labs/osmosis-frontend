@@ -221,17 +221,18 @@ export const TokenSelectDrawer: FunctionComponent<{
                             onClickAsset(coinDenom);
                           }}
                         >
-                          <EntityImage
-                            circular
-                            symbol={coinDenom}
-                            name={coinDenom}
-                            logoURIs={{
-                              png: coinImageUrl,
-                              svg: coinImageUrl,
-                            }}
-                            width={24}
-                            height={24}
-                          />
+                          <div className="h-[24px] w-[24px] overflow-hidden rounded-full">
+                            <EntityImage
+                              symbol={coinDenom}
+                              name={coinDenom}
+                              logoURIs={{
+                                png: coinImageUrl,
+                                svg: coinImageUrl,
+                              }}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
                           <p className="subtitle1">{coinDenom}</p>
                         </button>
                       );
@@ -286,9 +287,8 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                       >
                         <div className="flex items-center">
-                          <div className="shrink-0">
+                          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
                             <EntityImage
-                              circular
                               symbol={coinDenom}
                               name={coinDenom}
                               logoURIs={{

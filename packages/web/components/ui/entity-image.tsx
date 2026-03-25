@@ -14,26 +14,10 @@ export function EntityImage({
   symbol,
   denom,
   isChain = false,
-  circular = false,
-  logoUsesFullBounds = false,
   ...imageProps
 }: Omit<ImageProps, "src" | "alt"> &
   Pick<Asset, "logoURIs" | "name"> &
-  Partial<Pick<Asset, "symbol">> & {
-    isChain?: boolean;
-    denom?: string;
-    /**
-     * When true, wraps the image in a circle. For logos whose content extends to
-     * the edges of the image (logoUsesFullBounds), the clip is omitted so corner
-     * content is not cut off.
-     */
-    circular?: boolean;
-    /**
-     * When true, skips the overflow-hidden circular clip even in circular mode.
-     * Sourced from the asset's logoUsesFullBounds field in osmosis-labs/assetlists.
-     */
-    logoUsesFullBounds?: boolean;
-  }) {
+  Partial<Pick<Asset, "symbol">> & { isChain?: boolean; denom?: string }) {
   const [imgSrc, setImgSrc] = useState<string | undefined>(
     logoURIs?.svg || logoURIs?.png
   );
@@ -54,38 +38,6 @@ export function EntityImage({
       setErr(true);
     }
   };
-
-  if (circular) {
-    return (
-      <div
-        className={classNames(
-          "flex items-center justify-center rounded-full bg-osmoverse-alpha-700",
-          !logoUsesFullBounds && "overflow-hidden"
-        )}
-        style={{ width, height }}
-      >
-        {!imgSrc || err ? (
-          <span
-            className={classNames("text-sm text-osmoverse-400", {
-              "text-xxs": +width <= 20,
-            })}
-          >
-            {isChain ? name[0] : (symbol ?? denom)?.slice(0, 3) ?? "???"}
-          </span>
-        ) : (
-          <Image
-            {...imageProps}
-            width={width}
-            height={height}
-            src={imgSrc}
-            alt={name}
-            onError={handleError}
-            className="object-contain"
-          />
-        )}
-      </div>
-    );
-  }
 
   if (!imgSrc || err) {
     return (

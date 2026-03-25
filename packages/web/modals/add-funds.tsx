@@ -212,9 +212,8 @@ export function AddFundsModal({
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <div className="shrink-0">
+              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
                 <EntityImage
-                  circular
                   logoURIs={{
                     png: fromAsset?.coinImageUrl,
                   }}

@@ -551,9 +551,8 @@ const TableOrderRow = memo(
                   )}{" "}
                   {t("limitOrders.of")}
                 </span>
-                <div className="shrink-0">
+                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                   <EntityImage
-                    circular
                     width={20}
                     height={20}
                     logoURIs={

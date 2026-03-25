@@ -274,17 +274,18 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               onClickAsset(coinMinimalDenom);
                             }}
                           >
-                            <EntityImage
-                              circular
-                              symbol={coinDenom}
-                              name={coinDenom}
-                              logoURIs={{
-                                png: coinImageUrl,
-                                svg: coinImageUrl,
-                              }}
-                              width={24}
-                              height={24}
-                            />
+                            <div className="h-6 w-6 overflow-hidden rounded-full">
+                              <EntityImage
+                                symbol={coinDenom}
+                                name={coinDenom}
+                                logoURIs={{
+                                  png: coinImageUrl,
+                                  svg: coinImageUrl,
+                                }}
+                                width={24}
+                                height={24}
+                              />
+                            </div>
                             <p className="font-semibold">{coinDenom}</p>
                           </button>
                         );
@@ -344,9 +345,8 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               )}
                             >
                               <div className="flex min-w-0 items-center gap-4">
-                                <div className="shrink-0">
+                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
                                   <EntityImage
-                                    circular
                                     symbol={coinDenom}
                                     name={coinDenom}
                                     logoURIs={{
@@ -355,6 +355,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                                     }}
                                     width={48}
                                     height={48}
+                                    className="rounded-full"
                                   />
                                 </div>
                                 <div className="flex flex-col gap-1 overflow-hidden">

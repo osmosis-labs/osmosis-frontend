@@ -189,13 +189,6 @@ export interface Asset {
 
   pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
 
-  /**
-   * When true, the logo image uses its full bounding box — content extends near
-   * the edges and should not be clipped to a circle. Set in osmosis-labs/assetlists
-   * and flows through codegen automatically.
-   */
-  logoUsesFullBounds?: boolean;
-
   /** Add to asset at build time. */
   relative_image_url: string;
 

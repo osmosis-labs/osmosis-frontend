@@ -140,9 +140,8 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               )}
                               onClick={onClick}
                             >
-                              <div className="shrink-0">
+                              <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
                                 <EntityImage
-                                  circular
                                   logoURIs={getLogoURIs(asset.coinImageUrl)}
                                   name={asset.coinName}
                                   symbol={asset.coinDenom}
@@ -198,9 +197,8 @@ export const BridgeReceiveAssetDropdown: FunctionComponent<BridgeReceiveAssetDro
                               )}
                               onClick={onClick}
                             >
-                              <div className="shrink-0">
+                              <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
                                 <EntityImage
-                                  circular
                                   logoURIs={getLogoURIs(
                                     representativeAsset.coinImageUrl
                                   )}

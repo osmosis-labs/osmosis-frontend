@@ -272,9 +272,8 @@ const AssetVariantRow: React.FC<{
       <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
         <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="shrink-0">
+            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
-                circular
                 logoURIs={
                   variant.amount.currency.coinImageUrl
                     ? {
@@ -309,9 +308,8 @@ const AssetVariantRow: React.FC<{
             className="text-osmoverse-700"
           />
           <div className="flex grow items-center gap-3 py-2 px-4">
-            <div className="shrink-0">
+            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
               <EntityImage
-                circular
                 logoURIs={
                   variant?.canonicalAsset?.coinImageUrl
                     ? {

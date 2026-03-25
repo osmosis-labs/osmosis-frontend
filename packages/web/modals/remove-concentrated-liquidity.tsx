@@ -206,9 +206,8 @@ const AssetAmount: FunctionComponent<{
       className
     )}
   >
-    <div className="shrink-0">
+    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full">
       <EntityImage
-        circular
         logoURIs={{
           png: amount.currency.coinImageUrl,
         }}

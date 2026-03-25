@@ -237,9 +237,11 @@ const DenomImage: FunctionComponent<{
   size?: number;
 }> = ({ currency, size = 20 }) => {
   return (
-    <div className="shrink-0">
+    <div
+      className="shrink-0 overflow-hidden rounded-full"
+      style={{ width: size, height: size }}
+    >
       <EntityImage
-        circular
         logoURIs={getLogoURIs(currency.coinImageUrl)}
         name={currency.coinDenom}
         symbol={currency.coinDenom}

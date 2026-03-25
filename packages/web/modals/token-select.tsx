@@ -84,14 +84,14 @@ export const TokenSelectModal: FunctionComponent<
             >
               <button className="flex w-full items-center justify-between text-left">
                 <div className="flex items-center">
-                  <div className="mr-4">
+                  <div className="mr-4 h-8 w-8 overflow-hidden rounded-full">
                     <EntityImage
-                      circular
                       symbol={coinDenom}
                       name={coinDenom}
                       logoURIs={getLogoURIs(coinImageUrl)}
                       width={32}
                       height={32}
+                      className="rounded-full"
                     />
                   </div>
                   <div>

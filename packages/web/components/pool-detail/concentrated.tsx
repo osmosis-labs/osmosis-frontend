@@ -498,9 +498,8 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                 key={asset.currency.coinMinimalDenom}
               >
                 {asset.currency.coinImageUrl && (
-                  <div className="shrink-0">
+                  <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                     <EntityImage
-                      circular
                       logoURIs={{
                         svg: asset.currency.coinImageUrl?.replace(
                           /\.png$/,
@@ -552,9 +551,8 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                         +{incentive.apr.maxDecimals(0).toString()}
                       </span>
                     )}
-                    <div className="shrink-0">
+                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
                       <EntityImage
-                        circular
                         logoURIs={{
                           png: incentive.coinPerDay.currency.coinImageUrl,
                         }}
