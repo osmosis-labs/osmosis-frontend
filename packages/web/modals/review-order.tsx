@@ -273,10 +273,14 @@ export const ReviewOrder = observer(function ReviewOrder({
       // Cap at 100%
       const effectiveValue = +value > 100 ? "100" : value;
       setManualSlippage(effectiveValue);
+      // Guard against bare "." or other non-numeric intermediates before
+      // committing to slippageConfig; wait until the user finishes typing.
+      const numericValue = parseFloat(effectiveValue);
+      if (isNaN(numericValue)) return;
       // Mark as user override before writing so the auto-adjust hook won't
       // overwrite the value even if it happens to equal the current tier string.
       slippageConfig?.markUserOverride();
-      slippageConfig?.setManualSlippage(new Dec(+effectiveValue).toString());
+      slippageConfig?.setManualSlippage(new Dec(numericValue).toString());
     },
     [slippageConfig, autoAdjustedSlippage]
   );
