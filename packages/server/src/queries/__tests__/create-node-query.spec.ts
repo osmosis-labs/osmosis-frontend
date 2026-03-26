@@ -119,26 +119,22 @@ describe("createNodeQuery", () => {
     expect(result).toEqual(mockResult);
   });
 
-  describe("multi-endpoint retry logic", () => {
-    it("should retry on first endpoint failure and succeed on second attempt", async () => {
-      const mockResult = { data: "test" };
-      (apiClient as jest.Mock)
-        .mockRejectedValueOnce(new Error("Network timeout"))
-        .mockResolvedValueOnce(mockResult);
+  describe("multi-endpoint stagger logic", () => {
+    it("should try only once when a single endpoint is configured", async () => {
+      // MockChains[0] has one REST endpoint — no further rounds available
+      (apiClient as jest.Mock).mockRejectedValue(new Error("Network timeout"));
 
       const query = createNodeQuery<{ data: string }>({
         path: "/test",
-        maxRetries: 2,
       });
 
-      const result = await query({ chainList: MockChains });
-
-      // Should have been called twice (first failure, then success)
-      expect(apiClient).toHaveBeenCalledTimes(2);
-      expect(result).toEqual(mockResult);
+      await expect(query({ chainList: MockChains })).rejects.toThrow(
+        /All 1 REST endpoints failed/
+      );
+      expect(apiClient).toHaveBeenCalledTimes(1);
     });
 
-    it("should fallback to second endpoint when first endpoint fails all retries", async () => {
+    it("should fallback to second endpoint in round 2 when round 1 fails", async () => {
       const mockResult = { data: "success" };
       const mockChains = [
         {
@@ -153,7 +149,7 @@ describe("createNodeQuery", () => {
         },
       ];
 
-      // First endpoint fails 2 times, second endpoint succeeds
+      // Round 0: ep1 fails. Round 1: ep1 fails, ep2 succeeds (parallel).
       (apiClient as jest.Mock)
         .mockRejectedValueOnce(new Error("Endpoint 1 fail"))
         .mockRejectedValueOnce(new Error("Endpoint 1 fail again"))
@@ -161,13 +157,12 @@ describe("createNodeQuery", () => {
 
       const query = createNodeQuery<{ data: string }>({
         path: "/test",
-        maxRetries: 2,
       });
 
       const result = await query({ chainList: mockChains });
 
+      // Round 0: 1 call. Round 1: 2 parallel calls. Total: 3.
       expect(apiClient).toHaveBeenCalledTimes(3);
-      // Verify second endpoint was called
       expect(apiClient).toHaveBeenCalledWith(
         "https://endpoint2.com/test",
         expect.any(Object)
@@ -189,20 +184,18 @@ describe("createNodeQuery", () => {
         },
       ];
 
-      // All attempts fail
       (apiClient as jest.Mock).mockRejectedValue(new Error("All failed"));
 
       const query = createNodeQuery<{ data: string }>({
         path: "/test",
-        maxRetries: 2,
       });
 
       await expect(query({ chainList: mockChains })).rejects.toThrow(
         /All 2 REST endpoints failed/
       );
 
-      // Should have tried: endpoint1 (2 times) + endpoint2 (2 times) = 4 calls
-      expect(apiClient).toHaveBeenCalledTimes(4);
+      // Round 0: 1 call (ep1). Round 1: 2 calls (ep1, ep2). Total: 3.
+      expect(apiClient).toHaveBeenCalledTimes(3);
     });
 
     it("should respect custom timeout parameter", async () => {

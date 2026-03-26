@@ -14,23 +14,40 @@ import { runIfFn } from "@osmosis-labs/utils";
  *  the request will be sent to the RPC endpoint since it's
  *  assumed the LCD rest endpoint only accepts GET requests.
  *
- *  ENDPOINT FALLBACK:
+ *  ENDPOINT FALLBACK (staggered parallel):
  *  The REST endpoints come from the chain's asset list (osmosis-labs/assetlists).
- *  Each chain can have multiple REST endpoints for redundancy. This function will:
- *  1. Try each endpoint in order from the chain.apis.rest array
- *  2. Retry each endpoint up to `maxRetries` times with exponential backoff
- *  3. Move to the next endpoint if all retries fail
- *  4. Throw an error only if all endpoints have been exhausted
+ *  Each round adds one more endpoint tried in parallel, up to `maxWindowSize`:
+ *    Round 1: [ep1]              — 5s window
+ *    Round 2: [ep1, ep2]         — 5s window
+ *    Round 3: [ep1, ep2, ep3]    — 5s window (window full)
+ *    Round 4: [ep2, ep3, ep4]    — slides
+ *  The first successful response in any round is returned immediately.
+ *  This reduces time-to-fallback from (retries × timeout) per endpoint
+ *  to one timeout window regardless of which endpoint responds.
  *
  *  - [ ]: add node query error handling (like deserializing code)
  *  and extend `ApiClientError`
  */
+/** Resolves with the first promise that fulfills, or rejects if all reject.
+ *  Equivalent to Promise.any() without requiring ES2021 lib. */
+function raceToFirst<T>(promises: Promise<T>[]): Promise<T> {
+  return new Promise((resolve, reject) => {
+    let rejectedCount = 0;
+    promises.forEach((p) => {
+      p.then(resolve, () => {
+        rejectedCount++;
+        if (rejectedCount === promises.length) reject();
+      });
+    });
+  });
+}
+
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({
     path,
     options,
-    maxRetries = 3,
     timeout = 5000,
+    maxWindowSize = 3,
   }: {
     path: string | ((params: PathParameters) => string);
     /** Additional query options such as
@@ -39,11 +56,10 @@ export const createNodeQuery =
      *  due to the node-query invariant of rest services
      *  only accepting GET requests. */
     options?: (params: PathParameters) => ClientOptions;
-    /** Maximum number of retries per endpoint before trying the next one.
-     *  Default: 3 */
-    maxRetries?: number;
-    /** Request timeout in milliseconds. Default: 5000ms */
+    /** Request timeout in milliseconds per round. Default: 5000ms */
     timeout?: number;
+    /** Maximum number of endpoints tried in parallel per round. Default: 3 */
+    maxWindowSize?: number;
   }) =>
   async (
     ...params: PathParameters extends Record<any, any>
@@ -75,75 +91,58 @@ export const createNodeQuery =
       ...((params as [PathParameters & { chainId?: string }]) ?? [])
     );
 
-    let lastError: Error | null = null;
+    // Each round introduces one new endpoint. Total rounds = total endpoints.
+    for (let round = 0; round < restEndpoints.length; round++) {
+      const windowEnd = round + 1;
+      const windowStart = Math.max(0, windowEnd - maxWindowSize);
+      const window = restEndpoints.slice(windowStart, windowEnd);
 
-    // Try each endpoint with retries
-    for (
-      let endpointIndex = 0;
-      endpointIndex < restEndpoints.length;
-      endpointIndex++
-    ) {
-      const endpoint = restEndpoints[endpointIndex];
-      const baseUrl = endpoint.address;
+      // All requests in the round share a single timeout signal so the
+      // window expires atomically and zombies are aborted on success.
+      let timeoutSignal: AbortSignal | undefined;
+      let timeoutId: ReturnType<typeof setTimeout> | undefined;
+      let abortController: AbortController | undefined;
 
-      // Retry current endpoint with exponential backoff
-      for (let retry = 0; retry < maxRetries; retry++) {
-        try {
-          const url = new URL(pathStr, baseUrl);
+      if (typeof AbortSignal.timeout === "function") {
+        timeoutSignal = AbortSignal.timeout(timeout);
+      } else if (timeout > 0) {
+        abortController = new AbortController();
+        timeoutSignal = abortController.signal;
+        timeoutId = setTimeout(() => abortController?.abort(), timeout);
+      }
 
-          // AbortSignal.timeout is only available in Node 17.3+ and modern browsers
-          let timeoutSignal: AbortSignal | undefined;
-          let timeoutId: ReturnType<typeof setTimeout> | undefined;
-          let abortController: AbortController | undefined;
-
-          if (typeof AbortSignal.timeout === "function") {
-            timeoutSignal = AbortSignal.timeout(timeout);
-          } else if (timeout && timeout > 0) {
-            abortController = new AbortController();
-            timeoutSignal = abortController.signal;
-            timeoutId = setTimeout(() => abortController?.abort(), timeout);
-          }
-
-          let result: Result;
-          try {
-            result = await apiClient<Result>(url.toString(), {
+      try {
+        const result = await raceToFirst<Result>(
+          window.map((endpoint) => {
+            const url = new URL(pathStr, endpoint.address);
+            return apiClient<Result>(url.toString(), {
               ...opts,
               ...(timeoutSignal && { signal: timeoutSignal }),
             });
-          } finally {
-            if (timeoutId) clearTimeout(timeoutId);
-          }
+          })
+        );
 
-          // Success! Return immediately
-          return result;
-        } catch (error) {
-          lastError = error as Error;
+        // Abort any still-running requests in the window
+        abortController?.abort();
+        if (timeoutId) clearTimeout(timeoutId);
 
-          // Log the failure for debugging
-          if (retry === maxRetries - 1) {
-            // Last retry for this endpoint
-            console.warn(
-              `[createNodeQuery] Endpoint ${baseUrl} failed after ${maxRetries} retries. ` +
-                (endpointIndex < restEndpoints.length - 1
-                  ? "Trying next endpoint..."
-                  : "No more endpoints available."),
-              lastError.message
-            );
-          }
+        return result;
+      } catch {
+        if (timeoutId) clearTimeout(timeoutId);
 
-          // Wait before retry with exponential backoff (100ms, 200ms, 400ms, ...)
-          // Don't wait on the last retry if there are more endpoints to try
-          if (retry < maxRetries - 1) {
-            const backoffDelay = Math.pow(2, retry) * 100;
-            await new Promise((resolve) => setTimeout(resolve, backoffDelay));
-          }
+        if (round < restEndpoints.length - 1) {
+          console.warn(
+            `[createNodeQuery] Round ${round + 1}/${restEndpoints.length} failed for chain ${chainId}. Adding endpoint and retrying...`
+          );
+        } else {
+          console.warn(
+            `[createNodeQuery] All ${restEndpoints.length} endpoints exhausted for chain ${chainId}.`
+          );
         }
       }
     }
 
-    // All endpoints exhausted
     throw new Error(
-      `All ${restEndpoints.length} REST endpoints failed for chain ${chainId} after ${maxRetries} retries each. ` +
-        `Last error: ${lastError?.message || "Unknown error"}`
+      `All ${restEndpoints.length} REST endpoints failed for chain ${chainId}.`
     );
   };
