@@ -267,7 +267,7 @@ const AssetFieldsetTokenSelector = ({
           symbol={selectedCoinDenom ?? ""}
           width={isMobile ? 24 : 40}
           height={isMobile ? 24 : 40}
-          className="h-10 w-10 rounded-full sm:h-6 sm:w-6"
+          className="h-10 w-10 overflow-hidden rounded-full sm:h-6 sm:w-6"
         />
         <span className="ml-2 truncate text-h5 font-h5 sm:ml-1 sm:text-h6 sm:font-h6">
           {selectedCoinDenom}

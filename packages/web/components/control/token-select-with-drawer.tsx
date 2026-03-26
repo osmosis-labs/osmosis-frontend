@@ -87,7 +87,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
               isFromSelect ? "'from'" : "'to'"
             } token. Current token is ${selectedToken.coinDenom}`}
           >
-            <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
+            <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-7 md:w-7">
               <EntityImage
                 logoURIs={{
                   png: selectedToken.coinImageUrl,

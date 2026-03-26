@@ -94,14 +94,17 @@ export const OpenOrders: FunctionComponent = () => {
 
             return (
               <div key={index} className="-mx-2 flex justify-between gap-4 p-2">
-                <EntityImage
-                  width={32}
-                  height={32}
-                  logoURIs={baseAsset?.rawAsset.logoURIs ?? { png: undefined }}
-                  name={baseAsset?.rawAsset.name ?? ""}
-                  symbol={baseAsset?.rawAsset.symbol ?? ""}
-                  className="inline-block"
-                />
+                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    width={32}
+                    height={32}
+                    logoURIs={
+                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
+                    }
+                    name={baseAsset?.rawAsset.name ?? ""}
+                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                  />
+                </div>
                 <div className="flex h-full flex-col justify-between overflow-hidden whitespace-nowrap">
                   <span className="body2 overflow-hidden overflow-ellipsis">
                     {buySellText} {baseAsset?.currency?.coinDenom}{" "}

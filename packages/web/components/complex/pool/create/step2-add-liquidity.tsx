@@ -30,7 +30,7 @@ export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
                 className="flex h-24 place-content-between items-center rounded-2xl border border-white-faint px-7 md:h-fit md:p-2"
               >
                 <div className="flex items-center">
-                  <div className="flex h-14 w-14 items-center overflow-hidden md:h-7 md:w-7">
+                  <div className="flex h-14 w-14 items-center overflow-hidden rounded-full md:h-7 md:w-7">
                     <EntityImage
                       logoURIs={getLogoURIs(currency.coinImageUrl)}
                       name={currency.coinDenom}

@@ -67,15 +67,17 @@ export const RemoveLiquidity: FunctionComponent<
                 className="flex items-center gap-2"
                 key={asset.currency.coinDenom}
               >
-                <EntityImage
-                  logoURIs={{
-                    png: asset.currency.coinImageUrl,
-                  }}
-                  name={asset.currency.coinDenom}
-                  symbol={asset.currency.coinDenom}
-                  height={16}
-                  width={16}
-                />
+                <div className="h-4 w-4 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={{
+                      png: asset.currency.coinImageUrl,
+                    }}
+                    name={asset.currency.coinDenom}
+                    symbol={asset.currency.coinDenom}
+                    height={16}
+                    width={16}
+                  />
+                </div>
                 <span className="max-w-xs truncate">
                   {asset.mul(percentageMultiplier).trim(true).toString()}
                 </span>

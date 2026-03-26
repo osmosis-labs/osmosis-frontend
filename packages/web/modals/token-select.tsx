@@ -84,7 +84,7 @@ export const TokenSelectModal: FunctionComponent<
             >
               <button className="flex w-full items-center justify-between text-left">
                 <div className="flex items-center">
-                  <div className="mr-4 h-8 w-8 rounded-full">
+                  <div className="mr-4 h-8 w-8 overflow-hidden rounded-full">
                     <EntityImage
                       symbol={coinDenom}
                       name={coinDenom}

@@ -498,19 +498,21 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                 key={asset.currency.coinMinimalDenom}
               >
                 {asset.currency.coinImageUrl && (
-                  <EntityImage
-                    logoURIs={{
-                      svg: asset.currency.coinImageUrl?.replace(
-                        /\.png$/,
-                        ".svg"
-                      ),
-                      png: asset.currency.coinImageUrl,
-                    }}
-                    width={20}
-                    height={20}
-                    name={asset.currency.coinDenom}
-                    symbol={asset.currency.coinDenom}
-                  />
+                  <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={{
+                        svg: asset.currency.coinImageUrl?.replace(
+                          /\.png$/,
+                          ".svg"
+                        ),
+                        png: asset.currency.coinImageUrl,
+                      }}
+                      width={20}
+                      height={20}
+                      name={asset.currency.coinDenom}
+                      symbol={asset.currency.coinDenom}
+                    />
+                  </div>
                 )}
                 <span className="text-osmoverse-300">
                   {asset.currency.coinDenom}
@@ -549,15 +551,17 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                         +{incentive.apr.maxDecimals(0).toString()}
                       </span>
                     )}
-                    <EntityImage
-                      logoURIs={{
-                        png: incentive.coinPerDay.currency.coinImageUrl,
-                      }}
-                      name={incentive.coinPerDay.currency.coinDenom}
-                      symbol={incentive.coinPerDay.currency.coinDenom}
-                      width={20}
-                      height={20}
-                    />
+                    <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                      <EntityImage
+                        logoURIs={{
+                          png: incentive.coinPerDay.currency.coinImageUrl,
+                        }}
+                        name={incentive.coinPerDay.currency.coinDenom}
+                        symbol={incentive.coinPerDay.currency.coinDenom}
+                        width={20}
+                        height={20}
+                      />
+                    </div>
                   </div>
                   <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
                     <span>
