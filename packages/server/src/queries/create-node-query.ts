@@ -92,15 +92,27 @@ export const createNodeQuery =
           const url = new URL(pathStr, baseUrl);
 
           // AbortSignal.timeout is only available in Node 17.3+ and modern browsers
-          const timeoutSignal =
-            typeof AbortSignal.timeout === "function"
-              ? AbortSignal.timeout(timeout)
-              : undefined;
+          let timeoutSignal: AbortSignal | undefined;
+          let timeoutId: ReturnType<typeof setTimeout> | undefined;
+          let abortController: AbortController | undefined;
 
-          const result = await apiClient<Result>(url.toString(), {
-            ...opts,
-            ...(timeoutSignal && { signal: timeoutSignal }),
-          });
+          if (typeof AbortSignal.timeout === "function") {
+            timeoutSignal = AbortSignal.timeout(timeout);
+          } else if (timeout && timeout > 0) {
+            abortController = new AbortController();
+            timeoutSignal = abortController.signal;
+            timeoutId = setTimeout(() => abortController?.abort(), timeout);
+          }
+
+          let result: Result;
+          try {
+            result = await apiClient<Result>(url.toString(), {
+              ...opts,
+              ...(timeoutSignal && { signal: timeoutSignal }),
+            });
+          } finally {
+            if (timeoutId) clearTimeout(timeoutId);
+          }
 
           // Success! Return immediately
           return result;
