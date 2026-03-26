@@ -848,6 +848,17 @@ export function useSwap(
     [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
   );
 
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
   return {
     ...swapAssets,
     inAmountInput,
@@ -1104,6 +1115,17 @@ export function useSwapAssets({
     toAsset?.coinMinimalDenom
   );
 
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
   return {
     fromAsset,
     toAsset,
@@ -1138,10 +1160,12 @@ function useSwapAmountInput({
   const featureFlags = useFeatureFlags();
 
   const [gasAmount, setGasAmount] = useState<CoinPretty>();
+  const [swapFeeAmount, setSwapFeeAmount] = useState<CoinPretty>();
 
   const inAmountInput = useAmountInput({
     currency: swapAssets.fromAsset,
     gasAmount: gasAmount,
+    swapFeeAmount: swapFeeAmount,
   });
 
   const balanceQuoteQueryEnabled =
@@ -1232,7 +1256,18 @@ function useSwapAmountInput({
   }, [currentBalanceNetworkFee?.gasAmount]);
 
   const returnValue = useDeepMemo(() => {
-    return {
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return {
       ...inAmountInput,
       isLoadingCurrentBalanceNetworkFee,
       hasErrorWithCurrentBalanceQuote,
@@ -1323,6 +1358,17 @@ function useToFromDenoms({
     : fromAssetState;
   const toAssetDenom = useQueryParams ? toDenomQueryParamStr : toAssetState;
 
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
   return {
     fromAssetDenom: reverse ? toAssetDenom : fromAssetDenom,
     toAssetDenom: reverse ? fromAssetDenom : toAssetDenom,
@@ -1365,6 +1411,17 @@ export function useSwapAsset<TAsset extends MinimalAsset>({
 
     return makeMinimalAsset(asset.rawAsset);
   }, [minDenomOrSymbol, existingAsset]);
+
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
 
   return {
     asset: existingAsset ?? (asset as TAsset | undefined),
@@ -1476,7 +1533,18 @@ function useQueryRouterBestQuote(
       quote.amount.toDec().isZero()
     )
       return;
-    return {
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return {
       ...quote,
       amountIn:
         quoteType === "out-given-in"
@@ -1534,6 +1602,17 @@ function useQueryRouterBestQuote(
     [acceptedQuote, messages]
   );
 
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
   return {
     data: quoteData,
     isLoading: !isSuccess,
@@ -1559,16 +1638,60 @@ function makeRouterErrorFromTrpcError(errorMsg: string | null | undefined):
   if (isNil(errorMsg)) return;
 
   if (errorMsg?.includes(NoRouteError.defaultMessage)) {
-    return { error: new NoRouteError(), isUnexpected: false };
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return { error: new NoRouteError(), isUnexpected: false };
   }
   if (errorMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
-    return { error: new NotEnoughLiquidityError(), isUnexpected: false };
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return { error: new NotEnoughLiquidityError(), isUnexpected: false };
   }
   if (errorMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
-    return { error: new NotEnoughQuotedError(), isUnexpected: false };
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return { error: new NotEnoughQuotedError(), isUnexpected: false };
   }
   if (errorMsg) {
-    return {
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return {
       error: new Error("Unexpected router error" + (errorMsg ?? "")),
       isUnexpected: true,
     };
@@ -1632,7 +1755,18 @@ export function useAmountWithSlippage({
           )
         : undefined;
 
-      return { amountWithSlippage, fiatAmountWithSlippage };
+      
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return { amountWithSlippage, fiatAmountWithSlippage };
     }
 
     if (quoteType === "in-given-out") {
@@ -1660,13 +1794,35 @@ export function useAmountWithSlippage({
         swapState.inAmountInput.price,
         DEFAULT_VS_CURRENCY
       );
-      return {
+      
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return {
         amountWithSlippage: maxAmountWithSlippage,
         fiatAmountWithSlippage,
       };
     }
 
-    return {
+    
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
+
+  return {
       amountWithSlippage: undefined,
       fiatAmountWithSlippage: undefined,
     };
@@ -1679,6 +1835,17 @@ export function useAmountWithSlippage({
     swapState.inAmountInput.price,
     swapState.inAmountInput.balance,
   ]);
+
+  
+  useEffect(() => {
+    if (!swapAssets.fromAsset || !quote?.tokenInFeeAmount) {
+      setSwapFeeAmount(undefined);
+      return;
+    }
+    setSwapFeeAmount(
+      new CoinPretty(swapAssets.fromAsset.currency, quote.tokenInFeeAmount)
+    );
+  }, [swapAssets.fromAsset, quote?.tokenInFeeAmount]);
 
   return {
     amountWithSlippage,
