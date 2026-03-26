@@ -66,6 +66,7 @@ jobs:
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
             echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
             echo "outcome=error" >> "$GITHUB_OUTPUT"
@@ -138,7 +139,7 @@ jobs:
           fi
 
   prod-e2e-tests:
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     needs: [wait-for-deployment, check-balances]
     environment:
@@ -168,6 +169,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test transactions portfolio swap.osmo.wallet

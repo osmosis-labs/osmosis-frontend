@@ -7,6 +7,7 @@ import {
 } from '@playwright/test'
 
 import { BasePage } from './base-page'
+import { getKeplrPopupPage } from './keplr-helper'
 
 /**
  * Page object for the legacy /swap view (pre-trade-page UI).
@@ -72,24 +73,18 @@ export class SwapPage extends BasePage {
       'Insufficient balance for the swap!',
     ).toBeFalsy()
     await expect(this.swapBtn).toBeEnabled({ timeout: 7000 })
-    const pageApprove = context.waitForEvent('page', { timeout: 10000 })
     await this.swapBtn.click()
-    let approvePage: Page | null = null
-    try {
-      approvePage = await pageApprove
-    } catch (error: unknown) {
-      const err = error as { name?: string; message?: string }
-      if (err.name === 'TimeoutError' || /timeout/i.test(err.message ?? '')) {
-        console.log(
-          'Keplr popup did not appear within 10s; assuming 1-click trading.',
-        )
-        return { msgContentAmount: undefined }
-      }
-      throw error
+
+    const approvePage = await getKeplrPopupPage(context, { timeout: 10_000 })
+    if (!approvePage) {
+      console.log(
+        'Keplr popup did not appear; assuming 1-click trading.',
+      )
+      return { msgContentAmount: undefined }
     }
+
     await approvePage.waitForLoadState()
-    const approvePageTitle = approvePage.url()
-    console.log(`Approve page is opened at: ${approvePageTitle}`)
+    console.log(`Approve page is opened at: ${approvePage.url()}`)
     const approveBtn = approvePage.getByRole('button', {
       name: 'Approve',
     })
