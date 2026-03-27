@@ -1,4 +1,5 @@
 import { apiClient } from "../api-client";
+import { _clearHealthCache } from "../endpoint-health";
 import {
   createMultiEndpointClient,
   MultiEndpointClient,
@@ -11,6 +12,7 @@ jest.mock("../api-client", () => ({
 describe("MultiEndpointClient", () => {
   beforeEach(() => {
     (apiClient as jest.Mock).mockClear();
+    _clearHealthCache();
   });
 
   it("should create client with single endpoint", () => {
@@ -44,7 +46,6 @@ describe("MultiEndpointClient", () => {
 
     const result = await client.fetch<typeof mockResult>("/status");
 
-    expect(apiClient).toHaveBeenCalledTimes(1);
     expect(apiClient).toHaveBeenCalledWith(
       "https://endpoint1.com/status",
       expect.any(Object)
@@ -52,42 +53,26 @@ describe("MultiEndpointClient", () => {
     expect(result).toEqual(mockResult);
   });
 
-  it("should retry on failure and succeed on second attempt", async () => {
-    const mockResult = { data: "success" };
-    (apiClient as jest.Mock)
-      .mockRejectedValueOnce(new Error("Network error"))
-      .mockResolvedValueOnce(mockResult);
-
-    const client = createMultiEndpointClient(
-      [{ address: "https://endpoint1.com" }],
-      { maxRetries: 2 }
-    );
-
-    const result = await client.fetch<typeof mockResult>("/status");
-
-    expect(apiClient).toHaveBeenCalledTimes(2);
-    expect(result).toEqual(mockResult);
-  });
-
   it("should fallback to second endpoint when first fails", async () => {
     const mockResult = { data: "success" };
-    (apiClient as jest.Mock)
-      .mockRejectedValueOnce(new Error("Endpoint 1 fail"))
-      .mockRejectedValueOnce(new Error("Endpoint 1 fail again"))
-      .mockResolvedValueOnce(mockResult);
+
+    (apiClient as jest.Mock).mockImplementation((url: string) => {
+      if (url.includes("endpoint1")) {
+        return Promise.reject(new Error("Endpoint 1 fail"));
+      }
+      return Promise.resolve(mockResult);
+    });
 
     const client = createMultiEndpointClient(
       [
         { address: "https://endpoint1.com" },
         { address: "https://endpoint2.com" },
       ],
-      { maxRetries: 2 }
+      { hedgeDelay: 50, timeout: 200, maxTotalTime: 2000 }
     );
 
     const result = await client.fetch<typeof mockResult>("/status");
 
-    expect(apiClient).toHaveBeenCalledTimes(3);
-    // Verify second endpoint was called
     expect(apiClient).toHaveBeenCalledWith(
       "https://endpoint2.com/status",
       expect.any(Object)
@@ -103,48 +88,10 @@ describe("MultiEndpointClient", () => {
         { address: "https://endpoint1.com" },
         { address: "https://endpoint2.com" },
       ],
-      { maxRetries: 2 }
+      { hedgeDelay: 50, timeout: 200, maxTotalTime: 1000 }
     );
 
-    await expect(client.fetch("/status")).rejects.toThrow(
-      /All .* endpoints failed/
-    );
-
-    // endpoint1 (2 attempts) + endpoint2 (2 attempts) = 4 total
-    expect(apiClient).toHaveBeenCalledTimes(4);
-  });
-
-  it("should remember last successful endpoint", async () => {
-    const mockResult = { data: "success" };
-    (apiClient as jest.Mock)
-      .mockRejectedValueOnce(new Error("First endpoint failed"))
-      .mockRejectedValueOnce(new Error("First endpoint failed again"))
-      .mockResolvedValue(mockResult);
-
-    const client = createMultiEndpointClient(
-      [
-        { address: "https://endpoint1.com" },
-        { address: "https://endpoint2.com" },
-      ],
-      { maxRetries: 2 }
-    );
-
-    // First call should fail on endpoint1, succeed on endpoint2
-    await client.fetch<typeof mockResult>("/status");
-
-    // Clear the mock to count fresh calls
-    (apiClient as jest.Mock).mockClear();
-    (apiClient as jest.Mock).mockResolvedValue(mockResult);
-
-    // Second call should start with endpoint2 (last successful)
-    await client.fetch<typeof mockResult>("/status");
-
-    // Should only make 1 call since it starts with the working endpoint
-    expect(apiClient).toHaveBeenCalledTimes(1);
-    expect(apiClient).toHaveBeenCalledWith(
-      "https://endpoint2.com/status",
-      expect.any(Object)
-    );
+    await expect(client.fetch("/status")).rejects.toThrow(/endpoints failed/);
   });
 
   it("should sort endpoints by priority", async () => {
@@ -159,36 +106,157 @@ describe("MultiEndpointClient", () => {
 
     await client.fetch<typeof mockResult>("/status");
 
-    // Should try high priority first
-    expect(apiClient).toHaveBeenCalledWith(
-      "https://high-priority.com/status",
-      expect.any(Object)
+    // First call should be the highest priority
+    expect((apiClient as jest.Mock).mock.calls[0][0]).toBe(
+      "https://high-priority.com/status"
     );
   });
 
-  it("should use custom timeout", async () => {
-    const mockResult = { data: "success" };
-    (apiClient as jest.Mock).mockResolvedValue(mockResult);
+  describe("hedged request behavior", () => {
+    it("should fire second endpoint after hedgeDelay if first hasn't responded", async () => {
+      const mockResult = { data: "success" };
 
-    const client = createMultiEndpointClient(
-      [{ address: "https://endpoint1.com" }],
-      { timeout: 10000 }
-    );
+      // First endpoint is slow (300ms), second is fast
+      (apiClient as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes("endpoint1")) {
+          return new Promise((resolve) =>
+            setTimeout(() => resolve(mockResult), 300)
+          );
+        }
+        return Promise.resolve(mockResult);
+      });
 
-    await client.fetch<typeof mockResult>("/status");
+      const client = createMultiEndpointClient(
+        [
+          { address: "https://endpoint1.com" },
+          { address: "https://endpoint2.com" },
+        ],
+        { hedgeDelay: 100, timeout: 5000, maxTotalTime: 5000 }
+      );
 
-    expect(apiClient).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(Object)
-    );
+      const result = await client.fetch<typeof mockResult>("/status");
+      expect(result).toEqual(mockResult);
+
+      // Both endpoints should have been called (endpoint2 fires after 100ms hedge delay)
+      expect(apiClient).toHaveBeenCalledWith(
+        "https://endpoint2.com/status",
+        expect.any(Object)
+      );
+    });
+
+    it("should not fire second endpoint if first responds before hedgeDelay", async () => {
+      const mockResult = { data: "success" };
+
+      // First endpoint is fast (resolves immediately)
+      (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+      const client = createMultiEndpointClient(
+        [
+          { address: "https://endpoint1.com" },
+          { address: "https://endpoint2.com" },
+        ],
+        { hedgeDelay: 500, timeout: 5000, maxTotalTime: 5000 }
+      );
+
+      const result = await client.fetch<typeof mockResult>("/status");
+      expect(result).toEqual(mockResult);
+
+      // Only the first endpoint should have been called
+      expect(apiClient).toHaveBeenCalledTimes(1);
+      expect(apiClient).toHaveBeenCalledWith(
+        "https://endpoint1.com/status",
+        expect.any(Object)
+      );
+    });
+
+    it("should stop all in-flight when maxTotalTime is exceeded", async () => {
+      (apiClient as jest.Mock).mockImplementation(
+        () =>
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("slow")), 300)
+          )
+      );
+
+      const client = createMultiEndpointClient(
+        [
+          { address: "https://endpoint1.com" },
+          { address: "https://endpoint2.com" },
+          { address: "https://endpoint3.com" },
+        ],
+        { hedgeDelay: 100, timeout: 5000, maxTotalTime: 500 }
+      );
+
+      await expect(client.fetch("/status")).rejects.toThrow(/endpoints failed/);
+    });
+
+    it("should include budget info in error message", async () => {
+      (apiClient as jest.Mock).mockRejectedValue(new Error("fail"));
+
+      const client = createMultiEndpointClient(
+        [{ address: "https://endpoint1.com" }],
+        { maxTotalTime: 5000 }
+      );
+
+      await expect(client.fetch("/status")).rejects.toThrow(/budget.*5000ms/);
+    });
   });
 
-  it("should get current endpoint address", () => {
-    const client = createMultiEndpointClient([
-      { address: "https://endpoint1.com" },
-      { address: "https://endpoint2.com" },
-    ]);
+  describe("external AbortSignal", () => {
+    it("should stop immediately when signal is already aborted", async () => {
+      (apiClient as jest.Mock).mockResolvedValue({ data: "ok" });
 
-    expect(client.getCurrentEndpoint()).toBe("https://endpoint1.com");
+      const client = createMultiEndpointClient([
+        { address: "https://endpoint1.com" },
+      ]);
+
+      const controller = new AbortController();
+      controller.abort();
+
+      await expect(
+        client.fetch("/status", { signal: controller.signal })
+      ).rejects.toThrow(/aborted/i);
+      expect(apiClient).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("endpoint health integration", () => {
+    it("should prefer recently successful endpoint", async () => {
+      const mockResult = { data: "success" };
+
+      // First call: endpoint1 fails, endpoint2 succeeds → health cache records endpoint2
+      (apiClient as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes("endpoint1")) {
+          return Promise.reject(new Error("fail"));
+        }
+        return Promise.resolve(mockResult);
+      });
+
+      const client1 = createMultiEndpointClient(
+        [
+          { address: "https://endpoint1.com" },
+          { address: "https://endpoint2.com" },
+        ],
+        { hedgeDelay: 50, timeout: 200, maxTotalTime: 2000 }
+      );
+      await client1.fetch("/status");
+
+      // Second call: new client, both endpoints available
+      (apiClient as jest.Mock).mockClear();
+      (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+      const client2 = createMultiEndpointClient(
+        [
+          { address: "https://endpoint1.com" },
+          { address: "https://endpoint2.com" },
+        ],
+        { hedgeDelay: 500, timeout: 5000, maxTotalTime: 5000 }
+      );
+      await client2.fetch("/status");
+
+      // endpoint2 should be tried first (it was healthy last time)
+      expect((apiClient as jest.Mock).mock.calls[0][0]).toBe(
+        "https://endpoint2.com/status"
+      );
+    });
   });
 });

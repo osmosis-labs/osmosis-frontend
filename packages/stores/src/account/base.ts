@@ -1187,7 +1187,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private async getTimeoutHeight(chainId: string): Promise<bigint> {
     const chain = getChain({ chainId, chainList: this.chains });
     if (!chain) return BigInt("0");
-    const status = await queryRPCStatus({ restUrl: chain.apis.rpc[0].address });
+    const rpcUrls = chain.apis.rpc.map((rpc) => rpc.address).filter(Boolean);
+    if (rpcUrls.length === 0) return BigInt("0");
+    const status = await queryRPCStatus({ rpcUrls });
     return (
       BigInt(status.result.sync_info.latest_block_height) +
       NEXT_TX_TIMEOUT_HEIGHT_OFFSET

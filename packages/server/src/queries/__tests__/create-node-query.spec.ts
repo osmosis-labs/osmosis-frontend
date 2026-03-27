@@ -3,6 +3,14 @@ import { apiClient } from "@osmosis-labs/utils";
 import { createNodeQuery } from "../create-node-query";
 import { MockChains } from "./mock-chains";
 
+let clearHealthCache: () => void;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  clearHealthCache = require("@osmosis-labs/utils")._clearHealthCache;
+} catch {
+  clearHealthCache = () => {};
+}
+
 jest.mock("@osmosis-labs/utils", () => ({
   ...jest.requireActual("@osmosis-labs/utils"),
   apiClient: jest.fn(),
@@ -11,6 +19,7 @@ jest.mock("@osmosis-labs/utils", () => ({
 describe("createNodeQuery", () => {
   beforeEach(() => {
     (apiClient as jest.Mock).mockClear();
+    clearHealthCache();
   });
 
   it("should create a URL and call apiClient with it", async () => {
@@ -119,22 +128,8 @@ describe("createNodeQuery", () => {
     expect(result).toEqual(mockResult);
   });
 
-  describe("multi-endpoint stagger logic", () => {
-    it("should try only once when a single endpoint is configured", async () => {
-      // MockChains[0] has one REST endpoint — no further rounds available
-      (apiClient as jest.Mock).mockRejectedValue(new Error("Network timeout"));
-
-      const query = createNodeQuery<{ data: string }>({
-        path: "/test",
-      });
-
-      await expect(query({ chainList: MockChains })).rejects.toThrow(
-        /All 1 REST endpoints failed/
-      );
-      expect(apiClient).toHaveBeenCalledTimes(1);
-    });
-
-    it("should fallback to second endpoint in round 2 when round 1 fails", async () => {
+  describe("hedged endpoint fallback", () => {
+    it("should fallback to second endpoint when first fails", async () => {
       const mockResult = { data: "success" };
       const mockChains = [
         {
@@ -149,20 +144,22 @@ describe("createNodeQuery", () => {
         },
       ];
 
-      // Round 0: ep1 fails. Round 1: ep1 fails, ep2 succeeds (parallel).
-      (apiClient as jest.Mock)
-        .mockRejectedValueOnce(new Error("Endpoint 1 fail"))
-        .mockRejectedValueOnce(new Error("Endpoint 1 fail again"))
-        .mockResolvedValueOnce(mockResult);
+      (apiClient as jest.Mock).mockImplementation((url: string) => {
+        if (url.includes("endpoint1")) {
+          return Promise.reject(new Error("Endpoint 1 fail"));
+        }
+        return Promise.resolve(mockResult);
+      });
 
       const query = createNodeQuery<{ data: string }>({
         path: "/test",
+        hedgeDelay: 50,
+        timeout: 200,
+        maxTotalTime: 2000,
       });
 
       const result = await query({ chainList: mockChains });
 
-      // Round 0: 1 call. Round 1: 2 parallel calls. Total: 3.
-      expect(apiClient).toHaveBeenCalledTimes(3);
       expect(apiClient).toHaveBeenCalledWith(
         "https://endpoint2.com/test",
         expect.any(Object)
@@ -188,32 +185,13 @@ describe("createNodeQuery", () => {
 
       const query = createNodeQuery<{ data: string }>({
         path: "/test",
+        hedgeDelay: 50,
+        timeout: 200,
+        maxTotalTime: 1000,
       });
 
       await expect(query({ chainList: mockChains })).rejects.toThrow(
-        /All 2 REST endpoints failed/
-      );
-
-      // Round 0: 1 call (ep1). Round 1: 2 calls (ep1, ep2). Total: 3.
-      expect(apiClient).toHaveBeenCalledTimes(3);
-    });
-
-    it("should respect custom timeout parameter", async () => {
-      const mockResult = { data: "test" };
-      (apiClient as jest.Mock).mockResolvedValue(mockResult);
-
-      const customTimeout = 10000;
-      const query = createNodeQuery<{ data: string }>({
-        path: "/test",
-        timeout: customTimeout,
-      });
-
-      await query({ chainList: MockChains });
-
-      // Should be called with some options
-      expect(apiClient).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.any(Object)
+        /REST endpoints failed/
       );
     });
 
@@ -235,6 +213,68 @@ describe("createNodeQuery", () => {
       await expect(query({ chainList: mockChains })).rejects.toThrow(
         /No REST endpoints available/
       );
+    });
+
+    it("should stop when maxTotalTime budget is exceeded", async () => {
+      const mockChains = [
+        {
+          ...MockChains[0],
+          apis: {
+            rest: [
+              { address: "https://endpoint1.com" },
+              { address: "https://endpoint2.com" },
+            ],
+            rpc: [],
+          },
+        },
+      ];
+
+      (apiClient as jest.Mock).mockImplementation(
+        () =>
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("slow")), 300)
+          )
+      );
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        hedgeDelay: 100,
+        timeout: 5000,
+        maxTotalTime: 500,
+      });
+
+      await expect(query({ chainList: mockChains })).rejects.toThrow(
+        /endpoints failed/
+      );
+    });
+
+    it("should include budget info in error message", async () => {
+      (apiClient as jest.Mock).mockRejectedValue(new Error("fail"));
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        hedgeDelay: 50,
+        maxTotalTime: 5000,
+      });
+
+      await expect(query({ chainList: MockChains })).rejects.toThrow(
+        /budget.*5000ms/
+      );
+    });
+
+    it("should try only once when a single endpoint is configured", async () => {
+      (apiClient as jest.Mock).mockRejectedValue(new Error("Network timeout"));
+
+      const query = createNodeQuery<{ data: string }>({
+        path: "/test",
+        hedgeDelay: 50,
+        maxTotalTime: 1000,
+      });
+
+      await expect(query({ chainList: MockChains })).rejects.toThrow(
+        /All 1 REST endpoints failed/
+      );
+      expect(apiClient).toHaveBeenCalledTimes(1);
     });
   });
 });

@@ -1,4 +1,38 @@
 import { apiClient, ClientOptions } from "./api-client";
+import {
+  recordEndpointSuccess,
+  sortEndpointsByHealth,
+} from "./endpoint-health";
+
+/**
+ * Create a timeout AbortSignal, preferring the native `AbortSignal.timeout`
+ * when available and falling back to `AbortController + setTimeout` for
+ * older Node versions.
+ */
+function createTimeoutSignal(
+  ms: number,
+  parent?: AbortController
+): { signal: AbortSignal; cleanup: () => void } {
+  if (typeof AbortSignal.timeout === "function") {
+    const signal = AbortSignal.timeout(ms);
+    if (parent) {
+      signal.addEventListener("abort", () => parent.abort(), { once: true });
+    }
+    return { signal, cleanup: () => {} };
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ms);
+  if (parent) {
+    parent.signal.addEventListener("abort", () => controller.abort(), {
+      once: true,
+    });
+  }
+  return {
+    signal: controller.signal,
+    cleanup: () => clearTimeout(timeoutId),
+  };
+}
 
 /**
  * Configuration for a single endpoint.
@@ -13,175 +47,206 @@ export interface EndpointConfig {
  * Options for configuring multi-endpoint client behavior.
  */
 export interface MultiEndpointOptions {
-  /** Maximum number of retries per endpoint before trying the next one.
-   * Default: 3 */
-  maxRetries?: number;
-  /** Request timeout in milliseconds. Default: 5000ms */
+  /** Per-attempt timeout in milliseconds. Default: 3000ms */
   timeout?: number;
-  /** Multiplier for exponential backoff delay. Default: 2 (100ms, 200ms, 400ms...) */
-  backoffMultiplier?: number;
+  /**
+   * Delay in milliseconds before staggering the next endpoint request.
+   * A hedged-request pattern: if the first endpoint hasn't responded within
+   * this window, fire the next one in parallel. `Promise.any` picks the
+   * first success. Default: 1000ms
+   */
+  hedgeDelay?: number;
+  /**
+   * Maximum total wall-clock time in milliseconds for a single fetch() call
+   * across all endpoints combined. Default: 8000ms
+   */
+  maxTotalTime?: number;
 }
 
 /**
- * HTTP client that supports multiple endpoints with automatic failover and retry logic.
+ * HTTP client that supports multiple endpoints with hedged requests.
  *
- * Features:
- * - Tries endpoints in priority order (higher priority first)
- * - Retries each endpoint with exponential backoff
- * - Remembers the last successful endpoint for future requests
- * - Provides comprehensive error messages when all endpoints fail
+ * Instead of trying endpoints sequentially (which burns the full timeout on
+ * every dead endpoint), this client staggers requests across endpoints using
+ * `Promise.any`.  The first successful response wins; all other in-flight
+ * requests are aborted immediately.
  *
- * Example usage:
- * ```typescript
- * const client = createMultiEndpointClient([
- *   { address: "https://rpc-osmosis.blockapsis.com", priority: 1 },
- *   { address: "https://osmosis-rpc.polkachu.com", priority: 0 },
- * ]);
- *
- * const status = await client.fetch<StatusResponse>("/status");
- * ```
+ * Endpoints are tried in order of: recently-successful (from health cache),
+ * then priority (higher first), then original order.
  */
 export class MultiEndpointClient {
   private endpoints: EndpointConfig[];
-  private currentIndex: number = 0;
-  private maxRetries: number;
-  private timeout: number;
-  private backoffMultiplier: number;
+  private readonly timeout: number;
+  private readonly hedgeDelay: number;
+  private readonly maxTotalTime: number;
 
   constructor(endpoints: EndpointConfig[], options: MultiEndpointOptions = {}) {
     if (!endpoints || endpoints.length === 0) {
       throw new Error("At least one endpoint must be provided");
     }
 
-    // Sort by priority (higher priority first)
     this.endpoints = [...endpoints].sort(
       (a, b) => (b.priority ?? 0) - (a.priority ?? 0)
     );
 
-    this.maxRetries = options.maxRetries ?? 3;
-    this.timeout = options.timeout ?? 5000;
-    this.backoffMultiplier = options.backoffMultiplier ?? 2;
+    this.timeout = options.timeout ?? 3000;
+    this.hedgeDelay = options.hedgeDelay ?? 1000;
+    this.maxTotalTime = options.maxTotalTime ?? 8000;
   }
 
   /**
-   * Fetch data from the given path using multi-endpoint retry logic.
+   * Fetch data using hedged requests across all configured endpoints.
    *
-   * @param path - The path to append to the endpoint URL (e.g., "/status")
-   * @param options - Additional fetch options (headers, body, etc.)
-   * @returns Promise resolving to the typed response
-   * @throws Error if all endpoints fail after all retries
+   * Fires endpoint requests staggered by `hedgeDelay`. The first success
+   * wins via `Promise.any`; remaining in-flight requests are aborted.
+   * An optional external `AbortSignal` cancels everything immediately.
    */
-  async fetch<T>(path: string, options?: ClientOptions): Promise<T> {
-    let lastError: Error | null = null;
+  async fetch<T>(
+    path: string,
+    options?: ClientOptions & { signal?: AbortSignal }
+  ): Promise<T> {
+    const { signal: externalSignal, ...restOptions } = options ?? {};
 
-    // Try each endpoint starting from the last successful one
-    for (let i = 0; i < this.endpoints.length; i++) {
-      const endpointIndex = (this.currentIndex + i) % this.endpoints.length;
-      const endpoint = this.endpoints[endpointIndex];
-
-      // Retry current endpoint with exponential backoff
-      for (let retry = 0; retry < this.maxRetries; retry++) {
-        try {
-          const url = `${endpoint.address}${path}`;
-
-          // AbortSignal.timeout is only available in Node 17.3+ and modern browsers
-          let timeoutSignal: AbortSignal | undefined;
-          let timeoutId: NodeJS.Timeout | undefined;
-          let abortController: AbortController | undefined;
-
-          if (typeof AbortSignal.timeout === "function") {
-            timeoutSignal = AbortSignal.timeout(this.timeout);
-          } else if (this.timeout && this.timeout > 0) {
-            // Fallback for older environments
-            abortController = new AbortController();
-            timeoutSignal = abortController.signal;
-            timeoutId = setTimeout(() => {
-              abortController?.abort();
-            }, this.timeout);
-          }
-
-          try {
-            const result = await apiClient<T>(url, {
-              ...options,
-              ...(timeoutSignal && { signal: timeoutSignal }),
-            });
-
-            // Clear timeout on success to avoid timer leaks
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-            }
-
-            // Success! Remember this endpoint for future requests
-            this.currentIndex = endpointIndex;
-            return result;
-          } catch (error) {
-            // Clear timeout on error to avoid timer leaks
-            if (timeoutId) {
-              clearTimeout(timeoutId);
-            }
-            throw error;
-          }
-        } catch (error) {
-          lastError = error as Error;
-
-          // Log the failure for debugging
-          if (retry === this.maxRetries - 1) {
-            console.warn(
-              `[MultiEndpointClient] Endpoint ${endpoint.address} failed after ${this.maxRetries} retries. ` +
-                (i < this.endpoints.length - 1
-                  ? "Trying next endpoint..."
-                  : "No more endpoints available."),
-              lastError.message
-            );
-          }
-
-          // Wait before retry with exponential backoff
-          // Don't wait on the last retry if there are more endpoints to try
-          if (retry < this.maxRetries - 1) {
-            const backoffDelay = Math.pow(this.backoffMultiplier, retry) * 100;
-            await new Promise((resolve) => setTimeout(resolve, backoffDelay));
-          }
-        }
-      }
+    if (externalSignal?.aborted) {
+      throw new Error("Operation was aborted");
     }
 
-    // All endpoints exhausted
-    throw new Error(
-      `All ${this.endpoints.length} endpoints failed after ${this.maxRetries} retries each. ` +
-        `Last error: ${lastError?.message || "Unknown error"}`
+    const raceController = new AbortController();
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const startTime = Date.now();
+
+    // Wire external signal into our controller
+    if (externalSignal) {
+      externalSignal.addEventListener("abort", () => raceController.abort(), {
+        once: true,
+      });
+    }
+
+    // Sort endpoints: known-good first, then by original priority order
+    const sorted = sortEndpointsByHealth(this.endpoints);
+
+    // Only schedule endpoints whose stagger delay fits within the budget
+    const schedulable = sorted.filter(
+      (_, i) => i * this.hedgeDelay < this.maxTotalTime
     );
+
+    const attempts = schedulable.map(
+      (endpoint, i) =>
+        new Promise<T>((resolve, reject) => {
+          const delay = i * this.hedgeDelay;
+
+          const timer = setTimeout(async () => {
+            if (raceController.signal.aborted) {
+              return reject(new Error("Aborted"));
+            }
+
+            const elapsed = Date.now() - startTime;
+            const remaining = this.maxTotalTime - elapsed;
+            if (remaining <= 0) {
+              return reject(new Error("Time budget exceeded"));
+            }
+
+            const effectiveTimeout = Math.min(this.timeout, remaining);
+            const { signal, cleanup } = createTimeoutSignal(
+              effectiveTimeout,
+              raceController
+            );
+
+            try {
+              const url = `${endpoint.address}${path}`;
+              const result = await apiClient<T>(url, {
+                ...restOptions,
+                signal,
+              });
+              cleanup();
+              recordEndpointSuccess(endpoint.address);
+              resolve(result);
+            } catch (error) {
+              cleanup();
+              reject(error);
+            }
+          }, delay);
+
+          timers.push(timer);
+
+          raceController.signal.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timer);
+              reject(new Error("Aborted"));
+            },
+            { once: true }
+          );
+        })
+    );
+
+    // Global timeout as a safety net
+    const globalTimer = setTimeout(
+      () => raceController.abort(),
+      this.maxTotalTime
+    );
+    timers.push(globalTimer);
+
+    try {
+      const result = await promiseAny(attempts);
+      raceController.abort();
+      return result;
+    } catch (e: any) {
+      raceController.abort();
+      const errors: Error[] = e?.errors ?? [];
+      const lastError = errors[errors.length - 1];
+      throw new Error(
+        `All ${schedulable.length} endpoints failed` +
+          ` (budget: ${this.maxTotalTime}ms, elapsed: ${
+            Date.now() - startTime
+          }ms).` +
+          ` Last error: ${lastError?.message || "Unknown error"}`
+      );
+    } finally {
+      timers.forEach((t) => clearTimeout(t));
+    }
   }
 
-  /**
-   * Get the current best endpoint address.
-   * Useful for direct access when needed.
-   */
   getCurrentEndpoint(): string {
-    return this.endpoints[this.currentIndex].address;
+    return this.endpoints[0].address;
   }
 
-  /**
-   * Get all configured endpoints.
-   */
   getEndpoints(): EndpointConfig[] {
     return [...this.endpoints];
   }
 }
 
 /**
+ * ES6-compatible `Promise.any`: resolves with the first fulfilled promise.
+ * Rejects with `{ errors }` if every promise rejects.
+ */
+function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const errors: unknown[] = [];
+    let rejected = 0;
+
+    if (promises.length === 0) {
+      return reject(
+        Object.assign(new Error("All promises were rejected"), { errors })
+      );
+    }
+
+    promises.forEach((p, i) => {
+      p.then(resolve).catch((err) => {
+        errors[i] = err;
+        rejected++;
+        if (rejected === promises.length) {
+          reject(
+            Object.assign(new Error("All promises were rejected"), { errors })
+          );
+        }
+      });
+    });
+  });
+}
+
+/**
  * Factory function to create a MultiEndpointClient instance.
- *
- * @param endpoints - Array of endpoint configurations
- * @param options - Optional configuration for retry behavior
- * @returns A new MultiEndpointClient instance
- *
- * @example
- * ```typescript
- * const client = createMultiEndpointClient(
- *   chain.apis.rpc,
- *   { maxRetries: 5, timeout: 10000 }
- * );
- * ```
  */
 export function createMultiEndpointClient(
   endpoints: EndpointConfig[] | { address: string }[],

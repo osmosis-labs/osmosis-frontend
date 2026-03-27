@@ -48,8 +48,9 @@ export type QueryStatusResponse = {
 /**
  * Query RPC status from a chain node.
  *
- * Supports both single endpoint (legacy) and multiple endpoints with automatic fallback.
- * When multiple RPC URLs are provided, will try each endpoint with retry logic before failing.
+ * Supports both single endpoint (legacy) and multiple endpoints with hedged fallback.
+ * When multiple RPC URLs are provided, requests are staggered across endpoints and
+ * the first successful response wins.
  *
  * @param params - Either { restUrl: string } for single endpoint or { rpcUrls: string[] } for multi-endpoint
  * @returns The RPC status response
@@ -68,36 +69,43 @@ export type QueryStatusResponse = {
  * });
  */
 export async function queryRPCStatus(
-  params: { restUrl: string } | { rpcUrls: string[] }
+  params:
+    | { restUrl: string }
+    | {
+        rpcUrls: string[];
+        /** Per-attempt timeout in ms (default 3000). */
+        timeout?: number;
+        /** Stagger delay between hedged requests in ms (default 1000). */
+        hedgeDelay?: number;
+        /** Total wall-clock budget in ms across all endpoints (default 8000). */
+        maxTotalTime?: number;
+      }
 ): Promise<QueryStatusResponse> {
   let data: QueryStatusResponse | Status;
 
-  // Check if using new multi-endpoint API
   if ("rpcUrls" in params) {
-    const { rpcUrls } = params;
+    const {
+      rpcUrls,
+      timeout = 3000,
+      hedgeDelay = 1000,
+      maxTotalTime = 8000,
+    } = params;
 
     if (!rpcUrls || rpcUrls.length === 0) {
       throw new Error("At least one RPC URL must be provided");
     }
 
-    // Use multi-endpoint client for automatic retry and fallback
     const client = createMultiEndpointClient(
       rpcUrls.map((url) => ({ address: url })),
-      {
-        maxRetries: 3,
-        timeout: 5000,
-      }
+      { timeout, hedgeDelay, maxTotalTime }
     );
 
     data = await client.fetch<QueryStatusResponse | Status>("/status");
   } else {
-    // Legacy single endpoint - backward compatible
     const { restUrl } = params;
     data = await apiClient<QueryStatusResponse | Status>(restUrl + "/status");
   }
 
-  // some chains return a nonstandard response that does not include the jsonrpc field
-  // but rather just the status object
   if ("jsonrpc" in data) {
     return data as QueryStatusResponse;
   } else {

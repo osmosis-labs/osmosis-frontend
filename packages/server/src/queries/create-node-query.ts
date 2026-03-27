@@ -1,6 +1,71 @@
 import { Chain } from "@osmosis-labs/types";
 import { apiClient, ClientOptions } from "@osmosis-labs/utils";
+import {
+  recordEndpointSuccess,
+  sortEndpointsByHealth,
+} from "@osmosis-labs/utils";
 import { runIfFn } from "@osmosis-labs/utils";
+
+/**
+ * ES6-compatible `Promise.any`: resolves with the first fulfilled promise.
+ * Rejects with `{ errors }` if every promise rejects.
+ */
+function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const errors: unknown[] = [];
+    let rejected = 0;
+
+    if (promises.length === 0) {
+      return reject(
+        Object.assign(new Error("All promises were rejected"), { errors })
+      );
+    }
+
+    promises.forEach((p, i) => {
+      p.then(resolve).catch((err) => {
+        errors[i] = err;
+        rejected++;
+        if (rejected === promises.length) {
+          reject(
+            Object.assign(new Error("All promises were rejected"), { errors })
+          );
+        }
+      });
+    });
+  });
+}
+
+/**
+ * Create a timeout AbortSignal, preferring the native `AbortSignal.timeout`
+ * when available and falling back to `AbortController + setTimeout` for
+ * older Node versions.
+ */
+function createTimeoutSignal(
+  ms: number,
+  parent?: AbortController
+): { signal: AbortSignal; cleanup: () => void } {
+  if (typeof AbortSignal.timeout === "function") {
+    const signal = AbortSignal.timeout(ms);
+    // Wire into parent so the parent can abort the native signal's consumer
+    if (parent) {
+      signal.addEventListener("abort", () => parent.abort(), { once: true });
+    }
+    return { signal, cleanup: () => {} };
+  }
+
+  // Fallback for older runtimes
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), ms);
+  if (parent) {
+    parent.signal.addEventListener("abort", () => controller.abort(), {
+      once: true,
+    });
+  }
+  return {
+    signal: controller.signal,
+    cleanup: () => clearTimeout(timeoutId),
+  };
+}
 
 /** Creates a node query function that can be used to query any
  *  chain in the given chain list.
@@ -14,40 +79,19 @@ import { runIfFn } from "@osmosis-labs/utils";
  *  the request will be sent to the RPC endpoint since it's
  *  assumed the LCD rest endpoint only accepts GET requests.
  *
- *  ENDPOINT FALLBACK (staggered parallel):
- *  The REST endpoints come from the chain's asset list (osmosis-labs/assetlists).
- *  Each round adds one more endpoint tried in parallel, up to `maxWindowSize`:
- *    Round 1: [ep1]              — 5s window
- *    Round 2: [ep1, ep2]         — 5s window
- *    Round 3: [ep1, ep2, ep3]    — 5s window (window full)
- *    Round 4: [ep2, ep3, ep4]    — slides
- *  The first successful response in any round is returned immediately.
- *  This reduces time-to-fallback from (retries × timeout) per endpoint
- *  to one timeout window regardless of which endpoint responds.
- *
- *  - [ ]: add node query error handling (like deserializing code)
- *  and extend `ApiClientError`
+ *  ENDPOINT FALLBACK (hedged requests):
+ *  REST endpoints come from the chain's asset list. Requests are fired in a
+ *  staggered pattern (`hedgeDelay` apart). The first successful response wins
+ *  via a `Promise.any`-style race; all other in-flight requests are aborted.
+ *  Known-good endpoints (from the health cache) are tried first.
  */
-/** Resolves with the first promise that fulfills, or rejects if all reject.
- *  Equivalent to Promise.any() without requiring ES2021 lib. */
-function raceToFirst<T>(promises: Promise<T>[]): Promise<T> {
-  return new Promise((resolve, reject) => {
-    let rejectedCount = 0;
-    promises.forEach((p) => {
-      p.then(resolve, () => {
-        rejectedCount++;
-        if (rejectedCount === promises.length) reject();
-      });
-    });
-  });
-}
-
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({
     path,
     options,
-    timeout = 5000,
-    maxWindowSize = 3,
+    timeout = 3000,
+    hedgeDelay = 1000,
+    maxTotalTime = 8000,
   }: {
     path: string | ((params: PathParameters) => string);
     /** Additional query options such as
@@ -56,10 +100,12 @@ export const createNodeQuery =
      *  due to the node-query invariant of rest services
      *  only accepting GET requests. */
     options?: (params: PathParameters) => ClientOptions;
-    /** Request timeout in milliseconds per round. Default: 5000ms */
+    /** Per-attempt timeout in milliseconds. Default: 3000ms */
     timeout?: number;
-    /** Maximum number of endpoints tried in parallel per round. Default: 3 */
-    maxWindowSize?: number;
+    /** Stagger delay between hedged endpoint requests in ms. Default: 1000ms */
+    hedgeDelay?: number;
+    /** Maximum total wall-clock time across all endpoints. Default: 8000ms */
+    maxTotalTime?: number;
   }) =>
   async (
     ...params: PathParameters extends Record<any, any>
@@ -78,7 +124,6 @@ export const createNodeQuery =
 
     if (!chain) throw new Error(`Chain ${chainId} not found`);
 
-    // Get all available REST endpoints from the chain's asset list
     const restEndpoints = chain.apis.rest;
 
     if (!restEndpoints || restEndpoints.length === 0) {
@@ -91,58 +136,90 @@ export const createNodeQuery =
       ...((params as [PathParameters & { chainId?: string }]) ?? [])
     );
 
-    // Each round introduces one new endpoint. Total rounds = total endpoints.
-    for (let round = 0; round < restEndpoints.length; round++) {
-      const windowEnd = round + 1;
-      const windowStart = Math.max(0, windowEnd - maxWindowSize);
-      const window = restEndpoints.slice(windowStart, windowEnd);
+    const raceController = new AbortController();
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const cleanups: (() => void)[] = [];
+    const startTime = Date.now();
 
-      // All requests in the round share a single timeout signal so the
-      // window expires atomically and zombies are aborted on success.
-      let timeoutSignal: AbortSignal | undefined;
-      let timeoutId: ReturnType<typeof setTimeout> | undefined;
-      let abortController: AbortController | undefined;
+    const sorted = sortEndpointsByHealth(restEndpoints);
+    const schedulable = sorted.filter((_, i) => i * hedgeDelay < maxTotalTime);
 
-      if (typeof AbortSignal.timeout === "function") {
-        timeoutSignal = AbortSignal.timeout(timeout);
-      } else if (timeout > 0) {
-        abortController = new AbortController();
-        timeoutSignal = abortController.signal;
-        timeoutId = setTimeout(() => abortController?.abort(), timeout);
-      }
+    const attempts = schedulable.map(
+      (endpoint, i) =>
+        new Promise<Result>((resolve, reject) => {
+          const delay = i * hedgeDelay;
 
-      try {
-        const result = await raceToFirst<Result>(
-          window.map((endpoint) => {
-            const url = new URL(pathStr, endpoint.address);
-            return apiClient<Result>(url.toString(), {
-              ...opts,
-              ...(timeoutSignal && { signal: timeoutSignal }),
-            });
-          })
-        );
+          const timer = setTimeout(async () => {
+            if (raceController.signal.aborted) {
+              return reject(new Error("Aborted"));
+            }
 
-        // Abort any still-running requests in the window
-        abortController?.abort();
-        if (timeoutId) clearTimeout(timeoutId);
+            const elapsed = Date.now() - startTime;
+            const remaining = maxTotalTime - elapsed;
+            if (remaining <= 0) {
+              return reject(new Error("Time budget exceeded"));
+            }
 
-        return result;
-      } catch {
-        if (timeoutId) clearTimeout(timeoutId);
+            const effectiveTimeout = Math.min(timeout, remaining);
+            const { signal, cleanup } = createTimeoutSignal(
+              effectiveTimeout,
+              raceController
+            );
+            cleanups.push(cleanup);
 
-        if (round < restEndpoints.length - 1) {
-          console.warn(
-            `[createNodeQuery] Round ${round + 1}/${restEndpoints.length} failed for chain ${chainId}. Adding endpoint and retrying...`
+            try {
+              const url = new URL(pathStr, endpoint.address);
+              const result = await apiClient<Result>(url.toString(), {
+                ...opts,
+                signal,
+              });
+              cleanup();
+              recordEndpointSuccess(endpoint.address);
+              resolve(result);
+            } catch (error) {
+              cleanup();
+              reject(error);
+            }
+          }, delay);
+
+          timers.push(timer);
+
+          raceController.signal.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timer);
+              reject(new Error("Aborted"));
+            },
+            { once: true }
           );
-        } else {
-          console.warn(
-            `[createNodeQuery] All ${restEndpoints.length} endpoints exhausted for chain ${chainId}.`
-          );
-        }
-      }
-    }
-
-    throw new Error(
-      `All ${restEndpoints.length} REST endpoints failed for chain ${chainId}.`
+        })
     );
+
+    const globalTimer = setTimeout(() => raceController.abort(), maxTotalTime);
+    timers.push(globalTimer);
+
+    try {
+      const result = await promiseAny(attempts);
+      raceController.abort();
+      return result;
+    } catch (e: any) {
+      raceController.abort();
+      const errors: Error[] = e?.errors ?? [];
+      const lastError = errors[errors.length - 1];
+
+      console.warn(
+        `[createNodeQuery] All ${schedulable.length} REST endpoints exhausted for chain ${chainId}.`
+      );
+
+      throw new Error(
+        `All ${schedulable.length} REST endpoints failed for chain ${chainId}` +
+          ` (budget: ${maxTotalTime}ms, elapsed: ${
+            Date.now() - startTime
+          }ms).` +
+          ` Last error: ${lastError?.message || "Unknown error"}`
+      );
+    } finally {
+      timers.forEach((t) => clearTimeout(t));
+      cleanups.forEach((fn) => fn());
+    }
   };

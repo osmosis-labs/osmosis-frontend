@@ -52,11 +52,7 @@ export class PollingStatusSubscription {
     let timeoutId: NodeJS.Timeout | undefined;
     while (this._subscriptionCount > 0) {
       try {
-        // Use multi-endpoint support if multiple URLs provided
-        const status =
-          this.rpcUrls.length === 1
-            ? await queryRPCStatus({ restUrl: this.rpcUrls[0] })
-            : await queryRPCStatus({ rpcUrls: this.rpcUrls });
+        const status = await queryRPCStatus({ rpcUrls: this.rpcUrls });
 
         const blockTime = calcAverageBlockTimeMs(
           status,

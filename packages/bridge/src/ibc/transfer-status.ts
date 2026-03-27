@@ -155,7 +155,9 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       })
     );
 
-    const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
+    const packetReceivedTracer = new TxTracer(
+      this.getChainRpcUrls(destChainId)
+    );
     const receivedPromise = packetReceivedTracer
       .traceTx({
         // Should use the dst channel.
@@ -185,7 +187,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
-    const timeoutTracer = new TxTracer(this.getChainRpcUrl(sourceChainId));
+    const timeoutTracer = new TxTracer(this.getChainRpcUrls(sourceChainId));
     await timeoutTracer
       .traceTx({
         "timeout_packet.packet_src_channel": sourceChannelId,
@@ -244,26 +246,26 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     if (!this.blockSubscriberMap.has(chainId)) {
       this.blockSubscriberMap.set(
         chainId,
-        new PollingStatusSubscription(this.getChainRpcUrl(chainId))
+        new PollingStatusSubscription(this.getChainRpcUrls(chainId))
       );
     }
 
     return this.blockSubscriberMap.get(chainId)!;
   }
 
-  protected getChainRpcUrl(chainId: string): string {
+  protected getChainRpcUrls(chainId: string): string[] {
     const chain = this.chainList.find((chain) => chain.chain_id === chainId);
     if (!chain) {
       throw new Error("Chain not found: " + chainId);
     }
 
-    const rpc = chain.apis.rpc[0].address;
+    const urls = chain.apis.rpc.map((rpc) => rpc.address).filter(Boolean);
 
-    if (!rpc) {
-      throw new Error("RPC address not found for chain: " + chainId);
+    if (urls.length === 0) {
+      throw new Error("No RPC addresses found for chain: " + chainId);
     }
 
-    return rpc;
+    return urls;
   }
 
   /** Sends a status to the receiver with prefix key prepended. */
