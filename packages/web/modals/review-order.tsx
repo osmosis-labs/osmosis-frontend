@@ -228,10 +228,19 @@ export const ReviewOrder = observer(function ReviewOrder({
       let originalValue = initialOutput;
       return {
         diffGteSlippage: slippageConfig
-          ? originalValue
-              .sub(amountWithSlippage ?? new IntPretty(0))
-              .toDec()
-              .gte(slippageConfig?.slippage.toDec())
+          ? quoteType === "in-given-out"
+            ? // amountWithSlippage is the MAX INPUT (larger = worse for user).
+              // Warn when the current max input exceeds the initial quote.
+              (amountWithSlippage ?? new IntPretty(0))
+                .sub(originalValue)
+                .toDec()
+                .gte(slippageConfig?.slippage.toDec())
+            : // amountWithSlippage is the MIN OUTPUT (smaller = worse for user).
+              // Warn when the current min output has fallen below the initial quote.
+              originalValue
+                .sub(amountWithSlippage ?? new IntPretty(0))
+                .toDec()
+                .gte(slippageConfig?.slippage.toDec())
           : false,
         restart: () => {
           originalValue = amountWithSlippage ?? new IntPretty(0);
@@ -247,7 +256,7 @@ export const ReviewOrder = observer(function ReviewOrder({
      * quote so as to warn the user.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amountWithSlippage, slippageConfig]
+    [amountWithSlippage, slippageConfig, quoteType]
   );
 
   const handleManualSlippageChange = useCallback(
