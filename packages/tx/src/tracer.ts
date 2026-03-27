@@ -67,7 +67,8 @@ export class TxTracer {
   protected isManualClose: boolean = false;
 
   /**
-   * @param url - Single RPC URL or array of RPC URLs for multi-endpoint failover
+   * @param url - Single RPC URL or array of RPC URLs for multi-endpoint failover.
+   *   URLs are tried in order; callers should place the preferred (e.g. pre-probed) URL first.
    * @param wsEndpoint - WebSocket endpoint path (default: "/websocket")
    * @param options - Additional options including custom WebSocket constructor
    */

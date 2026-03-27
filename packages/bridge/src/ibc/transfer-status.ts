@@ -264,6 +264,10 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     };
   }
 
+  /**
+   * Returns (or lazily creates) a shared block-polling subscription for `chainId`.
+   * @param rpcUrls - Optional pre-sorted RPC URLs; uses chain registry order if omitted.
+   */
   protected getBlockSubscriber(
     chainId: string,
     rpcUrls?: string[]
