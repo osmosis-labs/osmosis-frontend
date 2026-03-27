@@ -206,8 +206,14 @@ export const ReviewOrder = observer(function ReviewOrder({
     quoteType === "in-given-out"
       ? Number(expectedOutputFiat?.toDec().toString() ?? "0")
       : Number(fiatAmountWithSlippage?.toDec().toString() ?? "0");
+  // For out-given-in: fiatAmountWithSlippage is undefined when no quote is
+  // available, so the !== undefined guard naturally covers the loading state.
+  // For in-given-out: tokenOutFiatValue falls back to $0 (never undefined), so
+  // we must also require minimumOutputUsdNum > 0 to avoid a false positive
+  // while the SOL (or other output asset) spot price is still loading.
   const isExtremeValueDisparity =
     inputUsdNum > 1 &&
+    minimumOutputUsdNum > 0 &&
     (quoteType === "in-given-out" ? expectedOutputFiat : fiatAmountWithSlippage) !==
       undefined &&
     minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
@@ -226,18 +232,24 @@ export const ReviewOrder = observer(function ReviewOrder({
    * last accepted baseline (initially the quote at mount time).
    *
    * - out-given-in: amountWithSlippage = MIN OUTPUT. Smaller = worse.
-   *   Warn when baseline − current ≥ slippage threshold.
+   *   Warn when (baseline − current) / baseline ≥ slippage.
    * - in-given-out: amountWithSlippage = MAX INPUT. Larger = worse.
-   *   Warn when current − baseline ≥ slippage threshold.
+   *   Warn when (current − baseline) / baseline ≥ slippage.
+   *
+   * The absolute diff is compared against (baseline × slippage) so the check
+   * is proportional — a raw decimal like 0.01 would otherwise fire on any
+   * sub-cent price tick regardless of trade size.
    */
   const diffGteSlippage = useMemo(() => {
     if (!slippageConfig) return false;
     const current = amountWithSlippage ?? new IntPretty(0);
-    const threshold = slippageConfig.slippage.toDec();
+    const baselineDec = quoteBaseline.toDec();
+    if (baselineDec.isZero()) return false;
+    const absThreshold = baselineDec.mul(slippageConfig.slippage.toDec());
     if (quoteType === "in-given-out") {
-      return current.sub(quoteBaseline).toDec().gte(threshold);
+      return current.sub(quoteBaseline).toDec().gte(absThreshold);
     }
-    return quoteBaseline.sub(current).toDec().gte(threshold);
+    return quoteBaseline.sub(current).toDec().gte(absThreshold);
   }, [amountWithSlippage, slippageConfig, quoteType, quoteBaseline]);
 
   // Resets the baseline to the current live quote, dismissing the warning.
