@@ -211,6 +211,19 @@ export const ReviewOrder = observer(function ReviewOrder({
   // For in-given-out: tokenOutFiatValue falls back to $0 (never undefined), so
   // we must also require minimumOutputUsdNum > 0 to avoid a false positive
   // while the SOL (or other output asset) spot price is still loading.
+  if (process.env.NODE_ENV !== "production") {
+    // eslint-disable-next-line no-console
+    console.debug("[disparity]", {
+      quoteType,
+      inputUsdNum,
+      minimumOutputUsdNum,
+      inAmountFiat: inAmountFiat?.toDec().toString(),
+      fiatAmountWithSlippage: fiatAmountWithSlippage?.toDec().toString(),
+      expectedOutputFiat: expectedOutputFiat?.toDec().toString(),
+      threshold: ExtremeValueDisparityThreshold,
+      thresholdProduct: inputUsdNum * ExtremeValueDisparityThreshold,
+    });
+  }
   const isExtremeValueDisparity =
     inputUsdNum > 1 &&
     minimumOutputUsdNum > 0 &&
