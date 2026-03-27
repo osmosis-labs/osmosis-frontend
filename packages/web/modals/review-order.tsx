@@ -216,48 +216,34 @@ export const ReviewOrder = observer(function ReviewOrder({
     if (!isExtremeValueDisparity) setHasAcknowledgedDisparity(false);
   }, [isExtremeValueDisparity]);
 
-  //Value is memoized as it must be frozen when the component is mounted
-  const initialOutput = useMemo(
-    () => amountWithSlippage ?? new IntPretty(0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+  // Frozen at mount; serves as the initial baseline for the slippage drift check.
+  const [quoteBaseline, setQuoteBaseline] = useState<IntPretty>(
+    () => amountWithSlippage ?? new IntPretty(0)
   );
 
-  const { diffGteSlippage, restart } = useMemo(
-    () => {
-      let originalValue = initialOutput;
-      return {
-        diffGteSlippage: slippageConfig
-          ? quoteType === "in-given-out"
-            ? // amountWithSlippage is the MAX INPUT (larger = worse for user).
-              // Warn when the current max input exceeds the initial quote.
-              (amountWithSlippage ?? new IntPretty(0))
-                .sub(originalValue)
-                .toDec()
-                .gte(slippageConfig?.slippage.toDec())
-            : // amountWithSlippage is the MIN OUTPUT (smaller = worse for user).
-              // Warn when the current min output has fallen below the initial quote.
-              originalValue
-                .sub(amountWithSlippage ?? new IntPretty(0))
-                .toDec()
-                .gte(slippageConfig?.slippage.toDec())
-          : false,
-        restart: () => {
-          originalValue = amountWithSlippage ?? new IntPretty(0);
-        },
-      };
-    },
+  /**
+   * True when the live quote has drifted beyond the slippage tolerance from the
+   * last accepted baseline (initially the quote at mount time).
+   *
+   * - out-given-in: amountWithSlippage = MIN OUTPUT. Smaller = worse.
+   *   Warn when baseline − current ≥ slippage threshold.
+   * - in-given-out: amountWithSlippage = MAX INPUT. Larger = worse.
+   *   Warn when current − baseline ≥ slippage threshold.
+   */
+  const diffGteSlippage = useMemo(() => {
+    if (!slippageConfig) return false;
+    const current = amountWithSlippage ?? new IntPretty(0);
+    const threshold = slippageConfig.slippage.toDec();
+    if (quoteType === "in-given-out") {
+      return current.sub(quoteBaseline).toDec().gte(threshold);
+    }
+    return quoteBaseline.sub(current).toDec().gte(threshold);
+  }, [amountWithSlippage, slippageConfig, quoteType, quoteBaseline]);
 
-    /**
-     * Dependencies are disabled for this hook as we only want to update the
-     * current slippage amount when the outAmountLessSlippage changes.
-     *
-     * This is to monitor if the output amount changes too much from the original
-     * quote so as to warn the user.
-     */
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [amountWithSlippage, slippageConfig, quoteType]
-  );
+  // Resets the baseline to the current live quote, dismissing the warning.
+  const restart = useCallback(() => {
+    setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
+  }, [amountWithSlippage]);
 
   const handleManualSlippageChange = useCallback(
     (value: string) => {
