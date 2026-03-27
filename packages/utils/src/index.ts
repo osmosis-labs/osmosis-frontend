@@ -11,7 +11,6 @@ export * from "./common-utils";
 export * from "./compare";
 export * from "./date";
 export * from "./dogecoin";
-export * from "./endpoint-health";
 export * from "./ethereum";
 export * from "./function";
 export * from "./gas-utils";

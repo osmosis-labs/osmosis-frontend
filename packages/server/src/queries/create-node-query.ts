@@ -1,10 +1,5 @@
 import { Chain } from "@osmosis-labs/types";
-import { apiClient, ClientOptions } from "@osmosis-labs/utils";
-import {
-  recordEndpointSuccess,
-  sortEndpointsByHealth,
-} from "@osmosis-labs/utils";
-import { runIfFn } from "@osmosis-labs/utils";
+import { apiClient, ClientOptions, runIfFn } from "@osmosis-labs/utils";
 
 /**
  * ES6-compatible `Promise.any`: resolves with the first fulfilled promise.
@@ -83,7 +78,7 @@ function createTimeoutSignal(
  *  REST endpoints come from the chain's asset list. Requests are fired in a
  *  staggered pattern (`hedgeDelay` apart). The first successful response wins
  *  via a `Promise.any`-style race; all other in-flight requests are aborted.
- *  Known-good endpoints (from the health cache) are tried first.
+ *  Endpoints are tried in their original order from the chain registry.
  */
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({
@@ -141,8 +136,9 @@ export const createNodeQuery =
     const cleanups: (() => void)[] = [];
     const startTime = Date.now();
 
-    const sorted = sortEndpointsByHealth(restEndpoints);
-    const schedulable = sorted.filter((_, i) => i * hedgeDelay < maxTotalTime);
+    const schedulable = restEndpoints.filter(
+      (_, i) => i * hedgeDelay < maxTotalTime
+    );
 
     const attempts = schedulable.map(
       (endpoint, i) =>
@@ -174,7 +170,6 @@ export const createNodeQuery =
                 signal,
               });
               cleanup();
-              recordEndpointSuccess(endpoint.address);
               resolve(result);
             } catch (error) {
               cleanup();

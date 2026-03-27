@@ -1,5 +1,4 @@
 import { Buffer } from "buffer";
-import { sortEndpointsByHealth } from "@osmosis-labs/utils";
 
 enum WsReadyState {
   CONNECTING,
@@ -87,8 +86,7 @@ export class TxTracer {
       throw new Error("At least one RPC URL must be provided");
     }
 
-    // Start with the endpoint most recently proven healthy (from HTTP calls)
-    this.urls = sortEndpointsByHealth(rawUrls);
+    this.urls = rawUrls;
 
     this.maxReconnectAttempts = options.maxReconnectAttempts ?? 3;
 

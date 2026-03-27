@@ -3,14 +3,6 @@ import { apiClient } from "@osmosis-labs/utils";
 import { createNodeQuery } from "../create-node-query";
 import { MockChains } from "./mock-chains";
 
-let clearHealthCache: () => void;
-try {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  clearHealthCache = require("@osmosis-labs/utils")._clearHealthCache;
-} catch {
-  clearHealthCache = () => {};
-}
-
 jest.mock("@osmosis-labs/utils", () => ({
   ...jest.requireActual("@osmosis-labs/utils"),
   apiClient: jest.fn(),
@@ -19,7 +11,6 @@ jest.mock("@osmosis-labs/utils", () => ({
 describe("createNodeQuery", () => {
   beforeEach(() => {
     (apiClient as jest.Mock).mockClear();
-    clearHealthCache();
   });
 
   it("should create a URL and call apiClient with it", async () => {

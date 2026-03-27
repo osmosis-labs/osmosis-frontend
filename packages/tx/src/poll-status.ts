@@ -66,6 +66,10 @@ export class PollingStatusSubscription {
         console.error(
           `Failed to fetch /status from ${this.rpcUrls.length} endpoint(s): ${e}`
         );
+        // Backoff before retrying to avoid spamming endpoints
+        await new Promise((resolve) => {
+          timeoutId = setTimeout(resolve, this.defaultBlockTimeMs);
+        });
       }
     }
     if (timeoutId) clearTimeout(timeoutId);

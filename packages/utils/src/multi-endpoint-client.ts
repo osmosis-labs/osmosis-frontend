@@ -1,8 +1,4 @@
 import { apiClient, ClientOptions } from "./api-client";
-import {
-  recordEndpointSuccess,
-  sortEndpointsByHealth,
-} from "./endpoint-health";
 
 /**
  * Create a timeout AbortSignal, preferring the native `AbortSignal.timeout`
@@ -71,8 +67,7 @@ export interface MultiEndpointOptions {
  * `Promise.any`.  The first successful response wins; all other in-flight
  * requests are aborted immediately.
  *
- * Endpoints are tried in order of: recently-successful (from health cache),
- * then priority (higher first), then original order.
+ * Endpoints are tried in priority order (higher first), then original order.
  */
 export class MultiEndpointClient {
   private endpoints: EndpointConfig[];
@@ -106,15 +101,27 @@ export class MultiEndpointClient {
 
   /**
    * Fetch data using hedged requests across all configured endpoints.
-   *
-   * Fires endpoint requests staggered by `hedgeDelay`. The first success
-   * wins via `Promise.any`; remaining in-flight requests are aborted.
-   * An optional external `AbortSignal` cancels everything immediately.
+   * Returns only the response data.
    */
   async fetch<T>(
     path: string,
     options?: ClientOptions & { signal?: AbortSignal }
   ): Promise<T> {
+    const { data } = await this.fetchWithEndpoint<T>(path, options);
+    return data;
+  }
+
+  /**
+   * Fetch data using hedged requests and also return which endpoint responded.
+   *
+   * Fires endpoint requests staggered by `hedgeDelay`. The first success
+   * wins via `Promise.any`; remaining in-flight requests are aborted.
+   * An optional external `AbortSignal` cancels everything immediately.
+   */
+  async fetchWithEndpoint<T>(
+    path: string,
+    options?: ClientOptions & { signal?: AbortSignal }
+  ): Promise<{ data: T; endpointAddress: string }> {
     const { signal: externalSignal, ...restOptions } = options ?? {};
 
     if (externalSignal?.aborted) {
@@ -125,24 +132,20 @@ export class MultiEndpointClient {
     const timers: ReturnType<typeof setTimeout>[] = [];
     const startTime = Date.now();
 
-    // Wire external signal into our controller
     if (externalSignal) {
       externalSignal.addEventListener("abort", () => raceController.abort(), {
         once: true,
       });
     }
 
-    // Sort endpoints: known-good first, then by original priority order
-    const sorted = sortEndpointsByHealth(this.endpoints);
-
     // Only schedule endpoints whose stagger delay fits within the budget
-    const schedulable = sorted.filter(
+    const schedulable = this.endpoints.filter(
       (_, i) => i * this.hedgeDelay < this.maxTotalTime
     );
 
     const attempts = schedulable.map(
       (endpoint, i) =>
-        new Promise<T>((resolve, reject) => {
+        new Promise<{ data: T; endpointAddress: string }>((resolve, reject) => {
           const delay = i * this.hedgeDelay;
 
           const timer = setTimeout(async () => {
@@ -164,13 +167,12 @@ export class MultiEndpointClient {
 
             try {
               const url = `${endpoint.address}${path}`;
-              const result = await apiClient<T>(url, {
+              const data = await apiClient<T>(url, {
                 ...restOptions,
                 signal,
               });
               cleanup();
-              recordEndpointSuccess(endpoint.address);
-              resolve(result);
+              resolve({ data, endpointAddress: endpoint.address });
             } catch (error) {
               cleanup();
               reject(error);

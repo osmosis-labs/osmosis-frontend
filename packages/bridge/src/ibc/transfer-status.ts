@@ -1,7 +1,7 @@
 import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
 import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { ChainIdHelper } from "@osmosis-labs/utils";
+import { ChainIdHelper, createMultiEndpointClient } from "@osmosis-labs/utils";
 
 import {
   TransferStatus,
@@ -111,7 +111,31 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     sequence: string;
     sendTxHash: string;
   }): Promise<void> {
-    const destBlockSubscriber = this.getBlockSubscriber(destChainId);
+    // Pre-probe destination RPCs to find a working endpoint.
+    // The hedged HTTP call is fast (~1-2s); TxTracer will connect to the
+    // winning endpoint's WebSocket immediately instead of burning minutes
+    // on dead endpoints.
+    const destRpcUrls = this.getChainRpcUrls(destChainId);
+    let sortedDestUrls = destRpcUrls;
+    try {
+      const client = createMultiEndpointClient(
+        destRpcUrls.map((url) => ({ address: url }))
+      );
+      const { endpointAddress } = await client.fetchWithEndpoint("/status");
+      sortedDestUrls = [
+        endpointAddress,
+        ...destRpcUrls.filter((u) => u !== endpointAddress),
+      ];
+    } catch {
+      console.warn(
+        `[IbcTransferStatus] Pre-probe failed for ${destChainId}, using default endpoint order`
+      );
+    }
+
+    const destBlockSubscriber = this.getBlockSubscriber(
+      destChainId,
+      sortedDestUrls
+    );
     const subscriptions: Promise<
       "timeout" | "received" | "connection-error"
     >[] = [];
@@ -155,9 +179,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       })
     );
 
-    const packetReceivedTracer = new TxTracer(
-      this.getChainRpcUrls(destChainId)
-    );
+    const packetReceivedTracer = new TxTracer(sortedDestUrls);
     const receivedPromise = packetReceivedTracer
       .traceTx({
         // Should use the dst channel.
@@ -242,11 +264,14 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     };
   }
 
-  protected getBlockSubscriber(chainId: string): PollingStatusSubscription {
+  protected getBlockSubscriber(
+    chainId: string,
+    rpcUrls?: string[]
+  ): PollingStatusSubscription {
     if (!this.blockSubscriberMap.has(chainId)) {
       this.blockSubscriberMap.set(
         chainId,
-        new PollingStatusSubscription(this.getChainRpcUrls(chainId))
+        new PollingStatusSubscription(rpcUrls ?? this.getChainRpcUrls(chainId))
       );
     }
 

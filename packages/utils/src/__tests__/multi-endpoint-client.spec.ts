@@ -1,5 +1,4 @@
 import { apiClient } from "../api-client";
-import { _clearHealthCache } from "../endpoint-health";
 import {
   createMultiEndpointClient,
   MultiEndpointClient,
@@ -12,7 +11,6 @@ jest.mock("../api-client", () => ({
 describe("MultiEndpointClient", () => {
   beforeEach(() => {
     (apiClient as jest.Mock).mockClear();
-    _clearHealthCache();
   });
 
   it("should create client with single endpoint", () => {
@@ -219,11 +217,26 @@ describe("MultiEndpointClient", () => {
     });
   });
 
-  describe("endpoint health integration", () => {
-    it("should prefer recently successful endpoint", async () => {
+  describe("fetchWithEndpoint", () => {
+    it("should return data and winning endpoint address", async () => {
+      const mockResult = { data: "success" };
+      (apiClient as jest.Mock).mockResolvedValue(mockResult);
+
+      const client = createMultiEndpointClient([
+        { address: "https://endpoint1.com" },
+      ]);
+
+      const result = await client.fetchWithEndpoint<typeof mockResult>(
+        "/status"
+      );
+
+      expect(result.data).toEqual(mockResult);
+      expect(result.endpointAddress).toBe("https://endpoint1.com");
+    });
+
+    it("should return the winning endpoint when first fails", async () => {
       const mockResult = { data: "success" };
 
-      // First call: endpoint1 fails, endpoint2 succeeds → health cache records endpoint2
       (apiClient as jest.Mock).mockImplementation((url: string) => {
         if (url.includes("endpoint1")) {
           return Promise.reject(new Error("fail"));
@@ -231,32 +244,20 @@ describe("MultiEndpointClient", () => {
         return Promise.resolve(mockResult);
       });
 
-      const client1 = createMultiEndpointClient(
+      const client = createMultiEndpointClient(
         [
           { address: "https://endpoint1.com" },
           { address: "https://endpoint2.com" },
         ],
         { hedgeDelay: 50, timeout: 200, maxTotalTime: 2000 }
       );
-      await client1.fetch("/status");
 
-      // Second call: new client, both endpoints available
-      (apiClient as jest.Mock).mockClear();
-      (apiClient as jest.Mock).mockResolvedValue(mockResult);
-
-      const client2 = createMultiEndpointClient(
-        [
-          { address: "https://endpoint1.com" },
-          { address: "https://endpoint2.com" },
-        ],
-        { hedgeDelay: 500, timeout: 5000, maxTotalTime: 5000 }
+      const result = await client.fetchWithEndpoint<typeof mockResult>(
+        "/status"
       );
-      await client2.fetch("/status");
 
-      // endpoint2 should be tried first (it was healthy last time)
-      expect((apiClient as jest.Mock).mock.calls[0][0]).toBe(
-        "https://endpoint2.com/status"
-      );
+      expect(result.data).toEqual(mockResult);
+      expect(result.endpointAddress).toBe("https://endpoint2.com");
     });
   });
 });

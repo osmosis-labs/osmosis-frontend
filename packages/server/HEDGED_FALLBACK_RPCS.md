@@ -10,15 +10,15 @@ The Osmosis frontend's IBC bridge transfer flow was timing out when querying cha
 
 3. **Single-endpoint usage everywhere** — `getTimeoutHeight`, `TxTracer`, `PollingStatusSubscription`, and the wallet store's `getTimeoutHeight` all used `rpc[0]` directly with no fallback. If the primary was dead, the entire flow failed.
 
-4. **No cross-component knowledge sharing** — Even when one HTTP call discovered a working endpoint, that knowledge was lost. TxTracer (WebSocket) would independently try the same dead primary.
+4. **TxTracer WebSocket stuck on dead endpoints** — WebSocket connections to dead endpoints hang for 30–60s each. With 3 reconnect attempts per endpoint, TxTracer could waste 3+ minutes before finding a working endpoint, causing "Withdrawal taking longer than expected" in the UI.
 
 ## Solution
 
-A **hedged request** pattern with a **shared health cache**, implemented across 7 files in 4 packages.
+A **hedged request** pattern for HTTP, with a **pre-probe** to guide WebSocket connections.
 
 ### 1. Hedged Requests (replaces sequential retry)
 
-`MultiEndpointClient.fetch()` and `createNodeQuery` now fire requests staggered 1 second apart using a `Promise.any`-style race. The first successful response wins; all other in-flight requests are immediately aborted via `AbortController`.
+`MultiEndpointClient.fetch()` and `createNodeQuery` fire requests staggered 1 second apart using a `Promise.any`-style race. The first successful response wins; all other in-flight requests are immediately aborted via `AbortController`.
 
 - **`hedgeDelay: 1000ms`** — next endpoint fires 1s after the previous, avoiding unnecessary load on healthy RPCs
 - **`timeout: 3000ms`** — per-attempt cap
@@ -27,16 +27,15 @@ A **hedged request** pattern with a **shared health cache**, implemented across 
 
 Dead primary scenario: old = ~15s (sequential exhaustion), new = ~2.5s (hedge fires at t=1s, healthy endpoint responds at ~t=2.5s).
 
-### 2. Endpoint Health Cache (`endpoint-health.ts`)
+### 2. Pre-probe for TxTracer (replaces health cache)
 
-A module-level `Map<url, timestamp>` tracking which endpoints responded successfully in the last 5 minutes. Two exports:
+Before creating a `TxTracer` WebSocket connection, `IbcTransferStatusProvider.traceStatus()` fires a fast hedged HTTP `/status` probe against the destination chain's RPCs. The winning endpoint is placed first in the URL list passed to TxTracer, so it connects to a known-good WebSocket immediately.
 
-- `recordEndpointSuccess(url)` — called automatically when any hedged HTTP fetch succeeds
-- `sortEndpointsByHealth(endpoints)` — reorders a URL list to put recently-healthy endpoints first, preserving original order as tiebreaker
+This replaces the previous global health cache approach (`endpoint-health.ts`), which couldn't cross the server/client process boundary — server-side hedged calls populated the cache on Vercel, but TxTracer ran in the browser with an empty cache.
 
-### 3. TxTracer Uses Known-Good Endpoint
+### 3. Error Backoff for Status Polling
 
-Instead of hedging WebSocket connections (unnatural for long-lived connections), `TxTracer` calls `sortEndpointsByHealth(urls)` in its constructor. By the time a WebSocket is needed, earlier HTTP calls (`queryRPCStatus`, `getTimeoutHeight`) have already populated the health cache. TxTracer connects to the proven endpoint first, with sequential fallback to the full list.
+`PollingStatusSubscription` now waits one block-time interval (~7.5s) before retrying when a `/status` poll fails. Previously, failures triggered an immediate retry loop that spammed endpoints with hedged request batches.
 
 ### 4. Multi-Endpoint Wiring Throughout
 
@@ -44,36 +43,29 @@ Instead of hedging WebSocket connections (unnatural for long-lived connections),
 - **`getTimeoutHeight`** — passes all RPC endpoints from the chain registry, not just `rpc[0]`
 - **`IbcTransferStatusProvider`** — `getChainRpcUrls()` returns all RPC URLs; both `TxTracer` and `PollingStatusSubscription` receive the full list
 - **`stores/account/base.ts`** — wallet store's `getTimeoutHeight` uses multi-endpoint `queryRPCStatus`
+- **`fetchWithEndpoint()`** — new method on `MultiEndpointClient` that returns both the data and the winning endpoint address, used by the pre-probe
 
 ## Files Changed
 
-| Package | File | Change |
-|---------|------|--------|
-| `utils` | `endpoint-health.ts` | **New** — health cache |
-| `utils` | `multi-endpoint-client.ts` | Rewritten — hedged `Promise.any` with stagger |
-| `utils` | `index.ts` | Export health cache |
-| `server` | `create-node-query.ts` | Rewritten — hedged stagger for REST endpoints |
-| `server` | `cosmos/rpc-status.ts` | Updated params — `hedgeDelay` replaces `maxRetries` |
-| `tx` | `tracer.ts` | Sort URLs by health on construction |
-| `bridge` | `ibc/transfer-status.ts` | Pass all RPC URLs instead of `rpc[0]` |
-| `stores` | `account/base.ts` | Multi-endpoint `queryRPCStatus` |
-
-## Test Coverage
-
-- 13 tests for `MultiEndpointClient` (hedging, health cache, abort signal, priority sorting)
-- 11 tests for `createNodeQuery` (fallback, budget exhaustion, single endpoint, error messages)
-
-All typecheck clean across `utils`, `server`, `tx`, `bridge`, and `stores` (one pre-existing unrelated type error in stores).
+| Package  | File                       | Change                                                   |
+| -------- | -------------------------- | -------------------------------------------------------- |
+| `utils`  | `multi-endpoint-client.ts` | Hedged `Promise.any` with stagger; `fetchWithEndpoint()` |
+| `server` | `create-node-query.ts`     | Hedged stagger for REST endpoints                        |
+| `server` | `cosmos/rpc-status.ts`     | Updated params — `hedgeDelay` replaces `maxRetries`      |
+| `tx`     | `tracer.ts`                | Multi-endpoint WebSocket with sequential failover        |
+| `tx`     | `poll-status.ts`           | Error backoff delay                                      |
+| `bridge` | `ibc/transfer-status.ts`   | Pre-probe + pass sorted URLs to TxTracer                 |
+| `stores` | `account/base.ts`          | Multi-endpoint `queryRPCStatus`                          |
 
 ## Key Design Decisions
 
-| Decision | Rationale |
-|----------|-----------|
-| 1s hedge delay (not 500ms) | Avoids spamming healthy RPCs; typical Cosmos RPC response is 1–3s |
-| 8s total budget (not 10s) | Leaves headroom within Vercel's 10s serverless timeout |
-| Health cache over explicit propagation | Avoids threading "winning endpoint" through every call chain; works across server and client contexts independently |
-| Sequential WebSocket fallback (not hedged) | WebSockets are long-lived; hedging them wastes connections. Health cache ensures TxTracer starts with the right endpoint |
-| ES6-compatible `promiseAny` polyfill | Root tsconfig targets ES6; `Promise.any` requires ES2021 |
+| Decision                                   | Rationale                                                                                                             |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| 1s hedge delay (not 500ms)                 | Avoids spamming healthy RPCs; typical Cosmos RPC response is 1–3s                                                     |
+| 8s total budget (not 10s)                  | Leaves headroom within Vercel's 10s serverless timeout                                                                |
+| Pre-probe over global cache                | Health cache can't cross server/client boundary; pre-probe is explicit and local                                      |
+| Sequential WebSocket fallback (not hedged) | WebSockets are long-lived; hedging them wastes connections. Pre-probe ensures TxTracer starts with the right endpoint |
+| ES6-compatible `promiseAny` polyfill       | Root tsconfig targets ES6; `Promise.any` requires ES2021                                                              |
 
 ## Known Limitation
 
