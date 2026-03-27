@@ -1760,10 +1760,22 @@ export function useDynamicSlippageConfig({
 }
 
 /** Computes the suggested slippage tier from a quote (pure, no side effects). */
-function computeSuggestedSlippage(quote: SwapState["quote"]): string {
+function computeSuggestedSlippage(
+  quote: SwapState["quote"],
+  quoteType: QuoteDirection = "out-given-in"
+): string {
   if (!quote) return DefaultSlippage;
 
-  const priceImpact = quote.priceImpactTokenOut?.toDec().abs() ?? new Dec(0);
+  const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
+  // For out-given-in, adverse impact is negative (user receives less) → take abs.
+  // For in-given-out, adverse impact is positive (user pays more); a negative value
+  // means a favorable trade and must NOT be treated as adverse.
+  const priceImpact =
+    quoteType === "in-given-out"
+      ? rawImpact.isPositive()
+        ? rawImpact
+        : new Dec(0)
+      : rawImpact.abs();
   const tokens = quote.tokens;
   const lowestLiquidityCap =
     tokens && tokens.length > 0
@@ -1790,15 +1802,17 @@ function computeSuggestedSlippage(quote: SwapState["quote"]): string {
 export function useDynamicSlippageFromQuote({
   quote,
   slippageConfig,
+  quoteType = "out-given-in",
 }: {
   quote: SwapState["quote"];
   slippageConfig: ObservableSlippageConfig;
+  quoteType?: QuoteDirection;
 }) {
   // Synchronously compute the display value from the current quote so it updates
   // in the same React render cycle as the quote/gas display, not one cycle later.
   const autoAdjustedSlippage = useMemo(
-    () => computeSuggestedSlippage(quote),
-    [quote]
+    () => computeSuggestedSlippage(quote, quoteType),
+    [quote, quoteType]
   );
 
   // Tracks the last value written by this hook — used only as an optimisation to
@@ -1819,7 +1833,7 @@ export function useDynamicSlippageFromQuote({
     // dedicated flag that review-order sets when the user edits the field.
     if (slippageConfig.userOverrodeSlippage) return;
 
-    const suggested = computeSuggestedSlippage(quote);
+    const suggested = computeSuggestedSlippage(quote, quoteType);
 
     // Skip the write if the suggestion is unchanged (avoids a MobX reaction cycle)
     if (suggested === lastAutoSet.current) return;
