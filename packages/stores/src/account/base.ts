@@ -41,6 +41,7 @@ import { Dec } from "@osmosis-labs/unit";
 import {
   apiClient,
   ApiClientError,
+  createMultiEndpointClient,
   getChain,
   isNil,
   OneClickTradingMaxGasLimit,
@@ -627,9 +628,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         await onSign();
       }
 
-      const restEndpoint = getEndpointString(
-        await wallet.getRestEndpoint(true)
-      );
+      // Pre-probe REST endpoints to find a working one for broadcast.
+      // Falls back to the wallet's default endpoint if probe fails.
+      let restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
+      const restUrls = this.getChainRestUrls(wallet);
+      if (restUrls.length > 1) {
+        try {
+          const client = createMultiEndpointClient(
+            restUrls.map((url) => ({ address: url }))
+          );
+          const { endpointAddress } = await client.fetchWithEndpoint(
+            "/cosmos/base/node/v1beta1/config"
+          );
+          restEndpoint = endpointAddress;
+        } catch {
+          // Pre-probe failed; use wallet default
+        }
+      }
 
       const res = await axios.post<{
         tx_response: {
@@ -655,9 +670,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const broadcasted = res.data.tx_response;
 
-      const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
+      // Pass all RPC endpoints to TxTracer for WebSocket failover.
+      const rpcUrls = this.getChainRpcUrls(wallet);
+      let sortedRpcUrls: string[] =
+        rpcUrls.length > 0
+          ? rpcUrls
+          : [getEndpointString(await wallet.getRpcEndpoint(true))];
+      if (rpcUrls.length > 1) {
+        try {
+          const client = createMultiEndpointClient(
+            rpcUrls.map((url) => ({ address: url }))
+          );
+          const { endpointAddress } = await client.fetchWithEndpoint("/status");
+          sortedRpcUrls = [
+            endpointAddress,
+            ...rpcUrls.filter((u) => u !== endpointAddress),
+          ];
+        } catch {
+          // Pre-probe failed; use default order
+        }
+      }
 
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
+      const txTracer = new TxTracer(sortedRpcUrls, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
 
@@ -1313,34 +1347,70 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
+  /** Resolve all REST endpoint URLs for the wallet's chain from the chain registry. */
+  private getChainRestUrls(wallet: AccountStoreWallet): string[] {
+    const chain = this.chains.find(
+      ({ chain_id }) => chain_id === wallet.chain.chain_id
+    );
+    return chain?.apis?.rest?.map((r) => r.address).filter(Boolean) ?? [];
+  }
+
+  /** Resolve all RPC endpoint URLs for the wallet's chain from the chain registry. */
+  private getChainRpcUrls(wallet: AccountStoreWallet): string[] {
+    const chain = this.chains.find(
+      ({ chain_id }) => chain_id === wallet.chain.chain_id
+    );
+    return chain?.apis?.rpc?.map((r) => r.address).filter(Boolean) ?? [];
+  }
+
   public async getAccountFromNode(wallet: AccountStoreWallet) {
-    try {
-      const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
-      const address = wallet?.address;
+    const address = wallet?.address;
 
-      if (!address) {
-        throw new Error("Address is not provided");
-      }
-
-      if (!endpoint) {
-        throw new Error("Endpoint is not provided");
-      }
-
-      const account = await BaseAccount.fetchFromRest(
-        axios.create({
-          baseURL: removeLastSlash(endpoint),
-        }),
-        address,
-        true
-      );
-
-      return {
-        accountNumber: account.getAccountNumber(),
-        sequence: account.getSequence(),
-      };
-    } catch (error: any) {
-      throw error;
+    if (!address) {
+      throw new Error("Address is not provided");
     }
+
+    const restUrls = this.getChainRestUrls(wallet);
+
+    if (restUrls.length > 1) {
+      // Hedged: try all REST endpoints, first success wins
+      const client = createMultiEndpointClient(
+        restUrls.map((url) => ({ address: url }))
+      );
+      const { data } = await client.fetchWithEndpoint<{
+        account: {
+          account_number: string;
+          sequence: string;
+          "@type"?: string;
+          base_account?: { account_number: string; sequence: string };
+        };
+      }>(`/cosmos/auth/v1beta1/accounts/${address}`);
+
+      const acct = data.account?.base_account ?? data.account;
+      return {
+        accountNumber: parseInt(acct.account_number, 10),
+        sequence: parseInt(acct.sequence, 10),
+      };
+    }
+
+    // Single endpoint — fall back to wallet endpoint + BaseAccount parser
+    const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
+    if (!endpoint) {
+      throw new Error("Endpoint is not provided");
+    }
+
+    const account = await BaseAccount.fetchFromRest(
+      axios.create({
+        baseURL: removeLastSlash(endpoint),
+      }),
+      address,
+      true
+    );
+
+    return {
+      accountNumber: account.getAccountNumber(),
+      sequence: account.getSequence(),
+    };
   }
 
   public async getSequence(
