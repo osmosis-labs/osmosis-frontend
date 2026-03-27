@@ -1646,7 +1646,7 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage > balance && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) && !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 
