@@ -223,9 +223,20 @@ const isExtremeValueDisparity =
   }, [isExtremeValueDisparity]);
 
   // Frozen at mount; serves as the initial baseline for the slippage drift check.
+  // Also reset whenever the modal re-opens so a stale baseline from a previous
+  // trade doesn't trigger a spurious "Quote Updated" warning on the next trade.
   const [quoteBaseline, setQuoteBaseline] = useState<IntPretty>(
     () => amountWithSlippage ?? new IntPretty(0)
   );
+  useEffect(() => {
+    if (isOpen) {
+      // Reset quote baseline and the local slippage draft so each new trade
+      // opens with a clean state — ReactModal doesn't unmount on close.
+      setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
+      setManualSlippage("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen]);
 
   /**
    * True when the live quote has drifted beyond the slippage tolerance from the
