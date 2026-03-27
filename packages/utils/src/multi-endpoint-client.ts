@@ -92,6 +92,16 @@ export class MultiEndpointClient {
     this.timeout = options.timeout ?? 3000;
     this.hedgeDelay = options.hedgeDelay ?? 1000;
     this.maxTotalTime = options.maxTotalTime ?? 8000;
+
+    if (this.timeout <= 0) {
+      throw new Error("timeout must be positive");
+    }
+    if (this.hedgeDelay <= 0) {
+      throw new Error("hedgeDelay must be positive");
+    }
+    if (this.maxTotalTime <= 0) {
+      throw new Error("maxTotalTime must be positive");
+    }
   }
 
   /**
