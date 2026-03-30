@@ -288,7 +288,7 @@ export function useSwap(
     | (NoRouteError | NotEnoughLiquidityError | Error | undefined)
     | typeof inAmountInput.error = useMemo(() => {
     let error =
-      quoteType === "out-given-in" ? inGivenOutQuoteError : quoteErrorMsg;
+      quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
 
     // only show spot price error if there's no quote
     if (
@@ -740,14 +740,20 @@ export function useSwap(
     ]
   );
 
+  const activeQuoteError =
+    quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
+  const activeInputEmpty =
+    quoteType === "in-given-out" ? outAmountInput.isEmpty : inAmountInput.isEmpty;
+
   const positivePrevQuote = usePreviousWhen(
     quote,
     useCallback(
       () =>
         Boolean(quote?.amount.toDec().isPositive()) &&
-        !quoteErrorMsg &&
-        !inAmountInput.isEmpty,
-      [quote, quoteErrorMsg, inAmountInput.isEmpty]
+        !activeQuoteError &&
+        !activeInputEmpty,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [quote, activeQuoteError, activeInputEmpty]
     )
   );
 
@@ -855,9 +861,12 @@ export function useSwap(
     tokenOutFiatValue,
     tokenInFeeAmountFiatValue,
     quote:
-      isQuoteLoading || inAmountInput.isTyping
+      isQuoteLoading ||
+      (quoteType === "in-given-out"
+        ? outAmountInput.isTyping
+        : inAmountInput.isTyping)
         ? positivePrevQuote
-        : !quoteErrorMsg
+        : !activeQuoteError
         ? quote
         : undefined,
     inBaseOutQuoteSpotPrice,
@@ -1768,6 +1777,7 @@ function computeSuggestedSlippage(
 
   const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
   // For out-given-in, adverse impact is negative (user receives less) → take abs.
+  // Positive (favorable) impact is clamped to zero so it does not inflate slippage.
   // For in-given-out, adverse impact is positive (user pays more); a negative value
   // means a favorable trade and must NOT be treated as adverse.
   const priceImpact =
@@ -1775,7 +1785,9 @@ function computeSuggestedSlippage(
       ? rawImpact.isPositive()
         ? rawImpact
         : new Dec(0)
-      : rawImpact.abs();
+      : rawImpact.isNegative()
+      ? rawImpact.abs()
+      : new Dec(0);
   const tokens = quote.tokens;
   const lowestLiquidityCap =
     tokens && tokens.length > 0
