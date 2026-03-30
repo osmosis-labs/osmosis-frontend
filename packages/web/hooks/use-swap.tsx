@@ -1843,7 +1843,7 @@ export function useDynamicSlippageFromQuote({
     // so the slippage getter uses this value rather than the preset buttons).
     // Display is handled by autoAdjustedSlippage (computed synchronously via useMemo).
     slippageConfig.setManualSlippage(suggested);
-  }, [quote, slippageConfig]);
+  }, [quote, slippageConfig, quoteType]);
 
   // Call this when slippage is externally reset (e.g. resetSlippage in swap-tool)
   // so the hook treats the next quote update as a fresh auto-adjust rather than
