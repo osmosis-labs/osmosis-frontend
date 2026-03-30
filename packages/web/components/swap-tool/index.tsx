@@ -140,11 +140,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       quoteType,
     });
 
-    const { autoAdjustedSlippage, resetAutoAdjust } = useDynamicSlippageFromQuote({
-      quote: swapState.quote,
-      slippageConfig,
-      quoteType,
-    });
+    const { autoAdjustedSlippage, resetAutoAdjust } =
+      useDynamicSlippageFromQuote({
+        quote: swapState.quote,
+        slippageConfig,
+        quoteType,
+      });
 
     if (
       swapState.fromAsset?.coinMinimalDenom ===
@@ -175,7 +176,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           .sub(swapState.tokenOutFiatValue?.toDec())
           .quo(swapState.inAmountInput?.fiatValue?.toDec()) ?? new Dec(0)
       );
-    }, [quoteType, swapState.inAmountInput?.fiatValue, swapState.tokenOutFiatValue, swapState.quote?.priceImpactTokenOut]);
+    }, [
+      quoteType,
+      swapState.inAmountInput?.fiatValue,
+      swapState.tokenOutFiatValue,
+      swapState.quote?.priceImpactTokenOut,
+    ]);
 
     const showOutputDifferenceWarning = outputDifference
       .toDec()
