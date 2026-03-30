@@ -745,17 +745,26 @@ export function useSwap(
   const activeInputEmpty =
     quoteType === "in-given-out" ? outAmountInput.isEmpty : inAmountInput.isEmpty;
 
-  const positivePrevQuote = usePreviousWhen(
-    quote,
-    useCallback(
-      () =>
-        Boolean(quote?.amount.toDec().isPositive()) &&
-        !activeQuoteError &&
-        !activeInputEmpty,
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      [quote, activeQuoteError, activeInputEmpty]
-    )
-  );
+  // Cache the last accepted quote, but segregated by quoteType so that a
+  // stale out-given-in quote is never shown while an in-given-out quote is
+  // loading (or vice-versa). The ref is explicitly cleared on mode switch.
+  const positivePrevQuoteRef = useRef<typeof quote>(undefined);
+  const prevQuoteTypeForCacheRef = useRef<typeof quoteType>(quoteType);
+  useEffect(() => {
+    if (prevQuoteTypeForCacheRef.current !== quoteType) {
+      prevQuoteTypeForCacheRef.current = quoteType;
+      positivePrevQuoteRef.current = undefined;
+      return;
+    }
+    if (
+      quote?.amount.toDec().isPositive() &&
+      !activeQuoteError &&
+      !activeInputEmpty
+    ) {
+      positivePrevQuoteRef.current = quote;
+    }
+  });
+  const positivePrevQuote = positivePrevQuoteRef.current;
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
@@ -1855,7 +1864,13 @@ export function useDynamicSlippageFromQuote({
     // so the slippage getter uses this value rather than the preset buttons).
     // Display is handled by autoAdjustedSlippage (computed synchronously via useMemo).
     slippageConfig.setManualSlippage(suggested);
-  }, [quote, slippageConfig, quoteType]);
+  }, [
+    quote,
+    slippageConfig,
+    quoteType,
+    slippageConfig.isManualSlippage,
+    slippageConfig.userOverrodeSlippage,
+  ]);
 
   // Call this when slippage is externally reset (e.g. resetSlippage in swap-tool)
   // so the hook treats the next quote update as a fresh auto-adjust rather than
