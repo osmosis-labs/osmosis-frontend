@@ -67,7 +67,6 @@ import { api, RouterInputs } from "~/utils/trpc";
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
-import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./use-wallet-select";
 
 export type SwapState = ReturnType<typeof useSwap>;
@@ -743,7 +742,9 @@ export function useSwap(
   const activeQuoteError =
     quoteType === "in-given-out" ? inGivenOutQuoteError : quoteErrorMsg;
   const activeInputEmpty =
-    quoteType === "in-given-out" ? outAmountInput.isEmpty : inAmountInput.isEmpty;
+    quoteType === "in-given-out"
+      ? outAmountInput.isEmpty
+      : inAmountInput.isEmpty;
 
   // Cache the last accepted quote, but segregated by quoteType so that a
   // stale out-given-in quote is never shown while an in-given-out quote is
@@ -1664,7 +1665,8 @@ export function useAmountWithSlippage({
       // We want to cap this amount to the user's balance. This should never be visible unless the swap is viable,
       // which implies the user has enough balance.
       const maxAmountWithSlippage =
-        amountWithSlippage.toDec().gt(balance.toDec()) && !balance.toDec().isZero()
+        amountWithSlippage.toDec().gt(balance.toDec()) &&
+        !balance.toDec().isZero()
           ? balance
           : amountWithSlippage;
 
@@ -1707,13 +1709,41 @@ export function useAmountWithSlippage({
 // Single source of truth for all slippage tiers.
 // Values are used to populate selectableSlippages and to compute suggested slippage.
 export const DYNAMIC_SLIPPAGE_TIERS = [
-  { slippage: "0.2", minPriceImpact: new Dec(0.003), maxLiquidityCap: new Dec(50000) },
-  { slippage: "0.3", minPriceImpact: new Dec(0.006), maxLiquidityCap: new Dec(25000) },
-  { slippage: "0.5", minPriceImpact: new Dec(0.01),  maxLiquidityCap: new Dec(10000) },
-  { slippage: "1.0", minPriceImpact: new Dec(0.03),  maxLiquidityCap: new Dec(3000)  },
-  { slippage: "2.0", minPriceImpact: new Dec(0.05),  maxLiquidityCap: new Dec(1000)  },
-  { slippage: "3.0", minPriceImpact: new Dec(0.10),  maxLiquidityCap: new Dec(300)   },
-  { slippage: "5.0", minPriceImpact: new Dec(0.20),  maxLiquidityCap: new Dec(100)   },
+  {
+    slippage: "0.2",
+    minPriceImpact: new Dec(0.003),
+    maxLiquidityCap: new Dec(50000),
+  },
+  {
+    slippage: "0.3",
+    minPriceImpact: new Dec(0.006),
+    maxLiquidityCap: new Dec(25000),
+  },
+  {
+    slippage: "0.5",
+    minPriceImpact: new Dec(0.01),
+    maxLiquidityCap: new Dec(10000),
+  },
+  {
+    slippage: "1.0",
+    minPriceImpact: new Dec(0.03),
+    maxLiquidityCap: new Dec(3000),
+  },
+  {
+    slippage: "2.0",
+    minPriceImpact: new Dec(0.05),
+    maxLiquidityCap: new Dec(1000),
+  },
+  {
+    slippage: "3.0",
+    minPriceImpact: new Dec(0.1),
+    maxLiquidityCap: new Dec(300),
+  },
+  {
+    slippage: "5.0",
+    minPriceImpact: new Dec(0.2),
+    maxLiquidityCap: new Dec(100),
+  },
 ];
 
 /** Dynamically adjusts slippage for in-given-out quotes up to a maximum of 5% */

@@ -182,11 +182,10 @@ export const ReviewOrder = observer(function ReviewOrder({
     manualSlippage !== ""
       ? manualSlippage
       : presetSlippagePct !== undefined
-        ? presetSlippagePct
-        : isAutoAdjusted && !isEditingSlippage
-          ? autoAdjustedSlippage!
-          : "";
-
+      ? presetSlippagePct
+      : isAutoAdjusted && !isEditingSlippage
+      ? autoAdjustedSlippage!
+      : "";
 
   const isManualSlippageTooHigh =
     (!!displayedSlippage && parseFloat(displayedSlippage) > 25) ||
@@ -211,11 +210,12 @@ export const ReviewOrder = observer(function ReviewOrder({
   // For in-given-out: tokenOutFiatValue falls back to $0 (never undefined), so
   // we must also require minimumOutputUsdNum > 0 to avoid a false positive
   // while the SOL (or other output asset) spot price is still loading.
-const isExtremeValueDisparity =
+  const isExtremeValueDisparity =
     inputUsdNum > 1 &&
     minimumOutputUsdNum > 0 &&
-    (quoteType === "in-given-out" ? expectedOutputFiat : fiatAmountWithSlippage) !==
-      undefined &&
+    (quoteType === "in-given-out"
+      ? expectedOutputFiat
+      : fiatAmountWithSlippage) !== undefined &&
     minimumOutputUsdNum < inputUsdNum * ExtremeValueDisparityThreshold;
 
   useEffect(() => {
@@ -698,7 +698,9 @@ const isExtremeValueDisparity =
                               type="text"
                               inputMode="decimal"
                               minWidth={30}
-                              placeholder={`${autoAdjustedSlippage ?? DefaultSlippage}%`}
+                              placeholder={`${
+                                autoAdjustedSlippage ?? DefaultSlippage
+                              }%`}
                               className="sm:caption w-fit bg-transparent px-0"
                               inputClassName={classNames(
                                 "!bg-transparent focus:text-center text-right placeholder:text-wosmongton-300 transition-all focus-visible:outline-none",
