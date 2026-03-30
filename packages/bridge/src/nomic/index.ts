@@ -118,6 +118,8 @@ export class NomicBridgeProvider implements BridgeProvider {
       });
     }
 
+    const maxSlippage = "0.005";
+
     let swapMessages: Awaited<ReturnType<typeof getSwapMessages>>;
     let swapRoute:
       | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
@@ -135,7 +137,7 @@ export class NomicBridgeProvider implements BridgeProvider {
 
       swapMessages = await getSwapMessages({
         coinAmount: fromAmount,
-        maxSlippage: "0.005",
+        maxSlippage,
         quote: swapRoute,
         tokenInCoinDecimals: fromAsset.decimals,
         tokenInCoinMinimalDenom: fromAsset.address,
@@ -164,11 +166,16 @@ export class NomicBridgeProvider implements BridgeProvider {
     };
     const ibcProvider = new IbcBridgeProvider(this.ctx);
 
+    const swapMinOutputAmount = swapRoute
+      ? new Dec(swapRoute.amount.toCoin().amount)
+          .mul(new Dec(1).sub(new Dec(maxSlippage)))
+          .truncate()
+          .toString()
+      : undefined;
+
     const transactionDataParams: GetBridgeQuoteParams = {
       ...params,
-      fromAmount: !!swapRoute
-        ? swapRoute.amount.toCoin().amount
-        : params.fromAmount,
+      fromAmount: swapMinOutputAmount ?? params.fromAmount,
       fromAsset: nomicBridgeAsset,
       toChain: {
         chainId: nomicChain.chain_id,
@@ -251,11 +258,7 @@ export class NomicBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: (!!swapRoute
-          ? new Dec(swapRoute.amount.toCoin().amount)
-          : new Dec(params.fromAmount)
-        )
-          // Use micro sats because the amount will always be nomic btc which has 14 decimals (micro sats)
+        amount: new Dec(swapMinOutputAmount ?? params.fromAmount)
           .sub(new Dec(transferFeeInMicroSats))
           .toString(),
         ...nomicBridgeAsset,

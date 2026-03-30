@@ -143,6 +143,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
       });
     }
 
+    const maxSlippage = params.slippage?.toString() ?? "0.005";
+
     let swapMessages: Awaited<ReturnType<typeof getSwapMessages>>;
     let swapRoute:
       | Awaited<ReturnType<typeof getRouteTokenOutGivenIn>>
@@ -162,7 +164,7 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
       swapMessages = await getSwapMessages({
         coinAmount: fromAmount,
-        maxSlippage: params.slippage?.toString() ?? "0.005",
+        maxSlippage,
         quote: swapRoute,
         tokenInCoinDecimals: fromAsset.decimals,
         tokenInCoinMinimalDenom: fromAsset.address,
@@ -193,11 +195,16 @@ export class Int3faceBridgeProvider implements BridgeProvider {
 
     const ibcProvider = new IbcBridgeProvider(this.ctx);
 
+    const swapMinOutputAmount = swapRoute
+      ? new Dec(swapRoute.amount.toCoin().amount)
+          .mul(new Dec(1).sub(new Dec(maxSlippage)))
+          .truncate()
+          .toString()
+      : undefined;
+
     const transactionDataParams: GetBridgeQuoteParams = {
       ...params,
-      fromAmount: !!swapRoute
-        ? swapRoute.amount.toCoin().amount
-        : params.fromAmount,
+      fromAmount: swapMinOutputAmount ?? params.fromAmount,
       fromAsset: int3faceBridgeAsset,
       toChain: {
         chainId: int3faceChain.chain_id,
@@ -268,9 +275,8 @@ export class Int3faceBridgeProvider implements BridgeProvider {
         ...params.fromAsset,
       },
       expectedOutput: {
-        amount: (!!swapRoute
-          ? new Dec(swapRoute.amount.toCoin().amount)
-          : new Dec(params.fromAmount)
+        amount: new Dec(
+          swapMinOutputAmount ?? params.fromAmount
         ).toString(),
         ...int3faceBridgeAsset,
         denom: tokenConfig.denom,
