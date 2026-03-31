@@ -1,7 +1,7 @@
 import { queryTx, Tx, TxEvent } from "@osmosis-labs/server";
 import { PollingStatusSubscription, TxTracer } from "@osmosis-labs/tx";
 import { AssetList, Chain } from "@osmosis-labs/types";
-import { ChainIdHelper } from "@osmosis-labs/utils";
+import { ChainIdHelper, createMultiEndpointClient } from "@osmosis-labs/utils";
 
 import {
   TransferStatus,
@@ -111,7 +111,33 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     sequence: string;
     sendTxHash: string;
   }): Promise<void> {
-    const destBlockSubscriber = this.getBlockSubscriber(destChainId);
+    // Pre-probe destination RPCs to find a working endpoint.
+    // The hedged HTTP call is fast (~1-2s); TxTracer will connect to the
+    // winning endpoint's WebSocket immediately instead of burning minutes
+    // on dead endpoints.
+    const destRpcUrls = this.getChainRpcUrls(destChainId);
+    let sortedDestUrls = destRpcUrls;
+    let probeSucceeded = false;
+    try {
+      const client = createMultiEndpointClient(
+        destRpcUrls.map((url) => ({ address: url }))
+      );
+      const { endpointAddress } = await client.fetchWithEndpoint("/status");
+      sortedDestUrls = [
+        endpointAddress,
+        ...destRpcUrls.filter((u) => u !== endpointAddress),
+      ];
+      probeSucceeded = true;
+    } catch {
+      console.warn(
+        `[IbcTransferStatus] Pre-probe failed for ${destChainId}, using default endpoint order`
+      );
+    }
+
+    const destBlockSubscriber = this.getBlockSubscriber(
+      destChainId,
+      probeSucceeded ? sortedDestUrls : undefined
+    );
     const subscriptions: Promise<
       "timeout" | "received" | "connection-error"
     >[] = [];
@@ -155,7 +181,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
       })
     );
 
-    const packetReceivedTracer = new TxTracer(this.getChainRpcUrl(destChainId));
+    const packetReceivedTracer = new TxTracer(sortedDestUrls);
     const receivedPromise = packetReceivedTracer
       .traceTx({
         // Should use the dst channel.
@@ -185,7 +211,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     }
 
     // If the packet timed out, wait until the packet timeout sent to the source chain.
-    const timeoutTracer = new TxTracer(this.getChainRpcUrl(sourceChainId));
+    const timeoutTracer = new TxTracer(this.getChainRpcUrls(sourceChainId));
     await timeoutTracer
       .traceTx({
         "timeout_packet.packet_src_channel": sourceChannelId,
@@ -240,30 +266,46 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     };
   }
 
-  protected getBlockSubscriber(chainId: string): PollingStatusSubscription {
-    if (!this.blockSubscriberMap.has(chainId)) {
+  /**
+   * Returns (or lazily creates) a shared block-polling subscription for `chainId`.
+   * If `rpcUrls` is provided (e.g. from a pre-probe), any existing cached subscriber
+   * is replaced so the sorted endpoint order takes effect.
+   * @param rpcUrls - Optional pre-sorted RPC URLs; uses chain registry order if omitted.
+   */
+  protected getBlockSubscriber(
+    chainId: string,
+    rpcUrls?: string[]
+  ): PollingStatusSubscription {
+    if (rpcUrls) {
+      // Pre-probe produced a sorted list — replace any stale cached subscriber
+      // so TxTracer and the polling subscriber both use the same winning endpoint.
       this.blockSubscriberMap.set(
         chainId,
-        new PollingStatusSubscription(this.getChainRpcUrl(chainId))
+        new PollingStatusSubscription(rpcUrls)
+      );
+    } else if (!this.blockSubscriberMap.has(chainId)) {
+      this.blockSubscriberMap.set(
+        chainId,
+        new PollingStatusSubscription(this.getChainRpcUrls(chainId))
       );
     }
 
     return this.blockSubscriberMap.get(chainId)!;
   }
 
-  protected getChainRpcUrl(chainId: string): string {
+  protected getChainRpcUrls(chainId: string): string[] {
     const chain = this.chainList.find((chain) => chain.chain_id === chainId);
     if (!chain) {
       throw new Error("Chain not found: " + chainId);
     }
 
-    const rpc = chain.apis.rpc[0].address;
+    const urls = chain.apis.rpc.map((rpc) => rpc.address).filter(Boolean);
 
-    if (!rpc) {
-      throw new Error("RPC address not found for chain: " + chainId);
+    if (urls.length === 0) {
+      throw new Error("No RPC addresses found for chain: " + chainId);
     }
 
-    return rpc;
+    return urls;
   }
 
   /** Sends a status to the receiver with prefix key prepended. */
