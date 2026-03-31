@@ -18,13 +18,7 @@
     "priceImpact": "가격 영향"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "1단계: 전략 선택",
-    "step2Title": "2단계: 유동성 추가",
-    "managed": "관리",
-    "managedDescription": "귀하의 직책을 관리할 제공자 중 하나를 선택하십시오. 완전히 손을 떼는 경험.",
-    "manual": "수동",
-    "manualDescription": "효율성과 보상을 최대화하기 위해 정기적으로 관리할 수 있는 위치를 만듭니다.",
-    "back": "뒤쪽에",
+    "step1Title": "유동성 추가",
     "priceShownIn": "표시된 가격",
     "priceRange": "가격 범위",
     "currentPrice": "현재 가격",

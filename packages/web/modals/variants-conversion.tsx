@@ -8,10 +8,10 @@ import { create } from "zustand";
 
 // Import useTranslation
 import { Icon } from "~/components/assets";
-import { EntityImage } from "~/components/ui/entity-image";
 import { SkeletonLoader } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { EventName } from "~/config";
 import {

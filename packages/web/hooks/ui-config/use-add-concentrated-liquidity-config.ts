@@ -292,7 +292,7 @@ export class ObservableAddConcentratedLiquidityConfig {
 	 Used to get current view type of AddConcLiquidity modal
 	 */
   @observable
-  protected _modalView: "overview" | "add_manual" | "add_managed" = "overview";
+  protected _modalView: "add_manual" = "add_manual";
 
   /*
    Used to get min and max range for adding concentrated liquidity
@@ -384,7 +384,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._sender;
   }
 
-  get modalView(): "overview" | "add_manual" | "add_managed" {
+  get modalView(): "add_manual" {
     return this._modalView;
   }
 
@@ -1032,9 +1032,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   }
 
   @action
-  readonly setModalView = (
-    viewType: "overview" | "add_manual" | "add_managed"
-  ) => {
+  readonly setModalView = (viewType: "add_manual") => {
     this._modalView = viewType;
   };
 

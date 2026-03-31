@@ -18,13 +18,7 @@
     "priceImpact": "Price Impact"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Step 1: Pick a strategy",
-    "step2Title": "Step 2: Add Liquidity",
-    "managed": "Managed",
-    "managedDescription": "Enlist a community liquidity manager to actively manage your position through Magma vaults.",
-    "manual": "Manual",
-    "manualDescription": "Create a position which you can regularly manage for maximum efficiency and rewards.",
-    "back": "Back",
+    "step1Title": "Add Liquidity",
     "priceShownIn": "Prices shown in {quote} per {base}",
     "priceRange": "Price Range",
     "currentPrice": "current price",

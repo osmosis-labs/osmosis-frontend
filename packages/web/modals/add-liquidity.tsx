@@ -1,8 +1,8 @@
+import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import {
   NotInitializedError,
   ObservableAddLiquidityConfig,
 } from "@osmosis-labs/stores";
-import type { ConcentratedPoolRawResponse } from "@osmosis-labs/server";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent } from "react";

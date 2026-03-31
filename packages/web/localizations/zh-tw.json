@@ -18,13 +18,7 @@
     "priceImpact": "價格影響"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "第 1 步：選擇策略",
-    "step2Title": "第二步：增加流動性",
-    "managed": "管理",
-    "managedDescription": "聘請我們的一位供應商來管理您的職位。完全不干涉的體驗。",
-    "manual": "手動的",
-    "manualDescription": "創建一個您可以定期管理的職位，以獲得最大的效率和回報。",
-    "back": "後退",
+    "step1Title": "增加流動性",
     "priceShownIn": "價格顯示於",
     "priceRange": "價格範圍",
     "currentPrice": "時價",
