@@ -117,6 +117,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
     // on dead endpoints.
     const destRpcUrls = this.getChainRpcUrls(destChainId);
     let sortedDestUrls = destRpcUrls;
+    let probeSucceeded = false;
     try {
       const client = createMultiEndpointClient(
         destRpcUrls.map((url) => ({ address: url }))
@@ -126,6 +127,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
         endpointAddress,
         ...destRpcUrls.filter((u) => u !== endpointAddress),
       ];
+      probeSucceeded = true;
     } catch {
       console.warn(
         `[IbcTransferStatus] Pre-probe failed for ${destChainId}, using default endpoint order`
@@ -134,7 +136,7 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
     const destBlockSubscriber = this.getBlockSubscriber(
       destChainId,
-      sortedDestUrls
+      probeSucceeded ? sortedDestUrls : undefined
     );
     const subscriptions: Promise<
       "timeout" | "received" | "connection-error"

@@ -50,9 +50,13 @@ export class MultiEndpointClient {
       throw new Error("At least one endpoint must be provided");
     }
 
-    this.endpoints = [...endpoints].sort(
-      (a, b) => (b.priority ?? 0) - (a.priority ?? 0)
-    );
+    this.endpoints = endpoints
+      .map((endpoint, index) => ({ endpoint, index }))
+      .sort((a, b) => {
+        const diff = (b.endpoint.priority ?? 0) - (a.endpoint.priority ?? 0);
+        return diff !== 0 ? diff : a.index - b.index;
+      })
+      .map(({ endpoint }) => endpoint);
 
     this.timeout = options.timeout ?? 3000;
     this.hedgeDelay = options.hedgeDelay ?? 1000;

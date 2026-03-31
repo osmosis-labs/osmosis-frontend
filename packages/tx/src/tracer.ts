@@ -157,13 +157,13 @@ export class TxTracer {
     this.reconnectAttempts++;
 
     // Check if we should try the next endpoint
-    if (this.reconnectAttempts > this.maxReconnectAttempts) {
-      this.reconnectAttempts = 0;
+    if (this.reconnectAttempts >= this.maxReconnectAttempts) {
       const previousIndex = this.currentUrlIndex;
       this.currentUrlIndex = (this.currentUrlIndex + 1) % this.urls.length;
+      this.reconnectAttempts = 1;
 
       // If we've wrapped back to the first endpoint, that's one full cycle
-      if (this.currentUrlIndex === 0 && this.urls.length > 1) {
+      if (this.currentUrlIndex === 0) {
         this.cycleCount++;
 
         if (this.cycleCount >= this.maxCycles) {
