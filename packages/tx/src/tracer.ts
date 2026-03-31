@@ -120,7 +120,9 @@ export class TxTracer {
 
   open() {
     const wsUrl = this.getWsEndpoint();
-    console.log(`[TxTracer] Connecting to WebSocket: ${wsUrl}`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[TxTracer] Connecting to WebSocket: ${wsUrl}`);
+    }
 
     this.ws = this.options.wsObject
       ? new this.options.wsObject(wsUrl)
@@ -146,7 +148,9 @@ export class TxTracer {
    */
   protected reconnect() {
     if (this.isManualClose) {
-      console.log("[TxTracer] Manual close, not reconnecting");
+      if (process.env.NODE_ENV !== "production") {
+        console.log("[TxTracer] Manual close, not reconnecting");
+      }
       return;
     }
 
@@ -196,10 +200,12 @@ export class TxTracer {
       8000
     );
 
-    console.log(
-      `[TxTracer] Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} ` +
-        `for endpoint ${this.currentUrlIndex} in ${backoffDelay}ms`
-    );
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `[TxTracer] Reconnect attempt ${this.reconnectAttempts}/${this.maxReconnectAttempts} ` +
+          `for endpoint ${this.currentUrlIndex} in ${backoffDelay}ms`
+      );
+    }
 
     this.reconnectTimeoutId = setTimeout(() => {
       this.open();
@@ -244,7 +250,9 @@ export class TxTracer {
   }
 
   protected readonly onOpen = (e: Event) => {
-    console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
+    }
 
     // Reset reconnect state on successful connection
     this.reconnectAttempts = 0;
