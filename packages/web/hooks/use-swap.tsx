@@ -765,7 +765,13 @@ export function useSwap(
       positivePrevQuoteRef.current = quote;
     }
   });
-  const positivePrevQuote = positivePrevQuoteRef.current;
+  // Only serve the cached quote when it belongs to the current mode.
+  // The effect above clears the ref after render; this guard covers the
+  // one-render gap before that effect fires on a quoteType switch.
+  const positivePrevQuote =
+    prevQuoteTypeForCacheRef.current === quoteType
+      ? positivePrevQuoteRef.current
+      : undefined;
 
   const quoteBaseOutSpotPrice = useMemo(() => {
     // get in/out spot price from quote if user requested a quote
