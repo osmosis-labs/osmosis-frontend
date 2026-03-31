@@ -317,13 +317,15 @@ const AssetHighlightRow: FunctionComponent<{
   const AssetContent = (
     <>
       <div className="flex items-center gap-2">
-        <EntityImage
-          symbol={coinDenom}
-          name={coinName}
-          logoURIs={logoURIs}
-          width={32}
-          height={32}
-        />
+        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+          <EntityImage
+            symbol={coinDenom}
+            name={coinName}
+            logoURIs={logoURIs}
+            width={32}
+            height={32}
+          />
+        </div>
         <span className="body2 max-w-[7rem] overflow-clip text-ellipsis whitespace-nowrap">
           {coinName}
         </span>

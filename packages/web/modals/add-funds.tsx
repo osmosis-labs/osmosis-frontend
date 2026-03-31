@@ -212,15 +212,17 @@ export function AddFundsModal({
               }}
               className="flex items-center gap-4 rounded-2xl p-4 text-left transition-colors hover:bg-osmoverse-900"
             >
-              <EntityImage
-                logoURIs={{
-                  png: fromAsset?.coinImageUrl,
-                }}
-                name={fromAsset?.coinName ?? ""}
-                symbol={fromAsset?.coinDenom ?? ""}
-                width={48}
-                height={48}
-              />
+              <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                <EntityImage
+                  logoURIs={{
+                    png: fromAsset?.coinImageUrl,
+                  }}
+                  name={fromAsset?.coinName ?? ""}
+                  symbol={fromAsset?.coinDenom ?? ""}
+                  width={48}
+                  height={48}
+                />
+              </div>
               <div className="flex w-full flex-col gap-1">
                 <span className="subtitle1">
                   {t("limitOrders.buy")} {fromAsset?.coinDenom}

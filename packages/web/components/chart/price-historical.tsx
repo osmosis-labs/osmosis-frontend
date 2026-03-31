@@ -330,7 +330,8 @@ export const PriceChartHeader: FunctionComponent<{
                 {fiatSymbol}
                 {compactZeros ? (
                   <>
-                    {significantDigits}.
+                    {significantDigits}
+                    {(decimalDigits || Boolean(zeros)) && "."}
                     {Boolean(zeros) && (
                       <>
                         0<sub title={`${getFormattedPrice()}USD`}>{zeros}</sub>
@@ -471,7 +472,8 @@ export const SubscriptDecimal: FunctionComponent<{
 
   return (
     <>
-      {significantDigits}.
+      {significantDigits}
+      {(decimalDigits || Boolean(zeros)) && "."}
       {Boolean(zeros) && (
         <>
           0<sub title={getFormattedPrice()}>{zeros}</sub>

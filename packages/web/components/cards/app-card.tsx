@@ -71,9 +71,9 @@ export const AppCard: FunctionComponent<{
             </h1>
             <div className="flex items-center gap-2">
               {!!twitterUrl && (
-                <IconLink url={twitterUrl} ariaLabel="Twitter">
+                <IconLink url={twitterUrl} ariaLabel="X">
                   <Icon
-                    id="twitter"
+                    id="X"
                     height="14px"
                     width="14px"
                     className="fill-osmoverse-400"

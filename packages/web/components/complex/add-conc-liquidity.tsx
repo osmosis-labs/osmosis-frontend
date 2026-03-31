@@ -87,8 +87,9 @@ const AddConcLiqView: FunctionComponent<
     pool?: Pool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
+    isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool }) => {
+> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -108,13 +109,23 @@ const AddConcLiqView: FunctionComponent<
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
+    setFullRange,
   } = addLiquidityConfig;
 
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
+  const hasInitializedInactivePool = useRef(false);
 
   const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
+
+  // Default to passive strategy for inactive pools (only on mount)
+  useEffect(() => {
+    if (isInactivePool && !fullRange && !hasInitializedInactivePool.current) {
+      setFullRange(true);
+      hasInitializedInactivePool.current = true;
+    }
+  }, [isInactivePool, fullRange, setFullRange]);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
@@ -281,6 +292,7 @@ const AddConcLiqView: FunctionComponent<
       <StrategySelectorGroup
         addLiquidityConfig={addLiquidityConfig}
         highSpotPriceInputRef={highSpotPriceInputRef}
+        isInactivePool={isInactivePool}
       />
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
@@ -423,6 +435,7 @@ const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
+    isInactivePool?: boolean;
   } & CustomClasses
 > = observer((props) => {
   const { t } = useTranslation();
@@ -462,6 +475,7 @@ const StrategySelectorGroup: FunctionComponent<
           label="Custom"
           className="sm:order-4 sm:w-full"
           highSpotPriceInputRef={props.highSpotPriceInputRef}
+          disabledForInactivePool={false}
         />
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
@@ -470,6 +484,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
+            disabledForInactivePool={false}
           />
           <PresetStrategyCard
             type="moderate"
@@ -477,6 +492,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
           <PresetStrategyCard
             type="aggressive"
@@ -484,6 +500,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
         </div>
       </div>
@@ -500,6 +517,7 @@ const PresetStrategyCard: FunctionComponent<
     width?: number;
     height?: number;
     highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
+    disabledForInactivePool?: boolean;
   } & CustomClasses
 > = observer(
   ({
@@ -511,6 +529,7 @@ const PresetStrategyCard: FunctionComponent<
     addLiquidityConfig,
     className,
     highSpotPriceInputRef,
+    disabledForInactivePool,
   }) => {
     const {
       currentStrategy,
@@ -525,12 +544,8 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
-    /** Disabled of aggressive price range is the same.
-     *  This can happen with pools with pegged currencies with very concentrated liq. */
-    const disabled =
-      "moderate" === type &&
-      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
-      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+    /** Disabled for inactive pools (to force passive and custom strategies only). */
+    const disabled = disabledForInactivePool === true;
 
     const isSelected = type === currentStrategy;
 
@@ -582,20 +597,27 @@ const PresetStrategyCard: FunctionComponent<
       }
     };
 
-    // not an option
-    if (disabled) return null;
+    // Check if disabled for pegged currencies (hide completely)
+    const disabledForPeggedCurrencies =
+      "moderate" === type &&
+      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
+      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+
+    // not an option for pegged currencies
+    if (disabledForPeggedCurrencies) return null;
 
     return (
       <div
         className={classNames(
-          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
+          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
-            "bg-supercharged": isSelected,
-            "cursor-not-allowed opacity-30": disabled,
+            "cursor-pointer hover:bg-supercharged": !disabled,
+            "bg-supercharged": isSelected && !disabled,
+            "cursor-not-allowed opacity-40": disabled,
           },
           className
         )}
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div

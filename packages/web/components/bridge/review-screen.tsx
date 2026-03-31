@@ -297,15 +297,17 @@ const AssetBox: FunctionComponent<{
     <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
       <div className="flex place-content-between items-center p-6 md:p-3">
         <div className="flex items-center gap-4 md:gap-2">
-          <EntityImage
-            logoURIs={{
-              png: assetImageUrl,
-            }}
-            name={coin.denom}
-            symbol={coin.denom}
-            width={isMobile ? 32 : 48}
-            height={isMobile ? 32 : 48}
-          />
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
+            <EntityImage
+              logoURIs={{
+                png: assetImageUrl,
+              }}
+              name={coin.denom}
+              symbol={coin.denom}
+              width={isMobile ? 32 : 48}
+              height={isMobile ? 32 : 48}
+            />
+          </div>
           <div className="md:flex md:flex-col md:gap-1">
             <div className="md:body2 text-h6 font-h6">
               {t(type === "from" ? "transfer.transfer" : "transfer.receive", {

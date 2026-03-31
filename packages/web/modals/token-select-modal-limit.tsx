@@ -274,7 +274,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               onClickAsset(coinMinimalDenom);
                             }}
                           >
-                            <div className="h-6 w-6 rounded-full">
+                            <div className="h-6 w-6 overflow-hidden rounded-full">
                               <EntityImage
                                 symbol={coinDenom}
                                 name={coinDenom}
@@ -345,7 +345,7 @@ export const TokenSelectModalLimit: FunctionComponent<TokenSelectModalLimitProps
                               )}
                             >
                               <div className="flex min-w-0 items-center gap-4">
-                                <div className="h-12 w-12 shrink-0 rounded-full">
+                                <div className="h-12 w-12 shrink-0 overflow-hidden rounded-full">
                                   <EntityImage
                                     symbol={coinDenom}
                                     name={coinDenom}

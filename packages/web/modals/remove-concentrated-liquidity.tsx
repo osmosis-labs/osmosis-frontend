@@ -206,15 +206,17 @@ const AssetAmount: FunctionComponent<{
       className
     )}
   >
-    <EntityImage
-      logoURIs={{
-        png: amount.currency.coinImageUrl,
-      }}
-      name={amount.currency.coinDenom}
-      symbol={amount.currency.coinDenom}
-      height={24}
-      width={24}
-    />
+    <div className="h-6 w-6 shrink-0 overflow-hidden rounded-full">
+      <EntityImage
+        logoURIs={{
+          png: amount.currency.coinImageUrl,
+        }}
+        name={amount.currency.coinDenom}
+        symbol={amount.currency.coinDenom}
+        height={24}
+        width={24}
+      />
+    </div>
     <span>{formatPretty(amount, { maxDecimals: 2 })}</span>
   </div>
 );

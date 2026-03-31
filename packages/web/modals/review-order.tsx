@@ -386,16 +386,17 @@ export function ReviewOrder({
             >
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
-                  <EntityImage
-                    logoURIs={{
-                      png: fromAsset?.coinImageUrl,
-                    }}
-                    name={fromAsset?.coinDenom ?? ""}
-                    symbol={fromAsset?.coinDenom ?? ""}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10"
-                  />
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={{
+                        png: fromAsset?.coinImageUrl,
+                      }}
+                      name={fromAsset?.coinDenom ?? ""}
+                      symbol={fromAsset?.coinDenom ?? ""}
+                      width={40}
+                      height={40}
+                    />
+                  </div>
                   <div className="flex flex-col">
                     <p className="sm:caption text-osmoverse-300">
                       {tab === "buy"
@@ -428,16 +429,17 @@ export function ReviewOrder({
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
                   {toAsset && (
-                    <EntityImage
-                      logoURIs={{
-                        png: toAsset.coinImageUrl,
-                      }}
-                      name={toAsset.coinName}
-                      symbol={toAsset.coinDenom}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10"
-                    />
+                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                      <EntityImage
+                        logoURIs={{
+                          png: toAsset.coinImageUrl,
+                        }}
+                        name={toAsset.coinName}
+                        symbol={toAsset.coinDenom}
+                        width={40}
+                        height={40}
+                      />
+                    </div>
                   )}
                   <div className="flex flex-col">
                     <p className="sm:caption text-osmoverse-300">
