@@ -1814,10 +1814,7 @@ export function useDynamicSlippageConfig({
 }
 
 /** Computes the suggested slippage tier from a quote (pure, no side effects). */
-function computeSuggestedSlippage(
-  quote: SwapState["quote"],
-  quoteType: QuoteDirection = "out-given-in"
-): string {
+function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   if (!quote) return DefaultSlippage;
 
   const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
@@ -1861,7 +1858,7 @@ export function useDynamicSlippageFromQuote({
   // Synchronously compute the display value from the current quote so it updates
   // in the same React render cycle as the quote/gas display, not one cycle later.
   const autoAdjustedSlippage = useMemo(
-    () => computeSuggestedSlippage(quote, quoteType),
+    () => computeSuggestedSlippage(quote),
     [quote, quoteType]
   );
 
@@ -1883,7 +1880,7 @@ export function useDynamicSlippageFromQuote({
     // dedicated flag that review-order sets when the user edits the field.
     if (slippageConfig.userOverrodeSlippage) return;
 
-    const suggested = computeSuggestedSlippage(quote, quoteType);
+    const suggested = computeSuggestedSlippage(quote);
 
     // Skip the write if the suggestion is unchanged (avoids a MobX reaction cycle)
     if (suggested === lastAutoSet.current) return;
