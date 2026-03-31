@@ -266,16 +266,25 @@ export class IbcTransferStatusProvider implements TransferStatusProvider {
 
   /**
    * Returns (or lazily creates) a shared block-polling subscription for `chainId`.
+   * If `rpcUrls` is provided (e.g. from a pre-probe), any existing cached subscriber
+   * is replaced so the sorted endpoint order takes effect.
    * @param rpcUrls - Optional pre-sorted RPC URLs; uses chain registry order if omitted.
    */
   protected getBlockSubscriber(
     chainId: string,
     rpcUrls?: string[]
   ): PollingStatusSubscription {
-    if (!this.blockSubscriberMap.has(chainId)) {
+    if (rpcUrls) {
+      // Pre-probe produced a sorted list — replace any stale cached subscriber
+      // so TxTracer and the polling subscriber both use the same winning endpoint.
       this.blockSubscriberMap.set(
         chainId,
-        new PollingStatusSubscription(rpcUrls ?? this.getChainRpcUrls(chainId))
+        new PollingStatusSubscription(rpcUrls)
+      );
+    } else if (!this.blockSubscriberMap.has(chainId)) {
+      this.blockSubscriberMap.set(
+        chainId,
+        new PollingStatusSubscription(this.getChainRpcUrls(chainId))
       );
     }
 
