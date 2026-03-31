@@ -18,13 +18,7 @@
     "priceImpact": "Fiyat Etkisi"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "1. Adım: Bir strateji seçin",
-    "step2Title": "2. Adım: Likidite Ekleyin",
-    "managed": "Yönetilen",
-    "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
-    "manual": "Manuel",
-    "manualDescription": "Maksimum verimlilik ve ödüller için düzenli olarak yönetebileceğiniz bir pozisyon oluşturun.",
-    "back": "Geri",
+    "step1Title": "Likidite Ekleyin",
     "priceShownIn": "Gösterilen fiyatlar",
     "priceRange": "Fiyat aralığı",
     "currentPrice": "Mevcut fiyat",

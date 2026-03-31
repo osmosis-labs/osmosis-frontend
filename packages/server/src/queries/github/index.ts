@@ -1,3 +1,4 @@
+export * from "./app-store";
 export * from "./chains";
 export * from "./file";
 export * from "./latest-commit-hash";

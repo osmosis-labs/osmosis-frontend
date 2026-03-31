@@ -18,13 +18,7 @@
     "priceImpact": "Impacto en el precio"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Paso 1: elige una estrategia",
-    "step2Title": "Paso 2: Añadir Liquidez",
-    "managed": "Administrado",
-    "managedDescription": "Reclute a uno de nuestros proveedores para administrar su posición. Una experiencia completamente libre.",
-    "manual": "Manual",
-    "manualDescription": "Cree una posición que pueda administrar regularmente para obtener la máxima eficiencia y recompensas.",
-    "back": "Atrás",
+    "step1Title": "Añadir Liquidez",
     "priceShownIn": "Precios mostrados en",
     "priceRange": "Rango de precios",
     "currentPrice": "precio actual",

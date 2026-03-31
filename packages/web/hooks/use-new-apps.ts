@@ -1,36 +1,36 @@
 import dayjs from "dayjs";
-import { useMemo } from "react";
 
-import {
-  App,
-  OsmosisAppListFilePath,
-  OsmosisAppListRepoName,
-} from "~/pages/apps";
-import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
+
+const NEW_APPS_STALE_TIME_MS = 1000 * 60 * 60;
+const emptyResult = {
+  allApps: [],
+  newApps: [],
+};
 
 export function useNewApps() {
-  const { queriesExternalStore } = useStore();
+  const { data } = api.local.cms.getAppStore.useQuery(undefined, {
+    staleTime: NEW_APPS_STALE_TIME_MS,
+    retry: false,
+    select: ({ applications }) => {
+      const allApps = applications ?? [];
+      const newApps = allApps.filter((app) => {
+        if (app?.internal_data?.project_listing_date === undefined)
+          return false;
+        return (
+          dayjs().diff(
+            dayjs(app?.internal_data?.project_listing_date),
+            "days"
+          ) <= 31
+        );
+      });
 
-  const currentFile = queriesExternalStore.queryGitHubFile.getFile<{
-    applications: App[];
-  }>({
-    repo: OsmosisAppListRepoName,
-    filePath: OsmosisAppListFilePath,
+      return {
+        allApps,
+        newApps,
+      };
+    },
   });
 
-  const newApps = useMemo(() => {
-    if (currentFile.response?.data.applications === undefined) {
-      return [];
-    }
-
-    return currentFile.response?.data.applications.filter((app) => {
-      if (app?.internal_data?.project_listing_date === undefined) return false;
-      return (
-        dayjs().diff(dayjs(app?.internal_data?.project_listing_date), "days") <=
-        31
-      );
-    });
-  }, [currentFile.response?.data.applications]);
-
-  return { newApps, allApps: currentFile.response?.data.applications ?? [] };
+  return data ?? emptyResult;
 }

@@ -18,13 +18,7 @@
     "priceImpact": "Impactul prețului"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Pasul 1: Alegeți o strategie",
-    "step2Title": "Pasul 2: Adăugați lichiditate",
-    "managed": "A reușit",
-    "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
-    "manual": "Manual",
-    "manualDescription": "Creați o poziție pe care o puteți gestiona în mod regulat pentru eficiență și recompense maxime.",
-    "back": "Înapoi",
+    "step1Title": "Adăugați lichiditate",
     "priceShownIn": "Prețurile afișate în",
     "priceRange": "Gama de prețuri",
     "currentPrice": "pretul curent",

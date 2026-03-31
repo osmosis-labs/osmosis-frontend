@@ -6,13 +6,8 @@ import {
   ObservableQueryIncentivizedPools,
   QueriesExternalStore as OsmosisQueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { DeepReadonly } from "utility-types";
-
-import { ObservableQueryFile } from "~/stores/queries-external/github";
 
 export class QueriesExternalStore extends OsmosisQueriesExternalStore {
-  public readonly queryGitHubFile: DeepReadonly<ObservableQueryFile>;
-
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
@@ -35,7 +30,5 @@ export class QueriesExternalStore extends OsmosisQueriesExternalStore {
       timeseriesDataBaseUrl,
       indexerDataBaseUrl
     );
-
-    this.queryGitHubFile = new ObservableQueryFile(kvStore);
   }
 }
