@@ -1372,29 +1372,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const restUrls = this.getChainRestUrls(wallet);
 
+    // Pick the best available REST endpoint: use the pre-probed winning endpoint
+    // if multiple are available, otherwise fall back to the wallet's default.
+    let endpoint: string;
     if (restUrls.length > 1) {
-      // Hedged: try all REST endpoints, first success wins
-      const client = createMultiEndpointClient(
-        restUrls.map((url) => ({ address: url }))
-      );
-      const { data } = await client.fetchWithEndpoint<{
-        account: {
-          account_number: string;
-          sequence: string;
-          "@type"?: string;
-          base_account?: { account_number: string; sequence: string };
-        };
-      }>(`/cosmos/auth/v1beta1/accounts/${address}`);
-
-      const acct = data.account?.base_account ?? data.account;
-      return {
-        accountNumber: parseInt(acct.account_number, 10),
-        sequence: parseInt(acct.sequence, 10),
-      };
+      try {
+        const client = createMultiEndpointClient(
+          restUrls.map((url) => ({ address: url }))
+        );
+        const { endpointAddress } = await client.fetchWithEndpoint(
+          `/cosmos/auth/v1beta1/accounts/${address}`
+        );
+        endpoint = endpointAddress;
+      } catch {
+        endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
+      }
+    } else {
+      endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
     }
 
-    // Single endpoint — fall back to wallet endpoint + BaseAccount parser
-    const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
     if (!endpoint) {
       throw new Error("Endpoint is not provided");
     }
