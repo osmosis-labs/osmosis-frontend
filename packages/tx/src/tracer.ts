@@ -65,6 +65,9 @@ export class TxTracer {
   protected maxReconnectAttempts: number = 3;
   protected reconnectTimeoutId?: NodeJS.Timeout;
   protected isManualClose: boolean = false;
+  /** Total number of full endpoint cycles completed. Stops reconnecting after maxCycles. */
+  protected cycleCount: number = 0;
+  protected readonly maxCycles: number = 3;
 
   /**
    * @param url - Single RPC URL or array of RPC URLs for multi-endpoint failover.
@@ -155,12 +158,27 @@ export class TxTracer {
       const previousIndex = this.currentUrlIndex;
       this.currentUrlIndex = (this.currentUrlIndex + 1) % this.urls.length;
 
-      // If we've tried all endpoints, wait longer before cycling again
+      // If we've wrapped back to the first endpoint, that's one full cycle
       if (this.currentUrlIndex === 0 && this.urls.length > 1) {
+        this.cycleCount++;
+
+        if (this.cycleCount >= this.maxCycles) {
+          console.error(
+            `[TxTracer] All ${this.urls.length} endpoints failed after ${this.maxCycles} cycle(s). Giving up.`
+          );
+          const error = new Error(
+            `TxTracer: all ${this.urls.length} RPC endpoints failed after ${this.maxCycles} cycle(s)`
+          );
+          for (const [, tx] of this.txSubscribes) tx.rejector(error);
+          for (const [, q] of this.pendingQueries) q.rejector(error);
+          this.txSubscribes.clear();
+          this.pendingQueries.clear();
+          return;
+        }
+
         console.warn(
-          `[TxTracer] All ${this.urls.length} endpoints failed. Cycling back to first endpoint after delay.`
+          `[TxTracer] All ${this.urls.length} endpoints failed (cycle ${this.cycleCount}/${this.maxCycles}). Retrying from first endpoint after delay.`
         );
-        // Wait 10 seconds before trying all endpoints again
         this.reconnectTimeoutId = setTimeout(() => {
           this.open();
         }, 10000);
@@ -228,8 +246,9 @@ export class TxTracer {
   protected readonly onOpen = (e: Event) => {
     console.log(`[TxTracer] WebSocket connected successfully to ${this.url}`);
 
-    // Reset reconnect attempts on successful connection
+    // Reset reconnect state on successful connection
     this.reconnectAttempts = 0;
+    this.cycleCount = 0;
     this.isManualClose = false;
 
     if (this.newBlockSubscribes.length > 0) {
