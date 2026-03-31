@@ -234,6 +234,7 @@ export const ReviewOrder = observer(function ReviewOrder({
       // opens with a clean state — ReactModal doesn't unmount on close.
       setQuoteBaseline(amountWithSlippage ?? new IntPretty(0));
       setManualSlippage("");
+      setHasAcknowledgedDisparity(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
