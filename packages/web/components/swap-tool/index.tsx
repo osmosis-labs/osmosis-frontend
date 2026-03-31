@@ -160,14 +160,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const outputDifference = useMemo(() => {
       if (quoteType === "in-given-out") {
-        // For in-given-out, priceImpactTokenOut is copied from the underlying
-        // out-given-in computation run in the reverse (sell) direction. Its sign
-        // is inverted relative to the buyer: a negative value means the seller
-        // gets less than pool spot, i.e. the buyer pays less — which the oracle
-        // comparison would show as a spurious "+" gain. Negate it so the display
-        // reflects the actual AMM cost from the buyer's perspective.
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1 and is always
+        // positive for adverse impact regardless of quote direction.
         return new RatePretty(
-          swapState.quote?.priceImpactTokenOut?.toDec().neg() ?? new Dec(0)
+          swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)
         );
       }
       return new RatePretty(

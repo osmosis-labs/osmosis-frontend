@@ -1821,18 +1821,11 @@ function computeSuggestedSlippage(
   if (!quote) return DefaultSlippage;
 
   const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
-  // For out-given-in, adverse impact is negative (user receives less) → take abs.
-  // Positive (favorable) impact is clamped to zero so it does not inflate slippage.
-  // For in-given-out, adverse impact is positive (user pays more); a negative value
-  // means a favorable trade and must NOT be treated as adverse.
-  const priceImpact =
-    quoteType === "in-given-out"
-      ? rawImpact.isPositive()
-        ? rawImpact
-        : new Dec(0)
-      : rawImpact.isNegative()
-      ? rawImpact.abs()
-      : new Dec(0);
+  // priceImpactTokenOut is computed as (effectivePrice / spotPrice) - 1 for both
+  // quote directions. Adverse impact is always positive (user pays more or receives
+  // less than spot). A negative value means a favorable trade and must NOT be
+  // treated as adverse — clamp to zero.
+  const priceImpact = rawImpact.isPositive() ? rawImpact : new Dec(0);
   const tokens = quote.tokens;
   const lowestLiquidityCap =
     tokens && tokens.length > 0
