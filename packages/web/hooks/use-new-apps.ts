@@ -14,15 +14,23 @@ export function useNewApps() {
     retry: false,
     select: ({ applications }) => {
       const allApps = applications ?? [];
+      // Count apps as "new" from the start of the cutoff day through today.
+      const start = dayjs().subtract(31, "days").startOf("day");
+      const now = dayjs().endOf("day");
       const newApps = allApps.filter((app) => {
-        if (app?.internal_data?.project_listing_date === undefined)
+        const projectListingDate = app?.internal_data?.project_listing_date;
+        if (projectListingDate === undefined) {
           return false;
-        return (
-          dayjs().diff(
-            dayjs(app?.internal_data?.project_listing_date),
-            "days"
-          ) <= 31
-        );
+        }
+
+        const listingDate = dayjs(projectListingDate);
+
+        // Ignore malformed CMS dates and dates scheduled for the future.
+        if (!listingDate.isValid()) {
+          return false;
+        }
+
+        return !listingDate.isBefore(start) && !listingDate.isAfter(now);
       });
 
       return {

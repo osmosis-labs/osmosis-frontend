@@ -22,7 +22,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   );
   const [fuse, setFuse] = useState<Fuse<AppStoreApp> | null>(null);
 
-  const { applications } = apps;
+  const applications = apps.applications ?? [];
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics({
@@ -91,19 +91,21 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           />
         </div>
       </div>
-      <HeroCard
-        title={featuredApp.title}
-        subtitle={featuredApp.subtitle}
-        imageUrl={
-          width <= Breakpoint.sm
-            ? featuredApp.thumbnail_image_URL
-            : featuredApp.hero_image_URL
-        }
-        githubUrl={featuredApp.github_URL}
-        twitterUrl={featuredApp.twitter_URL}
-        externalUrl={featuredApp.external_URL}
-        mediumUrl={featuredApp.medium_URL}
-      />
+      {featuredApp && (
+        <HeroCard
+          title={featuredApp.title}
+          subtitle={featuredApp.subtitle}
+          imageUrl={
+            width <= Breakpoint.sm
+              ? featuredApp.thumbnail_image_URL
+              : featuredApp.hero_image_URL
+          }
+          githubUrl={featuredApp.github_URL}
+          twitterUrl={featuredApp.twitter_URL}
+          externalUrl={featuredApp.external_URL}
+          mediumUrl={featuredApp.medium_URL}
+        />
+      )}
 
       <div className="body2 mb-2 pl-6 pt-7 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
