@@ -470,6 +470,12 @@
     "earnSwapFeesCaption": "Converta seus tokens em ações e ganhe em cada troca",
     "from": "de",
     "incentives": "Incentivos",
+    "initializePool": "Adicionar Liquidez",
+    "inactivePool": {
+      "title": "Piscina fora de alcance",
+      "description": "Todas as posições de liquidez estão fora do intervalo ao preço atual.\n\nAdicione uma pequena quantidade de liquidez (máximo de $1) para permitir o reequilíbrio à taxa de mercado atual.",
+      "addLiquidity": "Adicionar Liquidez"
+    },
     "learnMore": "Saiba mais",
     "level": "Nível {level}",
     "liquidity": "Liquidez da Piscina",

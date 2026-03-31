@@ -171,10 +171,15 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                // refresh tick data
-                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                  .invalidate({ poolId })
-                  .then(() => resolve());
+                // refresh pool data and tick data
+                Promise.all([
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                    { poolId }
+                  ),
+                  apiUtils.local.pools.getPool.invalidate({ poolId }),
+                ])
+                  .then(() => resolve())
+                  .catch(reject);
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addLiquidityCompleted,
@@ -235,10 +240,15 @@ export function useAddConcentratedLiquidityConfig(
             (tx) => {
               if (tx.code) reject(tx.rawLog);
               else {
-                // refresh tick data
-                apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange
-                  .invalidate({ poolId })
-                  .then(() => resolve());
+                // refresh pool data and tick data
+                Promise.all([
+                  apiUtils.local.concentratedLiquidity.getLiquidityPerTickRange.invalidate(
+                    { poolId }
+                  ),
+                  apiUtils.local.pools.getPool.invalidate({ poolId }),
+                ])
+                  .then(() => resolve())
+                  .catch(reject);
 
                 logEvent([
                   EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
@@ -350,6 +360,24 @@ export class ObservableAddConcentratedLiquidityConfig {
         .mul(multiplicationQuoteOverBase),
       tickSpacing: Number(pool.raw.tick_spacing),
     };
+  }
+
+  @computed
+  get isInactivePool(): boolean {
+    if (!this._pool || this._pool.type !== "concentrated") return false;
+
+    // Inactive pool: has TVL but no in-range liquidity at current price
+    // This happens when all liquidity positions are out of range
+    const poolRaw = this._pool.raw as ConcentratedPoolRawResponse;
+    const currentTickLiquidity = poolRaw?.current_tick_liquidity;
+    const isTickLiquidityZero = currentTickLiquidity
+      ? parseFloat(currentTickLiquidity) === 0
+      : false;
+    const hasTVL =
+      this._pool.tvlUnknown ||
+      this._pool.totalFiatValueLocked.toDec().gt(new Dec(0));
+
+    return isTickLiquidityZero && hasTVL;
   }
 
   get sender(): string {
@@ -519,44 +547,57 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this.baseDepositOnly) return [new RatePretty(1), new RatePretty(0)];
     if (this.quoteDepositOnly) return [new RatePretty(0), new RatePretty(1)];
 
-    const amount1 = new Int(1)
-      .toDec()
-      .mul(
-        DecUtils.getTenExponentN(
-          this._quoteDepositAmountIn.sendCurrency.coinDecimals
+    // Safety check: if pool has no liquidity (currentSqrtPrice is zero), return equal percentages
+    if (this.pool.currentSqrtPrice.isZero()) {
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
+
+    // Safety check: if prices are not loaded yet, return equal percentages
+    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
+
+    try {
+      const amount1 = new Int(1)
+        .toDec()
+        .mul(
+          DecUtils.getTenExponentN(
+            this._quoteDepositAmountIn.sendCurrency.coinDecimals
+          )
         )
-      )
-      .truncate();
+        .truncate();
 
-    const [lowerTick, upperTick] = this.tickRange;
+      const [lowerTick, upperTick] = this.tickRange;
 
-    // calculate proportional amount of other amount
-    const amount0 = calcAmount0(
-      amount1,
-      lowerTick,
-      upperTick,
-      this.pool.currentSqrtPrice
-    );
+      // calculate proportional amount of other amount
+      const amount0 = calcAmount0(
+        amount1,
+        lowerTick,
+        upperTick,
+        this.pool.currentSqrtPrice
+      );
 
-    const amount0Value = this._baseDepositPrice
-      ? this._baseDepositPrice.mul(
-          new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
-        )
-      : new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
-    const amount1Value = this._quoteDepositPrice
-      ? this._quoteDepositPrice.mul(
-          new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
-        )
-      : new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+      const amount0Value = this._baseDepositPrice.mul(
+        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+      );
+      const amount1Value = this._quoteDepositPrice.mul(
+        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+      );
 
-    const totalValue = amount0Value.toDec().add(amount1Value.toDec());
+      const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
-    if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
+      if (totalValue.isZero())
+        return [new RatePretty(0.5), new RatePretty(0.5)];
 
-    return [
-      new RatePretty(amount0Value.toDec().quo(totalValue)),
-      new RatePretty(amount1Value.toDec().quo(totalValue)),
-    ];
+      return [
+        new RatePretty(amount0Value.toDec().quo(totalValue)),
+        new RatePretty(amount1Value.toDec().quo(totalValue)),
+      ];
+    } catch (error) {
+      // Fallback to equal percentages if calculation fails
+      console.error("Error calculating deposit percentages:", error);
+      return [new RatePretty(0.5), new RatePretty(0.5)];
+    }
   }
 
   get baseDenom(): string {
@@ -792,6 +833,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       autorun(() => {
         if (
           this.pool &&
+          !this.isInactivePool &&
           this._baseDepositAmountIn.sendCurrency &&
           this._quoteDepositAmountIn.sendCurrency &&
           this._minHistoricalPrice !== null &&
@@ -834,7 +876,14 @@ export class ObservableAddConcentratedLiquidityConfig {
 
         if (anchor !== "base" || amount0.lte(new Int(0))) return;
 
-        // special case: likely no positions created yet in pool
+        // Special handling for inactive pools when Max is clicked
+        if (this.isInactivePool && this._baseDepositAmountIn.isMax) {
+          this.calculateInactivePoolCounterpartyAmount("base");
+          return;
+        }
+
+        // special case: inactive pools (no in-range liquidity) are handled above
+        // for active pools with no liquidity, return early - cannot calculate proportional amounts
         if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
           return;
         }
@@ -885,7 +934,14 @@ export class ObservableAddConcentratedLiquidityConfig {
 
         if (anchor !== "quote" || amount1.lte(new Int(0))) return;
 
-        // special case: likely no positions created yet in pool
+        // Special handling for inactive pools when Max is clicked
+        if (this.isInactivePool && this._quoteDepositAmountIn.isMax) {
+          this.calculateInactivePoolCounterpartyAmount("quote");
+          return;
+        }
+
+        // special case: inactive pools (no in-range liquidity) are handled above
+        // for active pools with no liquidity, return early - cannot calculate proportional amounts
         if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
           return;
         }
@@ -1000,6 +1056,168 @@ export class ObservableAddConcentratedLiquidityConfig {
     this.baseDepositAmountIn.setIsMax(false);
     this.quoteDepositAmountIn.setIsMax(true);
   };
+
+  @action
+  protected calculateInactivePoolCounterpartyAmount(
+    anchorAsset: "base" | "quote"
+  ) {
+    // Safety check: ensure prices are loaded and valid
+    if (!this._baseDepositPrice || !this._quoteDepositPrice) {
+      console.warn("Prices not loaded for inactive pool calculation");
+      return;
+    }
+
+    // Safety check: ensure prices are not zero (cannot calculate dollar value)
+    if (
+      this._baseDepositPrice.toDec().isZero() ||
+      this._quoteDepositPrice.toDec().isZero()
+    ) {
+      console.warn(
+        "One or both asset prices are zero - cannot calculate equal dollar value"
+      );
+      return;
+    }
+
+    const queryAccountBalances = this.queryBalances.getQueryBech32Address(
+      this.sender
+    );
+
+    if (anchorAsset === "base") {
+      // Base is max — calculate the quote amount that matches its dollar value.
+      const baseAmountRaw =
+        this.baseDepositAmountIn.getAmountPrimitive().amount;
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        new Int(baseAmountRaw)
+      );
+
+      const baseValue = this._baseDepositPrice.mul(baseCoin);
+      const quoteAmount = baseValue
+        .toDec()
+        .quo(this._quoteDepositPrice.toDec());
+
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        quoteAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._quoteDepositAmountIn.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+      );
+
+      const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._quoteDepositAmountIn.sendCurrency
+      );
+
+      if (quoteCoin.toDec().gt(quoteBalance.toDec())) {
+        // Quote overflows. Pre-check whether flipping to quote-as-anchor would also overflow
+        // base. MobX defers autorun reactions until after the current @action completes, so a
+        // simple boolean flag reset in `finally` cannot guard against the re-entrant call —
+        // the flag is always false by the time the deferred reaction fires. Instead, resolve
+        // the both-overflow case entirely within this action without flipping the anchor.
+        const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+          this._baseDepositAmountIn.sendCurrency
+        );
+        const baseValueFromQuoteMax = this._quoteDepositPrice.mul(quoteBalance);
+        const baseCoinFromQuoteMax = new CoinPretty(
+          this._baseDepositAmountIn.sendCurrency,
+          baseValueFromQuoteMax
+            .toDec()
+            .quo(this._baseDepositPrice.toDec())
+            .mul(
+              DecUtils.getTenExponentN(
+                this._baseDepositAmountIn.sendCurrency.coinDecimals
+              )
+            )
+            .truncate()
+        );
+
+        if (baseCoinFromQuoteMax.toDec().gt(baseBalance.toDec())) {
+          // Both assets overflow each other — cap both to their balances in one action.
+          this._baseDepositAmountIn.setAmount(
+            baseBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+          this._quoteDepositAmountIn.setAmount(
+            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+        } else {
+          // Only quote overflows — flip anchor to quote; the autorun will correctly
+          // calculate the reduced base amount from the quote max balance.
+          this.setQuoteDepositAmountMax();
+        }
+      } else {
+        this._quoteDepositAmountIn.setAmount(
+          quoteCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    } else {
+      // Quote is max — calculate the base amount that matches its dollar value.
+      const quoteAmountRaw =
+        this.quoteDepositAmountIn.getAmountPrimitive().amount;
+      const quoteCoin = new CoinPretty(
+        this._quoteDepositAmountIn.sendCurrency,
+        new Int(quoteAmountRaw)
+      );
+
+      const quoteValue = this._quoteDepositPrice.mul(quoteCoin);
+      const baseAmount = quoteValue.toDec().quo(this._baseDepositPrice.toDec());
+
+      const baseCoin = new CoinPretty(
+        this._baseDepositAmountIn.sendCurrency,
+        baseAmount
+          .mul(
+            DecUtils.getTenExponentN(
+              this._baseDepositAmountIn.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+      );
+
+      const baseBalance = queryAccountBalances.getBalanceFromCurrency(
+        this._baseDepositAmountIn.sendCurrency
+      );
+
+      if (baseCoin.toDec().gt(baseBalance.toDec())) {
+        // Base overflows. Same pre-check as above for the symmetric case.
+        const quoteBalance = queryAccountBalances.getBalanceFromCurrency(
+          this._quoteDepositAmountIn.sendCurrency
+        );
+        const quoteValueFromBaseMax = this._baseDepositPrice.mul(baseBalance);
+        const quoteCoinFromBaseMax = new CoinPretty(
+          this._quoteDepositAmountIn.sendCurrency,
+          quoteValueFromBaseMax
+            .toDec()
+            .quo(this._quoteDepositPrice.toDec())
+            .mul(
+              DecUtils.getTenExponentN(
+                this._quoteDepositAmountIn.sendCurrency.coinDecimals
+              )
+            )
+            .truncate()
+        );
+
+        if (quoteCoinFromBaseMax.toDec().gt(quoteBalance.toDec())) {
+          // Both assets overflow each other — cap both to their balances in one action.
+          this._quoteDepositAmountIn.setAmount(
+            quoteBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+          this._baseDepositAmountIn.setAmount(
+            baseBalance.trim(true).hideDenom(true).locale(false).toString()
+          );
+        } else {
+          // Only base overflows — flip anchor to base; the autorun will correctly
+          // calculate the reduced quote amount from the base max balance.
+          this.setBaseDepositAmountMax();
+        }
+      } else {
+        this._baseDepositAmountIn.setAmount(
+          baseCoin.hideDenom(true).locale(false).trim(true).toString()
+        );
+      }
+    }
+  }
 
   @action
   readonly setHistoricalPriceMinMax = (min: number, max: number) => {

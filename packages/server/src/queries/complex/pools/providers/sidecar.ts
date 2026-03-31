@@ -378,3 +378,184 @@ function makePoolRawResponseFromChainPool(
     code_id: chainPool.code_id?.toString(),
   } as PoolRawResponse;
 }
+
+/** Creates a minimal Currency object for an unlisted asset.
+ *  This is used as a fallback when assets are not in the asset list.
+ *  Note: Defaults to 6 decimals (standard for most Cosmos tokens). This may cause
+ *  display precision issues for tokens with different decimal places, but functionality
+ *  remains intact as the chain handles actual token amounts correctly. */
+function makeUnlistedAssetCurrency(denom: string) {
+  return {
+    coinDenom: denom,
+    coinMinimalDenom: denom,
+    coinDecimals: 6, // Default to 6 decimals, common for most Cosmos tokens
+    coinImageUrl: undefined,
+  };
+}
+
+/** Gets pool denoms from a chain pool (works for both sidecar and direct chain responses) */
+function getPoolDenomsFromChainPool(
+  chainPool: PoolRawResponse
+): string[] | null {
+  if ("pool_assets" in chainPool) {
+    return chainPool.pool_assets.map((asset) => asset.token.denom);
+  }
+
+  if ("pool_liquidity" in chainPool) {
+    return chainPool.pool_liquidity.map(({ denom }) => denom);
+  }
+
+  if ("token0" in chainPool) {
+    return [chainPool.token0, chainPool.token1];
+  }
+
+  // CosmWasm and CL pools without proper denom info cannot be processed
+  return null;
+}
+
+/** Extracts balances from a chain pool response.
+ *  Different pool types store balances differently. */
+function getBalancesFromChainPool(
+  chainPool: PoolRawResponse
+): { denom: string; amount: string }[] | null {
+  // Weighted pools store balances in pool_assets
+  if ("pool_assets" in chainPool) {
+    return chainPool.pool_assets.map((asset) => ({
+      denom: asset.token.denom,
+      amount: asset.token.amount,
+    }));
+  }
+
+  // Stable pools store balances in pool_liquidity
+  if ("pool_liquidity" in chainPool) {
+    return chainPool.pool_liquidity;
+  }
+
+  // Concentrated liquidity pools - query the pool's address balance
+  // TODO: query bank module for pool address balances
+  // For now, return null to indicate unsupported pool type
+  if ("token0" in chainPool) {
+    return null;
+  }
+
+  // Cosmwasm pools - need to query contract state
+  // For now, return null to indicate unsupported pool type
+  return null;
+}
+
+/** Gets reserves from a chain pool, including unlisted assets.
+ *  This doesn't throw when assets are not in the asset list - instead creates minimal currency objects. */
+function getReservesFromChainPool(
+  assetLists: AssetList[],
+  chainPool: PoolRawResponse,
+  balances: { denom: string; amount: string }[]
+): CoinPretty[] {
+  const poolDenoms = getPoolDenomsFromChainPool(chainPool);
+
+  // Should not happen if caller validates, but be defensive
+  if (!poolDenoms) {
+    return [];
+  }
+
+  return poolDenoms.map((denom) => {
+    const amount = balances.find((balance) => balance.denom === denom)?.amount;
+
+    // Try to get the asset from asset lists
+    try {
+      const asset = getAsset({ assetLists, anyDenom: denom });
+      return new CoinPretty(asset, amount ?? "0");
+    } catch {
+      // Asset not in list, create minimal currency
+      const currency = makeUnlistedAssetCurrency(denom);
+      return new CoinPretty(currency, amount ?? "0");
+    }
+  });
+}
+
+/** Converts a chain pool response to Pool type, handling unlisted assets. */
+export function makePoolFromChainPool({
+  chainPool,
+  assetLists,
+}: {
+  chainPool: PoolRawResponse;
+  assetLists: AssetList[];
+}): Pool | null {
+  const pool_id = "pool_id" in chainPool ? chainPool.pool_id : chainPool.id;
+  const balances = getBalancesFromChainPool(chainPool);
+  const poolDenoms = getPoolDenomsFromChainPool(chainPool);
+
+  // Cannot construct valid pool without denoms at all
+  if (poolDenoms === null) {
+    console.warn(
+      `Pool ${pool_id} cannot be constructed from chain data: missing pool denoms (unsupported pool type or malformed data)`
+    );
+    return null;
+  }
+
+  // For concentrated liquidity pools, balances are not directly available from the chain pool
+  // manager response. Synthesize zero-amount entries so we can still construct a minimal Pool
+  // for the chain fallback path. Track whether this synthesis occurred so consumers know the
+  // resulting TVL figure is unknown rather than genuinely zero.
+  const balancesSynthed =
+    balances === null && "current_sqrt_price" in chainPool;
+
+  const effectiveBalances =
+    balances ??
+    (balancesSynthed
+      ? poolDenoms.map((denom) => ({ denom, amount: "0" }))
+      : null);
+
+  // For non-concentrated pools, we still require actual balances.
+  if (effectiveBalances === null) {
+    console.warn(
+      `Pool ${pool_id} cannot be constructed from chain data: missing balances (unsupported pool type or incomplete data)`
+    );
+    return null;
+  }
+
+  const reserveCoins = getReservesFromChainPool(
+    assetLists,
+    chainPool,
+    effectiveBalances
+  );
+
+  // Get pool type
+  let poolType: PoolType;
+  if ("pool_assets" in chainPool) poolType = "weighted";
+  else if ("scaling_factors" in chainPool) poolType = "stable";
+  else if ("current_sqrt_price" in chainPool) poolType = "concentrated";
+  else if ("code_id" in chainPool) {
+    poolType = getCosmwasmPoolTypeFromCodeId(chainPool.code_id.toString());
+  } else {
+    throw new Error("Unknown pool type: " + JSON.stringify(chainPool));
+  }
+
+  // Get spread factor
+  let spreadFactor = "0";
+  if ("spread_factor" in chainPool) {
+    spreadFactor = chainPool.spread_factor;
+  } else if ("pool_params" in chainPool && chainPool.pool_params?.swap_fee) {
+    spreadFactor = chainPool.pool_params.swap_fee;
+  }
+
+  return {
+    id: pool_id.toString(),
+    type: poolType,
+    raw: chainPool,
+    spreadFactor: new RatePretty(spreadFactor),
+    reserveCoins,
+    totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    tvlUnknown: balancesSynthed,
+    // No incentives or market data available from chain
+    incentives: {
+      aprBreakdown: undefined,
+      incentiveTypes: ["none"],
+    },
+    market: {
+      volume24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      volume7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      feesSpent24hUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+      feesSpent7dUsd: new PricePretty(DEFAULT_VS_CURRENCY, 0),
+    },
+  };
+}
