@@ -30,38 +30,6 @@ function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
   });
 }
 
-/**
- * Create a timeout AbortSignal, preferring the native `AbortSignal.timeout`
- * when available and falling back to `AbortController + setTimeout` for
- * older Node versions.
- */
-function createTimeoutSignal(
-  ms: number,
-  parent?: AbortController
-): { signal: AbortSignal; cleanup: () => void } {
-  if (typeof AbortSignal.timeout === "function") {
-    const signal = AbortSignal.timeout(ms);
-    // Wire into parent so the parent can abort the native signal's consumer
-    if (parent) {
-      signal.addEventListener("abort", () => parent.abort(), { once: true });
-    }
-    return { signal, cleanup: () => {} };
-  }
-
-  // Fallback for older runtimes
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ms);
-  if (parent) {
-    parent.signal.addEventListener("abort", () => controller.abort(), {
-      once: true,
-    });
-  }
-  return {
-    signal: controller.signal,
-    cleanup: () => clearTimeout(timeoutId),
-  };
-}
-
 /** Creates a node query function that can be used to query any
  *  chain in the given chain list.
  *
@@ -133,7 +101,6 @@ export const createNodeQuery =
 
     const raceController = new AbortController();
     const timers: ReturnType<typeof setTimeout>[] = [];
-    const cleanups: (() => void)[] = [];
     const startTime = Date.now();
 
     const schedulable = restEndpoints.filter(
@@ -156,23 +123,32 @@ export const createNodeQuery =
               return reject(new Error("Time budget exceeded"));
             }
 
+            // Per-attempt controller: aborted either by per-attempt timeout or
+            // by raceController (when another endpoint wins or budget expires).
+            const attemptController = new AbortController();
+            const onRaceAbort = () => attemptController.abort();
+            raceController.signal.addEventListener("abort", onRaceAbort, {
+              once: true,
+            });
+
             const effectiveTimeout = Math.min(timeout, remaining);
-            const { signal, cleanup } = createTimeoutSignal(
-              effectiveTimeout,
-              raceController
+            const timeoutId = setTimeout(
+              () => attemptController.abort(),
+              effectiveTimeout
             );
-            cleanups.push(cleanup);
 
             try {
               const url = new URL(pathStr, endpoint.address);
               const result = await apiClient<Result>(url.toString(), {
                 ...opts,
-                signal,
+                signal: attemptController.signal,
               });
-              cleanup();
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
               resolve(result);
             } catch (error) {
-              cleanup();
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
               reject(error);
             }
           }, delay);
@@ -215,6 +191,5 @@ export const createNodeQuery =
       );
     } finally {
       timers.forEach((t) => clearTimeout(t));
-      cleanups.forEach((fn) => fn());
     }
   };

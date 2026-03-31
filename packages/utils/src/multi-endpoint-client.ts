@@ -1,36 +1,6 @@
 import { apiClient, ClientOptions } from "./api-client";
 
 /**
- * Create a timeout AbortSignal, preferring the native `AbortSignal.timeout`
- * when available and falling back to `AbortController + setTimeout` for
- * older Node versions.
- */
-function createTimeoutSignal(
-  ms: number,
-  parent?: AbortController
-): { signal: AbortSignal; cleanup: () => void } {
-  if (typeof AbortSignal.timeout === "function") {
-    const signal = AbortSignal.timeout(ms);
-    if (parent) {
-      signal.addEventListener("abort", () => parent.abort(), { once: true });
-    }
-    return { signal, cleanup: () => {} };
-  }
-
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), ms);
-  if (parent) {
-    parent.signal.addEventListener("abort", () => controller.abort(), {
-      once: true,
-    });
-  }
-  return {
-    signal: controller.signal,
-    cleanup: () => clearTimeout(timeoutId),
-  };
-}
-
-/**
  * Configuration for a single endpoint.
  * Endpoints with higher priority are tried first.
  */
@@ -159,22 +129,32 @@ export class MultiEndpointClient {
               return reject(new Error("Time budget exceeded"));
             }
 
+            // Per-attempt controller: aborted either by per-attempt timeout or
+            // by raceController (when another endpoint wins or budget expires).
+            const attemptController = new AbortController();
+            const onRaceAbort = () => attemptController.abort();
+            raceController.signal.addEventListener("abort", onRaceAbort, {
+              once: true,
+            });
+
             const effectiveTimeout = Math.min(this.timeout, remaining);
-            const { signal, cleanup } = createTimeoutSignal(
-              effectiveTimeout,
-              raceController
+            const timeoutId = setTimeout(
+              () => attemptController.abort(),
+              effectiveTimeout
             );
 
             try {
               const url = `${endpoint.address}${path}`;
               const data = await apiClient<T>(url, {
                 ...restOptions,
-                signal,
+                signal: attemptController.signal,
               });
-              cleanup();
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
               resolve({ data, endpointAddress: endpoint.address });
             } catch (error) {
-              cleanup();
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
               reject(error);
             }
           }, delay);
