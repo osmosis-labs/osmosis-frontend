@@ -18,13 +18,7 @@
     "priceImpact": "Fiyat Etkisi"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "1. Adım: Bir strateji seçin",
-    "step2Title": "2. Adım: Likidite Ekleyin",
-    "managed": "Yönetilen",
-    "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
-    "manual": "Manuel",
-    "manualDescription": "Maksimum verimlilik ve ödüller için düzenli olarak yönetebileceğiniz bir pozisyon oluşturun.",
-    "back": "Geri",
+    "step1Title": "Likidite Ekleyin",
     "priceShownIn": "Gösterilen fiyatlar",
     "priceRange": "Fiyat aralığı",
     "currentPrice": "Mevcut fiyat",
@@ -470,6 +464,12 @@
     "earnSwapFeesCaption": "Tokenlerinizi hisseye dönüştürün ve her takasta kazanın.",
     "from": "kimden",
     "incentives": "Teşvikler",
+    "initializePool": "Likidite Ekle",
+    "inactivePool": {
+      "title": "Havuz Erişim Alanı Dışında",
+      "description": "Mevcut fiyatta tüm likidite pozisyonları erişim aralığının dışındadır.\n\nMevcut piyasa kuruna göre yeniden dengeleme yapılmasına olanak sağlamak için az miktarda likidite (en fazla 1 dolar) ekleyin.",
+      "addLiquidity": "Likidite Ekle"
+    },
     "learnMore": "Daha fazla öğren",
     "level": "Seviye {level}",
     "liquidity": "Havuzdaki likidite",

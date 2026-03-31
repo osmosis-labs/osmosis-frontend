@@ -402,15 +402,17 @@ const PendingTransferLoadingIcon: FunctionComponent<{
 
   return (
     <div className="relative flex h-12 w-12 items-center justify-center">
-      <EntityImage
-        logoURIs={{
-          png: assetLogo,
-        }}
-        name="Token"
-        symbol="TOK"
-        width={32}
-        height={32}
-      />
+      <div className="h-8 w-8 overflow-hidden rounded-full">
+        <EntityImage
+          logoURIs={{
+            png: assetLogo,
+          }}
+          name="Token"
+          symbol="TOK"
+          width={32}
+          height={32}
+        />
+      </div>
       <div className="absolute inset-0" ref={progressRef}>
         <RadialProgress progress={100} strokeWidth={2} />
       </div>

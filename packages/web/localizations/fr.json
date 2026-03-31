@@ -18,13 +18,7 @@
     "priceImpact": "Incidence sur les prix"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Étape 1 : Choisissez une stratégie",
-    "step2Title": "Étape 2 : Ajouter des liquidités",
-    "managed": "Géré",
-    "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
-    "manual": "Manuel",
-    "manualDescription": "Créez un poste que vous pouvez gérer régulièrement pour une efficacité et des récompenses maximales.",
-    "back": "Dos",
+    "step1Title": "Ajouter des liquidités",
     "priceShownIn": "Les prix indiqués dans",
     "priceRange": "Échelle des prix",
     "currentPrice": "prix actuel",
@@ -470,6 +464,12 @@
     "earnSwapFeesCaption": "Convertissez vos jetons en actions et gagnez sur chaque échange.",
     "from": "de",
     "incentives": "Incitations",
+    "initializePool": "Ajouter des liquidités",
+    "inactivePool": {
+      "title": "Piscine hors de portée",
+      "description": "Toutes les positions de liquidité sont hors de portée au prix actuel.\n\nAjouter une petite quantité de liquidités (1 $ maximum) pour permettre un rééquilibrage au taux de marché actuel.",
+      "addLiquidity": "Ajouter des liquidités"
+    },
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",

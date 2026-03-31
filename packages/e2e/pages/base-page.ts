@@ -1,5 +1,15 @@
 import { type Locator, type Page, expect } from '@playwright/test'
+import { waitForKeplrApproval } from './keplr-helper'
 
+/**
+ * Base page object shared by all E2E page classes.
+ * Provides wallet connection/disconnection, navigation, and common UI helpers.
+ *
+ * Wallet interaction pattern:
+ *   Keplr opens a popup window for approval. When 1-Click Trading (1CT) is
+ *   enabled the popup may never appear, so all popup waits use timeouts and
+ *   treat TimeoutError as "auto-approved / 1CT active".
+ */
 export class BasePage {
   readonly page: Page
   readonly connectWalletBtn: Locator
@@ -21,34 +31,16 @@ export class BasePage {
     this.connectedWalletBtn = page.locator('//button/div/span[@title]')
   }
 
+  /**
+   * Connects the Keplr wallet via the browser extension popup.
+   * If the Keplr approval popup doesn't appear within 15s (e.g. auto-approved
+   * or 1CT enabled), we continue without error.
+   */
   async connectWallet() {
     await this.connectWalletBtn.click()
-    const pagePromise = this.page
-      .context()
-      .waitForEvent('page', { timeout: 15000 })
     await this.kepltWalletBtn.click()
     await this.page.waitForTimeout(1000)
-    let newPage: Page | null = null
-    try {
-      newPage = await pagePromise
-    } catch (error: any) {
-      if (
-        error.name === 'TimeoutError' ||
-        /timeout/i.test(error.message ?? '')
-      ) {
-        console.log(
-          'Keplr popup did not appear within 15s; assuming auto-approved.',
-        )
-      } else {
-        throw error
-      }
-    }
-
-    if (newPage) {
-      await newPage.waitForLoadState('load', { timeout: 10000 })
-      console.log(`Title of the new page: ${await newPage.title()}`)
-      await newPage.getByRole('button', { name: 'Approve' }).click()
-    }
+    await waitForKeplrApproval(this.page.context())
     await this.getWalletBalance()
     await this.dismissVariantsPopupIfPresent()
   }
@@ -79,6 +71,7 @@ export class BasePage {
     return balance
   }
 
+  /** Dismisses the "Variants Detected" modal that may appear on staging deploys. */
   async dismissVariantsPopupIfPresent() {
     try {
       const dismissBtn = this.page.getByRole('button', { name: 'Dismiss' })
@@ -91,7 +84,7 @@ export class BasePage {
   }
 
   async logOut() {
-    // open the wallet menu
+    await this.dismissAllToasts()
     await expect(
       this.connectedWalletBtn,
       'Wallet should be connected.',
@@ -101,5 +94,21 @@ export class BasePage {
     await logoutBtn.click({ timeout: 2000 })
     await this.page.waitForTimeout(2000)
     await expect(this.connectWalletBtn).toBeVisible({ timeout: 4000 })
+  }
+
+  /**
+   * Removes all react-toastify notifications from the DOM.
+   * The toast close button is invisible in headless mode (CSS :hover only),
+   * so we clear them via JS to prevent them from intercepting pointer events
+   * on the wallet button in the top-right header area.
+   */
+  async dismissAllToasts() {
+    await this.page
+      .evaluate(() => {
+        document
+          .querySelectorAll('.Toastify__toast')
+          .forEach((el) => el.remove())
+      })
+      .catch(() => {})
   }
 }

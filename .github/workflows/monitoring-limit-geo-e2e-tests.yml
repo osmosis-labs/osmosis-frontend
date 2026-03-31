@@ -5,11 +5,16 @@ on:
   schedule:
     - cron: "1 * * * *"
 
+permissions:
+  actions: write
+  contents: read
+  deployments: write
+
 jobs:
   fe-swap-us:
     timeout-minutes: 10
     name: prod-fe-swap-us
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -43,18 +48,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -78,6 +86,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -95,6 +130,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -109,7 +145,7 @@ jobs:
   fe-swap-eu:
     timeout-minutes: 15
     name: prod-fe-swap-eu
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -143,18 +179,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -178,6 +217,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -199,6 +265,7 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -213,7 +280,7 @@ jobs:
   fe-swap-sg:
     timeout-minutes: 15
     name: prod-fe-swap-sg
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     steps:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
@@ -249,18 +316,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -284,6 +354,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -305,6 +402,7 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -320,7 +418,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-eu
     name: prod-fe-trade-eu
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -356,18 +454,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -391,6 +492,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -412,6 +540,7 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 180000
@@ -432,7 +561,7 @@ jobs:
     if: failure() || success()
     name: prod-fe-limit-eu
     needs: fe-trade-eu
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -468,18 +597,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -503,6 +635,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -530,6 +689,7 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
@@ -549,7 +709,7 @@ jobs:
     timeout-minutes: 12
     needs: fe-swap-sg
     name: prod-fe-trade-sg
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -585,18 +745,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -620,6 +783,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -641,6 +831,7 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -660,7 +851,7 @@ jobs:
     timeout-minutes: 10
     needs: fe-swap-us
     name: prod-fe-trade-us
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -696,18 +887,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -731,6 +925,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -749,6 +970,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -769,7 +991,7 @@ jobs:
     if: failure() || success()
     needs: fe-trade-us
     name: prod-fe-limit-us
-    runs-on: macos-14
+    runs-on: ubuntu-latest
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -805,18 +1027,21 @@ jobs:
         continue-on-error: true
         run: |
           if [ -f packages/e2e/balance-report.json ]; then
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
             SUMMARY=$(jq -r '[.details[] | ltrimstr("  ")] | join("\\n")' packages/e2e/balance-report.json)
             ADDRESS=$(jq -r '.address // ""' packages/e2e/balance-report.json)
             OUTCOME=$(jq -r '.outcome // "warn"' packages/e2e/balance-report.json)
             echo "summary=${SUMMARY}" >> "$GITHUB_OUTPUT"
             echo "address=${ADDRESS}" >> "$GITHUB_OUTPUT"
             echo "outcome=${OUTCOME}" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=true" >> "$GITHUB_OUTPUT"
           else
-            echo "summary=Balance report not available." >> "$GITHUB_OUTPUT"
-            echo "outcome=warn" >> "$GITHUB_OUTPUT"
+            echo "summary=Balance check script crashed (not a balance issue)." >> "$GITHUB_OUTPUT"
+            echo "outcome=error" >> "$GITHUB_OUTPUT"
+            echo "is_balance_issue=false" >> "$GITHUB_OUTPUT"
           fi
       - name: Send low-balance Slack alert
-        if: steps.balance-check.outcome == 'failure'
+        if: steps.balance-check.outcome == 'failure' && steps.balance-details.outputs.is_balance_issue == 'true'
         continue-on-error: true
         uses: slackapi/slack-github-action@v1.26.0
         with:
@@ -840,6 +1065,33 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.E2E_SLACK_WEBHOOK_BALANCE_ALERTS }}
           SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      - name: Trigger automatic topup
+        if: steps.balance-check.outcome == 'failure'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ -f packages/e2e/balance-report.json ]; then
+            OUTCOME=$(jq -r '.outcome // ""' packages/e2e/balance-report.json)
+            if [ "$OUTCOME" = "warn" ] || [ "$OUTCOME" = "fail" ]; then
+              PENDING=$(gh run list --workflow "E2E: Topup Test Accounts" --limit 50 --json status --jq '[.[] | select(.status == "queued" or .status == "in_progress")] | length')
+              if [ "$PENDING" -gt 0 ]; then
+                echo "Topup workflow already queued/in-progress — skipping dispatch."
+              else
+                gh workflow run "E2E: Topup Test Accounts" \
+                  --ref stage \
+                  -f dry_run=false \
+                  -f topup_multiplier=1.5 \
+                  -f reserve_osmo=5 \
+                  -f reserve_usdc=500
+                echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
+              fi
+            else
+              echo "Skipping topup — balance outcome: $OUTCOME"
+            fi
+          else
+            echo "Skipping topup — no balance report found."
+          fi
       - name: Fail if balance critically low
         if: always() && steps.balance-check.outcome == 'failure'
         run: |
@@ -864,6 +1116,7 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
+          HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000

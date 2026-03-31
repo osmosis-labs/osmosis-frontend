@@ -60,30 +60,34 @@ export const TransactionSwapRow = ({
   const rightComponent =
     size === "sm" ? (
       <div className="flex items-center justify-end">
-        <EntityImage
-          logoURIs={getLogoURIs(
-            transaction.tokenIn.amount.currency.coinImageUrl
-          )}
-          name={transaction.tokenIn.amount.denom}
-          symbol={transaction.tokenIn.amount.denom}
-          height={32}
-          width={32}
-        />
+        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+          <EntityImage
+            logoURIs={getLogoURIs(
+              transaction.tokenIn.amount.currency.coinImageUrl
+            )}
+            name={transaction.tokenIn.amount.denom}
+            symbol={transaction.tokenIn.amount.denom}
+            height={32}
+            width={32}
+          />
+        </div>
         <Icon
           id="arrows-swap"
           width={16}
           height={16}
           className="my-[8px] mx-[4px] text-osmoverse-500"
         />
-        <EntityImage
-          logoURIs={getLogoURIs(
-            transaction.tokenOut.amount.currency.coinImageUrl
-          )}
-          name={transaction.tokenOut.amount.denom}
-          symbol={transaction.tokenOut.amount.denom}
-          height={32}
-          width={32}
-        />
+        <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+          <EntityImage
+            logoURIs={getLogoURIs(
+              transaction.tokenOut.amount.currency.coinImageUrl
+            )}
+            name={transaction.tokenOut.amount.denom}
+            symbol={transaction.tokenOut.amount.denom}
+            height={32}
+            width={32}
+          />
+        </div>
       </div>
     ) : (
       <div className="flex w-2/3 items-center justify-end gap-4 md:w-1/2">
@@ -104,16 +108,17 @@ export const TransactionSwapRow = ({
                 `- ${formatFiatPrice(transaction.tokenIn.value)}`}
             </div>
           </div>
-          <EntityImage
-            logoURIs={getLogoURIs(
-              transaction.tokenIn.amount.currency.coinImageUrl
-            )}
-            name={transaction.tokenIn.amount.denom}
-            symbol={transaction.tokenIn.amount.denom}
-            height={32}
-            width={32}
-            className="block md:hidden"
-          />
+          <div className="block h-8 w-8 shrink-0 overflow-hidden rounded-full md:hidden">
+            <EntityImage
+              logoURIs={getLogoURIs(
+                transaction.tokenIn.amount.currency.coinImageUrl
+              )}
+              name={transaction.tokenIn.amount.denom}
+              symbol={transaction.tokenIn.amount.denom}
+              height={32}
+              width={32}
+            />
+          </div>
         </div>
         <Icon
           id="arrow-right"
@@ -122,16 +127,17 @@ export const TransactionSwapRow = ({
           className="block text-osmoverse-600 md:hidden"
         />
         <div className="flex w-60 items-center justify-start gap-4 md:justify-end">
-          <EntityImage
-            logoURIs={getLogoURIs(
-              transaction.tokenOut.amount.currency.coinImageUrl
-            )}
-            name={transaction.tokenOut.amount.denom}
-            symbol={transaction.tokenOut.amount.denom}
-            height={32}
-            width={32}
-            className="block md:hidden"
-          />
+          <div className="block h-8 w-8 shrink-0 overflow-hidden rounded-full md:hidden">
+            <EntityImage
+              logoURIs={getLogoURIs(
+                transaction.tokenOut.amount.currency.coinImageUrl
+              )}
+              name={transaction.tokenOut.amount.denom}
+              symbol={transaction.tokenOut.amount.denom}
+              height={32}
+              width={32}
+            />
+          </div>
           <div className="text-left text-osmoverse-400 md:text-right">
             {transaction.tokenOut.value && (
               <div

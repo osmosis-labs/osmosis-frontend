@@ -206,13 +206,15 @@ export const AssetSelectScreen: FunctionComponent<AssetSelectScreenProps> =
                         !shouldShowUnverifiedAssets && !asset.isVerified,
                     })}
                   >
-                    <EntityImage
-                      logoURIs={getLogoURIs(asset.coinImageUrl)}
-                      width={isMobile ? 32 : 48}
-                      height={isMobile ? 32 : 48}
-                      name={asset.coinName}
-                      symbol={asset.coinDenom}
-                    />
+                    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
+                      <EntityImage
+                        logoURIs={getLogoURIs(asset.coinImageUrl)}
+                        width={isMobile ? 32 : 48}
+                        height={isMobile ? 32 : 48}
+                        name={asset.coinName}
+                        symbol={asset.coinDenom}
+                      />
+                    </div>
                     <span className="flex flex-col text-left">
                       <div className="flex items-center gap-1">
                         <span className="subtitle1 md:body2">

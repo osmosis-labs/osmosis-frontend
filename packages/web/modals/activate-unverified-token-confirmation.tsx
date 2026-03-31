@@ -25,7 +25,7 @@ export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
     >
       <div className="mx-auto flex max-w-sm flex-col items-center gap-8 pt-8">
         <div className="flex flex-col items-center gap-5">
-          <div className="mr-4 h-16 w-16 rounded-full">
+          <div className="mr-4 h-16 w-16 overflow-hidden rounded-full">
             <EntityImage
               symbol={coinDenom}
               name={coinDenom}

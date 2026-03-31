@@ -47,7 +47,7 @@ export const AssetCell: FunctionComponent<
           />
         </div>
       )}
-      <div className="h-10 w-10 flex-shrink-0">
+      <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
         <EntityImage
           symbol={coinDenom ?? ""}
           name={coinName ?? ""}

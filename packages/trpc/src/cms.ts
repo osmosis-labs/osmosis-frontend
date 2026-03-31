@@ -1,9 +1,16 @@
-import { getTokenInfo, querySwapAdBanners } from "@osmosis-labs/server";
+import {
+  getTokenInfo,
+  queryAppStore,
+  querySwapAdBanners,
+} from "@osmosis-labs/server";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 
 export const cmsRouter = createTRPCRouter({
+  getAppStore: publicProcedure.query(async () => {
+    return queryAppStore();
+  }),
   getSwapAdBanners: publicProcedure.query(async () => {
     return querySwapAdBanners();
   }),

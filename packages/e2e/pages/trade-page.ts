@@ -6,7 +6,21 @@ import {
 } from "@playwright/test";
 
 import { BasePage } from "./base-page";
+import { getKeplrPopupPage, waitForKeplrApproval } from "./keplr-helper";
 
+/**
+ * Page object for the /trade view (swap, buy, sell, limit orders).
+ *
+ * Transaction methods come in two flavours:
+ *   - *AndGetWalletMsg  (e.g. buyAndGetWalletMsg) -- full flow with retry logic,
+ *     returns the raw Keplr message content for test assertions.
+ *   - *AndApprove       (e.g. buyAndApprove) -- simplified fire-and-forget flow
+ *     with no retries; use when you only need to confirm the tx succeeded.
+ *
+ * All methods handle the Keplr / 1-Click Trading duality: if no popup appears
+ * within the timeout, the code assumes 1CT processed the transaction and
+ * continues to wait for the on-chain success toast.
+ */
 export class TradePage extends BasePage {
   readonly page: Page;
   readonly swapBtn: Locator;
@@ -130,61 +144,56 @@ export class TradePage extends BasePage {
     console.log(`Swap ${amount} with rate: ${exchangeRate}`);
   }
 
+  /**
+   * Obtains the Keplr popup (with headless fallback), reads the transaction
+   * message content, clicks Approve and returns the message text.
+   * Returns undefined when no popup appears (1CT / pre-approved).
+   */
   private async approveInKeplrAndGetMsg(context: BrowserContext) {
-    console.log("Wait for 5 seconds for any popup");
-    await this.page.waitForTimeout(5_000);
-    const pages = context.pages();
-    console.log(`Number of Open Pages: ${pages.length}`);
-    if (pages.length === 2) {
-      const approvePage = pages[1];
-      const approvePageTitle = approvePage.url();
-      console.log(`Approve page is opened at: ${approvePageTitle}`);
-      const msgContent = await approvePage
-        .getByText("type: osmosis/poolmanager/")
-        .textContent();
-      console.log(`Wallet is approving this msg: \n${msgContent}`);
-      await approvePage
-        .getByRole("button", { name: "Approve" })
-        .click({ timeout: 4000 });
-      return msgContent;
+    const approvePage = await getKeplrPopupPage(context, { timeout: 20_000 });
+    if (!approvePage) {
+      console.log(
+        "Keplr approval popup did not appear; assuming 1-click trading is enabled or transaction was pre-approved."
+      );
+      return undefined;
     }
-    console.log("Second page was not opened in 5 seconds.");
+
+    await approvePage.waitForLoadState();
+    const approveBtn = approvePage.getByRole("button", { name: "Approve" });
+    await expect(approveBtn).toBeEnabled();
+    const msgContentAmount =
+      (await approvePage
+        .getByText("type: osmosis/poolmanager/")
+        .textContent()) ?? undefined;
+    console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
+    await approveBtn.click();
+    return msgContentAmount;
   }
 
+  /**
+   * If the review-trade dialog shows a 1-Click Trading toggle in the "checked"
+   * state, disable it so the test exercises the full Keplr approval flow.
+   * Uses a short 500ms visibility check -- call sites add a 500ms waitForTimeout
+   * before invoking this, giving ~1s total for the dialog to render.
+   */
+  async disable1CTIfNeeded() {
+    const oneClickToggle =
+      '//div[@role="dialog"]//button[@data-state="checked"]';
+    if (await this.page.locator(oneClickToggle).isVisible({ timeout: 500 })) {
+      await this.page.locator(oneClickToggle).click({ timeout: 3000 });
+      console.log("Disabled 1-Click Trading toggle.");
+    }
+  }
+
+  /**
+   * Lightweight Keplr approval helper used by the *AndApprove methods.
+   * Delegates to the shared helper which handles both headed and headless modes.
+   */
   async justApproveIfNeeded(context: BrowserContext) {
-    let approvePage: import("@playwright/test").Page | null =
-      context
-        .pages()
-        .find((p) => p !== this.page && !p.isClosed()) ?? null;
-
-    if (!approvePage) {
-      try {
-        approvePage = await context.waitForEvent("page", { timeout: 10000 });
-      } catch (error: any) {
-        if (
-          error.name === "TimeoutError" ||
-          /timeout/i.test(error.message ?? "")
-        ) {
-          console.log(
-            "Keplr approval popup did not appear within 10s; assuming 1-click trading or pre-approved."
-          );
-        } else {
-          throw error;
-        }
-      }
-    }
-
-    if (approvePage) {
-      await approvePage.waitForLoadState("load", { timeout: 10000 });
-      console.log(`Approve page is opened at: ${approvePage.url()}`);
-      await approvePage
-        .getByRole("button", { name: "Approve" })
-        .click({ timeout: 4000 });
-    }
+    await waitForKeplrApproval(context, { timeout: 10_000 });
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalanceForSwap(),
       "Insufficient balance for the swap!"
@@ -193,14 +202,14 @@ export class TradePage extends BasePage {
     await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
       timeout: 15000,
     });
+
     await this.swapBtn.click({ timeout: 4000 });
-    // Handle 1-click by default
-    const oneClick = '//div[@role="dialog"]//button[@data-state="checked"]';
-    if (await this.page.locator(oneClick).isVisible({ timeout: 2000 })) {
-      await this.page.locator(oneClick).click({ timeout: 3000 });
-    }
+    await this.page.waitForTimeout(500);
+    await this.disable1CTIfNeeded();
     await this.confirmSwapBtn.click({ timeout: 5000 });
-    return await this.approveInKeplrAndGetMsg(context);
+
+    const msgContentAmount = await this.approveInKeplrAndGetMsg(context);
+    return msgContentAmount;
   }
 
   async selectAsset(token: string) {
@@ -274,7 +283,7 @@ export class TradePage extends BasePage {
   }
 
   async getTransactionUrl() {
-    const trxUrl = await this.trxLink.getAttribute("href");
+    const trxUrl = await this.trxLink.getAttribute("href", { timeout: 10000 });
     console.log(`Trx url: ${trxUrl}`);
     await this.page.reload();
     return trxUrl;
@@ -406,17 +415,10 @@ export class TradePage extends BasePage {
           timeout: 40000,
         });
 
-        // Handle Pop-up page ->
-        // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
-        // If Keplr popup doesn't appear (1-click trading enabled), this will timeout gracefully
-        const pageApprovePromise = context.waitForEvent("page", {
-          timeout: 20000,
-        });
         await this.buyBtn.click();
-        // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+        await this.disable1CTIfNeeded();
 
-        // Set slippage tolerance if specified (after buy clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
@@ -424,45 +426,28 @@ export class TradePage extends BasePage {
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
+        const approvePage = await getKeplrPopupPage(context, {
+          timeout: 20_000,
+        });
 
-        try {
-          const approvePage = await pageApprovePromise;
+        if (approvePage) {
           await approvePage.waitForLoadState();
           const approveBtn = approvePage.getByRole("button", {
             name: "Approve",
           });
           await expect(approveBtn).toBeEnabled();
-          let msgTextLocator = "type: osmosis/poolmanager/";
-          if (limit) {
-            msgTextLocator = "Execute contract";
-          }
+          const msgTextLocator = limit
+            ? "Execute contract"
+            : "type: osmosis/poolmanager/";
           msgContentAmount =
             (await approvePage.getByText(msgTextLocator).textContent()) ??
             undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-          // Approve trx
           await approveBtn.click();
-          // Handle Pop-up page <-
-        } catch (error: any) {
-          // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-          // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-          // This is expected behavior, not an error - transaction is still submitted on-chain
-          if (
-            error.name === "TimeoutError" ||
-            (error instanceof Error && /timeout/i.test(error.message))
-          ) {
-            console.log(
-              "✓ Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
-            );
-            msgContentAmount = undefined;
-          } else {
-            // Other errors (button not found, page closed, etc.) should be retried
-            console.error(
-              "Failed to get Keplr approval popup:",
-              error.message ?? "Unknown error"
-            );
-            throw error; // Re-throw to be caught by outer try-catch
-          }
+        } else {
+          console.log(
+            "Keplr approval popup did not appear; assuming 1-click trading is enabled or transaction was pre-approved."
+          );
         }
 
         // Successfully submitted! Now wait for transaction success
@@ -502,7 +487,12 @@ export class TradePage extends BasePage {
           }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
 
-        // Wait before retry to let things settle
+        // Dismiss any lingering "Review trade" modal so the next attempt starts clean
+        await this.page.keyboard.press("Escape");
+        await this.page
+          .locator(".ReactModal__Overlay")
+          .waitFor({ state: "hidden", timeout: 2000 })
+          .catch(() => {});
         await this.page.waitForTimeout(2000);
       }
     }
@@ -568,17 +558,10 @@ export class TradePage extends BasePage {
           timeout: 40000,
         });
 
-        // Handle Pop-up page ->
-        // IMPORTANT: waitForEvent MUST have a timeout to prevent hanging indefinitely
-        // If Keplr popup doesn't appear (1-click trading enabled), this will timeout gracefully
-        const pageApprovePromise = context.waitForEvent("page", {
-          timeout: 20000,
-        });
         await this.sellBtn.click();
-        // Small wait to let UI settle before triggering popup
         await this.page.waitForTimeout(500);
+        await this.disable1CTIfNeeded();
 
-        // Set slippage tolerance if specified (after sell clicked, before confirm)
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
         }
@@ -586,45 +569,28 @@ export class TradePage extends BasePage {
         await this.confirmSwapBtn.click();
 
         let msgContentAmount: string | undefined;
+        const approvePage = await getKeplrPopupPage(context, {
+          timeout: 20_000,
+        });
 
-        try {
-          const approvePage = await pageApprovePromise;
+        if (approvePage) {
           await approvePage.waitForLoadState();
           const approveBtn = approvePage.getByRole("button", {
             name: "Approve",
           });
           await expect(approveBtn).toBeEnabled();
-          let msgTextLocator = "type: osmosis/poolmanager/";
-          if (limit) {
-            msgTextLocator = "Execute contract";
-          }
+          const msgTextLocator = limit
+            ? "Execute contract"
+            : "type: osmosis/poolmanager/";
           msgContentAmount =
             (await approvePage.getByText(msgTextLocator).textContent()) ??
             undefined;
           console.log(`Wallet is approving this msg: \n${msgContentAmount}`);
-          // Approve trx
           await approveBtn.click();
-          // Handle Pop-up page <-
-        } catch (error: any) {
-          // IMPORTANT: Gracefully handle timeout errors for 1-click trading scenarios
-          // When 1-click trading is enabled, no Keplr popup appears and waitForEvent times out
-          // This is expected behavior, not an error - transaction is still submitted on-chain
-          if (
-            error.name === "TimeoutError" ||
-            (error instanceof Error && /timeout/i.test(error.message))
-          ) {
-            console.log(
-              "✓ Keplr approval popup did not appear within 20s; assuming 1-click trading is enabled or transaction was pre-approved."
-            );
-            msgContentAmount = undefined;
-          } else {
-            // Other errors (button not found, page closed, etc.) should be retried
-            console.error(
-              "Failed to get Keplr approval popup:",
-              error.message ?? "Unknown error"
-            );
-            throw error; // Re-throw to be caught by outer try-catch
-          }
+        } else {
+          console.log(
+            "Keplr approval popup did not appear; assuming 1-click trading is enabled or transaction was pre-approved."
+          );
         }
 
         // Successfully submitted! Now wait for transaction success
@@ -664,7 +630,12 @@ export class TradePage extends BasePage {
           }. ` + `Error: ${error.message ?? "Unknown error"}. Retrying...`
         );
 
-        // Wait before retry to let things settle
+        // Dismiss any lingering "Review trade" modal so the next attempt starts clean
+        await this.page.keyboard.press("Escape");
+        await this.page
+          .locator(".ReactModal__Overlay")
+          .waitFor({ state: "hidden", timeout: 2000 })
+          .catch(() => {});
         await this.page.waitForTimeout(2000);
       }
     }
@@ -699,6 +670,8 @@ export class TradePage extends BasePage {
     });
 
     await this.sellBtn.click();
+    await this.page.waitForTimeout(500);
+    await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
@@ -738,6 +711,8 @@ export class TradePage extends BasePage {
     });
 
     await this.buyBtn.click();
+    await this.page.waitForTimeout(500);
+    await this.disable1CTIfNeeded();
 
     if (slippagePercent) {
       await this.setSlippageTolerance(slippagePercent);
@@ -817,6 +792,8 @@ export class TradePage extends BasePage {
         });
 
         await this.swapBtn.click({ timeout: 4000 });
+        await this.page.waitForTimeout(500);
+        await this.disable1CTIfNeeded();
 
         if (slippagePercent) {
           await this.setSlippageTolerance(slippagePercent);
