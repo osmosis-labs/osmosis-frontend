@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
@@ -6,6 +7,14 @@ import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
+
+const WormholeRedeem = dynamic(
+  () =>
+    import("~/components/bridge/wormhole-redeem").then(
+      (mod) => mod.WormholeRedeem
+    ),
+  { ssr: false }
+);
 
 type PaletteColor = {
   50: string;
@@ -259,6 +268,7 @@ const Wormhole: FunctionComponent = () => {
         "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
       wormchain: "https://wormchain-mainnet-1-full.tm.p2p.org/",
       ethereum: "https://ethereum-rpc.publicnode.com",
+      osmosis: "https://rpc.archive.osmosis.zone",
     },
     tokensConfig: {
       BONK: {
@@ -424,6 +434,7 @@ const Wormhole: FunctionComponent = () => {
         data-theme={JSON.stringify(customTheme)}
         style={{ display: scriptLoaded ? "block" : "none" }}
       ></div>
+      <WormholeRedeem />
       {/**
        * On version bumps make sure to update the hash.
        * @see https://www.srihash.org/ - to compute it
