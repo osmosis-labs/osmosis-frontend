@@ -402,10 +402,7 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
     );
 
     const expectedJuno = trimPlaceholderZeros(
-      junoBalance
-        .toDec()
-        .sub(junoGas.toDec().mul(MUL_GAS_SLIPPAGE))
-        .toString()
+      junoBalance.toDec().sub(junoGas.toDec().mul(MUL_GAS_SLIPPAGE)).toString()
     );
 
     await waitFor(() => {
