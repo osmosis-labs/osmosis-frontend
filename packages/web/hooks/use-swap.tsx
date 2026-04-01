@@ -1825,6 +1825,14 @@ function computeSuggestedSlippage(
   // For out-given-in, adverse means less out received → ratio < 1 → negative.
   // For in-given-out, the quote is computed in the reverse sell direction:
   // adverse for the buyer means the seller benefits → ratio > 1 → positive.
+  //
+  // NOTE: In practice, in-given-out priceImpact will always be near-zero or
+  // positive (appearing favorable) because SQS implements exact-out by
+  // inverting an out-given-in quote. The inverted amount_in excludes taker fee
+  // and spread factor, so the quoted input is always slightly below the true
+  // market cost. As a result, slippage tier escalation never triggers for
+  // in-given-out trades — this is a known SQS limitation. Fixing it requires
+  // SQS to implement a true exact-out algorithm that includes fees in amount_in.
   const priceImpact =
     quoteType === "in-given-out"
       ? rawImpact.isPositive()
