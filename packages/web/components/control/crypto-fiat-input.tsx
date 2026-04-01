@@ -299,6 +299,7 @@ export const CryptoFiatInput: FunctionComponent<{
       );
     }
   }, [
+    assetWithBalance?.address,
     assetWithBalance?.amount,
     canSetMax,
     inputCoin,
