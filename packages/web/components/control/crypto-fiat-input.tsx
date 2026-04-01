@@ -107,6 +107,7 @@ export const CryptoFiatInput: FunctionComponent<{
   });
 
   const gasAppliedToMax = useRef(false);
+  const gasAppliedForAsset = useRef<string | undefined>(undefined);
 
   // Check if price is available for fiat input
   const isPriceAvailable = Boolean(assetPrice?.fiatCurrency);
@@ -259,6 +260,10 @@ export const CryptoFiatInput: FunctionComponent<{
 
     if (!canSetMax || !assetWithBalance?.amount || !inputCoin) return;
 
+    if (assetWithBalance.address !== gasAppliedForAsset.current) {
+      gasAppliedToMax.current = false;
+    }
+
     if (transferGasCost) {
       if (gasAppliedToMax.current) return;
 
@@ -285,7 +290,10 @@ export const CryptoFiatInput: FunctionComponent<{
       }
 
       gasAppliedToMax.current = true;
+      gasAppliedForAsset.current = assetWithBalance.address;
     } else {
+      // Don't set gasAppliedToMax here — allow gas deduction to run
+      // once transferGasCost arrives from the first quote response.
       onInput("crypto")(
         trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
       );
