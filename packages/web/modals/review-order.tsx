@@ -900,44 +900,42 @@ export const ReviewOrder = observer(function ReviewOrder({
                   onParamsChange={() => setShowOneClickTradingSettings(true)}
                 />
               )}
+              {isExtremeValueDisparity && (
+                <label
+                  htmlFor="extreme-disparity-ack"
+                  className="flex cursor-pointer items-start gap-3 rounded-xl bg-rust-800 p-4"
+                >
+                  <Checkbox
+                    id="extreme-disparity-ack"
+                    className="mt-0.5 shrink-0"
+                    checked={hasAcknowledgedDisparity}
+                    onCheckedChange={(checked) =>
+                      setHasAcknowledgedDisparity(checked === true)
+                    }
+                  />
+                  <span className="text-sm text-rust-200">
+                    {t("swap.extremeDisparityAcknowledgement")}
+                  </span>
+                </label>
+              )}
               {!diffGteSlippage && (
-                <>
-                  {isExtremeValueDisparity && (
-                    <label
-                      htmlFor="extreme-disparity-ack"
-                      className="flex cursor-pointer items-start gap-3 rounded-xl bg-rust-800 p-4"
-                    >
-                      <Checkbox
-                        id="extreme-disparity-ack"
-                        className="mt-0.5 shrink-0"
-                        checked={hasAcknowledgedDisparity}
-                        onCheckedChange={(checked) =>
-                          setHasAcknowledgedDisparity(checked === true)
-                        }
-                      />
-                      <span className="text-sm text-rust-200">
-                        {t("swap.extremeDisparityAcknowledgement")}
-                      </span>
-                    </label>
-                  )}
-                  <div className="flex w-full justify-between gap-3 pt-3">
-                    <Button
-                      mode="primary"
-                      onClick={() => {
-                        confirmAction();
-                      }}
-                      disabled={
-                        isConfirmationDisabled ||
-                        wouldExceedSpendLimit ||
-                        hasInsufficientFeeTokens ||
-                        (isExtremeValueDisparity && !hasAcknowledgedDisparity)
-                      }
-                      className="body2 sm:caption !rounded-2xl"
-                    >
-                      <h6>{t("limitOrders.confirm")}</h6>
-                    </Button>
-                  </div>
-                </>
+                <div className="flex w-full justify-between gap-3 pt-3">
+                  <Button
+                    mode="primary"
+                    onClick={() => {
+                      confirmAction();
+                    }}
+                    disabled={
+                      isConfirmationDisabled ||
+                      wouldExceedSpendLimit ||
+                      hasInsufficientFeeTokens ||
+                      (isExtremeValueDisparity && !hasAcknowledgedDisparity)
+                    }
+                    className="body2 sm:caption !rounded-2xl"
+                  >
+                    <h6>{t("limitOrders.confirm")}</h6>
+                  </Button>
+                </div>
               )}
             </div>
           </div>
