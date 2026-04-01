@@ -160,10 +160,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const outputDifference = useMemo(() => {
       if (quoteType === "in-given-out") {
-        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1 and is always
-        // positive for adverse impact regardless of quote direction.
+        // priceImpactTokenOut is (effectivePrice / spotPrice) - 1. Adverse
+        // trades are negative (buyer receives less out per in than spot).
+        // Negate so that adverse = positive, matching the out-given-in fiat
+        // branch convention used by the display logic below.
         return new RatePretty(
-          swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)
+          (swapState.quote?.priceImpactTokenOut?.toDec() ?? new Dec(0)).neg()
         );
       }
       return new RatePretty(
@@ -240,7 +242,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         quoteType,
       });
 
-    // reivew swap modal
+    // review swap modal
     const [showSwapReviewModal, setShowSwapReviewModal] = useState(false);
 
     // user action

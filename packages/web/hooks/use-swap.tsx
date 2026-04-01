@@ -1805,8 +1805,6 @@ export function useDynamicSlippageConfig({
               )
             );
           }
-        } else {
-          console.log("No amounts found");
         }
       }
     }
@@ -1814,33 +1812,16 @@ export function useDynamicSlippageConfig({
 }
 
 /** Computes the suggested slippage tier from a quote (pure, no side effects). */
-function computeSuggestedSlippage(
-  quote: SwapState["quote"],
-  quoteType: QuoteDirection = "out-given-in"
-): string {
+function computeSuggestedSlippage(quote: SwapState["quote"]): string {
   if (!quote) return DefaultSlippage;
 
   const rawImpact = quote.priceImpactTokenOut?.toDec() ?? new Dec(0);
-  // SQS computes priceImpact as (effectiveOutOverIn / spotOutOverIn) - 1.
-  // For out-given-in, adverse means less out received → ratio < 1 → negative.
-  // For in-given-out, the quote is computed in the reverse sell direction:
-  // adverse for the buyer means the seller benefits → ratio > 1 → positive.
-  //
-  // NOTE: In practice, in-given-out priceImpact will always be near-zero or
-  // positive (appearing favorable) because SQS implements exact-out by
-  // inverting an out-given-in quote. The inverted amount_in excludes taker fee
-  // and spread factor, so the quoted input is always slightly below the true
-  // market cost. As a result, slippage tier escalation never triggers for
-  // in-given-out trades — this is a known SQS limitation. Fixing it requires
-  // SQS to implement a true exact-out algorithm that includes fees in amount_in.
-  const priceImpact =
-    quoteType === "in-given-out"
-      ? rawImpact.isPositive()
-        ? rawImpact
-        : new Dec(0)
-      : rawImpact.isNegative()
-      ? rawImpact.abs()
-      : new Dec(0);
+  // SQS computes priceImpact as (effectiveOutOverIn / spotOutOverIn) - 1 for
+  // both quote directions. Adverse trades always yield a negative value:
+  //   out-given-in: user receives less out than spot → ratio < 1 → negative
+  //   in-given-out: buyer receives less out per in than spot → ratio < 1 → negative
+  // Clamp favorable (positive) values to zero so they don't inflate the tier.
+  const priceImpact = rawImpact.isNegative() ? rawImpact.abs() : new Dec(0);
   const tokens = quote.tokens;
   const lowestLiquidityCap =
     tokens && tokens.length > 0
@@ -1876,8 +1857,8 @@ export function useDynamicSlippageFromQuote({
   // Synchronously compute the display value from the current quote so it updates
   // in the same React render cycle as the quote/gas display, not one cycle later.
   const autoAdjustedSlippage = useMemo(
-    () => computeSuggestedSlippage(quote, quoteType),
-    [quote, quoteType]
+    () => computeSuggestedSlippage(quote),
+    [quote]
   );
 
   // Tracks the last value written by this hook — used only as an optimisation to
@@ -1898,7 +1879,7 @@ export function useDynamicSlippageFromQuote({
     // dedicated flag that review-order sets when the user edits the field.
     if (slippageConfig.userOverrodeSlippage) return;
 
-    const suggested = computeSuggestedSlippage(quote, quoteType);
+    const suggested = computeSuggestedSlippage(quote);
 
     // Skip the write if the suggestion is unchanged (avoids a MobX reaction cycle)
     if (suggested === lastAutoSet.current) return;
