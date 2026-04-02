@@ -22,19 +22,12 @@ test.describe("Test Market Buy/Sell Order feature", () => {
 
     tradePage = new TradePage(context.pages()[0]);
     await tradePage.goto();
-  });
-
-  test.afterAll(async () => {
-    await context.close();
-  });
-
-  test.beforeEach(async () => {
     await tradePage.connectWallet();
     expect(await tradePage.isError(), "Swap is not available!").toBeFalsy();
   });
 
-  test.afterEach(async () => {
-    await tradePage.logOut();
+  test.afterAll(async () => {
+    await context.close();
   });
 
   // biome-ignore lint/correctness/noEmptyPattern: <explanation>

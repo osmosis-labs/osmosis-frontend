@@ -415,7 +415,7 @@ jobs:
           path: packages/e2e/playwright-report
 
   fe-trade-eu:
-    timeout-minutes: 12
+    timeout-minutes: 20
     needs: fe-swap-eu
     name: prod-fe-trade-eu
     runs-on: ubuntu-latest
@@ -545,11 +545,11 @@ jobs:
           cd packages/e2e
           npx playwright test monitoring.market --timeout 180000
       - name: set-output
-        if: failure() || success()
+        if: always()
         id: set-output
         run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload monitoring test results
-        if: failure()
+        if: failure() || cancelled()
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -694,11 +694,11 @@ jobs:
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
       - name: set-output
-        if: failure() || success()
+        if: always()
         id: set-output
         run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload monitoring test results
-        if: failure()
+        if: failure() || cancelled()
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -706,7 +706,7 @@ jobs:
           path: packages/e2e/playwright-report
 
   fe-trade-sg:
-    timeout-minutes: 12
+    timeout-minutes: 15
     needs: fe-swap-sg
     name: prod-fe-trade-sg
     runs-on: ubuntu-latest
@@ -836,11 +836,11 @@ jobs:
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
       - name: set-output
-        if: failure() || success()
+        if: always()
         id: set-output
         run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload monitoring test results
-        if: failure()
+        if: failure() || cancelled()
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -975,11 +975,11 @@ jobs:
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
       - name: set-output
-        if: failure() || success()
+        if: always()
         id: set-output
         run: echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload monitoring test results
-        if: failure()
+        if: failure() || cancelled()
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
@@ -1121,13 +1121,13 @@ jobs:
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
       - name: set-output
-        if: failure() || success()
+        if: always()
         id: set-output
         run: |
           echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)"
           echo "unexpected=$(jq -r '.stats.unexpected' packages/e2e/playwright-report/test-results.json)" >> $GITHUB_OUTPUT
       - name: upload monitoring test results
-        if: failure()
+        if: failure() || cancelled()
         id: monitoring-test-results
         uses: actions/upload-artifact@v4
         with:
