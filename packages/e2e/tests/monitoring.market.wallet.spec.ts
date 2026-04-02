@@ -6,6 +6,7 @@ import { ensureBalances } from "../utils/balance-checker";
 import { deriveAddress } from "../utils/wallet-utils";
 
 test.describe("Test Market Buy/Sell Order feature", () => {
+  test.describe.configure({ retries: 0 });
   let context: BrowserContext;
   const privateKey = process.env.PRIVATE_KEY ?? "private_key";
   let tradePage: TradePage;
