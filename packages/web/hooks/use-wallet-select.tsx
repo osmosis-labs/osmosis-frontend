@@ -96,7 +96,14 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
           const walletInfo = CosmosWalletRegistry.find(
             ({ name }) => name === currentWallet
           );
-          const WalletClass = await walletInfo?.lazyInstall();
+
+          if (!walletInfo) {
+            localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+            localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+            return;
+          }
+
+          const WalletClass = await walletInfo.lazyInstall();
           return accountStore.addWallet(new WalletClass(walletInfo));
         }
       };
