@@ -292,8 +292,10 @@ export const CryptoFiatInput: FunctionComponent<{
       gasAppliedToMax.current = true;
       gasAppliedForAsset.current = assetWithBalance.address;
     } else {
-      // Don't set gasAppliedToMax here — allow gas deduction to run
-      // once transferGasCost arrives from the first quote response.
+      // Reset the guard so gas deduction runs when transferGasCost arrives.
+      // This covers both the initial render (ref starts false) and the case
+      // where quotes temporarily fail after gas was previously applied.
+      gasAppliedToMax.current = false;
       onInput("crypto")(
         trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
       );

@@ -409,4 +409,85 @@ describe("CryptoFiatInput gasAppliedToMax guard", () => {
       expect(onChangeCryptoInput).toHaveBeenCalledWith(expectedJuno);
     });
   });
+
+  it("re-applies gas after transferGasCost goes undefined then returns", async () => {
+    const balanceRaw = "2000000";
+    const gasRaw1 = "5000";
+    const gasRaw2 = "5200";
+    const onChangeCryptoInput = jest.fn();
+
+    const balanceDec = makeBalance(balanceRaw).toDec().toString();
+    const balance = makeBalance(balanceRaw);
+
+    const baseProps = {
+      currentUnit: "crypto" as const,
+      setCurrentUnit: jest.fn(),
+      setIsMax: jest.fn(),
+      canSetMax: true,
+      transferGasChain: { prettyName: "Cosmos Hub" },
+      assetPrice: undefined,
+      assetWithBalance: {
+        denom: "ATOM",
+        address: "uatom",
+        decimals: 6,
+        amount: balance,
+      },
+      fiatInput: "",
+      onChangeFiatInput: jest.fn(),
+      isInsufficientBal: false,
+      isInsufficientFee: false,
+    };
+
+    // 1) Gas applied initially
+    const { rerender } = render(
+      <CryptoFiatInput
+        {...baseProps}
+        isMax={true}
+        transferGasCost={makeGasCost(gasRaw1)}
+        cryptoInput={balanceDec}
+        onChangeCryptoInput={onChangeCryptoInput}
+      />
+    );
+
+    const expected1 = expectedMaxAfterGas(balanceRaw, gasRaw1);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected1);
+    });
+
+    onChangeCryptoInput.mockClear();
+
+    // 2) Quotes fail — transferGasCost goes undefined while isMax stays true
+    rerender(
+      <CryptoFiatInput
+        {...baseProps}
+        isMax={true}
+        transferGasCost={undefined}
+        cryptoInput={expected1}
+        onChangeCryptoInput={onChangeCryptoInput}
+      />
+    );
+
+    const fullBalance = trimPlaceholderZeros(balanceDec);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(fullBalance);
+    });
+
+    onChangeCryptoInput.mockClear();
+
+    // 3) Quotes succeed again — gas should be deducted fresh
+    rerender(
+      <CryptoFiatInput
+        {...baseProps}
+        isMax={true}
+        transferGasCost={makeGasCost(gasRaw2)}
+        cryptoInput={balanceDec}
+        onChangeCryptoInput={onChangeCryptoInput}
+      />
+    );
+
+    const expected2 = expectedMaxAfterGas(balanceRaw, gasRaw2);
+    await waitFor(() => {
+      expect(onChangeCryptoInput).toHaveBeenCalledWith(expected2);
+    });
+  });
 });
