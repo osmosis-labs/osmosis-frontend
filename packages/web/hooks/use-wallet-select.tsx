@@ -1,6 +1,8 @@
+import { MainWalletBase } from "@cosmos-kit/core";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
+  CosmosRegistryWallet,
 } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
@@ -19,6 +21,52 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
+
+interface InstallPrevSessionWalletDeps {
+  walletRegistry: CosmosRegistryWallet[];
+  mainWallets: MainWalletBase[];
+  addWallet: (wallet: MainWalletBase) => any;
+}
+
+/**
+ * Attempts to restore a previously connected cosmos wallet from localStorage.
+ * If the persisted wallet name is no longer in the registry (e.g. after a wallet
+ * provider is sunset), the stale session is cleared so the user starts fresh.
+ */
+export async function installPrevSessionWallet({
+  walletRegistry,
+  mainWallets,
+  addWallet,
+}: InstallPrevSessionWalletDeps) {
+  const accountStr = localStorage.getItem(CosmosKitAccountsLocalStorageKey);
+
+  if (!accountStr || accountStr === "[]") {
+    localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+    localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+    return;
+  }
+
+  const currentWallet = localStorage.getItem(CosmosKitWalletLocalStorageKey);
+
+  if (currentWallet) {
+    if (mainWallets.some((w) => w.walletInfo.name === currentWallet)) {
+      return;
+    }
+
+    const walletInfo = walletRegistry.find(
+      ({ name }) => name === currentWallet
+    );
+
+    if (!walletInfo) {
+      localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+      localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+      return;
+    }
+
+    const WalletClass = await walletInfo.lazyInstall();
+    return addWallet(new WalletClass(walletInfo));
+  }
+}
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
   onOpenWalletSelect: (params: WalletSelectParams) => void;
@@ -67,43 +115,13 @@ export const WalletSelectProvider: FunctionComponent<{ children: ReactNode }> =
     }, [accountStore, setUserProperty]);
 
     useEffect(() => {
-      const installPrevSessionWallet = async () => {
-        const accountStr = localStorage.getItem(
-          CosmosKitAccountsLocalStorageKey
-        );
-
-        // If there is no account, remove wallet and accounts from local storage to avoid unneeded installation
-        if (!accountStr || accountStr === "[]") {
-          localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
-          localStorage.removeItem(CosmosKitWalletLocalStorageKey);
-          return;
-        }
-
-        const currentWallet = window.localStorage.getItem(
-          CosmosKitWalletLocalStorageKey
-        );
-
-        if (currentWallet) {
-          // If wallet is already installed, do nothing
-          if (
-            accountStore.walletManager.mainWallets.some(
-              (w) => w.walletInfo.name === currentWallet
-            )
-          ) {
-            return;
-          }
-
-          const walletInfo = CosmosWalletRegistry.find(
-            ({ name }) => name === currentWallet
-          );
-          const WalletClass = await walletInfo?.lazyInstall();
-          return accountStore.addWallet(new WalletClass(walletInfo));
-        }
-      };
-
       const init = async () => {
         try {
-          await installPrevSessionWallet();
+          await installPrevSessionWallet({
+            walletRegistry: CosmosWalletRegistry,
+            mainWallets: accountStore.walletManager.mainWallets,
+            addWallet: (w) => accountStore.addWallet(w),
+          });
           // On mounted handles wallet connection if a session exists
           await accountStore.walletManager.onMounted();
           setUserAmplitudeProperties();
