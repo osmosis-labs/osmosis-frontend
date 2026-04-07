@@ -196,17 +196,15 @@ export const WormholeRedeem: FunctionComponent = () => {
       const { Connection, PublicKey } = await import("@solana/web3.js");
       const connection = new Connection(SOLANA_RPC);
 
-      const { wormhole, Wormhole } = await import(
-        "@wormhole-foundation/sdk-connect"
-      );
-      const { default: solana } = await import(
+      const { Wormhole } = await import("@wormhole-foundation/sdk-connect");
+      const { SolanaPlatform } = await import(
         "@wormhole-foundation/sdk-solana"
       );
       const { deserialize } = await import(
         "@wormhole-foundation/sdk-definitions"
       );
 
-      const wh = await wormhole("Mainnet", [solana], {
+      const wh = new Wormhole("Mainnet", [SolanaPlatform], {
         chains: { Solana: { rpc: SOLANA_RPC } },
       });
       const solanaCtx = wh.getChain("Solana");
