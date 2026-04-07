@@ -180,9 +180,11 @@ export const WormholeRedeem: FunctionComponent = () => {
 
   useEffect(() => {
     if (!phantom) return;
-    phantom.on?.("accountChanged", (publicKey: any) => {
+    const onAccountChanged = (publicKey: any) => {
       setSolanaWallet(publicKey ? publicKey.toString() : null);
-    });
+    };
+    phantom.on?.("accountChanged", onAccountChanged);
+    return () => phantom.off?.("accountChanged", onAccountChanged);
   }, [phantom]);
 
   const executeRedeem = useCallback(async () => {
