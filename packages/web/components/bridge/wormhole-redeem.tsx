@@ -1,4 +1,5 @@
-import {
+import type { Keypair, Transaction, VersionedTransaction } from "@solana/web3.js";
+import React, {
   FunctionComponent,
   useCallback,
   useEffect,
@@ -6,7 +7,12 @@ import {
   useState,
 } from "react";
 
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { apiClient, shorten } from "@osmosis-labs/utils";
+
 import { Spinner } from "~/components/loaders";
+import { formatPretty } from "~/utils/formatter";
 
 const WORMHOLESCAN_API = "https://api.wormholescan.io/api/v1";
 const SOLANA_RPC = "https://solana-rpc.publicnode.com";
@@ -81,26 +87,13 @@ type RedeemStatus =
   | "success"
   | "error";
 
-function truncateAddress(addr: string, chars = 6): string {
-  if (addr.length <= chars * 2 + 3) return addr;
-  return `${addr.slice(0, chars)}...${addr.slice(-chars)}`;
-}
-
-function formatUsd(val: string): string {
-  const n = parseFloat(val);
-  if (isNaN(n)) return val;
-  return n.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-  });
-}
+const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
 export const WormholeRedeem: FunctionComponent = () => {
   const [txHash, setTxHash] = useState("");
   const [status, setStatus] = useState<RedeemStatus>("idle");
   const [operation, setOperation] = useState<OperationData | null>(null);
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState<React.ReactNode>("");
   const [solanaWallet, setSolanaWallet] = useState<string | null>(null);
   const [redeemTxHash, setRedeemTxHash] = useState<string | null>(null);
 
@@ -119,10 +112,9 @@ export const WormholeRedeem: FunctionComponent = () => {
     setRedeemTxHash(null);
 
     try {
-      const res = await fetch(`${WORMHOLESCAN_API}/operations?txHash=${hash}`);
-      if (!res.ok) throw new Error(`API returned ${res.status}`);
-
-      const json = await res.json();
+      const json = await apiClient<{ operations?: OperationData[] }>(
+        `${WORMHOLESCAN_API}/operations?txHash=${encodeURIComponent(hash)}`
+      );
       if (!json.operations?.length) {
         throw new Error(
           "Transaction not found. Make sure this is a Wormhole bridge transaction hash."
@@ -157,8 +149,10 @@ export const WormholeRedeem: FunctionComponent = () => {
       } else {
         setStatus("ready");
       }
-    } catch (err: any) {
-      setErrorMsg(err.message || "Failed to look up transaction");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to look up transaction";
+      setErrorMsg(message);
       setStatus("error");
     }
   }, [txHash]);
@@ -166,21 +160,34 @@ export const WormholeRedeem: FunctionComponent = () => {
   const connectWallet = useCallback(async () => {
     if (!phantom) {
       setErrorMsg(
-        "Phantom wallet not detected. Please install Phantom to redeem."
+        <>
+          Phantom wallet not detected.{" "}
+          <a
+            href={PHANTOM_DOWNLOAD_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
+            Install Phantom
+          </a>{" "}
+          to redeem.
+        </>
       );
       return;
     }
     try {
       const resp = await phantom.connect();
       setSolanaWallet(resp.publicKey.toString());
-    } catch (err: any) {
-      setErrorMsg(err.message || "Failed to connect wallet");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Failed to connect wallet";
+      setErrorMsg(message);
     }
   }, [phantom]);
 
   useEffect(() => {
     if (!phantom) return;
-    const onAccountChanged = (publicKey: any) => {
+    const onAccountChanged = (publicKey: { toString(): string } | null) => {
       setSolanaWallet(publicKey ? publicKey.toString() : null);
     };
     phantom.on?.("accountChanged", onAccountChanged);
@@ -235,7 +242,10 @@ export const WormholeRedeem: FunctionComponent = () => {
         const latestBlockhash = await connection.getLatestBlockhash(
           "confirmed"
         );
-        const tx = unsignedTx.transaction.transaction as any;
+        const innerTx = unsignedTx.transaction.transaction as
+          | Transaction
+          | VersionedTransaction;
+        const tx = innerTx as Transaction;
         if (
           !tx.recentBlockhash ||
           tx.recentBlockhash === "11111111111111111111111111111111"
@@ -245,7 +255,9 @@ export const WormholeRedeem: FunctionComponent = () => {
         if (!tx.feePayer) {
           tx.feePayer = payer;
         }
-        const signers = unsignedTx.transaction.signers as any[] | undefined;
+        const signers = unsignedTx.transaction.signers as
+          | Keypair[]
+          | undefined;
         if (signers?.length) {
           for (const signer of signers) {
             if (typeof tx.partialSign === "function") {
@@ -290,8 +302,10 @@ export const WormholeRedeem: FunctionComponent = () => {
       }
 
       setStatus("success");
-    } catch (err: any) {
-      setErrorMsg(err.message || "Redeem failed");
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Redeem failed";
+      setErrorMsg(message);
       setStatus("error");
     }
   }, [operation, solanaWallet, phantom]);
@@ -357,23 +371,29 @@ export const WormholeRedeem: FunctionComponent = () => {
 
                 <span className="text-osmoverse-400">Value</span>
                 <span className="text-right text-white-full">
-                  ~{formatUsd(operation.data.usdAmount)}
+                  ~
+                  {formatPretty(
+                    new PricePretty(
+                      DEFAULT_VS_CURRENCY,
+                      new Dec(operation.data.usdAmount)
+                    )
+                  )}
                 </span>
 
                 <span className="text-osmoverse-400">From</span>
                 <span className="text-right font-mono text-xs text-white-full">
-                  {truncateAddress(
+                  {shorten(
                     operation.sourceChain.attribute?.value?.originAddress ||
                       operation.sourceChain.from,
-                    8
+                    { prefixLength: 8, suffixLength: 8 }
                   )}
                 </span>
 
                 <span className="text-osmoverse-400">To (Solana)</span>
                 <span className="text-right font-mono text-xs text-white-full">
-                  {truncateAddress(
+                  {shorten(
                     operation.content.standarizedProperties.toAddress,
-                    8
+                    { prefixLength: 8, suffixLength: 8 }
                   )}
                 </span>
 
@@ -443,7 +463,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                 <div className="flex items-center justify-between rounded-lg bg-osmoverse-900 p-3 text-sm">
                   <span className="text-osmoverse-400">Connected Wallet</span>
                   <span className="font-mono text-xs text-white-full">
-                    {truncateAddress(solanaWallet, 6)}
+                    {shorten(solanaWallet)}
                   </span>
                 </div>
 
@@ -486,7 +506,7 @@ export const WormholeRedeem: FunctionComponent = () => {
   );
 };
 
-async function checkIfRedeemed(op: OperationData): Promise<boolean> {
+export async function checkIfRedeemed(op: OperationData): Promise<boolean> {
   try {
     const { PublicKey } = await import("@solana/web3.js");
 
