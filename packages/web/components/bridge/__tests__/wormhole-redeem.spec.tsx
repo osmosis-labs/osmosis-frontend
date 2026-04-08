@@ -24,8 +24,8 @@ jest.mock("@osmosis-labs/server", () => ({
 }));
 
 jest.mock("~/utils/formatter", () => ({
-  formatPretty: jest.fn((price: { toString: () => string }) =>
-    `$${price.toString()}`
+  formatPretty: jest.fn(
+    (price: { toString: () => string }) => `$${price.toString()}`
   ),
 }));
 
@@ -122,9 +122,7 @@ describe("checkIfRedeemed", () => {
   });
 
   it("returns false on network error", async () => {
-    global.fetch = jest
-      .fn()
-      .mockRejectedValueOnce(new Error("Network error"));
+    global.fetch = jest.fn().mockRejectedValueOnce(new Error("Network error"));
 
     const result = await checkIfRedeemed(makeOperation() as any);
     expect(result).toBe(false);

@@ -1,4 +1,8 @@
-import type { Keypair, Transaction, VersionedTransaction } from "@solana/web3.js";
+import type {
+  Keypair,
+  Transaction,
+  VersionedTransaction,
+} from "@solana/web3.js";
 import React, {
   FunctionComponent,
   useCallback,
@@ -255,9 +259,7 @@ export const WormholeRedeem: FunctionComponent = () => {
         if (!tx.feePayer) {
           tx.feePayer = payer;
         }
-        const signers = unsignedTx.transaction.signers as
-          | Keypair[]
-          | undefined;
+        const signers = unsignedTx.transaction.signers as Keypair[] | undefined;
         if (signers?.length) {
           for (const signer of signers) {
             if (typeof tx.partialSign === "function") {
@@ -303,8 +305,7 @@ export const WormholeRedeem: FunctionComponent = () => {
 
       setStatus("success");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Redeem failed";
+      const message = err instanceof Error ? err.message : "Redeem failed";
       setErrorMsg(message);
       setStatus("error");
     }
@@ -391,10 +392,10 @@ export const WormholeRedeem: FunctionComponent = () => {
 
                 <span className="text-osmoverse-400">To (Solana)</span>
                 <span className="text-right font-mono text-xs text-white-full">
-                  {shorten(
-                    operation.content.standarizedProperties.toAddress,
-                    { prefixLength: 8, suffixLength: 8 }
-                  )}
+                  {shorten(operation.content.standarizedProperties.toAddress, {
+                    prefixLength: 8,
+                    suffixLength: 8,
+                  })}
                 </span>
 
                 <span className="text-osmoverse-400">Date</span>
