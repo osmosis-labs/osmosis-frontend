@@ -205,7 +205,7 @@ export const WormholeRedeem: FunctionComponent = () => {
       const connection = new Connection(SOLANA_RPC);
 
       const { Wormhole } = await import("@wormhole-foundation/sdk-connect");
-      const { SolanaPlatform } = await import(
+      const { SolanaPlatform, isVersionedTransaction } = await import(
         "@wormhole-foundation/sdk-solana"
       );
       const { deserialize } = await import(
@@ -244,27 +244,37 @@ export const WormholeRedeem: FunctionComponent = () => {
         const innerTx = unsignedTx.transaction.transaction as
           | Transaction
           | VersionedTransaction;
-        const tx = innerTx as Transaction;
-        if (
-          !tx.recentBlockhash ||
-          tx.recentBlockhash === "11111111111111111111111111111111"
-        ) {
-          tx.recentBlockhash = latestBlockhash.blockhash;
-        }
-        if (!tx.feePayer) {
-          tx.feePayer = payer;
-        }
         const signers = unsignedTx.transaction.signers as Keypair[] | undefined;
-        if (signers?.length) {
-          for (const signer of signers) {
-            if (typeof tx.partialSign === "function") {
-              tx.partialSign(signer);
-            }
+        const PLACEHOLDER_BLOCKHASH = "11111111111111111111111111111111";
+
+        if (isVersionedTransaction(innerTx)) {
+          if (
+            !innerTx.message.recentBlockhash ||
+            innerTx.message.recentBlockhash === PLACEHOLDER_BLOCKHASH
+          ) {
+            innerTx.message.recentBlockhash = latestBlockhash.blockhash;
+          }
+          if (signers?.length) {
+            innerTx.sign(signers);
+          }
+        } else {
+          const tx = innerTx;
+          if (
+            !tx.recentBlockhash ||
+            tx.recentBlockhash === PLACEHOLDER_BLOCKHASH
+          ) {
+            tx.recentBlockhash = latestBlockhash.blockhash;
+          }
+          if (!tx.feePayer) {
+            tx.feePayer = payer;
+          }
+          if (signers?.length) {
+            tx.partialSign(...signers);
           }
         }
 
         setStatus("signing");
-        const signed = await phantom.signTransaction(tx);
+        const signed = await phantom.signTransaction(innerTx);
 
         setStatus("submitting");
         const sig = await connection.sendRawTransaction(signed.serialize(), {
