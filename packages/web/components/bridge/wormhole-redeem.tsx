@@ -1,3 +1,6 @@
+import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { Dec, PricePretty } from "@osmosis-labs/unit";
+import { apiClient, shorten } from "@osmosis-labs/utils";
 import type {
   Keypair,
   Transaction,
@@ -10,10 +13,6 @@ import {
   useMemo,
   useState,
 } from "react";
-
-import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { Dec, PricePretty } from "@osmosis-labs/unit";
-import { apiClient, shorten } from "@osmosis-labs/utils";
 
 import { Spinner } from "~/components/loaders";
 import { formatPretty } from "~/utils/formatter";
