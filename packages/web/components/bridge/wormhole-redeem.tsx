@@ -3,7 +3,7 @@ import type {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import React, {
+import {
   FunctionComponent,
   useCallback,
   useEffect,
@@ -93,11 +93,16 @@ type RedeemStatus =
 
 const PHANTOM_DOWNLOAD_URL = "https://phantom.app/";
 
+type RedeemError =
+  | { type: "phantom_not_installed" }
+  | { type: "generic"; message: string }
+  | null;
+
 export const WormholeRedeem: FunctionComponent = () => {
   const [txHash, setTxHash] = useState("");
   const [status, setStatus] = useState<RedeemStatus>("idle");
   const [operation, setOperation] = useState<OperationData | null>(null);
-  const [errorMsg, setErrorMsg] = useState<React.ReactNode>("");
+  const [error, setError] = useState<RedeemError>(null);
   const [solanaWallet, setSolanaWallet] = useState<string | null>(null);
   const [redeemTxHash, setRedeemTxHash] = useState<string | null>(null);
 
@@ -112,7 +117,7 @@ export const WormholeRedeem: FunctionComponent = () => {
 
     setStatus("looking_up");
     setOperation(null);
-    setErrorMsg("");
+    setError(null);
     setRedeemTxHash(null);
 
     try {
@@ -154,38 +159,29 @@ export const WormholeRedeem: FunctionComponent = () => {
         setStatus("ready");
       }
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to look up transaction";
-      setErrorMsg(message);
+      setError({
+        type: "generic",
+        message:
+          err instanceof Error ? err.message : "Failed to look up transaction",
+      });
       setStatus("error");
     }
   }, [txHash]);
 
   const connectWallet = useCallback(async () => {
     if (!phantom) {
-      setErrorMsg(
-        <>
-          Phantom wallet not detected.{" "}
-          <a
-            href={PHANTOM_DOWNLOAD_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline"
-          >
-            Install Phantom
-          </a>{" "}
-          to redeem.
-        </>
-      );
+      setError({ type: "phantom_not_installed" });
       return;
     }
     try {
       const resp = await phantom.connect();
       setSolanaWallet(resp.publicKey.toString());
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to connect wallet";
-      setErrorMsg(message);
+      setError({
+        type: "generic",
+        message:
+          err instanceof Error ? err.message : "Failed to connect wallet",
+      });
     }
   }, [phantom]);
 
@@ -201,7 +197,7 @@ export const WormholeRedeem: FunctionComponent = () => {
   const executeRedeem = useCallback(async () => {
     if (!operation || !solanaWallet || !phantom) return;
 
-    setErrorMsg("");
+    setError(null);
 
     try {
       setStatus("signing");
@@ -305,8 +301,10 @@ export const WormholeRedeem: FunctionComponent = () => {
 
       setStatus("success");
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Redeem failed";
-      setErrorMsg(message);
+      setError({
+        type: "generic",
+        message: err instanceof Error ? err.message : "Redeem failed",
+      });
       setStatus("error");
     }
   }, [operation, solanaWallet, phantom]);
@@ -354,9 +352,24 @@ export const WormholeRedeem: FunctionComponent = () => {
         </div>
 
         {/* Error Display */}
-        {errorMsg && (
+        {error && (
           <div className="mt-4 rounded-lg border border-rust-600 bg-rust-800/20 p-3 text-sm text-rust-200">
-            {errorMsg}
+            {error.type === "phantom_not_installed" ? (
+              <>
+                Phantom wallet not detected.{" "}
+                <a
+                  href={PHANTOM_DOWNLOAD_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline"
+                >
+                  Install Phantom
+                </a>{" "}
+                to redeem.
+              </>
+            ) : (
+              error.message
+            )}
           </div>
         )}
 
