@@ -226,8 +226,7 @@ export const WormholeRedeem: FunctionComponent = () => {
       const payer = new PublicKey(solanaWallet);
       const senderAddress = Wormhole.chainAddress("Solana", solanaWallet);
       const recipient = operation.content.standarizedProperties.toAddress;
-      const isRecipient =
-        solanaWallet.toLowerCase() === recipient.toLowerCase();
+      const isRecipient = solanaWallet === recipient;
       const isNativeUnwrap =
         isRecipient &&
         operation.content.payload.tokenChain === 1 &&
