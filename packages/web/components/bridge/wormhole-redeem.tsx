@@ -1,6 +1,6 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
-import { apiClient, shorten } from "@osmosis-labs/utils";
+import { apiClient, getSolanaExplorerUrl, shorten } from "@osmosis-labs/utils";
 import type {
   Keypair,
   Transaction,
@@ -97,6 +97,7 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [error, setError] = useState<RedeemError>(null);
   const [solanaWallet, setSolanaWallet] = useState<string | null>(null);
   const [redeemTxHashes, setRedeemTxHashes] = useState<string[]>([]);
+  const [lookedUpTxHash, setLookedUpTxHash] = useState("");
 
   const [phantom, setPhantom] = useState<any>(null);
 
@@ -127,6 +128,7 @@ export const WormholeRedeem: FunctionComponent = () => {
     setOperation(null);
     setError(null);
     setRedeemTxHashes([]);
+    setLookedUpTxHash(hash);
 
     try {
       const json = await apiClient<{ operations?: OperationData[] }>(
@@ -450,7 +452,9 @@ export const WormholeRedeem: FunctionComponent = () => {
                 This transfer has already been redeemed on Solana.
                 {operation.targetChain?.transaction?.txHash ? (
                   <a
-                    href={`https://solscan.io/tx/${operation.targetChain.transaction.txHash}`}
+                    href={getSolanaExplorerUrl({
+                      hash: operation.targetChain.transaction.txHash,
+                    })}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ml-1 underline"
@@ -461,7 +465,7 @@ export const WormholeRedeem: FunctionComponent = () => {
                   <a
                     href={`https://wormholescan.io/#/tx/${encodeURIComponent(
                       operation.sourceChain.attribute?.value?.originTxHash ||
-                        txHash
+                        lookedUpTxHash
                     )}?network=Mainnet`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -517,13 +521,21 @@ export const WormholeRedeem: FunctionComponent = () => {
               </div>
             )}
 
-            {status === "success" && redeemTxHashes.length > 0 && (
-              <div className="rounded-lg border border-bullish-600 bg-bullish-600/10 p-3 text-sm text-bullish-200">
-                Transfer redeemed successfully!{" "}
+            {redeemTxHashes.length > 0 && (
+              <div
+                className={`rounded-lg border p-3 text-sm ${
+                  status === "success"
+                    ? "border-bullish-600 bg-bullish-600/10 text-bullish-200"
+                    : "border-ammelia-600 bg-ammelia-600/10 text-ammelia-200"
+                }`}
+              >
+                {status === "success"
+                  ? "Transfer redeemed successfully!"
+                  : `${redeemTxHashes.length} of the redeem transactions confirmed before the error:`}
                 {redeemTxHashes.map((hash, i) => (
                   <a
                     key={hash}
-                    href={`https://solscan.io/tx/${hash}`}
+                    href={getSolanaExplorerUrl({ hash })}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="ml-1 underline"
