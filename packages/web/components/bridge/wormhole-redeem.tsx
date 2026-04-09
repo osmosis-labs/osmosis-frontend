@@ -6,13 +6,7 @@ import type {
   Transaction,
   VersionedTransaction,
 } from "@solana/web3.js";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useState } from "react";
 
 import { Spinner } from "~/components/loaders";
 import { formatPretty } from "~/utils/formatter";
@@ -81,7 +75,6 @@ interface OperationData {
 type RedeemStatus =
   | "idle"
   | "looking_up"
-  | "found"
   | "already_redeemed"
   | "checking_solana"
   | "ready"
@@ -103,11 +96,27 @@ export const WormholeRedeem: FunctionComponent = () => {
   const [operation, setOperation] = useState<OperationData | null>(null);
   const [error, setError] = useState<RedeemError>(null);
   const [solanaWallet, setSolanaWallet] = useState<string | null>(null);
-  const [redeemTxHash, setRedeemTxHash] = useState<string | null>(null);
+  const [redeemTxHashes, setRedeemTxHashes] = useState<string[]>([]);
 
-  const phantom = useMemo(() => {
-    if (typeof window === "undefined") return null;
-    return (window as any).phantom?.solana ?? (window as any).solana ?? null;
+  const [phantom, setPhantom] = useState<any>(null);
+
+  useEffect(() => {
+    const detect = () =>
+      (window as any).phantom?.solana ?? (window as any).solana ?? null;
+
+    const provider = detect();
+    if (provider) {
+      setPhantom(provider);
+      return;
+    }
+
+    const onProviderReady = () => setPhantom(detect());
+    window.addEventListener("load", onProviderReady);
+    const timer = setTimeout(() => setPhantom(detect()), 1000);
+    return () => {
+      window.removeEventListener("load", onProviderReady);
+      clearTimeout(timer);
+    };
   }, []);
 
   const lookupTransaction = useCallback(async () => {
@@ -117,7 +126,7 @@ export const WormholeRedeem: FunctionComponent = () => {
     setStatus("looking_up");
     setOperation(null);
     setError(null);
-    setRedeemTxHash(null);
+    setRedeemTxHashes([]);
 
     try {
       const json = await apiClient<{ operations?: OperationData[] }>(
@@ -304,7 +313,7 @@ export const WormholeRedeem: FunctionComponent = () => {
               sig
           );
         }
-        setRedeemTxHash(sig);
+        setRedeemTxHashes((prev) => [...prev, sig]);
       }
 
       setStatus("success");
@@ -508,17 +517,22 @@ export const WormholeRedeem: FunctionComponent = () => {
               </div>
             )}
 
-            {status === "success" && redeemTxHash && (
+            {status === "success" && redeemTxHashes.length > 0 && (
               <div className="rounded-lg border border-bullish-600 bg-bullish-600/10 p-3 text-sm text-bullish-200">
                 Transfer redeemed successfully!{" "}
-                <a
-                  href={`https://solscan.io/tx/${redeemTxHash}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline"
-                >
-                  View on Solscan
-                </a>
+                {redeemTxHashes.map((hash, i) => (
+                  <a
+                    key={hash}
+                    href={`https://solscan.io/tx/${hash}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="ml-1 underline"
+                  >
+                    {redeemTxHashes.length > 1
+                      ? `View tx ${i + 1} on Solscan`
+                      : "View on Solscan"}
+                  </a>
+                ))}
               </div>
             )}
           </div>
