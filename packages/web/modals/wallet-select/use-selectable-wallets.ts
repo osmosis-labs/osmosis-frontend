@@ -103,6 +103,17 @@ export const useSelectableWallets = ({
             }
 
             /**
+             * If on mobile and `leap` is in `window`, it means that the user enters
+             * the frontend from Leap's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
+              return array
+                .filter((wallet) => wallet.name === AvailableCosmosWallets.Leap)
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
              * If on mobile and `keplr` is in `window`, it means that the user enters
              * the frontend from Keplr's app in app browser. So, there is no need
              * to use wallet connect, as it resembles the extension's usage.

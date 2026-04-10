@@ -2266,7 +2266,7 @@
     "@cosmjs/math" "0.27.1"
     "@cosmjs/utils" "0.27.1"
 
-"@cosmjs/amino@0.32.3", "@cosmjs/amino@^0.32.3":
+"@cosmjs/amino@0.32.3", "@cosmjs/amino@^0.32.0", "@cosmjs/amino@^0.32.3":
   version "0.32.3"
   resolved "https://registry.yarnpkg.com/@cosmjs/amino/-/amino-0.32.3.tgz#b81d4a2b8d61568431a1afcd871e1344a19d97ff"
   integrity sha512-G4zXl+dJbqrz1sSJ56H/25l5NJEk/pAPIr8piAHgbXYw88OdAOlpA26PQvk2IbSN/rRgVbvlLTNgX2tzz1dyUA==
@@ -2520,7 +2520,7 @@
   dependencies:
     bn.js "^5.2.0"
 
-"@cosmjs/proto-signing@0.32.3", "@cosmjs/proto-signing@^0.32.3":
+"@cosmjs/proto-signing@0.32.3", "@cosmjs/proto-signing@^0.32.0", "@cosmjs/proto-signing@^0.32.3":
   version "0.32.3"
   resolved "https://registry.yarnpkg.com/@cosmjs/proto-signing/-/proto-signing-0.32.3.tgz#91ae149b747d18666a6ccc924165b306431f7c0d"
   integrity sha512-kSZ0ZUY0DwcRT0NcIn2HkadH4NKlwjfZgbLj1ABwh/4l0RgeT84QCscZCu63tJYq3K6auwqTiZSZERwlO4/nbg==
@@ -2943,6 +2943,42 @@
   dependencies:
     "@cosmos-kit/keplr-extension" "^2.12.2"
     "@cosmos-kit/keplr-mobile" "^2.12.2"
+
+"@cosmos-kit/leap-extension@^2.12.2":
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-extension/-/leap-extension-2.12.2.tgz#d06f8344f52e048e9df913ba3ed443d800fe0cd0"
+  integrity sha512-IB6+kEUgSxp2FeQwtCN6JlZu8RVn3/EeOxn7TNfbarMi2nP9sAWkclI8Pv4RI7i4Mp5iRFoCokpx4mCBYrQGVQ==
+  dependencies:
+    "@chain-registry/keplr" "1.68.2"
+    "@cosmos-kit/core" "^2.13.1"
+
+"@cosmos-kit/leap-metamask-cosmos-snap@^0.12.2":
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-metamask-cosmos-snap/-/leap-metamask-cosmos-snap-0.12.2.tgz#34fcd5b001476023791f97fe1a975aab8f18d5b5"
+  integrity sha512-77IZ1wW5l7cGYJM6lnW3coGdDwIi5h2KWCvVk5O8ITYUPDnKahBZtkvoxPRFD9V2DZKTvWL1u/fY+1rOFJZ0aQ==
+  dependencies:
+    "@chain-registry/keplr" "1.68.2"
+    "@cosmos-kit/core" "^2.13.1"
+    "@leapwallet/cosmos-snap-provider" "0.1.26"
+    "@metamask/providers" "^11.1.1"
+
+"@cosmos-kit/leap-mobile@^2.11.2":
+  version "2.11.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap-mobile/-/leap-mobile-2.11.2.tgz#0885a605bfcd6cb8624d5d766fb946761aee2aa3"
+  integrity sha512-KDMV88UgkS6rwJxp96lggfODKLtssjysFnQqrVfxVkCU6vj2FjqFWX9vCvnGNMWB5G91UU7SyMH5kA/iTWcwBA==
+  dependencies:
+    "@chain-registry/keplr" "1.68.2"
+    "@cosmos-kit/core" "^2.13.1"
+    "@cosmos-kit/walletconnect" "^2.10.1"
+
+"@cosmos-kit/leap@^2.12.2":
+  version "2.12.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/leap/-/leap-2.12.2.tgz#20c0d259f225475ab94155d2261c92c1b4e8ae4a"
+  integrity sha512-OEz2m+f30MmJ9m+e3niUgrR7FVy2cnb2JdXJ7cEp/BIFJWtSKC7mde8BKTl2nltFUmTj10gjNPRimEPBV9YnfQ==
+  dependencies:
+    "@cosmos-kit/leap-extension" "^2.12.2"
+    "@cosmos-kit/leap-metamask-cosmos-snap" "^0.12.2"
+    "@cosmos-kit/leap-mobile" "^2.11.2"
 
 "@cosmos-kit/okxwallet-extension@^2.11.2":
   version "2.11.2"
@@ -4522,6 +4558,16 @@
     deepmerge "^4.2.2"
     long "^3 || ^4 || ^5"
 
+"@leapwallet/cosmos-snap-provider@0.1.26":
+  version "0.1.26"
+  resolved "https://registry.yarnpkg.com/@leapwallet/cosmos-snap-provider/-/cosmos-snap-provider-0.1.26.tgz#023f9c0f1f9fb4ae1497256d6356ef38a865e9d9"
+  integrity sha512-KqT4OTECINPZohosLkAzdYotzV5YYJwzg2r/GKKMv3ndIuiqom/9WCaEs9W3KzPaRe69rOZpjbFmcu0gB4PSww==
+  dependencies:
+    "@cosmjs/amino" "^0.32.0"
+    "@cosmjs/proto-signing" "^0.32.0"
+    bignumber.js "^9.1.2"
+    long "^5.2.3"
+
 "@ledgerhq/devices@^5.51.1":
   version "5.51.1"
   resolved "https://registry.npmjs.org/@ledgerhq/devices/-/devices-5.51.1.tgz"
@@ -4735,6 +4781,15 @@
     "@metamask/utils" "^8.3.0"
     readable-stream "^3.6.2"
 
+"@metamask/object-multiplex@^1.1.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@metamask/object-multiplex/-/object-multiplex-1.2.0.tgz#38fc15c142f61939391e1b9a8eed679696c7e4f4"
+  integrity sha512-hksV602d3NWE2Q30Mf2Np1WfVKaGqfJRy9vpHAmelbaD0OkDt06/0KQkRR6UVYdMbTbkuEu8xN5JDUU80inGwQ==
+  dependencies:
+    end-of-stream "^1.4.4"
+    once "^1.4.0"
+    readable-stream "^2.3.3"
+
 "@metamask/object-multiplex@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@metamask/object-multiplex/-/object-multiplex-2.0.0.tgz#aa6e4aa7b4e2f457ea4bb51cd7281d931e0aa35d"
@@ -4766,6 +4821,23 @@
     fast-deep-equal "^3.1.3"
     is-stream "^2.0.0"
     readable-stream "^3.6.2"
+    webextension-polyfill "^0.10.0"
+
+"@metamask/providers@^11.1.1":
+  version "11.1.2"
+  resolved "https://registry.yarnpkg.com/@metamask/providers/-/providers-11.1.2.tgz#6fb559699dd1806ca3524f35bd0a2286946624e4"
+  integrity sha512-xjE4cKrGpKZjripkMKMStc0H4LXrWJPijfbaj1kKeDLVhRH2Yu3ZecV3iIhf1EIJePeA+Kx6Pcm7d0IVJ+ea7g==
+  dependencies:
+    "@metamask/object-multiplex" "^1.1.0"
+    "@metamask/safe-event-emitter" "^3.0.0"
+    detect-browser "^5.2.0"
+    eth-rpc-errors "^4.0.2"
+    extension-port-stream "^2.1.1"
+    fast-deep-equal "^3.1.3"
+    is-stream "^2.0.0"
+    json-rpc-engine "^6.1.0"
+    json-rpc-middleware-stream "^4.2.1"
+    pump "^3.0.0"
     webextension-polyfill "^0.10.0"
 
 "@metamask/rpc-errors@^6.2.1":
@@ -9689,7 +9761,7 @@ bigint-buffer@^1.1.5:
   dependencies:
     bindings "^1.3.0"
 
-bignumber.js@9.1.2:
+bignumber.js@9.1.2, bignumber.js@^9.1.2:
   version "9.1.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.2.tgz#b7c4242259c008903b13707983b5f4bbd31eda0c"
   integrity sha512-2/mKyZH9K85bzOEfhXDBFZTGd1CTs+5IHpeFQo9luiBG7hghdC851Pj2WAhb6E3R6b9tZj/XKhbg4fum+Kepug==
@@ -11967,7 +12039,7 @@ encoding@^0.1.13:
   dependencies:
     iconv-lite "^0.6.2"
 
-end-of-stream@^1.0.0, end-of-stream@^1.1.0, end-of-stream@^1.4.0, end-of-stream@^1.4.1:
+end-of-stream@^1.0.0, end-of-stream@^1.1.0, end-of-stream@^1.4.0, end-of-stream@^1.4.1, end-of-stream@^1.4.4:
   version "1.4.4"
   resolved "https://registry.npmjs.org/end-of-stream/-/end-of-stream-1.4.4.tgz"
   integrity sha512-+uw1inIHVPQoaVuHzRyXd21icM+cnt4CzD5rW+NC1wjOUSTOs+Te7FOv7AhN7vS9x/oIyhLP5PR1H+phQAHu5Q==
@@ -12855,6 +12927,13 @@ extend@^3.0.0, extend@~3.0.2:
   version "3.0.2"
   resolved "https://registry.npmjs.org/extend/-/extend-3.0.2.tgz"
   integrity sha512-fjquC59cD7CyW6urNXK0FBufkZcoiGG80wTuPujX590cB5Ttln20E2UB4S/WARVqhXffZl2LNgS+gQdPIIim/g==
+
+extension-port-stream@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/extension-port-stream/-/extension-port-stream-2.1.1.tgz#ec11f2a5ed95655d8c40805d7cb0c39939ee9ef4"
+  integrity sha512-qknp5o5rj2J9CRKfVB8KJr+uXQlrojNZzdESUPhKYLXf97TPcGf6qWWKmpsNNtUyOdzFhab1ON0jzouNxHHvow==
+  dependencies:
+    webextension-polyfill ">=0.10.0 <1.0"
 
 extension-port-stream@^3.0.0:
   version "3.0.0"
@@ -15783,6 +15862,15 @@ json-rpc-engine@^6.1.0:
   dependencies:
     "@metamask/safe-event-emitter" "^2.0.0"
     eth-rpc-errors "^4.0.2"
+
+json-rpc-middleware-stream@^4.2.1:
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/json-rpc-middleware-stream/-/json-rpc-middleware-stream-4.2.3.tgz#08340846ffaa2a60287930773546eb4b7f7dbba2"
+  integrity sha512-4iFb0yffm5vo3eFKDbQgke9o17XBcLQ2c3sONrXSbcOLzP8LTojqo8hRGVgtJShhm5q4ZDSNq039fAx9o65E1w==
+  dependencies:
+    "@metamask/safe-event-emitter" "^3.0.0"
+    json-rpc-engine "^6.1.0"
+    readable-stream "^2.3.3"
 
 json-rpc-random-id@^1.0.0, json-rpc-random-id@^1.0.1:
   version "1.0.1"
