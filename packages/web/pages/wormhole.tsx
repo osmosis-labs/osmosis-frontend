@@ -268,7 +268,7 @@ const Wormhole: FunctionComponent = () => {
         "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
       wormchain: "https://wormchain-rpc.polkachu.com",
       ethereum: "https://ethereum-rpc.publicnode.com",
-      osmosis: "https://rpc.archive.osmosis.zone",
+      osmosis: "https://rpc.osmosis.zone",
     },
     tokensConfig: {
       BONK: {
