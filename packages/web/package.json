@@ -90,6 +90,7 @@
     "@wormhole-foundation/sdk-connect": "4.14.1",
     "@wormhole-foundation/sdk-definitions": "4.14.1",
     "@wormhole-foundation/sdk-solana": "4.14.1",
+    "@wormhole-foundation/sdk-solana-tokenbridge": "4.14.1",
     "axios": "^0.27.2",
     "bip39-light": "^1.0.7",
     "cachified": "^3.5.4",
