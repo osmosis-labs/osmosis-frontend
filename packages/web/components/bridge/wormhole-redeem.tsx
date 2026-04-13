@@ -219,6 +219,7 @@ export const WormholeRedeem: FunctionComponent = () => {
       const { SolanaPlatform, isVersionedTransaction } = await import(
         "@wormhole-foundation/sdk-solana"
       );
+      await import("@wormhole-foundation/sdk-solana-tokenbridge");
       const { deserialize } = await import(
         "@wormhole-foundation/sdk-definitions"
       );
