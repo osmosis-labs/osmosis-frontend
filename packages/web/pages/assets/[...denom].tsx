@@ -22,6 +22,7 @@ import { useLocalStorage, useUnmount } from "react-use";
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
+import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { LinkifiedText } from "~/components/linkified-text";
 import { AssetBalance } from "~/components/pages/asset-info-page/balance";
 import { AssetPriceChart } from "~/components/pages/asset-info-page/chart";
@@ -29,7 +30,6 @@ import {
   AssetDetails,
   AssetStats,
 } from "~/components/pages/asset-info-page/details";
-import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
