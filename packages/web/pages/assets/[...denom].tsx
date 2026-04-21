@@ -22,7 +22,6 @@ import { useLocalStorage, useUnmount } from "react-use";
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
 import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
-import { OpenOrders } from "~/components/complex/portfolio/open-orders";
 import { LinkifiedText } from "~/components/linkified-text";
 import { AssetBalance } from "~/components/pages/asset-info-page/balance";
 import { AssetPriceChart } from "~/components/pages/asset-info-page/chart";
@@ -31,6 +30,7 @@ import {
   AssetStats,
 } from "~/components/pages/asset-info-page/details";
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
+import { AssetOrderHistory } from "~/components/pages/asset-info-page/orders";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
@@ -178,7 +178,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
           quoteDenom: previousTrade?.quoteDenom ?? "",
         }}
       >
-        <OpenOrders coinMinimalDenom={asset.coinMinimalDenom} />
+        <AssetOrderHistory />
       </TradeTool>
     );
 
