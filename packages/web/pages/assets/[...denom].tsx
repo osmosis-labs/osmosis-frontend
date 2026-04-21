@@ -30,6 +30,7 @@ import {
   AssetStats,
 } from "~/components/pages/asset-info-page/details";
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
+import { AssetOrderHistory } from "~/components/pages/asset-info-page/orders";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
@@ -176,7 +177,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
           outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
           quoteDenom: previousTrade?.quoteDenom ?? "",
         }}
-      />
+      >
+        <AssetOrderHistory />
+      </TradeTool>
     );
 
     return (
