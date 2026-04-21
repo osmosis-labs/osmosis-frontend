@@ -314,7 +314,7 @@ function CompactActionsCell({
         />
       ) : (
         <Icon
-          id="thin-x"
+          id="x-circle"
           width={16}
           height={16}
           className="text-wosmongton-200"
