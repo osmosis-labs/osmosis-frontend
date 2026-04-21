@@ -166,21 +166,17 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       return null;
     }
 
-    const SwapTool_ = (
-      <TradeTool
-        page="Token Info Page"
-        swapToolProps={swapToolProps}
-        setPreviousTrade={setPreviousTrade}
-        previousTrade={{
-          baseDenom: asset.coinMinimalDenom,
-          sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
-          outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
-          quoteDenom: previousTrade?.quoteDenom ?? "",
-        }}
-      >
-        <AssetOrderHistory />
-      </TradeTool>
-    );
+    const tradeToolProps = {
+      page: "Token Info Page" as const,
+      swapToolProps,
+      setPreviousTrade,
+      previousTrade: {
+        baseDenom: asset.coinMinimalDenom,
+        sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
+        outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
+        quoteDenom: previousTrade?.quoteDenom ?? "",
+      },
+    };
 
     return (
       <AssetInfoViewProvider value={contextValue}>
@@ -237,7 +233,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
               />
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                  {SwapTool_}
+                  <TradeTool {...tradeToolProps}>
+                    <AssetOrderHistory />
+                  </TradeTool>
                 </div>
               </div>
               {!asset.areTransfersDisabled && asset.contract ? (
@@ -252,7 +250,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
             </div>
 
             <div className="flex flex-col gap-11 sm:gap-10">
-              <div className="xl:hidden">{SwapTool_}</div>
+              <div className="xl:hidden">
+                <TradeTool {...tradeToolProps}>
+                  <AssetOrderHistory />
+                </TradeTool>
+              </div>
               <AssetBalance className="xl:hidden" />
               <AssetStats className="xl:hidden" />
               {!asset.areTransfersDisabled && asset.contract ? (

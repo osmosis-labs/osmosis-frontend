@@ -98,8 +98,12 @@ export const AssetOrderHistory = observer(() => {
               />
             </div>
           )}
-          {[...filledOrders, ...activeOrders].map((order, i) => (
-            <OrderRow key={i} order={order} refetch={refetch} />
+          {[...filledOrders, ...activeOrders].map((order) => (
+            <OrderRow
+              key={`${order.orderbookAddress}:${order.tick_id}:${order.order_id}`}
+              order={order}
+              refetch={refetch}
+            />
           ))}
         </div>
       )}
@@ -276,7 +280,7 @@ function CompactActionsCell({
   if (status === "filled") return null;
 
   const isClaimAndCancel =
-    status === "partiallyFilled" && percentFilled > percentClaimed;
+    status === "partiallyFilled" && percentFilled.gt(percentClaimed);
 
   const msgs: { msg: object; contractAddress: string; funds: [] }[] = [];
   if (isClaimAndCancel) {
