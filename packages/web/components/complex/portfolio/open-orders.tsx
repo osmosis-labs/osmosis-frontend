@@ -1,6 +1,11 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
-import React, { FunctionComponent, useCallback, useState } from "react";
+import React, {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useState,
+} from "react";
 
 import { LinkButton } from "~/components/buttons/link-button";
 import { Spinner } from "~/components/loaders";
@@ -27,46 +32,50 @@ export const OpenOrders: FunctionComponent<OpenOrdersProps> = ({
   const { accountStore } = useStore();
   const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const { orders: allActiveOrders, isLoading } = useOrderbookOrders({
+  const {
+    orders: allOrders,
+    isLoading,
+    refetch,
+  } = useOrderbookOrders({
     userAddress: wallet?.address ?? "",
     pageSize: coinMinimalDenom ? 100 : OPEN_ORDERS_LIMIT,
-    filter: "open",
+    filter: coinMinimalDenom ? "active" : "open",
   });
 
-  const activeOrders = coinMinimalDenom
-    ? allActiveOrders.filter(
-        (o) =>
-          o.baseAsset?.coinMinimalDenom === coinMinimalDenom ||
-          o.quoteAsset?.coinMinimalDenom === coinMinimalDenom
-      )
-    : allActiveOrders;
+  const { activeOrders, filledOrders } = useMemo(() => {
+    const denomOrders = coinMinimalDenom
+      ? allOrders.filter(
+          (o) =>
+            o.baseAsset?.coinMinimalDenom === coinMinimalDenom ||
+            o.quoteAsset?.coinMinimalDenom === coinMinimalDenom
+        )
+      : allOrders;
 
-  const {
-    orders: claimableOrders,
-    claimAllOrders,
-    isLoading: isClaimableLoading,
-  } = useOrderbookClaimableOrders({
+    return {
+      activeOrders: denomOrders.filter(
+        (o) => o.status === "open" || o.status === "partiallyFilled"
+      ),
+      filledOrders: coinMinimalDenom
+        ? denomOrders.filter((o) => o.status === "filled")
+        : [],
+    };
+  }, [allOrders, coinMinimalDenom]);
+
+  const { claimAllOrders } = useOrderbookClaimableOrders({
     userAddress: wallet?.address ?? "",
-    disabled: !coinMinimalDenom,
+    disabled: !coinMinimalDenom || filledOrders.length === 0,
   });
-
-  const filledOrders = coinMinimalDenom
-    ? claimableOrders.filter(
-        (o) =>
-          o.baseAsset?.coinMinimalDenom === coinMinimalDenom ||
-          o.quoteAsset?.coinMinimalDenom === coinMinimalDenom
-      )
-    : [];
 
   const [claiming, setClaiming] = useState(false);
   const claim = useCallback(async () => {
     setClaiming(true);
     try {
       await claimAllOrders();
+      await refetch();
     } finally {
       setClaiming(false);
     }
-  }, [claimAllOrders]);
+  }, [claimAllOrders, refetch]);
 
   const hasOrders = activeOrders.length > 0 || filledOrders.length > 0;
 
@@ -93,7 +102,7 @@ export const OpenOrders: FunctionComponent<OpenOrdersProps> = ({
             <button
               className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 py-1.5 px-3 disabled:opacity-50"
               onClick={claim}
-              disabled={claiming || isClaimableLoading}
+              disabled={claiming}
             >
               {claiming && <Spinner className="mr-1.5 !h-3 !w-3" />}
               <span className="caption">{t("limitOrders.claimAll")}</span>
