@@ -269,6 +269,9 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Sem incentivos"
     }
   },

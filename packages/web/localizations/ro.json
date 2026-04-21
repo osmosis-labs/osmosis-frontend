@@ -269,6 +269,9 @@
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
       "transmuter": "Transmutator",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Fără incentivi"
     }
   },

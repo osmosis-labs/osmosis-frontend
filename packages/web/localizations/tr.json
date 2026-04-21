@@ -269,6 +269,9 @@
       "weighted": "Ağırlıklı",
       "concentrated": "Konsantre likidite",
       "transmuter": "Dönüştürücü",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Teşvik yok"
     }
   },

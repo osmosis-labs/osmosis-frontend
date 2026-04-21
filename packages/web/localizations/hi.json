@@ -269,6 +269,9 @@
       "weighted": "भारित",
       "concentrated": "सुपरचार्ज",
       "transmuter": "ट्रांसमीटर",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "कोई प्रोत्साहन नहीं"
     }
   },

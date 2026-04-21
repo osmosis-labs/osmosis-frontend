@@ -269,6 +269,9 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "无激励"
     }
   },
