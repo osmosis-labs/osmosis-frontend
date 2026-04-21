@@ -278,12 +278,12 @@ function CompactActionsCell({
   const isClaimAndCancel =
     status === "partiallyFilled" && percentFilled > percentClaimed;
 
-  const msgs = [];
+  const msgs: { msg: object; contractAddress: string; funds: [] }[] = [];
   if (isClaimAndCancel) {
     msgs.push({
       msg: { claim_limit: { order_id, tick_id } },
       contractAddress: orderbookAddress,
-      funds: [] as [],
+      funds: [],
     });
   }
   msgs.push({
