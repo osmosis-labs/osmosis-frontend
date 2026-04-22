@@ -87,6 +87,7 @@ interface PoolsTableProps {
   emptyResultsText?: string;
   setSortDirection: (dir: SortDirection) => void;
   setSortKey: (key?: MarketIncentivePoolsSortKey) => void;
+  minLiquidityUsd?: number;
 }
 
 export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
@@ -113,6 +114,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     emptyResultsText,
     setSortDirection,
     setSortKey,
+    minLiquidityUsd = 1_000,
     children,
   } = props;
 
@@ -166,7 +168,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             direction: sortParams.allPoolsSortDir,
           }
         : undefined,
-      minLiquidityUsd: 1_000,
+      minLiquidityUsd,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

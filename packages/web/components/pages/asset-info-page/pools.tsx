@@ -13,7 +13,8 @@ import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 interface AssetPoolsProps {
-  denom: string;
+  coinMinimalDenom: string;
+  coinDenom: string;
 }
 
 const defaultFilters: PoolsTableFilters = {
@@ -30,15 +31,15 @@ const sortParams: PoolsTabelSortParams = {
 };
 
 export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
-  const { denom } = props;
+  const { coinMinimalDenom, coinDenom } = props;
   const { t } = useTranslation();
 
   const filters = useMemo(
     () => ({
       ...defaultFilters,
-      denoms: [denom],
+      denoms: [coinMinimalDenom],
     }),
-    [denom]
+    [coinMinimalDenom]
   );
 
   return (
@@ -52,7 +53,7 @@ export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
           className=" text-wosmongton-200"
           asChild
         >
-          <Link href={`/pools?searchQuery=${encodeURIComponent(`${denom}`)}`}>
+          <Link href={`/pools?searchQuery=${encodeURIComponent(coinDenom)}`}>
             {t("assets.seeAll")}
           </Link>
         </Button>
@@ -65,7 +66,8 @@ export const AssetPools: FunctionComponent<AssetPoolsProps> = (props) => {
         sortParams={sortParams}
         setSortDirection={noop}
         setSortKey={noop}
-        emptyResultsText={t("search.poolsEmpty", { denom })}
+        minLiquidityUsd={0}
+        emptyResultsText={t("search.poolsEmpty", { denom: coinDenom })}
       />
     </section>
   );
