@@ -29,6 +29,7 @@ import {
 } from "@osmosis-labs/utils";
 import { createTRPCReact } from "@trpc/react-query";
 import { parseAsString, useQueryState } from "nuqs";
+import { Dec } from "@osmosis-labs/unit";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { useAsync } from "react-use";
@@ -839,14 +840,7 @@ export function useSwap(
     quoteType,
     outAmountInput.fiatValue,
   ]);
-  const totalFee = useDeepMemo(
-    () =>
-      sum([
-        tokenInFeeAmountFiatValue,
-        networkFee?.gasUsdValueToPay?.toDec() ?? new Dec(0),
-      ]),
-    [tokenInFeeAmountFiatValue, networkFee?.gasUsdValueToPay]
-  );
+  
 
   return {
     ...swapAssets,
