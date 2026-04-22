@@ -262,6 +262,7 @@ function CompactActionsCell({
         );
         await refetch();
       } catch {
+      } finally {
         setLoading(false);
       }
     },
