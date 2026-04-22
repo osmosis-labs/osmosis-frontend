@@ -297,25 +297,29 @@ function CompactActionsCell({
     funds: [] as [],
   });
 
+  const label = isClaimAndCancel
+    ? t("limitOrders.claimAndClose")
+    : t("limitOrders.cancel");
+
   return (
     <button
       className="flex h-7 w-7 items-center justify-center rounded-full bg-osmoverse-825 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
       onClick={() => execute(msgs)}
       disabled={loading}
-      title={
-        isClaimAndCancel
-          ? t("limitOrders.claimAndClose")
-          : t("limitOrders.cancel")
-      }
+      title={label}
+      aria-label={label}
     >
       {loading ? (
-        <Spinner className="!h-3 !w-3" />
+        <span aria-hidden>
+          <Spinner className="!h-3 !w-3" />
+        </span>
       ) : isClaimAndCancel ? (
         <Icon
           id="check-mark-slim"
           width={12}
           height={12}
           className="text-wosmongton-200"
+          aria-hidden
         />
       ) : (
         <Icon
@@ -323,6 +327,7 @@ function CompactActionsCell({
           width={16}
           height={16}
           className="text-wosmongton-200"
+          aria-hidden
         />
       )}
     </button>
