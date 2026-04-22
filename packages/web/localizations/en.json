@@ -269,6 +269,9 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "No incentives"
     }
   },

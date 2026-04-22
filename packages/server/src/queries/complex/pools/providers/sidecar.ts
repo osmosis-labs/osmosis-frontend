@@ -112,17 +112,10 @@ export function getPoolsFromSidecar({
 
       // Filter pools by requested types
       // Since sidecar API can't distinguish cosmwasm subtypes, we filter after type identification
-      // Note: cosmwasm, cosmwasm-astroport-pcl, and cosmwasm-whitewhale are always included
-      const alwaysIncludedTypes: PoolType[] = [
-        "cosmwasm",
-        "cosmwasm-astroport-pcl",
-        "cosmwasm-whitewhale",
-      ];
+      // Note: generic cosmwasm pools are always included as a fallback
       const filteredPools = types
         ? pools.filter(
-            (pool) =>
-              types.includes(pool.type) ||
-              alwaysIncludedTypes.includes(pool.type)
+            (pool) => types.includes(pool.type) || pool.type === "cosmwasm"
           )
         : pools;
 

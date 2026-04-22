@@ -269,6 +269,9 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
+      "orderbook": "주문서",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "인센티브 없음"
     }
   },

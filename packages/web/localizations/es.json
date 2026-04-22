@@ -269,6 +269,9 @@
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
       "transmuter": "transmutador",
+      "orderbook": "Libro de pedidos",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Sin incentivos"
     }
   },

@@ -40,9 +40,12 @@ export type PoolIncentiveFilter = NonNullable<
 
 // These are the options for filtering the pools.
 export const poolFilterTypes: PoolTypeFilter[] = [
+  "concentrated",
+  "cosmwasm-orderbook",
   "weighted",
   "stable",
-  "concentrated",
+  "cosmwasm-astroport-pcl",
+  "cosmwasm-whitewhale",
   "cosmwasm-transmuter",
 ];
 
@@ -143,7 +146,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         : undefined,
       denoms: filters.denoms,
       // These are all of the pools that we support fetching.
-      // In addition, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
       // When transmuter is selected, include both transmuter and alloyed pools
       types: [
         ...filters.poolTypesFilter.reduce((acc, type) => {
@@ -158,8 +160,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           return acc;
         }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
         "cosmwasm",
-        "cosmwasm-astroport-pcl",
-        "cosmwasm-whitewhale",
       ],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
@@ -576,6 +576,9 @@ const PoolCompositionCell: PoolCellComponent = ({
                         type === "cosmwasm-alloyed" ||
                         type === "cosmwasm"
                     ),
+                    "text-wosmongton-300": Boolean(
+                      type === "cosmwasm-orderbook"
+                    ),
                   })}
                 >
                   {type === "weighted" && (
@@ -609,9 +612,13 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "cosmwasm-alloyed" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-orderbook" && (
+                    <Icon id="open-book" width={16} height={16} />
+                  )}
 
                   {type != "cosmwasm-astroport-pcl" &&
                     type != "cosmwasm-whitewhale" &&
+                    type != "cosmwasm-orderbook" &&
                     (spreadFactor ? spreadFactor.toString() : "")}
                 </p>
               </div>
@@ -650,6 +657,9 @@ function getPoolLink(pool: Pool): string {
   }
   if (pool.type === "cosmwasm-whitewhale") {
     return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
+  if (pool.type === "cosmwasm-orderbook") {
+    return `/pool/${pool.id}`;
   }
   if (pool.type === "cosmwasm") {
     const contractAddress = getContractAddress(pool);

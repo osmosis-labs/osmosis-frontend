@@ -18,6 +18,7 @@ const allPooltypes = [
   "cosmwasm-alloyed",
   "cosmwasm-astroport-pcl",
   "cosmwasm-whitewhale",
+  "cosmwasm-orderbook",
   "cosmwasm",
 ] as const;
 
