@@ -1,7 +1,8 @@
 import type { GroupingOption, OrderbookLevel } from "@osmosis-labs/server";
 import dynamic from "next/dynamic";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
+import { t } from "~/hooks/language";
 import { theme } from "~/tailwind.config";
 
 export type DepthDataSource = "cl" | "gamm" | "orderbook";
@@ -37,26 +38,45 @@ const OrderRow: FunctionComponent<{
   maxQuoteValue: number;
   cumulativeQuoteValue: number;
   side: "bid" | "ask";
+  isHighlighted: boolean;
   onPriceSelect?: (price: number) => void;
-}> = ({ level, maxQuoteValue, cumulativeQuoteValue, side, onPriceSelect }) => {
+  onHover: (i: number | null) => void;
+  index: number;
+}> = ({
+  level,
+  maxQuoteValue,
+  cumulativeQuoteValue,
+  side,
+  isHighlighted,
+  onPriceSelect,
+  onHover,
+  index,
+}) => {
   const pct =
     maxQuoteValue > 0 ? (cumulativeQuoteValue / maxQuoteValue) * 100 : 0;
   const isBid = side === "bid";
   const quoteAmount = level.price * level.quantity;
 
+  const baseColor = isBid
+    ? theme.colors.bullish["400"]
+    : theme.colors.rust["400"];
+
   return (
     <div
-      className="relative grid cursor-pointer grid-cols-3 px-2 py-0.5 font-mono text-xs hover:bg-osmoverse-800"
+      className="relative grid cursor-pointer grid-cols-3 px-2 py-0.5 font-mono text-xs"
+      style={{
+        backgroundColor: isHighlighted ? baseColor + "18" : "transparent",
+      }}
       onClick={() => onPriceSelect?.(level.price)}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
     >
       {/* depth bar behind the row — fills from the right */}
       <span
         className="pointer-events-none absolute inset-y-0 right-0"
         style={{
           width: `${Math.min(pct, 100)}%`,
-          backgroundColor: isBid
-            ? theme.colors.bullish["400"] + "20"
-            : theme.colors.rust["400"] + "20",
+          backgroundColor: isHighlighted ? baseColor + "35" : baseColor + "20",
         }}
       />
       <span className={isBid ? "text-bullish-400" : "text-rust-400"}>
@@ -109,6 +129,9 @@ export const OrderbookDepthPanel: FunctionComponent<{
   const visibleBids = bids.slice(0, VISIBLE_LEVELS);
   const visibleAsks = asks.slice(0, VISIBLE_LEVELS);
 
+  const [hoveredAsk, setHoveredAsk] = useState<number | null>(null);
+  const [hoveredBid, setHoveredBid] = useState<number | null>(null);
+
   // Compute cumulative quote value (price × quantity) for fill bars so both
   // sides are denominated in the same currency and large base-unit orders don't skew.
   let cumBidQuote = 0;
@@ -135,19 +158,37 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? (spreadAbs / midPrice) * 100
       : undefined;
 
+  // Sweep summary: sum base quantity from best price up to hovered row (inclusive)
+  const sweepSide =
+    hoveredAsk !== null ? "ask" : hoveredBid !== null ? "bid" : null;
+  const sweepIndex = hoveredAsk ?? hoveredBid ?? null;
+  const sweepLevels =
+    sweepSide === "ask"
+      ? visibleAsks.slice(0, (sweepIndex ?? 0) + 1)
+      : sweepSide === "bid"
+      ? visibleBids.slice(0, (sweepIndex ?? 0) + 1)
+      : [];
+  const sweepVolume = sweepLevels.reduce((s, l) => s + l.quantity, 0);
+  const sweepWorstPrice =
+    sweepSide === "ask"
+      ? visibleAsks[sweepIndex ?? 0]?.price
+      : visibleBids[sweepIndex ?? 0]?.price;
+
   if (!isLoading && !isError && bids.length === 0 && asks.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-        <p className="body2 text-osmoverse-300">No open orders</p>
+        <p className="body2 text-osmoverse-300">
+          {t("pool.orderbookPool.depthNoOrders")}
+        </p>
         <p className="caption text-osmoverse-500">
-          This order book is currently empty
+          {t("pool.orderbookPool.depthNoOrdersDesc")}
         </p>
       </div>
     );
   }
 
-  const noAsks = !isLoading && !isError && asks.length === 0;
-  const noBids = !isLoading && !isError && bids.length === 0;
+  const noAsks = !isLoading && !isError && asks.length === 0 && bids.length > 0;
+  const noBids = !isLoading && !isError && bids.length === 0 && asks.length > 0;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
@@ -162,7 +203,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
                 : "text-osmoverse-400 hover:text-osmoverse-200"
             }`}
           >
-            Raw
+            {t("pool.orderbookPool.depthRaw")}
           </button>
           {groupingOptions.map(({ label, value }) => (
             <button
@@ -186,7 +227,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
       </div>
       {/* Column headers */}
       <div className="grid grid-cols-3 px-3 py-0.5 font-mono text-xs text-osmoverse-500">
-        <span>Price</span>
+        <span>{t("pool.orderbookPool.depthPrice")}</span>
         <span className="text-right">{baseSymbol ?? "Base"}</span>
         <span className="text-right">{quoteSymbol ?? "Quote"}</span>
       </div>
@@ -202,27 +243,46 @@ export const OrderbookDepthPanel: FunctionComponent<{
           ))
         ) : noAsks ? (
           <div className="flex flex-1 items-center justify-center py-4">
-            <p className="caption text-osmoverse-500">No asks</p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthNoAsks")}
+            </p>
           </div>
         ) : (
           visibleAsks.map((level, i) => (
             <OrderRow
               key={`ask-${i}`}
+              index={i}
               level={level}
               maxQuoteValue={maxQuoteValue}
               cumulativeQuoteValue={askQuoteCumulatives[i]}
               side="ask"
+              isHighlighted={hoveredAsk !== null && i <= hoveredAsk}
               onPriceSelect={onPriceSelect}
+              onHover={setHoveredAsk}
             />
           ))
         )}
       </div>
 
-      {/* Spread row */}
-      <div className="flex items-center justify-center gap-2 border-y border-osmoverse-700 px-2 py-0.5 font-mono text-xs">
-        {spreadPct !== undefined ? (
+      {/* Spread / sweep summary row */}
+      <div
+        className="flex items-center justify-center gap-2 border-y border-osmoverse-700 px-2 py-0.5 font-mono text-xs"
+        onMouseLeave={() => {
+          setHoveredAsk(null);
+          setHoveredBid(null);
+        }}
+      >
+        {sweepSide !== null && sweepWorstPrice !== undefined ? (
           <>
-            <span className="text-osmoverse-400">Spread:</span>
+            <span className="text-osmoverse-200">
+              {formatQuantity(sweepVolume)} {baseSymbol ?? "base"}
+            </span>
+          </>
+        ) : spreadPct !== undefined ? (
+          <>
+            <span className="text-osmoverse-400">
+              {t("pool.orderbookPool.spread")}:
+            </span>
             <span className="text-osmoverse-200">{spreadPct.toFixed(2)}%</span>
           </>
         ) : (
@@ -241,17 +301,22 @@ export const OrderbookDepthPanel: FunctionComponent<{
           ))
         ) : noBids ? (
           <div className="flex flex-1 items-center justify-center py-4">
-            <p className="caption text-osmoverse-500">No bids</p>
+            <p className="caption text-osmoverse-500">
+              {t("pool.orderbookPool.depthNoBids")}
+            </p>
           </div>
         ) : (
           visibleBids.map((level, i) => (
             <OrderRow
               key={`bid-${i}`}
+              index={i}
               level={level}
               maxQuoteValue={maxQuoteValue}
               cumulativeQuoteValue={bidQuoteCumulatives[i]}
               side="bid"
+              isHighlighted={hoveredBid !== null && i <= hoveredBid}
               onPriceSelect={onPriceSelect}
+              onHover={setHoveredBid}
             />
           ))
         )}

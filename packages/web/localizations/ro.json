@@ -534,7 +534,13 @@
       "noOrdersDesc": "Plasează primul tău ordin limitat.",
       "filterAll": "Toate",
       "filterBuy": "Cumpăra",
-      "filterSell": "Vinde"
+      "filterSell": "Vinde",
+      "depthPrice": "Preț",
+      "depthRaw": "Brut",
+      "depthNoAsks": "Fără vânzări",
+      "depthNoBids": "Fără cumpărări",
+      "depthNoOrders": "Fără ordine deschise",
+      "depthNoOrdersDesc": "Acest registru de ordine este în prezent gol"
     }
   },
   "pools": {

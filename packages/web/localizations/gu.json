@@ -534,7 +534,13 @@
       "noOrdersDesc": "તમારો પ્રથમ મર્યાદા ઓર્ડર આપો.",
       "filterAll": "બધા",
       "filterBuy": "ખરીદો",
-      "filterSell": "વેચો"
+      "filterSell": "વેચો",
+      "depthPrice": "ભાવ",
+      "depthRaw": "કાચું",
+      "depthNoAsks": "કોઈ વેચાણ નથી",
+      "depthNoBids": "કોઈ ખરીદી નથી",
+      "depthNoOrders": "કોઈ ખુલ્લા ઓર્ડર નથી",
+      "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે"
     }
   },
   "pools": {

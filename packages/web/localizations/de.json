@@ -534,7 +534,13 @@
       "noOrdersDesc": "Geben Sie Ihren ersten Limitauftrag auf.",
       "filterAll": "Alle",
       "filterBuy": "Kaufen",
-      "filterSell": "Verkaufen"
+      "filterSell": "Verkaufen",
+      "depthPrice": "Preis",
+      "depthRaw": "Roh",
+      "depthNoAsks": "Keine Verkaufsangebote",
+      "depthNoBids": "Keine Kaufangebote",
+      "depthNoOrders": "Keine offenen Aufträge",
+      "depthNoOrdersDesc": "Dieses Orderbuch ist derzeit leer"
     }
   },
   "pools": {

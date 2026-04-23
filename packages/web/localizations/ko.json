@@ -534,7 +534,13 @@
       "noOrdersDesc": "첫 번째 지정가 주문을 넣어보세요.",
       "filterAll": "전체",
       "filterBuy": "구매",
-      "filterSell": "판매"
+      "filterSell": "판매",
+      "depthPrice": "가격",
+      "depthRaw": "원본",
+      "depthNoAsks": "매도 없음",
+      "depthNoBids": "매수 없음",
+      "depthNoOrders": "미체결 주문 없음",
+      "depthNoOrdersDesc": "이 주문서는 현재 비어 있습니다"
     }
   },
   "pools": {

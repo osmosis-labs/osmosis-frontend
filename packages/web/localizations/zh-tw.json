@@ -534,7 +534,13 @@
       "noOrdersDesc": "請下您的第一筆限價訂單。",
       "filterAll": "全部",
       "filterBuy": "買入",
-      "filterSell": "賣出"
+      "filterSell": "賣出",
+      "depthPrice": "價格",
+      "depthRaw": "原始",
+      "depthNoAsks": "無賣單",
+      "depthNoBids": "無買單",
+      "depthNoOrders": "暫無掛單",
+      "depthNoOrdersDesc": "該訂單簿目前為空"
     }
   },
   "pools": {

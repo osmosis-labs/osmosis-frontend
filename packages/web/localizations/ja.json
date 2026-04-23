@@ -534,7 +534,13 @@
       "noOrdersDesc": "最初の指値注文を入れましょう。",
       "filterAll": "すべて",
       "filterBuy": "購入",
-      "filterSell": "売却"
+      "filterSell": "売却",
+      "depthPrice": "価格",
+      "depthRaw": "未集計",
+      "depthNoAsks": "売り注文なし",
+      "depthNoBids": "買い注文なし",
+      "depthNoOrders": "未約定注文なし",
+      "depthNoOrdersDesc": "この板は現在空です"
     }
   },
   "pools": {

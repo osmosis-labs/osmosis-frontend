@@ -534,7 +534,13 @@
       "noOrdersDesc": "Place your first limit order.",
       "filterAll": "All",
       "filterBuy": "Buy",
-      "filterSell": "Sell"
+      "filterSell": "Sell",
+      "depthPrice": "Price",
+      "depthRaw": "Raw",
+      "depthNoAsks": "No asks",
+      "depthNoBids": "No bids",
+      "depthNoOrders": "No open orders",
+      "depthNoOrdersDesc": "This order book is currently empty"
     }
   },
   "pools": {

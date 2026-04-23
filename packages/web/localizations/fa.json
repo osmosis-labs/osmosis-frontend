@@ -534,7 +534,13 @@
       "noOrdersDesc": "اولین سفارش محدود خود را ثبت کنید.",
       "filterAll": "همه",
       "filterBuy": "خرید",
-      "filterSell": "فروش"
+      "filterSell": "فروش",
+      "depthPrice": "قیمت",
+      "depthRaw": "خام",
+      "depthNoAsks": "بدون فروشنده",
+      "depthNoBids": "بدون خریدار",
+      "depthNoOrders": "سفارش بازی وجود ندارد",
+      "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است"
     }
   },
   "pools": {

@@ -34,6 +34,8 @@ export type PairDepthResult = {
   yRange: [number, number];
   xRange: [number, number];
   groupingOptions: GroupingOption[];
+  /** True when the result is a no-data sentinel (orderbook not found, mid-price unavailable, etc.) rather than a live empty book */
+  unavailable?: boolean;
 };
 
 const pairDepthCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -130,7 +132,7 @@ async function computePairDepth({
   // 1. Look up the orderbook to get base/quote denoms + contract address
   const allOrderbooks = await getOrderbookPools();
   const orderbook = allOrderbooks.find((ob) => ob.poolId === poolId);
-  if (!orderbook) return empty;
+  if (!orderbook) return { ...empty, unavailable: true };
 
   const { contractAddress } = orderbook;
 
@@ -192,7 +194,7 @@ async function computePairDepth({
     // ticks may be at extremes if book is empty
   }
 
-  if (midPrice <= 0) return empty;
+  if (midPrice <= 0) return { ...empty, unavailable: true };
 
   const nextBidTick = orderbookState.next_bid_tick;
   const nextAskTick = orderbookState.next_ask_tick;

@@ -534,7 +534,13 @@
       "noOrdersDesc": "Разместите первый лимитный ордер.",
       "filterAll": "Все",
       "filterBuy": "Купить",
-      "filterSell": "Продать"
+      "filterSell": "Продать",
+      "depthPrice": "Цена",
+      "depthRaw": "Без группировки",
+      "depthNoAsks": "Нет предложений",
+      "depthNoBids": "Нет заявок",
+      "depthNoOrders": "Нет открытых ордеров",
+      "depthNoOrdersDesc": "Книга ордеров пуста"
     }
   },
   "pools": {

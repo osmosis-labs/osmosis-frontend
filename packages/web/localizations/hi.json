@@ -534,7 +534,13 @@
       "noOrdersDesc": "अपना पहला सीमा ऑर्डर दें।",
       "filterAll": "सभी",
       "filterBuy": "खरीदें",
-      "filterSell": "बेचें"
+      "filterSell": "बेचें",
+      "depthPrice": "मूल्य",
+      "depthRaw": "कच्चा",
+      "depthNoAsks": "कोई विक्रय आदेश नहीं",
+      "depthNoBids": "कोई क्रय आदेश नहीं",
+      "depthNoOrders": "कोई खुले आदेश नहीं",
+      "depthNoOrdersDesc": "यह ऑर्डर बुक वर्तमान में खाली है"
     }
   },
   "pools": {

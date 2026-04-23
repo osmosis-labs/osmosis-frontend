@@ -534,7 +534,13 @@
       "noOrdersDesc": "İlk limit emrinizi verin.",
       "filterAll": "Tümü",
       "filterBuy": "Al",
-      "filterSell": "Sat"
+      "filterSell": "Sat",
+      "depthPrice": "Fiyat",
+      "depthRaw": "Ham",
+      "depthNoAsks": "Satış yok",
+      "depthNoBids": "Alış yok",
+      "depthNoOrders": "Açık emir yok",
+      "depthNoOrdersDesc": "Bu emir defteri şu anda boş"
     }
   },
   "pools": {

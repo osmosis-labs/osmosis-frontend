@@ -534,7 +534,13 @@
       "noOrdersDesc": "Passez votre premier ordre limité.",
       "filterAll": "Tous",
       "filterBuy": "Acheter",
-      "filterSell": "Vendre"
+      "filterSell": "Vendre",
+      "depthPrice": "Prix",
+      "depthRaw": "Brut",
+      "depthNoAsks": "Aucune vente",
+      "depthNoBids": "Aucun achat",
+      "depthNoOrders": "Aucun ordre ouvert",
+      "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide"
     }
   },
   "pools": {

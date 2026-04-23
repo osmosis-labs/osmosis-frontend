@@ -534,7 +534,13 @@
       "noOrdersDesc": "Faça seu primeiro pedido limitado.",
       "filterAll": "Todos",
       "filterBuy": "Comprar",
-      "filterSell": "Vender"
+      "filterSell": "Vender",
+      "depthPrice": "Preço",
+      "depthRaw": "Bruto",
+      "depthNoAsks": "Sem vendas",
+      "depthNoBids": "Sem compras",
+      "depthNoOrders": "Sem ordens abertas",
+      "depthNoOrdersDesc": "Este livro de ordens está vazio"
     }
   },
   "pools": {

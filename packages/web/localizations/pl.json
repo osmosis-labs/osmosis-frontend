@@ -534,7 +534,13 @@
       "noOrdersDesc": "Złóż swoje pierwsze zlecenie z limitem.",
       "filterAll": "Wszystkie",
       "filterBuy": "Kupno",
-      "filterSell": "Sprzedaż"
+      "filterSell": "Sprzedaż",
+      "depthPrice": "Cena",
+      "depthRaw": "Surowe",
+      "depthNoAsks": "Brak ofert sprzedaży",
+      "depthNoBids": "Brak ofert kupna",
+      "depthNoOrders": "Brak otwartych zleceń",
+      "depthNoOrdersDesc": "Ta księga zleceń jest obecnie pusta"
     }
   },
   "pools": {

@@ -534,7 +534,13 @@
       "noOrdersDesc": "请下您的第一笔限价订单。",
       "filterAll": "全部",
       "filterBuy": "买入",
-      "filterSell": "卖出"
+      "filterSell": "卖出",
+      "depthPrice": "价格",
+      "depthRaw": "原始",
+      "depthNoAsks": "无卖单",
+      "depthNoBids": "无买单",
+      "depthNoOrders": "暂无挂单",
+      "depthNoOrdersDesc": "该订单簿当前为空"
     }
   },
   "pools": {
