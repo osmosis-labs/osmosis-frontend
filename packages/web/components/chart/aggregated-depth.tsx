@@ -1,4 +1,4 @@
-import type { OrderbookLevel } from "@osmosis-labs/server";
+import type { GroupingOption, OrderbookLevel } from "@osmosis-labs/server";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
@@ -78,19 +78,32 @@ export const OrderbookDepthPanel: FunctionComponent<{
   bids: OrderbookLevel[];
   asks: OrderbookLevel[];
   midPrice: number;
+  bidPrice?: number;
+  askPrice?: number;
+  groupingOptions?: GroupingOption[];
   baseSymbol?: string;
   quoteSymbol?: string;
   onPriceSelect?: (price: number) => void;
   isLive?: boolean;
   isLoading?: boolean;
+  isError?: boolean;
+  bucketSize?: number;
+  onBucketSizeChange?: (size: number | undefined) => void;
 }> = ({
   bids,
   asks,
+  midPrice,
+  bidPrice = 0,
+  askPrice = 0,
+  groupingOptions = [],
   baseSymbol,
   quoteSymbol,
   onPriceSelect,
   isLive,
   isLoading,
+  isError,
+  bucketSize,
+  onBucketSizeChange,
 }) => {
   const VISIBLE_LEVELS = 12;
   const visibleBids = bids.slice(0, VISIBLE_LEVELS);
@@ -115,7 +128,14 @@ export const OrderbookDepthPanel: FunctionComponent<{
 
   const skeletonRows = Array.from({ length: VISIBLE_LEVELS });
 
-  if (!isLoading && bids.length === 0 && asks.length === 0) {
+  const spreadAbs =
+    bidPrice > 0 && askPrice > 0 ? askPrice - bidPrice : undefined;
+  const spreadPct =
+    spreadAbs !== undefined && midPrice > 0
+      ? (spreadAbs / midPrice) * 100
+      : undefined;
+
+  if (!isLoading && !isError && bids.length === 0 && asks.length === 0) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
         <p className="body2 text-osmoverse-300">No open orders</p>
@@ -126,23 +146,49 @@ export const OrderbookDepthPanel: FunctionComponent<{
     );
   }
 
-  const noAsks = !isLoading && asks.length === 0;
-  const noBids = !isLoading && bids.length === 0;
+  const noAsks = !isLoading && !isError && asks.length === 0;
+  const noBids = !isLoading && !isError && bids.length === 0;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
+      {/* Aggregation selector + live indicator */}
+      <div className="flex items-center border-b border-osmoverse-700 px-3 py-1">
+        <div className="flex gap-1">
+          <button
+            onClick={() => onBucketSizeChange?.(undefined)}
+            className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+              bucketSize === undefined
+                ? "bg-osmoverse-700 text-white-full"
+                : "text-osmoverse-400 hover:text-osmoverse-200"
+            }`}
+          >
+            Raw
+          </button>
+          {groupingOptions.map(({ label, value }) => (
+            <button
+              key={value}
+              onClick={() => onBucketSizeChange?.(value)}
+              className={`rounded px-1.5 py-0.5 font-mono text-xs transition-colors ${
+                bucketSize === value
+                  ? "bg-osmoverse-700 text-white-full"
+                  : "text-osmoverse-400 hover:text-osmoverse-200"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <span
+          className={`ml-auto mr-0.5 h-1.5 w-1.5 rounded-full ${
+            isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
+          }`}
+        />
+      </div>
       {/* Column headers */}
-      <div className="grid grid-cols-3 border-b border-osmoverse-700 px-2 py-1 font-mono text-xs text-osmoverse-400">
+      <div className="grid grid-cols-3 px-3 py-0.5 font-mono text-xs text-osmoverse-500">
         <span>Price</span>
         <span className="text-right">{baseSymbol ?? "Base"}</span>
-        <div className="flex items-center justify-end gap-1.5">
-          <span>{quoteSymbol ?? "Quote"}</span>
-          <span
-            className={`h-1.5 w-1.5 rounded-full ${
-              isLive ? "bg-bullish-400" : "animate-pulse bg-osmoverse-500"
-            }`}
-          />
-        </div>
+        <span className="text-right">{quoteSymbol ?? "Quote"}</span>
       </div>
 
       {/* Asks (reverse order — highest ask at top, best ask nearest spread) */}
@@ -172,7 +218,17 @@ export const OrderbookDepthPanel: FunctionComponent<{
         )}
       </div>
 
-      <div className="border-y border-osmoverse-700" />
+      {/* Spread row */}
+      <div className="flex items-center justify-center gap-2 border-y border-osmoverse-700 px-2 py-0.5 font-mono text-xs">
+        {spreadPct !== undefined ? (
+          <>
+            <span className="text-osmoverse-400">Spread:</span>
+            <span className="text-osmoverse-200">{spreadPct.toFixed(2)}%</span>
+          </>
+        ) : (
+          <span className="text-osmoverse-600">—</span>
+        )}
+      </div>
 
       {/* Bids */}
       <div className="no-scrollbar overflow-y-auto">
