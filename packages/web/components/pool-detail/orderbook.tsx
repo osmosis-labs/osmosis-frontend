@@ -10,11 +10,13 @@ import { FunctionComponent, memo, useCallback, useEffect, useMemo, useState } fr
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { ChartUnavailable } from "~/components/chart/price-historical";
-import { PlaceLimitTool } from "~/components/place-limit-tool";
 import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
-import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Spinner } from "~/components/loaders/spinner";
+import { PlaceLimitTool } from "~/components/place-limit-tool";
+import { OrderTypeSelector, TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
+import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
@@ -33,8 +35,6 @@ import {
   formatPretty,
   getPriceExtendedFormatOptions,
 } from "~/utils/formatter";
-import { OrderTypeSelector, TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
-import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
 import { historicalDatafeed } from "~/utils/trading-view";
 import { api } from "~/utils/trpc";
 
