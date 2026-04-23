@@ -56,49 +56,71 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     },
   };
 
-  if (container && chart.current === undefined && featureFlags._isInitialized) {
-    const widgetOptions: ChartingLibraryWidgetOptions = {
-      symbol: props.coinDenom,
-      datafeed: props.datafeed!,
-      interval: "1d" as ResolutionString,
-      container,
-      library_path: "/tradingview/",
-      custom_css_url: "/tradingview/custom-limit.css",
-      custom_font_family: '"Inter", sans-serif',
-      locale: "en",
-      disabled_features: [
-        "header_symbol_search",
-        "header_compare",
-        "symbol_search_hot_key",
-        "symbol_info",
-        "go_to_date",
-        "header_quick_search",
-        "header_symbol_search",
-        "symbol_search_hot_key",
-        "compare_symbol_search_spread_operators",
-        "studies_symbol_search_spread_operators",
-        "use_localstorage_for_settings",
-      ],
-      enabled_features: [
-        "remove_library_container_border",
-        "hide_last_na_study_output",
-        "dont_show_boolean_study_arguments",
-        "hide_left_toolbar_by_default",
-      ],
-      autosize: true,
-      ...themeOptions,
-      ...props,
-    };
-
-    chart.current = new TradingView.widget(widgetOptions);
-  }
+  const propsRef = useRef(props);
+  propsRef.current = props;
 
   useEffect(() => {
+    if (!container || !featureFlags._isInitialized) return;
+
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    const tryInit = () => {
+      if (chart.current) return true;
+      if (typeof window === "undefined") return false;
+      const tv = (window as any).TradingView;
+      if (!tv) return false;
+
+      const widgetOptions: ChartingLibraryWidgetOptions = {
+        symbol: propsRef.current.coinDenom,
+        datafeed: propsRef.current.datafeed!,
+        interval: "1d" as ResolutionString,
+        container,
+        library_path: "/tradingview/",
+        custom_css_url: "/tradingview/custom-limit.css",
+        custom_font_family: '"Inter", sans-serif',
+        locale: "en",
+        disabled_features: [
+          "header_symbol_search",
+          "header_compare",
+          "symbol_search_hot_key",
+          "symbol_info",
+          "go_to_date",
+          "header_quick_search",
+          "compare_symbol_search_spread_operators",
+          "studies_symbol_search_spread_operators",
+          "use_localstorage_for_settings",
+        ],
+        enabled_features: [
+          "remove_library_container_border",
+          "hide_last_na_study_output",
+          "dont_show_boolean_study_arguments",
+          "hide_left_toolbar_by_default",
+        ],
+        autosize: true,
+        ...themeOptions,
+        ...propsRef.current,
+      };
+
+      chart.current = new tv.widget(widgetOptions);
+      return true;
+    };
+
+    if (!tryInit()) {
+      // Script not yet loaded — poll until it is (max ~10s)
+      intervalId = setInterval(() => {
+        if (tryInit() && intervalId) {
+          clearInterval(intervalId);
+        }
+      }, 200);
+    }
+
     return () => {
+      if (intervalId) clearInterval(intervalId);
       chart.current?.remove();
       chart.current = undefined;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [container, featureFlags._isInitialized]);
 
-  return <div className="relative h-full" ref={setContainer} />;
+  return <div className="relative h-full w-full" ref={setContainer} />;
 };
