@@ -16,6 +16,7 @@ type AdvancedChartProps = Omit<
 
 export const AdvancedChart = (props: AdvancedChartProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const featureFlags = useFeatureFlags();
   const themeOptions: Partial<ChartingLibraryWidgetOptions> = {
@@ -89,7 +90,9 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       ...props,
     };
 
-    return new TradingView.widget(widgetOptions);
+    const widget = new TradingView.widget(widgetOptions);
+    widget.onChartReady(() => setIsReady(true));
+    return widget;
   });
 
   const isFeatureFlagsInitialized = featureFlags._isInitialized;
@@ -118,8 +121,17 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
     return () => {
       if (intervalId) clearInterval(intervalId);
       widget?.remove();
+      setIsReady(false);
     };
   }, [container, isFeatureFlagsInitialized]);
 
-  return <div className="relative h-full w-full" ref={setContainer} />;
+  return (
+    <div className="relative h-full w-full">
+      {/* TradingView owns this div, no React children inside it */}
+      <div className="h-full w-full" ref={setContainer} />
+      {!isReady && (
+        <div className="pointer-events-none absolute inset-0 z-10 bg-osmoverse-1000" />
+      )}
+    </div>
+  );
 };
