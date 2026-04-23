@@ -6,6 +6,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import Tippy from "@tippyjs/react";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
@@ -32,7 +33,6 @@ import {
   TRADE_TYPES,
 } from "~/components/swap-tool/order-type-selector";
 import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
-import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import {
@@ -141,6 +141,9 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       { enabled: Boolean(contractAddress) }
     );
 
+    // Bucket size for depth aggregation — undefined = raw ticks
+    const [bucketSize, setBucketSize] = useState<number | undefined>(undefined);
+
     // Aggregated depth chart data
     const {
       data: depthData,
@@ -148,11 +151,12 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       isError: isDepthError,
       isRefetching: isDepthRefetching,
     } = api.edge.pools.getPairDepth.useQuery(
-      { poolId },
+      { poolId, bucketSize },
       {
         enabled: Boolean(contractAddress),
         refetchInterval: 10000,
         keepPreviousData: true,
+        staleTime: 0,
       }
     );
 
@@ -342,6 +346,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
                   initialQuoteDenom={quoteDenom}
                   alwaysExpandedDetails
                   externalOrderPrice={selectedPrice}
+                  onOrderSuccess={() => refetch()}
                 />
               </div>
             </div>
@@ -364,6 +369,9 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
                       bids={depthData?.bids ?? []}
                       asks={depthData?.asks ?? []}
                       midPrice={depthData?.midPrice ?? 0}
+                      bidPrice={depthData?.bidPrice}
+                      askPrice={depthData?.askPrice}
+                      groupingOptions={depthData?.groupingOptions ?? []}
                       baseSymbol={
                         pool?.reserveCoins.find(
                           (c) => c.currency.coinMinimalDenom === baseDenom
@@ -377,6 +385,9 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
                       onPriceSelect={(p) => setSelectedPrice(String(p))}
                       isLive={!isDepthRefetching}
                       isLoading={isDepthLoading && !depthData}
+                      isError={isDepthError}
+                      bucketSize={bucketSize}
+                      onBucketSizeChange={setBucketSize}
                     />
                   )}
                 </div>
@@ -387,7 +398,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
           {/* ── Your Orders (full width) ── */}
           <div className="rounded-3xl border border-osmoverse-700 p-6">
             <div className="mb-4 flex items-center gap-3">
-              <h6>{t("pool.orderbookPool.yourOrders")}</h6>
+              <h4>{t("pool.orderbookPool.yourOrders")}</h4>
               <div className="ml-auto flex gap-1 rounded-lg bg-osmoverse-800 p-0.5">
                 {(["all", "bid", "ask"] as const).map((f) => (
                   <button
@@ -510,7 +521,7 @@ const OrdersTable: FunctionComponent<{
   }, [orders]);
 
   return (
-    <div className="mt-3 overflow-x-auto">
+    <div className="mt-3 overflow-x-auto xl:overflow-visible">
       <table className="min-w-[900px] table-auto">
         <thead className="border-b border-osmoverse-700 bg-osmoverse-1000">
           <tr className={classNames(gridClasses)}>
@@ -578,45 +589,55 @@ const PoolOrderGroupHeader: FunctionComponent<{
 
   const claim = useCallback(async () => {
     setClaiming(true);
-    await onClaimAll();
-    setClaiming(false);
+    try {
+      await onClaimAll();
+    } finally {
+      setClaiming(false);
+    }
   }, [onClaimAll]);
 
   if (group === "filled") {
     return (
-      <tr className={classNames(gridClasses, "items-center")}>
-        <td className="!px-0" />
-        <td colSpan={4} className="!px-0">
-          <div className="flex items-center gap-3">
-            <span className="sm:subtitle1 text-h5 font-h5">
-              {t("limitOrders.orderHistoryHeaders.filled")}
-            </span>
-            {claimableCount > 0 && (
-              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-[#A51399]">
-                <span className="md:body2 text-subtitle font-subtitle">
-                  {claimableCount}
+      <tr className="flex w-full items-center py-2">
+        <td className="flex min-w-0 flex-1 items-center gap-2 !px-0">
+          <span className="shrink-0 text-h5 font-h5">
+            {t("limitOrders.orderHistoryHeaders.filled")}
+          </span>
+          {claimableCount > 0 && (
+            <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#A51399]">
+              <span className="md:body2 text-subtitle font-subtitle">
+                {claimableCount}
+              </span>
+            </div>
+          )}
+          <Tippy
+            content={
+              <div className="body2 flex flex-col gap-1 rounded-xl border border-osmoverse-100 bg-osmoverse-1000 px-3 py-2.5">
+                <span className="caption">
+                  {t("limitOrders.whatIsOrderClaim.title")}
+                </span>
+                <span className="caption text-osmoverse-300">
+                  {t("limitOrders.whatIsOrderClaim.description")}
                 </span>
               </div>
-            )}
-            <GenericDisclaimer
-              title={t("limitOrders.whatIsOrderClaim.title")}
-              body={t("limitOrders.whatIsOrderClaim.description")}
-            >
-              <div className="flex h-8 w-8 items-center justify-center rounded-full transition-colors hover:bg-osmoverse-800">
-                <Icon
-                  id="question"
-                  className="h-5 w-5 text-wosmongton-200"
-                  width={20}
-                  height={20}
-                />
-              </div>
-            </GenericDisclaimer>
-          </div>
+            }
+            trigger="mouseenter focus"
+            arrow={false}
+          >
+            <span className="inline-flex cursor-pointer items-center">
+              <Icon
+                id="question"
+                className="h-6 w-6 text-wosmongton-200 hover:text-wosmongton-100"
+                width={24}
+                height={24}
+              />
+            </span>
+          </Tippy>
         </td>
-        <td className="flex items-center justify-end !px-0">
+        <td className="shrink-0 !px-0">
           {claimableCount > 0 && (
             <button
-              className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 px-4 py-3 disabled:opacity-50"
+              className="flex items-center justify-center rounded-[48px] bg-wosmongton-700 px-4 py-2 disabled:opacity-50"
               onClick={claim}
               disabled={claiming}
             >
@@ -630,9 +651,9 @@ const PoolOrderGroupHeader: FunctionComponent<{
   }
 
   return (
-    <tr className="flex items-center">
-      <td colSpan={6} className="py-3">
-        <span className="sm:subtitle1 text-h5 font-h5">
+    <tr className="flex items-center py-2">
+      <td colSpan={6} className="!px-0">
+        <span className="text-h5 font-h5">
           {group === "pending"
             ? t("limitOrders.orderHistoryHeaders.pending")
             : t("limitOrders.orderHistoryHeaders.past")}
@@ -706,7 +727,7 @@ const OrderRow = memo(
       <tr
         className={classNames(
           gridClasses,
-          "items-center border-b border-osmoverse-800 sm:[&>td]:!py-0"
+          "items-center hover:bg-osmoverse-900 sm:[&>td]:!py-0"
         )}
       >
         <td className="flex items-center justify-center !px-0 !text-left">
