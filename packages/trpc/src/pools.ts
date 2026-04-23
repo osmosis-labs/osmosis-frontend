@@ -6,6 +6,7 @@ import {
   getCachedTransmuterTotalPoolLiquidity,
   getConcentratedRangePoolApr,
   getLockableDurations,
+  getPairDepth,
   getPool,
   getPoolGaugeIncentives,
   getPools,
@@ -169,5 +170,10 @@ export const poolsRouter = createTRPCRouter({
         ctx.chainList,
         ctx.assetLists
       )
+    ),
+  getPairDepth: publicProcedure
+    .input(z.object({ poolId: z.string() }))
+    .query(({ ctx, input: { poolId } }) =>
+      getPairDepth({ poolId, ...ctx })
     ),
 });

@@ -90,6 +90,30 @@ export const queryOrderbookTicks = createNodeQuery<
   },
 });
 
+// AllTicks: paginated tick enumeration — returns only ticks with existing orders.
+// start_from and end_at are inclusive tick IDs; limit caps the result count.
+export const queryOrderbookAllTicks = createNodeQuery<
+  OrderbookTicksResponse,
+  {
+    orderbookAddress: string;
+    startFrom?: number;
+    endAt?: number;
+    limit?: number;
+  }
+>({
+  path: ({ orderbookAddress, startFrom, endAt, limit }) => {
+    const msg = JSON.stringify({
+      all_ticks: {
+        ...(startFrom !== undefined ? { start_from: startFrom } : {}),
+        ...(endAt !== undefined ? { end_at: endAt } : {}),
+        ...(limit !== undefined ? { limit } : {}),
+      },
+    });
+    const encodedMsg = Buffer.from(msg).toString("base64");
+    return `/cosmwasm/wasm/v1/contract/${orderbookAddress}/smart/${encodedMsg}`;
+  },
+});
+
 export interface TickUnrealizedCancelsState {
   ask_unrealized_cancels: string;
   bid_unrealized_cancels: string;
