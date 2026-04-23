@@ -70,6 +70,77 @@ export class TradePage extends BasePage {
     this.slippageInput = page
       .locator('input[type="text"][inputmode="decimal"]')
       .first();
+
+    this.attachTxNetworkLogging();
+  }
+
+  /**
+   * Attaches low-noise page listeners that log only transaction-broadcast-
+   * related network traffic: Tendermint RPC `/broadcast_tx*`, Cosmos SDK REST
+   * `/cosmos/tx/v1beta1/txs`, gRPC-Web `BroadcastTx`, and ABCI queries that
+   * usually accompany a broadcast. Also logs SQS routes hits so we can see
+   * whether quote fetches change behaviour under proxy.
+   *
+   * Purpose: when the UI success toast never appears (e.g. EU/SG monitoring
+   * runs via proxy), the log reveals whether the broadcast request was even
+   * made, what status code came back, and any network-level failure.
+   *
+   * Listeners are attached once in the constructor and remain for the
+   * lifetime of the page; no teardown required.
+   */
+  private attachTxNetworkLogging() {
+    const txUrlPattern =
+      /(broadcast_tx|BroadcastTx|cosmos\/tx\/v1beta1\/txs|abci_query|sqs\.osmosis\.zone\/router)/i;
+    const shouldLog = (url: string) => txUrlPattern.test(url);
+
+    this.page.on("request", (req) => {
+      const url = req.url();
+      if (!shouldLog(url)) return;
+      let postPreview = "";
+      try {
+        const post = req.postData();
+        if (post) {
+          postPreview =
+            post.length > 300 ? `${post.slice(0, 300)}...` : post;
+        }
+      } catch {
+        // some requests have no post data accessor -- ignore
+      }
+      console.log(
+        `[tx-net] → REQUEST ${req.method()} ${url}${
+          postPreview ? ` body=${postPreview}` : ""
+        }`
+      );
+    });
+
+    this.page.on("response", async (res) => {
+      const url = res.url();
+      if (!shouldLog(url)) return;
+      const status = res.status();
+      let bodyPreview = "";
+      try {
+        const text = await res.text();
+        bodyPreview =
+          text.length > 400 ? `${text.slice(0, 400)}...` : text;
+      } catch {
+        // body may already be consumed or non-text; fine
+      }
+      console.log(
+        `[tx-net] ← RESPONSE ${status} ${url}${
+          bodyPreview ? ` body=${bodyPreview}` : ""
+        }`
+      );
+    });
+
+    this.page.on("requestfailed", (req) => {
+      const url = req.url();
+      if (!shouldLog(url)) return;
+      console.warn(
+        `[tx-net] ✗ FAILED ${req.method()} ${url} err=${
+          req.failure()?.errorText ?? "<unknown>"
+        }`
+      );
+    });
   }
 
   async goto() {
@@ -191,6 +262,108 @@ export class TradePage extends BasePage {
    */
   async justApproveIfNeeded(context: BrowserContext) {
     await waitForKeplrApproval(context, { timeout: 10_000 });
+  }
+
+  /**
+   * Waits for any lingering "Transaction Successful" / "Transaction Broadcasting"
+   * / "View explorer" toast from a previous transaction to disappear, so the
+   * next confirmation detection can't short-circuit on stale DOM. Mirrors the
+   * guard used in transactions-page.ts (cancelLimitOrder / claimAndCloseAny /
+   * claimAll). Safe to call multiple times -- never throws.
+   *
+   * Important for sequential tests like monitoring.market.wallet.spec, where
+   * four buy/sell swaps run back-to-back within the 7s success-toast lifetime.
+   */
+  async dismissStaleTxToasts(timeout = 3000) {
+    await Promise.all([
+      this.trxSuccessful
+        .waitFor({ state: "hidden", timeout })
+        .catch(() => {}),
+      this.trxBroadcasting
+        .waitFor({ state: "hidden", timeout })
+        .catch(() => {}),
+      this.trxLink.waitFor({ state: "hidden", timeout }).catch(() => {}),
+    ]);
+  }
+
+  /**
+   * Logs best-effort UI diagnostics to help triage tx-confirmation timeouts.
+   * Safe to call from a catch block -- never throws.
+   */
+  private async logTxDiagnostics(prefix: string) {
+    const url = this.page.url();
+    let toastText = "<none>";
+    try {
+      toastText =
+        (await this.page
+          .locator('[role="alertdialog"]')
+          .innerText({ timeout: 500 })) || "<empty>";
+    } catch {
+      // alertdialog may not exist; keep default
+    }
+    let explorerHref: string | null = null;
+    try {
+      explorerHref = await this.trxLink.getAttribute("href", { timeout: 500 });
+    } catch {
+      // no explorer link visible; fine
+    }
+    console.warn(
+      `[tx-diagnostics] ${prefix}\n  page=${url}\n  alertDialogText=${JSON.stringify(
+        toastText
+      )}\n  explorerHref=${explorerHref ?? "<none>"}`
+    );
+  }
+
+  /**
+   * Waits for a transaction to reach a positive end state using only UI
+   * signals. Runs in two phases:
+   *
+   *   1. Fast-fail (default 15s): any of
+   *      "Transaction Broadcasting" | "Transaction Successful" | "View explorer"
+   *      must become visible. If none appears, the tx almost certainly never
+   *      reached the mempool -- throws a clearly labelled error so on-chain
+   *      issues are not hidden behind a generic 40s timeout.
+   *
+   *   2. Success (remaining time, default 40s total): wait for
+   *      "Transaction Successful" or "View explorer" (both rendered by the
+   *      success toast). The success toast auto-closes after ~7s, so this
+   *      phase just has to catch that window.
+   *
+   * On either failure the method logs lightweight diagnostics (page URL,
+   * current toast text, explorer href) to aid CI triage.
+   */
+  async waitForTxConfirmation(opts: { timeout?: number } = {}) {
+    const total = opts.timeout ?? 40_000;
+    const broadcastTimeout = Math.min(15_000, total);
+    const startedAt = Date.now();
+
+    const anyTxSignal = this.trxBroadcasting
+      .or(this.trxSuccessful)
+      .or(this.trxLink);
+    const successSignal = this.trxSuccessful.or(this.trxLink);
+
+    try {
+      await expect(anyTxSignal).toBeVisible({ timeout: broadcastTimeout });
+    } catch (e) {
+      await this.logTxDiagnostics(
+        `No tx toast within ${broadcastTimeout}ms (broadcast likely never happened)`
+      );
+      throw new Error(
+        `Transaction did not reach broadcasting or success state within ${broadcastTimeout}ms. ` +
+          `This usually means the swap was never submitted to the chain (wallet/RPC/signing issue), ` +
+          `not a UI visibility problem.`
+      );
+    }
+
+    const remaining = Math.max(total - (Date.now() - startedAt), 5_000);
+    try {
+      await expect(successSignal).toBeVisible({ timeout: remaining });
+    } catch (e) {
+      await this.logTxDiagnostics(
+        `Broadcast seen but success toast not visible within ${total}ms`
+      );
+      throw e;
+    }
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
@@ -665,6 +838,8 @@ export class TradePage extends BasePage {
   ) {
     const slippagePercent = options?.slippagePercent;
 
+    await this.dismissStaleTxToasts();
+
     await expect(this.sellBtn, "Sell button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
@@ -678,11 +853,9 @@ export class TradePage extends BasePage {
     }
 
     await this.confirmSwapBtn.click();
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
+    const confirmationPromise = this.waitForTxConfirmation({ timeout: 40_000 });
     await this.justApproveIfNeeded(context);
-    await successPromise;
+    await confirmationPromise;
   }
 
   /**
@@ -706,6 +879,8 @@ export class TradePage extends BasePage {
   ) {
     const slippagePercent = options?.slippagePercent;
 
+    await this.dismissStaleTxToasts();
+
     await expect(this.buyBtn, "Buy button is disabled!").toBeEnabled({
       timeout: this.buySellTimeout,
     });
@@ -719,11 +894,9 @@ export class TradePage extends BasePage {
     }
 
     await this.confirmSwapBtn.click();
-    const successPromise = expect(this.trxSuccessful).toBeVisible({
-      timeout: 40000,
-    });
+    const confirmationPromise = this.waitForTxConfirmation({ timeout: 40_000 });
     await this.justApproveIfNeeded(context);
-    await successPromise;
+    await confirmationPromise;
   }
 
   /**
@@ -787,6 +960,9 @@ export class TradePage extends BasePage {
           "Insufficient balance for the swap!"
         ).toBeFalsy();
         console.log("Swap and Sign now..");
+
+        await this.dismissStaleTxToasts();
+
         await expect(this.swapBtn, "Swap button is disabled!").toBeEnabled({
           timeout: this.buySellTimeout,
         });
@@ -800,8 +976,8 @@ export class TradePage extends BasePage {
         }
 
         await this.confirmSwapBtn.click({ timeout: 5000 });
-        const successPromise = expect(this.trxSuccessful).toBeVisible({
-          timeout: 40000,
+        const confirmationPromise = this.waitForTxConfirmation({
+          timeout: 40_000,
         });
         await this.justApproveIfNeeded(context);
 
@@ -811,7 +987,7 @@ export class TradePage extends BasePage {
           );
         }
 
-        await successPromise;
+        await confirmationPromise;
 
         return;
       } catch (error: any) {

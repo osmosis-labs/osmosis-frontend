@@ -35,7 +35,10 @@ export class SwapPage extends BasePage {
       '//div/button[contains(@class, "ease-bounce")]',
     )
     this.exchangeRate = page.locator('//span[@data-testid="token-price"]')
-    this.trxSuccessful = page.locator('//h6[.="Transaction Succesful"]')
+    // Prefer the text locator (matches both the h6 title and accompanying
+    // success elements) instead of a strict xpath that previously had a typo
+    // ("Succesful"), which silently stopped matching after the copy was fixed.
+    this.trxSuccessful = page.getByText('Transaction Successful')
     this.trxLink = page.getByText('View explorer')
     this.trxBroadcasting = page.locator('//h6[.="Transaction Broadcasting"]')
   }
