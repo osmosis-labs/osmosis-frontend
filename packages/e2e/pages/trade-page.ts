@@ -423,39 +423,22 @@ export class TradePage extends BasePage {
     } = {}
   ) {
     const total = opts.timeout ?? 40_000;
-    const broadcastTimeout = Math.min(15_000, total);
-    const startedAt = Date.now();
 
-    const anyTxSignal = this.trxBroadcasting
-      .or(this.trxSuccessful)
-      .or(this.trxLink);
-    const successSignal = this.trxSuccessful.or(this.trxLink);
-
+    // Wait for "Transaction Successful" text to appear. This is the exact
+    // pattern that was proven to work prior to this file's refactor -- using a
+    // compound `.or()` locator across trxSuccessful / trxLink / trxBroadcasting
+    // triggered Playwright strict-mode issues when multiple success-toast
+    // elements were present, causing the assertion to throw immediately even
+    // though the toast had rendered (visible via the View-explorer href in
+    // diagnostics output). Keep this simple and targeted.
     try {
-      await expect(anyTxSignal).toBeVisible({ timeout: broadcastTimeout });
+      await expect(this.trxSuccessful).toBeVisible({ timeout: total });
     } catch (e) {
       await this.logTxDiagnostics(
-        `No tx toast within ${broadcastTimeout}ms (broadcast likely never happened)`
+        `Transaction Successful toast not visible within ${total}ms`
       );
       opts.networkCapture?.dump(
-        `No tx toast within ${broadcastTimeout}ms -- network activity since confirm click`
-      );
-      throw new Error(
-        `Transaction did not reach broadcasting or success state within ${broadcastTimeout}ms. ` +
-          `This usually means the swap was never submitted to the chain (wallet/RPC/signing issue), ` +
-          `not a UI visibility problem.`
-      );
-    }
-
-    const remaining = Math.max(total - (Date.now() - startedAt), 5_000);
-    try {
-      await expect(successSignal).toBeVisible({ timeout: remaining });
-    } catch (e) {
-      await this.logTxDiagnostics(
-        `Broadcast seen but success toast not visible within ${total}ms`
-      );
-      opts.networkCapture?.dump(
-        `Broadcast seen but success toast not visible -- network activity since confirm click`
+        `Transaction Successful toast not visible -- network activity since confirm click`
       );
       throw e;
     }
