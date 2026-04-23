@@ -206,7 +206,7 @@ const CancelButton = ({
       return;
     }
     const { tick_id, order_id, orderbookAddress } = order;
-    const claimMsg = {
+    const cancelMsg = {
       msg: {
         cancel_limit: { order_id, tick_id },
       },
@@ -219,7 +219,7 @@ const CancelButton = ({
       await prepareMultiExecuteContractMsg(
         transactionContext,
         "executeWasm",
-        [claimMsg],
+        [cancelMsg],
         undefined
       ).then((prepared) => signAndBroadcast(...prepared));
       await refetch();

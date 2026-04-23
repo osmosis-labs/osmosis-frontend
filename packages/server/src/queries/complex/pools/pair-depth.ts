@@ -42,8 +42,9 @@ function formatGroupLabel(value: number): string {
   if (value >= 1000)
     return value.toLocaleString("en-US", { maximumFractionDigits: 0 });
   if (value >= 1) return value.toFixed(value % 1 === 0 ? 0 : 2);
-  // For small decimals, show enough significant digits to avoid "0.00"
-  return value.toPrecision(1);
+  // For small decimals, show enough significant digits without scientific notation
+  const s = value.toPrecision(1);
+  return s.includes("e") ? value.toFixed(20).replace(/\.?0+$/, "") : s;
 }
 
 function aggregateLevels(
@@ -313,6 +314,7 @@ async function computePairDepth({
   ].sort((a, b) => a.price - b.price);
 
   const allPrices = depthData.map((d) => d.price);
+  if (allPrices.length === 0) return { ...empty, midPrice, bidPrice, askPrice };
   const minPrice = Math.min(...allPrices);
   const maxPrice = Math.max(...allPrices);
   const maxDepth = Math.max(...depthData.map((d) => d.depth));
