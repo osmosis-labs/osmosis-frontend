@@ -169,8 +169,34 @@ export const orderbookRouter = createTRPCRouter({
         orderbookAddress: osmoAddress,
         chainList: ctx.chainList,
       });
-      const askSpotPrice = tickToPrice(new Int(orderbookState.next_ask_tick));
-      const bidSpotPrice = tickToPrice(new Int(orderbookState.next_bid_tick));
+
+      // tickToPrice gives price in base-unit terms; normalize by decimal difference
+      // so the displayed price matches the human-readable quote/base ratio.
+      const pools = await getOrderbookPools();
+      const pool = pools.find((p) => p.contractAddress === osmoAddress);
+      const baseAsset = pool
+        ? getAssetFromAssetList({
+            coinMinimalDenom: pool.baseDenom,
+            assetLists: ctx.assetLists,
+          })
+        : undefined;
+      const quoteAsset = pool
+        ? getAssetFromAssetList({
+            coinMinimalDenom: pool.quoteDenom,
+            assetLists: ctx.assetLists,
+          })
+        : undefined;
+      const normalizationFactor = new Dec(10).pow(
+        new Int(
+          (quoteAsset?.decimals ?? 0) - (baseAsset?.decimals ?? 0)
+        )
+      );
+
+      const rawAsk = tickToPrice(new Int(orderbookState.next_ask_tick));
+      const rawBid = tickToPrice(new Int(orderbookState.next_bid_tick));
+      const askSpotPrice = rawAsk.quo(normalizationFactor);
+      const bidSpotPrice = rawBid.quo(normalizationFactor);
+
       return {
         ...orderbookState,
         askSpotPrice,
@@ -229,8 +255,25 @@ export const orderbookRouter = createTRPCRouter({
       });
       return historicalOrders;
     }),
-  getPools: publicProcedure.query(async () => {
+  getPools: publicProcedure.query(async ({ ctx }) => {
     const pools = await getOrderbookPools();
-    return pools;
+    // Normalize: if base is a stablecoin and quote is not, swap them so the
+    // volatile asset is always treated as base across the UI.
+    return pools.map((pool) => {
+      const baseAsset = getAssetFromAssetList({
+        coinMinimalDenom: pool.baseDenom,
+        assetLists: ctx.assetLists,
+      });
+      const quoteAsset = getAssetFromAssetList({
+        coinMinimalDenom: pool.quoteDenom,
+        assetLists: ctx.assetLists,
+      });
+      const baseIsStable = Boolean(baseAsset?.rawAsset.pegMechanism);
+      const quoteIsStable = Boolean(quoteAsset?.rawAsset.pegMechanism);
+      if (baseIsStable && !quoteIsStable) {
+        return { ...pool, baseDenom: pool.quoteDenom, quoteDenom: pool.baseDenom };
+      }
+      return pool;
+    });
   }),
 });
