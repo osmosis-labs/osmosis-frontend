@@ -1,5 +1,6 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
+import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useState } from "react";
 
@@ -7,6 +8,7 @@ import { SkeletonLoader } from "~/components/loaders/skeleton-loader";
 import {
   BasePoolDetails,
   ConcentratedLiquidityPool,
+  OrderbookPool,
   SharePool,
 } from "~/components/pool-detail";
 import { useTranslation, useWindowSize } from "~/hooks";
@@ -32,6 +34,8 @@ const Pool: FunctionComponent<Props> = ({
     error,
   } = api.local.pools.getPool.useQuery({ poolId });
 
+  const isOrderbookPool = pool?.type === "cosmwasm-orderbook";
+
   const [showTradeModal, setShowTradeModal] = useState(false);
 
   const isValidPoolId = Boolean(
@@ -52,7 +56,7 @@ const Pool: FunctionComponent<Props> = ({
     if (!pool || !isValidPoolId) return;
 
     // Handle different cosmwasm pool type redirections
-    if (pool.type.startsWith("cosmwasm")) {
+    if (pool.type.startsWith("cosmwasm") && !isOrderbookPool) {
       let redirectUrl = "";
 
       if (pool.type === "cosmwasm-alloyed") {
@@ -75,7 +79,7 @@ const Pool: FunctionComponent<Props> = ({
         window.location.href = redirectUrl;
       }
     }
-  }, [pool, poolId, isValidPoolId]);
+  }, [pool, poolId, isValidPoolId, isOrderbookPool]);
   useEffect(() => {
     if ((!isValidPoolId || isError) && router.isReady) {
       // Log error for debugging
@@ -88,6 +92,12 @@ const Pool: FunctionComponent<Props> = ({
 
   return (
     <>
+      {isOrderbookPool && (
+        <Script
+          src="/tradingview/charting_library.standalone.js"
+          strategy="afterInteractive"
+        />
+      )}
       <NextSeo title={t("seo.pool.title", { id: poolId })} />
       {pool && Boolean(poolId) && (
         <TradeTokens
@@ -110,6 +120,8 @@ const Pool: FunctionComponent<Props> = ({
           <SkeletonLoader className="h-8 !rounded-xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
         </div>
+      ) : isOrderbookPool ? (
+        <OrderbookPool poolId={pool.id} />
       ) : pool.type === "concentrated" && !isMobile ? (
         <ConcentratedLiquidityPool poolId={pool.id} />
       ) : pool.type === "weighted" || pool.type === "stable" ? (
