@@ -138,8 +138,13 @@ export const poolsRouter = createTRPCRouter({
       )
     ),
   getPairDepth: publicProcedure
-    .input(z.object({ poolId: z.string() }))
-    .query(({ ctx, input: { poolId } }) =>
-      getPairDepth({ poolId, ...ctx })
+    .input(
+      z.object({
+        poolId: z.string(),
+        bucketSize: z.number().positive().optional(),
+      })
+    )
+    .query(({ ctx, input: { poolId, bucketSize } }) =>
+      getPairDepth({ poolId, bucketSize, ...ctx })
     ),
 });
