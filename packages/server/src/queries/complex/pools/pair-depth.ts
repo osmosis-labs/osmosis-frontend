@@ -100,7 +100,7 @@ export function getPairDepth({
   return cachified({
     cache: pairDepthCache,
     key: `pairDepth-${poolId}-${bucketSize ?? 0}`,
-    ttl: 1000 * 10,
+    ttl: 1000 * 30,
     getFreshValue: () =>
       computePairDepth({ poolId, bucketSize, assetLists, chainList }),
   });
@@ -205,6 +205,16 @@ async function computePairDepth({
   // AllTicks returns only ticks with actual orders — no range bounding needed.
   // Bids: all ticks up to and including nextBidTick.
   // Asks: all ticks from nextAskTick upward.
+  console.debug("[pair-depth] fetching ticks", {
+    poolId,
+    contractAddress,
+    nextBidTick,
+    nextAskTick,
+    midPrice,
+    bidPrice,
+    askPrice,
+  });
+
   const [bidTicksResp, askTicksResp] = await Promise.all([
     queryOrderbookAllTicks({
       orderbookAddress: contractAddress,
@@ -212,15 +222,38 @@ async function computePairDepth({
       endAt: nextBidTick,
     })
       .then((r) => r.data.ticks)
-      .catch(() => []),
+      .catch((e) => {
+        console.error("[pair-depth] bid ticks fetch failed", e);
+        return null;
+      }),
     queryOrderbookAllTicks({
       orderbookAddress: contractAddress,
       chainList,
       startFrom: nextAskTick,
     })
       .then((r) => r.data.ticks)
-      .catch(() => []),
+      .catch((e) => {
+        console.error("[pair-depth] ask ticks fetch failed", e);
+        return null;
+      }),
   ]);
+
+  // If either side failed entirely, return unavailable so the frontend
+  // holds stale data rather than showing a false empty side.
+  if (bidTicksResp === null || askTicksResp === null) {
+    console.warn("[pair-depth] tick fetch failed, returning unavailable", {
+      bidFailed: bidTicksResp === null,
+      askFailed: askTicksResp === null,
+    });
+    return { ...empty, midPrice, bidPrice, askPrice, unavailable: true };
+  }
+
+  console.debug("[pair-depth] raw ticks", {
+    bidTickCount: bidTicksResp.length,
+    askTickCount: askTicksResp.length,
+    bidSample: bidTicksResp.slice(0, 3),
+    askSample: askTicksResp.slice(0, 3),
+  });
 
   const baseScale = Math.pow(10, baseDecimals);
   const quoteScale = Math.pow(10, quoteDecimals);
@@ -297,6 +330,13 @@ async function computePairDepth({
   const bids = bucketSize
     ? aggregateLevels(rawBids, bucketSize, "bid")
     : rawBids;
+
+  console.debug("[pair-depth] levels built", {
+    bidLevels: bids.length,
+    askLevels: asks.length,
+    bidSample: bids.slice(0, 3),
+    askSample: asks.slice(0, 3),
+  });
 
   if (bids.length === 0 && asks.length === 0)
     return { ...empty, midPrice, bidPrice, askPrice };
