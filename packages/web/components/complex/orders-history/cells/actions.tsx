@@ -21,11 +21,7 @@ export function ActionsCell({
         // TODO: swap to cancel button for partially filled but entirely claimed orders
         return <ClaimAndCloseButton order={order} refetch={refetch} />;
       case "filled":
-        return (
-          <span className="text-body-1 text-osmoverse-300">
-            {t("limitOrders.claimable")}
-          </span>
-        );
+        return <ClaimButton order={order} refetch={refetch} />;
       default:
         return null;
     }
@@ -113,6 +109,60 @@ const ClaimAndCloseButton = observer(
           {order.percentFilled > order.percentClaimed
             ? t("limitOrders.claimAndClose")
             : t("limitOrders.close")}
+        </span>
+      </button>
+    );
+  }
+);
+
+const ClaimButton = observer(
+  ({
+    order,
+    refetch,
+  }: {
+    order: MappedLimitOrder;
+    refetch: () => Promise<any>;
+  }) => {
+    const { accountStore } = useStore();
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const [claiming, setClaiming] = useState(false);
+
+    useEffect(() => {
+      setClaiming(false);
+    }, [order.order_id]);
+
+    const claim = useCallback(async () => {
+      if (!account) return;
+      const { tick_id, order_id, orderbookAddress } = order;
+      try {
+        setClaiming(true);
+        await account.cosmwasm.sendMultiExecuteContractMsg(
+          "executeWasm",
+          [
+            {
+              msg: { claim_limit: { order_id, tick_id } },
+              contractAddress: orderbookAddress,
+              funds: [],
+            },
+          ],
+          undefined
+        );
+        await refetch();
+      } catch (error) {
+        console.error(error);
+        setClaiming(false);
+      }
+    }, [account, order, refetch]);
+
+    return (
+      <button
+        className="flex h-8 items-center justify-center rounded-5xl bg-osmoverse-825 px-3 transition-colors hover:bg-osmoverse-700 disabled:opacity-50"
+        onClick={claim}
+        disabled={claiming}
+      >
+        <span className="body2 flex items-center text-wosmongton-200">
+          {claiming && <Spinner className="mr-2 h-2 w-2" />}
+          {t("limitOrders.claim")}
         </span>
       </button>
     );
