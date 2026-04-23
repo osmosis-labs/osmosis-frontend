@@ -175,6 +175,7 @@ export async function getPools(
 export * from "./bonding";
 export * from "./env";
 export * from "./incentives";
+export * from "./pair-depth";
 export * from "./providers";
 export * from "./raw";
 export * from "./share";
