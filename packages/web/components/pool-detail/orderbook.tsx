@@ -1,12 +1,25 @@
 import { DEFAULT_VS_CURRENCY, MappedLimitOrder } from "@osmosis-labs/server";
-import { CoinPretty, Dec, Int, PricePretty, RatePretty } from "@osmosis-labs/unit";
+import {
+  CoinPretty,
+  Dec,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@osmosis-labs/unit";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { parseAsStringEnum, parseAsStringLiteral, useQueryState } from "nuqs";
-import { FunctionComponent, memo, useCallback, useEffect, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { ChartUnavailable } from "~/components/chart/price-historical";
@@ -14,7 +27,10 @@ import { ActionsCell } from "~/components/complex/orders-history/cells/actions";
 import { OrderProgressBar } from "~/components/complex/orders-history/cells/filled-progress";
 import { Spinner } from "~/components/loaders/spinner";
 import { PlaceLimitTool } from "~/components/place-limit-tool";
-import { OrderTypeSelector, TRADE_TYPES } from "~/components/swap-tool/order-type-selector";
+import {
+  OrderTypeSelector,
+  TRADE_TYPES,
+} from "~/components/swap-tool/order-type-selector";
 import { SwapToolTab } from "~/components/swap-tool/swap-tool-tabs";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
@@ -84,7 +100,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       const params = new URLSearchParams(window.location.search);
       if (!params.has("tab")) setTradeTab(SwapToolTab.BUY);
       if (!params.has("type")) setTradeType("limit");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Pool base data
@@ -97,14 +113,24 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       [allOrderbooks, poolId]
     );
     const contractAddress = orderbook?.contractAddress ?? "";
-    const baseDenom = orderbook?.baseDenom ?? pool?.reserveCoins[0]?.currency.coinMinimalDenom ?? "";
-    const quoteDenom = orderbook?.quoteDenom ?? pool?.reserveCoins[1]?.currency.coinMinimalDenom ?? "";
+    const baseDenom =
+      orderbook?.baseDenom ??
+      pool?.reserveCoins[0]?.currency.coinMinimalDenom ??
+      "";
+    const quoteDenom =
+      orderbook?.quoteDenom ??
+      pool?.reserveCoins[1]?.currency.coinMinimalDenom ??
+      "";
 
     // reserveCoins sorted to match normalized base/quote orientation
     const sortedReserveCoins = useMemo(() => {
       if (!pool?.reserveCoins || !baseDenom) return pool?.reserveCoins ?? [];
-      const base = pool.reserveCoins.find((c) => c.currency.coinMinimalDenom === baseDenom);
-      const quote = pool.reserveCoins.find((c) => c.currency.coinMinimalDenom === quoteDenom);
+      const base = pool.reserveCoins.find(
+        (c) => c.currency.coinMinimalDenom === baseDenom
+      );
+      const quote = pool.reserveCoins.find(
+        (c) => c.currency.coinMinimalDenom === quoteDenom
+      );
       if (base && quote) return [base, quote];
       return pool.reserveCoins;
     }, [pool?.reserveCoins, baseDenom, quoteDenom]);
@@ -116,10 +142,22 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // Aggregated depth chart data
-    const { data: depthData, isLoading: isDepthLoading, isError: isDepthError } = api.edge.pools.getPairDepth.useQuery(
+    const {
+      data: depthData,
+      isLoading: isDepthLoading,
+      isError: isDepthError,
+      isRefetching: isDepthRefetching,
+    } = api.edge.pools.getPairDepth.useQuery(
       { poolId },
-      { enabled: Boolean(contractAddress), refetchInterval: 10000, keepPreviousData: true }
+      {
+        enabled: Boolean(contractAddress),
+        refetchInterval: 10000,
+        keepPreviousData: true,
+      }
     );
+
+    // Price selected by clicking a depth table row — forwarded to PlaceLimitTool
+    const [selectedPrice, setSelectedPrice] = useState<string>("");
 
     // TradingView datafeed — uses the same historical price API as the assets page
     const apiUtils = api.useUtils();
@@ -130,8 +168,8 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // Display denom for TradingView — use the normalized baseDenom from orderbook metadata
-    const baseCoinDenom = baseDenom || (pool?.reserveCoins[0]?.currency.coinMinimalDenom ?? "");
-
+    const baseCoinDenom =
+      baseDenom || (pool?.reserveCoins[0]?.currency.coinMinimalDenom ?? "");
 
     // Incentives / APR
     const { data: incentives, isLoading: isLoadingIncentives } =
@@ -160,6 +198,15 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       [allOrders, contractAddress]
     );
 
+    const [dirFilter, setDirFilter] = useState<"all" | "bid" | "ask">("all");
+    const filteredOrders = useMemo(
+      () =>
+        dirFilter === "all"
+          ? poolOrders
+          : poolOrders.filter((o) => o.order_direction === dirFilter),
+      [poolOrders, dirFilter]
+    );
+
     // Claimable orders for this pool
     const { claimAllOrders } = useOrderbookClaimableOrders({
       userAddress: account?.address ?? "",
@@ -170,8 +217,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
     const claimablePoolOrders = useMemo(
       () =>
         poolOrders.filter(
-          (o) =>
-            o.status === "filled" && o.orderbookAddress === contractAddress
+          (o) => o.status === "filled" && o.orderbookAddress === contractAddress
         ),
       [poolOrders, contractAddress]
     );
@@ -181,8 +227,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       await refetch();
     }, [claimAllOrders, refetch]);
 
-    const showConnectWallet =
-      !account?.isWalletConnected && !isWalletLoading;
+    const showConnectWallet = !account?.isWalletConnected && !isWalletLoading;
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 px-8 py-4 md:gap-4 md:p-4">
@@ -228,12 +273,12 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
           </div>
 
           {/* ── TradingView chart ── */}
-          <div className="h-[340px] overflow-hidden rounded-3xl border border-osmoverse-700" style={{ marginBottom: "-60px" }}>
+          <div
+            className="h-[340px] overflow-hidden rounded-3xl border border-osmoverse-700"
+            style={{ marginBottom: "-60px" }}
+          >
             {baseCoinDenom ? (
-              <AdvancedChart
-                coinDenom={baseCoinDenom}
-                datafeed={tvDatafeed}
-              />
+              <AdvancedChart coinDenom={baseCoinDenom} datafeed={tvDatafeed} />
             ) : (
               <ChartUnavailable />
             )}
@@ -256,28 +301,30 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
             <div className="w-[512px] shrink-0 rounded-3xl border border-osmoverse-700 lg:w-full">
               {/* Buy / Sell tabs — each takes 50% */}
               <div className="flex overflow-hidden rounded-t-3xl">
-                {([SwapToolTab.BUY, SwapToolTab.SELL] as const).map((tab, i) => {
-                  const isActive = tradeTab === tab;
-                  const isBuy = tab === SwapToolTab.BUY;
-                  return (
-                    <button
-                      key={tab}
-                      onClick={() => setTradeTab(tab)}
-                      className={classNames(
-                        "flex-1 py-3 font-semibold transition-colors",
-                        isActive
-                          ? isBuy
-                            ? "bg-bullish-400 text-osmoverse-1000"
-                            : "bg-rust-500 text-white"
-                          : i === 0
-                          ? "border-b border-r border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                          : "border-b border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
-                      )}
-                    >
-                      {isBuy ? t("portfolio.buy") : t("limitOrders.sell")}
-                    </button>
-                  );
-                })}
+                {([SwapToolTab.BUY, SwapToolTab.SELL] as const).map(
+                  (tab, i) => {
+                    const isActive = tradeTab === tab;
+                    const isBuy = tab === SwapToolTab.BUY;
+                    return (
+                      <button
+                        key={tab}
+                        onClick={() => setTradeTab(tab)}
+                        className={classNames(
+                          "flex-1 py-3 font-semibold transition-colors",
+                          isActive
+                            ? isBuy
+                              ? "bg-bullish-400 text-osmoverse-1000"
+                              : "bg-rust-500 text-white"
+                            : i === 0
+                            ? "border-b border-r border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
+                            : "border-b border-osmoverse-700 bg-osmoverse-900 text-osmoverse-400 hover:text-osmoverse-200"
+                        )}
+                      >
+                        {isBuy ? t("portfolio.buy") : t("limitOrders.sell")}
+                      </button>
+                    );
+                  }
+                )}
               </div>
               {/* Limit / Market toggle */}
               <div className="flex items-center px-5 pt-4">
@@ -294,6 +341,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
                   initialBaseDenom={baseDenom}
                   initialQuoteDenom={quoteDenom}
                   alwaysExpandedDetails
+                  externalOrderPrice={selectedPrice}
                 />
               </div>
             </div>
@@ -302,24 +350,35 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
             <div className="relative min-w-0 flex-1 self-stretch lg:min-h-[500px]">
               <div className="absolute inset-0 flex flex-col overflow-hidden rounded-3xl border border-osmoverse-700 bg-osmoverse-1000">
                 <div className="min-h-0 flex-1">
-                  {depthData ? (
-                    <OrderbookDepthPanel
-                      bids={depthData.bids ?? []}
-                      asks={depthData.asks ?? []}
-                      midPrice={depthData.midPrice}
-                      baseSymbol={pool?.reserveCoins.find((c) => c.currency.coinMinimalDenom === baseDenom)?.currency.coinDenom}
-                      quoteSymbol={pool?.reserveCoins.find((c) => c.currency.coinMinimalDenom === quoteDenom)?.currency.coinDenom}
-                    />
-                  ) : isDepthLoading ? (
-                    <div className="flex h-full items-center justify-center">
-                      <Spinner className="m-auto" />
-                    </div>
-                  ) : isDepthError ? (
+                  {isDepthError && !depthData ? (
                     <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                      <p className="body2 text-osmoverse-300">Order book unavailable</p>
-                      <p className="caption text-osmoverse-500">Could not load depth data</p>
+                      <p className="body2 text-osmoverse-300">
+                        Order book unavailable
+                      </p>
+                      <p className="caption text-osmoverse-500">
+                        Could not load depth data
+                      </p>
                     </div>
-                  ) : null}
+                  ) : (
+                    <OrderbookDepthPanel
+                      bids={depthData?.bids ?? []}
+                      asks={depthData?.asks ?? []}
+                      midPrice={depthData?.midPrice ?? 0}
+                      baseSymbol={
+                        pool?.reserveCoins.find(
+                          (c) => c.currency.coinMinimalDenom === baseDenom
+                        )?.currency.coinDenom
+                      }
+                      quoteSymbol={
+                        pool?.reserveCoins.find(
+                          (c) => c.currency.coinMinimalDenom === quoteDenom
+                        )?.currency.coinDenom
+                      }
+                      onPriceSelect={(p) => setSelectedPrice(String(p))}
+                      isLive={!isDepthRefetching}
+                      isLoading={isDepthLoading && !depthData}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -327,7 +386,28 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
 
           {/* ── Your Orders (full width) ── */}
           <div className="rounded-3xl border border-osmoverse-700 p-6">
-            <h6 className="mb-4">{t("pool.orderbookPool.yourOrders")}</h6>
+            <div className="mb-4 flex items-center gap-3">
+              <h6>{t("pool.orderbookPool.yourOrders")}</h6>
+              <div className="ml-auto flex gap-1 rounded-lg bg-osmoverse-800 p-0.5">
+                {(["all", "bid", "ask"] as const).map((f) => (
+                  <button
+                    key={f}
+                    onClick={() => setDirFilter(f)}
+                    className={`rounded-md px-3 py-1 text-xs transition-colors ${
+                      dirFilter === f
+                        ? "bg-osmoverse-700 text-white-full"
+                        : "text-osmoverse-400 hover:text-osmoverse-200"
+                    }`}
+                  >
+                    {f === "all"
+                      ? t("pool.orderbookPool.filterAll")
+                      : f === "bid"
+                      ? t("pool.orderbookPool.filterBuy")
+                      : t("pool.orderbookPool.filterSell")}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {showConnectWallet ? (
               <div className="flex flex-col items-center gap-4 py-10 text-center">
@@ -345,7 +425,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
               <div className="flex justify-center py-10">
                 <Spinner className="!h-10 !w-10" />
               </div>
-            ) : poolOrders.length === 0 ? (
+            ) : filteredOrders.length === 0 ? (
               <div className="flex flex-col items-center gap-2 py-10 text-center">
                 <Image
                   src="/images/place-limit-order.svg"
@@ -362,7 +442,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
               </div>
             ) : (
               <OrdersTable
-                orders={poolOrders}
+                orders={filteredOrders}
                 refetch={refetch}
                 claimableCount={claimablePoolOrders.length}
                 onClaimAll={claimOrders}
@@ -480,11 +560,7 @@ const OrdersTable: FunctionComponent<{
             onClick={() => fetchNextPage?.()}
             disabled={isFetchingNextPage}
           >
-            {isFetchingNextPage ? (
-              <Spinner className="h-4 w-4" />
-            ) : (
-              "Load more"
-            )}
+            {isFetchingNextPage ? <Spinner className="h-4 w-4" /> : "Load more"}
           </Button>
         </div>
       )}
@@ -666,7 +742,12 @@ const OrderRow = memo(
                   )
                 )}
               </span>
-              <Icon id="arrow-right" className="h-4 w-4" width={16} height={16} />
+              <Icon
+                id="arrow-right"
+                className="h-4 w-4"
+                width={16}
+                height={16}
+              />
               <span>
                 {formatPretty(
                   new CoinPretty(
@@ -690,11 +771,11 @@ const OrderRow = memo(
                     DEFAULT_VS_CURRENCY,
                     order_direction === "bid"
                       ? placed_quantity /
-                          Number(
-                            new Dec(10)
-                              .pow(new Int(quoteAsset?.decimals ?? 0))
-                              .toString()
-                          )
+                        Number(
+                          new Dec(10)
+                            .pow(new Int(quoteAsset?.decimals ?? 0))
+                            .toString()
+                        )
                       : output.quo(
                           new Dec(10).pow(new Int(quoteAsset?.decimals ?? 0))
                         )

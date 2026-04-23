@@ -521,7 +521,21 @@
     "yourStats": "आपका पूल संतुलन",
     "onlyInRangePositions": "केवल रेंज में पदों के लिए",
     "custom": "रिवाज़",
-    "nextRewardIn": "अगला पुरस्कार"
+    "nextRewardIn": "अगला पुरस्कार",
+    "orderbookPool": {
+      "type": "ऑर्डर बुक",
+      "bestBid": "सबसे अच्छी बोली",
+      "bestAsk": "सबसे अच्छा आस्क",
+      "spread": "स्प्रेड",
+      "makerFee": "मेकर शुल्क",
+      "marketDepth": "बाजार गहराई",
+      "yourOrders": "आपके ऑर्डर",
+      "noOrders": "इस जोड़ी के लिए कोई ऑर्डर नहीं",
+      "noOrdersDesc": "अपना पहला सीमा ऑर्डर दें।",
+      "filterAll": "सभी",
+      "filterBuy": "खरीदें",
+      "filterSell": "बेचें"
+    }
   },
   "pools": {
     "allPools": {

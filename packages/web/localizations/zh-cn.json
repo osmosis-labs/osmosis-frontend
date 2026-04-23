@@ -521,7 +521,21 @@
     "yourStats": "您的资金池余额",
     "onlyInRangePositions": "仅适用于范围内的位置",
     "custom": "风俗",
-    "nextRewardIn": "下次奖励"
+    "nextRewardIn": "下次奖励",
+    "orderbookPool": {
+      "type": "订单簿",
+      "bestBid": "最优买价",
+      "bestAsk": "最优卖价",
+      "spread": "价差",
+      "makerFee": "挂单手续费",
+      "marketDepth": "市场深度",
+      "yourOrders": "我的订单",
+      "noOrders": "该交易对暂无订单",
+      "noOrdersDesc": "请下您的第一笔限价订单。",
+      "filterAll": "全部",
+      "filterBuy": "买入",
+      "filterSell": "卖出"
+    }
   },
   "pools": {
     "allPools": {

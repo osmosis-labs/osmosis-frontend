@@ -521,7 +521,21 @@
     "yourStats": "Su saldo de la piscina",
     "onlyInRangePositions": "Solo para posiciones en rango",
     "custom": "Costumbre",
-    "nextRewardIn": "Próxima recompensa en"
+    "nextRewardIn": "Próxima recompensa en",
+    "orderbookPool": {
+      "type": "Libro de órdenes",
+      "bestBid": "Mejor oferta",
+      "bestAsk": "Mejor precio de venta",
+      "spread": "Diferencial",
+      "makerFee": "Tarifa del creador",
+      "marketDepth": "Profundidad de mercado",
+      "yourOrders": "Tus órdenes",
+      "noOrders": "No hay órdenes para este par",
+      "noOrdersDesc": "Coloca tu primera orden limitada.",
+      "filterAll": "Todos",
+      "filterBuy": "Comprar",
+      "filterSell": "Vender"
+    }
   },
   "pools": {
     "allPools": {

@@ -521,7 +521,21 @@
     "yourStats": "Ihr Pool-Guthaben",
     "onlyInRangePositions": "Nur für Positionen in Reichweite",
     "custom": "Brauch",
-    "nextRewardIn": "Nächste Belohnung in"
+    "nextRewardIn": "Nächste Belohnung in",
+    "orderbookPool": {
+      "type": "Orderbuch",
+      "bestBid": "Bestes Gebot",
+      "bestAsk": "Bestes Angebot",
+      "spread": "Spread",
+      "makerFee": "Maker-Gebühr",
+      "marketDepth": "Markttiefe",
+      "yourOrders": "Ihre Aufträge",
+      "noOrders": "Keine Aufträge für dieses Paar",
+      "noOrdersDesc": "Geben Sie Ihren ersten Limitauftrag auf.",
+      "filterAll": "Alle",
+      "filterBuy": "Kaufen",
+      "filterSell": "Verkaufen"
+    }
   },
   "pools": {
     "allPools": {

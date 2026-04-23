@@ -521,7 +521,21 @@
     "yourStats": "તમારું પૂલ બેલેન્સ",
     "onlyInRangePositions": "માત્ર શ્રેણીમાં હોદ્દા માટે",
     "custom": "કસ્ટમ",
-    "nextRewardIn": "પછીનું પુરસ્કાર"
+    "nextRewardIn": "પછીનું પુરસ્કાર",
+    "orderbookPool": {
+      "type": "ઓર્ડર બુક",
+      "bestBid": "શ્રેષ્ઠ બિડ",
+      "bestAsk": "શ્રેષ્ઠ આસ્ક",
+      "spread": "સ્પ્રેડ",
+      "makerFee": "મેકર ફી",
+      "marketDepth": "બજાર ઊંડાઈ",
+      "yourOrders": "તમારા ઓર્ડર",
+      "noOrders": "આ જોડી માટે કોઈ ઓર્ડર નથી",
+      "noOrdersDesc": "તમારો પ્રથમ મર્યાદા ઓર્ડર આપો.",
+      "filterAll": "બધા",
+      "filterBuy": "ખરીદો",
+      "filterSell": "વેચો"
+    }
   },
   "pools": {
     "allPools": {

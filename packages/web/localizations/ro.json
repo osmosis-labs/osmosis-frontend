@@ -521,7 +521,21 @@
     "yourStats": "Statisticile tale",
     "onlyInRangePositions": "Doar pentru pozițiile din rază",
     "custom": "Personalizat",
-    "nextRewardIn": "Următoarea recompensă în"
+    "nextRewardIn": "Următoarea recompensă în",
+    "orderbookPool": {
+      "type": "Registru de ordine",
+      "bestBid": "Cea mai bună ofertă",
+      "bestAsk": "Cel mai bun preț de vânzare",
+      "spread": "Diferență",
+      "makerFee": "Comision maker",
+      "marketDepth": "Adâncimea pieței",
+      "yourOrders": "Ordinele tale",
+      "noOrders": "Nicio ordine pentru această pereche",
+      "noOrdersDesc": "Plasează primul tău ordin limitat.",
+      "filterAll": "Toate",
+      "filterBuy": "Cumpăra",
+      "filterSell": "Vinde"
+    }
   },
   "pools": {
     "allPools": {

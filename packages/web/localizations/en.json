@@ -531,7 +531,10 @@
       "marketDepth": "Market depth",
       "yourOrders": "Your orders",
       "noOrders": "No orders for this pair",
-      "noOrdersDesc": "Place your first limit order."
+      "noOrdersDesc": "Place your first limit order.",
+      "filterAll": "All",
+      "filterBuy": "Buy",
+      "filterSell": "Sell"
     }
   },
   "pools": {

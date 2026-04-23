@@ -521,7 +521,21 @@
     "yourStats": "Twoje saldo puli",
     "onlyInRangePositions": "Tylko dla pozycji w zasięgu",
     "custom": "Zwyczaj",
-    "nextRewardIn": "Następna nagroda za"
+    "nextRewardIn": "Następna nagroda za",
+    "orderbookPool": {
+      "type": "Arkusz zleceń",
+      "bestBid": "Najlepsza oferta kupna",
+      "bestAsk": "Najlepsza oferta sprzedaży",
+      "spread": "Spread",
+      "makerFee": "Opłata makera",
+      "marketDepth": "Głębokość rynku",
+      "yourOrders": "Twoje zlecenia",
+      "noOrders": "Brak zleceń dla tej pary",
+      "noOrdersDesc": "Złóż swoje pierwsze zlecenie z limitem.",
+      "filterAll": "Wszystkie",
+      "filterBuy": "Kupno",
+      "filterSell": "Sprzedaż"
+    }
   },
   "pools": {
     "allPools": {

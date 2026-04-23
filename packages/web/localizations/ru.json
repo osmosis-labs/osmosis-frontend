@@ -521,7 +521,21 @@
     "yourStats": "Ваш баланс в пуле",
     "onlyInRangePositions": "Только для позиций в диапазоне",
     "custom": "Обычай",
-    "nextRewardIn": "Следующая награда через"
+    "nextRewardIn": "Следующая награда через",
+    "orderbookPool": {
+      "type": "Книга заявок",
+      "bestBid": "Лучшая покупка",
+      "bestAsk": "Лучшая продажа",
+      "spread": "Спред",
+      "makerFee": "Комиссия мейкера",
+      "marketDepth": "Глубина рынка",
+      "yourOrders": "Ваши ордера",
+      "noOrders": "Нет ордеров для этой пары",
+      "noOrdersDesc": "Разместите первый лимитный ордер.",
+      "filterAll": "Все",
+      "filterBuy": "Купить",
+      "filterSell": "Продать"
+    }
   },
   "pools": {
     "allPools": {

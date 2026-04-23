@@ -521,7 +521,21 @@
     "yourStats": "Havuz bakiyeniz",
     "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için",
     "custom": "Gelenek",
-    "nextRewardIn": "Sonraki ödül"
+    "nextRewardIn": "Sonraki ödül",
+    "orderbookPool": {
+      "type": "Emir defteri",
+      "bestBid": "En iyi alış",
+      "bestAsk": "En iyi satış",
+      "spread": "Fark",
+      "makerFee": "Yapıcı ücreti",
+      "marketDepth": "Piyasa derinliği",
+      "yourOrders": "Emirleriniz",
+      "noOrders": "Bu parite için emir yok",
+      "noOrdersDesc": "İlk limit emrinizi verin.",
+      "filterAll": "Tümü",
+      "filterBuy": "Al",
+      "filterSell": "Sat"
+    }
   },
   "pools": {
     "allPools": {

@@ -521,7 +521,21 @@
     "yourStats": "موجودی استخر شما",
     "onlyInRangePositions": "فقط برای موقعیت های در محدوده",
     "custom": "سفارشی",
-    "nextRewardIn": "پاداش بعدی در"
+    "nextRewardIn": "پاداش بعدی در",
+    "orderbookPool": {
+      "type": "دفتر سفارشات",
+      "bestBid": "بهترین پیشنهاد خرید",
+      "bestAsk": "بهترین پیشنهاد فروش",
+      "spread": "اسپرد",
+      "makerFee": "کارمزد میکر",
+      "marketDepth": "عمق بازار",
+      "yourOrders": "سفارش‌های شما",
+      "noOrders": "هیچ سفارشی برای این جفت وجود ندارد",
+      "noOrdersDesc": "اولین سفارش محدود خود را ثبت کنید.",
+      "filterAll": "همه",
+      "filterBuy": "خرید",
+      "filterSell": "فروش"
+    }
   },
   "pools": {
     "allPools": {

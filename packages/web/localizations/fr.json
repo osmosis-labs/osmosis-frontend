@@ -521,7 +521,21 @@
     "yourStats": "Le solde de votre piscine",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage",
     "custom": "Coutume",
-    "nextRewardIn": "Prochaine récompense dans"
+    "nextRewardIn": "Prochaine récompense dans",
+    "orderbookPool": {
+      "type": "Carnet d'ordres",
+      "bestBid": "Meilleure offre",
+      "bestAsk": "Meilleur prix de vente",
+      "spread": "Écart",
+      "makerFee": "Frais du créateur",
+      "marketDepth": "Profondeur du marché",
+      "yourOrders": "Vos ordres",
+      "noOrders": "Aucun ordre pour cette paire",
+      "noOrdersDesc": "Passez votre premier ordre limité.",
+      "filterAll": "Tous",
+      "filterBuy": "Acheter",
+      "filterSell": "Vendre"
+    }
   },
   "pools": {
     "allPools": {

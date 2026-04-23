@@ -521,7 +521,21 @@
     "yourStats": "내 잔액",
     "onlyInRangePositions": "범위 내 위치에만 해당",
     "custom": "관습",
-    "nextRewardIn": "다음 보상까지"
+    "nextRewardIn": "다음 보상까지",
+    "orderbookPool": {
+      "type": "오더북",
+      "bestBid": "최우선 매수",
+      "bestAsk": "최우선 매도",
+      "spread": "스프레드",
+      "makerFee": "메이커 수수료",
+      "marketDepth": "시장 깊이",
+      "yourOrders": "내 주문",
+      "noOrders": "이 페어에 주문이 없습니다",
+      "noOrdersDesc": "첫 번째 지정가 주문을 넣어보세요.",
+      "filterAll": "전체",
+      "filterBuy": "구매",
+      "filterSell": "판매"
+    }
   },
   "pools": {
     "allPools": {

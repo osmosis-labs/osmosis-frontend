@@ -521,7 +521,21 @@
     "yourStats": "プール残高",
     "onlyInRangePositions": "範囲内の位置のみ",
     "custom": "カスタム",
-    "nextRewardIn": "次の報酬まで"
+    "nextRewardIn": "次の報酬まで",
+    "orderbookPool": {
+      "type": "オーダーブック",
+      "bestBid": "最良買値",
+      "bestAsk": "最良売値",
+      "spread": "スプレッド",
+      "makerFee": "メイカー手数料",
+      "marketDepth": "マーケットデプス",
+      "yourOrders": "あなたの注文",
+      "noOrders": "このペアの注文はありません",
+      "noOrdersDesc": "最初の指値注文を入れましょう。",
+      "filterAll": "すべて",
+      "filterBuy": "購入",
+      "filterSell": "売却"
+    }
   },
   "pools": {
     "allPools": {

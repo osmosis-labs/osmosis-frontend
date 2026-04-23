@@ -64,6 +64,7 @@ interface PlaceLimitToolProps {
   initialQuoteDenom?: string;
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
   alwaysExpandedDetails?: boolean;
+  externalOrderPrice?: string;
 }
 
 /** Safely converts a raw input string to a Dec value.
@@ -141,6 +142,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
     alwaysExpandedDetails = false,
+    externalOrderPrice,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     const { accountStore } = useStore();
@@ -204,6 +206,11 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       maxSlippage: slippageConfig.slippage.toDec(),
       quoteType,
     });
+
+    useEffect(() => {
+      if (externalOrderPrice) swapState.priceState.setPrice(externalOrderPrice);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [externalOrderPrice]);
 
     const resetSlippage = useCallback(() => {
       const defaultSlippage =

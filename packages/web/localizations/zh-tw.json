@@ -521,7 +521,21 @@
     "yourStats": "您的資金池餘額",
     "onlyInRangePositions": "僅適用於範圍內的位置",
     "custom": "風俗",
-    "nextRewardIn": "下次獎勵"
+    "nextRewardIn": "下次獎勵",
+    "orderbookPool": {
+      "type": "訂單簿",
+      "bestBid": "最優買價",
+      "bestAsk": "最優賣價",
+      "spread": "價差",
+      "makerFee": "掛單手續費",
+      "marketDepth": "市場深度",
+      "yourOrders": "我的訂單",
+      "noOrders": "此交易對尚無訂單",
+      "noOrdersDesc": "請下您的第一筆限價訂單。",
+      "filterAll": "全部",
+      "filterBuy": "買入",
+      "filterSell": "賣出"
+    }
   },
   "pools": {
     "allPools": {
