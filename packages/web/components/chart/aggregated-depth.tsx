@@ -106,6 +106,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
   onPriceSelect?: (price: number) => void;
   isLive?: boolean;
   isLoading?: boolean;
+  isRefetching?: boolean;
   isError?: boolean;
   bucketSize?: number;
   onBucketSizeChange?: (size: number | undefined) => void;
@@ -121,6 +122,7 @@ export const OrderbookDepthPanel: FunctionComponent<{
   onPriceSelect,
   isLive,
   isLoading,
+  isRefetching,
   isError,
   bucketSize,
   onBucketSizeChange,
@@ -174,7 +176,13 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? visibleAsks[sweepIndex ?? 0]?.price
       : visibleBids[sweepIndex ?? 0]?.price;
 
-  if (!isLoading && !isError && bids.length === 0 && asks.length === 0) {
+  if (
+    !isLoading &&
+    !isRefetching &&
+    !isError &&
+    bids.length === 0 &&
+    asks.length === 0
+  ) {
     return (
       <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
         <p className="body2 text-osmoverse-300">
@@ -187,8 +195,18 @@ export const OrderbookDepthPanel: FunctionComponent<{
     );
   }
 
-  const noAsks = !isLoading && !isError && asks.length === 0 && bids.length > 0;
-  const noBids = !isLoading && !isError && bids.length === 0 && asks.length > 0;
+  const noAsks =
+    !isLoading &&
+    !isRefetching &&
+    !isError &&
+    asks.length === 0 &&
+    bids.length > 0;
+  const noBids =
+    !isLoading &&
+    !isRefetching &&
+    !isError &&
+    bids.length === 0 &&
+    asks.length > 0;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
