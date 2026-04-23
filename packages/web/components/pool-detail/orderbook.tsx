@@ -154,7 +154,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
       { poolId, bucketSize },
       {
         enabled: Boolean(contractAddress),
-        refetchInterval: 10000,
+        refetchInterval: 30000,
         keepPreviousData: true,
         staleTime: 0,
       }
@@ -384,8 +384,9 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
                       }
                       onPriceSelect={(p) => setSelectedPrice(String(p))}
                       isLive={!isDepthRefetching}
+                      isRefetching={isDepthRefetching}
                       isLoading={isDepthLoading && !depthData}
-                      isError={isDepthError}
+                      isError={isDepthError || depthData?.unavailable}
                       bucketSize={bucketSize}
                       onBucketSizeChange={setBucketSize}
                     />
