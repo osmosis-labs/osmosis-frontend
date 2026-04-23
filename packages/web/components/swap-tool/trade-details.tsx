@@ -33,6 +33,7 @@ interface TradeDetailsProps {
   makerFee?: Dec;
   priceOverride?: PricePretty;
   tab?: "buy" | "sell";
+  alwaysExpanded?: boolean;
 }
 
 export const TradeDetails = observer(
@@ -44,6 +45,7 @@ export const TradeDetails = observer(
     makerFee,
     tab,
     priceOverride,
+    alwaysExpanded = false,
   }: Partial<TradeDetailsProps>) => {
     const { t } = useTranslation();
     const routesVisDisclosure = useDisclosure();
@@ -79,21 +81,28 @@ export const TradeDetails = observer(
 
     return (
       <div className="flex w-full">
-        <Disclosure>
+        <Disclosure defaultOpen={alwaysExpanded}>
           {({ open, close }) => (
             <div
               className="flex w-full flex-col transition-all"
-              style={{
-                height: open ? detailsHeight : 32,
-                overflow: open ? "hidden" : undefined,
-              }}
+              style={
+                alwaysExpanded
+                  ? undefined
+                  : {
+                      height: open ? detailsHeight : 32,
+                      overflow: open ? "hidden" : undefined,
+                    }
+              }
             >
               <div ref={details} className="flex w-full flex-col">
-                <Closer
-                  isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
-                  close={close}
-                />
-                <div className="flex min-h-[2rem] w-full items-start justify-between sm:min-h-[1.5rem]">
+                {!alwaysExpanded && (
+                  <Closer
+                    isInAmountEmpty={isInAmountEmpty || isOutAmountEmpty}
+                    close={close}
+                  />
+                )}
+                <div className={classNames("flex w-full items-start justify-between", { "min-h-[2rem] sm:min-h-[1.5rem]": type !== "limit" })}>
+                  {type !== "limit" && (
                   <SkeletonLoader
                     isLoaded={Boolean(swapState?.inBaseOutQuoteSpotPrice)}
                   >
@@ -138,40 +147,43 @@ export const TradeDetails = observer(
                       </div>
                     </GenericDisclaimer>
                   </SkeletonLoader>
-                  <Disclosure.Button
-                    className={classNames(
-                      "relative flex items-center justify-between py-1 transition-opacity"
-                    )}
-                    disabled={isInAmountEmpty || isOutAmountEmpty}
-                  >
-                    <GenericDisclaimer
-                      title="High price impact"
-                      body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
-                      disabled={!isPriceImpactHigh || open}
+                  )}
+                  {!alwaysExpanded && (
+                    <Disclosure.Button
+                      className={classNames(
+                        "relative flex items-center justify-between py-1 transition-opacity"
+                      )}
+                      disabled={isInAmountEmpty || isOutAmountEmpty}
                     >
-                      <div
-                        className={classNames(
-                          "flex items-center gap-2 transition-opacity",
-                          {
-                            "opacity-0": isInAmountEmpty || isOutAmountEmpty,
-                          }
-                        )}
+                      <GenericDisclaimer
+                        title="High price impact"
+                        body="With a trade of this size, you may receive a significantly lower value due to low liquidity between the selected assets"
+                        disabled={!isPriceImpactHigh || open}
                       >
-                        {isPriceImpactHigh && !open && (
-                          <Icon
-                            id="alert-circle-filled"
-                            width={16}
-                            height={16}
-                          />
-                        )}
-                        <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
-                          {open ? t("swap.hideDetails") : t("swap.showDetails")}
-                        </span>
-                      </div>
-                    </GenericDisclaimer>
-                  </Disclosure.Button>
+                        <div
+                          className={classNames(
+                            "flex items-center gap-2 transition-opacity",
+                            {
+                              "opacity-0": isInAmountEmpty || isOutAmountEmpty,
+                            }
+                          )}
+                        >
+                          {isPriceImpactHigh && !open && (
+                            <Icon
+                              id="alert-circle-filled"
+                              width={16}
+                              height={16}
+                            />
+                          )}
+                          <span className="body2 sm:caption whitespace-nowrap text-wosmongton-300">
+                            {open ? t("swap.hideDetails") : t("swap.showDetails")}
+                          </span>
+                        </div>
+                      </GenericDisclaimer>
+                    </Disclosure.Button>
+                  )}
                 </div>
-                <Disclosure.Panel className="body2 sm:caption flex flex-col text-osmoverse-300">
+                <Disclosure.Panel static={alwaysExpanded} className="body2 sm:caption flex flex-col text-osmoverse-300">
                   {type === "market" ? (
                     <RecapRow
                       className={classNames({
