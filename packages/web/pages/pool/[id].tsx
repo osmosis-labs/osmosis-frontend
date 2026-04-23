@@ -137,7 +137,8 @@ export const getServerSideProps: GetServerSideProps = async ({
   resolvedUrl,
 }) => {
   const splitUrl = resolvedUrl.split("/");
-  return { props: { poolId: splitUrl.pop() ?? "-" } };
+  const lastSegment = splitUrl.pop() ?? "-";
+  return { props: { poolId: lastSegment.split("?")[0] } };
 };
 
 export default Pool;
