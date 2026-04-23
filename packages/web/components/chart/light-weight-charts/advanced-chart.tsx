@@ -95,9 +95,31 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
   const isFeatureFlagsInitialized = featureFlags._isInitialized;
   useEffect(() => {
     if (!container || !isFeatureFlagsInitialized) return;
-    const widget = createWidget(container);
-    return () => widget.remove();
+
+    let widget: { remove: () => void } | undefined;
+    let intervalId: ReturnType<typeof setInterval> | undefined;
+
+    const tryInit = () => {
+      if (widget) return true;
+      // The TradingView script may not have loaded yet; wait for it.
+      if (typeof window === "undefined" || !(window as any).TradingView) {
+        return false;
+      }
+      widget = createWidget(container);
+      return true;
+    };
+
+    if (!tryInit()) {
+      intervalId = setInterval(() => {
+        if (tryInit() && intervalId) clearInterval(intervalId);
+      }, 200);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+      widget?.remove();
+    };
   }, [container, isFeatureFlagsInitialized]);
 
-  return <div className="relative h-full" ref={setContainer} />;
+  return <div className="relative h-full w-full" ref={setContainer} />;
 };
