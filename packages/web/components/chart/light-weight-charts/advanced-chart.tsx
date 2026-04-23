@@ -17,6 +17,7 @@ type AdvancedChartProps = Omit<
 
 export const AdvancedChart = (props: AdvancedChartProps) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
+  const [isReady, setIsReady] = useState(false);
   const chart = useRef<IChartingLibraryWidget>();
 
   const featureFlags = useFeatureFlags();
@@ -101,7 +102,9 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
         ...propsRef.current,
       };
 
-      chart.current = new tv.widget(widgetOptions);
+      const widget = new tv.widget(widgetOptions);
+      chart.current = widget;
+      widget.onChartReady(() => setIsReady(true));
       return true;
     };
 
@@ -118,9 +121,18 @@ export const AdvancedChart = (props: AdvancedChartProps) => {
       if (intervalId) clearInterval(intervalId);
       chart.current?.remove();
       chart.current = undefined;
+      setIsReady(false);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [container, featureFlags._isInitialized]);
 
-  return <div className="relative h-full w-full" ref={setContainer} />;
+  return (
+    <div className="relative h-full w-full">
+      {/* TradingView owns this div — no React children inside it */}
+      <div className="h-full w-full" ref={setContainer} />
+      {!isReady && (
+        <div className="pointer-events-none absolute inset-0 z-10 bg-osmoverse-1000" />
+      )}
+    </div>
+  );
 };
