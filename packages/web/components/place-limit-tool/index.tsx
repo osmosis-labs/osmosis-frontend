@@ -72,6 +72,7 @@ interface PlaceLimitToolProps {
   initialBaseDenom?: string;
   initialQuoteDenom?: string;
   onOrderSuccess?: (baseDenom?: string, quoteDenom?: string) => void;
+  alwaysExpandedDetails?: boolean;
 }
 
 /** Safely converts a raw input string to a Dec value.
@@ -147,6 +148,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
     initialBaseDenom = ATOM_BASE_DENOM,
     initialQuoteDenom = USDC_BASE_DENOM,
     onOrderSuccess,
+    alwaysExpandedDetails = false,
   }: PlaceLimitToolProps) => {
     const [quoteType, setQuoteType] = useState<QuoteDirection>("out-given-in");
     const { t } = useTranslation();
@@ -1087,6 +1089,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = memo(
             makerFee={swapState.makerFee}
             treatAsStable={tab === "buy" ? "in" : "out"}
             tab={tab as "buy" | "sell"}
+            alwaysExpanded={alwaysExpandedDetails}
             priceOverride={
               type === "limit" && swapState.priceState.spotPrice
                 ? new PricePretty(
