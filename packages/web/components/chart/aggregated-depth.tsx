@@ -1,6 +1,6 @@
 import type { OrderbookLevel } from "@osmosis-labs/server";
 import dynamic from "next/dynamic";
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { FunctionComponent } from "react";
 
 import { theme } from "~/tailwind.config";
 
@@ -29,207 +29,6 @@ function formatQuantity(qty: number): string {
     compactDisplay: "short",
   }).format(qty);
 }
-
-// ── Depth curve ───────────────────────────────────────────────────────────────
-
-type TooltipState = {
-  x: number;
-  y: number;
-  price: number;
-  cumulative: number;
-  side: "bid" | "ask";
-} | null;
-
-const DepthCurve: FunctionComponent<{
-  bids: OrderbookLevel[];
-  asks: OrderbookLevel[];
-}> = ({ bids, asks }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [tooltip, setTooltip] = useState<TooltipState>(null);
-
-  // Store render params in a ref so mouse handlers can read them without
-  // triggering the draw effect.
-  const chartParamsRef = useRef<{
-    minPrice: number;
-    maxPrice: number;
-    chartW: number;
-    chartH: number;
-    pad: { top: number; bottom: number; left: number; right: number };
-    allLevels: (OrderbookLevel & { side: "bid" | "ask" })[];
-  } | null>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const dpr = window.devicePixelRatio || 1;
-    const { offsetWidth: w, offsetHeight: h } = canvas;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.clearRect(0, 0, w, h);
-
-    if (bids.length === 0 && asks.length === 0) {
-      chartParamsRef.current = null;
-      return;
-    }
-
-    // Bids are sorted desc (best bid first = highest price first)
-    // Asks are sorted asc (best ask first = lowest price first)
-    const maxCumulative = Math.max(
-      bids.length ? bids[bids.length - 1].cumulative : 0,
-      asks.length ? asks[0].cumulative : 0
-    );
-    if (maxCumulative <= 0) return;
-
-    const allPrices = [
-      ...(bids.length ? [bids[bids.length - 1].price, bids[0].price] : []),
-      ...(asks.length ? [asks[0].price, asks[asks.length - 1].price] : []),
-    ];
-    const minPrice = Math.min(...allPrices);
-    const maxPrice = Math.max(...allPrices);
-    if (minPrice >= maxPrice) return;
-
-    const pad = { top: 4, bottom: 4, left: 0, right: 0 };
-    const chartW = w - pad.left - pad.right;
-    const chartH = h - pad.top - pad.bottom;
-
-    chartParamsRef.current = {
-      minPrice,
-      maxPrice,
-      chartW,
-      chartH,
-      pad,
-      allLevels: [
-        ...bids.map((l) => ({ ...l, side: "bid" as const })),
-        ...asks.map((l) => ({ ...l, side: "ask" as const })),
-      ],
-    };
-
-    const toX = (price: number) =>
-      pad.left + ((price - minPrice) / (maxPrice - minPrice)) * chartW;
-    const toY = (cum: number) =>
-      pad.top + chartH - (cum / maxCumulative) * chartH;
-
-    const drawSide = (
-      levels: OrderbookLevel[],
-      color: string,
-      fillColor: string,
-      side: "bid" | "ask"
-    ) => {
-      if (levels.length === 0) return;
-      ctx.beginPath();
-
-      if (side === "bid") {
-        // bids: price desc, cumulative increases as price falls
-        const startX = toX(levels[0].price);
-        ctx.moveTo(startX, chartH + pad.top);
-        ctx.lineTo(startX, toY(levels[0].cumulative));
-        for (let i = 1; i < levels.length; i++) {
-          const x = toX(levels[i].price);
-          ctx.lineTo(x, toY(levels[i - 1].cumulative));
-          ctx.lineTo(x, toY(levels[i].cumulative));
-        }
-        const lastX = toX(levels[levels.length - 1].price);
-        ctx.lineTo(lastX, chartH + pad.top);
-      } else {
-        // asks: price asc, cumulative decreases as price falls toward mid
-        const startX = toX(levels[0].price);
-        ctx.moveTo(startX, chartH + pad.top);
-        ctx.lineTo(startX, toY(levels[0].cumulative));
-        for (let i = 1; i < levels.length; i++) {
-          const x = toX(levels[i].price);
-          ctx.lineTo(x, toY(levels[i - 1].cumulative));
-          ctx.lineTo(x, toY(levels[i].cumulative));
-        }
-        const lastX = toX(levels[levels.length - 1].price);
-        ctx.lineTo(lastX, chartH + pad.top);
-      }
-
-      ctx.closePath();
-      ctx.fillStyle = fillColor;
-      ctx.fill();
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    };
-
-    drawSide(
-      bids,
-      theme.colors.bullish["400"],
-      theme.colors.bullish["400"] + "33",
-      "bid"
-    );
-    drawSide(
-      asks,
-      theme.colors.rust["400"],
-      theme.colors.rust["400"] + "33",
-      "ask"
-    );
-  }, [bids, asks]);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    const params = chartParamsRef.current;
-    if (!params) return;
-    const { minPrice, maxPrice, chartW, allLevels } = params;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const price = minPrice + (x / chartW) * (maxPrice - minPrice);
-
-    // Find nearest level by price distance
-    let nearest = allLevels[0];
-    let minDist = Infinity;
-    for (const l of allLevels) {
-      const d = Math.abs(l.price - price);
-      if (d < minDist) {
-        minDist = d;
-        nearest = l;
-      }
-    }
-
-    setTooltip({
-      x,
-      y: e.clientY - rect.top,
-      price: nearest.price,
-      cumulative: nearest.cumulative,
-      side: nearest.side,
-    });
-  };
-
-  return (
-    <div className="relative h-full w-full">
-      <canvas
-        ref={canvasRef}
-        className="h-full w-full"
-        style={{ display: "block" }}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setTooltip(null)}
-      />
-      {tooltip && (
-        <div
-          className="pointer-events-none absolute z-10 rounded bg-osmoverse-800 px-2 py-1 text-xs shadow-md"
-          style={{
-            left: tooltip.x + 8,
-            top: Math.max(0, tooltip.y - 28),
-          }}
-        >
-          <span
-            className={
-              tooltip.side === "bid" ? "text-bullish-400" : "text-rust-400"
-            }
-          >
-            {formatPrice(tooltip.price)}
-          </span>
-          <span className="ml-2 text-osmoverse-300">
-            {formatQuantity(tooltip.cumulative)}
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
 
 // ── Level 2 table ─────────────────────────────────────────────────────────────
 
@@ -293,20 +92,17 @@ export const OrderbookDepthPanel: FunctionComponent<{
   isLive,
   isLoading,
 }) => {
-  // Show only the N levels closest to mid price to keep the table compact
   const VISIBLE_LEVELS = 12;
   const visibleBids = bids.slice(0, VISIBLE_LEVELS);
   const visibleAsks = asks.slice(0, VISIBLE_LEVELS);
 
   // Compute cumulative quote value (price × quantity) for fill bars so both
   // sides are denominated in the same currency and large base-unit orders don't skew.
-  // Bids: accumulate from best bid outward.
   let cumBidQuote = 0;
   const bidQuoteCumulatives = visibleBids.map((l) => {
     cumBidQuote += l.price * l.quantity;
     return cumBidQuote;
   });
-  // Asks: accumulate from best ask outward.
   let cumAskQuote = 0;
   const askQuoteCumulatives = visibleAsks.map((l) => {
     cumAskQuote += l.price * l.quantity;
