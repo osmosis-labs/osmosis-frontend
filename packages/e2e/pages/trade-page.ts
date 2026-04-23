@@ -70,77 +70,6 @@ export class TradePage extends BasePage {
     this.slippageInput = page
       .locator('input[type="text"][inputmode="decimal"]')
       .first();
-
-    this.attachTxNetworkLogging();
-  }
-
-  /**
-   * Attaches low-noise page listeners that log only transaction-broadcast-
-   * related network traffic: Tendermint RPC `/broadcast_tx*`, Cosmos SDK REST
-   * `/cosmos/tx/v1beta1/txs`, gRPC-Web `BroadcastTx`, and ABCI queries that
-   * usually accompany a broadcast. Also logs SQS routes hits so we can see
-   * whether quote fetches change behaviour under proxy.
-   *
-   * Purpose: when the UI success toast never appears (e.g. EU/SG monitoring
-   * runs via proxy), the log reveals whether the broadcast request was even
-   * made, what status code came back, and any network-level failure.
-   *
-   * Listeners are attached once in the constructor and remain for the
-   * lifetime of the page; no teardown required.
-   */
-  private attachTxNetworkLogging() {
-    const txUrlPattern =
-      /(broadcast_tx|BroadcastTx|cosmos\/tx\/v1beta1\/txs|abci_query|sqs\.osmosis\.zone\/router)/i;
-    const shouldLog = (url: string) => txUrlPattern.test(url);
-
-    this.page.on("request", (req) => {
-      const url = req.url();
-      if (!shouldLog(url)) return;
-      let postPreview = "";
-      try {
-        const post = req.postData();
-        if (post) {
-          postPreview =
-            post.length > 300 ? `${post.slice(0, 300)}...` : post;
-        }
-      } catch {
-        // some requests have no post data accessor -- ignore
-      }
-      console.log(
-        `[tx-net] → REQUEST ${req.method()} ${url}${
-          postPreview ? ` body=${postPreview}` : ""
-        }`
-      );
-    });
-
-    this.page.on("response", async (res) => {
-      const url = res.url();
-      if (!shouldLog(url)) return;
-      const status = res.status();
-      let bodyPreview = "";
-      try {
-        const text = await res.text();
-        bodyPreview =
-          text.length > 400 ? `${text.slice(0, 400)}...` : text;
-      } catch {
-        // body may already be consumed or non-text; fine
-      }
-      console.log(
-        `[tx-net] ← RESPONSE ${status} ${url}${
-          bodyPreview ? ` body=${bodyPreview}` : ""
-        }`
-      );
-    });
-
-    this.page.on("requestfailed", (req) => {
-      const url = req.url();
-      if (!shouldLog(url)) return;
-      console.warn(
-        `[tx-net] ✗ FAILED ${req.method()} ${url} err=${
-          req.failure()?.errorText ?? "<unknown>"
-        }`
-      );
-    });
   }
 
   async goto() {
@@ -315,6 +244,161 @@ export class TradePage extends BasePage {
   }
 
   /**
+   * Starts capturing tx-broadcast-related network activity. Intended to be
+   * armed just before clicking Confirm and either consumed via
+   * `logCapturedTxNetwork()` on failure or discarded via `stop()` on success.
+   *
+   * Filters aggressively to only tx-relevant endpoints (broadcast, tendermint
+   * RPC, cosmos REST tx posts, sqs/indexer hits that matter) so captured
+   * output stays small enough to dump into CI logs.
+   *
+   * Safe to call repeatedly -- each call returns a fresh handle.
+   */
+  protected startTxNetworkCapture() {
+    type Entry = {
+      at: number;
+      kind: "request" | "response";
+      method?: string;
+      url: string;
+      status?: number;
+      body?: string;
+      failure?: string;
+    };
+
+    const entries: Entry[] = [];
+    const MAX_ENTRIES = 40;
+    const MAX_BODY = 800;
+
+    const isInteresting = (url: string, body?: string) => {
+      const u = url.toLowerCase();
+      if (
+        u.includes("broadcast") ||
+        u.includes("/cosmos/tx/") ||
+        u.includes("/txs") ||
+        u.includes("/abci_query") ||
+        u.includes("/tx?") ||
+        u.endsWith("/tx") ||
+        u.includes("/status") ||
+        u.includes("trpc") ||
+        u.includes("sqs") ||
+        u.includes("rpc.")
+      ) {
+        return true;
+      }
+      if (body && /"method"\s*:\s*"broadcast_tx_/.test(body)) return true;
+      return false;
+    };
+
+    const push = (entry: Entry) => {
+      if (entries.length >= MAX_ENTRIES) return;
+      entries.push(entry);
+    };
+
+    const onRequest = (req: import("@playwright/test").Request) => {
+      try {
+        const method = req.method();
+        const url = req.url();
+        const body = req.postData() ?? undefined;
+        if (method === "GET" && !isInteresting(url)) return;
+        if (method !== "GET" && !isInteresting(url, body)) return;
+        push({
+          at: Date.now(),
+          kind: "request",
+          method,
+          url,
+          body: body ? body.slice(0, MAX_BODY) : undefined,
+        });
+      } catch {
+        // best-effort; never throw from listener
+      }
+    };
+
+    const onResponse = async (res: import("@playwright/test").Response) => {
+      try {
+        const req = res.request();
+        const method = req.method();
+        const url = res.url();
+        const reqBody = req.postData() ?? undefined;
+        if (method === "GET" && !isInteresting(url)) return;
+        if (method !== "GET" && !isInteresting(url, reqBody)) return;
+        let body: string | undefined;
+        try {
+          const raw = await res.text();
+          body = raw ? raw.slice(0, MAX_BODY) : undefined;
+        } catch {
+          // body may not be readable (redirect, aborted); ignore
+        }
+        push({
+          at: Date.now(),
+          kind: "response",
+          method,
+          url,
+          status: res.status(),
+          body,
+        });
+      } catch {
+        // best-effort
+      }
+    };
+
+    const onRequestFailed = (req: import("@playwright/test").Request) => {
+      try {
+        const url = req.url();
+        const body = req.postData() ?? undefined;
+        if (!isInteresting(url, body)) return;
+        push({
+          at: Date.now(),
+          kind: "response",
+          method: req.method(),
+          url,
+          failure: req.failure()?.errorText ?? "unknown",
+        });
+      } catch {
+        // best-effort
+      }
+    };
+
+    this.page.on("request", onRequest);
+    this.page.on("response", onResponse);
+    this.page.on("requestfailed", onRequestFailed);
+    const startedAt = Date.now();
+
+    return {
+      stop: () => {
+        this.page.off("request", onRequest);
+        this.page.off("response", onResponse);
+        this.page.off("requestfailed", onRequestFailed);
+      },
+      dump: (prefix: string) => {
+        if (entries.length === 0) {
+          console.warn(
+            `[tx-network] ${prefix}\n  no tx-related network activity captured (monitored ${
+              Date.now() - startedAt
+            }ms)`
+          );
+          return;
+        }
+        const lines = entries.map((e) => {
+          const elapsed = e.at - startedAt;
+          const tag =
+            e.kind === "request"
+              ? `REQ ${e.method}`
+              : e.failure
+                ? `FAIL ${e.method} ${e.failure}`
+                : `RES ${e.status} ${e.method}`;
+          const bodySnippet = e.body
+            ? ` body=${JSON.stringify(e.body).slice(0, MAX_BODY + 20)}`
+            : "";
+          return `  +${elapsed}ms ${tag} ${e.url}${bodySnippet}`;
+        });
+        console.warn(
+          `[tx-network] ${prefix} (${entries.length} entries, cap ${MAX_ENTRIES})\n${lines.join("\n")}`
+        );
+      },
+    };
+  }
+
+  /**
    * Waits for a transaction to reach a positive end state using only UI
    * signals. Runs in two phases:
    *
@@ -332,7 +416,12 @@ export class TradePage extends BasePage {
    * On either failure the method logs lightweight diagnostics (page URL,
    * current toast text, explorer href) to aid CI triage.
    */
-  async waitForTxConfirmation(opts: { timeout?: number } = {}) {
+  async waitForTxConfirmation(
+    opts: {
+      timeout?: number;
+      networkCapture?: { dump: (prefix: string) => void };
+    } = {}
+  ) {
     const total = opts.timeout ?? 40_000;
     const broadcastTimeout = Math.min(15_000, total);
     const startedAt = Date.now();
@@ -348,6 +437,9 @@ export class TradePage extends BasePage {
       await this.logTxDiagnostics(
         `No tx toast within ${broadcastTimeout}ms (broadcast likely never happened)`
       );
+      opts.networkCapture?.dump(
+        `No tx toast within ${broadcastTimeout}ms -- network activity since confirm click`
+      );
       throw new Error(
         `Transaction did not reach broadcasting or success state within ${broadcastTimeout}ms. ` +
           `This usually means the swap was never submitted to the chain (wallet/RPC/signing issue), ` +
@@ -361,6 +453,9 @@ export class TradePage extends BasePage {
     } catch (e) {
       await this.logTxDiagnostics(
         `Broadcast seen but success toast not visible within ${total}ms`
+      );
+      opts.networkCapture?.dump(
+        `Broadcast seen but success toast not visible -- network activity since confirm click`
       );
       throw e;
     }
@@ -852,10 +947,18 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
-    await this.confirmSwapBtn.click();
-    const confirmationPromise = this.waitForTxConfirmation({ timeout: 40_000 });
-    await this.justApproveIfNeeded(context);
-    await confirmationPromise;
+    const capture = this.startTxNetworkCapture();
+    try {
+      await this.confirmSwapBtn.click();
+      const confirmationPromise = this.waitForTxConfirmation({
+        timeout: 40_000,
+        networkCapture: capture,
+      });
+      await this.justApproveIfNeeded(context);
+      await confirmationPromise;
+    } finally {
+      capture.stop();
+    }
   }
 
   /**
@@ -893,10 +996,18 @@ export class TradePage extends BasePage {
       await this.setSlippageTolerance(slippagePercent);
     }
 
-    await this.confirmSwapBtn.click();
-    const confirmationPromise = this.waitForTxConfirmation({ timeout: 40_000 });
-    await this.justApproveIfNeeded(context);
-    await confirmationPromise;
+    const capture = this.startTxNetworkCapture();
+    try {
+      await this.confirmSwapBtn.click();
+      const confirmationPromise = this.waitForTxConfirmation({
+        timeout: 40_000,
+        networkCapture: capture,
+      });
+      await this.justApproveIfNeeded(context);
+      await confirmationPromise;
+    } finally {
+      capture.stop();
+    }
   }
 
   /**
@@ -975,21 +1086,27 @@ export class TradePage extends BasePage {
           await this.setSlippageTolerance(slippagePercent);
         }
 
-        await this.confirmSwapBtn.click({ timeout: 5000 });
-        const confirmationPromise = this.waitForTxConfirmation({
-          timeout: 40_000,
-        });
-        await this.justApproveIfNeeded(context);
+        const capture = this.startTxNetworkCapture();
+        try {
+          await this.confirmSwapBtn.click({ timeout: 5000 });
+          const confirmationPromise = this.waitForTxConfirmation({
+            timeout: 40_000,
+            networkCapture: capture,
+          });
+          await this.justApproveIfNeeded(context);
 
-        if (attempt > 0) {
-          console.log(
-            `✓ Swap transaction submitted after ${attempt} retry(ies)`
-          );
+          if (attempt > 0) {
+            console.log(
+              `✓ Swap transaction submitted after ${attempt} retry(ies)`
+            );
+          }
+
+          await confirmationPromise;
+
+          return;
+        } finally {
+          capture.stop();
         }
-
-        await confirmationPromise;
-
-        return;
       } catch (error: any) {
         const isDisabledError =
           error.message?.includes("disabled") ||
