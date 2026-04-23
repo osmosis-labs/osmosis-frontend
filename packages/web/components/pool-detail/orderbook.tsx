@@ -91,7 +91,7 @@ export const OrderbookPool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // Default to limit order type on this page
-    const [tradeType, setTradeType] = useQueryState(
+    const [, setTradeType] = useQueryState(
       "type",
       parseAsStringLiteral(TRADE_TYPES).withDefault("limit")
     );

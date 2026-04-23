@@ -198,7 +198,7 @@ const CancelButton = observer(
         return;
       }
       const { tick_id, order_id, orderbookAddress } = order;
-      const claimMsg = {
+      const cancelMsg = {
         msg: {
           cancel_limit: { order_id, tick_id },
         },
@@ -210,7 +210,7 @@ const CancelButton = observer(
         setCancelling(true);
         await account.cosmwasm.sendMultiExecuteContractMsg(
           "executeWasm",
-          [claimMsg],
+          [cancelMsg],
           undefined
         );
         await refetch();
