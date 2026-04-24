@@ -39,7 +39,7 @@
     ]
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.29.0",
+    "@chain-registry/types": "^0.46.0",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
     "cachified": "^3.5.4",

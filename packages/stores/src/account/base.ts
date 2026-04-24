@@ -188,7 +188,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ],
         display: asset.symbol,
       })),
-    })) as CosmologyAssetList[];
+    })) as unknown as CosmologyAssetList[];
   }
 
   constructor(
@@ -249,13 +249,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     const chains = this._getCosmosKitCompatibleChains();
     this._walletManager = new WalletManager(
-      chains as any,
+      chains,
       wallets,
       logger,
       true,
       true,
       ["https://daodao.zone", "https://dao.daodao.zone"],
-      this.walletManagerAssets as any,
+      this.walletManagerAssets,
       "icns",
       this.options.walletConnectOptions,
       undefined,
