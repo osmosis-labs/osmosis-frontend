@@ -238,6 +238,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       (chain) =>
         ({
           ...chain,
+          chain_type: "cosmos",
           network_type: chain.networkType,
           pretty_name: chain.prettyName,
           bech32_prefix: chain.bech32Prefix,
@@ -248,13 +249,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     const chains = this._getCosmosKitCompatibleChains();
     this._walletManager = new WalletManager(
-      chains,
+      chains as any,
       wallets,
       logger,
       true,
       true,
       ["https://daodao.zone", "https://dao.daodao.zone"],
-      this.walletManagerAssets,
+      this.walletManagerAssets as any,
       "icns",
       this.options.walletConnectOptions,
       undefined,
