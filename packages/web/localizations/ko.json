@@ -540,7 +540,9 @@
       "depthNoAsks": "매도 없음",
       "depthNoBids": "매수 없음",
       "depthNoOrders": "미체결 주문 없음",
-      "depthNoOrdersDesc": "이 주문서는 현재 비어 있습니다"
+      "depthNoOrdersDesc": "이 주문서는 현재 비어 있습니다",
+      "depthUnavailable": "호가창 깊이 데이터 없음",
+      "depthUnavailableDesc": "주문서 깊이를 불러올 수 없습니다. 재시도 중..."
     }
   },
   "pools": {

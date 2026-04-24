@@ -540,7 +540,9 @@
       "depthNoAsks": "No asks",
       "depthNoBids": "No bids",
       "depthNoOrders": "No open orders",
-      "depthNoOrdersDesc": "This order book is currently empty"
+      "depthNoOrdersDesc": "This order book is currently empty",
+      "depthUnavailable": "Depth data unavailable",
+      "depthUnavailableDesc": "Unable to load order book depth. Retrying..."
     }
   },
   "pools": {

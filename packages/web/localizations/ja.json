@@ -540,7 +540,9 @@
       "depthNoAsks": "売り注文なし",
       "depthNoBids": "買い注文なし",
       "depthNoOrders": "未約定注文なし",
-      "depthNoOrdersDesc": "この板は現在空です"
+      "depthNoOrdersDesc": "この板は現在空です",
+      "depthUnavailable": "板情報データを取得できません",
+      "depthUnavailableDesc": "板情報の読み込みに失敗しました。再試行中..."
     }
   },
   "pools": {

@@ -540,7 +540,9 @@
       "depthNoAsks": "Brak ofert sprzedaży",
       "depthNoBids": "Brak ofert kupna",
       "depthNoOrders": "Brak otwartych zleceń",
-      "depthNoOrdersDesc": "Ta księga zleceń jest obecnie pusta"
+      "depthNoOrdersDesc": "Ta księga zleceń jest obecnie pusta",
+      "depthUnavailable": "Dane głębokości niedostępne",
+      "depthUnavailableDesc": "Nie można załadować głębokości arkusza zleceń. Ponawiam próbę..."
     }
   },
   "pools": {

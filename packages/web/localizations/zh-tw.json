@@ -540,7 +540,9 @@
       "depthNoAsks": "無賣單",
       "depthNoBids": "無買單",
       "depthNoOrders": "暫無掛單",
-      "depthNoOrdersDesc": "該訂單簿目前為空"
+      "depthNoOrdersDesc": "該訂單簿目前為空",
+      "depthUnavailable": "深度資料無法使用",
+      "depthUnavailableDesc": "無法載入委託簿深度。正在重試..."
     }
   },
   "pools": {

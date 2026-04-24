@@ -540,7 +540,9 @@
       "depthNoAsks": "Satış yok",
       "depthNoBids": "Alış yok",
       "depthNoOrders": "Açık emir yok",
-      "depthNoOrdersDesc": "Bu emir defteri şu anda boş"
+      "depthNoOrdersDesc": "Bu emir defteri şu anda boş",
+      "depthUnavailable": "Derinlik verisi mevcut değil",
+      "depthUnavailableDesc": "Emir defteri derinliği yüklenemedi. Yeniden deneniyor..."
     }
   },
   "pools": {

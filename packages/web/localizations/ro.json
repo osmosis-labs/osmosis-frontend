@@ -540,7 +540,9 @@
       "depthNoAsks": "Fără vânzări",
       "depthNoBids": "Fără cumpărări",
       "depthNoOrders": "Fără ordine deschise",
-      "depthNoOrdersDesc": "Acest registru de ordine este în prezent gol"
+      "depthNoOrdersDesc": "Acest registru de ordine este în prezent gol",
+      "depthUnavailable": "Date de profunzime indisponibile",
+      "depthUnavailableDesc": "Imposibil de încărcat adâncimea registrului de ordine. Se reîncearcă..."
     }
   },
   "pools": {

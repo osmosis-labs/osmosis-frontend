@@ -540,7 +540,9 @@
       "depthNoAsks": "بدون فروشنده",
       "depthNoBids": "بدون خریدار",
       "depthNoOrders": "سفارش بازی وجود ندارد",
-      "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است"
+      "depthNoOrdersDesc": "این دفتر سفارش در حال حاضر خالی است",
+      "depthUnavailable": "داده‌های عمق در دسترس نیست",
+      "depthUnavailableDesc": "بارگذاری عمق دفتر سفارش ممکن نیست. در حال تلاش مجدد..."
     }
   },
   "pools": {

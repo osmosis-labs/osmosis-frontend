@@ -540,7 +540,9 @@
       "depthNoAsks": "Нет предложений",
       "depthNoBids": "Нет заявок",
       "depthNoOrders": "Нет открытых ордеров",
-      "depthNoOrdersDesc": "Книга ордеров пуста"
+      "depthNoOrdersDesc": "Книга ордеров пуста",
+      "depthUnavailable": "Данные глубины недоступны",
+      "depthUnavailableDesc": "Не удалось загрузить глубину стакана заявок. Повторная попытка..."
     }
   },
   "pools": {

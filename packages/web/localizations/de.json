@@ -540,7 +540,9 @@
       "depthNoAsks": "Keine Verkaufsangebote",
       "depthNoBids": "Keine Kaufangebote",
       "depthNoOrders": "Keine offenen Aufträge",
-      "depthNoOrdersDesc": "Dieses Orderbuch ist derzeit leer"
+      "depthNoOrdersDesc": "Dieses Orderbuch ist derzeit leer",
+      "depthUnavailable": "Tiefendaten nicht verfügbar",
+      "depthUnavailableDesc": "Orderbuch-Tiefe konnte nicht geladen werden. Erneuter Versuch..."
     }
   },
   "pools": {

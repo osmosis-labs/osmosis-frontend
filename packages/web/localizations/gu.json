@@ -540,7 +540,9 @@
       "depthNoAsks": "કોઈ વેચાણ નથી",
       "depthNoBids": "કોઈ ખરીદી નથી",
       "depthNoOrders": "કોઈ ખુલ્લા ઓર્ડર નથી",
-      "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે"
+      "depthNoOrdersDesc": "આ ઓર્ડર બુક હાલમાં ખાલી છે",
+      "depthUnavailable": "ઊંડાઈ ડેટા અનુપલબ્ધ",
+      "depthUnavailableDesc": "ઓર્ડર બુક ઊંડાઈ લોડ કરવામાં અસમર્થ. ફરી પ્રયાસ કરી રહ્યા છીએ..."
     }
   },
   "pools": {

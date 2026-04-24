@@ -540,7 +540,9 @@
       "depthNoAsks": "Aucune vente",
       "depthNoBids": "Aucun achat",
       "depthNoOrders": "Aucun ordre ouvert",
-      "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide"
+      "depthNoOrdersDesc": "Ce carnet d'ordres est actuellement vide",
+      "depthUnavailable": "Données de profondeur indisponibles",
+      "depthUnavailableDesc": "Impossible de charger la profondeur du carnet d'ordres. Nouvelle tentative..."
     }
   },
   "pools": {

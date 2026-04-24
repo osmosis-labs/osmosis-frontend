@@ -540,7 +540,9 @@
       "depthNoAsks": "无卖单",
       "depthNoBids": "无买单",
       "depthNoOrders": "暂无挂单",
-      "depthNoOrdersDesc": "该订单簿当前为空"
+      "depthNoOrdersDesc": "该订单簿当前为空",
+      "depthUnavailable": "深度数据不可用",
+      "depthUnavailableDesc": "无法加载订单簿深度。正在重试..."
     }
   },
   "pools": {

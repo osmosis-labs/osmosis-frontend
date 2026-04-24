@@ -540,7 +540,9 @@
       "depthNoAsks": "Sem vendas",
       "depthNoBids": "Sem compras",
       "depthNoOrders": "Sem ordens abertas",
-      "depthNoOrdersDesc": "Este livro de ordens está vazio"
+      "depthNoOrdersDesc": "Este livro de ordens está vazio",
+      "depthUnavailable": "Dados de profundidade indisponíveis",
+      "depthUnavailableDesc": "Não foi possível carregar a profundidade do livro de ordens. Tentando novamente..."
     }
   },
   "pools": {

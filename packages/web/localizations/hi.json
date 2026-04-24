@@ -540,7 +540,9 @@
       "depthNoAsks": "कोई विक्रय आदेश नहीं",
       "depthNoBids": "कोई क्रय आदेश नहीं",
       "depthNoOrders": "कोई खुले आदेश नहीं",
-      "depthNoOrdersDesc": "यह ऑर्डर बुक वर्तमान में खाली है"
+      "depthNoOrdersDesc": "यह ऑर्डर बुक वर्तमान में खाली है",
+      "depthUnavailable": "गहराई डेटा अनुपलब्ध",
+      "depthUnavailableDesc": "ऑर्डर बुक गहराई लोड करने में असमर्थ। पुनः प्रयास हो रहा है..."
     }
   },
   "pools": {
