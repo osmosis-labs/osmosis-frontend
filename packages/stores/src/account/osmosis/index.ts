@@ -375,7 +375,7 @@ export class OsmosisAccountImpl {
     const mkp = this.makeCoinPretty;
 
     // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    let queryPoolForJoin = queries.queryPools.getPool(poolId);
+    const queryPoolForJoin = queries.queryPools.getPool(poolId);
     if (!queryPoolForJoin) {
       try {
         await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
@@ -493,7 +493,7 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
 
     // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
-    let queryPoolForJoinSwap = queries.queryPools.getPool(poolId);
+    const queryPoolForJoinSwap = queries.queryPools.getPool(poolId);
     if (!queryPoolForJoinSwap) {
       try {
         await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
