@@ -200,9 +200,6 @@ async function computePairDepth({
   const nextAskTick = orderbookState.next_ask_tick;
 
   // 3. Use AllTicks to fetch only ticks that actually have orders.
-  // Bids: from (nextBidTick - TICK_RANGE) up to nextBidTick (descending price side).
-  // Asks: from nextAskTick up to (nextAskTick + TICK_RANGE).
-  // AllTicks returns only ticks with actual orders — no range bounding needed.
   // Bids: all ticks up to and including nextBidTick.
   // Asks: all ticks from nextAskTick upward.
   console.debug("[pair-depth] fetching ticks", {
@@ -238,14 +235,11 @@ async function computePairDepth({
       }),
   ]);
 
-  // If either side failed entirely, return unavailable so the frontend
-  // holds stale data rather than showing a false empty side.
+  // Throw on tick fetch failure so cachified propagates the error and the
+  // tRPC layer returns a 500. React Query then keeps the previous successful
+  // data (keepPreviousData) instead of overwriting it with empty arrays.
   if (bidTicksResp === null || askTicksResp === null) {
-    console.warn("[pair-depth] tick fetch failed, returning unavailable", {
-      bidFailed: bidTicksResp === null,
-      askFailed: askTicksResp === null,
-    });
-    return { ...empty, midPrice, bidPrice, askPrice, unavailable: true };
+    throw new Error("orderbook tick fetch failed");
   }
 
   console.debug("[pair-depth] raw ticks", {

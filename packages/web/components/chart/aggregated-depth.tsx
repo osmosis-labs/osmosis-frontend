@@ -176,23 +176,31 @@ export const OrderbookDepthPanel: FunctionComponent<{
       ? visibleAsks[sweepIndex ?? 0]?.price
       : visibleBids[sweepIndex ?? 0]?.price;
 
-  if (
-    !isLoading &&
-    !isRefetching &&
-    !isError &&
-    bids.length === 0 &&
-    asks.length === 0
-  ) {
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-        <p className="body2 text-osmoverse-300">
-          {t("pool.orderbookPool.depthNoOrders")}
-        </p>
-        <p className="caption text-osmoverse-500">
-          {t("pool.orderbookPool.depthNoOrdersDesc")}
-        </p>
-      </div>
-    );
+  if (!isLoading && bids.length === 0 && asks.length === 0) {
+    if (isError) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+          <p className="body2 text-osmoverse-300">
+            {t("pool.orderbookPool.depthUnavailable")}
+          </p>
+          <p className="caption text-osmoverse-500">
+            {t("pool.orderbookPool.depthUnavailableDesc")}
+          </p>
+        </div>
+      );
+    }
+    if (!isRefetching) {
+      return (
+        <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
+          <p className="body2 text-osmoverse-300">
+            {t("pool.orderbookPool.depthNoOrders")}
+          </p>
+          <p className="caption text-osmoverse-500">
+            {t("pool.orderbookPool.depthNoOrdersDesc")}
+          </p>
+        </div>
+      );
+    }
   }
 
   const noAsks =
