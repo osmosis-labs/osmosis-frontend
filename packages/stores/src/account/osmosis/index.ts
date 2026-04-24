@@ -374,6 +374,16 @@ export class OsmosisAccountImpl {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
 
+    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
+    let queryPoolForJoin = queries.queryPools.getPool(poolId);
+    if (!queryPoolForJoin) {
+      try {
+        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
+      } catch (e) {
+        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
+      }
+    }
+
     await this.base.signAndBroadcast(
       this.chainId,
       "joinPool",
@@ -481,6 +491,16 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
+
+    // If not in cache, it might be a low-liquidity pool that wasn't fetched initially
+    let queryPoolForJoinSwap = queries.queryPools.getPool(poolId);
+    if (!queryPoolForJoinSwap) {
+      try {
+        await queries.queryPools.fetchRemainingPools({ minLiquidity: 0 });
+      } catch (e) {
+        console.error(`Failed to fetch remaining pools for pool ${poolId}:`, e);
+      }
+    }
 
     await this.base.signAndBroadcast(
       this.chainId,
