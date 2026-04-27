@@ -544,7 +544,9 @@
       "swapFee": "Definir taxa de swap",
       "undersandCost": "Entendo que criar um novo pool custará {poolCreationFee} .",
       "buttonCreate": "Criar Pool",
-      "buttonCreating": "Criando"
+      "buttonCreating": "Criando",
+      "18decimalWarning": "{symbol} usa 18 casas decimais e não pode ser usado como ativo base em um pool Supercharged com um ativo quote de 6 casas decimais.",
+      "18decimalWarningAction": "Tente trocar os ativos base e quote, ou crie um Weighted Pool em vez disso."
     },
     "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",

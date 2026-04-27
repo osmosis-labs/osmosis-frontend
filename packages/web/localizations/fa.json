@@ -544,7 +544,9 @@
       "swapFee": "کارمزد مبادله را تنظیم کنید",
       "undersandCost": "من متوجه هستم که ایجاد یک استخر جدید هزینه {poolCreationFee} را در بر خواهد داشت.",
       "buttonCreate": "استخر ایجاد کنید",
-      "buttonCreating": "ایجاد"
+      "buttonCreating": "ایجاد",
+      "18decimalWarning": "{symbol} از ۱۸ رقم اعشار استفاده می‌کند و نمی‌تواند به عنوان دارایی پایه در یک استخر Supercharged با یک دارایی quote با ۶ رقم اعشار استفاده شود.",
+      "18decimalWarningAction": "سعی کنید دارایی‌های پایه و quote را جابجا کنید یا به جای آن یک Weighted Pool ایجاد کنید."
     },
     "TVL": "TVL",
     "myLiquidity": "نقدینگی های من",

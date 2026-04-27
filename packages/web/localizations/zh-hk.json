@@ -544,7 +544,9 @@
       "swapFee": "設定隔夜利息",
       "undersandCost": "我了解建立新池將花費{poolCreationFee} 。",
       "buttonCreate": "建立池",
-      "buttonCreating": "創造"
+      "buttonCreating": "創造",
+      "18decimalWarning": "{symbol} 使用18位小數，唔可以喺同6位小數報價資產配對嘅Supercharged池入面用作基礎資產。",
+      "18decimalWarningAction": "請試下交換基礎資產同報價資產，或者改為創建Weighted池。"
     },
     "TVL": "TVL",
     "myLiquidity": "我嘅流動性",
