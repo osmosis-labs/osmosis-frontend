@@ -544,7 +544,9 @@
       "swapFee": "Establecer tarifa de intercambio",
       "undersandCost": "Entiendo que crear un nuevo grupo costará {poolCreationFee} .",
       "buttonCreate": "Crear Pool",
-      "buttonCreating": "Creando"
+      "buttonCreating": "Creando",
+      "18decimalWarning": "{symbol} utiliza 18 decimales y no puede usarse como activo base en un pool Supercharged con un activo quote de 6 decimales.",
+      "18decimalWarningAction": "Intenta intercambiar los activos base y quote, o crea un pool Weighted en su lugar."
     },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",

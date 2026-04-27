@@ -544,7 +544,9 @@
       "swapFee": "स्वैप शुल्क निर्धारित करें",
       "undersandCost": "मैं समझता हूं कि एक नया पूल बनाने में {poolCreationFee} खर्च आएगा।",
       "buttonCreate": "पूल बनाएं",
-      "buttonCreating": "सृजन"
+      "buttonCreating": "सृजन",
+      "18decimalWarning": "{symbol} 18 दशमलव स्थानों का उपयोग करता है और 6 दशमलव quote asset के साथ Supercharged pool में base asset के रूप में उपयोग नहीं किया जा सकता।",
+      "18decimalWarningAction": "base और quote assets को बदलने का प्रयास करें, या इसके बजाय एक Weighted Pool बनाएं।"
     },
     "TVL": "टी वी लाइनों",
     "myLiquidity": "मेरी तरलता",

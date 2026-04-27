@@ -544,7 +544,9 @@
       "swapFee": "设置掉期费",
       "undersandCost": "我了解创建一个新池将花费{poolCreationFee} 。",
       "buttonCreate": "创建池",
-      "buttonCreating": "创建"
+      "buttonCreating": "创建",
+      "18decimalWarning": "{symbol} 使用18位小数，不能在与6位小数报价资产配对的Supercharged池中用作基础资产。",
+      "18decimalWarningAction": "请尝试交换基础资产和报价资产，或改为创建Weighted池。"
     },
     "TVL": "TVL",
     "myLiquidity": "我的流动性",

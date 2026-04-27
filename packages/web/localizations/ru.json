@@ -544,7 +544,9 @@
       "swapFee": "Установить комиссию за своп",
       "undersandCost": "Я понимаю, что создание нового пула будет стоить {poolCreationFee} .",
       "buttonCreate": "Создать пул",
-      "buttonCreating": "Создание"
+      "buttonCreating": "Создание",
+      "18decimalWarning": "{symbol} использует 18 десятичных знаков и не может использоваться как базовый актив в Supercharged пуле с quote активом с 6 знаками.",
+      "18decimalWarningAction": "Попробуйте поменять местами базовый и quote активы или создайте Weighted Pool."
     },
     "TVL": "ТВЛ",
     "myLiquidity": "Моя ликвидность",

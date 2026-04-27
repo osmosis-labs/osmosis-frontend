@@ -8,7 +8,7 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
-import { RatePretty } from "@osmosis-labs/unit";
+import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { Fragment, useMemo, useState } from "react";
 
@@ -82,6 +82,32 @@ export const SetBaseInfos = observer(
 
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
+
+    const is18DecimalBase =
+      selectedBase?.token.coinDecimals === 18 &&
+      selectedQuote?.token.coinDecimals === 6;
+
+    const { data: basePrice, isLoading: isBasePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom: selectedBase?.token.coinMinimalDenom ?? "" },
+        { enabled: is18DecimalBase && !!selectedBase?.token.coinMinimalDenom }
+      );
+    const { data: quotePrice, isLoading: isQuotePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom: selectedQuote?.token.coinMinimalDenom ?? "" },
+        { enabled: is18DecimalBase && !!selectedQuote?.token.coinMinimalDenom }
+      );
+
+    // Block 18-decimal base paired with 6-decimal quote unless price is known
+    // and base is worth at least 100x the quote asset. No price = blocked.
+    const is18DecimalMismatch =
+      is18DecimalBase &&
+      (isBasePriceLoading ||
+        isQuotePriceLoading ||
+        basePrice === undefined ||
+        quotePrice === undefined ||
+        quotePrice.toDec().isZero() ||
+        basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
 
     return (
       <>
@@ -165,8 +191,22 @@ export const SetBaseInfos = observer(
               })}
             </Label>
           </Field>
+          {is18DecimalMismatch && (
+            <div className="body2 text-center text-rust-400">
+              <p>
+                {t("pools.createSupercharged.18decimalWarning", {
+                  symbol: selectedBase!.token.coinDenom,
+                })}
+              </p>
+              <p className="mt-1">
+                {t("pools.createSupercharged.18decimalWarningAction")}
+              </p>
+            </div>
+          )}
           <Button
-            disabled={!isAgreementChecked || !selectedBase}
+            disabled={
+              !isAgreementChecked || !selectedBase || is18DecimalMismatch
+            }
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
               setIsTxLoading(true);

@@ -544,7 +544,9 @@
       "swapFee": "Set Swap Fee",
       "undersandCost": "I understand that creating a new pool will cost {poolCreationFee}.",
       "buttonCreate": "Create Pool",
-      "buttonCreating": "Creating"
+      "buttonCreating": "Creating",
+      "18decimalWarning": "{symbol} uses 18 decimal places and cannot be used as the base asset in a Supercharged pool with a 6 decimal quote.",
+      "18decimalWarningAction": "Try swapping the base and quote assets, or create a Weighted pool instead."
     },
     "TVL": "TVL",
     "myLiquidity": "My Liquidity",

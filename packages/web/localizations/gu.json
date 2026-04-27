@@ -544,7 +544,9 @@
       "swapFee": "સ્વેપ ફી સેટ કરો",
       "undersandCost": "હું સમજું છું કે નવો પૂલ બનાવવા માટે {poolCreationFee} ખર્ચ થશે.",
       "buttonCreate": "પૂલ બનાવો",
-      "buttonCreating": "બનાવી રહ્યા છે"
+      "buttonCreating": "બનાવી રહ્યા છે",
+      "18decimalWarning": "{symbol} 18 દશાંશ સ્થાનોનો ઉપયોગ કરે છે અને 6 દશાંશ quote asset સાથે Supercharged pool માં base asset તરીકે ઉપયોગ કરી શકાતો નથી.",
+      "18decimalWarningAction": "base અને quote assets ફેરવવાનો પ્રયાસ કરો, અથવા તેના બદલે Weighted Pool બનાવો."
     },
     "TVL": "ટીવીએલ",
     "myLiquidity": "મારી લિક્વિડિટી",

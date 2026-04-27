@@ -544,7 +544,9 @@
       "swapFee": "Setați taxa de schimb",
       "undersandCost": "Înțeleg că crearea unui pool nou va costa {poolCreationFee} .",
       "buttonCreate": "Creați pool",
-      "buttonCreating": "Crearea"
+      "buttonCreating": "Crearea",
+      "18decimalWarning": "{symbol} utilizează 18 zecimale și nu poate fi folosit ca activ de bază într-un pool Supercharged cu un activ quote de 6 zecimale.",
+      "18decimalWarningAction": "Încearcă să schimbi activele de bază și quote sau creează în schimb un Weighted Pool."
     },
     "TVL": "TVL",
     "myLiquidity": "Lichiditatea mea",

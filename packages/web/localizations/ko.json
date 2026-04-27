@@ -544,7 +544,9 @@
       "swapFee": "스왑 수수료 설정",
       "undersandCost": "새 풀을 만드는 데 {poolCreationFee} 의 비용이 발생한다는 것을 알고 있습니다.",
       "buttonCreate": "풀 생성",
-      "buttonCreating": "생성"
+      "buttonCreating": "생성",
+      "18decimalWarning": "{symbol}은 18자리 소수점을 사용하며, 6자리 quote 자산과의 Supercharged 풀에서 base 자산으로 사용할 수 없습니다.",
+      "18decimalWarningAction": "base와 quote 자산을 바꾸거나 대신 Weighted Pool을 생성하세요."
     },
     "TVL": "TVL",
     "myLiquidity": "내 유동성",

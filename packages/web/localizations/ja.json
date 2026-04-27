@@ -544,7 +544,9 @@
       "swapFee": "スワップ手数料の設定",
       "undersandCost": "新しいプールを作成するには{poolCreationFee}の費用がかかることを理解しています。",
       "buttonCreate": "プールを作成",
-      "buttonCreating": "作成"
+      "buttonCreating": "作成",
+      "18decimalWarning": "{symbol}は18桁の小数点以下を使用しており、6桁のquoteアセットとのSuperchargedプールのbaseアセットとして使用することはできません。",
+      "18decimalWarningAction": "baseとquoteアセットを入れ替えるか、代わりにWeighted Poolを作成してください。"
     },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",
