@@ -1401,7 +1401,12 @@
       "filled": "Comenzi completate pentru revendicare"
     },
     "priceReaches": "Dacă prețul {denom} atinge {price}",
-    "belowMinimumAmount": "{amount} minim"
+    "belowMinimumAmount": "{amount} minim",
+    "noOrderbookForPair": "Nu există niciun orderbook pentru {base}/{quote}. Creați unul pentru a activa limit orders pentru această pereche.",
+    "createOrderbook": "Creați Orderbook",
+    "noOrderbookExists": "Niciun orderbook pentru {denom}",
+    "clickToCreateOrderbook": "Faceți clic pentru a crea un orderbook și a activa limit orders pentru această pereche.",
+    "createOrderbookDescription": "Crearea unui orderbook pool permite plasarea de limit orders pentru această pereche de tranzacționare pe Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {

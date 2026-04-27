@@ -1401,7 +1401,12 @@
       "filled": "Ausgeführte Bestellungen zum Einfordern"
     },
     "priceReaches": "Wenn der Preis {denom} {price} erreicht",
-    "belowMinimumAmount": "{amount} Minimum"
+    "belowMinimumAmount": "{amount} Minimum",
+    "noOrderbookForPair": "Für {base}/{quote} existiert kein Orderbuch. Erstellen Sie eines, um Limit-Orders für dieses Paar zu aktivieren.",
+    "createOrderbook": "Orderbuch erstellen",
+    "noOrderbookExists": "Kein Orderbuch für {denom}",
+    "clickToCreateOrderbook": "Klicken Sie hier, um ein Orderbuch zu erstellen und Limit-Orders für dieses Paar zu aktivieren.",
+    "createOrderbookDescription": "Das Erstellen eines Orderbuch-Pools ermöglicht es, Limit-Orders für dieses Handelspaar auf Osmosis zu platzieren."
   },
   "tradeDetails": {
     "priceImpact": {

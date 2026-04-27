@@ -1401,7 +1401,12 @@
       "filled": "Commandes exécutées à réclamer"
     },
     "priceReaches": "Si le prix {denom} atteint {price}",
-    "belowMinimumAmount": "{amount} minimum"
+    "belowMinimumAmount": "{amount} minimum",
+    "noOrderbookForPair": "Aucun orderbook n'existe pour {base}/{quote}. Créez-en un pour activer les ordres limites pour cette paire.",
+    "createOrderbook": "Créer un Orderbook",
+    "noOrderbookExists": "Aucun orderbook pour {denom}",
+    "clickToCreateOrderbook": "Cliquez pour créer un orderbook et activer les ordres limites pour cette paire.",
+    "createOrderbookDescription": "La création d'un orderbook pool permet de passer des ordres limites pour cette paire de trading sur Osmosis."
   },
   "tradeDetails": {
     "priceImpact": {
