@@ -233,4 +233,27 @@ export const orderbookRouter = createTRPCRouter({
     const pools = await getOrderbookPools();
     return pools;
   }),
+  /**
+   * Verifies whether an orderbook can be created for a given base/quote pair.
+   * Returns:
+   *  - `orderbookExists`: true if the canonical list already has this pair.
+   *  - `endpointFunctional`: true if the sidecar endpoint returned any orderbook pools.
+   */
+  verifyOrderbookCreation: publicProcedure
+    .input(z.object({ baseDenom: z.string(), quoteDenom: z.string() }))
+    .query(async ({ input }) => {
+      const { baseDenom, quoteDenom } = input;
+      const pools = await getOrderbookPools();
+
+      const orderbookExists = pools.some(
+        (pool) =>
+          (pool.baseDenom === baseDenom && pool.quoteDenom === quoteDenom) ||
+          (pool.baseDenom === quoteDenom && pool.quoteDenom === baseDenom)
+      );
+
+      // Endpoint is functional if we received any canonical pools at all.
+      const endpointFunctional = pools.length > 0;
+
+      return { orderbookExists, endpointFunctional };
+    }),
 });
