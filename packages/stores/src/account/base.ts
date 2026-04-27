@@ -188,7 +188,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ],
         display: asset.symbol,
       })),
-    })) as CosmologyAssetList[];
+    })) as unknown as CosmologyAssetList[];
   }
 
   constructor(
@@ -238,6 +238,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       (chain) =>
         ({
           ...chain,
+          chain_type: "cosmos",
           network_type: chain.networkType,
           pretty_name: chain.prettyName,
           bech32_prefix: chain.bech32Prefix,
