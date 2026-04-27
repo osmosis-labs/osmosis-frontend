@@ -3066,7 +3066,7 @@
     "@cosmos-kit/core" "^2.18.1"
     "@cosmos-kit/walletconnect" "^2.15.1"
 
-"@cosmos-kit/galaxy-station@^2.13.7":
+"@cosmos-kit/galaxy-station@^2.16.1":
   version "2.16.1"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/galaxy-station/-/galaxy-station-2.16.1.tgz#9ad91aa6ea59f13981531b3146448e9a1738bf01"
   integrity sha512-hKrDJ/hZAJXpsQOG67pRcXqyaNArPJAtm6Q0d9U+QX99OqWk11DVZ+C2Htsr81HW37z+N7ZVZQgwK3UUSLL/9w==
