@@ -57,7 +57,30 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
   const { depositCap, depositCapOccupied } = useMemo(() => {
     if (!item.row.original.tvl)
       return { depositCapOccupied: undefined, depositCap: undefined };
-    const depositCap = item.row.original.tvl.maxTvlUsd;
+
+    // First try to use top-level maxTvlUsd
+    let depositCap = item.row.original.tvl.maxTvlUsd;
+
+    // If not available, aggregate asset-level maxTvl values
+    if (!depositCap && item.row.original.tvl.assets) {
+      const assetMaxTvls = item.row.original.tvl.assets
+        .map((asset) => asset.maxTvl)
+        .filter(
+          (maxTvl): maxTvl is typeof item.row.original.tvl.tvlUsd =>
+            maxTvl !== undefined
+        );
+
+      if (assetMaxTvls.length > 0) {
+        // Sum up all asset maxTvl values
+        // Start with first element and reduce over the rest
+        const totalMaxTvl = assetMaxTvls.slice(1).reduce((acc, maxTvl) => {
+          return acc!.add(maxTvl!);
+        }, assetMaxTvls[0]!);
+
+        depositCap = totalMaxTvl;
+      }
+    }
+
     const depositCapOccupied =
       depositCap && depositCap.toDec().gt(new Dec(0))
         ? Math.round(
@@ -71,7 +94,7 @@ export const TVLCell = (item: CellContext<EarnStrategy, PricePretty>) => {
       depositCapOccupied: Math.min(depositCapOccupied, 100),
       depositCap,
     };
-  }, [item.row.original.tvl, tvlUsd]);
+  }, [item.row.original, tvlUsd]);
 
   if (isLoadingTVL) {
     return (

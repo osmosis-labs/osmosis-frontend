@@ -7,6 +7,7 @@ import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { Breakpoint, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
 
 import { SkeletonLoader } from "../loaders/skeleton-loader";
@@ -19,11 +20,9 @@ export const PoolsOverview: FunctionComponent<
   const { width } = useWindowSize();
   const { t } = useTranslation();
 
-  const { data: osmoPrice, isFetched } = api.edge.assets.getAssetPrice.useQuery(
-    {
-      coinMinimalDenom: "uosmo",
-    }
-  );
+  const { data: osmo, isFetched } = api.edge.assets.getMarketAsset.useQuery({
+    findMinDenomOrSymbol: "OSMO",
+  });
   const { data: epochs } = api.local.params.getEpochs.useQuery();
 
   // update time every second
@@ -67,14 +66,18 @@ export const PoolsOverview: FunctionComponent<
         <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        {osmoPrice && (
+        {osmo?.currentPrice && (
           <SkeletonLoader
             className={classNames(isFetched ? null : "h-5 w-13")}
             isLoaded={isFetched}
           >
             <h2 className="mt-[3px]">
-              {osmoPrice.fiatCurrency.symbol}
-              {Number(osmoPrice.toDec().toString()).toFixed(2)}
+              {formatPretty(osmo.currentPrice, {
+                maxDecimals: 6,
+                maximumSignificantDigits: undefined,
+                maximumFractionDigits: 3,
+                notation: "standard",
+              })}
             </h2>
           </SkeletonLoader>
         )}

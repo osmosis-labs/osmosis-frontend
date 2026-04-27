@@ -1,4 +1,3 @@
-export * from "./axelar";
 export * from "./bridge-providers";
 export * from "./errors";
 export * from "./ibc";

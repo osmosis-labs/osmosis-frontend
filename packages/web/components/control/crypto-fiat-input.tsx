@@ -18,9 +18,19 @@ import { Tooltip } from "~/components/tooltip";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useControllableState } from "~/hooks/use-controllable-state";
 import { replaceAt } from "~/utils/array";
+import { isSameCoinDenom } from "~/utils/denom";
 import { trimPlaceholderZeros } from "~/utils/number";
 
 const mulGasSlippage = new Dec("1.1");
+
+/** Safely converts a raw input string to a Dec value.
+ * Returns "0" for empty strings or lone decimals that can't be parsed.
+ */
+function safeInputToDec(input: string): string {
+  const trimmed = input.trim();
+  if (trimmed === "" || trimmed === ".") return "0";
+  return trimmed;
+}
 
 export const CryptoFiatInput: FunctionComponent<{
   currentUnit: "fiat" | "crypto";
@@ -96,6 +106,9 @@ export const CryptoFiatInput: FunctionComponent<{
     onChange: setIsMaxProp,
   });
 
+  const gasAppliedToMax = useRef(false);
+  const gasAppliedForAsset = useRef<string | undefined>(undefined);
+
   // Check if price is available for fiat input
   const isPriceAvailable = Boolean(assetPrice?.fiatCurrency);
 
@@ -112,7 +125,7 @@ export const CryptoFiatInput: FunctionComponent<{
     if (!assetPrice?.fiatCurrency) return;
     return new PricePretty(
       assetPrice.fiatCurrency,
-      new Dec(fiatInputRaw === "" ? 0 : fiatInputRaw)
+      new Dec(safeInputToDec(fiatInputRaw))
     );
   }, [assetPrice?.fiatCurrency, fiatInputRaw]);
 
@@ -124,11 +137,9 @@ export const CryptoFiatInput: FunctionComponent<{
         coinDenom: assetWithBalance.denom,
         coinMinimalDenom: assetWithBalance.address,
       },
-      cryptoInputRaw === ""
-        ? new Dec(0)
-        : new Dec(cryptoInputRaw || "0").mul(
-            DecUtils.getTenExponentN(assetWithBalance.decimals)
-          )
+      new Dec(safeInputToDec(cryptoInputRaw)).mul(
+        DecUtils.getTenExponentN(assetWithBalance.decimals)
+      )
     );
   }, [assetWithBalance, cryptoInputRaw]);
 
@@ -237,39 +248,60 @@ export const CryptoFiatInput: FunctionComponent<{
     pendingRatioUpdate,
   ]);
 
-  // Subtract gas cost and adjust input when selecting max amount
+  // Subtract gas cost and adjust input when selecting max amount.
+  // Uses gasAppliedToMax ref to prevent a feedback loop: without it,
+  // each quote response returns a slightly different gas estimate which
+  // re-triggers this effect, adjusts the input, fires a new quote, etc.
   useEffect(() => {
-    if (isMax && canSetMax && assetWithBalance?.amount && inputCoin) {
-      if (transferGasCost) {
-        let maxTransferAmount = new Dec(0);
+    if (!isMax) {
+      gasAppliedToMax.current = false;
+      return;
+    }
 
-        const gasFeeMatchesInputDenom =
-          transferGasCost &&
-          transferGasCost.toCoin().denom ===
-            assetWithBalance.amount.toCoin().denom &&
-          transferGasCost.toCoin().denom === inputCoin.toCoin().denom;
+    if (!canSetMax || !assetWithBalance?.amount || !inputCoin) return;
 
-        if (gasFeeMatchesInputDenom) {
-          maxTransferAmount = assetWithBalance.amount
-            .toDec()
-            .sub(transferGasCost.toDec().mul(mulGasSlippage));
-        } else {
-          maxTransferAmount = assetWithBalance.amount.toDec();
-        }
+    if (assetWithBalance.address !== gasAppliedForAsset.current) {
+      gasAppliedToMax.current = false;
+    }
 
-        if (
-          maxTransferAmount.isPositive() &&
-          inputCoin.toDec().gt(maxTransferAmount)
-        ) {
-          onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
-        }
+    if (transferGasCost) {
+      if (gasAppliedToMax.current) return;
+
+      let maxTransferAmount = new Dec(0);
+
+      const gasFeeMatchesInputDenom = isSameCoinDenom(
+        transferGasCost,
+        assetWithBalance.amount
+      );
+
+      if (gasFeeMatchesInputDenom) {
+        maxTransferAmount = assetWithBalance.amount
+          .toDec()
+          .sub(transferGasCost.toDec().mul(mulGasSlippage));
       } else {
-        onInput("crypto")(
-          trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
-        );
+        maxTransferAmount = assetWithBalance.amount.toDec();
       }
+
+      if (
+        maxTransferAmount.isPositive() &&
+        inputCoin.toDec().gt(maxTransferAmount)
+      ) {
+        onInput("crypto")(trimPlaceholderZeros(maxTransferAmount.toString()));
+      }
+
+      gasAppliedToMax.current = true;
+      gasAppliedForAsset.current = assetWithBalance.address;
+    } else {
+      // Reset the guard so gas deduction runs when transferGasCost arrives.
+      // This covers both the initial render (ref starts false) and the case
+      // where quotes temporarily fail after gas was previously applied.
+      gasAppliedToMax.current = false;
+      onInput("crypto")(
+        trimPlaceholderZeros(assetWithBalance.amount.toDec().toString())
+      );
     }
   }, [
+    assetWithBalance?.address,
     assetWithBalance?.amount,
     canSetMax,
     inputCoin,

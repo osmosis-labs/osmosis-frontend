@@ -477,7 +477,7 @@ const CustomButtons = () => {
       <Component title="Link Icon">
         <Button size="icon" variant="secondary" aria-label="X" asChild>
           <Link href="" target="_blank" rel="external">
-            <Icon className="h-4 w-4 text-osmoverse-400" id="X" />
+            <Icon className="h-4 w-4 fill-osmoverse-400" id="X" />
           </Link>
         </Button>
       </Component>

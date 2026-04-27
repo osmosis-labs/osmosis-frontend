@@ -209,7 +209,7 @@ export const AmountAndReviewScreen = observer(
 
     const quote = useBridgeQuotes({
       toAddress,
-      toChain: toChain,
+      toChain,
       toAsset: (() => {
         if (!toAsset) return undefined;
         const asset = assetsInOsmosis?.find(
@@ -229,7 +229,7 @@ export const AmountAndReviewScreen = observer(
         };
       })(),
       fromAddress,
-      fromChain: fromChain,
+      fromChain,
       fromAsset: (() => {
         if (!fromAsset) return undefined;
         const asset = assetsInOsmosis?.find(

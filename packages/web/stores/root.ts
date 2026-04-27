@@ -1,4 +1,3 @@
-import { AxelarTransferStatusProvider } from "@osmosis-labs/bridge/build/axelar/transfer-status";
 import { IbcTransferStatusProvider } from "@osmosis-labs/bridge/build/ibc/transfer-status";
 import { Int3faceTransferStatusProvider } from "@osmosis-labs/bridge/build/int3face/transfer-status";
 import { NomicTransferStatusProvider } from "@osmosis-labs/bridge/build/nomic/transfer-status";
@@ -10,6 +9,10 @@ import {
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import {
+  AlloyedPoolCodeIds,
+  TransmuterPoolCodeIds,
+} from "@osmosis-labs/server";
+import {
   AccountStore,
   ChainStore,
   CosmosAccount,
@@ -17,7 +20,6 @@ import {
   DerivedDataStore,
   LPCurrencyRegistrar,
   makeIndexedKVStore,
-  makeLocalStorageKVStore,
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
@@ -35,22 +37,12 @@ import {
   BlacklistedPoolIds,
   HISTORICAL_DATA_URL,
   IS_TESTNET,
-  TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
-import { NavBarStore } from "~/stores/nav-bar";
-import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
-import {
-  HideBalancesUserSetting,
-  HideDustUserSetting,
-  LanguageUserSetting,
-  UnverifiedAssetsUserSetting,
-  UserSettings,
-} from "~/stores/user-settings";
 
 import {
   TRANSFER_HISTORY_STORE_KEY,
@@ -81,12 +73,6 @@ export class RootStore {
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
 
-  public readonly navBarStore: NavBarStore;
-
-  public readonly userSettings: UserSettings;
-
-  public readonly profileStore: ProfileStore;
-
   constructor({
     txEvents,
   }: {
@@ -113,6 +99,7 @@ export class RootStore {
         webApiBaseUrl,
         BlacklistedPoolIds,
         TransmuterPoolCodeIds,
+        AlloyedPoolCodeIds,
         IS_TESTNET
       )
     );
@@ -135,17 +122,6 @@ export class RootStore {
       ).osmosis!.queryPools,
       assets
     );
-
-    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
-    this.userSettings = new UserSettings(userSettingKvStore, [
-      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new HideDustUserSetting(
-        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
-          ?.symbol ?? "$"
-      ),
-      new UnverifiedAssetsUserSetting(),
-      new HideBalancesUserSetting(),
-    ]);
 
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
@@ -222,7 +198,6 @@ export class RootStore {
     );
 
     const transferStatusProviders = [
-      new AxelarTransferStatusProvider(IS_TESTNET ? "testnet" : "mainnet"),
       new SquidTransferStatusProvider(
         IS_TESTNET ? "testnet" : "mainnet",
         ChainList
@@ -287,10 +262,5 @@ export class RootStore {
       this.chainStore,
       assets
     );
-
-    this.navBarStore = new NavBarStore(this.chainStore.osmosis.chainId);
-
-    const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
-    this.profileStore = new ProfileStore(profileStoreKvStore);
   }
 }

@@ -1,3 +1,4 @@
+import type { AppStoreApp, AppStoreResponse } from "@osmosis-labs/server";
 import Fuse from "fuse.js";
 import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
@@ -10,41 +11,18 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { Breakpoint, useAmplitudeAnalytics, useTranslation } from "~/hooks";
 
-export type App = {
-  title: string;
-  subtitle: string;
-  external_URL: string;
-  thumbnail_image_URL: string;
-  hero_image_URL: string;
-  twitter_URL?: string;
-  medium_URL?: string;
-  github_URL?: string;
-  featured?: boolean;
-  internal_data: {
-    thumbnail_size: number;
-    hero_size: number;
-    /**
-     * Date in ISO format. E.g. "2023-07-31T22:34:16.961Z"
-     */
-    project_listing_date: string;
-  };
-};
-
 type AppStoreProps = {
-  apps: {
-    applications: App[];
-  };
+  apps: AppStoreResponse;
 };
-
-export const OsmosisAppListRepoName = "osmosis-labs/fe-content";
-export const OsmosisAppListFilePath = "cms/apps/applications.json";
 
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const [fuzzySearchResults, setFuzzySearchResults] = useState<App[]>([]);
-  const [fuse, setFuse] = useState<Fuse<App> | null>(null);
+  const [fuzzySearchResults, setFuzzySearchResults] = useState<AppStoreApp[]>(
+    []
+  );
+  const [fuse, setFuse] = useState<Fuse<AppStoreApp> | null>(null);
 
-  const { applications } = apps;
+  const applications = apps.applications ?? [];
 
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics({
@@ -113,19 +91,21 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
           />
         </div>
       </div>
-      <HeroCard
-        title={featuredApp.title}
-        subtitle={featuredApp.subtitle}
-        imageUrl={
-          width <= Breakpoint.sm
-            ? featuredApp.thumbnail_image_URL
-            : featuredApp.hero_image_URL
-        }
-        githubUrl={featuredApp.github_URL}
-        twitterUrl={featuredApp.twitter_URL}
-        externalUrl={featuredApp.external_URL}
-        mediumUrl={featuredApp.medium_URL}
-      />
+      {featuredApp && (
+        <HeroCard
+          title={featuredApp.title}
+          subtitle={featuredApp.subtitle}
+          imageUrl={
+            width <= Breakpoint.sm
+              ? featuredApp.thumbnail_image_URL
+              : featuredApp.hero_image_URL
+          }
+          githubUrl={featuredApp.github_URL}
+          twitterUrl={featuredApp.twitter_URL}
+          externalUrl={featuredApp.external_URL}
+          mediumUrl={featuredApp.medium_URL}
+        />
+      )}
 
       <div className="body2 mb-2 pl-6 pt-7 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
@@ -180,11 +160,8 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 export default AppStore;
 
 export async function getStaticProps() {
-  // The raw URL of the applications.json file in the GitHub repo
-  const url = `https://raw.githubusercontent.com/${OsmosisAppListRepoName}/main/${OsmosisAppListFilePath}`;
-
-  const response = await fetch(url);
-  const apps = await response.json();
+  const { queryAppStore } = await import("@osmosis-labs/server");
+  const apps = await queryAppStore();
 
   return {
     props: {

@@ -3,12 +3,12 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
+import { BridgeChain } from "@osmosis-labs/bridge";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { IntPretty } from "@osmosis-labs/unit";
 import { isNil, noop, shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import {
   Dispatch,
   FunctionComponent,
@@ -32,6 +32,8 @@ import {
   useScreenManager,
 } from "~/components/screen-manager";
 import { Button } from "~/components/ui/button";
+import { Checkbox } from "~/components/ui/checkbox";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import { EthereumChainIds } from "~/config/wagmi";
 import {
@@ -46,6 +48,7 @@ import { useEvmWalletAccount, useSwitchEvmChain } from "~/hooks/evm-wallet";
 import { usePrice } from "~/hooks/queries/assets/use-price";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 import { ChainLogo } from "../assets/chain-logo";
@@ -177,6 +180,7 @@ export const AmountScreen = observer(
     const [areMoreOptionsVisible, setAreMoreOptionsVisible] = useState(false);
     const [isNetworkSelectVisible, setIsNetworkSelectVisible] = useState(false);
     const [pendingChainApproval, setPendingChainApproval] = useState(false);
+    const [wishesToProceed, setWishesToProceed] = useState(false);
 
     const [inputUnit, setInputUnit] = useState<"crypto" | "fiat">("fiat");
     const {
@@ -465,9 +469,43 @@ export const AmountScreen = observer(
             type: fromChain.chainType,
             assets: assets as Extract<SupportedAsset, { chainType: "doge" }>[],
           };
-        default:
+        case "litecoin":
           return {
             type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "litecoin" }
+            >[],
+          };
+        case "xrpl":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "xrpl" }>[],
+          };
+        case "bitcoin-cash":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "bitcoin-cash" }
+            >[],
+          };
+        case "ton":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<SupportedAsset, { chainType: "ton" }>[],
+          };
+        case "solana":
+          return {
+            type: fromChain.chainType,
+            assets: assets as Extract<
+              SupportedAsset,
+              { chainType: "solana" }
+            >[],
+          };
+        default:
+          return {
+            type: (fromChain as BridgeChain).chainType,
             assets: assets as Extract<
               SupportedAsset,
               { chainType: "solana" }
@@ -705,6 +743,26 @@ export const AmountScreen = observer(
           ? !fromChain || !fromAsset
           : !toChain || !toAsset));
 
+    const isTransferButtonDisabled = useMemo(() => {
+      if (
+        cryptoAmount === "" ||
+        cryptoAmount === "0" ||
+        (!quote.userCanAdvance && !warnUserOfPriceImpact && !warnUserOfSlippage)
+      )
+        return true;
+
+      if (warnUserOfPriceImpact || warnUserOfSlippage) {
+        return !wishesToProceed;
+      }
+      return false;
+    }, [
+      cryptoAmount,
+      quote.userCanAdvance,
+      warnUserOfPriceImpact,
+      warnUserOfSlippage,
+      wishesToProceed,
+    ]);
+
     const shouldShowAssetDropdown = useMemo(() => {
       return direction === "deposit"
         ? !isNil(fromAsset) &&
@@ -934,12 +992,15 @@ export const AmountScreen = observer(
                 className="flex items-center gap-3"
                 onClick={() => setCurrentScreen(BridgeScreen.Asset)}
               >
-                <Image
-                  width={32}
-                  height={32}
-                  src={canonicalAsset.coinImageUrl ?? "/"}
-                  alt="token image"
-                />{" "}
+                <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
+                    name={canonicalAsset.coinName}
+                    symbol={canonicalAsset.coinDenom}
+                    width={32}
+                    height={32}
+                  />
+                </div>
                 <span>{canonicalAsset.coinDenom}</span>
               </button>
             </>
@@ -969,32 +1030,32 @@ export const AmountScreen = observer(
             transferGasChain={fromChain}
           />
 
+          {(isLoadingAssetsBalance || isLoading) && (
+            <div className="flex w-full items-center justify-center gap-3">
+              <Spinner className="text-wosmongton-500" />
+              <p className="body1 md:body2 text-osmoverse-300">
+                {t("transfer.lookingForBalances")}
+              </p>
+            </div>
+          )}
+
+          {!isLoadingAssetsBalance &&
+            !isLoading &&
+            assetsBalances?.length === 1 && (
+              <p className="body1 md:body2 w-full text-center text-osmoverse-300">
+                {inputUnit === "crypto"
+                  ? assetsBalances[0].amount
+                      .trim(true)
+                      .maxDecimals(6)
+                      .hideDenom(true)
+                      .toString()
+                  : assetsBalances[0].usdValue.toString()}{" "}
+                {t("transfer.available")}
+              </p>
+            )}
+
           {(isWalletNeededConnected || isLoading) && (
             <>
-              {(isLoadingAssetsBalance || isLoading) && (
-                <div className="flex w-full items-center justify-center gap-3">
-                  <Spinner className="text-wosmongton-500" />
-                  <p className="body1 md:body2 text-osmoverse-300">
-                    {t("transfer.lookingForBalances")}
-                  </p>
-                </div>
-              )}
-
-              {!isLoadingAssetsBalance &&
-                !isLoading &&
-                assetsBalances?.length === 1 && (
-                  <p className="body1 md:body2 w-full text-center text-osmoverse-300">
-                    {inputUnit === "crypto"
-                      ? assetsBalances[0].amount
-                          .trim(true)
-                          .maxDecimals(6)
-                          .hideDenom(true)
-                          .toString()
-                      : assetsBalances[0].usdValue.toString()}{" "}
-                    {t("transfer.available")}
-                  </p>
-                )}
-
               {!isLoadingAssetsBalance &&
                 !isLoading &&
                 assetsBalances &&
@@ -1258,12 +1319,27 @@ export const AmountScreen = observer(
                     </div>
                   </div>
                 )}
+                {(warnUserOfPriceImpact || warnUserOfSlippage) &&
+                  !isInsufficientFee && (
+                    <div className="flex gap-4">
+                      <Checkbox
+                        checked={wishesToProceed}
+                        onCheckedChange={(checked) => {
+                          if (checked === "indeterminate") {
+                            return setWishesToProceed(false);
+                          }
+
+                          return setWishesToProceed(checked);
+                        }}
+                      />
+                      <h2 className="body2">
+                        Yes, I understand this could cause heavy loss of funds
+                        and I wish to proceed.
+                      </h2>
+                    </div>
+                  )}
                 <Button
-                  disabled={
-                    cryptoAmount === "" ||
-                    cryptoAmount === "0" ||
-                    !quote.userCanAdvance
-                  }
+                  disabled={isTransferButtonDisabled}
                   className="w-full md:h-12"
                   variant={
                     warnUserOfSlippage || warnUserOfPriceImpact
@@ -1441,19 +1517,20 @@ const TransferDetails: FunctionComponent<{
     useMeasure<HTMLDivElement>();
   const { t } = useTranslation();
   const successfulQuotes = quote?.successfulQuotes ?? [];
+  const isOpen = quote?.warnUserOfPriceImpact || quote?.warnUserOfSlippage;
 
   if (!isLoading && successfulQuotes.length === 0) {
     return null;
   }
 
   return (
-    <Disclosure>
+    <Disclosure key={`details-disclosure-${isOpen}`} defaultOpen={isOpen}>
       {({ open }) => (
         <div
           className="flex w-full flex-col gap-3 overflow-clip transition-height duration-300 ease-inOutBack"
           style={{
             height: open
-              ? (detailsHeight + detailsOffset ?? 288) + 46 // collapsed height
+              ? detailsHeight + detailsOffset + 46 // collapsed height
               : 36,
           }}
         >

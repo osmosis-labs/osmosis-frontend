@@ -1,17 +1,19 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
 import { MinimalAsset } from "@osmosis-labs/types";
 import { CoinPretty, Dec, PricePretty } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectorProps } from "~/components/complex/pool/create/cl/set-base-info";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { Spinner } from "~/components/loaders";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface AddInitialLiquidityProps {
@@ -21,7 +23,23 @@ interface AddInitialLiquidityProps {
   onClose?: () => void;
 }
 
-const isAmountValid = (amount?: string) => !!amount && !/^0*$/.test(amount);
+const isPositiveDecAmount = (amount?: string): boolean => {
+  if (!amount) return false;
+  try {
+    return new Dec(amount).gt(new Dec(0));
+  } catch {
+    return false;
+  }
+};
+
+const safeParseDecOrZero = (value?: string | number): Dec => {
+  if (!value) return new Dec(0);
+  try {
+    return new Dec(value);
+  } catch {
+    return new Dec(0);
+  }
+};
 
 export const AddInitialLiquidity = observer(
   ({
@@ -84,7 +102,7 @@ export const AddInitialLiquidity = observer(
             Initial liquidity will be deposited as a full range position
           </span>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3">
           <TokenLiquiditySelector
             selectedAsset={selectedBase}
             value={baseAmount}
@@ -102,9 +120,9 @@ export const AddInitialLiquidity = observer(
             isQuote
           />
         </div>
-        {isAmountValid(baseAmount) &&
-          isAmountValid(quoteAmount) &&
-          quoteUsdValue && (
+        {quoteUsdValue &&
+          isPositiveDecAmount(baseAmount) &&
+          isPositiveDecAmount(quoteAmount) && (
             <span className="subtitle1 text-osmoverse-300">
               Implied value: 1 {selectedBase.token.coinDenom}{" "}
               <span className="font-bold">
@@ -120,19 +138,29 @@ export const AddInitialLiquidity = observer(
               </span>
             </span>
           )}
-        <div className="flex flex-col gap-[26px]">
+        <div className="flex flex-col items-center gap-[26px]">
           <button
             disabled={
               isTxLoading ||
-              new Dec(baseAmount ?? 0).gt(
+              !isPositiveDecAmount(baseAmount) ||
+              !isPositiveDecAmount(quoteAmount) ||
+              safeParseDecOrZero(baseAmount).gt(
                 baseAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               ) ||
-              new Dec(quoteAmount ?? 0).gt(
+              safeParseDecOrZero(quoteAmount).gt(
                 quoteAssetBalanceData?.amount?.toDec() ?? new Dec(0)
               )
             }
             onClick={() => {
-              if (!baseAmount || !quoteAmount) return;
+              if (
+                !baseAmount ||
+                !quoteAmount ||
+                !isValidNumericalRawInput(baseAmount) ||
+                !isValidNumericalRawInput(quoteAmount) ||
+                !isPositiveDecAmount(baseAmount) ||
+                !isPositiveDecAmount(quoteAmount)
+              )
+                return;
 
               setIsTxLoading(true);
               account?.osmosis
@@ -193,16 +221,20 @@ const TokenLiquiditySelector = observer(
     if (!selectedAsset) return;
 
     return (
-      <div className="flex w-[360px] items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
+      <div className="flex flex-1 items-center justify-between rounded-3xl bg-osmoverse-825 p-5">
         <div className="flex items-center gap-3">
-          <Image
-            src={selectedAsset.token.coinImageUrl ?? ""}
-            alt={`${selectedAsset.token.coinDenom}`}
+          <EntityImage
+            logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
+            name={selectedAsset.token.coinDenom}
+            symbol={selectedAsset.token.coinDenom}
             width={52}
             height={52}
-            className="rounded-full"
+            className="overflow-hidden rounded-full"
           />
-          <h5 className="max-w-[90px] truncate">
+          <h5
+            className="max-w-[120px] truncate"
+            title={selectedAsset.token.coinDenom}
+          >
             {selectedAsset.token.coinDenom}
           </h5>
         </div>
@@ -225,16 +257,30 @@ const TokenLiquiditySelector = observer(
             </span>
           </button>
           <input
-            type="number"
+            type="text"
+            inputMode="decimal"
             className="w-[158px] rounded-xl bg-osmoverse-800 py-2 px-3 text-right text-h5 font-h5"
             placeholder="0"
             value={value}
             onChange={(e) => {
-              // we might have to adjust this treshold
-              if (e.target.value.length > 32) return;
-              if (e.target.value === "") return setter();
+              let inputValue = e.target.value;
 
-              setter(e.target.value);
+              // we might have to adjust this treshold
+              if (inputValue.length > 32) return;
+              if (inputValue === "") return setter();
+
+              // Handle leading decimal point
+              if (inputValue.startsWith(".")) {
+                inputValue = "0" + inputValue;
+              }
+
+              // Validate input: only allow valid numerical input with optional decimal point
+              // Allows: "1", "1.", "1.0", "1.00", ".5", "0.5", etc.
+              // Rejects: "1.2.3", "abc", "1a", etc.
+              const validPattern = /^\d*\.?\d*$/;
+              if (!validPattern.test(inputValue)) return;
+
+              setter(inputValue);
             }}
           />
           <span className="caption h-3.5 text-osmoverse-400">
@@ -244,7 +290,9 @@ const TokenLiquiditySelector = observer(
                 formatPretty(
                   new PricePretty(
                     DEFAULT_VS_CURRENCY,
-                    new Dec(value).mul(assetPrice?.toDec() ?? new Dec(0))
+                    safeParseDecOrZero(value).mul(
+                      assetPrice?.toDec() ?? new Dec(0)
+                    )
                   )
                 )}
           </span>

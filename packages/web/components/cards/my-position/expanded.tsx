@@ -24,11 +24,10 @@ import { ChartUnavailable, PriceChartHeader } from "~/components/chart";
 import { Spinner } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { ChartButton } from "~/components/ui/button";
-import { ArrowButton, Button } from "~/components/ui/button";
+import { ArrowButton, Button, ChartButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import {
   ObservableHistoricalAndLiquidityData,
   useHistoricalAndLiquidityData,
@@ -38,7 +37,13 @@ import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
-import { formatPretty, getPriceExtendedFormatOptions } from "~/utils/formatter";
+import {
+  formatPretty,
+  formatPriceWithUserPrecision,
+  getFullPrecisionPrice,
+  getPriceExtendedFormatOptions,
+} from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { RouterOutputs } from "~/utils/trpc";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -232,20 +237,16 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               </div>
               <div className="flex h-full flex-col justify-between py-4">
                 <PriceBox
-                  currentValue={formatPretty(upperPrice, {
-                    scientificMagnitudeThreshold: 4,
-                  })}
+                  currentValue={formatPriceWithUserPrecision(upperPrice)}
+                  fullPrecisionValue={getFullPrecisionPrice(upperPrice)}
                   label={t("clPositions.maxPrice")}
                   infinity={isFullRange}
                 />
                 <PriceBox
                   currentValue={
-                    isFullRange
-                      ? "0"
-                      : formatPretty(lowerPrice, {
-                          scientificMagnitudeThreshold: 4,
-                        })
+                    isFullRange ? "0" : formatPriceWithUserPrecision(lowerPrice)
                   }
+                  fullPrecisionValue={getFullPrecisionPrice(lowerPrice)}
                   label={t("clPositions.minPrice")}
                 />
               </div>
@@ -468,15 +469,14 @@ export const AssetsInfo: FunctionComponent<
             <div className="flex flex-wrap gap-x-5 gap-y-3">
               {assets.map((asset) => (
                 <div key={asset.denom} className="flex items-center gap-2">
-                  <div className="h-[24px] w-[24px] flex-shrink-0">
-                    {asset.currency.coinImageUrl && (
-                      <Image
-                        alt="base currency"
-                        src={asset.currency.coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    )}
+                  <div className="h-[24px] w-[24px] flex-shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={getLogoURIs(asset.currency.coinImageUrl)}
+                      name={asset.currency.coinDenom}
+                      symbol={asset.currency.coinDenom}
+                      height={24}
+                      width={24}
+                    />
                   </div>
                   <span className="whitespace-nowrap">
                     {formatPretty(asset, { maxDecimals: 6 })}
@@ -501,8 +501,9 @@ export const AssetsInfo: FunctionComponent<
 const PriceBox: FunctionComponent<{
   label: string;
   currentValue: string;
+  fullPrecisionValue?: string;
   infinity?: boolean;
-}> = ({ label, currentValue, infinity }) => (
+}> = ({ label, currentValue, fullPrecisionValue, infinity }) => (
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
@@ -515,7 +516,10 @@ const PriceBox: FunctionComponent<{
         />
       </div>
     ) : (
-      <h6 className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight">
+      <h6
+        className="overflow-hidden text-ellipsis border-0 bg-transparent text-subtitle1 leading-tight"
+        title={fullPrecisionValue}
+      >
         {currentValue}
       </h6>
     )}

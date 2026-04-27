@@ -18,13 +18,7 @@
     "priceImpact": "가격 영향"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "1단계: 전략 선택",
-    "step2Title": "2단계: 유동성 추가",
-    "managed": "관리",
-    "managedDescription": "귀하의 직책을 관리할 제공자 중 하나를 선택하십시오. 완전히 손을 떼는 경험.",
-    "manual": "수동",
-    "manualDescription": "효율성과 보상을 최대화하기 위해 정기적으로 관리할 수 있는 위치를 만듭니다.",
-    "back": "뒤쪽에",
+    "step1Title": "유동성 추가",
     "priceShownIn": "표시된 가격",
     "priceRange": "가격 범위",
     "currentPrice": "현재 가격",
@@ -172,10 +166,10 @@
       "meme": "나 나",
       "liquid_staking": "리퀴드 스테이킹",
       "built_on_osmosis": "삼투를 기반으로 구축",
-      "sail_initiative": "항해 계획",
       "bridges": "교량",
       "nft_protocol": "NFT 프로토콜",
       "ai": "일체 포함",
+      "depin": "DePIN",
       "privacy": "은둔",
       "social": "사회의",
       "oracles": "오라클",
@@ -190,7 +184,9 @@
       "new": "새로운",
       "topGainers": "최고 상승자",
       "upcoming": "예정"
-    }
+    },
+    "strandedTokenDepositDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 입금할 수 없습니다.",
+    "strandedTokenWithdrawDisabled": "이 자산은 원점 체인으로 가는 경로가 더 이상 활성화되지 않아 인출할 수 없습니다."
   },
   "cypherCard": {
     "cypherSpend": "오스모시스 페이",
@@ -273,6 +269,9 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
+      "orderbook": "주문서",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "인센티브 없음"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "투표",
     "featureRequests": "기능 요청",
     "trade": "프로 트레이딩",
-    "margin": "여유",
-    "perpetuals": "무기한",
-    "marsSubtext": "화성에 의해 구동됨",
-    "levanaSubtext": "레바나 제공",
     "more": "더",
     "new": "새로운",
     "settings": "설정"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "풀에 유동성을 공급하고, 교환이 발생하면 수수료를 받으세요",
     "from": "출처:",
     "incentives": "인센티브",
+    "initializePool": "유동성 추가",
+    "inactivePool": {
+      "title": "수영장이 범위를 벗어났습니다",
+      "description": "현재 가격에서 모든 유동성 포지션이 거래 범위를 벗어났습니다.\n\n현재 시장 금리로 재조정할 수 있도록 소량의 유동성(최대 1달러)을 추가하세요.",
+      "addLiquidity": "유동성 추가"
+    },
     "learnMore": "더 알아보기",
     "level": "레벨 {level}",
     "liquidity": "유동성",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "{chain} {asset} chain\"} 계정으로 가스 토큰을 보내주세요.",
     "insufficientFundsForFees": "수수료를 지불할 자금이 부족합니다",
     "youNeedFundsToPay": "{chain} 에 대한 네트워크 및 브리징 비용을 지불하려면 자금이 필요합니다.",
+    "youNeedFundsToPayWithFee": "전송하려는 금액이 {chain}에서 {feeAmount} {feeCurrency}의 브리징 수수료를 충당하기에 너무 적습니다. 더 큰 금액을 시도해 보세요.",
+    "transferAmountTooLowValueLoss": "전송 금액이 너무 적습니다",
+    "valueLossTooHighToBridge": "수수료를 제외한 전송 금액이 너무 적습니다. 브리지를 성공적으로 완료하기에는 가치 손실이 너무 큽니다. 더 큰 금액을 시도해 보세요.",
     "assetsDepositsUnavailable": "{asset} 예금을 사용할 수 없습니다.",
     "assetWithdrawalsUnavailable": "{asset} 출금이 불가능합니다.",
     "noAvailableDeposits": "현재 사용 가능한 경로나 공급자를 찾을 수 없습니다. 나중에 다시 시도하거나 다른 애플리케이션을 사용하여 자금을 Osmosis로 이체하세요.",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "이 주소는 {denom} 만 {network} 네트워크에서 수신할 수 있습니다. 다른 자산을 보내면 영구적인 손실이 발생할 수 있습니다.",
     "minimumDeposit": "최소입금",
     "nomic": {
-      "estimatedTime": "약 1시간 정도",
+      "estimatedTime": "1-8시간",
       "awaitingBtc": "BTC를 기다리는 중",
       "transferringYourBtc": "BTC 전송",
       "depositStatus": "입금 상태",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "당신의 거래는 실패할 수 있습니다",
     "description": "모든 풀에서 {tokenWithLowLiquidity} 의 유동성이 낮기 때문에 이 거래는 높은 슬리피지를 초래할 수 있으며 실행되지 않을 수 있습니다."
+  },
+  "taprootAddressNotSupported": "Taproot 주소는 출금에 지원되지 않습니다.",
+  "wormhole": {
+    "deprecationTitle": "Wormhole 지원이 중단될 예정입니다",
+    "deprecationSubtitle": "Wormhole을 통해 Osmosis로 추가 자산을 브리징하는 것을 권장하지 않습니다. 이 페이지는 Osmosis에서 기존 Wormhole 브리징 자산을 인출하는 데 도움을 드리기 위해 제공됩니다."
   }
 }

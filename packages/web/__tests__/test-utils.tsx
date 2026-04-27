@@ -79,6 +79,10 @@ export function renderHookWithProviders<
   return { ...utils, rootStore: testRootStore };
 }
 
+export function resetQueryClient() {
+  queryClient.clear();
+}
+
 export function mockFeatureFlags(
   flags: Partial<Record<AvailableFlags, string | boolean | number>>
 ) {

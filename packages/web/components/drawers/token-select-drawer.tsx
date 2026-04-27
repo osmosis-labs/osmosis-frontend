@@ -1,24 +1,24 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { Fragment, FunctionComponent, useRef, useState } from "react";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { IconButton } from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
+import { PrivateText } from "~/components/privacy";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useKeyboardNavigation } from "~/hooks/use-keyboard-navigation";
 import { SwapState } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
 
 import { useDraggableScroll } from "../../hooks/use-draggable-scroll";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
-import { useStore } from "../../stores";
 import { Intersection } from "../intersection";
 import { Spinner } from "../loaders/spinner";
 
@@ -39,20 +39,18 @@ export const TokenSelectDrawer: FunctionComponent<{
     showRecommendedTokens = true,
   }) => {
     const { t } = useTranslation();
-    const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
+    const shouldShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
+    const setShowUnverifiedAssets = useUserSettingsStore(
+      (state) => state.setShowUnverifiedAssets
+    );
 
     const assets = swapState.selectableAssets;
     const assetsRef = useLatest(assets);
     const [confirmUnverifiedAssetDenom, setConfirmUnverifiedAssetDenom] =
       useState<string | null>(null);
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const shouldShowUnverifiedAssets =
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -130,9 +128,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           isOpen={Boolean(confirmUnverifiedAssetDenom)}
           onConfirm={() => {
             if (!confirmUnverifiedAssetDenom) return;
-            showUnverifiedAssetsSetting?.setState({
-              showUnverifiedAssets: true,
-            });
+            setShowUnverifiedAssets(true);
             onSelect(confirmUnverifiedAssetDenom);
           }}
           onRequestClose={() => {
@@ -225,16 +221,18 @@ export const TokenSelectDrawer: FunctionComponent<{
                             onClickAsset(coinDenom);
                           }}
                         >
-                          {coinImageUrl && (
-                            <div className="h-[24px] w-[24px] rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={24}
-                                height={24}
-                              />
-                            </div>
-                          )}
+                          <div className="h-[24px] w-[24px] overflow-hidden rounded-full">
+                            <EntityImage
+                              symbol={coinDenom}
+                              name={coinDenom}
+                              logoURIs={{
+                                png: coinImageUrl,
+                                svg: coinImageUrl,
+                              }}
+                              width={24}
+                              height={24}
+                            />
+                          </div>
                           <p className="subtitle1">{coinDenom}</p>
                         </button>
                       );
@@ -289,16 +287,18 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                       >
                         <div className="flex items-center">
-                          {coinImageUrl && (
-                            <div className="mr-4 h-8 w-8 rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={32}
-                                height={32}
-                              />
-                            </div>
-                          )}
+                          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                            <EntityImage
+                              symbol={coinDenom}
+                              name={coinDenom}
+                              logoURIs={{
+                                png: coinImageUrl,
+                                svg: coinImageUrl,
+                              }}
+                              width={32}
+                              height={32}
+                            />
+                          </div>
                           <div className="mr-4">
                             <h6 className="button font-button text-white-full">
                               {coinDenom}
@@ -327,12 +327,14 @@ export const TokenSelectDrawer: FunctionComponent<{
                           amount.toDec().isPositive() && (
                             <div className="flex flex-col text-right">
                               <p className="button">
-                                {formatPretty(amount.hideDenom(true), {
-                                  maxDecimals: 6,
-                                })}
+                                <PrivateText
+                                  text={formatPretty(amount.hideDenom(true), {
+                                    maxDecimals: 6,
+                                  })}
+                                />
                               </p>
                               <span className="caption font-medium text-osmoverse-400">
-                                {usdValue.toString()}
+                                <PrivateText text={usdValue.toString()} />
                               </span>
                             </div>
                           )}

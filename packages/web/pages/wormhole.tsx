@@ -1,10 +1,20 @@
+import dynamic from "next/dynamic";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { Icon } from "~/components/assets";
 import { Spinner } from "~/components/loaders";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
+
+const WormholeRedeem = dynamic(
+  () =>
+    import("~/components/bridge/wormhole-redeem").then(
+      (mod) => mod.WormholeRedeem
+    ),
+  { ssr: false }
+);
 
 type PaletteColor = {
   50: string;
@@ -242,6 +252,7 @@ interface WormholeConnectConfig {
 
 const Wormhole: FunctionComponent = () => {
   const router = useRouter();
+  const { t } = useTranslation();
   const [scriptLoaded, setScriptLoaded] = useState(false);
 
   useAmplitudeAnalytics({ onLoadEvent: [EventName.Wormhole.pageViewed] });
@@ -251,11 +262,13 @@ const Wormhole: FunctionComponent = () => {
   const token = router.query.token as string;
 
   let config: WormholeConnectConfig = {
-    networks: ["solana", "osmosis", "sui", "aptos"],
+    networks: ["solana", "osmosis", "sui", "aptos", "ethereum"],
     rpcs: {
       solana:
         "https://mainnet.helius-rpc.com/?api-key=f4713222-8bbc-4495-aace-5693e719712e",
-      wormchain: "https://wormchain-mainnet-1-full.tm.p2p.org/",
+      wormchain: "https://wormchain-rpc.polkachu.com",
+      ethereum: "https://ethereum-rpc.publicnode.com",
+      osmosis: "https://rpc.osmosis.zone",
     },
     tokensConfig: {
       BONK: {
@@ -350,7 +363,7 @@ const Wormhole: FunctionComponent = () => {
         },
       },
     },
-    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT", "WSOL"],
+    tokens: ["W", "SOL", "PYTH", "BONK", "SUI", "APT", "WSOL", "USDT"],
   };
 
   let bridgeDefaults = {
@@ -393,7 +406,23 @@ const Wormhole: FunctionComponent = () => {
   }, []);
 
   return (
-    <>
+    <div className="bg-osmoverse-900">
+      <div className="mx-auto max-w-2xl px-4 pt-8">
+        <div className="flex gap-3 rounded-2xl border-2 border-rust-600 p-5">
+          <Icon
+            id="alert-triangle"
+            className="h-6 w-6 shrink-0 text-rust-600"
+          />
+          <div className="flex flex-col gap-1">
+            <h1 className="body2 text-white-full">
+              {t("wormhole.deprecationTitle")}
+            </h1>
+            <p className="body2 text-osmoverse-300">
+              {t("wormhole.deprecationSubtitle")}
+            </p>
+          </div>
+        </div>
+      </div>
       {!scriptLoaded && (
         <div className="flex h-screen w-full items-center justify-center">
           <Spinner />
@@ -405,6 +434,7 @@ const Wormhole: FunctionComponent = () => {
         data-theme={JSON.stringify(customTheme)}
         style={{ display: scriptLoaded ? "block" : "none" }}
       ></div>
+      <WormholeRedeem />
       {/**
        * On version bumps make sure to update the hash.
        * @see https://www.srihash.org/ - to compute it
@@ -415,7 +445,7 @@ const Wormhole: FunctionComponent = () => {
         integrity="sha384-BTkX2AhTeIfxDRFsJbLtR26TQ9QKKpi7EMe807JdfQQBTAkUT9a2mSGwf/5CJ4bF"
         crossOrigin="anonymous"
       />
-    </>
+    </div>
   );
 };
 

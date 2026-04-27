@@ -4,12 +4,11 @@ import { PortfolioPage } from '../pages/portfolio-page'
 import { SwapPage } from '../pages/swap-page'
 import { TransactionsPage } from '../pages/transactions-page'
 import { SetupKeplr } from '../setup-keplr'
+import { deriveAddress } from '../utils/wallet-utils'
 
 test.describe('Test Transactions feature', () => {
   let context: BrowserContext
   let page: Page
-  const walletId =
-    process.env.WALLET_ID ?? 'osmo1qyc8u7cn0zjxcu9dvrjz5zwfnn0ck92v62ak9l'
   const privateKey = process.env.PRIVATE_KEY ?? 'pk'
   let portfolioPage: PortfolioPage
   let transactionsPage: TransactionsPage
@@ -37,6 +36,7 @@ test.describe('Test Transactions feature', () => {
   })
 
   test.skip('User should be able to see a new transaction', async () => {
+    const { address: walletId } = await deriveAddress(privateKey)
     swapPage = new SwapPage(context.pages()[0])
     await swapPage.goto()
     await swapPage.selectPair('USDC', 'USDT')

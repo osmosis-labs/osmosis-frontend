@@ -1889,14 +1889,6 @@ export const MockAssetList: AssetList[] = [
         pegMechanism: "collateralized",
         transferMethods: [
           {
-            name: "Satellite",
-            type: "external_interface",
-            depositUrl:
-              "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=uusdc",
-            withdrawUrl:
-              "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=uusdc",
-          },
-          {
             name: "Osmosis IBC Transfer",
             type: "ibc",
             counterparty: {
@@ -1965,14 +1957,6 @@ export const MockAssetList: AssetList[] = [
         },
         categories: [],
         transferMethods: [
-          {
-            name: "Satellite",
-            type: "external_interface",
-            depositUrl:
-              "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=weth-wei",
-            withdrawUrl:
-              "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=weth-wei",
-          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",
@@ -2999,14 +2983,6 @@ export const MockAssetList: AssetList[] = [
         },
         categories: ["stablecoin", "defi"],
         transferMethods: [
-          {
-            name: "Satellite",
-            type: "external_interface",
-            depositUrl:
-              "https://satellite.money/?source=ethereum&destination=osmosis&asset_denom=rai-we",
-            withdrawUrl:
-              "https://satellite.money/?source=osmosis&destination=ethereum&asset_denom=rai-wei",
-          },
           {
             name: "Osmosis IBC Transfer",
             type: "ibc",

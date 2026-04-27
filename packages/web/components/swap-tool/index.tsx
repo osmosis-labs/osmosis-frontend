@@ -787,7 +787,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             [swapState, closeTokenSelectModals]
           )}
           showRecommendedTokens={showTokenSelectRecommendedTokens}
-          hideBalances
           setAssetQueryInput={swapState.setAssetsQueryInput}
           assetQueryInput={swapState.assetsQueryInput}
           fetchNextPageAssets={swapState.fetchNextPageAssets}

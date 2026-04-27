@@ -1,0 +1,36 @@
+name: Retry failed e2e test once
+on:
+  workflow_run:
+    workflows:
+      [
+        "Synthetic Geo Monitoring Frontend tests",
+        "Synthetic Quote Geo Monitoring Frontend tests",
+      ]
+    types:
+      - completed
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write # Retry actions
+      checks: read # Get info about the run
+    steps:
+      - name: Print workflow run info
+        run: |
+          echo "Workflow Run ID: ${{ github.event.workflow_run.id }}"
+          echo "Workflow Run Name: ${{ github.event.workflow_run.name }}"
+          echo "Workflow Run Status: ${{ github.event.workflow_run.conclusion }}"
+          echo "Workflow Run Attempt: ${{ github.event.workflow_run.run_attempt }}"
+          echo "Repository: ${{ github.event.repository.full_name }}"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Event Action: ${{ github.event.action }}"
+      - name: retry
+        if: ${{ github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt == 1 }}
+        run: gh run rerun "${{ github.event.workflow_run.id }}" --repo "${{ github.event.repository.full_name }}" --failed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

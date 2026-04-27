@@ -35,12 +35,10 @@ import {
 import { useConst } from "~/hooks/use-const";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
-import { removeQueryParam } from "~/utils/url";
 
 import { AssetCategoriesSelectors } from "../assets/categories";
 import { HistoricalPriceSparkline, PriceChange } from "../assets/price";
@@ -62,7 +60,12 @@ export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
   tableTopPadding?: number;
 }> = observer(({ tableTopPadding = 0 }) => {
-  const { userSettings } = useStore();
+  const showUnverifiedAssets = useUserSettingsStore(
+    (state) => state.showUnverifiedAssets
+  );
+  const setShowUnverifiedAssets = useUserSettingsStore(
+    (state) => state.setShowUnverifiedAssets
+  );
   const { width, isMobile } = useWindowSize();
   const router = useRouter();
   const { t } = useTranslation();
@@ -73,6 +76,14 @@ export const AssetsInfoTable: FunctionComponent<{
   const selectCategory = useCallback(
     (category: string, highlight?: string) => {
       setCategory(category);
+      router.push(
+        {
+          pathname: router.pathname,
+          query: { ...router.query, category },
+        },
+        undefined,
+        { shallow: true }
+      );
       logEvent([
         EventName.Assets.categorySelected,
         {
@@ -81,11 +92,20 @@ export const AssetsInfoTable: FunctionComponent<{
         },
       ]);
     },
-    [logEvent]
+    [logEvent, router]
   );
   const unselectCategory = useCallback(() => {
     setCategory(undefined);
-  }, []);
+    const { category, ...query } = router.query;
+    router.push(
+      {
+        pathname: router.pathname,
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
+  }, [router]);
   const onSelectTopGainers = useCallback(() => {
     selectCategory("topGainers", "topGainers");
   }, [selectCategory]);
@@ -102,7 +122,6 @@ export const AssetsInfoTable: FunctionComponent<{
     const category = urlParams.get("category");
     if (category) {
       setCategory(category);
-      removeQueryParam("category");
     }
   });
 
@@ -152,12 +171,7 @@ export const AssetsInfoTable: FunctionComponent<{
     [searchQuery, sortKey, sortDirection]
   );
 
-  // unverified assets
-  const showUnverifiedAssetsSetting =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets");
-  const showUnverifiedAssets = Boolean(
-    showUnverifiedAssetsSetting?.state.showUnverifiedAssets
-  );
+  // unverified assets (value is retrieved from the store above)
   const [verifyAsset, setVerifiedAsset] = useState<{
     coinDenom: string;
     coinImageUrl?: string;
@@ -180,11 +194,18 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       limit: 50,
       search: searchQuery,
-      onlyVerified: showUnverifiedAssets === false && !searchQuery,
+      onlyVerified:
+        selectedCategory === "topGainers"
+          ? true
+          : showUnverifiedAssets === false && !searchQuery,
       includePreview,
       sort,
       watchListDenoms,
       categories,
+      excludeVariants: selectedCategory === "topGainers",
+      excludeStablecoins: selectedCategory === "topGainers",
+      minLiquidity:
+        selectedCategory === "topGainers" ? 1000 : searchQuery ? 0 : undefined,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -467,9 +488,7 @@ export const AssetsInfoTable: FunctionComponent<{
         isOpen={Boolean(verifyAsset)}
         onConfirm={() => {
           if (!verifyAsset) return;
-          showUnverifiedAssetsSetting?.setState({
-            showUnverifiedAssets: true,
-          });
+          setShowUnverifiedAssets(true);
         }}
         onRequestClose={() => {
           setVerifiedAsset(null);

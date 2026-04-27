@@ -40,9 +40,12 @@ export type PoolIncentiveFilter = NonNullable<
 
 // These are the options for filtering the pools.
 export const poolFilterTypes: PoolTypeFilter[] = [
+  "concentrated",
+  "cosmwasm-orderbook",
   "weighted",
   "stable",
-  "concentrated",
+  "cosmwasm-astroport-pcl",
+  "cosmwasm-whitewhale",
   "cosmwasm-transmuter",
 ];
 
@@ -87,6 +90,7 @@ interface PoolsTableProps {
   emptyResultsText?: string;
   setSortDirection: (dir: SortDirection) => void;
   setSortKey: (key?: MarketIncentivePoolsSortKey) => void;
+  minLiquidityUsd?: number;
 }
 
 export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
@@ -100,7 +104,9 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     disablePagination = false,
     filters = {
       searchQuery: undefined,
-      poolTypesFilter: poolFilterTypes,
+      poolTypesFilter: poolFilterTypes.filter(
+        (type) => type !== "cosmwasm-transmuter"
+      ),
       poolIncentivesFilter: incentiveTypes,
       denoms: [],
     },
@@ -111,6 +117,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     emptyResultsText,
     setSortDirection,
     setSortKey,
+    minLiquidityUsd = 1_000,
     children,
   } = props;
 
@@ -139,12 +146,20 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
         : undefined,
       denoms: filters.denoms,
       // These are all of the pools that we support fetching.
-      // In addiion, to pool filters, there are also general cosmwasm pools, Astroport PCL pools, and whitewhale pools.
+      // When transmuter is selected, include both transmuter and alloyed pools
       types: [
-        ...filters.poolTypesFilter,
+        ...filters.poolTypesFilter.reduce((acc, type) => {
+          if (type === "cosmwasm-transmuter") {
+            acc.push(
+              "cosmwasm-transmuter" as const,
+              "cosmwasm-alloyed" as const
+            );
+          } else {
+            acc.push(type);
+          }
+          return acc;
+        }, [] as (PoolTypeFilter | "cosmwasm-alloyed")[]),
         "cosmwasm",
-        "cosmwasm-astroport-pcl",
-        "cosmwasm-whitewhale",
       ],
       incentiveTypes: filters.poolIncentivesFilter,
       sort: sortKey
@@ -153,7 +168,7 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
             direction: sortParams.allPoolsSortDir,
           }
         : undefined,
-      minLiquidityUsd: 1_000,
+      minLiquidityUsd,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -518,13 +533,36 @@ const PoolCompositionCell: PoolCellComponent = ({
       />
       <div className="flex items-center gap-1.5 text-ion-400">
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
-          <PoolAssetsName
-            size="sm"
-            assetDenoms={reserveCoins.map(({ denom, currency }) => ({
-              minDenom: currency.coinMinimalDenom,
-              symbol: denom,
-            }))}
-          />
+          {type === "cosmwasm-alloyed" ? (
+            <span className="subtitle1 md:subtitle2">
+              {(() => {
+                // For alloyed pools, extract asset name from reserve coin symbols
+                // Clean up symbols by removing prefixes and lowercase letters/periods
+                const firstCoin = reserveCoins[0];
+                if (firstCoin) {
+                  let asset = firstCoin.denom
+                    // Remove lowercase letters and periods
+                    .replace(/[a-z.]/g, "");
+
+                  // Handle specific overrides
+                  if (asset === "WBTC" || firstCoin.denom.includes("BTC")) {
+                    asset = "BTC";
+                  }
+
+                  return `Alloyed ${asset || firstCoin.denom}`;
+                }
+                return "Alloyed Asset";
+              })()}
+            </span>
+          ) : (
+            <PoolAssetsName
+              size="sm"
+              assetDenoms={reserveCoins.map(({ denom, currency }) => ({
+                minDenom: currency.coinMinimalDenom,
+                symbol: denom,
+              }))}
+            />
+          )}
           <span className={classNames("text-sm font-caption opacity-60")}>
             <p className={classNames("ml-auto flex items-center gap-1.5")}>
               {t("components.table.poolId", { id })}
@@ -534,7 +572,12 @@ const PoolCompositionCell: PoolCellComponent = ({
                     "text-ion-400": Boolean(type === "concentrated"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
-                      type === "cosmwasm-transmuter" || type === "cosmwasm"
+                      type === "cosmwasm-transmuter" ||
+                        type === "cosmwasm-alloyed" ||
+                        type === "cosmwasm"
+                    ),
+                    "text-wosmongton-300": Boolean(
+                      type === "cosmwasm-orderbook"
                     ),
                   })}
                 >
@@ -566,9 +609,16 @@ const PoolCompositionCell: PoolCellComponent = ({
                   {type === "cosmwasm-transmuter" && (
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
+                  {type === "cosmwasm-alloyed" && (
+                    <Icon id="custom-pool" width={16} height={16} />
+                  )}
+                  {type === "cosmwasm-orderbook" && (
+                    <Icon id="open-book" width={16} height={16} />
+                  )}
 
                   {type != "cosmwasm-astroport-pcl" &&
                     type != "cosmwasm-whitewhale" &&
+                    type != "cosmwasm-orderbook" &&
                     (spreadFactor ? spreadFactor.toString() : "")}
                 </p>
               </div>
@@ -580,16 +630,44 @@ const PoolCompositionCell: PoolCellComponent = ({
   );
 };
 
+function getContractAddress(pool: Pool): string | undefined {
+  const raw = pool.raw as any;
+  return raw?.contract_address;
+}
+
 function getPoolLink(pool: Pool): string {
+  if (pool.type === "cosmwasm-alloyed") {
+    return `https://alloyed.osmosis.zone/pools/${pool.id}`;
+  }
   if (pool.type === "cosmwasm-transmuter") {
-    return `https://celatone.osmosis.zone/osmosis-1/pools/${pool.id}`;
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
+    return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
   if (pool.type === "cosmwasm-astroport-pcl") {
-    return `https://osmosis.astroport.fi/pools/${pool.id}`;
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
+    return `https://osmosis.astroport.fi/pools/${contractAddress}`;
   }
-
   if (pool.type === "cosmwasm-whitewhale") {
     return `https://app.whitewhale.money/osmosis/pools/${pool.id}`;
+  }
+  if (pool.type === "cosmwasm-orderbook") {
+    return `/pool/${pool.id}`;
+  }
+  if (pool.type === "cosmwasm") {
+    const contractAddress = getContractAddress(pool);
+    if (!contractAddress) {
+      console.warn(`Pool ${pool.id} missing contract_address`);
+      return `/pool/${pool.id}`;
+    }
+    return `https://celatone.osmosis.zone/osmosis-1/contracts/${contractAddress}`;
   }
 
   return `/pool/${pool.id}`;
@@ -597,9 +675,11 @@ function getPoolLink(pool: Pool): string {
 
 function getPoolTypeTarget(pool: Pool) {
   if (
+    pool.type === "cosmwasm-alloyed" ||
     pool.type === "cosmwasm-transmuter" ||
     pool.type === "cosmwasm-astroport-pcl" ||
-    pool.type === "cosmwasm-whitewhale"
+    pool.type === "cosmwasm-whitewhale" ||
+    pool.type === "cosmwasm"
   ) {
     return "_blank";
   }

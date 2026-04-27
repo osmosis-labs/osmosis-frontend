@@ -18,13 +18,7 @@
     "priceImpact": "价格影响"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "第 1 步：选择策略",
-    "step2Title": "第二步：增加流动性",
-    "managed": "管理",
-    "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
-    "manual": "手动的",
-    "manualDescription": "创建一个您可以定期管理的职位，以获得最大的效率和回报。",
-    "back": "后退",
+    "step1Title": "增加流动性",
     "priceShownIn": "价格显示于",
     "priceRange": "价格范围",
     "currentPrice": "时价",
@@ -172,10 +166,10 @@
       "meme": "模因",
       "liquid_staking": "流动质押",
       "built_on_osmosis": "建立在 Osmosis 之上",
-      "sail_initiative": "扬帆计划",
       "bridges": "桥梁",
       "nft_protocol": "NFT 协议",
       "ai": "人工智能",
+      "depin": "DePIN",
       "privacy": "隐私",
       "social": "社会的",
       "oracles": "预言机",
@@ -190,7 +184,9 @@
       "new": "新的",
       "topGainers": "涨幅最大的股票",
       "upcoming": "即将推出"
-    }
+    },
+    "strandedTokenDepositDisabled": "由于通往其原始链的路径已失效，因此无法存入该资产。",
+    "strandedTokenWithdrawDisabled": "由于通往其源链的路径已失效，因此该资产无法提取。"
   },
   "cypherCard": {
     "cypherSpend": "渗透支付",
@@ -273,6 +269,9 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
+      "orderbook": "订单簿",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "无激励"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "投票",
     "featureRequests": "功能请求",
     "trade": "专业交易",
-    "margin": "利润",
-    "perpetuals": "永续",
-    "marsSubtext": "由火星提供动力",
-    "levanaSubtext": "由 Levana 提供支持",
     "more": "更多的",
     "new": "新的",
     "settings": "设置"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "将您的代币转为份额并在每次兑换中赚取收益.",
     "from": "来自",
     "incentives": "奖励",
+    "initializePool": "增加流动性",
+    "inactivePool": {
+      "title": "泳池超出范围",
+      "description": "当前价格下所有流动性头寸均超出范围。\n\n添加少量流动性（最多 1 美元），以便重新平衡至当前市场利率。",
+      "addLiquidity": "增加流动性"
+    },
     "learnMore": "了解更多",
     "level": "等级 {level}",
     "liquidity": "资金池流动性",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "在转移 {\"type {chain} {asset} chain\"} 账户发送一个 gas 代币。",
     "insufficientFundsForFees": "费用资金不足",
     "youNeedFundsToPay": "您需要资金来支付{chain}网络费和桥接费。",
+    "youNeedFundsToPayWithFee": "您尝试转移的金额太低，无法支付{chain}上 {feeAmount} {feeCurrency} 的桥接费用。请尝试更大的金额。",
+    "transferAmountTooLowValueLoss": "转账金额太低",
+    "valueLossTooHighToBridge": "扣除费用后的转账金额太低。价值损失太高，无法成功桥接。请尝试更大的金额。",
     "assetsDepositsUnavailable": "{asset}存款不可用",
     "assetWithdrawalsUnavailable": "{asset}提现不可用",
     "noAvailableDeposits": "目前找不到可用的路线或提供商。请稍后重试或使用其他应用程序将您的资金转入 Osmosis。",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "此地址只能从{denom}网络接收来自{network}网络的资产。发送任何其他资产都可能导致永久损失。",
     "minimumDeposit": "最低存款",
     "nomic": {
-      "estimatedTime": "约1小时",
+      "estimatedTime": "1-8 小时",
       "awaitingBtc": "等待比特币",
       "transferringYourBtc": "转移你的比特币",
       "depositStatus": "存款状态",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "你的交易可能会失败",
     "description": "由于所有资金池的{tokenWithLowLiquidity}流动性较低，该交易可能会导致高滑点，并且可能无法执行。"
+  },
+  "taprootAddressNotSupported": "Taproot 地址不支持提现",
+  "wormhole": {
+    "deprecationTitle": "Wormhole 支持正在被弃用",
+    "deprecationSubtitle": "我们不建议通过 Wormhole 向 Osmosis 桥接更多资产。此页面可帮助您从 Osmosis 提取现有的 Wormhole 桥接资产。"
   }
 }

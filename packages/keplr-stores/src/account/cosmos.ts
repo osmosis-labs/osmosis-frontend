@@ -1,46 +1,46 @@
-import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
-import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
 import type { BroadcastMode, Msg, StdFee, StdSignDoc } from "@cosmjs/launchpad";
+import { isAddress } from "@ethersproject/address";
 import { DenomHelper, escapeHTML } from "@keplr-wallet/common";
-import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
-import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
-import {
-  AuthInfo,
-  TxRaw,
-  TxBody,
-  Fee,
-  SignerInfo,
-  SignDoc,
-} from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
-import { SignMode } from "@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing";
-import { PubKey } from "@keplr-wallet/proto-types/cosmos/crypto/secp256k1/keys";
-import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
-import { MsgTransfer } from "@keplr-wallet/proto-types/ibc/applications/transfer/v1/tx";
-import {
-  MsgDelegate,
-  MsgUndelegate,
-  MsgBeginRedelegate,
-} from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
-import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
-import { MsgVote } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/tx";
-import { VoteOption } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/gov";
 import {
   BaseAccount,
   Bech32Address,
   ChainIdHelper,
   TendermintTxTracer,
 } from "@keplr-wallet/cosmos";
-import { QueriesSetBase, IQueriesStore, CosmosQueries } from "../query";
+import { MsgSend } from "@keplr-wallet/proto-types/cosmos/bank/v1beta1/tx";
+import { PubKey } from "@keplr-wallet/proto-types/cosmos/crypto/secp256k1/keys";
+import { MsgWithdrawDelegatorReward } from "@keplr-wallet/proto-types/cosmos/distribution/v1beta1/tx";
+import { VoteOption } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/gov";
+import { MsgVote } from "@keplr-wallet/proto-types/cosmos/gov/v1beta1/tx";
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from "@keplr-wallet/proto-types/cosmos/staking/v1beta1/tx";
+import { SignMode } from "@keplr-wallet/proto-types/cosmos/tx/signing/v1beta1/signing";
+import {
+  AuthInfo,
+  Fee,
+  SignDoc,
+  SignerInfo,
+  TxBody,
+  TxRaw,
+} from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
+import { Any } from "@keplr-wallet/proto-types/google/protobuf/any";
+import { MsgTransfer } from "@keplr-wallet/proto-types/ibc/applications/transfer/v1/tx";
+import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
+import { BondStatus } from "@osmosis-labs/types";
+import { Dec, DecUtils, Int } from "@osmosis-labs/unit";
+import Axios, { AxiosInstance } from "axios";
+import { Buffer } from "buffer/";
+import deepmerge from "deepmerge";
+import Long from "long";
 import { DeepPartial, DeepReadonly } from "utility-types";
 import { ChainGetter } from "../common";
-import Axios, { AxiosInstance } from "axios";
-import deepmerge from "deepmerge";
-import { isAddress } from "@ethersproject/address";
-import { Buffer } from "buffer/";
+import { CosmosQueries, IQueriesStore, QueriesSetBase } from "../query";
+import { AccountSetBaseSuper, MsgOpt, WalletStatus } from "./base";
 import { MakeTxResponse, ProtoMsgsOrWithAminoMsgs } from "./types";
 import { txEventsWithPreOnFulfill } from "./utils";
-import Long from "long";
-import { BondStatus } from "@osmosis-labs/types";
 
 export interface CosmosAccount {
   cosmos: CosmosAccountImpl;
@@ -510,9 +510,8 @@ export class CosmosAccountImpl {
       true
     );
 
-    const useEthereumSign = this.chainGetter
-      .getChain(this.chainId)
-      .features?.includes("eth-key-sign");
+    const useEthereumSign =
+      this.chainGetter.getChain(this.chainId).bip44.coinType === 60;
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const keplr = (await this.base.getKeplr())!;
@@ -620,9 +619,7 @@ export class CosmosAccountImpl {
     signDoc: SignDoc;
   }> {
     const useEthereumSign =
-      this.chainGetter
-        .getChain(this.chainId)
-        .features?.includes("eth-key-sign") === true;
+      this.chainGetter.getChain(this.chainId).bip44.coinType === 60;
 
     const chainIsInjective = this.chainId.startsWith("injective");
 
@@ -1903,10 +1900,6 @@ export class CosmosAccountImpl {
   }
 
   protected get hasEthereumAddress(): boolean {
-    return (
-      this.chainGetter
-        .getChain(this.chainId)
-        .features?.includes("eth-address-gen") ?? false
-    );
+    return this.chainGetter.getChain(this.chainId).bip44.coinType === 60;
   }
 }

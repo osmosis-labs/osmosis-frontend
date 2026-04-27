@@ -6,7 +6,7 @@ import spriteSVGURL from "~/public/icons/sprite.svg";
 const SEO_VALUES = {
   SITE_URL: "https://osmosis.zone",
   APP_URL: "https://app.osmosis.zone",
-  TWITTER_HANDLE: "@osmosiszone",
+  TWITTER_HANDLE: "@osmosis",
   IMAGE_PREVIEW: "/images/preview.jpg",
   FAVICON: "/favicon.ico",
 };

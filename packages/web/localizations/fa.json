@@ -18,13 +18,7 @@
     "priceImpact": "تاثیر قیمت"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "مرحله 1: یک استراتژی انتخاب کنید",
-    "step2Title": "مرحله 2: اضافه کردن نقدینگی",
-    "managed": "اداره می شود",
-    "managedDescription": "یکی از ارائه دهندگان ما را برای مدیریت موقعیت خود استخدام کنید. یک تجربه کاملاً دستی.",
-    "manual": "کتابچه راهنمای",
-    "manualDescription": "موقعیتی ایجاد کنید که بتوانید به طور منظم آن را برای حداکثر کارایی و پاداش مدیریت کنید.",
-    "back": "بازگشت",
+    "step1Title": "اضافه کردن نقدینگی",
     "priceShownIn": "قیمت ها نشان داده شده در",
     "priceRange": "حدود قیمت",
     "currentPrice": "قیمت فعلی",
@@ -172,10 +166,10 @@
       "meme": "میم",
       "liquid_staking": "استقرار مایع",
       "built_on_osmosis": "ساخته شده بر روی اسمز",
-      "sail_initiative": "ابتکار بادبان",
       "bridges": "پل ها",
       "nft_protocol": "پروتکل NFT",
       "ai": "هوش مصنوعی",
+      "depin": "DePIN",
       "privacy": "حریم خصوصی",
       "social": "اجتماعی",
       "oracles": "اوراکلز",
@@ -190,7 +184,9 @@
       "new": "جدید",
       "topGainers": "برترین برندگان",
       "upcoming": "آینده"
-    }
+    },
+    "strandedTokenDepositDisabled": "این دارایی قابل واریز نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست.",
+    "strandedTokenWithdrawDisabled": "این دارایی قابل برداشت نیست زیرا مسیر منتهی به زنجیره مبدا آن دیگر فعال نیست."
   },
   "cypherCard": {
     "cypherSpend": "اسمز پرداخت",
@@ -273,6 +269,9 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
+      "orderbook": "دفترچه سفارش",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "انتخابات",
     "featureRequests": "درخواست‌های ویژگی",
     "trade": "تجارت حرفه ای",
-    "margin": "لبه",
-    "perpetuals": "همیشگی ها",
-    "marsSubtext": "پشتیبانی شده توسط مریخ",
-    "levanaSubtext": "پشتیبانی شده توسط Levana",
     "more": "بیشتر",
     "new": "جدید",
     "settings": "تنظیمات"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "توکن ها را به سهم تبدیل کنید و کارمزد دریافت کنید.",
     "from": "از",
     "incentives": "جوایز",
+    "initializePool": "نقدینگی را افزایش دهید",
+    "inactivePool": {
+      "title": "استخر خارج از محدوده",
+      "description": "تمام موقعیت‌های نقدینگی با قیمت فعلی خارج از محدوده هستند.\n\nمقدار کمی نقدینگی (حداکثر ۱ دلار) اضافه کنید تا امکان ایجاد تعادل مجدد با نرخ فعلی بازار فراهم شود.",
+      "addLiquidity": "نقدینگی را افزایش دهید"
+    },
     "learnMore": "دریافت اطلاعات بیشتر",
     "level": "سطح {level}",
     "liquidity": "نقدینگی استخر",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "لطفاً قبل از انتقال { {chain} {asset} } خود ارسال کنید.",
     "insufficientFundsForFees": "بودجه ناکافی برای هزینه ها",
     "youNeedFundsToPay": "برای پرداخت هزینه های شبکه و پل زدن در {chain} به بودجه نیاز دارید.",
+    "youNeedFundsToPayWithFee": "مبلغی که سعی در انتقال آن دارید برای پوشش هزینه پل زدن {feeAmount} {feeCurrency} در {chain} بسیار کم است. لطفاً مبلغ بیشتری را امتحان کنید.",
+    "transferAmountTooLowValueLoss": "مبلغ انتقال بسیار کم است",
+    "valueLossTooHighToBridge": "مبلغ انتقال پس از کسر هزینه‌ها بسیار کم است. از دست دادن ارزش برای اتمام موفقیت‌آمیز پل بسیار زیاد خواهد بود. لطفاً مبلغ بیشتری را امتحان کنید.",
     "assetsDepositsUnavailable": "سپرده‌های {asset} در دسترس نیستند",
     "assetWithdrawalsUnavailable": "برداشت‌های {asset} در دسترس نیست",
     "noAvailableDeposits": "در حال حاضر هیچ مسیر یا ارائه دهنده ای در دسترس نیست. لطفاً بعداً دوباره امتحان کنید یا از یک برنامه جایگزین برای انتقال وجوه خود به Osmosis استفاده کنید.",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "این آدرس فقط می‌تواند {denom} را از شبکه {network} دریافت کند. ارسال هر گونه دارایی دیگر ممکن است منجر به از دست دادن دائمی شود.",
     "minimumDeposit": "حداقل سپرده",
     "nomic": {
-      "estimatedTime": "حدود 1 ساعت",
+      "estimatedTime": "۱-۸ ساعت",
       "awaitingBtc": "در انتظار بیت کوین",
       "transferringYourBtc": "انتقال بیت کوین شما",
       "depositStatus": "وضعیت سپرده",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "ممکن است معامله شما شکست بخورد",
     "description": "به دلیل نقدینگی پایین {tokenWithLowLiquidity} در تمام استخرها، این معامله ممکن است منجر به لغزش قیمت بالا شود و اجرا نشود."
+  },
+  "taprootAddressNotSupported": "آدرس‌های Taproot برای برداشت وجه پشتیبانی نمی‌شوند.",
+  "wormhole": {
+    "deprecationTitle": "پشتیبانی Wormhole در حال منسوخ شدن است",
+    "deprecationSubtitle": "ما توصیه نمی‌کنیم دارایی‌های اضافی را از طریق Wormhole به Osmosis منتقل کنید. این صفحه برای کمک به شما در خروج دارایی‌های موجود Wormhole از Osmosis در دسترس است."
   }
 }

@@ -18,13 +18,7 @@
     "priceImpact": "Incidence sur les prix"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Étape 1 : Choisissez une stratégie",
-    "step2Title": "Étape 2 : Ajouter des liquidités",
-    "managed": "Géré",
-    "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
-    "manual": "Manuel",
-    "manualDescription": "Créez un poste que vous pouvez gérer régulièrement pour une efficacité et des récompenses maximales.",
-    "back": "Dos",
+    "step1Title": "Ajouter des liquidités",
     "priceShownIn": "Les prix indiqués dans",
     "priceRange": "Échelle des prix",
     "currentPrice": "prix actuel",
@@ -172,10 +166,10 @@
       "meme": "Mème",
       "liquid_staking": "Jalonnement liquide",
       "built_on_osmosis": "Construit sur l'osmose",
-      "sail_initiative": "Initiative de voile",
       "bridges": "Des ponts",
       "nft_protocol": "Protocole NFT",
       "ai": "IA",
+      "depin": "DePIN",
       "privacy": "Confidentialité",
       "social": "Sociale",
       "oracles": "Oracles",
@@ -190,7 +184,9 @@
       "new": "Nouveau",
       "topGainers": "Meilleurs gagnants",
       "upcoming": "A venir"
-    }
+    },
+    "strandedTokenDepositDisabled": "Ce actif ne peut être déposé car la route vers sa chaîne d'origine n'est plus active.",
+    "strandedTokenWithdrawDisabled": "Cet actif ne peut être retiré car la route vers sa chaîne d'origine n'est plus active."
   },
   "cypherCard": {
     "cypherSpend": "Paiement par osmose",
@@ -273,6 +269,9 @@
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
       "transmuter": "Transmutateur",
+      "orderbook": "Carnet de commandes",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Pas d'incitations"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "Voter",
     "featureRequests": "Requêtes de nouvelles fonctionnalités",
     "trade": "Commerce professionnel",
-    "margin": "Marge",
-    "perpetuals": "Perpétuelles",
-    "marsSubtext": "Propulsé par Mars",
-    "levanaSubtext": "Propulsé par Levana",
     "more": "Plus",
     "new": "NOUVEAU",
     "settings": "Paramètres"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "Convertissez vos jetons en actions et gagnez sur chaque échange.",
     "from": "de",
     "incentives": "Incitations",
+    "initializePool": "Ajouter des liquidités",
+    "inactivePool": {
+      "title": "Piscine hors de portée",
+      "description": "Toutes les positions de liquidité sont hors de portée au prix actuel.\n\nAjouter une petite quantité de liquidités (1 $ maximum) pour permettre un rééquilibrage au taux de marché actuel.",
+      "addLiquidity": "Ajouter des liquidités"
+    },
     "learnMore": "En savoir plus",
     "level": "Niveau {level}",
     "liquidity": "Liquidité du bassin",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "Veuillez envoyer un jeton de gaz à votre compte {chain} avant de transférer {asset} .",
     "insufficientFundsForFees": "Fonds insuffisants pour les frais",
     "youNeedFundsToPay": "Vous avez besoin de fonds pour payer les frais de réseau et de transition sur {chain} .",
+    "youNeedFundsToPayWithFee": "Le montant que vous essayez de transférer est trop faible pour couvrir les frais de pontage de {feeAmount} {feeCurrency} sur {chain}. Veuillez essayer un montant plus élevé.",
+    "transferAmountTooLowValueLoss": "Montant du transfert trop bas",
+    "valueLossTooHighToBridge": "Le montant du transfert est trop bas après les frais. La perte de valeur serait trop élevée pour effectuer le pontage avec succès. Veuillez essayer un montant plus élevé.",
     "assetsDepositsUnavailable": "Les dépôts {asset} ne sont pas disponibles",
     "assetWithdrawalsUnavailable": "Les retraits de {asset} ne sont pas disponibles",
     "noAvailableDeposits": "Actuellement, aucun itinéraire ou fournisseur disponible n'a été trouvé. Veuillez réessayer plus tard ou utiliser une autre application pour transférer vos fonds vers Osmosis.",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "Cette adresse ne peut recevoir que {denom} du réseau {network} . L'envoi de tout autre élément peut entraîner une perte permanente.",
     "minimumDeposit": "Dépôt minimum",
     "nomic": {
-      "estimatedTime": "Environ 1 heure",
+      "estimatedTime": "1-8 h",
       "awaitingBtc": "En attente de BTC",
       "transferringYourBtc": "Transférer votre BTC",
       "depositStatus": "Statut du dépôt",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "Votre transaction peut échouer",
     "description": "En raison de la faible liquidité de {tokenWithLowLiquidity} dans tous les pools, cette transaction peut entraîner un glissement élevé et peut ne pas être exécutée."
+  },
+  "taprootAddressNotSupported": "Les adresses de racine pivotante ne sont pas prises en charge pour les retraits",
+  "wormhole": {
+    "deprecationTitle": "Le support de Wormhole est en cours de dépréciation",
+    "deprecationSubtitle": "Nous ne recommandons pas de transférer des actifs supplémentaires vers Osmosis via Wormhole. Cette page est disponible pour vous aider à retirer les actifs existants bridgés par Wormhole depuis Osmosis."
   }
 }

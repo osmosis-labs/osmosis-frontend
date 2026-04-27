@@ -6,6 +6,7 @@ import {
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
 import {
+  ALLOYED_POOL_CODE_IDS_MAINNET,
   BasePool,
   CONCENTRATED_LIQ_POOL_TYPE,
   ConcentratedLiquidityPool,
@@ -40,7 +41,6 @@ import {
   ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
 } from "../../queries/concentrated-liquidity";
-import { Head } from "../../queries/utils";
 import { ObservableQueryExternalBase } from "../base";
 
 /** Query store that can refresh an individual pool's data from the node.
@@ -65,7 +65,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
       this.raw,
       new ConcentratedLiquidityPoolTickDataProvider(
         this.queryLiquiditiesInNetDirection
-      )
+      ),
+      this.alloyedCodeIds
     );
   }
 
@@ -332,7 +333,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
-    raw: PoolRaw
+    raw: PoolRaw,
+    readonly alloyedCodeIds: string[] = ALLOYED_POOL_CODE_IDS_MAINNET
   ) {
     super(
       kvStore,
@@ -483,7 +485,9 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
       chainGetter,
       queryLiquiditiesInNetDirection,
       queryBalances,
-    ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
+      _raw,
+      alloyedCodeIds,
+    ]: ConstructorParameters<typeof ObservableQueryPool>
   ): Promise<ObservableQueryPool> {
     try {
       // fetch pool
@@ -505,7 +509,8 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
         chainGetter,
         queryLiquiditiesInNetDirection,
         queryBalances,
-        data.pool
+        data.pool,
+        alloyedCodeIds
       );
     } catch {
       throw new Error("not-found");
@@ -548,14 +553,18 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
 export function isSupportedPool(
   poolRaw: any,
   poolIdBlacklist: string[] = [],
-  transmuterCodeIds: string[] = []
+  transmuterCodeIds: string[] = [],
+  alloyedCodeIds: string[] = []
 ) {
+  const allSupportedCosmwasmCodeIds = [...transmuterCodeIds, ...alloyedCodeIds];
   return (
     (poolRaw["@type"] === STABLE_POOL_TYPE ||
       poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
       poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE ||
       (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
-        transmuterCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
+        allSupportedCosmwasmCodeIds.includes(
+          (poolRaw as CosmwasmPoolRaw).code_id
+        ))) &&
     !poolIdBlacklist.includes(poolRaw.id)
   );
 }

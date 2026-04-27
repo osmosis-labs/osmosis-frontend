@@ -1,5 +1,4 @@
 import type { Pool } from "@osmosis-labs/server";
-import { QuasarVault } from "@osmosis-labs/stores";
 import { Dec, DecUtils } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import debounce from "debounce";
@@ -17,17 +16,14 @@ import React, {
 } from "react";
 
 import { Icon } from "~/components/assets";
-import { IconButton } from "~/components/buttons/icon-button";
 import {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/price-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
-import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
 import { Spinner } from "~/components/loaders/spinner";
 import { CustomClasses } from "~/components/types";
-import { Button } from "~/components/ui/button";
 import { ChartButton } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { EventName } from "~/config/analytics-events";
@@ -68,204 +64,32 @@ export const AddConcLiquidity: FunctionComponent<
     actionButton: ReactNode;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(
-  ({ className, addLiquidityConfig, actionButton, onRequestClose }) => {
-    const { poolId } = addLiquidityConfig;
-    const { queriesExternalStore } = useStore();
+> = observer(({ className, addLiquidityConfig, actionButton }) => {
+  const { poolId } = addLiquidityConfig;
 
-    const { queryQuasarVaults } = queriesExternalStore;
-    const { vaults: quasarVaults } = queryQuasarVaults.get(poolId);
-
-    const { data: pool } = api.local.pools.getPool.useQuery({
-      poolId,
-    });
-
-    const getMagmaUrl = (pool?: Pool) => {
-      if (!pool) return "";
-      const assetDenoms = pool.reserveCoins
-        .map((coin) => coin.currency.coinMinimalDenom)
-        .join(",");
-      return `https://app.magma.eco/vaults?minimumTVL=1&minimumTvlCheck=true&assets=${assetDenoms}`;
-    };
-
-    return (
-      <div
-        className={classNames(
-          "flex flex-col",
-          addLiquidityConfig.modalView === "overview" ? "gap-8" : "gap-5",
-          className
-        )}
-      >
-        {(() => {
-          switch (addLiquidityConfig.modalView) {
-            case "overview":
-              return (
-                <Overview
-                  pool={pool}
-                  quasarVaults={quasarVaults}
-                  addLiquidityConfig={addLiquidityConfig}
-                  onRequestClose={onRequestClose}
-                  getMagmaUrl={getMagmaUrl}
-                />
-              );
-            case "add_manual":
-              return (
-                <AddConcLiqView
-                  pool={pool}
-                  addLiquidityConfig={addLiquidityConfig}
-                  actionButton={actionButton}
-                />
-              );
-            case "add_managed":
-              window.open(getMagmaUrl(pool), "_blank");
-              addLiquidityConfig.setModalView("overview");
-              return null;
-          }
-        })()}
-      </div>
-    );
-  }
-);
-
-const Overview: FunctionComponent<
-  {
-    pool?: Pool;
-    quasarVaults: QuasarVault[];
-    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    onRequestClose: () => void;
-    getMagmaUrl: (pool?: Pool) => string;
-  } & CustomClasses
-> = ({ addLiquidityConfig, pool, onRequestClose, getMagmaUrl }) => {
-  const { t } = useTranslation();
-  const [selected, selectView] =
-    useState<typeof addLiquidityConfig.modalView>("add_manual");
+  const { data: pool } = api.local.pools.getPool.useQuery({
+    poolId,
+  });
 
   return (
-    <>
-      <div className="align-center relative flex flex-row">
-        <div className="absolute left-0 flex h-full items-center text-sm" />
-        <h6 className="flex-1 text-center">
-          {t("addConcentratedLiquidity.step1Title")}
-        </h6>
-        <div className="absolute right-0">
-          <IconButton
-            aria-label="Close"
-            mode="unstyled"
-            size="unstyled"
-            className="!p-0"
-            icon={
-              <Icon
-                id="close"
-                className="text-osmoverse-400 hover:text-white-full"
-                width={32}
-                height={32}
-              />
-            }
-            onClick={onRequestClose}
-          />
-        </div>
-      </div>
-      <div className="flex flex-col">
-        <div className="flex justify-center gap-[12px] xs:flex-col">
-          <div>
-            <StrategySelector
-              title={t("addConcentratedLiquidity.manual")}
-              description={t("addConcentratedLiquidity.manualDescription")}
-              selected={selected === "add_manual"}
-              onClick={() => selectView("add_manual")}
-              imgSrc="/images/cl-manual-pick-strategy.png"
-            />
-          </div>
-          <div>
-            <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === "add_managed"}
-              onClick={() => selectView("add_managed")}
-              imgSrc="/images/magma-vault.png"
-              isNew
-            />
-          </div>
-        </div>
-      </div>
-      <div className="flex w-full items-center justify-center">
-        <Button
-          className="w-[25rem]"
-          onClick={() => {
-            if (selected === "add_managed") {
-              window.open(getMagmaUrl(pool), "_blank");
-              addLiquidityConfig.setModalView("overview");
-            } else {
-              addLiquidityConfig.setModalView(selected);
-            }
-          }}
-        >
-          {t("pools.createPool.buttonNext")}
-        </Button>
-      </div>
-    </>
-  );
-};
-
-const StrategySelector: FunctionComponent<{
-  title: string;
-  description: string;
-  selected: boolean;
-  onClick?: () => void;
-  imgSrc: string;
-  isNew?: boolean;
-}> = (props) => {
-  const { selected, onClick, title, description, imgSrc, isNew } = props;
-  const { t } = useTranslation();
-  return (
-    <div
-      className={classNames(
-        "flex flex-1 flex-col items-center justify-center gap-4 rounded-2xl bg-osmoverse-700/[.6] p-[2px]",
-        {
-          "bg-supercharged": selected,
-          "cursor-pointer hover:bg-supercharged": onClick,
-        }
-      )}
-      onClick={onClick}
-    >
-      <div
-        className={classNames(
-          "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-2xl px-4 py-8",
-          {
-            "bg-osmoverse-700": Boolean(onClick),
-          }
-        )}
-      >
-        <div className="flex items-center justify-center gap-2 text-h6 font-h6">
-          {title}
-          {isNew && (
-            <Pill>
-              <span className="button py-[4px]">{t("new")}</span>
-            </Pill>
-          )}
-        </div>
-        <Image
-          alt={title}
-          src={imgSrc}
-          width={354}
-          height={180}
-          className="!rounded-2xl"
-        />
-        <div className="body2 text-center text-osmoverse-200">
-          {description}
-        </div>
-      </div>
+    <div className={classNames("flex flex-col gap-5", className)}>
+      <AddConcLiqView
+        pool={pool}
+        addLiquidityConfig={addLiquidityConfig}
+        actionButton={actionButton}
+      />
     </div>
   );
-};
+});
 
 const AddConcLiqView: FunctionComponent<
   {
     pool?: Pool;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     actionButton: ReactNode;
+    isInactivePool?: boolean;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, actionButton, pool }) => {
+> = observer(({ addLiquidityConfig, actionButton, pool, isInactivePool }) => {
   const {
     poolId,
     rangeWithCurrencyDecimals,
@@ -280,19 +104,28 @@ const AddConcLiqView: FunctionComponent<
     tickRange,
     error: addLiqError,
     setElectSuperfluidStaking,
-    setModalView,
     setMaxRange,
     setMinRange,
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
+    setFullRange,
   } = addLiquidityConfig;
 
   const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
+  const hasInitializedInactivePool = useRef(false);
 
   const { derivedDataStore, queriesExternalStore } = useStore();
   const chartConfig = useHistoricalAndLiquidityData(poolId);
+
+  // Default to passive strategy for inactive pools (only on mount)
+  useEffect(() => {
+    if (isInactivePool && !fullRange && !hasInitializedInactivePool.current) {
+      setFullRange(true);
+      hasInitializedInactivePool.current = true;
+    }
+  }, [isInactivePool, fullRange, setFullRange]);
 
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
@@ -319,22 +152,8 @@ const AddConcLiqView: FunctionComponent<
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
-        <button
-          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
-          onClick={() => setModalView("overview")}
-        >
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-          />
-          <span className="body2 pl-1 text-osmoverse-100">
-            {t("addConcentratedLiquidity.back")}
-          </span>
-        </button>
         <h6 className="mx-auto whitespace-nowrap">
-          {t("addConcentratedLiquidity.step2Title")}
+          {t("addConcentratedLiquidity.step1Title")}
         </h6>
         <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {
@@ -473,6 +292,7 @@ const AddConcLiqView: FunctionComponent<
       <StrategySelectorGroup
         addLiquidityConfig={addLiquidityConfig}
         highSpotPriceInputRef={highSpotPriceInputRef}
+        isInactivePool={isInactivePool}
       />
       <section className="flex flex-col">
         <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
@@ -615,6 +435,7 @@ const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
+    isInactivePool?: boolean;
   } & CustomClasses
 > = observer((props) => {
   const { t } = useTranslation();
@@ -654,6 +475,7 @@ const StrategySelectorGroup: FunctionComponent<
           label="Custom"
           className="sm:order-4 sm:w-full"
           highSpotPriceInputRef={props.highSpotPriceInputRef}
+          disabledForInactivePool={false}
         />
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
@@ -662,6 +484,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
+            disabledForInactivePool={false}
           />
           <PresetStrategyCard
             type="moderate"
@@ -669,6 +492,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
           <PresetStrategyCard
             type="aggressive"
@@ -676,6 +500,7 @@ const StrategySelectorGroup: FunctionComponent<
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
+            disabledForInactivePool={props.isInactivePool}
           />
         </div>
       </div>
@@ -692,6 +517,7 @@ const PresetStrategyCard: FunctionComponent<
     width?: number;
     height?: number;
     highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
+    disabledForInactivePool?: boolean;
   } & CustomClasses
 > = observer(
   ({
@@ -703,6 +529,7 @@ const PresetStrategyCard: FunctionComponent<
     addLiquidityConfig,
     className,
     highSpotPriceInputRef,
+    disabledForInactivePool,
   }) => {
     const {
       currentStrategy,
@@ -717,12 +544,8 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
-    /** Disabled of aggressive price range is the same.
-     *  This can happen with pools with pegged currencies with very concentrated liq. */
-    const disabled =
-      "moderate" === type &&
-      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
-      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+    /** Disabled for inactive pools (to force passive and custom strategies only). */
+    const disabled = disabledForInactivePool === true;
 
     const isSelected = type === currentStrategy;
 
@@ -774,20 +597,27 @@ const PresetStrategyCard: FunctionComponent<
       }
     };
 
-    // not an option
-    if (disabled) return null;
+    // Check if disabled for pegged currencies (hide completely)
+    const disabledForPeggedCurrencies =
+      "moderate" === type &&
+      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
+      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+
+    // not an option for pegged currencies
+    if (disabledForPeggedCurrencies) return null;
 
     return (
       <div
         className={classNames(
-          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
+          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
           {
-            "bg-supercharged": isSelected,
-            "cursor-not-allowed opacity-30": disabled,
+            "cursor-pointer hover:bg-supercharged": !disabled,
+            "bg-supercharged": isSelected && !disabled,
+            "cursor-not-allowed opacity-40": disabled,
           },
           className
         )}
-        onClick={onClick}
+        onClick={disabled ? undefined : onClick}
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div
@@ -858,7 +688,8 @@ const PriceInputBox: FunctionComponent<{
         <InputBox
           className="bg-transparent text-subtitle1 leading-tight"
           style="no-border"
-          type="number"
+          type="text"
+          inputMode="decimal"
           rightEntry
           inputRef={inputRef}
           autoFocus={

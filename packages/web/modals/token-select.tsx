@@ -2,14 +2,16 @@ import { AppCurrency, IBCCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { SearchBox } from "~/components/input";
+import { PrivateText } from "~/components/privacy";
 import { InputProps } from "~/components/types";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -82,16 +84,16 @@ export const TokenSelectModal: FunctionComponent<
             >
               <button className="flex w-full items-center justify-between text-left">
                 <div className="flex items-center">
-                  {coinImageUrl && (
-                    <div className="mr-4 h-8 w-8 rounded-full">
-                      <Image
-                        src={coinImageUrl}
-                        alt="token icon"
-                        width={32}
-                        height={32}
-                      />
-                    </div>
-                  )}
+                  <div className="mr-4 h-8 w-8 overflow-hidden rounded-full">
+                    <EntityImage
+                      symbol={coinDenom}
+                      name={coinDenom}
+                      logoURIs={getLogoURIs(coinImageUrl)}
+                      width={32}
+                      height={32}
+                      className="rounded-full"
+                    />
+                  </div>
                   <div>
                     <h6 className="text-white-full">{justDenom}</h6>
                     <div className="md:caption text-left font-semibold text-osmoverse-400">
@@ -108,10 +110,10 @@ export const TokenSelectModal: FunctionComponent<
                         tokenAmount.length > 10,
                     })}
                   >
-                    {tokenAmount}
+                    <PrivateText text={tokenAmount} />
                   </h6>
                   <span className="subtitle1 text-osmoverse-400">
-                    {tokenPrice}
+                    <PrivateText text={tokenPrice} />
                   </span>
                 </div>
               )}

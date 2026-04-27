@@ -52,3 +52,13 @@ export function getNomicRelayerUrl({ env }: { env: "mainnet" | "testnet" }) {
         "https://nomic-relayer.forbole.com",
       ];
 }
+
+export const getInt3BTCMinimalDenom = ({
+  env,
+}: {
+  env: "mainnet" | "testnet";
+}) => {
+  return env === "mainnet"
+    ? "ibc/2F4258D6E1E01B203D6CA83F2C7E4959615053A21EC2C2FC196F7911CAC832EF" // BTC.int3
+    : "ibc/68157A7910F47A17C4BA8E06180FA4E5D6E3DF8A8F2B2FD4A74F23597BC1ABBF"; // Testnet BTC.int3
+};

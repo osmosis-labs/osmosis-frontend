@@ -16,6 +16,7 @@ import { Intersection } from "~/components/intersection";
 import { Spinner } from "~/components/loaders";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { EventName } from "~/config";
 import {
   Breakpoint,
@@ -421,11 +422,6 @@ const TableOrderRow = memo(
       status,
     } = order;
 
-    const baseAssetLogo =
-      baseAsset?.rawAsset.logoURIs.svg ??
-      baseAsset?.rawAsset.logoURIs.png ??
-      "";
-
     const placedAt = dayjs.unix(placed_at);
     const formattedTime = placedAt.format("h:mm A");
     const formattedDate = placedAt.format("MMM D");
@@ -555,13 +551,17 @@ const TableOrderRow = memo(
                   )}{" "}
                   {t("limitOrders.of")}
                 </span>
-                <Image
-                  src={baseAssetLogo}
-                  alt={`${baseAsset?.symbol} icon`}
-                  width={20}
-                  height={20}
-                  className="h-5 w-5"
-                />
+                <div className="h-5 w-5 shrink-0 overflow-hidden rounded-full">
+                  <EntityImage
+                    width={20}
+                    height={20}
+                    logoURIs={
+                      baseAsset?.rawAsset.logoURIs ?? { png: undefined }
+                    }
+                    name={baseAsset?.rawAsset.name ?? ""}
+                    symbol={baseAsset?.rawAsset.symbol ?? ""}
+                  />
+                </div>
                 <span>{baseAsset?.symbol}</span>
               </div>
             </div>

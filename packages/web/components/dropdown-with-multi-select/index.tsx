@@ -3,8 +3,8 @@ import classNames from "classnames";
 import { Fragment, type ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
-import { ListOption } from "~/components/earn/table/types/filters";
 import { InfoTooltip } from "~/components/tooltip";
+import { ListOption } from "~/components/types";
 import { Checkbox } from "~/components/ui/checkbox";
 
 interface DropdownWithMultiSelectProps<T> {

@@ -12,7 +12,8 @@ import {
 } from "~/__tests__/test-utils";
 import { ChainList } from "~/config/generated/chain-list";
 
-import { isValidNumericalRawInput, useAmountInput } from "../use-amount-input";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
+import { useAmountInput } from "../use-amount-input";
 
 describe("useAmountInput", () => {
   const osmoMockCurrency: Currency = {

@@ -175,6 +175,24 @@ describe("IbcBridgeProvider", () => {
     expect(quote).toHaveProperty("transactionRequest");
   });
 
+  it("should not throw when gas fee denom is an ibc denom (e.g. non-OSMO fee token)", async () => {
+    const osmosisAtomIbcDenom = mockAtomFromOsmosis.fromAsset.address;
+    (estimateGasFee as jest.Mock).mockResolvedValue({
+      amount: [
+        { amount: "5000", denom: osmosisAtomIbcDenom, isSubtractiveFee: true },
+      ],
+    });
+
+    const quote: BridgeQuote = await provider.getQuote(mockAtomFromOsmosis);
+
+    expect(quote.estimatedGasFee).toBeDefined();
+    expect(quote.estimatedGasFee!.amount).toBe("5000");
+    // Ensure gas denom metadata resolves without crashing.
+    expect(quote.estimatedGasFee!.address).toBe(osmosisAtomIbcDenom);
+    expect(quote.estimatedGasFee!.denom).toBe("ATOM");
+    expect(quote.estimatedGasFee!.decimals).toBe(6);
+  });
+
   it("should calculate the correct toAmount when gas fee is not needed for tx", async () => {
     (estimateGasFee as jest.Mock).mockResolvedValue({
       amount: [{ amount: "5000", denom: "uatom", isSubtractiveFee: false }],

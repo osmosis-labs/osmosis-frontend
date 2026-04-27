@@ -7,7 +7,13 @@ import {
 } from '@playwright/test'
 
 import { BasePage } from './base-page'
+import { getKeplrPopupPage } from './keplr-helper'
 
+/**
+ * Page object for the legacy /swap view (pre-trade-page UI).
+ * Uses the simpler Keplr popup flow (no Promise.race) -- if the popup doesn't
+ * appear within 10s the method returns undefined, assuming 1-Click Trading.
+ */
 export class SwapPage extends BasePage {
   readonly page: Page
   readonly swapBtn: Locator
@@ -43,6 +49,7 @@ export class SwapPage extends BasePage {
     await this.page.waitForTimeout(2000)
     const currentUrl = this.page.url()
     console.log(`FE opened at: ${currentUrl}`)
+    await this.dismissVariantsPopupIfPresent()
   }
 
   async flipTokenPair() {
@@ -61,19 +68,23 @@ export class SwapPage extends BasePage {
   }
 
   async swapAndGetWalletMsg(context: BrowserContext) {
-    // Make sure to have sufficient balance and swap button is enabled
     expect(
       await this.isInsufficientBalance(),
       'Insufficient balance for the swap!',
     ).toBeFalsy()
     await expect(this.swapBtn).toBeEnabled({ timeout: 7000 })
-    // Handle Pop-up page ->
-    const pageApprove = context.waitForEvent('page')
     await this.swapBtn.click()
-    const approvePage = await pageApprove
+
+    const approvePage = await getKeplrPopupPage(context, { timeout: 10_000 })
+    if (!approvePage) {
+      console.log(
+        'Keplr popup did not appear; assuming 1-click trading.',
+      )
+      return { msgContentAmount: undefined }
+    }
+
     await approvePage.waitForLoadState()
-    const approvePageTitle = approvePage.url()
-    console.log(`Approve page is opened at: ${approvePageTitle}`)
+    console.log(`Approve page is opened at: ${approvePage.url()}`)
     const approveBtn = approvePage.getByRole('button', {
       name: 'Approve',
     })
@@ -82,17 +93,19 @@ export class SwapPage extends BasePage {
       .getByText('type: osmosis/poolmanager/')
       .textContent()
     console.log(`Wallet is approving this msg: \n${msgContentAmount}`)
-    // Approve trx
     await approveBtn.click()
-    // wait for trx confirmation
     await this.page.waitForTimeout(4000)
-    //await approvePage.close();
-    // Handle Pop-up page <-
     return { msgContentAmount }
   }
 
+  /**
+   * Selects a trading pair, optimising for the common cases:
+   *   1. Pair already matches -> no-op
+   *   2. Pair is the reverse  -> single flip
+   *   3. One token overlaps   -> flip first to avoid the token-picker hiding
+   *      already-selected tokens, then search/select the remaining one(s).
+   */
   async selectPair(from: string, to: string) {
-    // Filter does not show already selected tokens
     console.log(`Select pair ${from} to ${to}`)
     const tokenLocator =
       '//img[@alt="token icon"]/../..//h5 | //img[@alt="token icon"]/../..//span[@class="subtitle1"]'
@@ -116,6 +129,8 @@ export class SwapPage extends BasePage {
       return
     }
 
+    // Flip first when one of the desired tokens sits on the wrong side,
+    // because the token picker hides the already-selected counterpart.
     if (from === toTokenText || to === fromTokenText) {
       await this.flipTokenPair()
     }
@@ -176,9 +191,14 @@ export class SwapPage extends BasePage {
     return await issufBalanceBtn.isVisible({ timeout: 2000 })
   }
 
-  async isError() {
+  async isError(settleTimeout = 5_000) {
     const errorBtn = this.page.locator('//button[.="Error"]')
-    return await errorBtn.isVisible({ timeout: 2000 })
+    try {
+      await expect(errorBtn).not.toBeVisible({ timeout: settleTimeout })
+      return false
+    } catch {
+      return true
+    }
   }
 
   async showSwapInfo() {

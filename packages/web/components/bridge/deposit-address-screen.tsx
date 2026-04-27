@@ -11,7 +11,6 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { FunctionComponent, ReactNode, useState } from "react";
 import { useMeasure } from "react-use";
 
@@ -22,6 +21,7 @@ import { NomicPendingTransfers } from "~/components/nomic/nomic-pending-transfer
 import { useScreenManager } from "~/components/screen-manager";
 import { Tooltip } from "~/components/tooltip";
 import { Button, IconButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { BridgeScreen } from "~/hooks/bridge";
 import { useClipboard } from "~/hooks/use-clipboard";
@@ -29,6 +29,7 @@ import { useHumanizedRemainingTime } from "~/hooks/use-humanized-remaining-time"
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
 import { useStore } from "~/stores";
 import { displayHumanizedTime } from "~/utils/date";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { trimPlaceholderZeros } from "~/utils/number";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -126,12 +127,15 @@ export const DepositAddressScreen = observer(
                   className="flex items-center gap-3"
                   onClick={() => setCurrentScreen(BridgeScreen.Asset)}
                 >
-                  <Image
-                    width={32}
-                    height={32}
-                    src={canonicalAsset.coinImageUrl ?? "/"}
-                    alt="token image"
-                  />{" "}
+                  <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
+                      name={canonicalAsset.coinName}
+                      symbol={canonicalAsset.coinDenom}
+                      width={32}
+                      height={32}
+                    />
+                  </div>
                   <span>
                     {canonicalAsset.coinName} ({canonicalAsset.coinDenom})
                   </span>

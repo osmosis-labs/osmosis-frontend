@@ -36,17 +36,23 @@ export class WalletPage {
   }
 
   async startImport() {
-    try {
-      await this.page.waitForTimeout(1000)
-      await this.importWalletBtn.click({
-        timeout: 5000,
-      })
-      await this.useRecoveryBtn.click()
-    } catch {
-      expect(
-        this.importWalletBtn,
-        'Import Keplr wallet button is not visible!',
-      ).toBeVisible({ timeout: 2000 })
+    await this.importWalletBtn.waitFor({ state: 'visible', timeout: 10_000 })
+    await this.importWalletBtn.click({ timeout: 5_000 })
+    await this.useRecoveryBtn.waitFor({ state: 'visible', timeout: 10_000 })
+    await this.useRecoveryBtn.click({ timeout: 5_000 })
+  }
+
+  /**
+   * Auto-detects whether `secret` is a BIP39 mnemonic phrase (contains
+   * whitespace) or a hex private key and uses the appropriate Keplr
+   * import flow. Accepts either format transparently.
+   */
+  async importWallet(secret: string) {
+    const trimmed = secret.trim()
+    if (/\s/.test(trimmed)) {
+      await this.importWalletFromSeed(trimmed)
+    } else {
+      await this.importWalletWithPrivateKey(trimmed)
     }
   }
 
@@ -54,7 +60,9 @@ export class WalletPage {
     await this.startImport()
     await this.privateKeyBtn.click()
     await this.privateKeyInput.fill(privateKey)
-    await this.importBtn.click({ timeout: 4000 })
+    await this.importBtn.click({ timeout: 4_000 })
+    // Confirm the SPA navigated to the name/password step before proceeding
+    await this.walletNameInput.waitFor({ state: 'visible', timeout: 10_000 })
     await this.setWalletNameAndPassword('Keplr')
     await this.selectChainsAndSave()
     await this.finish()
@@ -62,36 +70,35 @@ export class WalletPage {
 
   async importWalletFromSeed(seed: string) {
     await this.startImport()
-    console.log('Import Wallet from a Seed.')
-    await this.page.waitForTimeout(7000)
-    // enter 12 words seed
-    const seedArray: string[] = seed.split(' ')
-    expect(seedArray, 'Seed phrase is missing or incomplete!').toHaveLength(12)
-    const locInputs = '//input[@type="password"]'
-    await this.page.locator('//input[@type="text"]').first().fill(seedArray[0])
-    // for loop does not work here, some magic..
-    await this.page.locator(locInputs).nth(0).fill(seedArray[1])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(1).fill(seedArray[2])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(2).fill(seedArray[3])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(3).fill(seedArray[4])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(4).fill(seedArray[5])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(5).fill(seedArray[6])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(6).fill(seedArray[7])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(7).fill(seedArray[8])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(8).fill(seedArray[9])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(9).fill(seedArray[10])
-    await this.page.waitForTimeout(200)
-    await this.page.locator(locInputs).nth(10).fill(seedArray[11])
+    const words = seed.trim().split(/\s+/)
+    const wordCount = words.length
+    if (wordCount !== 12 && wordCount !== 24) {
+      throw new Error(
+        `Mnemonic must be 12 or 24 words, got ${wordCount}.`,
+      )
+    }
+    console.log(`Import Wallet from a ${wordCount}-word seed.`)
+
+    if (wordCount === 24) {
+      await this.page
+        .getByRole('button', { name: '24 words', exact: true })
+        .click()
+    }
+
+    // Keplr renders word inputs as text/password and appends 3 number inputs
+    // (derivation path). In 12-word mode word 1 is text; in 24-word mode all
+    // start as password (flipping to text on fill). Target all non-number inputs.
+    const wordInputs = this.page.locator('input:not([type="number"])')
+    await wordInputs.nth(wordCount - 1).waitFor({ state: 'visible', timeout: 5000 })
+
+    for (let i = 0; i < wordCount; i++) {
+      await wordInputs.nth(i).fill(words[i])
+      await this.page.waitForTimeout(200)
+    }
+
     await this.importBtn.click()
+    // Confirm the SPA navigated to the name/password step before proceeding
+    await this.walletNameInput.waitFor({ state: 'visible', timeout: 10_000 })
     await this.setWalletNameAndPassword('Keplr')
     await this.selectChainsAndSave()
     await this.finish()
@@ -106,26 +113,60 @@ export class WalletPage {
     await this.walletPassInput.fill(password)
     await this.walletRePassInput.fill(password)
     await this.nextBtn.click()
+    // Keplr uses hash-based SPA routing so waitForLoadState resolves instantly.
+    // Instead, confirm the name input disappears to verify actual page transition.
+    await this.walletNameInput.waitFor({ state: 'hidden', timeout: 10_000 })
   }
 
   async selectChainsAndSave() {
     console.log('Select all Native chains and save.')
-    await this.page
-      .getByText('All Native Chains')
-      .click({ timeout: 9000, force: true })
-    try {
-      console.log('Import whatever is available.')
-      await this.importBtn.click({ timeout: 2000 })
-    } catch {
-      console.log('No Import button, ignore.')
+    const allChains = this.page.getByText('All Native Chains')
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        await allChains.waitFor({ state: 'visible', timeout: 20_000 })
+        await allChains.click({ timeout: 5_000 })
+        break
+      } catch (err) {
+        const screenshotPath = `test-results/keplr-chains-debug-attempt-${attempt}-${Date.now()}.png`
+        await this.page.screenshot({ path: screenshotPath, fullPage: true })
+        console.error(
+          `'All Native Chains' not visible or not clickable (attempt ${attempt + 1}/3). ` +
+          `Screenshot: ${screenshotPath} | URL: ${this.page.url()} | Error: ${err}`
+        )
+        if (attempt < 2) {
+          // Don't reload -- Keplr is a hash-routed SPA so reload resets to the
+          // welcome page, destroying all import progress. Just wait and retry.
+          await this.page.waitForTimeout(5_000)
+        } else {
+          throw new Error(
+            `'All Native Chains' never appeared/clickable after 3 attempts. ` +
+            `Last error: ${err}`,
+          )
+        }
+      }
     }
-    await this.page.waitForTimeout(2000)
-    await this.saveBtn.click({ timeout: 3000 })
-    await this.page.waitForTimeout(2000)
+
+    const accountCreated = this.page.getByText('Account Created!')
+
+    for (let i = 0; i < 10; i++) {
+      if (await accountCreated.isVisible().catch(() => false)) break
+
+      if (await this.importBtn.isVisible().catch(() => false)) {
+        console.log('Import whatever is available.')
+        await this.importBtn.click({ timeout: 2000 })
+      } else if (await this.saveBtn.isVisible().catch(() => false)) {
+        console.log('Save chain selection.')
+        await this.saveBtn.click({ timeout: 2000 })
+      }
+
+      await this.page.waitForTimeout(1000)
+    }
+
     await expect(
-      this.page.getByText('Account Created!'),
+      accountCreated,
       'Account is not created!',
-    ).toBeVisible({ timeout: 9000 })
+    ).toBeVisible({ timeout: 20_000 })
   }
 
   async takeScreenshot() {

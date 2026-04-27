@@ -10,8 +10,10 @@ import { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 import type { RouterOutputs } from "~/utils/trpc";
 
 type SplitOutGivenIn =
@@ -52,7 +54,7 @@ export const RouteLane: FunctionComponent<{
             {route.percentage.inequalitySymbol(false).maxDecimals(0).toString()}
           </span>
         )}
-        <div className="h-7">
+        <div className="h-7 w-7">
           <DenomImage currency={sendCurrency} size={28} />
         </div>
       </div>
@@ -68,7 +70,7 @@ export const RouteLane: FunctionComponent<{
         <Pools {...route} />
       </div>
 
-      <div className="h-7 shrink-0">
+      <div className="h-7 w-7 shrink-0">
         <DenomImage currency={lastOutCurrency} size={28} />
       </div>
     </div>
@@ -155,6 +157,7 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                   {(type === "concentrated" ||
                     type === "stable" ||
                     type === "cosmwasm-transmuter" ||
+                    type === "cosmwasm-alloyed" ||
                     type === "cosmwasm-astroport-pcl" ||
                     type === "cosmwasm-whitewhale" ||
                     type === "cosmwasm") && (
@@ -163,7 +166,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                         <Icon id="lightning-small" height={16} width={16} />
                       )}
                       {(type === "stable" ||
-                        type === "cosmwasm-transmuter") && (
+                        type === "cosmwasm-transmuter" ||
+                        type === "cosmwasm-alloyed") && (
                         <Image
                           alt="stable-pool"
                           src="/icons/stableswap-pool.svg"
@@ -177,7 +181,8 @@ const Pools: FunctionComponent<Route> = observer(({ pools }) => {
                       {t(
                         type === "concentrated"
                           ? "clPositions.supercharged"
-                          : type === "cosmwasm-transmuter"
+                          : type === "cosmwasm-transmuter" ||
+                            type === "cosmwasm-alloyed"
                           ? "pool.transmuter"
                           : type === "cosmwasm-astroport-pcl"
                           ? "Astroport PCL"
@@ -230,19 +235,19 @@ const DenomImage: FunctionComponent<{
   currency: AppCurrency | Currency;
   /** Size in px */
   size?: number;
-}> = ({ currency, size = 20 }) =>
-  currency.coinImageUrl ? (
-    <Image
-      src={currency.coinImageUrl}
-      alt="token icon"
-      width={size}
-      height={size}
-    />
-  ) : (
+}> = ({ currency, size = 20 }) => {
+  return (
     <div
+      className="shrink-0 overflow-hidden rounded-full"
       style={{ width: size, height: size }}
-      className="flex items-center justify-center rounded-full bg-osmoverse-700"
     >
-      {currency.coinDenom[0].toUpperCase()}
+      <EntityImage
+        logoURIs={getLogoURIs(currency.coinImageUrl)}
+        name={currency.coinDenom}
+        symbol={currency.coinDenom}
+        width={size}
+        height={size}
+      />
     </div>
   );
+};

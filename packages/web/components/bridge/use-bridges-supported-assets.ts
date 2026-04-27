@@ -12,16 +12,14 @@ import { api, RouterOutputs } from "~/utils/trpc";
 const supportedAssetsBridges: Bridge[] = [
   "Skip",
   "Squid",
-  "Axelar",
   "IBC",
+  "Nomic",
   "Int3face",
   // include nomic, nitro, wormhole, and penumbra for suggesting BTC + SOL + TRX assets and chains
   // as external URL transfer options, even though they are not supported by the bridge providers natively yet.
   // Once bridging is natively supported, we can add these to the `useBridgeQuotes` provider list.
-  "Nomic",
   "Wormhole",
   "Nitro",
-  "Picasso",
   "Penumbra",
 ];
 
@@ -43,34 +41,45 @@ export const useBridgesSupportedAssets = ({
   direction: "deposit" | "withdraw";
 }) => {
   const supportedAssetsResults = api.useQueries((t) =>
-    supportedAssetsBridges.flatMap((bridge) =>
-      (assets ?? []).map((asset) =>
-        t.bridgeTransfer.getSupportedAssetsByBridge(
-          {
-            bridge,
-            asset: {
-              address: asset.coinMinimalDenom,
-              decimals: asset.coinDecimals,
-              denom: asset.coinDenom,
+    supportedAssetsBridges
+      /**
+       * Disable Int3face for deposits
+       * since we should not be using Int3face for deposits
+       * as of https://osmosis-network.slack.com/archives/C0963S0DB4Z/p1758138969630079
+       */
+      .filter((bridge) => {
+        if (direction === "withdraw") return true;
+
+        return bridge !== "Int3face";
+      })
+      .flatMap((bridge) =>
+        (assets ?? []).map((asset) =>
+          t.bridgeTransfer.getSupportedAssetsByBridge(
+            {
+              bridge,
+              asset: {
+                address: asset.coinMinimalDenom,
+                decimals: asset.coinDecimals,
+                denom: asset.coinDenom,
+              },
+              direction,
+              chain,
             },
-            direction,
-            chain,
-          },
-          {
-            enabled: !isNil(assets),
-            staleTime: 30_000,
-            cacheTime: 30_000,
-            // Disable retries, as useQueries
-            // will block successful queries from being returned
-            // if failed queries are being returned
-            // until retry starts returning false.
-            // This causes slow UX even though there's a
-            // query that the user can use.
-            retry: false,
-          }
+            {
+              enabled: !isNil(assets),
+              staleTime: 30_000,
+              cacheTime: 30_000,
+              // Disable retries, as useQueries
+              // will block successful queries from being returned
+              // if failed queries are being returned
+              // until retry starts returning false.
+              // This causes slow UX even though there's a
+              // query that the user can use.
+              retry: false,
+            }
+          )
         )
       )
-    )
   );
 
   const successfulQueries = useMemo(
@@ -282,6 +291,14 @@ export const useBridgesSupportedAssets = ({
           asset.coinGeckoId === "ripple"
       );
 
+    // Check if this is ATOM to prioritize Cosmos Hub
+    const isAtom = assets?.some(
+      (asset) =>
+        asset.coinMinimalDenom ===
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2" ||
+        asset.coinGeckoId === "cosmos"
+    );
+
     return Array.from(
       // Remove duplicate chains
       new Map(
@@ -325,6 +342,14 @@ export const useBridgesSupportedAssets = ({
                 a.chainId !== "xrplevm_1440000-1" &&
                 b.chainId === "xrplevm_1440000-1"
               )
+                return 1;
+            }
+
+            // For ATOM, prioritize Cosmos Hub first
+            if (isAtom) {
+              if (a.chainId === "cosmoshub-4" && b.chainId !== "cosmoshub-4")
+                return -1;
+              if (a.chainId !== "cosmoshub-4" && b.chainId === "cosmoshub-4")
                 return 1;
             }
 

@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { Icon } from "~/components/assets/icon";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { useSwap } from "~/hooks/use-swap";
 
@@ -13,16 +14,19 @@ export const PolarisBanner = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="relative overflow-hidden min-h-[208px] flex flex-col my-3 gap-2 bg-[#653026] p-5 rounded-3xl">
-      <div className="flex flex-col gap-2 max-w-[290px]">
+      <div className="flex flex-col gap-2 max-w-[290px] relative z-10">
         <h6 className="inline-flex items-center gap-1 text-[#FFFFFF70] font-medium">
           {t("polarisBanner.tradeYour")}
           <div className="px-1">
-            <Image
-              src={fromAsset?.coinImageUrl ?? ""}
-              alt={fromAsset?.coinDenom ?? ""}
+            <EntityImage
+              logoURIs={{
+                png: fromAsset?.coinImageUrl,
+              }}
+              name={fromAsset?.coinName}
+              symbol={fromAsset?.coinDenom}
               width={24}
               height={24}
-              className="rounded-full"
+              className="overflow-hidden rounded-full"
             />
           </div>
           <span className="text-[#F8F6F2]">{fromAsset?.coinDenom ?? ""}</span>

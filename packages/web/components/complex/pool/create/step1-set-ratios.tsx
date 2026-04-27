@@ -58,7 +58,8 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                     </Button>
                   )}
                   <InputBox
-                    type="number"
+                    type="text"
+                    inputMode="decimal"
                     inputClassName="text-h5 font-h5 md:subtitle1 w-32 md:w-14"
                     currentValue={
                       (config.poolType === "weighted" && percentage
@@ -117,7 +118,8 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             <div className="flex items-center gap-4 md:gap-1">
               <InputBox
                 className="w-44 md:w-20"
-                type="number"
+                type="text"
+                inputMode="decimal"
                 inputClassName="text-right text-h6 font-h6 md:subtitle1"
                 currentValue={config.swapFee}
                 onInput={(value) => config.setSwapFee(value)}

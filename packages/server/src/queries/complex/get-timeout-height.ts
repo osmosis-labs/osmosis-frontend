@@ -27,9 +27,15 @@ export async function getTimeoutHeight({
     throw new Error("Could not find destination Cosmos chain");
   }
 
-  const destinationNodeStatus = await queryRPCStatus({
-    restUrl: destinationCosmosChain.apis.rpc[0].address,
-  });
+  const rpcUrls = destinationCosmosChain.apis.rpc.map((rpc) => rpc.address);
+
+  if (rpcUrls.length === 0) {
+    throw new Error(
+      `No RPC endpoints available for chain ${destinationCosmosChain.chain_id}`
+    );
+  }
+
+  const destinationNodeStatus = await queryRPCStatus({ rpcUrls });
 
   const network = destinationNodeStatus.result.node_info.network;
   const latestBlockHeight =

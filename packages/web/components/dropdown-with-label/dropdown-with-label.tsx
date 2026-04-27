@@ -5,7 +5,7 @@ import classNames from "classnames";
 import { Fragment, ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
-import { ListOption } from "~/components/earn/table/types/filters";
+import { ListOption } from "~/components/types";
 
 interface DropdownWithLabelProps<T> {
   label: ReactNode;

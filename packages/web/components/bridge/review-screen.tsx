@@ -14,6 +14,7 @@ import { Icon } from "~/components/assets";
 import { ChainLogo } from "~/components/assets/chain-logo";
 import { Tooltip } from "~/components/tooltip";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useWindowSize } from "~/hooks";
 import { useClipboard } from "~/hooks/use-clipboard";
 import { BridgeChainWithDisplayInfo } from "~/server/api/routers/bridge-transfer";
@@ -171,7 +172,11 @@ export const ReviewScreen: FunctionComponent<ConfirmationScreenProps> = ({
           className="w-full md:h-12"
           onClick={onConfirm}
           disabled={
-            !quote.userCanAdvance || quote.isTxPending || quote.isApprovingToken
+            (!quote.userCanAdvance &&
+              !quote.warnUserOfPriceImpact &&
+              !quote.warnUserOfSlippage) ||
+            quote.isTxPending ||
+            quote.isApprovingToken
           }
         >
           <div className="md:subtitle1 text-h6 font-h6">
@@ -292,12 +297,17 @@ const AssetBox: FunctionComponent<{
     <div className="flex w-full flex-col rounded-2xl border border-osmoverse-700">
       <div className="flex place-content-between items-center p-6 md:p-3">
         <div className="flex items-center gap-4 md:gap-2">
-          <Image
-            alt="token image"
-            src={assetImageUrl}
-            width={isMobile ? 32 : 48}
-            height={isMobile ? 32 : 48}
-          />
+          <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full md:h-12 md:w-12">
+            <EntityImage
+              logoURIs={{
+                png: assetImageUrl,
+              }}
+              name={coin.denom}
+              symbol={coin.denom}
+              width={isMobile ? 32 : 48}
+              height={isMobile ? 32 : 48}
+            />
+          </div>
           <div className="md:flex md:flex-col md:gap-1">
             <div className="md:body2 text-h6 font-h6">
               {t(type === "from" ? "transfer.transfer" : "transfer.receive", {
@@ -367,7 +377,9 @@ const TransferDetails: FunctionComponent<
   const expandedPadding = isMobile ? 10 : 0;
 
   return (
-    <Disclosure>
+    <Disclosure
+      defaultOpen={quote.warnUserOfPriceImpact || quote.warnUserOfSlippage}
+    >
       {({ open }) => (
         <div
           className="flex flex-col gap-3 overflow-hidden px-6 transition-height duration-300 ease-inOutBack md:px-3"

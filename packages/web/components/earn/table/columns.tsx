@@ -1,7 +1,6 @@
 import { EarnStrategy } from "@osmosis-labs/server";
 import { createColumnHelper } from "@tanstack/react-table";
 import classNames from "classnames";
-import Image from "next/image";
 import { PropsWithChildren } from "react";
 
 import {
@@ -23,6 +22,7 @@ import {
   sortDurationValues,
 } from "~/components/earn/table/utils";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { TranslationPath, useTranslation } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
 
@@ -88,16 +88,24 @@ export const tableColumns = [
         )}
       >
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
-          <Image
-            src={coinImageUrl ?? ""}
-            alt={`${coinDenom} image`}
+          <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            className={classNames("h-9 min-w-[36px] rounded-full", {
-              "-ml-4": i > 0,
-            })}
-            width={36}
-            height={36}
-          />
+            className={classNames(
+              "h-9 w-9 shrink-0 overflow-hidden rounded-full",
+              { "-ml-4": i > 0 }
+            )}
+          >
+            <EntityImage
+              symbol={coinDenom}
+              name={coinDenom}
+              logoURIs={{
+                png: coinImageUrl,
+                svg: coinImageUrl,
+              }}
+              width={36}
+              height={36}
+            />
+          </div>
         ))}
       </div>
     ),
@@ -150,17 +158,27 @@ export const tableColumns = [
     cell: (item) => (
       <div className="relative flex items-center justify-end">
         {item.getValue().map(({ coinDenom, coinImageUrl }, i) => (
-          <Image
-            src={coinImageUrl ?? ""}
-            alt={`${coinDenom} image`}
+          <div
             key={`${coinDenom} ${i} ${item.cell.id}`}
-            className={classNames("h-6 w-6 rounded-full", {
-              "-ml-2": i > 0,
-              "mr-2": item.getValue().length === 1,
-            })}
-            width={24}
-            height={24}
-          />
+            className={classNames(
+              "h-6 w-6 shrink-0 overflow-hidden rounded-full",
+              {
+                "-ml-2": i > 0,
+                "mr-2": item.getValue().length === 1,
+              }
+            )}
+          >
+            <EntityImage
+              symbol={coinDenom}
+              name={coinDenom}
+              logoURIs={{
+                png: coinImageUrl,
+                svg: coinImageUrl,
+              }}
+              width={24}
+              height={24}
+            />
+          </div>
         ))}
       </div>
     ),

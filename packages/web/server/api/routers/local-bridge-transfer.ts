@@ -122,6 +122,10 @@ export const localBridgeTransferRouter = createTRPCRouter({
           createAssetObject("tron", z.object({})),
           createAssetObject("penumbra", z.object({})),
           createAssetObject("doge", z.object({})),
+          createAssetObject("bitcoin-cash", z.object({})),
+          createAssetObject("litecoin", z.object({})),
+          createAssetObject("xrpl", z.object({})),
+          createAssetObject("ton", z.object({})),
         ]),
       })
     )

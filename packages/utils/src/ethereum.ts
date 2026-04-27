@@ -1,3 +1,4 @@
+import { fallback, http } from "viem";
 import {
   arbitrum,
   avalanche,
@@ -47,8 +48,23 @@ function mapChainInfo<Chain>({
 }
 
 export const EthereumChainInfo = [
+  // Override viem's default mainnet RPC (eth.merkle.io, 25 req/s free-tier cap)
+  // with more reliable public endpoints. Order matters: first URL is primary.
   mapChainInfo({
-    chain: mainnet,
+    chain: {
+      ...mainnet,
+      rpcUrls: {
+        ...mainnet.rpcUrls,
+        default: {
+          ...mainnet.rpcUrls.default,
+          http: [
+            "https://ethereum-rpc.publicnode.com",
+            "https://evm-1.keplr.app",
+            "https://eth.merkle.io",
+          ],
+        },
+      },
+    },
     clientChainId: "Ethereum Main Network",
     color: "#454973",
     relativeLogoUrl: "/networks/ethereum.svg",
@@ -156,6 +172,16 @@ export const EthereumChainInfo = [
     relativeLogoUrl: "/networks/optimism.svg",
   }),
 ] as const;
+
+/**
+ * Builds a viem fallback transport from a chain's default RPC URLs.
+ * Falls through each URL in order on failure.
+ */
+export function getEvmRpcTransport(chain: {
+  rpcUrls: { default: { http: readonly string[] } };
+}) {
+  return fallback(chain.rpcUrls.default.http.map((url) => http(url)));
+}
 
 export function getEvmExplorerUrl({
   hash,

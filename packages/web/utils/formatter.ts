@@ -11,6 +11,7 @@ import {
 import {
   getDecimalCount,
   getNumberMagnitude,
+  leadingZerosCount,
   toScientificNotation,
 } from "~/utils/number";
 
@@ -131,7 +132,34 @@ function priceFormatter(
   );
   num = isNaN(num) ? 0 : num;
   const formatter = new Intl.NumberFormat(price.fiatCurrency.locale, options);
-  return formatter.format(num);
+  let formatted = formatter.format(num);
+
+  // For values using standard notation with significant digits,
+  // pad to minimum 2 decimal places for consistency (e.g., $12.30 not $12.3, $12,345.10 not $12,345.1)
+  // But don't pad whole numbers (e.g., $119,232 not $119,232.00)
+  if (
+    opts.notation === "standard" &&
+    opts.maximumSignificantDigits &&
+    num > 0 &&
+    !Number.isInteger(num)
+  ) {
+    const parts = formatter.formatToParts(num);
+    const fractionIndex = parts.findIndex((part) => part.type === "fraction");
+    if (fractionIndex >= 0 && parts[fractionIndex].value.length < 2) {
+      parts[fractionIndex] = {
+        ...parts[fractionIndex],
+        value: parts[fractionIndex].value.padEnd(2, "0"),
+      };
+      formatted = parts.map((part) => part.value).join("");
+    } else if (fractionIndex === -1) {
+      const decimalSymbol =
+        formatter.formatToParts(1.1).find((part) => part.type === "decimal")
+          ?.value ?? ".";
+      formatted = `${formatted}${decimalSymbol}00`;
+    }
+  }
+
+  return formatted;
 }
 
 /** Formats a coin as compact by default. i.e. 7.53 ATOM or 265 OSMO. Validate handled by `CoinPretty`. */
@@ -226,6 +254,10 @@ function hasIntlFormatOptions(opts: FormatOptions) {
  *  STARS: $0.03673
  *  HUAHUA: $0.00001231
  *
+ * For very small prices with many leading zeros, we ensure 4 non-zero significant digits
+ * are preserved. This typically occurs with pairings with high value quotes such as BTC:
+ *  BABY: 0.0000002523 (6 leading zeros → 4 non-zero significant digits)
+ *
  * If a number is greater or equal to $100, we show a dynamic significant digits based on it's integer part, examples:
  * BTC: $47,334.21
  * ETH: $3,441.15
@@ -240,21 +272,35 @@ export function getPriceExtendedFormatOptions(value: Dec): FormatOptions {
     ? 4
     : integerPartLength + 2;
 
+  // For very small numbers with many leading zeros (e.g., 0.0000002523),
+  // we need a high maxDecimals to preserve precision through IntPretty conversion.
+  // maximumSignificantDigits will handle the display correctly by showing only
+  // the 4 significant digits without forcing trailing zeros.
+  const valueStr = value.toString();
+  const leadingZeros = valueStr.includes(".") ? leadingZerosCount(valueStr) : 0;
+  const numericValue = parseFloat(valueStr);
+  const isWholeNumber = Math.floor(numericValue) === numericValue;
+
+  let maxDecimals: number;
   const minimumDecimals = 2;
 
-  const maxDecimals = Math.max(
-    getDecimalCount(parseFloat(value.toString())),
-    minimumDecimals
-  );
+  // Check if whole number first, as Dec may have trailing zeros that leadingZerosCount would count
+  if (isWholeNumber) {
+    // For whole numbers (e.g., 119232.00), just use minimum decimals
+    maxDecimals = minimumDecimals;
+  } else if (leadingZeros >= 4) {
+    // For tiny numbers, ensure maxDecimals captures at least 4 non-zero significant digits
+    // Example: 0.0000002523 has 6 leading zeros, needs 10 decimals (6 + 4)
+    maxDecimals = leadingZeros + 4;
+  } else {
+    // For numbers with decimals, get actual decimal count with minimum of 2
+    maxDecimals = Math.max(getDecimalCount(numericValue), minimumDecimals);
+  }
 
   return {
     maxDecimals,
     notation: "standard",
     maximumSignificantDigits,
-    minimumSignificantDigits: maximumSignificantDigits,
-    minimumFractionDigits: 4,
-    maximumFractionDigits: 4,
-    disabledTrimZeros: true,
   };
 }
 
@@ -358,7 +404,8 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
   }
 
   const splitDec = price.toDec().toString().split(".");
-  const maxDecimalStr = splitDec[0] + "." + splitDec[1].slice(0, maxDecimals);
+  const maxDecimalStr =
+    splitDec[0] + "." + (splitDec[1] || "0").slice(0, maxDecimals);
   const maxDecimalPrice = new PricePretty(
     price.fiatCurrency,
     new Dec(maxDecimalStr)
@@ -368,7 +415,138 @@ export function formatFiatPrice(price: PricePretty, maxDecimals = 2) {
     ...getPriceExtendedFormatOptions(maxDecimalPrice.toDec()),
   }).split(".");
 
-  return splitPretty[0] + "." + splitPretty[1].slice(0, maxDecimals);
+  return splitPretty[0] + "." + (splitPretty[1] || "0").slice(0, maxDecimals);
+}
+
+/**
+ * Returns the full unformatted decimal value as a string, trimming only trailing zeros.
+ * Used for tooltips to show the complete precision.
+ */
+export function getFullPrecisionPrice(price: Dec): string {
+  if (price.isZero()) return "0";
+
+  const priceStr = price.toString();
+  const [integerPart, decimalPart] = priceStr.split(".");
+
+  if (!decimalPart) return integerPart;
+
+  // Trim only trailing zeros
+  const trimmedDecimal = decimalPart.replace(/0+$/, "");
+
+  if (trimmedDecimal === "") return integerPart;
+
+  return `${integerPart}.${trimmedDecimal}`;
+}
+
+/**
+ * Formats a price preserving the user's original precision.
+ * Shows up to 3 significant decimal places (non-zero), truncating (not rounding).
+ * - Numbers under 10: maintain at least 2 decimal places (e.g., "5.00", "7.50")
+ * - Whole numbers >= 10: no decimal places (e.g., "40", "100")
+ * - Numbers with decimals: preserve up to 3 significant decimals
+ * - Numbers very close to whole numbers (like 99.999 or 100.001) round to the nearest whole
+ */
+export function formatPriceWithUserPrecision(price: Dec): string {
+  if (price.isZero()) return "0";
+
+  const priceStr = price.toString();
+  const [integerPart, decimalPart] = priceStr.split(".");
+
+  const integerValue = parseInt(integerPart, 10);
+
+  // No decimal part - it's a whole number
+  if (!decimalPart) {
+    if (integerValue >= 10) {
+      return integerPart;
+    } else {
+      return `${integerPart}.00`;
+    }
+  }
+
+  // Trim trailing zeros to see if it's actually a whole number
+  const trimmedDecimal = decimalPart.replace(/0+$/, "");
+
+  if (trimmedDecimal === "") {
+    // It's a whole number (like "100.000")
+    if (integerValue >= 10) {
+      return integerPart;
+    } else {
+      return `${integerPart}.00`;
+    }
+  }
+
+  // Count significant (non-zero) decimal places
+  let significantDecimals = 0;
+  let truncateAtIndex = -1;
+
+  for (let i = 0; i < trimmedDecimal.length; i++) {
+    if (trimmedDecimal[i] !== "0") {
+      significantDecimals++;
+      if (significantDecimals === 3) {
+        truncateAtIndex = i;
+        break;
+      }
+    }
+  }
+
+  let resultDecimal: string;
+
+  if (truncateAtIndex === -1) {
+    // 3 or fewer significant decimals - use as is
+    resultDecimal = trimmedDecimal;
+  } else {
+    // More than 3 significant decimals - truncate at 3rd
+    resultDecimal = trimmedDecimal.substring(0, truncateAtIndex + 1);
+  }
+
+  // Check if after truncation, we're very close to a whole number
+  // The threshold scales with magnitude: 1.0001, 10.001, 100.01, etc.
+  const reconstructed = `${integerPart}.${resultDecimal}`;
+  const numericValue = parseFloat(reconstructed);
+  const roundedWhole = Math.round(numericValue);
+
+  // Don't round to 0
+  if (roundedWhole === 0) {
+    // For numbers < 10, ensure at least 2 decimal places
+    if (integerValue < 10 && parseInt(integerPart, 10) === integerValue) {
+      const minDecimalPlaces = 2;
+      resultDecimal = resultDecimal.padEnd(minDecimalPlaces, "0");
+    }
+    return `${integerPart}.${resultDecimal}`;
+  }
+
+  // Determine threshold based on magnitude: 0.0001 for [1-10), 0.001 for [10-100), 0.01 for [100+)
+  let threshold: number;
+  if (roundedWhole < 10) {
+    threshold = 0.0001; // 1.0001
+  } else if (roundedWhole < 100) {
+    threshold = 0.001; // 10.001
+  } else {
+    threshold = 0.01; // 100.01
+  }
+
+  // If we're within threshold of a whole number and all visible decimals are 9s or 0s, round to whole
+  if (Math.abs(numericValue - roundedWhole) < threshold) {
+    // Check if the decimal is all 9s (like .999) or very small (like .001)
+    if (
+      /^9+$/.test(resultDecimal) ||
+      parseFloat(`0.${resultDecimal}`) < threshold
+    ) {
+      if (roundedWhole >= 10) {
+        return String(roundedWhole);
+      } else {
+        return `${roundedWhole}.00`;
+      }
+    }
+  }
+
+  // For numbers < 10, ensure at least 2 decimal places
+  if (integerValue < 10 && parseInt(integerPart, 10) === integerValue) {
+    const minDecimalPlaces = 2;
+    resultDecimal = resultDecimal.padEnd(minDecimalPlaces, "0");
+  }
+
+  return `${integerPart}.${resultDecimal}`;
 }
 
 export function calcFontSize(numChars: number, isMobile: boolean): string {

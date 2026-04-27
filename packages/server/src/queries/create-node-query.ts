@@ -1,6 +1,34 @@
 import { Chain } from "@osmosis-labs/types";
-import { apiClient, ClientOptions } from "@osmosis-labs/utils";
-import { runIfFn } from "@osmosis-labs/utils";
+import { apiClient, ClientOptions, runIfFn } from "@osmosis-labs/utils";
+
+/**
+ * ES6-compatible `Promise.any`: resolves with the first fulfilled promise.
+ * Rejects with `{ errors }` if every promise rejects.
+ */
+function promiseAny<T>(promises: Promise<T>[]): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const errors: unknown[] = [];
+    let rejected = 0;
+
+    if (promises.length === 0) {
+      return reject(
+        Object.assign(new Error("All promises were rejected"), { errors })
+      );
+    }
+
+    promises.forEach((p, i) => {
+      p.then(resolve).catch((err) => {
+        errors[i] = err;
+        rejected++;
+        if (rejected === promises.length) {
+          reject(
+            Object.assign(new Error("All promises were rejected"), { errors })
+          );
+        }
+      });
+    });
+  });
+}
 
 /** Creates a node query function that can be used to query any
  *  chain in the given chain list.
@@ -14,13 +42,19 @@ import { runIfFn } from "@osmosis-labs/utils";
  *  the request will be sent to the RPC endpoint since it's
  *  assumed the LCD rest endpoint only accepts GET requests.
  *
- *  - [ ]: add node query error handling (like deserializing code)
- *  and extend `ApiClientError`
+ *  ENDPOINT FALLBACK (hedged requests):
+ *  REST endpoints come from the chain's asset list. Requests are fired in a
+ *  staggered pattern (`hedgeDelay` apart). The first successful response wins
+ *  via a `Promise.any`-style race; all other in-flight requests are aborted.
+ *  Endpoints are tried in their original order from the chain registry.
  */
 export const createNodeQuery =
   <Result, PathParameters extends Record<any, any> | unknown = unknown>({
     path,
     options,
+    timeout = 3000,
+    hedgeDelay = 1000,
+    maxTotalTime = 8000,
   }: {
     path: string | ((params: PathParameters) => string);
     /** Additional query options such as
@@ -29,6 +63,12 @@ export const createNodeQuery =
      *  due to the node-query invariant of rest services
      *  only accepting GET requests. */
     options?: (params: PathParameters) => ClientOptions;
+    /** Per-attempt timeout in milliseconds. Default: 3000ms */
+    timeout?: number;
+    /** Stagger delay between hedged endpoint requests in ms. Default: 1000ms */
+    hedgeDelay?: number;
+    /** Maximum total wall-clock time across all endpoints. Default: 8000ms */
+    maxTotalTime?: number;
   }) =>
   async (
     ...params: PathParameters extends Record<any, any>
@@ -47,15 +87,109 @@ export const createNodeQuery =
 
     if (!chain) throw new Error(`Chain ${chainId} not found`);
 
-    const opts = options?.(...(params as [PathParameters]));
+    const restEndpoints = chain.apis.rest;
 
-    const url = new URL(
-      runIfFn(
-        path,
-        ...((params as [PathParameters & { chainId?: string }]) ?? [])
-      ),
-      chain.apis.rest[0].address
+    if (!restEndpoints || restEndpoints.length === 0) {
+      throw new Error(`No REST endpoints available for chain ${chainId}`);
+    }
+
+    const opts = options?.(...(params as [PathParameters]));
+    const pathStr = runIfFn(
+      path,
+      ...((params as [PathParameters & { chainId?: string }]) ?? [])
     );
-    if (opts) return apiClient<Result>(url.toString(), opts);
-    else return apiClient<Result>(url.toString());
+
+    const raceController = new AbortController();
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const startTime = Date.now();
+
+    const schedulable = restEndpoints.filter(
+      (_, i) => i * hedgeDelay < maxTotalTime
+    );
+
+    const attempts = schedulable.map(
+      (endpoint, i) =>
+        new Promise<Result>((resolve, reject) => {
+          const delay = i * hedgeDelay;
+
+          const timer = setTimeout(async () => {
+            if (raceController.signal.aborted) {
+              return reject(new Error("Aborted"));
+            }
+
+            const elapsed = Date.now() - startTime;
+            const remaining = maxTotalTime - elapsed;
+            if (remaining <= 0) {
+              return reject(new Error("Time budget exceeded"));
+            }
+
+            // Per-attempt controller: aborted either by per-attempt timeout or
+            // by raceController (when another endpoint wins or budget expires).
+            const attemptController = new AbortController();
+            const onRaceAbort = () => attemptController.abort();
+            raceController.signal.addEventListener("abort", onRaceAbort, {
+              once: true,
+            });
+
+            const effectiveTimeout = Math.min(timeout, remaining);
+            const timeoutId = setTimeout(
+              () => attemptController.abort(),
+              effectiveTimeout
+            );
+
+            try {
+              const url = new URL(pathStr, endpoint.address);
+              const result = await apiClient<Result>(url.toString(), {
+                ...opts,
+                signal: attemptController.signal,
+              });
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
+              resolve(result);
+            } catch (error) {
+              clearTimeout(timeoutId);
+              raceController.signal.removeEventListener("abort", onRaceAbort);
+              reject(error);
+            }
+          }, delay);
+
+          timers.push(timer);
+
+          raceController.signal.addEventListener(
+            "abort",
+            () => {
+              clearTimeout(timer);
+              reject(new Error("Aborted"));
+            },
+            { once: true }
+          );
+        })
+    );
+
+    const globalTimer = setTimeout(() => raceController.abort(), maxTotalTime);
+    timers.push(globalTimer);
+
+    try {
+      const result = await promiseAny(attempts);
+      raceController.abort();
+      return result;
+    } catch (e: any) {
+      raceController.abort();
+      const errors: Error[] = e?.errors ?? [];
+      const lastError = errors[errors.length - 1];
+
+      console.warn(
+        `[createNodeQuery] All ${schedulable.length} REST endpoints exhausted for chain ${chainId}.`
+      );
+
+      throw new Error(
+        `All ${schedulable.length} REST endpoints failed for chain ${chainId}` +
+          ` (budget: ${maxTotalTime}ms, elapsed: ${
+            Date.now() - startTime
+          }ms).` +
+          ` Last error: ${lastError?.message || "Unknown error"}`
+      );
+    } finally {
+      timers.forEach((t) => clearTimeout(t));
+    }
   };

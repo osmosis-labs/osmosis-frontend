@@ -142,16 +142,20 @@ function createOrAddToAssetList(
   const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
 
   const chainId = isOsmosis
-    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-    : chain.chain_id;
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id ?? ""
+    : chain.chain_id ?? "";
   const chainName = chain.chain_name;
+  const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
 
   const augmentedAsset: Asset = {
     ...asset,
-    relative_image_url: getImageRelativeFilePath(
-      asset.logoURIs.svg ?? asset.logoURIs.png!,
-      asset.symbol
-    ),
+    logoURIs: asset.logoURIs ?? {
+      png: "",
+      svg: "",
+    },
+    relative_image_url: imageUrl
+      ? getImageRelativeFilePath(imageUrl, asset.symbol)
+      : "",
   };
 
   if (assetlistIndex === -1) {
@@ -201,15 +205,72 @@ async function generateAssetListFile({
       return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
-    /** Otherwise, assume IBC asset 1 hop counterparty. */
+    /** Check if asset has any transfer methods at all */
+    if (!asset.transferMethods || asset.transferMethods.length === 0) {
+      // Asset has no transfer methods - could be:
+      // 1. Native Osmosis asset (no counterparty) - silent
+      // 2. Factory token (sourceDenom starts with factory/) - silent
+      // 3. Stranded from defunct chain (has counterparty, not factory) - warn
+      const hasCounterparty =
+        asset.counterparty && asset.counterparty.length > 0;
+      const isFactoryToken = asset.sourceDenom?.startsWith("factory/");
+
+      // Only warn for truly stranded tokens (not factory tokens)
+      if (hasCounterparty && !isFactoryToken) {
+        console.warn(
+          `[${environment.toUpperCase()}] Asset ${
+            asset.symbol
+          } has no transfer methods - adding as Osmosis-based asset (not bridgeable)`
+        );
+      }
+
+      const osmosisChain = chains.find(
+        (chain) => chain.chain_id === osmosisChainId
+      );
+
+      if (!osmosisChain) {
+        throw new Error("Failed to find chain osmosis");
+      }
+
+      return createOrAddToAssetList(acc, osmosisChain, asset, environment);
+    }
+
+    /** Otherwise, look for IBC transfer method to determine counterparty chain */
     const cosmosCounterparty = [...asset.transferMethods]
       .reverse()
       .find(({ type }) => type === "ibc") as IbcTransferMethod | undefined;
 
     if (!cosmosCounterparty) {
-      throw new Error(
-        "Failed to find cosmos counterparty for IBC asset: " + asset.symbol
+      // Asset has transfer methods but no IBC method (e.g., bridge methods)
+      // Look for counterparty chain info in the asset's counterparty array
+      const assetCounterparty = asset.counterparty?.[0];
+
+      if (assetCounterparty && "chainName" in assetCounterparty) {
+        // Found cosmos counterparty with chain name
+        const chain = chains.find(
+          (c) => c.chain_name === assetCounterparty.chainName
+        );
+
+        if (!chain) {
+          console.error(
+            `Failed to find chain ${assetCounterparty.chainName}. ${asset.symbol} for that chain will be skipped.`
+          );
+          return acc;
+        }
+
+        return createOrAddToAssetList(acc, chain, asset, environment);
+      }
+
+      // No counterparty info found, add to Osmosis as fallback
+      const osmosisChain = chains.find(
+        (chain) => chain.chain_id === osmosisChainId
       );
+
+      if (!osmosisChain) {
+        throw new Error("Failed to find chain osmosis");
+      }
+
+      return createOrAddToAssetList(acc, osmosisChain, asset, environment);
     }
 
     const counterpartyChainName = cosmosCounterparty.counterparty.chainName;
@@ -219,9 +280,10 @@ async function generateAssetListFile({
     );
 
     if (!chain) {
-      throw new Error(
+      console.error(
         `Failed to find chain ${counterpartyChainName}. ${asset.symbol} for that chain will be skipped.`
       );
+      return acc;
     }
 
     return createOrAddToAssetList(acc, chain, asset, environment);
@@ -312,8 +374,12 @@ async function generateAssetImages({
 }) {
   console.time("Successfully downloaded images");
   for await (const asset of assetList.assets) {
+    const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
+    if (!imageUrl) continue;
+
     await saveAssetImageToTokensDir({
-      imageUrl: asset?.logoURIs.svg ?? asset?.logoURIs.png ?? "",
+      imageUrl,
       asset,
       currentAssetListHash: commitHash,
     });

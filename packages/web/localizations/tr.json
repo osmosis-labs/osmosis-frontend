@@ -18,13 +18,7 @@
     "priceImpact": "Fiyat Etkisi"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "1. Adım: Bir strateji seçin",
-    "step2Title": "2. Adım: Likidite Ekleyin",
-    "managed": "Yönetilen",
-    "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
-    "manual": "Manuel",
-    "manualDescription": "Maksimum verimlilik ve ödüller için düzenli olarak yönetebileceğiniz bir pozisyon oluşturun.",
-    "back": "Geri",
+    "step1Title": "Likidite Ekleyin",
     "priceShownIn": "Gösterilen fiyatlar",
     "priceRange": "Fiyat aralığı",
     "currentPrice": "Mevcut fiyat",
@@ -172,10 +166,10 @@
       "meme": "meme",
       "liquid_staking": "Sıvı esnetme",
       "built_on_osmosis": "Osmoz üzerine inşa edilmiştir",
-      "sail_initiative": "Yelken Girişimi",
       "bridges": "Köprüler",
       "nft_protocol": "NFT Protokolü",
       "ai": "yapay zeka",
+      "depin": "DePIN",
       "privacy": "Mahremiyet",
       "social": "Sosyal",
       "oracles": "Kahinler",
@@ -190,7 +184,9 @@
       "new": "Yeni",
       "topGainers": "En çok kazananlar",
       "upcoming": "Yaklaşan"
-    }
+    },
+    "strandedTokenDepositDisabled": "Bu varlık, kaynak zincirine giden yol artık etkin olmadığından yatırılamaz",
+    "strandedTokenWithdrawDisabled": "Bu varlık geri çekilemez çünkü kaynak zincirine giden yol artık etkin değil"
   },
   "cypherCard": {
     "cypherSpend": "Osmoz Ödeme",
@@ -273,6 +269,9 @@
       "weighted": "Ağırlıklı",
       "concentrated": "Konsantre likidite",
       "transmuter": "Dönüştürücü",
+      "orderbook": "Sipariş Defteri",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Teşvik yok"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
     "trade": "Profesyonel Ticaret",
-    "margin": "Marj",
-    "perpetuals": "Kalıcılar",
-    "marsSubtext": "Mars tarafından desteklenmektedir",
-    "levanaSubtext": "Levana tarafından desteklenmektedir",
     "more": "Daha",
     "new": "YENİ",
     "settings": "Ayarlar"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "Tokenlerinizi hisseye dönüştürün ve her takasta kazanın.",
     "from": "kimden",
     "incentives": "Teşvikler",
+    "initializePool": "Likidite Ekle",
+    "inactivePool": {
+      "title": "Havuz Erişim Alanı Dışında",
+      "description": "Mevcut fiyatta tüm likidite pozisyonları erişim aralığının dışındadır.\n\nMevcut piyasa kuruna göre yeniden dengeleme yapılmasına olanak sağlamak için az miktarda likidite (en fazla 1 dolar) ekleyin.",
+      "addLiquidity": "Likidite Ekle"
+    },
     "learnMore": "Daha fazla öğren",
     "level": "Seviye {level}",
     "liquidity": "Havuzdaki likidite",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "Lütfen { {chain} {asset} chain\"} hesabınıza bir gaz tokeni gönderin.",
     "insufficientFundsForFees": "Ücretler için yeterli fon yok",
     "youNeedFundsToPay": "{chain} ağ ve köprüleme ücretlerini ödemek için paraya ihtiyacınız var.",
+    "youNeedFundsToPayWithFee": "Transfer etmeye çalıştığınız miktar, {chain} üzerinde {feeAmount} {feeCurrency} köprüleme ücretini karşılamak için çok düşük. Lütfen daha büyük bir miktar deneyin.",
+    "transferAmountTooLowValueLoss": "Transfer miktarı çok düşük",
+    "valueLossTooHighToBridge": "Ücretlerden sonra transfer miktarı çok düşük. Değer kaybı köprüyü başarıyla tamamlamak için çok yüksek olacaktır. Lütfen daha büyük bir miktar deneyin.",
     "assetsDepositsUnavailable": "{asset} para yatırma işlemleri kullanılamıyor",
     "assetWithdrawalsUnavailable": "{asset} çekimleri kullanılamaz",
     "noAvailableDeposits": "Şu anda mevcut rota veya sağlayıcı bulunamadı. Lütfen daha sonra tekrar deneyin veya paranızı Osmosis'e aktarmak için alternatif bir uygulama kullanın.",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "Bu adres yalnızca {denom} {network} \"denom\"} alabilir. Başka herhangi bir varlığın gönderilmesi kalıcı kayba neden olabilir.",
     "minimumDeposit": "Minimum mevduat",
     "nomic": {
-      "estimatedTime": "Yaklaşık 1 saat",
+      "estimatedTime": "1-8 saat",
       "awaitingBtc": "BTC bekleniyor",
       "transferringYourBtc": "BTC'nizi transfer etme",
       "depositStatus": "Mevduat durumu",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "İşleminiz başarısız olabilir",
     "description": "Tüm havuzlarda {tokenWithLowLiquidity} likiditesinin düşük olması nedeniyle, bu işlem yüksek kaymaya neden olabilir ve gerçekleştirilemeyebilir."
+  },
+  "taprootAddressNotSupported": "Taproot adresleri çekimler için desteklenmiyor",
+  "wormhole": {
+    "deprecationTitle": "Wormhole desteği kaldırılıyor",
+    "deprecationSubtitle": "Wormhole aracılığıyla Osmosis'e ek varlık köprülenmesini önermiyoruz. Bu sayfa, mevcut Wormhole köprülenmiş varlıklarınızı Osmosis'ten çekmenize yardımcı olmak için kullanılabilir."
   }
 }

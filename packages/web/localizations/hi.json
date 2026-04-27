@@ -18,13 +18,7 @@
     "priceImpact": "मूल्य प्रभाव"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "चरण 1: एक रणनीति चुनें",
-    "step2Title": "चरण 2: तरलता जोड़ें",
-    "managed": "प्रबंधित",
-    "managedDescription": "अपनी स्थिति का प्रबंधन करने के लिए हमारे प्रदाताओं में से एक को सूचीबद्ध करें। पूरी तरह से एक अनोखा अनुभव।",
-    "manual": "नियमावली",
-    "manualDescription": "एक ऐसी स्थिति बनाएं जिसे आप अधिकतम दक्षता और पुरस्कार के लिए नियमित रूप से प्रबंधित कर सकें।",
-    "back": "पीछे",
+    "step1Title": "तरलता जोड़ें",
     "priceShownIn": "कीमतें {quote} प्रति {base} में दिखाई गई हैं",
     "priceRange": "मूल्य सीमा",
     "currentPrice": "मौजूदा कीमत",
@@ -172,10 +166,10 @@
       "meme": "MEME",
       "liquid_staking": "तरल दाँव",
       "built_on_osmosis": "ऑस्मोसिस पर निर्मित",
-      "sail_initiative": "सेल पहल",
       "bridges": "पुलों",
       "nft_protocol": "एनएफटी प्रोटोकॉल",
       "ai": "ऐ",
+      "depin": "DePIN",
       "privacy": "गोपनीयता",
       "social": "सामाजिक",
       "oracles": "दैवज्ञ",
@@ -190,7 +184,9 @@
       "new": "नया",
       "topGainers": "शीर्ष लाभार्थी",
       "upcoming": "आगामी"
-    }
+    },
+    "strandedTokenDepositDisabled": "इस परिसंपत्ति को जमा नहीं किया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है",
+    "strandedTokenWithdrawDisabled": "इस परिसंपत्ति को वापस नहीं लिया जा सकता क्योंकि इसकी मूल श्रृंखला का मार्ग अब सक्रिय नहीं है"
   },
   "cypherCard": {
     "cypherSpend": "ऑस्मोसिस पे",
@@ -273,6 +269,9 @@
       "weighted": "भारित",
       "concentrated": "सुपरचार्ज",
       "transmuter": "ट्रांसमीटर",
+      "orderbook": "ऑर्डरबुक",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "कोई प्रोत्साहन नहीं"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "वोट",
     "featureRequests": "सुविधा का अनुरोध",
     "trade": "प्रो ट्रेडिंग",
-    "margin": "अंतर",
-    "perpetuals": "स्थाई",
-    "marsSubtext": "मंगल द्वारा संचालित",
-    "levanaSubtext": "लेवाना द्वारा संचालित",
     "more": "अधिक",
     "new": "नया",
     "settings": "समायोजन"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "अपने टोकन को शेयरों में बदलें और प्रत्येक स्वैप पर कमाएं।",
     "from": "से",
     "incentives": "प्रोत्साहन राशि",
+    "initializePool": "तरलता बढ़ाएँ",
+    "inactivePool": {
+      "title": "पूल सीमा से बाहर है",
+      "description": "वर्तमान मूल्य पर सभी तरलता स्थितियां पहुंच से बाहर हैं।\n\nबाजार दर के अनुसार संतुलन स्थापित करने के लिए थोड़ी मात्रा में तरलता (अधिकतम $1) जोड़ें।",
+      "addLiquidity": "तरलता बढ़ाएँ"
+    },
     "learnMore": "और अधिक जानें",
     "level": "लेवल {level}",
     "liquidity": "पूल तरलता",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "कृपया {chain} खाते में {asset} स्थानांतरित करने से पहले एक गैस टोकन भेजें।",
     "insufficientFundsForFees": "फीस के लिए अपर्याप्त धनराशि",
     "youNeedFundsToPay": "आपको {chain} पर नेटवर्क और ब्रिजिंग शुल्क का भुगतान करने के लिए धन की आवश्यकता है।",
+    "youNeedFundsToPayWithFee": "आप जो राशि स्थानांतरित करने का प्रयास कर रहे हैं वह {chain} पर {feeAmount} {feeCurrency} के ब्रिजिंग शुल्क को कवर करने के लिए बहुत कम है। कृपया एक बड़ी राशि का प्रयास करें।",
+    "transferAmountTooLowValueLoss": "स्थानांतरण राशि बहुत कम है",
+    "valueLossTooHighToBridge": "शुल्क के बाद स्थानांतरण राशि बहुत कम है। ब्रिज को सफलतापूर्वक पूरा करने के लिए मूल्य हानि बहुत अधिक होगी। कृपया एक बड़ी राशि का प्रयास करें।",
     "assetsDepositsUnavailable": "{asset} जमा उपलब्ध नहीं हैं",
     "assetWithdrawalsUnavailable": "{asset} निकासी उपलब्ध नहीं है",
     "noAvailableDeposits": "वर्तमान में कोई उपलब्ध मार्ग या प्रदाता नहीं मिल पा रहा है। कृपया बाद में पुनः प्रयास करें या अपने फंड को ऑस्मोसिस में स्थानांतरित करने के लिए किसी वैकल्पिक एप्लिकेशन का उपयोग करें।",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "यह पता केवल {denom} {network} नेटवर्क से प्राप्त कर सकता है। किसी अन्य संपत्ति को भेजने से स्थायी नुकसान हो सकता है।",
     "minimumDeposit": "न्यूनतम जमा",
     "nomic": {
-      "estimatedTime": "लगभग 1 घंटा",
+      "estimatedTime": "1-8 घंटे",
       "awaitingBtc": "बीटीसी की प्रतीक्षा में",
       "transferringYourBtc": "अपना BTC स्थानांतरित करना",
       "depositStatus": "जमा स्थिति",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "आपका व्यापार विफल हो सकता है",
     "description": "सभी पूलों में {tokenWithLowLiquidity} की कम तरलता के कारण, इस व्यापार के परिणामस्वरूप उच्च स्लिपेज हो सकता है और इसे निष्पादित नहीं किया जा सकता है।"
+  },
+  "taprootAddressNotSupported": "निकासी के लिए टैपरूट पते समर्थित नहीं हैं",
+  "wormhole": {
+    "deprecationTitle": "Wormhole सहायता बंद की जा रही है",
+    "deprecationSubtitle": "हम Wormhole के माध्यम से Osmosis में अतिरिक्त संपत्ति ब्रिज करने की सिफारिश नहीं करते हैं। यह पृष्ठ आपको Osmosis से मौजूदा Wormhole-ब्रिज की गई संपत्ति निकालने में सहायता के लिए उपलब्ध है।"
   }
 }

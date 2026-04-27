@@ -45,8 +45,8 @@ interface BaseCurrency {
 
 export type StakeCurrency = BaseCurrency & {
   base?: string;
-  chainSuggestionDenom?: string;
-  sourceDenom?: string;
+  // chainSuggestionDenom?: string;
+  // sourceDenom?: string;
   originCurrency?: BaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
   };
@@ -148,7 +148,7 @@ export interface Asset {
   symbol: string;
   name: string;
   decimals: number;
-  logoURIs: LogoURIs;
+  logoURIs?: LogoURIs;
   coingeckoId?: string;
 
   tooltipMessage?: string;
@@ -219,4 +219,6 @@ export type MinimalAsset = {
   /** Contract address of alloyed asset CW pool. */
   contract?: string;
   variantGroupKey: string | undefined;
+  /** Optional tooltip message to display for this asset. */
+  tooltipMessage?: string;
 };

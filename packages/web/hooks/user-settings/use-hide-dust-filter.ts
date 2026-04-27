@@ -1,8 +1,10 @@
 import { PricePretty } from "@osmosis-labs/unit";
 import { useMemo } from "react";
 
-import { useStore } from "~/stores";
-import { HideDustState, HideDustUserSetting } from "~/stores/user-settings";
+import {
+  DUST_THRESHOLD,
+  useUserSettingsStore,
+} from "~/stores/user-settings-store";
 
 /** Filter a list of items less than one fiat min-amount (penny) if the user setting is on.
  *  @param items Items to be filtered
@@ -12,19 +14,13 @@ export function useHideDustUserSetting<DustableItem>(
   items: DustableItem[],
   getValueOfItem: (item: DustableItem) => PricePretty | undefined
 ): DustableItem[] {
-  const { userSettings } = useStore();
-
-  const hideDust =
-    userSettings.getUserSettingById<HideDustState>("hide-dust")?.state
-      ?.hideDust ?? false;
+  const hideDust = useUserSettingsStore((state) => state.hideDust);
 
   return useMemo(
     () =>
       items.filter((item) =>
         hideDust
-          ? getValueOfItem(item)
-              ?.toDec()
-              .gte(HideDustUserSetting.DUST_THRESHOLD) ?? true
+          ? getValueOfItem(item)?.toDec().gte(DUST_THRESHOLD) ?? true
           : true
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps

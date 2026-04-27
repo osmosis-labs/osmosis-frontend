@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { ClientOnly } from "~/components/client-only";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation, useUserWatchlist } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 
@@ -17,14 +17,17 @@ export const AssetNavigation: FunctionComponent = observer(() => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-center gap-4">
-        {token.coinImageUrl ? (
-          <Image
-            src={token.coinImageUrl}
-            alt={token.coinName}
+        <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+          <EntityImage
+            logoURIs={{
+              png: token.coinImageUrl,
+            }}
+            name={token.coinName}
+            symbol={token.coinDenom}
             width={40}
             height={40}
           />
-        ) : null}
+        </div>
         <div className="flex flex-wrap gap-2">
           {title ? <h6 className="font-h6">{title}</h6> : null}
           <h6 className="font-h6 text-osmoverse-300">{token.coinDenom}</h6>

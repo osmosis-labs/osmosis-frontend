@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "@0xsquid/sdk": "^1.14.0",
-    "@axelar-network/axelarjs-sdk": "0.17.0",
     "@cosmjs/encoding": "0.32.3",
     "@cosmjs/proto-signing": "0.32.3",
     "@osmosis-labs/proto-codecs": "^5.1.0",

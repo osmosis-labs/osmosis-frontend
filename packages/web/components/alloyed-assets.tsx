@@ -1,9 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 
 import { Icon } from "~/components/assets";
+import { EntityImage } from "~/components/ui/entity-image";
 import { Skeleton } from "~/components/ui/skeleton";
 import { useTranslation } from "~/hooks";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface AlloyedAssetsSectionProps {
@@ -96,13 +97,15 @@ export const AlloyedAssetsSection = (props: AlloyedAssetsSectionProps) => {
             className="flex"
           >
             {alloyedAsset.asset.coinImageUrl ? (
-              <Image
-                src={alloyedAsset.asset.coinImageUrl}
-                alt={alloyedAsset.asset.coinName}
-                width={48}
-                height={48}
-                className="h-12 w-12 min-w-[48px]"
-              />
+              <div className="h-12 w-12 min-w-[48px] shrink-0 overflow-hidden rounded-full">
+                <EntityImage
+                  logoURIs={getLogoURIs(alloyedAsset.asset.coinImageUrl)}
+                  symbol={alloyedAsset.asset.coinDenom}
+                  name={alloyedAsset.asset.coinName}
+                  width={48}
+                  height={48}
+                />
+              </div>
             ) : (
               false
             )}

@@ -42,7 +42,9 @@ const useAllPoolsTable = () => {
       searchQuery: parseAsString,
       poolTypesFilter: parseAsArrayOf<PoolTypeFilter>(
         parseAsStringLiteral<PoolTypeFilter>(poolFilterTypes)
-      ).withDefault([...poolFilterTypes]),
+      ).withDefault(
+        poolFilterTypes.filter((type) => type !== "cosmwasm-transmuter")
+      ),
       poolIncentivesFilter: parseAsArrayOf<PoolIncentiveFilter>(
         parseAsStringLiteral<PoolIncentiveFilter>(incentiveTypes)
       ).withDefault([...incentiveTypes]),
@@ -128,11 +130,23 @@ const TableControls = () => {
           selectedOptionIds={filters.poolTypesFilter}
           atLeastOneSelected
           options={[
-            { id: "weighted", display: t("components.table.weighted") },
-            { id: "stable", display: t("components.table.stable") },
             {
               id: "concentrated",
               display: t("components.table.concentrated"),
+            },
+            {
+              id: "cosmwasm-orderbook",
+              display: t("components.table.orderbook"),
+            },
+            { id: "weighted", display: t("components.table.weighted") },
+            { id: "stable", display: t("components.table.stable") },
+            {
+              id: "cosmwasm-astroport-pcl",
+              display: t("components.table.astroport"),
+            },
+            {
+              id: "cosmwasm-whitewhale",
+              display: t("components.table.whitewhale"),
             },
             {
               id: "cosmwasm-transmuter",

@@ -1,5 +1,7 @@
-import { sleep } from "@axelar-network/axelarjs-sdk";
 import type { EncodeObject } from "@cosmjs/proto-signing";
+
+const sleep = (seconds: number) =>
+  new Promise((resolve) => setTimeout(resolve, seconds * 1000));
 import { EarnStrategy } from "@osmosis-labs/server";
 import {
   makeExecuteCosmwasmContractMsg,

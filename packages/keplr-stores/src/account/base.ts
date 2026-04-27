@@ -1,9 +1,9 @@
-import { action, computed, flow, makeObservable, observable } from "mobx";
-import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
-import { ChainGetter } from "../common";
+import type { StdFee } from "@cosmjs/launchpad";
 import { DenomHelper, toGenerator } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import type { StdFee } from "@cosmjs/launchpad";
+import { AppCurrency, Keplr, KeplrSignOptions } from "@keplr-wallet/types";
+import { action, computed, flow, makeObservable, observable } from "mobx";
+import { ChainGetter } from "../common";
 import { MakeTxResponse } from "./types";
 
 export enum WalletStatus {
@@ -341,11 +341,7 @@ export class AccountSetBase {
   }
 
   get hasEthereumHexAddress(): boolean {
-    return (
-      this.chainGetter
-        .getChain(this.chainId)
-        .features?.includes("eth-address-gen") ?? false
-    );
+    return this.chainGetter.getChain(this.chainId).bip44.coinType === 60;
   }
 
   @computed

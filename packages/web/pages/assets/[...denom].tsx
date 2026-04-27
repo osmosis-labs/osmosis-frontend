@@ -20,7 +20,9 @@ import { FunctionComponent, useEffect, useMemo } from "react";
 import { useLocalStorage, useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
+import { Icon } from "~/components/assets";
 import { LinkButton } from "~/components/buttons/link-button";
+import { LinkifiedText } from "~/components/linkified-text";
 import { AssetBalance } from "~/components/pages/asset-info-page/balance";
 import { AssetPriceChart } from "~/components/pages/asset-info-page/chart";
 import {
@@ -28,6 +30,7 @@ import {
   AssetStats,
 } from "~/components/pages/asset-info-page/details";
 import { AssetNavigation } from "~/components/pages/asset-info-page/navigation";
+import { AssetOrderHistory } from "~/components/pages/asset-info-page/orders";
 import { AssetPools } from "~/components/pages/asset-info-page/pools";
 import { TwitterSection } from "~/components/pages/asset-info-page/twitter";
 import { USDC_BASE_DENOM } from "~/components/place-limit-tool/defaults";
@@ -163,19 +166,17 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       return null;
     }
 
-    const SwapTool_ = (
-      <TradeTool
-        page="Token Info Page"
-        swapToolProps={swapToolProps}
-        setPreviousTrade={setPreviousTrade}
-        previousTrade={{
-          baseDenom: asset.coinDenom,
-          sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
-          outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
-          quoteDenom: previousTrade?.quoteDenom ?? "",
-        }}
-      />
-    );
+    const tradeToolProps = {
+      page: "Token Info Page" as const,
+      swapToolProps,
+      setPreviousTrade,
+      previousTrade: {
+        baseDenom: asset.coinMinimalDenom,
+        sendTokenDenom: swapToolProps.initialSendTokenDenom ?? "",
+        outTokenDenom: swapToolProps.initialOutTokenDenom ?? "",
+        quoteDenom: previousTrade?.quoteDenom ?? "",
+      },
+    };
 
     return (
       <AssetInfoViewProvider value={contextValue}>
@@ -212,12 +213,29 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                 <AssetPriceChart />
               </div>
               <AssetBalance className="hidden xl:block" />
+              {asset.tooltipMessage && (
+                <div className="flex items-start gap-3 rounded-2xl border border-osmoverse-700 bg-osmoverse-825 p-4">
+                  <Icon
+                    id="info"
+                    className="mt-0.5 h-5 w-5 shrink-0 text-osmoverse-300"
+                  />
+                  <LinkifiedText
+                    text={asset.tooltipMessage}
+                    className="body2 text-osmoverse-200"
+                  />
+                </div>
+              )}
               <AssetDetails />
               <AssetStats className="hidden xl:flex" />
-              <AssetPools denom={asset.coinDenom} />
+              <AssetPools
+                coinMinimalDenom={asset.coinMinimalDenom}
+                coinDenom={asset.coinDenom}
+              />
               <div className="w-full xl:flex xl:gap-4 1.5lg:flex-col">
                 <div className="hidden w-[26.875rem] shrink-0 xl:order-1 xl:block 1.5lg:order-none 1.5lg:w-full">
-                  {SwapTool_}
+                  <TradeTool {...tradeToolProps}>
+                    <AssetOrderHistory />
+                  </TradeTool>
                 </div>
               </div>
               {!asset.areTransfersDisabled && asset.contract ? (
@@ -232,7 +250,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
             </div>
 
             <div className="flex flex-col gap-11 sm:gap-10">
-              <div className="xl:hidden">{SwapTool_}</div>
+              <div className="xl:hidden">
+                <TradeTool {...tradeToolProps}>
+                  <AssetOrderHistory />
+                </TradeTool>
+              </div>
               <AssetBalance className="xl:hidden" />
               <AssetStats className="xl:hidden" />
               {!asset.areTransfersDisabled && asset.contract ? (

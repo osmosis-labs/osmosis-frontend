@@ -1,9 +1,10 @@
 import classNames from "classnames";
-import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { LinkifiedText } from "~/components/linkified-text";
 import { Tooltip } from "~/components/tooltip";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 
 /** Width should be defined by parent elements. */
@@ -13,6 +14,7 @@ export const AssetCell: FunctionComponent<
     coinName: string;
     coinImageUrl: string;
     warnUnverified: boolean;
+    tooltipMessage?: string;
     isInUserWatchlist: boolean;
     onClickWatchlist: () => void;
   }>
@@ -21,6 +23,7 @@ export const AssetCell: FunctionComponent<
   coinName,
   coinImageUrl,
   warnUnverified = false,
+  tooltipMessage,
   isInUserWatchlist,
   onClickWatchlist,
 }) => {
@@ -44,15 +47,17 @@ export const AssetCell: FunctionComponent<
           />
         </div>
       )}
-      <div className="h-10 w-10 flex-shrink-0">
-        {coinImageUrl && (
-          <Image
-            alt={coinDenom ?? "coin image"}
-            src={coinImageUrl}
-            height={40}
-            width={40}
-          />
-        )}
+      <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full">
+        <EntityImage
+          symbol={coinDenom ?? ""}
+          name={coinName ?? ""}
+          logoURIs={{
+            png: coinImageUrl,
+            svg: coinImageUrl,
+          }}
+          height={40}
+          width={40}
+        />
       </div>
       <div className="flex flex-grow flex-col overflow-hidden">
         {coinName && (
@@ -66,6 +71,14 @@ export const AssetCell: FunctionComponent<
                   id="alert-triangle"
                   className="h-5 w-5 text-osmoverse-300"
                 />
+              </Tooltip>
+            )}
+            {tooltipMessage && (
+              <Tooltip
+                content={<LinkifiedText text={tooltipMessage} />}
+                interactive={true}
+              >
+                <Icon id="info" className="h-4 w-4 text-osmoverse-300" />
               </Tooltip>
             )}
           </div>

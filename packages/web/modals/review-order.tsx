@@ -9,6 +9,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import classNames from "classnames";
 import Image from "next/image";
 import { parseAsString, useQueryState } from "nuqs";
@@ -22,6 +23,7 @@ import { OneClickTradingSettings } from "~/components/one-click-trading/one-clic
 import { oneClickTradingTimeMappings } from "~/components/one-click-trading/screens/session-period-screen";
 import { GenericDisclaimer } from "~/components/tooltip/generic-disclaimer";
 import { Button as UIButton } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { RecapRow } from "~/components/ui/recap-row";
 import { Skeleton } from "~/components/ui/skeleton";
 import { Switch } from "~/components/ui/switch";
@@ -36,7 +38,6 @@ import {
   useTranslation,
   useWindowSize,
 } from "~/hooks";
-import { isValidNumericalRawInput } from "~/hooks/input/use-amount-input";
 import { useIsCosmosNewAccount } from "~/hooks/use-is-cosmos-new-account";
 import { useSwap } from "~/hooks/use-swap";
 import { ModalBase } from "~/modals";
@@ -385,15 +386,17 @@ export function ReviewOrder({
             >
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
-                  {fromAsset && (
-                    <Image
-                      src={fromAsset.coinImageUrl ?? ""}
-                      alt={`${fromAsset.coinDenom} image`}
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                    <EntityImage
+                      logoURIs={{
+                        png: fromAsset?.coinImageUrl,
+                      }}
+                      name={fromAsset?.coinDenom ?? ""}
+                      symbol={fromAsset?.coinDenom ?? ""}
                       width={40}
                       height={40}
-                      className="h-10 w-10"
                     />
-                  )}
+                  </div>
                   <div className="flex flex-col">
                     <p className="sm:caption text-osmoverse-300">
                       {tab === "buy"
@@ -426,13 +429,17 @@ export function ReviewOrder({
               <div className="flex items-end justify-between p-2">
                 <div className="flex items-center gap-4">
                   {toAsset && (
-                    <Image
-                      src={toAsset.coinImageUrl ?? ""}
-                      alt={`${toAsset.coinDenom} image`}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10"
-                    />
+                    <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                      <EntityImage
+                        logoURIs={{
+                          png: toAsset.coinImageUrl,
+                        }}
+                        name={toAsset.coinName}
+                        symbol={toAsset.coinDenom}
+                        width={40}
+                        height={40}
+                      />
+                    </div>
                   )}
                   <div className="flex flex-col">
                     <p className="sm:caption text-osmoverse-300">
@@ -547,10 +554,9 @@ export function ReviewOrder({
                           <div
                             className={classNames(
                               "flex w-fit items-center justify-center overflow-hidden rounded-lg py-1.5 pl-2 text-center transition-all sm:-my-0.5 sm:h-7",
-                              {
-                                "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2":
-                                  isEditingSlippage,
-                              }
+                              isEditingSlippage
+                                ? "border-2 border-solid border-wosmongton-300 bg-osmoverse-900 pr-2"
+                                : "border border-osmoverse-700 bg-osmoverse-850 pr-2"
                             )}
                           >
                             <AutosizeInput

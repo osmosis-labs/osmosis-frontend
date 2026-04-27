@@ -18,13 +18,7 @@
     "priceImpact": "価格への影響"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "ステップ 1: 戦略を選択する",
-    "step2Title": "ステップ 2: 流動性を追加する",
-    "managed": "管理された",
-    "managedDescription": "当社のプロバイダーにポジションの管理を依頼してください。完全に手を使わない体験。",
-    "manual": "マニュアル",
-    "manualDescription": "最大限の効率と報酬を得るために、定期的に管理できるポジションを作成します。",
-    "back": "戻る",
+    "step1Title": "流動性を追加する",
     "priceShownIn": "{quote} {base} quote\"} で表示されます",
     "priceRange": "価格帯",
     "currentPrice": "現在の価格",
@@ -172,10 +166,10 @@
       "meme": "ミーム",
       "liquid_staking": "リキッドステーキング",
       "built_on_osmosis": "浸透に基づいて構築",
-      "sail_initiative": "セイルイニシアチブ",
       "bridges": "橋",
       "nft_protocol": "NFT プロトコル",
       "ai": "人工知能",
+      "depin": "DePIN",
       "privacy": "プライバシー",
       "social": "社交",
       "oracles": "オラクル",
@@ -190,7 +184,9 @@
       "new": "新しい",
       "topGainers": "上位の利益",
       "upcoming": "今後の予定"
-    }
+    },
+    "strandedTokenDepositDisabled": "この資産は、元のチェーンへのルートがアクティブでなくなったため預けることができません",
+    "strandedTokenWithdrawDisabled": "この資産は、その起源チェーンへのルートがアクティブではなくなったため、引き出すことができません。"
   },
   "cypherCard": {
     "cypherSpend": "オズモシスペイ",
@@ -273,6 +269,9 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
+      "orderbook": "注文書",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "投票する",
     "featureRequests": "機能リクエスト",
     "trade": "プロトレーディング",
-    "margin": "マージン",
-    "perpetuals": "永久保存版",
-    "marsSubtext": "火星の力を借りて",
-    "levanaSubtext": "レヴァナが提供する",
     "more": "もっと",
     "new": "新しい",
     "settings": "設定"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "トークンを株式に変換し、交換するたびに収益を上げます。",
     "from": "から",
     "incentives": "インセンティブ",
+    "initializePool": "流動性を追加する",
+    "inactivePool": {
+      "title": "プール範囲外",
+      "description": "すべての流動性ポジションは現在の価格で範囲外です。\n\n現在の市場レートに合わせてリバランスできるように、少量の流動性（最大 1 ドル）を追加します。",
+      "addLiquidity": "流動性を追加する"
+    },
     "learnMore": "もっと詳しく知る",
     "level": "レベル{level}",
     "liquidity": "プールの流動性",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "{ {chain} {asset} chain\"} アカウントにガス トークンを送信してください。",
     "insufficientFundsForFees": "手数料の資金が不足している",
     "youNeedFundsToPay": "{chain}のネットワーク料金とブリッジ料金を支払うための資金が必要です。",
+    "youNeedFundsToPayWithFee": "転送しようとしている金額が低すぎて、{chain}での{feeAmount} {feeCurrency}のブリッジ手数料をカバーできません。より大きな金額をお試しください。",
+    "transferAmountTooLowValueLoss": "送金額が少なすぎます",
+    "valueLossTooHighToBridge": "手数料を差し引いた送金額が少なすぎます。ブリッジを正常に完了するには価値の損失が大きすぎます。より大きな金額をお試しください。",
     "assetsDepositsUnavailable": "{asset}の預金は利用できません",
     "assetWithdrawalsUnavailable": "{asset}引き出しは利用できません",
     "noAvailableDeposits": "現在、利用可能なルートまたはプロバイダーが見つかりません。しばらくしてからもう一度お試しいただくか、別のアプリケーションを使用して資金を Osmosis に送金してください。",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "このアドレスは{denom} {network} \"denom\"} のみを受信できます。その他の資産を送信すると、永久に失われる可能性があります。",
     "minimumDeposit": "最低入金額",
     "nomic": {
-      "estimatedTime": "約1時間",
+      "estimatedTime": "1-8時間",
       "awaitingBtc": "BTCを待つ",
       "transferringYourBtc": "BTCの送金",
       "depositStatus": "預金状況",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "取引が失敗する可能性がある",
     "description": "すべてのプールにおける{tokenWithLowLiquidity}の流動性が低いため、この取引は大きなスリッページを引き起こし、実行されない可能性があります。"
+  },
+  "taprootAddressNotSupported": "Taprootアドレスは出金には対応していません",
+  "wormhole": {
+    "deprecationTitle": "Wormholeサポートは廃止予定です",
+    "deprecationSubtitle": "Wormholeを経由してOsmosisに追加のアセットをブリッジすることはお勧めしません。このページは、Osmosisから既存のWormholeブリッジ済みアセットを引き出すためにご利用いただけます。"
   }
 }

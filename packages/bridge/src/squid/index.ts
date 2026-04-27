@@ -4,8 +4,25 @@ import {
   type GetRoute as SquidGetRouteParams,
   type RouteResponse,
   type TokensResponse,
-  type TransactionRequest,
 } from "@0xsquid/sdk";
+
+/**
+ * The v2 Squid API returns `target` instead of `targetAddress` and no longer
+ * includes `routeType`. The bundled `@0xsquid/sdk@1.x` types are stale.
+ *
+ * TODO: Upgrade `@0xsquid/sdk` to v2 and use the official types from
+ * `@0xsquid/squid-types` (`OnChainExecutionData`). That major bump touches
+ * ethers v5→v6 and reshapes several other types, so it needs its own PR.
+ */
+interface SquidTransactionRequest {
+  target: string;
+  data: string;
+  value: string;
+  gasLimit: string;
+  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
+}
 import {
   makeExecuteCosmwasmContractMsg,
   makeIBCTransferMsg,
@@ -16,6 +33,7 @@ import {
   apiClient,
   ApiClientError,
   EthereumChainInfo,
+  getEvmRpcTransport,
   isNil,
   NativeEVMTokenConstantAddress,
 } from "@osmosis-labs/utils";
@@ -26,7 +44,6 @@ import {
   createPublicClient,
   encodeFunctionData,
   erc20Abi,
-  http,
   numberToHex,
 } from "viem";
 
@@ -64,7 +81,7 @@ export class SquidBridgeProvider implements BridgeProvider {
   ) {
     this.apiURL =
       ctx.env === "mainnet"
-        ? "https://api.0xsquid.com"
+        ? "https://v2.api.squidrouter.com"
         : "https://testnet.api.squidrouter.com";
     this.squidScanBaseUrl =
       ctx.env === "mainnet"
@@ -111,14 +128,14 @@ export class SquidBridgeProvider implements BridgeProvider {
           receiveGasOnDestination: false,
         };
 
-        const url = new URL(`${this.apiURL}/v1/route`);
-        Object.entries(getRouteParams).forEach(([key, value]) => {
-          url.searchParams.append(key, value.toString());
-        });
+        const url = new URL(`${this.apiURL}/v2/route`);
         const data = await apiClient<RouteResponse>(url.toString(), {
           headers: {
             "x-integrator-id": this.integratorId,
+            "Content-Type": "application/json",
           },
+          method: "POST",
+          body: JSON.stringify(getRouteParams),
         }).catch((e) => {
           if (e instanceof ApiClientError) {
             const errMsgs = getSquidErrors(e);
@@ -183,7 +200,8 @@ export class SquidBridgeProvider implements BridgeProvider {
           });
         }
 
-        const transactionRequest = data.route.transactionRequest;
+        const transactionRequest = data.route
+          .transactionRequest as unknown as SquidTransactionRequest;
         const isEvmTransaction = fromChain.chainType === "evm";
 
         if (!aggregatePriceImpact) {
@@ -195,8 +213,8 @@ export class SquidBridgeProvider implements BridgeProvider {
         }
 
         if (
-          data.route.params.toToken.address.toLowerCase() !==
-          toAsset.address.toLowerCase()
+          data?.route?.params?.toToken?.toLowerCase() !==
+          toAsset.address?.toLowerCase()
         ) {
           throw new BridgeQuoteError({
             bridgeId: SquidBridgeProvider.ID,
@@ -305,7 +323,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           (t.address.toLowerCase() === asset.address.toLowerCase() ||
             t.ibcDenom?.toLowerCase() === asset.address.toLowerCase()) &&
           // squid uses canonical chain IDs (numerical and string)
-          t.chainId === chain.chainId
+          String(t.chainId) === String(chain.chainId)
       );
 
       if (!token) throw new Error("Token not found: " + asset.address);
@@ -333,7 +351,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         const squidToken = tokens.find(
           (t) =>
             t.address.toLowerCase() === address.toLowerCase() &&
-            t.chainId === counterparty.chainId
+            String(t.chainId) === String(counterparty.chainId)
         );
         if (!squidToken) continue;
 
@@ -373,10 +391,12 @@ export class SquidBridgeProvider implements BridgeProvider {
             token.commonKey &&
             t.commonKey === token.commonKey &&
             t.address !== token.address &&
-            t.chainId !== token.chainId
+            String(t.chainId) !== String(token.chainId)
         )
         .map((t) => {
-          const chain = chains.find(({ chainId }) => chainId === t.chainId);
+          const chain = chains.find(
+            ({ chainId }) => String(chainId) === String(t.chainId)
+          );
           if (!chain) return;
           return { ...t, ...chain };
         })
@@ -431,7 +451,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromChain: BridgeChain;
     fromAddress: string;
     estimateFromAmount: string;
-    transactionRequest: TransactionRequest;
+    transactionRequest: SquidTransactionRequest;
   }): Promise<EvmBridgeTransactionRequest> {
     const isFromAssetNative =
       fromAsset.address === NativeEVMTokenConstantAddress;
@@ -459,7 +479,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
       const fromTokenContract = createPublicClient({
         chain: evmChain,
-        transport: http(evmChain.rpcUrls.default.http[0]),
+        transport: getEvmRpcTransport(evmChain),
       });
 
       approvalTx = await this.getApprovalTx({
@@ -468,7 +488,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         fromChain,
         isFromAssetNative,
         fromTokenContract,
-        targetAddress: transactionRequest.targetAddress as Address,
+        targetAddress: transactionRequest.target as Address,
         tokenAddress: fromAsset.address as Address,
       });
     } catch (e) {
@@ -481,12 +501,9 @@ export class SquidBridgeProvider implements BridgeProvider {
 
     return {
       type: "evm",
-      to: transactionRequest.targetAddress as Address,
+      to: transactionRequest.target as Address,
       data: transactionRequest.data as Address,
-      value:
-        transactionRequest.routeType !== "SEND"
-          ? numberToHex(BigInt(transactionRequest.value))
-          : undefined,
+      value: numberToHex(BigInt(transactionRequest.value)),
       ...(transactionRequest.maxPriorityFeePerGas
         ? {
             gas: numberToHex(BigInt(transactionRequest.gasLimit)),
@@ -520,13 +537,13 @@ export class SquidBridgeProvider implements BridgeProvider {
   ): Promise<CosmosBridgeTransactionRequest> {
     try {
       const parsedData = JSON.parse(data) as {
-        msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
+        typeUrl: typeof IbcTransferType | typeof WasmTransferType;
       };
 
-      if (parsedData.msgTypeUrl === IbcTransferType) {
+      if (parsedData.typeUrl === IbcTransferType) {
         const ibcData = parsedData as {
-          msgTypeUrl: typeof IbcTransferType;
-          msg: {
+          typeUrl: typeof IbcTransferType;
+          value: {
             sourcePort: string;
             sourceChannel: string;
             token: {
@@ -550,23 +567,23 @@ export class SquidBridgeProvider implements BridgeProvider {
         const timeoutHeight = await this.ctx.getTimeoutHeight(
           toChain.chainType === "cosmos"
             ? toChain
-            : { destinationAddress: ibcData.msg.receiver }
+            : { destinationAddress: ibcData.value.receiver }
         );
 
         const { typeUrl, value: msg } = await makeIBCTransferMsg({
-          memo: ibcData.msg.memo,
-          receiver: ibcData.msg.receiver,
-          sender: ibcData.msg.sender,
-          sourceChannel: ibcData.msg.sourceChannel,
-          sourcePort: ibcData.msg.sourcePort,
+          memo: ibcData.value.memo,
+          receiver: ibcData.value.receiver,
+          sender: ibcData.value.sender,
+          sourceChannel: ibcData.value.sourceChannel,
+          sourcePort: ibcData.value.sourcePort,
           timeoutTimestamp: new Long(
-            ibcData.msg.timeoutTimestamp.low,
-            ibcData.msg.timeoutTimestamp.high,
-            ibcData.msg.timeoutTimestamp.unsigned
+            ibcData.value.timeoutTimestamp.low,
+            ibcData.value.timeoutTimestamp.high,
+            ibcData.value.timeoutTimestamp.unsigned
           ).toString() as any,
           // @ts-ignore
           timeoutHeight,
-          token: ibcData.msg.token,
+          token: ibcData.value.token,
         });
 
         return {
@@ -574,21 +591,21 @@ export class SquidBridgeProvider implements BridgeProvider {
           msgs: [{ typeUrl, value: msg }],
           gasFee,
         };
-      } else if (parsedData.msgTypeUrl === WasmTransferType) {
+      } else if (parsedData.typeUrl === WasmTransferType) {
         const cosmwasmData = parsedData as {
-          msgTypeUrl: typeof WasmTransferType;
-          msg: {
-            wasm: {
-              contract: string;
-              msg: object;
-            };
+          typeUrl: typeof WasmTransferType;
+          value: {
+            sender: string;
+            contract: string;
+            msg: object;
+            funds?: { denom: string; amount: string }[];
           };
         };
 
         const { typeUrl, value: msg } = await makeExecuteCosmwasmContractMsg({
           sender: fromAddress,
-          contract: cosmwasmData.msg.wasm.contract,
-          msg: cosmwasmData.msg.wasm.msg,
+          contract: cosmwasmData.value.contract,
+          msg: cosmwasmData.value.msg,
           funds: [fromCoin],
         });
 
@@ -631,7 +648,12 @@ export class SquidBridgeProvider implements BridgeProvider {
       getFreshValue: async () => {
         try {
           const data = await apiClient<ChainsResponse>(
-            `${this.apiURL}/v1/chains`
+            `${this.apiURL}/v2/chains`,
+            {
+              headers: {
+                "x-integrator-id": this.integratorId,
+              },
+            }
           );
           return data.chains;
         } catch (e) {
@@ -650,7 +672,12 @@ export class SquidBridgeProvider implements BridgeProvider {
       getFreshValue: async () => {
         try {
           const data = await apiClient<TokensResponse>(
-            `${this.apiURL}/v1/tokens`
+            `${this.apiURL}/v2/tokens`,
+            {
+              headers: {
+                "x-integrator-id": this.integratorId,
+              },
+            }
           );
           return data.tokens;
         } catch (e) {

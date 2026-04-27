@@ -27,7 +27,7 @@ export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
   const fileNameSplit = urlParts[urlParts.length - 1].split(".");
   const fileType = fileNameSplit[fileNameSplit.length - 1];
-  return path.join(tokensDir, `${symbol.toLowerCase()}.${fileType}`);
+  return `${tokensDir}/${symbol.toLowerCase()}.${fileType}`;
 }
 
 function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
@@ -108,15 +108,17 @@ export async function saveAssetImageToTokensDir({
   // Fetch the image from the URL.
   const response = await fetch(imageUrl);
   if (!response.ok) {
-    throw new Error(
+    console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
+    return null;
   }
 
   if (!response.body) {
-    throw new Error(
+    console.error(
       `Failed to fetch image from ${imageUrl}: ${response.statusText}`
     );
+    return null;
   }
 
   // Save the image to the file system.
@@ -153,32 +155,39 @@ function getKeplrCompatibleChain({
   const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
   if (!assetList && environment === "mainnet") {
-    throw new Error(
+    console.error(
       `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
     );
+
+    return;
   }
 
   if (!assetList && environment === "testnet") {
     console.warn(`Failed to find currencies for ${chain.chain_name}`);
-    return undefined;
+    return;
   }
 
-  const stakingTokenSourceDenom = chain.stakeCurrency?.sourceDenom ?? "";
+  const stakingTokenDenom = chain.stakeCurrency?.coinMinimalDenom ?? "";
   const stakeAsset = assetList!.assets.find(
-    (asset) => asset.sourceDenom === stakingTokenSourceDenom
+    (asset) => asset.coinMinimalDenom === stakingTokenDenom
   );
 
   const stakeDisplayDecimals = stakeAsset?.decimals;
-  const stakeSourceDenom = stakeAsset?.sourceDenom;
+  const stakeCoinMinimalDenom = stakeAsset?.coinMinimalDenom;
 
-  const rpc = chain.apis.rpc[0].address;
-  const rest = chain.apis.rest[0].address;
+  const rpc = chain.apis ? chain.apis.rpc[0]?.address : "";
+  const rest = chain.apis ? chain.apis.rest[0]?.address : "";
   const prettyChainName = chain.prettyName;
+
+  const stakeCurrencyImageUrl =
+    stakeAsset?.logoURIs?.svg ?? stakeAsset?.logoURIs?.png;
 
   return {
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
     rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
-    chainId: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId : chainId,
+    chainId: isOsmosis
+      ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId ?? ""
+      : chainId ?? "",
     chainName: chain.chain_name,
     prettyChainName: isOsmosis
       ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? prettyChainName
@@ -186,135 +195,36 @@ function getKeplrCompatibleChain({
     bip44: {
       coinType: chain?.slip44 ?? 118,
     },
-    currencies: assetList!.assets.reduce<ChainInfoWithExplorer["currencies"]>(
-      (acc, asset) => {
-        const sourceDenom = asset.sourceDenom;
-        const displayDecimals = asset.decimals;
+    currencies: (chain.currencies ?? []).reduce<
+      ChainInfoWithExplorer["currencies"]
+    >((acc, asset) => {
+      const coinMinimalDenom = asset.coinMinimalDenom ?? "";
+      const displayDecimals = asset.coinDecimals;
 
-        const isCW20ContractToken =
-          sourceDenom
-            .split(/(\w+):(\w+)/)
-            .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
-
-        let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-        if (sourceDenom.startsWith("cw20:secret")) {
-          type = "secret20";
-        } else if (sourceDenom.startsWith("cw20:")) {
-          type = "cw20";
-        }
-
-        if (!asset.logoURIs.svg && !asset.logoURIs.png) {
-          throw new Error(
-            `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
-          );
-        }
-
-        let gasPriceStep: ChainInfo["gasPriceStep"];
-        const matchingFeeCurrency = chain.feeCurrencies.find(
-          (token) => token.coinDenom === sourceDenom
-        );
-
-        if (
-          matchingFeeCurrency &&
-          matchingFeeCurrency.gasPriceStep?.low &&
-          matchingFeeCurrency.gasPriceStep.average &&
-          matchingFeeCurrency.gasPriceStep.high
-        ) {
-          gasPriceStep = {
-            low: matchingFeeCurrency.gasPriceStep.low,
-            average: matchingFeeCurrency.gasPriceStep.average,
-            high: matchingFeeCurrency.gasPriceStep.high,
-          };
-        }
-
-        acc.push({
-          type: type ?? "cw20",
-          coinDenom: asset.symbol,
-          /**
-           * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
-           */
-          coinMinimalDenom: isCW20ContractToken
-            ? sourceDenom + `:${asset.symbol}`
-            : sourceDenom,
-          contractAddress: isCW20ContractToken
-            ? sourceDenom.split(":")[1]!
-            : "",
-          coinDecimals: displayDecimals,
-          coinGeckoId: asset.coingeckoId,
-          coinImageUrl: getImageRelativeFilePath(
-            asset.logoURIs.svg ?? asset.logoURIs.png!,
-            asset.symbol
-          ),
-          base: asset.coinMinimalDenom,
-          pegMechanism: asset.pegMechanism,
-          gasPriceStep,
-        });
-        return acc;
-      },
-      []
-    ),
-    stakeCurrency:
-      // Note: this is a hacky fix since it's possible for chains to have no staking token (i.e. Noble)
-      // Newever versions of Keplr made this nullable, but our Keplr stores are from an old version of Keplr.
-      // I don't anticipate this being an issue since we don't really use staking tokens on other chain in our FE features.
-      // Further, most chains have staking tokens.
-      // So, I add a placeholder token to stay compatible with the ChainInfo types that we imported into the keplr-* packages in the monorepo.
-      // Long term, once we remove the keplr stores for good and delete that code, we can upgrade our Keplr chain type to use the newer
-      // type that tolerates missing staking tokens. Then, we can suggest chains to Keplr wallet with Staking tokens missing.
-      stakeAsset &&
-      stakeDisplayDecimals &&
-      (stakeSourceDenom || stakingTokenSourceDenom)
-        ? {
-            coinDecimals: stakeDisplayDecimals ?? 0,
-            coinDenom: stakeAsset.symbol ?? stakingTokenSourceDenom,
-            coinMinimalDenom:
-              stakeSourceDenom ?? stakingTokenSourceDenom! ?? "",
-            coinGeckoId: stakeAsset.coingeckoId,
-            coinImageUrl:
-              stakeAsset.logoURIs.svg || stakeAsset.logoURIs.png
-                ? getImageRelativeFilePath(
-                    stakeAsset.logoURIs.svg ?? stakeAsset.logoURIs.png!,
-                    stakeAsset.symbol
-                  )
-                : undefined,
-            base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
-          }
-        : {
-            coinDecimals: 0,
-            coinDenom: "STAKE",
-            coinMinimalDenom: "tempStakePlaceholder",
-          },
-    feeCurrencies: chain.feeCurrencies.reduce<
-      ChainInfoWithExplorer["feeCurrencies"]
-    >((acc, token) => {
-      const asset = assetList!.assets.find(
-        (asset) =>
-          asset.sourceDenom ===
-          (token.chainSuggestionDenom ?? token.coinMinimalDenom)
-      );
-
-      if (!asset) {
-        return acc;
-      }
-
-      const sourceDenom = asset.sourceDenom;
-      const displayDecimals = asset.decimals;
-
-      const isContractToken =
-        sourceDenom
+      const isCW20ContractToken =
+        coinMinimalDenom
           .split(/(\w+):(\w+)/)
           .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
+
       let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-      if (sourceDenom.startsWith("cw20:secret")) {
+      if (coinMinimalDenom.startsWith("cw20:secret")) {
         type = "secret20";
-      } else if (sourceDenom.startsWith("cw20:")) {
+      } else if (coinMinimalDenom.startsWith("cw20:")) {
         type = "cw20";
       }
 
+      // if (!asset.logoURIs.svg && !asset.logoURIs.png) {
+      //   throw new Error(
+      //     `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
+      //   );
+      // }
+
       let gasPriceStep: ChainInfo["gasPriceStep"];
-      const matchingFeeCurrency = chain.feeCurrencies.find(
-        (token) => token.coinMinimalDenom === asset.coinMinimalDenom
-      );
+      const matchingFeeCurrency = chain.feeCurrencies
+        ? chain.feeCurrencies.find(
+            (token) => token.coinMinimalDenom === coinMinimalDenom
+          )
+        : undefined;
 
       if (
         matchingFeeCurrency &&
@@ -329,6 +239,107 @@ function getKeplrCompatibleChain({
         };
       }
 
+      const imageUrl = asset?.coinImageUrl ?? "";
+
+      acc.push({
+        type: type ?? "cw20",
+        coinDenom: asset.coinDenom,
+        /**
+         * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
+         */
+        coinMinimalDenom: isCW20ContractToken
+          ? coinMinimalDenom + `:${asset.coinDenom}`
+          : coinMinimalDenom,
+        contractAddress: isCW20ContractToken
+          ? coinMinimalDenom.split(":")[1]!
+          : "",
+        coinDecimals: displayDecimals,
+        coinGeckoId: asset.coinGeckoId,
+        coinImageUrl: imageUrl
+          ? getImageRelativeFilePath(imageUrl, asset.coinDenom)
+          : undefined,
+        base: asset.coinMinimalDenom,
+        // pegMechanism: asset.pegMechanism,
+        gasPriceStep,
+      });
+      return acc;
+    }, []),
+    stakeCurrency:
+      // Note: this is a hacky fix since it's possible for chains to have no staking token (i.e. Noble)
+      // Newever versions of Keplr made this nullable, but our Keplr stores are from an old version of Keplr.
+      // I don't anticipate this being an issue since we don't really use staking tokens on other chain in our FE features.
+      // Further, most chains have staking tokens.
+      // So, I add a placeholder token to stay compatible with the ChainInfo types that we imported into the keplr-* packages in the monorepo.
+      // Long term, once we remove the keplr stores for good and delete that code, we can upgrade our Keplr chain type to use the newer
+      // type that tolerates missing staking tokens. Then, we can suggest chains to Keplr wallet with Staking tokens missing.
+      stakeAsset &&
+      stakeDisplayDecimals &&
+      (stakeCoinMinimalDenom || stakingTokenDenom)
+        ? {
+            coinDecimals: stakeDisplayDecimals ?? 0,
+            coinDenom: stakeAsset.symbol ?? stakingTokenDenom,
+            coinMinimalDenom: stakeCoinMinimalDenom ?? stakingTokenDenom! ?? "",
+            coinGeckoId: stakeAsset.coingeckoId,
+            coinImageUrl: stakeCurrencyImageUrl
+              ? getImageRelativeFilePath(
+                  stakeCurrencyImageUrl,
+                  stakeAsset.symbol
+                )
+              : undefined,
+            base: stakeAsset.coinMinimalDenom ?? "tempStakePlaceholder",
+          }
+        : {
+            coinDecimals: 0,
+            coinDenom: "STAKE",
+            coinMinimalDenom: "tempStakePlaceholder",
+          },
+    feeCurrencies: (chain.feeCurrencies ?? []).reduce<
+      ChainInfoWithExplorer["feeCurrencies"]
+    >((acc, token) => {
+      const asset = assetList?.assets.find(
+        (asset) => asset.coinMinimalDenom === token.coinMinimalDenom
+      );
+
+      if (!asset) {
+        return acc;
+      }
+
+      const coinMinimalDenom = asset.coinMinimalDenom;
+      const displayDecimals = asset.decimals;
+
+      const isContractToken =
+        coinMinimalDenom
+          .split(/(\w+):(\w+)/)
+          .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
+      let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
+      if (coinMinimalDenom.startsWith("cw20:secret")) {
+        type = "secret20";
+      } else if (coinMinimalDenom.startsWith("cw20:")) {
+        type = "cw20";
+      }
+
+      let gasPriceStep: ChainInfo["gasPriceStep"];
+      const matchingFeeCurrency = chain.feeCurrencies
+        ? chain.feeCurrencies.find(
+            (token) => token.coinMinimalDenom === asset.coinMinimalDenom
+          )
+        : undefined;
+
+      if (
+        matchingFeeCurrency &&
+        matchingFeeCurrency.gasPriceStep?.low &&
+        matchingFeeCurrency.gasPriceStep.average &&
+        matchingFeeCurrency.gasPriceStep.high
+      ) {
+        gasPriceStep = {
+          low: matchingFeeCurrency.gasPriceStep.low,
+          average: matchingFeeCurrency.gasPriceStep.average,
+          high: matchingFeeCurrency.gasPriceStep.high,
+        };
+      }
+
+      const imageUrl = asset?.logoURIs?.svg ?? asset?.logoURIs?.png;
+
       acc.push({
         type: type ?? "cw20",
         coinDenom: asset.symbol,
@@ -336,25 +347,23 @@ function getKeplrCompatibleChain({
          * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
          */
         coinMinimalDenom: isContractToken
-          ? sourceDenom + `:${asset.symbol}`
-          : sourceDenom,
-        contractAddress: isContractToken ? sourceDenom.split(":")[1] : "ƒ",
+          ? coinMinimalDenom + `:${asset.symbol}`
+          : coinMinimalDenom,
+        contractAddress: isContractToken ? coinMinimalDenom.split(":")[1] : "ƒ",
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingeckoId,
-        coinImageUrl:
-          asset?.logoURIs.svg || asset?.logoURIs.png
-            ? getImageRelativeFilePath(
-                asset.logoURIs.svg ?? asset.logoURIs.png!,
-                asset.symbol
-              )
-            : undefined,
+        coinImageUrl: imageUrl
+          ? getImageRelativeFilePath(imageUrl, asset.symbol)
+          : undefined,
         base: asset.coinMinimalDenom,
         gasPriceStep,
       });
       return acc;
     }, []),
     bech32Config: chain.bech32Config,
-    explorerUrlToTx: chain.explorers[0].txPage.replace("${", "{"),
+    explorerUrlToTx: chain.explorers
+      ? chain.explorers[0]?.txPage.replace("${", "{")
+      : "",
     features: chain.features,
   };
 }
@@ -391,14 +400,15 @@ export function getChainList({
 
         return {
           ...chain,
+          features: chain.features ?? [],
           /**
            * Needed for CosmosKit to function correctly, otherwise
            * chain suggestion won't work.
            */
           fees: {
-            fee_tokens: chain.feeCurrencies.map((token) => ({
+            fee_tokens: (chain.feeCurrencies ?? []).map((token) => ({
               ...token,
-              denom: token.chainSuggestionDenom ?? token.coinMinimalDenom,
+              denom: token.coinMinimalDenom,
               fixed_min_gas_price: token.gasPriceStep?.low ?? 0,
               low_gas_price: token.gasPriceStep?.low,
               average_gas_price: token.gasPriceStep?.average,
@@ -418,13 +428,13 @@ export function getChainList({
             rpc:
               isOsmosis && OSMOSIS_RPC_OVERWRITE
                 ? [{ address: OSMOSIS_RPC_OVERWRITE }]
-                : chain.apis.rpc,
+                : chain.apis?.rpc ?? [],
             rest:
               isOsmosis && OSMOSIS_REST_OVERWRITE
                 ? [{ address: OSMOSIS_REST_OVERWRITE }]
-                : chain.apis.rest,
+                : chain.apis?.rest ?? [],
           },
-          explorers: chain.explorers.map((explorer) => ({
+          explorers: (chain.explorers ?? []).map((explorer) => ({
             ...explorer,
             txPage: explorer.txPage.replace("${", "{"),
           })),

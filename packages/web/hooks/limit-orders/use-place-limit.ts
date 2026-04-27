@@ -5,15 +5,13 @@ import {
   QuoteDirection,
 } from "@osmosis-labs/tx";
 import { CoinPretty, Dec, Int, PricePretty } from "@osmosis-labs/unit";
+import { isValidNumericalRawInput } from "@osmosis-labs/utils";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAsync } from "react-use";
 
 import { tError } from "~/components/localization";
 import { EventName, EventPage, OUTLIER_USD_VALUE_THRESHOLD } from "~/config";
-import {
-  isValidNumericalRawInput,
-  useAmountInput,
-} from "~/hooks/input/use-amount-input";
+import { useAmountInput } from "~/hooks/input/use-amount-input";
 import { useTranslation } from "~/hooks/language";
 import { useOrderbook } from "~/hooks/limit-orders/use-orderbook";
 import { onAdd1CTSession } from "~/hooks/mutations/one-click-trading";

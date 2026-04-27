@@ -10,19 +10,20 @@ import {
 } from "@headlessui/react";
 import { RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import React, { Fragment, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { useUserSettingsStore } from "~/stores/user-settings-store";
 import { formatPretty } from "~/utils/formatter";
+import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
@@ -45,18 +46,13 @@ export const SetBaseInfos = observer(
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
-    const { accountStore, userSettings } = useStore();
+    const { accountStore } = useStore();
+    const showUnverifiedAssets = useUserSettingsStore(
+      (state) => state.showUnverifiedAssets
+    );
 
     const account = accountStore.getWallet(accountStore.osmosisChainId);
     const { showPreviewAssets } = useShowPreviewAssets();
-
-    const showUnverifiedAssetsSetting =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      );
-    const showUnverifiedAssets = Boolean(
-      showUnverifiedAssetsSetting?.state.showUnverifiedAssets
-    );
 
     const { data: tokens, isLoading: isLoadingTokens } =
       api.local.concentratedLiquidity.getTokens.useQuery({
@@ -236,12 +232,13 @@ const TokenSelector = observer(
           <div className="flex items-center gap-3">
             {selectedAsset ? (
               <>
-                <Image
-                  src={selectedAsset.token.coinImageUrl ?? ""}
-                  alt={`${selectedAsset.token.coinDenom}`}
+                <EntityImage
+                  logoURIs={getLogoURIs(selectedAsset.token.coinImageUrl)}
+                  name={selectedAsset.token.coinDenom}
+                  symbol={selectedAsset.token.coinDenom}
                   width={52}
                   height={52}
-                  className="rounded-full"
+                  className="overflow-hidden rounded-full"
                 />
                 <h5 className="max-w-[130px] truncate">
                   {selectedAsset.token.coinDenom}

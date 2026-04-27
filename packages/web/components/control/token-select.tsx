@@ -2,10 +2,10 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 
 import { Icon } from "~/components/assets";
+import { EntityImage } from "~/components/ui/entity-image";
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
@@ -13,6 +13,7 @@ import {
 } from "~/hooks";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
+import { getLogoURIs } from "~/utils/logo-uri";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<{
@@ -142,17 +143,16 @@ export const TokenSelect: FunctionComponent<{
               }
             }}
           >
-            {selectedCurrency.coinImageUrl && (
-              <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-[30px] md:w-[30px]">
-                <Image
-                  src={selectedCurrency.coinImageUrl}
-                  alt="token icon"
-                  width={isMobile ? 30 : 50}
-                  height={isMobile ? 30 : 50}
-                  className="h-[50px] md:h-[30px]"
-                />
-              </div>
-            )}
+            <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-[30px] md:w-[30px]">
+              <EntityImage
+                logoURIs={getLogoURIs(selectedCurrency.coinImageUrl)}
+                name={selectedCurrency.coinDenom}
+                symbol={selectedCurrency.coinDenom}
+                width={isMobile ? 30 : 50}
+                height={isMobile ? 30 : 50}
+                className="h-[50px] md:h-[30px]"
+              />
+            </div>
             <div className="flex flex-col">
               <div className="flex items-center">
                 {isMobile ? (

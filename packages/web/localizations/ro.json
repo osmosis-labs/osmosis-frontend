@@ -18,13 +18,7 @@
     "priceImpact": "Impactul prețului"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Pasul 1: Alegeți o strategie",
-    "step2Title": "Pasul 2: Adăugați lichiditate",
-    "managed": "A reușit",
-    "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
-    "manual": "Manual",
-    "manualDescription": "Creați o poziție pe care o puteți gestiona în mod regulat pentru eficiență și recompense maxime.",
-    "back": "Înapoi",
+    "step1Title": "Adăugați lichiditate",
     "priceShownIn": "Prețurile afișate în",
     "priceRange": "Gama de prețuri",
     "currentPrice": "pretul curent",
@@ -172,10 +166,10 @@
       "meme": "Eu eu",
       "liquid_staking": "Mărire lichidă",
       "built_on_osmosis": "Construit pe osmoză",
-      "sail_initiative": "Inițiativa Sail",
       "bridges": "Poduri",
       "nft_protocol": "Protocolul NFT",
       "ai": "AI",
+      "depin": "DePIN",
       "privacy": "Confidențialitate",
       "social": "Social",
       "oracles": "Oracole",
@@ -190,7 +184,9 @@
       "new": "Nou",
       "topGainers": "Câștigători de top",
       "upcoming": "În viitor"
-    }
+    },
+    "strandedTokenDepositDisabled": "Acest activ nu poate fi depus deoarece ruta către lanțul său de origine nu mai este activă.",
+    "strandedTokenWithdrawDisabled": "Acest activ nu poate fi retras deoarece ruta către lanțul său de origine nu mai este activă."
   },
   "cypherCard": {
     "cypherSpend": "Plată osmoză",
@@ -273,6 +269,9 @@
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
       "transmuter": "Transmutator",
+      "orderbook": "Carnet de comandă",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Fără incentivi"
     }
   },
@@ -349,10 +348,6 @@
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
     "trade": "Pro Trading",
-    "margin": "Marja",
-    "perpetuals": "Perpetue",
-    "marsSubtext": "Alimentat de Marte",
-    "levanaSubtext": "Produs de Levana",
     "more": "Mai mult",
     "new": "NOU",
     "settings": "Setări"
@@ -472,6 +467,12 @@
     "earnSwapFeesCaption": "Converteste-ti activele in actiuni pentru a castiga din fiecare schimb.",
     "from": "de la",
     "incentives": "Recompense",
+    "initializePool": "Adăugați lichiditate",
+    "inactivePool": {
+      "title": "Piscina în afara razei de acoperire",
+      "description": "Toate pozițiile de lichiditate sunt în afara intervalului la prețul actual.\n\nAdăugați o cantitate mică de lichiditate (maxim 1 USD) pentru a permite reechilibrarea la rata actuală a pieței.",
+      "addLiquidity": "Adăugați lichiditate"
+    },
     "learnMore": "Citeste mai multe",
     "level": "Nivel {level}",
     "liquidity": "Lichiditatea",
@@ -888,6 +889,9 @@
     "sendFundsToAccount": "Vă rugăm să trimiteți un indicativ de gaz în contul dvs. {chain} înainte de a transfera {asset} .",
     "insufficientFundsForFees": "Fonduri insuficiente pentru taxe",
     "youNeedFundsToPay": "Aveți nevoie de fonduri pentru a plăti taxele de rețea și de conectare pe {chain} .",
+    "youNeedFundsToPayWithFee": "Suma pe care încercați să o transferați este prea mică pentru a acoperi taxa de conectare de {feeAmount} {feeCurrency} pe {chain}. Vă rugăm să încercați o sumă mai mare.",
+    "transferAmountTooLowValueLoss": "Suma de transfer este prea mică",
+    "valueLossTooHighToBridge": "Suma de transfer este prea mică după taxe. Pierderea de valoare ar fi prea mare pentru a finaliza cu succes conectarea. Vă rugăm să încercați o sumă mai mare.",
     "assetsDepositsUnavailable": "Depunerile {asset} nu sunt disponibile",
     "assetWithdrawalsUnavailable": "Retragerile {asset} nu sunt disponibile",
     "noAvailableDeposits": "În prezent, nu pot fi găsite rute sau furnizori disponibili. Vă rugăm să încercați din nou mai târziu sau să utilizați o aplicație alternativă pentru a vă transfera fondurile către Osmosis.",
@@ -908,7 +912,7 @@
     "receiveOnlyAsset": "Această adresă poate primi numai {denom} din rețeaua {network} . Trimiterea oricăror alte active poate duce la pierderi permanente.",
     "minimumDeposit": "Depozit minim",
     "nomic": {
-      "estimatedTime": "Aproximativ 1 oră",
+      "estimatedTime": "1-8 ore",
       "awaitingBtc": "În așteptarea BTC",
       "transferringYourBtc": "Transferul dvs. BTC",
       "depositStatus": "Starea depozitului",
@@ -1331,5 +1335,10 @@
   "lowLiquidityAlert": {
     "title": "Tranzacția ta ar putea eșua",
     "description": "Din cauza lichidității reduse a tranzacției {tokenWithLowLiquidity} în toate portofoliile, această tranzacție poate duce la alunecări mari și este posibil să nu fie executată."
+  },
+  "taprootAddressNotSupported": "Adresele Taproot nu sunt acceptate pentru retrageri",
+  "wormhole": {
+    "deprecationTitle": "Suportul pentru Wormhole este în curs de retragere",
+    "deprecationSubtitle": "Nu recomandăm transferul de active suplimentare către Osmosis prin Wormhole. Această pagină este disponibilă pentru a vă ajuta să retrageți activele existente bridge-uite prin Wormhole din Osmosis."
   }
 }

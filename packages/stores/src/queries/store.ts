@@ -60,6 +60,7 @@ export const OsmosisQueries = {
     webApiBaseUrl: string,
     poolIdBlacklist: string[] = [],
     transmuterCodeIds: string[] = [],
+    alloyedCodeIds: string[] = [],
     isTestnet = false
   ): (
     queriesSetBase: QueriesSetBase,
@@ -84,6 +85,7 @@ export const OsmosisQueries = {
                 webApiBaseUrl,
                 poolIdBlacklist,
                 transmuterCodeIds,
+                alloyedCodeIds,
                 isTestnet
               )
             : undefined,
@@ -145,6 +147,7 @@ export class OsmosisQueriesImpl {
     webApiBaseUrl: string,
     poolIdBlacklist: string[] = [],
     transmuterCodeIds: string[] = [],
+    alloyedCodeIds: string[] = [],
     isTestnet = false
   ) {
     this.queryNodeInfo = new ObservableQueryNodeInfo(
@@ -222,6 +225,7 @@ export class OsmosisQueriesImpl {
       this.queryGammNumPools,
       poolIdBlacklist,
       transmuterCodeIds,
+      alloyedCodeIds,
       isTestnet
     );
 

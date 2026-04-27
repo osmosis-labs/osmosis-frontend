@@ -17,11 +17,11 @@ import {
   toJS,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { RadialProgress } from "~/components/radial-progress";
+import { EntityImage } from "~/components/ui/entity-image";
 import { useTranslation } from "~/hooks";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { formatPretty } from "~/utils/formatter";
@@ -402,7 +402,17 @@ const PendingTransferLoadingIcon: FunctionComponent<{
 
   return (
     <div className="relative flex h-12 w-12 items-center justify-center">
-      <Image src={assetLogo} width={32} height={32} alt="Asset image" />
+      <div className="h-8 w-8 overflow-hidden rounded-full">
+        <EntityImage
+          logoURIs={{
+            png: assetLogo,
+          }}
+          name="Token"
+          symbol="TOK"
+          width={32}
+          height={32}
+        />
+      </div>
       <div className="absolute inset-0" ref={progressRef}>
         <RadialProgress progress={100} strokeWidth={2} />
       </div>
