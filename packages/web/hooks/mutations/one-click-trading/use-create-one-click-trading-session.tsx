@@ -298,6 +298,7 @@ export async function makeCreate1CTSessionMessage({
     "/osmosis.concentratedliquidity.v1beta1.MsgCreatePosition",
     // LP Management - GAMM Pools
     "/osmosis.gamm.v1beta1.MsgJoinPool",
+    "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
     "/osmosis.gamm.v1beta1.MsgExitPool",
     // Staking Reward Management
     "/osmosis.valsetpref.v1beta1.MsgSetValidatorSetPreference",
