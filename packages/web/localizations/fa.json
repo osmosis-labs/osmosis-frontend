@@ -284,7 +284,6 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
-    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -319,7 +318,12 @@
     "noOrderbook": "بدون دفترچه سفارش برای جفت",
     "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
-    "startAgain": "دوباره شروع کن"
+    "startAgain": "دوباره شروع کن",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "تخمین زده",
   "frontierMigration": {

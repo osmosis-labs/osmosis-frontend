@@ -284,7 +284,6 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
-    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -319,7 +318,12 @@
     "noOrderbook": "Çift için Sipariş Defteri Yok",
     "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
-    "startAgain": "Tekrar başla"
+    "startAgain": "Tekrar başla",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "Tahmini",
   "frontierMigration": {

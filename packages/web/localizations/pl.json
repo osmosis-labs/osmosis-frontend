@@ -284,7 +284,6 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
-    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -319,7 +318,12 @@
     "noOrderbook": "Brak księgi zamówień dla pary",
     "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
-    "startAgain": "Zacznij jeszcze raz"
+    "startAgain": "Zacznij jeszcze raz",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "Szacowany",
   "frontierMigration": {

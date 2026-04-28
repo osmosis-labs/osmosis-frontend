@@ -284,7 +284,6 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
-    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
@@ -319,7 +318,12 @@
     "noOrderbook": "ペアの注文書はありません",
     "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
-    "startAgain": "再開する"
+    "startAgain": "再開する",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "推定",
   "frontierMigration": {

@@ -284,7 +284,6 @@
     "highSwapFee": "સ્વેપ ફી ખૂબ વધારે છે",
     "insufficientAmount": "અપૂરતી રકમ",
     "insufficientBal": "અપર્યાપ્ત સંતુલન",
-    "insufficientBalForFee": "ફી માટે અપર્યાપ્ત બેલેન્સ",
     "insufficientLiquidity": "અપૂરતી તરલતા",
     "invalidNumberAmount": "નંબરનું અમાન્ય સ્વરૂપ",
     "invalidScalingFactorControllerAddress": "અમાન્ય સ્કેલિંગ પરિબળ નિયંત્રક સરનામું",
@@ -319,7 +318,12 @@
     "noOrderbook": "જોડી માટે કોઈ ઓર્ડરબુક નથી",
     "uhOhSomethingWentWrong": "ઓહ, કંઈક ખોટું થયું",
     "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
-    "startAgain": "ફરી શરૂ કરો"
+    "startAgain": "ફરી શરૂ કરો",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "અંદાજિત",
   "frontierMigration": {

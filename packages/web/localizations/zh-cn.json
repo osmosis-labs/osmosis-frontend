@@ -284,7 +284,6 @@
     "highSwapFee": "交易费太高",
     "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
-    "insufficientBalForFee": "余额不足，无法支付费用",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
@@ -319,7 +318,12 @@
     "noOrderbook": "暂无订单簿",
     "uhOhSomethingWentWrong": "哦，出问题了",
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
-    "startAgain": "重新开始"
+    "startAgain": "重新开始",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    }
   },
   "estimated": "估计的",
   "frontierMigration": {
