@@ -825,6 +825,181 @@ describe("getGasFeeAmount", () => {
     expect(gasAmount.isSubtractiveFee).toBe(false);
   });
 
+  // Scenario: user has insufficient OSMO so the loop has to try alt fee tokens.
+  // The first alt fee token's chain-registered txfees routing pool has no
+  // liquidity, so its spot-price query throws. Selection should skip that
+  // denom and fall back to the next viable alt fee token rather than
+  // aborting the whole tx.
+  it("should skip a fee token whose spot-price query fails and fall back to the next viable fee token", async () => {
+    const gasLimit = 1000;
+    const chainId = "osmosis-1";
+    const address = "osmo1...";
+    const baseFee = "0.002500000000000000";
+    const lowEnoughSpotPrice = "1";
+
+    (queryBalances as jest.Mock).mockResolvedValue({
+      balances: [
+        {
+          denom: "uosmo",
+          amount: "1",
+        },
+        {
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          amount: "1000000",
+        },
+        {
+          denom: "uion",
+          amount: "1000000",
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee,
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uion",
+          poolID: 3217,
+        },
+        {
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          poolID: 1,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockImplementation(({ denom }) => {
+      if (denom === "uion") {
+        return Promise.reject(
+          new Error(
+            "Fetch error. error getting spot price for pool (3217), no liquidity in pool"
+          )
+        );
+      }
+      if (
+        denom ===
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+      ) {
+        return Promise.resolve({
+          pool_id: "1",
+          spot_price: lowEnoughSpotPrice,
+        } as Awaited<ReturnType<typeof queryFeeTokenSpotPrice>>);
+      }
+      throw new Error("Mocked implementation got an unexpected fee denom");
+    });
+
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      const gasAmount = (
+        await getGasFeeAmount({
+          chainId,
+          chainList: MockChains,
+          gasLimit: gasLimit.toString(),
+          bech32Address: address,
+        })
+      )[0];
+
+      // Verify the broken denom was attempted (and skipped),
+      // and the healthy denom was picked.
+      expect(queryFeeTokenSpotPrice).toBeCalledWith({
+        chainId,
+        chainList: MockChains,
+        denom: "uion",
+      });
+      expect(queryFeeTokenSpotPrice).toBeCalledWith({
+        chainId,
+        chainList: MockChains,
+        denom: "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+      });
+
+      expect(gasAmount.denom).toBe(
+        "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+      );
+      expect(gasAmount.isSubtractiveFee).toBe(false);
+
+      // Should have warned about the skipped denom.
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Skipping fee token uion"),
+        expect.stringContaining("no liquidity in pool")
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  // Scenario: every alt fee token's spot-price query throws (e.g. all
+  // registered txfees routing pools are drained, or LCD is hard-down for
+  // the spot-price endpoint). With no OSMO balance to fall back on, we
+  // should surface InsufficientFeeError rather than swallow into a
+  // successful selection.
+  it("should throw InsufficientFeeError when every alt fee token's spot-price query fails and OSMO balance is insufficient", async () => {
+    const gasLimit = 1000;
+    const chainId = "osmosis-1";
+    const address = "osmo1...";
+    const baseFee = "0.002500000000000000";
+
+    (queryBalances as jest.Mock).mockResolvedValue({
+      balances: [
+        {
+          denom: "uosmo",
+          amount: "1",
+        },
+        {
+          denom: "uion",
+          amount: "1000000",
+        },
+        {
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          amount: "1000000",
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryBalances>>);
+    (queryFeesBaseGasPrice as jest.Mock).mockResolvedValue({
+      base_fee: baseFee,
+    } as Awaited<ReturnType<typeof queryFeesBaseGasPrice>>);
+    (queryFeeTokens as jest.Mock).mockResolvedValue({
+      fee_tokens: [
+        {
+          denom: "uion",
+          poolID: 2,
+        },
+        {
+          denom:
+            "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+          poolID: 1,
+        },
+      ],
+    } as Awaited<ReturnType<typeof queryFeeTokens>>);
+    (queryFeesBaseDenom as jest.Mock).mockResolvedValue({
+      base_denom: "uosmo",
+    } as Awaited<ReturnType<typeof queryFeesBaseDenom>>);
+    (queryFeeTokenSpotPrice as jest.Mock).mockImplementation(() =>
+      Promise.reject(new Error("error getting spot price: no liquidity in pool"))
+    );
+
+    const warnSpy = jest.spyOn(console, "warn").mockImplementation(() => {});
+
+    try {
+      await expect(
+        getGasFeeAmount({
+          chainId,
+          chainList: MockChains,
+          gasLimit: gasLimit.toString(),
+          bech32Address: address,
+        })
+      ).rejects.toThrow(InsufficientFeeError);
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
   it("should throw InsufficientFeeError when balance is insufficient without Osmosis fee module — no balances", async () => {
     const gasLimit = 1000;
     const chainId = "cosmoshub-4";
