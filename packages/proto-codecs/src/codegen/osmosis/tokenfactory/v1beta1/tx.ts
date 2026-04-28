@@ -176,39 +176,15 @@ export const MsgSetDenomMetadata = {
   fromAmino(object: MsgSetDenomMetadataAmino): MsgSetDenomMetadata {
     return {
       sender: object.sender ?? "",
-      metadata: {
-        description: object.metadata?.description ?? "",
-        denomUnits: (object.metadata?.denom_units ?? []).map((u: any) => ({
-          denom: u.denom ?? "",
-          exponent: u.exponent ?? 0,
-          aliases: u.aliases ?? [],
-        })),
-        base: object.metadata?.base ?? "",
-        display: object.metadata?.display ?? "",
-        name: object.metadata?.name ?? "",
-        symbol: object.metadata?.symbol ?? "",
-        uri: object.metadata?.uri ?? "",
-        uriHash: object.metadata?.uri_hash ?? "",
-      },
+      metadata: object.metadata
+        ? Metadata.fromAmino(object.metadata)
+        : createBaseMsgSetDenomMetadata().metadata,
     };
   },
   toAmino(message: MsgSetDenomMetadata): MsgSetDenomMetadataAmino {
     return {
       sender: message.sender,
-      metadata: {
-        description: message.metadata.description,
-        denom_units: message.metadata.denomUnits.map((u) => ({
-          denom: u.denom,
-          exponent: u.exponent,
-          aliases: u.aliases,
-        })),
-        base: message.metadata.base,
-        display: message.metadata.display,
-        name: message.metadata.name,
-        symbol: message.metadata.symbol,
-        uri: message.metadata.uri,
-        uri_hash: message.metadata.uriHash,
-      },
+      metadata: Metadata.toAmino(message.metadata),
     };
   },
   toProto(message: MsgSetDenomMetadata): Uint8Array {
