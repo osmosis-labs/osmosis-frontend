@@ -180,6 +180,14 @@ const MainLayoutWrapper: FunctionComponent<{
         selectionTest: /\/apps/,
         badge: <AppsBadge appsLink="/apps" />,
       },
+      flags.tokenFactory
+        ? {
+            label: t("menu.tokenFactory"),
+            link: "/tokenfactory",
+            icon: <Icon id="coins" className="h-6 w-6" />,
+            selectionTest: /\/tokenfactory/,
+          }
+        : null,
       {
         label: t("menu.more"),
         icon: <Icon id="dots-three-vertical" className="h-6 w-6" />,
@@ -192,6 +200,7 @@ const MainLayoutWrapper: FunctionComponent<{
   }, [
     flags.earnPage,
     flags.staking,
+    flags.tokenFactory,
     flags._isInitialized,
     osmosisWallet?.walletInfo?.stakeUrl,
     t,
