@@ -455,7 +455,6 @@ export const OneClickTradingSettings = ({
                   />
                 </div>
 
-
                 {standalone &&
                   hasExistingSession &&
                   changes.filter((c) => c !== "isEnabled").length > 0 &&

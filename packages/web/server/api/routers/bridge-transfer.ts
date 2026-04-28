@@ -116,7 +116,11 @@ export const bridgeTransferRouter = createTRPCRouter({
         // render the dedicated "No fee tokens" warning instead of the generic
         // "Something isn't working" box.
         const errorMessage =
-          err instanceof Error ? err.message : typeof err === "string" ? err : "";
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : "";
         const isOsmosisWithdrawal = input.fromChain.chainId === "osmosis-1";
         if (isOsmosisWithdrawal && isInsufficientFeeError(errorMessage)) {
           throw new TRPCError({

@@ -248,209 +248,213 @@ const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
   onInsufficientFeeTokens?: () => void;
-}> = observer(({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
-  const { t } = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
-  const { accountStore } = useStore();
-  const account = accountStore.getWallet(accountStore.osmosisChainId);
+}> = observer(
+  ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
+    const { t } = useTranslation();
+    const { logEvent } = useAmplitudeAnalytics();
+    const { accountStore } = useStore();
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
 
-  const {
-    onConvert,
-    quote,
-    convertFee,
-    isLoading,
-    isError,
-    isConvertingVariant,
-    isConvertingThisVariant,
-  } = useConvertVariant(variant);
-
-  /**
-   * Check for error when estimating, in case this variant
-   * has very low liquidity and would fail on chain for some reason.
-   * If so, block the user from sending tx.
-   */
-  const simulation = useAsync(async () => {
-    if (!account || !quote || !account?.address) return;
-
-    const messages = await getConvertVariantMessages(
-      variant,
+    const {
+      onConvert,
       quote,
-      account.address
-    );
+      convertFee,
+      isLoading,
+      isError,
+      isConvertingVariant,
+      isConvertingThisVariant,
+    } = useConvertVariant(variant);
 
-    if (!Array.isArray(messages)) return;
+    /**
+     * Check for error when estimating, in case this variant
+     * has very low liquidity and would fail on chain for some reason.
+     * If so, block the user from sending tx.
+     */
+    const simulation = useAsync(async () => {
+      if (!account || !quote || !account?.address) return;
 
-    await accountStore.estimateFee({ wallet: account, messages }).catch((e) => {
-      logEvent([
-        EventName.ConvertVariants.variantUnavailable,
-        { fromToken: variant.amount.currency.coinDenom },
-      ]);
+      const messages = await getConvertVariantMessages(
+        variant,
+        quote,
+        account.address
+      );
 
-      throw e;
+      if (!Array.isArray(messages)) return;
+
+      await accountStore
+        .estimateFee({ wallet: account, messages })
+        .catch((e) => {
+          logEvent([
+            EventName.ConvertVariants.variantUnavailable,
+            { fromToken: variant.amount.currency.coinDenom },
+          ]);
+
+          throw e;
+        });
     });
-  });
 
-  const isUnavailable = Boolean(simulation?.error) || isError;
+    const isUnavailable = Boolean(simulation?.error) || isError;
 
-  useEffect(() => {
-    if (simulation?.error instanceof InsufficientBalanceForFeeError) {
-      onInsufficientFeeTokens?.();
-    }
-  }, [simulation?.error, onInsufficientFeeTokens]);
+    useEffect(() => {
+      if (simulation?.error instanceof InsufficientBalanceForFeeError) {
+        onInsufficientFeeTokens?.();
+      }
+    }, [simulation?.error, onInsufficientFeeTokens]);
 
-  const conversionDisabled =
-    isLoading ||
-    isError ||
-    isConvertingVariant ||
-    simulation.loading ||
-    Boolean(simulation?.error);
+    const conversionDisabled =
+      isLoading ||
+      isError ||
+      isConvertingVariant ||
+      simulation.loading ||
+      Boolean(simulation?.error);
 
-  const isButtonLoading = isConvertingThisVariant || simulation.loading;
+    const isButtonLoading = isConvertingThisVariant || simulation.loading;
 
-  return (
-    <>
-      <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
-        <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
-          <div className="flex min-w-0 items-center gap-3">
-            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <EntityImage
-                logoURIs={
-                  variant.amount.currency.coinImageUrl
-                    ? {
-                        svg: variant.amount.currency.coinImageUrl.replace(
-                          /\.(png|svg)$/,
-                          ".svg"
-                        ),
-                        png: variant.amount.currency.coinImageUrl.replace(
-                          /\.(png|svg)$/,
-                          ".png"
-                        ),
-                      }
-                    : {}
-                }
-                name={variant.amount.currency.coinDenom ?? ""}
-                symbol={variant.amount.currency.coinDenom ?? ""}
-                height={40}
-                width={40}
+    return (
+      <>
+        <div className="flex flex-col justify-between gap-3 rounded-2xl py-4">
+          <div className="grid w-full grid-cols-[1fr_1.5rem_1fr_1.5rem] items-center gap-3 py-2">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                <EntityImage
+                  logoURIs={
+                    variant.amount.currency.coinImageUrl
+                      ? {
+                          svg: variant.amount.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".svg"
+                          ),
+                          png: variant.amount.currency.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".png"
+                          ),
+                        }
+                      : {}
+                  }
+                  name={variant.amount.currency.coinDenom ?? ""}
+                  symbol={variant.amount.currency.coinDenom ?? ""}
+                  height={40}
+                  width={40}
+                />
+              </div>
+              <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
+                <span className="subtitle1 truncate">{variant.name}</span>
+                <span className="body2 truncate text-osmoverse-300">
+                  {variant.amount.currency.coinDenom ?? ""}
+                </span>
+              </div>
+            </div>
+            <Icon
+              id="arrow"
+              height={24}
+              width={24}
+              className="text-osmoverse-700"
+            />
+            <div className="flex grow items-center gap-3 py-2 px-4">
+              <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
+                <EntityImage
+                  logoURIs={
+                    variant?.canonicalAsset?.coinImageUrl
+                      ? {
+                          svg: variant.canonicalAsset.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".svg"
+                          ),
+                          png: variant.canonicalAsset.coinImageUrl.replace(
+                            /\.(png|svg)$/,
+                            ".png"
+                          ),
+                        }
+                      : {}
+                  }
+                  name={variant?.canonicalAsset?.coinDenom ?? ""}
+                  symbol={variant?.canonicalAsset?.coinDenom ?? ""}
+                  height={40}
+                  width={40}
+                />
+              </div>
+              <div className="flex flex-col gap-1 overflow-hidden">
+                <span className="subtitle1 truncate">
+                  {variant.canonicalAsset?.coinName}
+                </span>
+                <span className="body2 truncate text-osmoverse-300">
+                  {variant?.canonicalAsset?.coinDenom ?? ""}
+                </span>
+              </div>
+            </div>
+            {variant.canonicalAsset?.isAlloyed && (
+              <div className="flex items-center justify-center">
+                <Tooltip
+                  arrow={true}
+                  content={
+                    <div className="flex gap-3">
+                      <div>
+                        <Icon
+                          id="alloyed"
+                          height={16}
+                          width={16}
+                          className="text-ammelia-400"
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <span className="caption">
+                          {t("assetVariantsConversion.tooltipTitle", {
+                            coinName: variant.canonicalAsset?.coinName ?? "",
+                          })}
+                        </span>
+                        <span className="caption text-osmoverse-300">
+                          {t("assetVariantsConversion.tooltipDescription", {
+                            coinDenom: variant.canonicalAsset?.coinDenom ?? "",
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                >
+                  <Icon
+                    id="alloyed"
+                    height={24}
+                    width={24}
+                    className="text-osmoverse-alpha-700"
+                  />
+                </Tooltip>
+              </div>
+            )}
+          </div>
+          <div className="flex place-content-between items-center gap-2">
+            <div className="body2 text-osmoverse-300">
+              <FeeContent
+                isLoading={isLoading}
+                convertFee={convertFee}
+                swapFee={quote?.swapFee}
+                isUnavailable={isUnavailable}
+                simulation={simulation}
               />
             </div>
-            <div className="flex min-w-0 flex-col gap-1 overflow-hidden">
-              <span className="subtitle1 truncate">{variant.name}</span>
-              <span className="body2 truncate text-osmoverse-300">
-                {variant.amount.currency.coinDenom ?? ""}
-              </span>
-            </div>
-          </div>
-          <Icon
-            id="arrow"
-            height={24}
-            width={24}
-            className="text-osmoverse-700"
-          />
-          <div className="flex grow items-center gap-3 py-2 px-4">
-            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-full">
-              <EntityImage
-                logoURIs={
-                  variant?.canonicalAsset?.coinImageUrl
-                    ? {
-                        svg: variant.canonicalAsset.coinImageUrl.replace(
-                          /\.(png|svg)$/,
-                          ".svg"
-                        ),
-                        png: variant.canonicalAsset.coinImageUrl.replace(
-                          /\.(png|svg)$/,
-                          ".png"
-                        ),
-                      }
-                    : {}
-                }
-                name={variant?.canonicalAsset?.coinDenom ?? ""}
-                symbol={variant?.canonicalAsset?.coinDenom ?? ""}
-                height={40}
-                width={40}
-              />
-            </div>
-            <div className="flex flex-col gap-1 overflow-hidden">
-              <span className="subtitle1 truncate">
-                {variant.canonicalAsset?.coinName}
-              </span>
-              <span className="body2 truncate text-osmoverse-300">
-                {variant?.canonicalAsset?.coinDenom ?? ""}
-              </span>
-            </div>
-          </div>
-          {variant.canonicalAsset?.isAlloyed && (
-            <div className="flex items-center justify-center">
-              <Tooltip
-                arrow={true}
-                content={
-                  <div className="flex gap-3">
-                    <div>
-                      <Icon
-                        id="alloyed"
-                        height={16}
-                        width={16}
-                        className="text-ammelia-400"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <span className="caption">
-                        {t("assetVariantsConversion.tooltipTitle", {
-                          coinName: variant.canonicalAsset?.coinName ?? "",
-                        })}
-                      </span>
-                      <span className="caption text-osmoverse-300">
-                        {t("assetVariantsConversion.tooltipDescription", {
-                          coinDenom: variant.canonicalAsset?.coinDenom ?? "",
-                        })}
-                      </span>
-                    </div>
-                  </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="md"
+                className={classNames("!h-12 !w-fit", {
+                  "rounded-full !bg-osmoverse-850/60": isButtonLoading,
+                })}
+                disabled={conversionDisabled}
+                isLoading={isButtonLoading}
+                onClick={() =>
+                  onConvert().catch((e) => {
+                    console.error("Failed to convert", e);
+                  })
                 }
               >
-                <Icon
-                  id="alloyed"
-                  height={24}
-                  width={24}
-                  className="text-osmoverse-alpha-700"
-                />
-              </Tooltip>
+                {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
+              </Button>
             </div>
-          )}
-        </div>
-        <div className="flex place-content-between items-center gap-2">
-          <div className="body2 text-osmoverse-300">
-            <FeeContent
-              isLoading={isLoading}
-              convertFee={convertFee}
-              swapFee={quote?.swapFee}
-              isUnavailable={isUnavailable}
-              simulation={simulation}
-            />
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              size="md"
-              className={classNames("!h-12 !w-fit", {
-                "rounded-full !bg-osmoverse-850/60": isButtonLoading,
-              })}
-              disabled={conversionDisabled}
-              isLoading={isButtonLoading}
-              onClick={() =>
-                onConvert().catch((e) => {
-                  console.error("Failed to convert", e);
-                })
-              }
-            >
-              {isButtonLoading ? "" : t("assetVariantsConversion.convert")}
-            </Button>
           </div>
         </div>
-      </div>
-      {showBottomBorder && <div className="h-px w-full bg-osmoverse-700" />}
-    </>
-  );
-});
+        {showBottomBorder && <div className="h-px w-full bg-osmoverse-700" />}
+      </>
+    );
+  }
+);
 
 const AllocationSkeleton = () => (
   <div className="flex flex-col gap-3">
