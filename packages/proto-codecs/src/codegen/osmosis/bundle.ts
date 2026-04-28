@@ -58,6 +58,8 @@ import * as _53 from "./superfluid/superfluid";
 import * as _54 from "./superfluid/tx";
 import * as _101 from "./superfluid/tx.amino";
 import * as _111 from "./superfluid/tx.registry";
+import * as _113 from "./tokenfactory/v1beta1/tx";
+import * as _114 from "./tokenfactory/v1beta1/tx.registry";
 import * as _55 from "./valsetpref/v1beta1/state";
 import * as _56 from "./valsetpref/v1beta1/tx";
 import * as _102 from "./valsetpref/v1beta1/tx.amino";
@@ -166,6 +168,12 @@ export namespace osmosis {
     ..._101,
     ..._111,
   };
+  export namespace tokenfactory {
+    export const v1beta1 = {
+      ..._113,
+      ..._114,
+    };
+  }
   export namespace valsetpref {
     export const v1beta1 = {
       ..._55,

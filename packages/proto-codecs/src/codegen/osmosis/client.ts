@@ -25,6 +25,8 @@ import * as osmosisSmartaccountV1beta1TxAmino from "./smartaccount/v1beta1/tx.am
 import * as osmosisSmartaccountV1beta1TxRegistry from "./smartaccount/v1beta1/tx.registry";
 import * as osmosisSuperfluidTxAmino from "./superfluid/tx.amino";
 import * as osmosisSuperfluidTxRegistry from "./superfluid/tx.registry";
+import * as osmosisTokenfactoryV1beta1TxAmino from "./tokenfactory/v1beta1/tx.amino";
+import * as osmosisTokenfactoryV1beta1TxRegistry from "./tokenfactory/v1beta1/tx.registry";
 import * as osmosisValsetprefV1beta1TxAmino from "./valsetpref/v1beta1/tx.amino";
 import * as osmosisValsetprefV1beta1TxRegistry from "./valsetpref/v1beta1/tx.registry";
 export const osmosisAminoConverters = {
@@ -37,6 +39,7 @@ export const osmosisAminoConverters = {
   ...osmosisPoolmanagerV1beta1TxAmino.AminoConverter,
   ...osmosisSmartaccountV1beta1TxAmino.AminoConverter,
   ...osmosisSuperfluidTxAmino.AminoConverter,
+  ...osmosisTokenfactoryV1beta1TxAmino.AminoConverter,
   ...osmosisValsetprefV1beta1TxAmino.AminoConverter,
 };
 export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
@@ -49,6 +52,7 @@ export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
   ...osmosisPoolmanagerV1beta1TxRegistry.registry,
   ...osmosisSmartaccountV1beta1TxRegistry.registry,
   ...osmosisSuperfluidTxRegistry.registry,
+  ...osmosisTokenfactoryV1beta1TxRegistry.registry,
   ...osmosisValsetprefV1beta1TxRegistry.registry,
 ];
 export const getSigningOsmosisClientOptions = ({
