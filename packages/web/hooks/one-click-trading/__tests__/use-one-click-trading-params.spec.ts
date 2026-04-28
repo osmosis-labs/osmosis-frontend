@@ -60,7 +60,7 @@ const defaultApiResponse: Pick<
   sessionPeriod: {
     end: DEFAULT_SESSION_PERIOD,
   },
-  enabledOptionalCategories: { poolManagement: true },
+  enabledOptionalCategories: { poolManagement: true, limitOrders: true },
 };
 
 // msw-trpc did not deserialize the spendLimit prop, so we mock it here

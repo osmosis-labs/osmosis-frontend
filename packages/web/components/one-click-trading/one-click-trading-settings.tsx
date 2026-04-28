@@ -684,6 +684,10 @@ const CATEGORY_TRANSLATION_KEYS: Record<
     label: "oneClickTrading.settings.permissions.poolManagement.label",
     caption: "oneClickTrading.settings.permissions.poolManagement.caption",
   },
+  limitOrders: {
+    label: "oneClickTrading.settings.permissions.limitOrders.label",
+    caption: "oneClickTrading.settings.permissions.limitOrders.caption",
+  },
 };
 
 /** Renders one toggle per optional category. Forced categories (swaps,

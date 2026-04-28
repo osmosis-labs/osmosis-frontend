@@ -7,6 +7,7 @@ import {
   getOrderbookMakerFee,
   getOrderbookPools,
   getOrderbookState,
+  getPools,
   MappedLimitOrder,
   maybeCachePaginatedItems,
   OrderStatus,
@@ -232,5 +233,25 @@ export const orderbookRouter = createTRPCRouter({
   getPools: publicProcedure.query(async () => {
     const pools = await getOrderbookPools();
     return pools;
+  }),
+  getPoolsWithVolume: publicProcedure.query(async ({ ctx }) => {
+    const orderbookPools = await getOrderbookPools();
+    if (orderbookPools.length === 0) return [];
+
+    const poolIds = orderbookPools.map((p) => p.poolId);
+    const { items: poolsWithData } = await getPools({
+      poolIds,
+      assetLists: ctx.assetLists,
+      chainList: ctx.chainList,
+    });
+
+    return orderbookPools.map((ob) => {
+      const poolData = poolsWithData.find((p) => p.id === ob.poolId);
+      return {
+        ...ob,
+        volume24hUsd:
+          poolData?.market?.volume24hUsd?.toDec().toString() ?? "0",
+      };
+    });
   }),
 });

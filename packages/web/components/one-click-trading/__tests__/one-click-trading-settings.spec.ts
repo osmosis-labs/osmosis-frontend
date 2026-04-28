@@ -14,7 +14,7 @@ describe("compare1CTTransactionParams", () => {
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
-      enabledOptionalCategories: { poolManagement: true },
+      enabledOptionalCategories: { poolManagement: true, limitOrders: true },
     };
 
     const nextParams = { ...prevParams };
@@ -29,7 +29,7 @@ describe("compare1CTTransactionParams", () => {
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
-      enabledOptionalCategories: { poolManagement: true },
+      enabledOptionalCategories: { poolManagement: true, limitOrders: true },
     };
 
     const nextParams: OneClickTradingTransactionParams = {
@@ -47,7 +47,7 @@ describe("compare1CTTransactionParams", () => {
       spendLimit: mockPricePretty(5000),
       networkFeeLimit: "13485",
       sessionPeriod: { end: "1hour" },
-      enabledOptionalCategories: { poolManagement: true },
+      enabledOptionalCategories: { poolManagement: true, limitOrders: true },
     };
 
     const nextParams: OneClickTradingTransactionParams = {

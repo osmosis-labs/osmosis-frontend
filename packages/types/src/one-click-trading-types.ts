@@ -15,7 +15,10 @@ import type { PricePretty } from "@osmosis-labs/unit";
 
 export const FORCED_ONE_CLICK_CATEGORIES = ["swaps", "rewards"] as const;
 
-export const OPTIONAL_ONE_CLICK_CATEGORIES = ["poolManagement"] as const;
+export const OPTIONAL_ONE_CLICK_CATEGORIES = [
+  "poolManagement",
+  "limitOrders",
+] as const;
 
 export const ONE_CLICK_CATEGORIES = [
   ...FORCED_ONE_CLICK_CATEGORIES,
@@ -53,6 +56,12 @@ export const ONE_CLICK_MESSAGES_BY_CATEGORY = {
     "/osmosis.gamm.v1beta1.MsgJoinSwapExternAmountIn",
     "/osmosis.gamm.v1beta1.MsgExitPool",
   ],
+  /** Limit orders are CosmWasm MsgExecuteContract calls against orderbook
+   *  contracts. The contract-address constraint can't be expressed via a flat
+   *  @type filter, so the runtime authenticator builder constructs these
+   *  filters separately when this category is enabled. The empty entry here
+   *  reserves the category slot in the type model. */
+  limitOrders: [],
 } as const satisfies Record<OneClickCategory, readonly string[]>;
 
 /** Flat union of every 1CT-eligible Osmosis-chain message type, derived from
@@ -67,6 +76,7 @@ export const DEFAULT_ENABLED_OPTIONAL_CATEGORIES: Record<
   boolean
 > = {
   poolManagement: true,
+  limitOrders: true,
 };
 
 /** Returns the flat list of allowed message types for a given set of optional

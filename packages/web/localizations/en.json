@@ -441,6 +441,10 @@
         "poolManagement": {
           "label": "Pool management",
           "caption": "Add, remove, and create liquidity positions on Osmosis pools."
+        },
+        "limitOrders": {
+          "label": "Limit orders",
+          "caption": "Place and manage limit orders on the top orderbooks without re-signing."
         }
       },
       "startButton": "Start 1-Click Trading",

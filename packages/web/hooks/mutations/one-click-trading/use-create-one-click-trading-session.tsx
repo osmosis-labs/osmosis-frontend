@@ -32,6 +32,12 @@ import { useStore } from "~/stores";
 import { displayHumanizedTime, humanizeTime } from "~/utils/date";
 import { api, RouterInputs, RouterOutputs } from "~/utils/trpc";
 
+/** Maximum number of orderbook contract addresses pre-authorized in a single
+ *  1CT session. Each MessageFilter entry adds to the authenticator's onchain
+ *  size; 20 keeps the authenticator small while covering the top-volume
+ *  orderbooks that account for the bulk of limit-order traffic. */
+const MAX_ORDERBOOK_FILTERS_PER_SESSION = 20;
+
 export class CreateOneClickSessionError extends Error {
   constructor(message: string) {
     super(message);
@@ -67,11 +73,13 @@ export function getOneClickTradingSessionAuthenticator({
   allowedAmount,
   allowedMessages,
   sessionPeriod,
+  orderbookContractAddresses = [],
 }: {
   key: PrivKeySecp256k1;
   allowedMessages: AvailableOneClickTradingMessages[];
   allowedAmount: string;
   sessionPeriod: OneClickTradingTimeLimit;
+  orderbookContractAddresses?: string[];
 }): {
   authenticatorType: AuthenticatorType;
   data: Uint8Array;
@@ -104,9 +112,20 @@ export function getOneClickTradingSessionAuthenticator({
     config: toBase64(Buffer.from(`{"@type":"${message}"}`)),
   }));
 
+  const orderbookFilters = orderbookContractAddresses.map((contract) => ({
+    type: "MessageFilter",
+    config: toBase64(
+      Buffer.from(
+        `{"@type":"/cosmwasm.wasm.v1.MsgExecuteContract","contract":"${contract}"}`
+      )
+    ),
+  }));
+
   const messageFilterAnyOf = {
     type: "AnyOf",
-    config: toBase64(Buffer.from(JSON.stringify(messageFilters))),
+    config: toBase64(
+      Buffer.from(JSON.stringify([...messageFilters, ...orderbookFilters]))
+    ),
   };
 
   const compositeAuthData = [
@@ -291,6 +310,25 @@ export async function makeCreate1CTSessionMessage({
       transaction1CTParams.enabledOptionalCategories
     );
 
+  // Orderbook contract addresses are fetched only when the user has the
+  // limitOrders category enabled. Each address becomes a separate MessageFilter
+  // entry allowing MsgExecuteContract against that specific contract.
+  let orderbookContractAddresses: string[] = [];
+  if (transaction1CTParams.enabledOptionalCategories.limitOrders) {
+    try {
+      const orderbookPools =
+        await apiUtils.edge.orderbooks.getPoolsWithVolume.fetch();
+      orderbookContractAddresses = orderbookPools
+        .sort(
+          (a, b) => parseFloat(b.volume24hUsd) - parseFloat(a.volume24hUsd)
+        )
+        .slice(0, MAX_ORDERBOOK_FILTERS_PER_SESSION)
+        .map((p) => p.contractAddress);
+    } catch {
+      // Non-fatal: limit order 1CT support will be absent for this session
+    }
+  }
+
   let sessionPeriod: OneClickTradingTimeLimit;
   switch (transaction1CTParams.sessionPeriod.end) {
     case "1hour":
@@ -325,6 +363,7 @@ export async function makeCreate1CTSessionMessage({
     allowedAmount,
     allowedMessages,
     sessionPeriod,
+    orderbookContractAddresses,
   });
 
   const authenticatorToRemoveId =

@@ -25,6 +25,7 @@ const CATEGORY_LABEL_KEYS: Record<OneClickCategory, string> = {
   swaps: "oneClickTrading.permissionsSummary.categoryLabel.swaps",
   rewards: "oneClickTrading.permissionsSummary.categoryLabel.rewards",
   poolManagement: "oneClickTrading.settings.permissions.poolManagement.label",
+  limitOrders: "oneClickTrading.settings.permissions.limitOrders.label",
 };
 
 interface OneClickPermissionsSummaryProps {
