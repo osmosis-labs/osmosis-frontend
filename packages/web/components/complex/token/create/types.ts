@@ -29,6 +29,4 @@ export interface CreateTokenStepProps extends CustomClasses {
   walletAddress: string;
   isSendingMsg?: boolean;
   advanceStep: () => void;
-  /** Override the canAdvance gate computed by StepBase (e.g. for renounce confirmation). */
-  extraCanAdvance?: boolean;
 }

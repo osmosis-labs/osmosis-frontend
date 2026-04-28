@@ -1,20 +1,22 @@
-import classNames from "classnames";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent } from "react";
 
 import { StepBase } from "~/components/complex/token/create/step-base";
 import { CreateTokenStepProps } from "~/components/complex/token/create/types";
 import { InputBox } from "~/components/input";
+import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
+
+const BURN_ADDRESS = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
 
 export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
   props
 ) => {
   const { config, setConfig, walletAddress } = props;
   const { t } = useTranslation();
-  const [renounceConfirmed, setRenounceConfirmed] = useState(false);
 
-  const isRenouncing = config.changeAdminEnabled && config.newAdmin === "";
+  const isRenouncing = config.newAdmin === BURN_ADDRESS;
+
   const adminAddressError =
     config.changeAdminEnabled &&
     config.newAdmin !== "" &&
@@ -22,10 +24,8 @@ export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
       ? t("tokenFactory.create.errors.invalidAddress")
       : null;
 
-  const extraCanAdvance = isRenouncing ? renounceConfirmed : undefined;
-
   return (
-    <StepBase step={3} {...props} extraCanAdvance={extraCanAdvance}>
+    <StepBase step={3} {...props}>
       <div className="flex flex-col gap-5">
         {/* Mint section */}
         <div className="rounded-2xl border border-osmoverse-700 p-5">
@@ -95,77 +95,58 @@ export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
             <Switch
               checked={config.changeAdminEnabled}
               onCheckedChange={(checked) => {
-                setConfig({ changeAdminEnabled: checked });
-                if (!checked) setRenounceConfirmed(false);
+                setConfig({
+                  changeAdminEnabled: checked,
+                  newAdmin: checked ? config.newAdmin : "",
+                });
               }}
             />
           </div>
 
           {config.changeAdminEnabled && (
             <div className="mt-4 flex flex-col gap-3">
-              <div className="flex flex-col gap-1.5">
-                <label className="body2 text-osmoverse-300">
-                  {t("tokenFactory.create.newAdminAddress")}
-                </label>
-                <InputBox
-                  currentValue={config.newAdmin}
-                  onInput={(val) => {
-                    setConfig({ newAdmin: val });
-                    setRenounceConfirmed(false);
-                  }}
-                  placeholder={t("tokenFactory.create.newAdminPlaceholder")}
-                  style={adminAddressError ? "error" : "enabled"}
-                />
-                {adminAddressError && (
-                  <span className="caption text-missionError">
-                    {adminAddressError}
-                  </span>
-                )}
-                <span className="caption text-osmoverse-500">
-                  {t("tokenFactory.create.newAdminHint")}
-                </span>
-              </div>
-
-              {isRenouncing && (
-                <button
-                  className={classNames(
-                    "flex items-center gap-3 rounded-xl border p-3 text-left",
-                    renounceConfirmed
-                      ? "border-rust-500 bg-rust-500/10"
-                      : "border-osmoverse-700"
+              {!isRenouncing && (
+                <div className="flex flex-col gap-1.5">
+                  <label className="body2 text-osmoverse-300">
+                    {t("tokenFactory.create.newAdminAddress")}
+                  </label>
+                  <InputBox
+                    currentValue={config.newAdmin}
+                    onInput={(val) => setConfig({ newAdmin: val })}
+                    placeholder={t("tokenFactory.create.newAdminPlaceholder")}
+                    style={adminAddressError ? "error" : "enabled"}
+                  />
+                  {adminAddressError && (
+                    <span className="caption text-missionError">
+                      {adminAddressError}
+                    </span>
                   )}
-                  onClick={() => setRenounceConfirmed((v) => !v)}
-                >
-                  <div
-                    className={classNames(
-                      "flex h-5 w-5 shrink-0 items-center justify-center rounded border-2",
-                      renounceConfirmed
-                        ? "border-rust-500 bg-rust-500"
-                        : "border-osmoverse-500"
-                    )}
-                  >
-                    {renounceConfirmed && (
-                      <svg
-                        width="10"
-                        height="8"
-                        viewBox="0 0 10 8"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M1 4L3.5 6.5L9 1"
-                          stroke="white"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="caption text-rust-400">
+                  <span className="caption text-osmoverse-500">
+                    {t("tokenFactory.create.newAdminHint")}
+                  </span>
+                </div>
+              )}
+              {isRenouncing ? (
+                <div className="flex flex-col gap-2 rounded-xl border border-missionError/40 bg-missionError/10 p-3">
+                  <span className="caption text-missionError">
                     {t("tokenFactory.create.renounceWarning")}
                   </span>
-                </button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setConfig({ newAdmin: "" })}
+                  >
+                    {t("tokenFactory.create.renounceCancel")}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setConfig({ newAdmin: BURN_ADDRESS })}
+                >
+                  {t("tokenFactory.create.renounceAdmin")}
+                </Button>
               )}
             </div>
           )}

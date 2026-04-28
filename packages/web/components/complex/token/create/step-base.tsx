@@ -9,7 +9,6 @@ export function StepBase({
   config,
   isSendingMsg,
   advanceStep,
-  extraCanAdvance,
   children,
 }: PropsWithChildren<{ step: 1 | 2 | 3 | 4 } & CreateTokenStepProps>) {
   const { t } = useTranslation();
@@ -36,12 +35,10 @@ export function StepBase({
     }
     if (step === 3) {
       if (config.mintEnabled && config.mintAmount === "") return false;
-      if (
-        config.changeAdminEnabled &&
-        config.newAdmin !== "" &&
-        !/^osmo1[a-z0-9]{38}$/.test(config.newAdmin)
-      )
-        return false;
+      if (config.changeAdminEnabled) {
+        if (config.newAdmin === "") return false;
+        if (!/^osmo1[a-z0-9]{38}$/.test(config.newAdmin)) return false;
+      }
       return true;
     }
     if (step === 4) return config.acknowledgeFee;
@@ -54,8 +51,7 @@ export function StepBase({
   });
 
   const isLastStep = step === 4;
-  const finalCanAdvance =
-    canAdvance && (extraCanAdvance === undefined || extraCanAdvance);
+  const finalCanAdvance = canAdvance;
 
   return (
     <div className="flex flex-col gap-5">
