@@ -15,6 +15,7 @@ import {
   useState,
 } from "react";
 
+import { InsufficientFeeTokensWarning } from "~/components/alert/insufficient-fee-tokens-warning";
 import { Icon } from "~/components/assets/icon";
 import {
   AssetFieldset,
@@ -856,22 +857,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
             />
           )}
           {hasInsufficientFeeTokens && (
-            <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-3">
-              <Icon
-                id="alert-triangle"
-                width={20}
-                height={20}
-                className="text-rust-600 min-w-[20px] mt-1"
-              />
-              <div className="flex flex-col gap-1">
-                <span className="body2 text-base text-rust-500">
-                  {t("errors.insufficientFeeTokens.title")}
-                </span>
-                <span className="subtitle2 text-osmoverse-400">
-                  {t("errors.insufficientFeeTokens.body")}
-                </span>
-              </div>
-            </div>
+            <InsufficientFeeTokensWarning className="mt-3" />
           )}
           <div className="flex w-full flex-col py-3">
             {!account?.isWalletConnected ? (

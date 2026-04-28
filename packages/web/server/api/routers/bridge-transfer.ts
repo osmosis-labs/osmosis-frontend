@@ -45,6 +45,7 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
+import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 
 export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
@@ -104,7 +105,7 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       const quoteFn = () => bridgeProvider.getQuote(input);
 
-      let quote;
+      let quote: Awaited<ReturnType<typeof quoteFn>>;
       try {
         /** If the bridge takes longer than 15 seconds to respond, we should timeout that quote. */
         quote = await timeout(quoteFn, 15 * 1000)();
@@ -125,7 +126,7 @@ export const bridgeTransferRouter = createTRPCRouter({
         if (isOsmosisWithdrawal && isInsufficientFeeError(errorMessage)) {
           throw new TRPCError({
             code: "BAD_REQUEST",
-            message: `INSUFFICIENT_FEE_TOKENS_OSMOSIS: ${errorMessage}`,
+            message: `${INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER}: ${errorMessage}`,
             cause: err,
           });
         }

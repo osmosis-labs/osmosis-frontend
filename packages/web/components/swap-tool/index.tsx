@@ -17,6 +17,7 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
+import { InsufficientFeeTokensWarning } from "~/components/alert/insufficient-fee-tokens-warning";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
@@ -695,22 +696,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 </div>
               )}
               {hasInsufficientFeeTokens && (
-                <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
-                  <Icon
-                    id="alert-triangle"
-                    width={20}
-                    height={20}
-                    className="text-rust-600 min-w-[20px] mt-1"
-                  />
-                  <div className="flex flex-col gap-1">
-                    <span className="body2 text-base text-rust-500">
-                      {t("errors.insufficientFeeTokens.title")}
-                    </span>
-                    <span className="subtitle2 text-osmoverse-400">
-                      {t("errors.insufficientFeeTokens.body")}
-                    </span>
-                  </div>
-                </div>
+                <InsufficientFeeTokensWarning className="mb-3" />
               )}
             </div>
           </div>
@@ -725,6 +711,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       !Boolean(swapState.quote) ||
                       isSwapToolLoading ||
                       Boolean(swapState.error) ||
+                      // Fee-token shortage must hard-disable independently of
+                      // the overspend-limit short-circuit below: when 1CT is
+                      // active and a swap exceeds the spend limit we still
+                      // *let* the user click through (overspend triggers a
+                      // re-auth flow), but a wallet with no usable fee token
+                      // can't sign anything regardless, so the button must
+                      // stay disabled to match its "Insufficient fee balance"
+                      // label.
+                      hasInsufficientFeeTokens ||
                       (Boolean(swapState.networkFeeError) &&
                         !swapState.hasOverSpendLimitError)))
                 }

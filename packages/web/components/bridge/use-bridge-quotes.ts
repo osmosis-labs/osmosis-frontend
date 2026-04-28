@@ -27,6 +27,7 @@ import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
+import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
@@ -473,11 +474,13 @@ export const useBridgeQuotes = ({
 
   // Server (`getQuoteByBridge`) tags Osmosis-source withdrawals that fail
   // because the user's account holds no fee token with sufficient balance with
-  // the `INSUFFICIENT_FEE_TOKENS_OSMOSIS` marker so we can render the dedicated
-  // shared warning instead of the generic "Something isn't working" box.
+  // the `INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER` marker so we can render the
+  // dedicated shared warning instead of the generic "Something isn't working"
+  // box.
   const hasInsufficientFeeTokensForOsmosis = useMemo(() => {
     return (
-      someError?.message?.includes("INSUFFICIENT_FEE_TOKENS_OSMOSIS") ?? false
+      someError?.message?.includes(INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER) ??
+      false
     );
   }, [someError]);
 

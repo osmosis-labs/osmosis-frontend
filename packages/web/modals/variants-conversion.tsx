@@ -3,11 +3,11 @@ import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";
 
-// Import useTranslation
+import { InsufficientFeeTokensWarning } from "~/components/alert/insufficient-fee-tokens-warning";
 import { Icon } from "~/components/assets";
 import { SkeletonLoader } from "~/components/loaders";
 import { Tooltip } from "~/components/tooltip";
@@ -115,12 +115,31 @@ export const AssetVariantsConversionModal = observer(() => {
   // estimateFee throws InsufficientBalanceForFeeError, show a single shared
   // banner at the top of the modal instead of repeating it per row (the cause
   // is the wallet's fee balance, not the variant).
-  const [hasInsufficientFeeTokens, setHasInsufficientFeeTokens] =
-    useState(false);
+  //
+  // Tracked per-row in a denom-keyed map so that a row clearing its error
+  // (e.g. user adds OSMO to cover gas) flips the banner off correctly. A flat
+  // boolean wouldn't, since rows only ever set true and the modal-level reset
+  // only fires on close.
+  const [insufficientFeeByDenom, setInsufficientFeeByDenom] = useState<
+    Record<string, boolean>
+  >({});
+  const hasInsufficientFeeTokens = Object.values(insufficientFeeByDenom).some(
+    Boolean
+  );
 
   useEffect(() => {
-    if (!isOpen) setHasInsufficientFeeTokens(false);
+    if (!isOpen) setInsufficientFeeByDenom({});
   }, [isOpen]);
+
+  const reportInsufficientFeeTokens = useCallback(
+    (coinMinimalDenom: string, hasInsufficient: boolean) => {
+      setInsufficientFeeByDenom((prev) => {
+        if (prev[coinMinimalDenom] === hasInsufficient) return prev;
+        return { ...prev, [coinMinimalDenom]: hasInsufficient };
+      });
+    },
+    []
+  );
 
   const {
     data: portfolioAssetsData,
@@ -200,22 +219,7 @@ export const AssetVariantsConversionModal = observer(() => {
           </a>
         </p>
         {hasInsufficientFeeTokens && (
-          <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-4">
-            <Icon
-              id="alert-triangle"
-              width={20}
-              height={20}
-              className="text-rust-600 min-w-[20px] mt-1"
-            />
-            <div className="flex flex-col gap-1">
-              <span className="body2 text-base text-rust-500">
-                {t("errors.insufficientFeeTokens.title")}
-              </span>
-              <span className="subtitle2 text-osmoverse-400">
-                {t("errors.insufficientFeeTokens.body")}
-              </span>
-            </div>
-          </div>
+          <InsufficientFeeTokensWarning className="mt-4" />
         )}
         <div className="mt-4 flex flex-col">
           {isPortfolioAssetsLoading ? (
@@ -231,8 +235,11 @@ export const AssetVariantsConversionModal = observer(() => {
                   key={variant.amount.currency.coinMinimalDenom}
                   variant={variant}
                   showBottomBorder={index !== variants.length - 1}
-                  onInsufficientFeeTokens={() =>
-                    setHasInsufficientFeeTokens(true)
+                  onInsufficientFeeTokens={(hasInsufficient) =>
+                    reportInsufficientFeeTokens(
+                      variant.amount.currency.coinMinimalDenom,
+                      hasInsufficient
+                    )
                   }
                 />
               )
@@ -247,7 +254,7 @@ export const AssetVariantsConversionModal = observer(() => {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
-  onInsufficientFeeTokens?: () => void;
+  onInsufficientFeeTokens?: (hasInsufficient: boolean) => void;
 }> = observer(
   ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
     const { t } = useTranslation();
@@ -296,10 +303,16 @@ const AssetVariantRow: React.FC<{
     const isUnavailable = Boolean(simulation?.error) || isError;
 
     useEffect(() => {
-      if (simulation?.error instanceof InsufficientBalanceForFeeError) {
-        onInsufficientFeeTokens?.();
-      }
-    }, [simulation?.error, onInsufficientFeeTokens]);
+      // Always report current state (true OR false) so the modal-level banner
+      // reflects the latest simulation outcome rather than getting stuck on
+      // true once any simulation has ever errored. simulation.loading is
+      // ignored deliberately: we only want to reset on a real result, not
+      // momentarily flicker the banner off mid-refetch.
+      if (simulation.loading) return;
+      onInsufficientFeeTokens?.(
+        simulation?.error instanceof InsufficientBalanceForFeeError
+      );
+    }, [simulation?.error, simulation.loading, onInsufficientFeeTokens]);
 
     const conversionDisabled =
       isLoading ||

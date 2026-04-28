@@ -995,6 +995,20 @@ describe("getGasFeeAmount", () => {
           bech32Address: address,
         })
       ).rejects.toThrow(InsufficientFeeError);
+
+      // Each candidate fee denom (uion + the IBC token) should have been
+      // explicitly skipped + logged before the InsufficientFeeError is thrown,
+      // proving the loop didn't short-circuit on the first failing denom.
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining("Skipping fee token uion"),
+        expect.stringContaining("no liquidity in pool")
+      );
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining(
+          "Skipping fee token ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2"
+        ),
+        expect.stringContaining("no liquidity in pool")
+      );
     } finally {
       warnSpy.mockRestore();
     }

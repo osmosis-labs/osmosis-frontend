@@ -185,7 +185,15 @@ export const OneClickTradingSettings = ({
     enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
   });
 
-  const hasInsufficientFeeTokens =
+  // Scoped to the remove path only: `useEstimateTxFees` above is gated on
+  // `oneClickTradingInfo` being present (i.e. an existing session is being
+  // ended/edited), so this signal is meaningful for the edit-session button
+  // but not for the start-session button. Plumbing fee estimation into the
+  // start path requires a deterministic equivalent of
+  // `makeCreate1CTSessionMessage` (it currently generates a fresh privKey and
+  // a clock-dependent session period on every call), which is out of scope
+  // here.
+  const hasInsufficientFeeTokensForRemove =
     estimateRemoveTxError instanceof InsufficientBalanceForFeeError;
 
   useEffect(() => {
@@ -464,9 +472,9 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
-                        disabled={hasInsufficientFeeTokens}
+                        disabled={hasInsufficientFeeTokensForRemove}
                       >
-                        {hasInsufficientFeeTokens
+                        {hasInsufficientFeeTokensForRemove
                           ? t("errors.insufficientFeeTokens.buttonLabel")
                           : t("oneClickTrading.settings.editSessionButton")}
                       </Button>
@@ -481,18 +489,15 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
-                        disabled={hasInsufficientFeeTokens}
                       >
-                        {hasInsufficientFeeTokens
-                          ? t("errors.insufficientFeeTokens.buttonLabel")
-                          : t("oneClickTrading.settings.startButton")}
+                        {t("oneClickTrading.settings.startButton")}
                       </Button>
                     </div>
                   )}
 
                 {standalone &&
                   isOneClickTradingEnabled &&
-                  !hasInsufficientFeeTokens &&
+                  !hasInsufficientFeeTokensForRemove &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <div className="flex flex-col gap-2">
                       <SkeletonLoader
