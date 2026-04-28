@@ -6,4 +6,5 @@ export * from "./lockup";
 export * from "./poolmanager";
 export * from "./stableswap";
 export * from "./superfluid";
+export * from "./tokenfactory";
 export * from "./valsetpref";

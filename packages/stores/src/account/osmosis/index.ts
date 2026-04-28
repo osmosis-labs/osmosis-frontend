@@ -16,6 +16,10 @@ import {
   makeCollectSpreadRewardsMsg,
   makeCreateBalancerPoolMsg,
   makeCreateConcentratedPoolMsg,
+  makeMsgChangeAdmin,
+  makeMsgCreateDenom,
+  makeMsgMint,
+  makeMsgSetDenomMetadata,
   makeCreateFullRangePositionAndSuperfluidDelegateMsg,
   makeCreatePositionMsg,
   makeCreateStableswapPoolMsg,
@@ -180,6 +184,93 @@ export class OsmosisAccountImpl {
             });
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Create a tokenfactory denom with optional metadata, initial mint, and admin transfer.
+   * Messages are batched in order: CreateDenom → SetDenomMetadata → (Mint?) → (ChangeAdmin?)
+   */
+  async sendCreateTokenFactoryDenomMsg(
+    params: {
+      subdenom: string;
+      name: string;
+      symbol: string;
+      decimals: number;
+      description?: string;
+      uri?: string;
+      uriHash?: string;
+      mintAmount?: string;
+      mintToAddress?: string;
+      newAdmin?: string;
+    },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sender = this.address;
+    const fullDenom = `factory/${sender}/${params.subdenom}`;
+    const displayDenom = params.symbol;
+
+    const createDenom = makeMsgCreateDenom({
+      sender,
+      subdenom: params.subdenom,
+    });
+
+    const setMetadata = makeMsgSetDenomMetadata({
+      sender,
+      metadata: {
+        description: params.description ?? "",
+        denomUnits: [
+          { denom: fullDenom, exponent: 0, aliases: [] },
+          { denom: displayDenom, exponent: params.decimals, aliases: [] },
+        ],
+        base: fullDenom,
+        display: displayDenom,
+        name: params.name,
+        symbol: params.symbol,
+        uri: params.uri ?? "",
+        uriHash: params.uriHash ?? "",
+      },
+    });
+
+    const msgs: EncodeObject[] = [createDenom, setMetadata];
+
+    if (params.mintAmount && params.mintAmount !== "") {
+      msgs.push(
+        makeMsgMint({
+          sender,
+          amount: { denom: fullDenom, amount: params.mintAmount },
+          mintToAddress: params.mintToAddress ?? sender,
+        })
+      );
+    }
+
+    if (params.newAdmin !== undefined) {
+      msgs.push(
+        makeMsgChangeAdmin({
+          sender,
+          denom: fullDenom,
+          newAdmin: params.newAdmin,
+        })
+      );
+    }
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "createTokenFactoryDenom",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(sender)
+            .balances.forEach((bal) => bal.waitFreshResponse());
+        }
         onFulfill?.(tx);
       }
     );
