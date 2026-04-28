@@ -107,6 +107,22 @@ export const OrderTypeSelector = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
+  // Verify whether this is a real missing orderbook vs. an endpoint failure.
+  // Use fetchStatus instead of isLoading — isLoading is true even when the query
+  // is disabled (no data yet), which would permanently grey out the tab for tokens
+  // that do have an orderbook. fetchStatus === "fetching" is only true when a
+  // request is actually in-flight.
+  const {
+    data: orderbookVerification,
+    isLoading: isVerifying,
+    fetchStatus: verifyFetchStatus,
+  } = api.edge.orderbooks.verifyOrderbookCreation.useQuery(
+    { baseDenom: base, quoteDenom: quote },
+    { enabled: !isLoading && !hasOrderbook }
+  );
+
+  const isVerifyingInFlight = isVerifying && verifyFetchStatus === "fetching";
+
   const uiTradeTypes: UITradeType[] = useMemo(
     () => [
       {
@@ -117,23 +133,16 @@ export const OrderTypeSelector = ({
       {
         id: "limit",
         title: t("limitOrders.limit"),
-        disabled: isLoading || !hasOrderbook,
+        disabled: isLoading || isVerifyingInFlight || !hasOrderbook,
       },
     ],
-    [hasOrderbook, isLoading, t]
+    [hasOrderbook, isLoading, isVerifyingInFlight, t]
   );
-
-  // Verify whether this is a real missing orderbook vs. an endpoint failure
-  const { data: orderbookVerification, isLoading: isVerifying } =
-    api.edge.orderbooks.verifyOrderbookCreation.useQuery(
-      { baseDenom: base, quoteDenom: quote },
-      { enabled: !isLoading && !hasOrderbook }
-    );
 
   const showCreateOption =
     !isLoading &&
     !hasOrderbook &&
-    !isVerifying &&
+    !isVerifyingInFlight &&
     orderbookVerification !== undefined &&
     !orderbookVerification.orderbookExists &&
     orderbookVerification.endpointFunctional;
