@@ -374,7 +374,8 @@
     "trade": "Pro Trading",
     "more": "More",
     "new": "NEW",
-    "settings": "Settings"
+    "settings": "Settings",
+    "tokenFactory": "Token Factory"
   },
   "oneClickTrading": {
     "toast": {
@@ -1084,6 +1085,10 @@
     "pools": {
       "title": "Osmosis Pools",
       "description": "Discover liquidity pools on Osmosis - the leading decentralized Cosmos exchange"
+    },
+    "tokenFactory": {
+      "title": "Osmosis Token Factory",
+      "description": "Create your own token on Osmosis with no code required"
     }
   },
   "tokenInfos": {
@@ -1476,6 +1481,61 @@
     "convertAlloy": {
       "stepTitle": "Convert {symbol} to {symbol}.wh",
       "description": "You hold {balance} {symbol} as the alloyed asset. Wormhole bridges the {symbol}.wh variant, so convert first, then bridge below."
+    }
+  },
+  "tokenFactory": {
+    "title": "Token Factory",
+    "description": "Create your own token on Osmosis. No code required.",
+    "createButton": "Create token",
+    "noTokensYet": "You haven't created any tokens yet.",
+    "connectWallet": "Connect your wallet to create and manage tokens.",
+    "create": {
+      "title": "Create token",
+      "stepOf": "Step {step} of {total}",
+      "buttonNext": "Next",
+      "buttonCreate": "Create token",
+      "optional": "optional",
+      "subdenom": "Subdenom",
+      "subdenomHint": "Unique identifier — becomes part of the permanent denom (max 44 characters)",
+      "name": "Token name",
+      "namePlaceholder": "My Token",
+      "symbol": "Symbol",
+      "decimals": "Decimals",
+      "decimalsTooltip": "6 is the standard for Osmosis tokens. Values above 6 may cause incompatibility with concentrated liquidity pools and are for advanced use only.",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe your token",
+      "uri": "Website or documentation link",
+      "uriHint": "A link to your token's website, whitepaper, or any page that tells people more about it.",
+      "uriHash": "Link verification code",
+      "uriHashPlaceholder": "SHA-256 hash",
+      "uriHashHint": "A fingerprint of the page above that lets wallets verify the content hasn't changed. Leave blank if unsure.",
+      "mintTokens": "Mint initial supply",
+      "mintTokensHint": "Mint tokens immediately after creation",
+      "mintAmount": "Amount",
+      "mintRecipient": "Recipient address",
+      "mintRecipientHint": "osmo1... (leave blank to send to yourself)",
+      "mintRecipientDefault": "Defaults to your wallet address",
+      "changeAdmin": "Transfer admin",
+      "changeAdminHint": "Set a new admin or renounce admin rights after creation",
+      "newAdminAddress": "New admin address",
+      "newAdminPlaceholder": "osmo1... (leave blank to renounce)",
+      "newAdminHint": "Leave blank to permanently renounce admin rights",
+      "renounceWarning": "I understand this is irreversible. Once admin rights are renounced, no one can mint, burn, or update this token's metadata.",
+      "acknowledgeFee": "I understand that creating a token consumes gas and the denom is permanent and cannot be deleted.",
+      "confirmDenom": "Denom",
+      "confirmName": "Name",
+      "confirmSymbol": "Symbol",
+      "confirmDecimals": "Decimals",
+      "confirmDescription": "Description",
+      "confirmMint": "Initial mint",
+      "confirmAdmin": "Admin after creation",
+      "confirmAdminRenounced": "Renounced (no admin)",
+      "errors": {
+        "subdenomTooLong": "Subdenom must be 44 characters or fewer",
+        "subdenomInvalidChars": "Only letters, numbers, '.', '_', '/', '-' are allowed",
+        "uriInvalid": "Must be a valid URL",
+        "invalidAddress": "Must be a valid osmo1... address"
+      }
     }
   }
 }

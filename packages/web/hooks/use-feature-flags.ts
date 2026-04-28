@@ -36,6 +36,7 @@ const defaultFlags: Record<AvailableFlags, boolean> = {
   swapped: true,
   onrampmoney: true,
   polarisBanner: false,
+  tokenFactory: true,
 };
 
 export function useFeatureFlags() {

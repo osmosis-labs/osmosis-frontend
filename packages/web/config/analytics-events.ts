@@ -243,6 +243,11 @@ export const EventName = {
   Wormhole: {
     pageViewed: "Wormhole: Page viewed",
   },
+  TokenFactory: {
+    pageViewed: "Token Factory: Page viewed",
+    createStarted: "Token Factory: Create started",
+    createCompleted: "Token Factory: Create completed",
+  },
   OneClickTrading: {
     startSession: "1CT: Start session",
     endSession: "1CT: End session",
