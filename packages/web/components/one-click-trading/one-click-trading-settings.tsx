@@ -1,3 +1,4 @@
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
@@ -174,12 +175,18 @@ export const OneClickTradingSettings = ({
     });
   }, [oneClickTradingInfo]);
 
-  const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
-    useEstimateTxFees({
-      messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
-      chainId: chainStore.osmosis.chainId,
-      enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
-    });
+  const {
+    data: estimateRemoveTxData,
+    isLoading: isLoadingEstimateRemoveTx,
+    error: estimateRemoveTxError,
+  } = useEstimateTxFees({
+    messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
+    chainId: chainStore.osmosis.chainId,
+    enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+  });
+
+  const hasInsufficientFeeTokens =
+    estimateRemoveTxError instanceof InsufficientBalanceForFeeError;
 
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
@@ -448,6 +455,7 @@ export const OneClickTradingSettings = ({
                   />
                 </div>
 
+
                 {standalone &&
                   hasExistingSession &&
                   changes.filter((c) => c !== "isEnabled").length > 0 &&
@@ -457,8 +465,11 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
+                        disabled={hasInsufficientFeeTokens}
                       >
-                        {t("oneClickTrading.settings.editSessionButton")}
+                        {hasInsufficientFeeTokens
+                          ? t("errors.insufficientFeeTokens.buttonLabel")
+                          : t("oneClickTrading.settings.editSessionButton")}
                       </Button>
                     </div>
                   )}
@@ -471,14 +482,18 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx}
+                        disabled={hasInsufficientFeeTokens}
                       >
-                        {t("oneClickTrading.settings.startButton")}
+                        {hasInsufficientFeeTokens
+                          ? t("errors.insufficientFeeTokens.buttonLabel")
+                          : t("oneClickTrading.settings.startButton")}
                       </Button>
                     </div>
                   )}
 
                 {standalone &&
                   isOneClickTradingEnabled &&
+                  !hasInsufficientFeeTokens &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <div className="flex flex-col gap-2">
                       <SkeletonLoader

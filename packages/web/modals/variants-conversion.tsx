@@ -1,8 +1,9 @@
 import type { AssetVariant } from "@osmosis-labs/server";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";
 
@@ -110,6 +111,17 @@ export const AssetVariantsConversionModal = observer(() => {
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
 
+  // Lift fee-token availability from row-level simulations: if any row's
+  // estimateFee throws InsufficientBalanceForFeeError, show a single shared
+  // banner at the top of the modal instead of repeating it per row (the cause
+  // is the wallet's fee balance, not the variant).
+  const [hasInsufficientFeeTokens, setHasInsufficientFeeTokens] =
+    useState(false);
+
+  useEffect(() => {
+    if (!isOpen) setHasInsufficientFeeTokens(false);
+  }, [isOpen]);
+
   const {
     data: portfolioAssetsData,
     error: portfolioAssetsError,
@@ -187,6 +199,24 @@ export const AssetVariantsConversionModal = observer(() => {
             {t("assetVariantsConversion.learnMore")}
           </a>
         </p>
+        {hasInsufficientFeeTokens && (
+          <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-4">
+            <Icon
+              id="alert-triangle"
+              width={20}
+              height={20}
+              className="text-rust-600 min-w-[20px] mt-1"
+            />
+            <div className="flex flex-col gap-1">
+              <span className="body2 text-base text-rust-500">
+                {t("errors.insufficientFeeTokens.title")}
+              </span>
+              <span className="subtitle2 text-osmoverse-400">
+                {t("errors.insufficientFeeTokens.body")}
+              </span>
+            </div>
+          </div>
+        )}
         <div className="mt-4 flex flex-col">
           {isPortfolioAssetsLoading ? (
             <AllocationSkeleton />
@@ -201,6 +231,9 @@ export const AssetVariantsConversionModal = observer(() => {
                   key={variant.amount.currency.coinMinimalDenom}
                   variant={variant}
                   showBottomBorder={index !== variants.length - 1}
+                  onInsufficientFeeTokens={() =>
+                    setHasInsufficientFeeTokens(true)
+                  }
                 />
               )
             )
@@ -214,7 +247,8 @@ export const AssetVariantsConversionModal = observer(() => {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
-}> = observer(({ variant, showBottomBorder = true }) => {
+  onInsufficientFeeTokens?: () => void;
+}> = observer(({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const { accountStore } = useStore();
@@ -257,6 +291,12 @@ const AssetVariantRow: React.FC<{
   });
 
   const isUnavailable = Boolean(simulation?.error) || isError;
+
+  useEffect(() => {
+    if (simulation?.error instanceof InsufficientBalanceForFeeError) {
+      onInsufficientFeeTokens?.();
+    }
+  }, [simulation?.error, onInsufficientFeeTokens]);
 
   const conversionDisabled =
     isLoading ||

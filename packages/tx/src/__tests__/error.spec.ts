@@ -7,6 +7,21 @@ describe("isInsufficientFeeError", () => {
     expect(isInsufficientFeeError(message)).toBeTruthy();
   });
 
+  it("should return true for the API-generated 'no fee tokens' message (no address)", () => {
+    // Surfaced by `selectFeeAmountFromBalances` /
+    // `getFallbackFeeAmountFromBalances` and forwarded by the
+    // `/api/estimate-gas-fee` endpoint.
+    const message =
+      "No fee tokens found with sufficient balance on account. Please add funds to continue.";
+    expect(isInsufficientFeeError(message)).toBeTruthy();
+  });
+
+  it("should return true for the API-generated 'no fee tokens' message (with address)", () => {
+    const message =
+      "No fee tokens found with sufficient balance on account for address osmo1abcdef. Please add funds to continue.";
+    expect(isInsufficientFeeError(message)).toBeTruthy();
+  });
+
   it("should return false for an invalid insufficient fee error message", () => {
     const message = "Some other error message.";
     expect(isInsufficientFeeError(message)).toBeFalsy();

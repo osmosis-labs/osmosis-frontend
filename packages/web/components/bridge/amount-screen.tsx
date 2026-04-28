@@ -1310,7 +1310,8 @@ export const AmountScreen = observer(
                     />
                     <div className="flex flex-col">
                       <h1 className="body2">
-                        {errorBoxMessage?.heading ?? warningBoxMessage?.heading}
+                        {errorBoxMessage?.heading ??
+                          warningBoxMessage?.heading}
                       </h1>
                       <p className="body2 text-osmoverse-300">
                         {errorBoxMessage?.description ??

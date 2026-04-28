@@ -471,6 +471,16 @@ export const useBridgeQuotes = ({
     return extractFeeDetailsFromError(someError.message);
   }, [isInsufficientFee, someError]);
 
+  // Server (`getQuoteByBridge`) tags Osmosis-source withdrawals that fail
+  // because the user's account holds no fee token with sufficient balance with
+  // the `INSUFFICIENT_FEE_TOKENS_OSMOSIS` marker so we can render the dedicated
+  // shared warning instead of the generic "Something isn't working" box.
+  const hasInsufficientFeeTokensForOsmosis = useMemo(() => {
+    return (
+      someError?.message?.includes("INSUFFICIENT_FEE_TOKENS_OSMOSIS") ?? false
+    );
+  }, [someError]);
+
   const isInvalidAddress = useMemo(() => {
     return someError?.message.includes("taproot");
   }, [someError]);
@@ -817,7 +827,16 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
-  if (isValueLossTooHigh) {
+  if (hasInsufficientFeeTokensForOsmosis) {
+    // Surface this case via the dedicated warning component rendered by the
+    // consumer (amount-screen). We still set a fallback text-only errorBox to
+    // keep `userCanAdvance` gating consistent for surfaces that don't render
+    // the dedicated component.
+    errorBoxMessage = {
+      heading: t("errors.insufficientFeeTokens.title"),
+      description: t("errors.insufficientFeeTokens.body"),
+    };
+  } else if (isValueLossTooHigh) {
     errorBoxMessage = {
       heading: t("transfer.transferAmountTooLowValueLoss"),
       description: t("transfer.valueLossTooHighToBridge"),

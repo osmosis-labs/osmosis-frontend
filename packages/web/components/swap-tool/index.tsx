@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -303,9 +304,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.isLoadingNetworkFee ||
       swapState.isLoadingOneClickMessages;
 
+    const hasInsufficientFeeTokens =
+      swapState.networkFeeError instanceof InsufficientBalanceForFeeError;
+
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
+    } else if (hasInsufficientFeeTokens) {
+      // Surface the fee-token shortage even when there's also a price-impact
+      // warning — the user can't proceed regardless, and "Swap anyway" would
+      // be misleading for a fee-balance issue.
+      buttonText = t("errors.insufficientFeeTokens.buttonLabel");
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
     } else if (
@@ -681,6 +690,24 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       {t("lowLiquidityAlert.description", {
                         tokenWithLowLiquidity,
                       })}
+                    </span>
+                  </div>
+                </div>
+              )}
+              {hasInsufficientFeeTokens && (
+                <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
+                  <Icon
+                    id="alert-triangle"
+                    width={20}
+                    height={20}
+                    className="text-rust-600 min-w-[20px] mt-1"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <span className="body2 text-base text-rust-500">
+                      {t("errors.insufficientFeeTokens.title")}
+                    </span>
+                    <span className="subtitle2 text-osmoverse-400">
+                      {t("errors.insufficientFeeTokens.body")}
                     </span>
                   </div>
                 </div>
