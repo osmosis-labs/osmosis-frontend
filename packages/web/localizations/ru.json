@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
     "startAgain": "Начать заново",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "Нет токенов для оплаты комиссии с достаточным балансом",
+      "body": "Внесите OSMO или другой поддерживаемый токен комиссии в Osmosis, чтобы покрыть сетевой сбор.",
+      "buttonLabel": "Недостаточный баланс для комиссии"
     }
   },
   "estimated": "Оцененный",

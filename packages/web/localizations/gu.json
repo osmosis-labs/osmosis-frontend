@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "અસુવીધી બદલ માફી. પછીથી ફરી પ્રયત્ન કરો.",
     "startAgain": "ફરી શરૂ કરો",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "પૂરતા બેલેન્સ સાથે કોઈ ફી ટોકન નથી",
+      "body": "નેટવર્ક ફી ભરપાઈ કરવા માટે Osmosis પર OSMO અથવા અન્ય સમર્થિત ફી ટોકન જમા કરો.",
+      "buttonLabel": "અપૂરતું ફી બેલેન્સ"
     }
   },
   "estimated": "અંદાજિત",

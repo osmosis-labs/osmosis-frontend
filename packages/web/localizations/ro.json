@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
     "startAgain": "Incepe din nou",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "Niciun token de comision cu sold suficient",
+      "body": "Depune OSMO sau un alt token de comision acceptat pe Osmosis pentru a acoperi comisionul de rețea.",
+      "buttonLabel": "Sold insuficient pentru comision"
     }
   },
   "estimated": "Estimată",

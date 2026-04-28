@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
     "startAgain": "重新開始",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "沒有餘額足夠的手續費代幣",
+      "body": "請在 Osmosis 上存入 OSMO 或其他支援的手續費代幣以支付網路費用。",
+      "buttonLabel": "手續費餘額不足"
     }
   },
   "estimated": "估計的",

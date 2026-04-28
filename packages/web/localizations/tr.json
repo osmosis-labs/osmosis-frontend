@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
     "startAgain": "Tekrar başla",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "Yeterli bakiyeye sahip ücret tokeni yok",
+      "body": "Ağ ücretini karşılamak için Osmosis üzerinde OSMO veya desteklenen başka bir ücret tokeni yatırın.",
+      "buttonLabel": "Yetersiz ücret bakiyesi"
     }
   },
   "estimated": "Tahmini",

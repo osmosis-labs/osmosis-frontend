@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
     "startAgain": "再開する",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "残高が十分な手数料トークンがありません",
+      "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
+      "buttonLabel": "手数料の残高が不足しています"
     }
   },
   "estimated": "推定",

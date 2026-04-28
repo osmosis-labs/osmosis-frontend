@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
     "startAgain": "Recommencer",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "Aucun jeton de frais avec un solde suffisant",
+      "body": "Déposez de l'OSMO ou un autre jeton de frais pris en charge sur Osmosis pour couvrir les frais de réseau.",
+      "buttonLabel": "Solde de frais insuffisant"
     }
   },
   "estimated": "Estimé",

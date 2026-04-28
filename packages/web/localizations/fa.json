@@ -320,9 +320,9 @@
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
     "startAgain": "دوباره شروع کن",
     "insufficientFeeTokens": {
-      "title": "No fee tokens with sufficient balance",
-      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
-      "buttonLabel": "Insufficient fee balance"
+      "title": "هیچ توکن کارمزدی با موجودی کافی وجود ندارد",
+      "body": "برای پوشش کارمزد شبکه، OSMO یا یک توکن کارمزد پشتیبانی‌شده دیگر را در Osmosis واریز کنید.",
+      "buttonLabel": "موجودی کارمزد کافی نیست"
     }
   },
   "estimated": "تخمین زده",
