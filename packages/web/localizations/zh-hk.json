@@ -1405,7 +1405,7 @@
     "noOrderbookForPair": "{base}/{quote} 唔存在 orderbook。建立一個以啟用呢個交易對嘅 limit orders。",
     "createOrderbook": "建立 Orderbook",
     "noOrderbookExists": "{denom} 冇 orderbook",
-    "clickToCreateOrderbook": "點擊建立 orderbook 並啟用呢個交易對嘅 limit orders。",
+    "clickToCreateOrderbook": "點擊為呢個交易對建立 orderbook。",
     "createOrderbookDescription": "建立 orderbook pool 可喺 Osmosis 上為呢個交易對落 limit orders。"
   },
   "tradeDetails": {

@@ -1405,7 +1405,7 @@
     "noOrderbookForPair": "No existe ningún orderbook para {base}/{quote}. Cree uno para habilitar órdenes limitadas para este par.",
     "createOrderbook": "Crear Orderbook",
     "noOrderbookExists": "Sin orderbook para {denom}",
-    "clickToCreateOrderbook": "Haga clic para crear un orderbook y habilitar órdenes limitadas para este par.",
+    "clickToCreateOrderbook": "Haga clic para crear un orderbook para este par.",
     "createOrderbookDescription": "Crear un orderbook pool permite colocar órdenes limitadas para este par de trading en Osmosis."
   },
   "tradeDetails": {

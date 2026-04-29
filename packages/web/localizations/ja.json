@@ -1405,7 +1405,7 @@
     "noOrderbookForPair": "{base}/{quote}のorderbookが存在しません。このペアのlimit ordersを有効にするために作成してください。",
     "createOrderbook": "Orderbookを作成",
     "noOrderbookExists": "{denom}のorderbookなし",
-    "clickToCreateOrderbook": "クリックしてorderbookを作成し、このペアのlimit ordersを有効にします。",
+    "clickToCreateOrderbook": "クリックしてこのペアのorderbookを作成します。",
     "createOrderbookDescription": "Orderbook poolを作成すると、Osmosis上でこの取引ペアのlimit ordersが注文できるようになります。"
   },
   "tradeDetails": {

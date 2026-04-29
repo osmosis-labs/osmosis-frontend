@@ -1405,7 +1405,7 @@
     "noOrderbookForPair": "{base}/{quote} için herhangi bir orderbook mevcut değil. Bu çift için limit orders'ı etkinleştirmek üzere bir tane oluşturun.",
     "createOrderbook": "Orderbook Oluştur",
     "noOrderbookExists": "{denom} için orderbook yok",
-    "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak ve limit orders'ı etkinleştirmek için tıklayın.",
+    "clickToCreateOrderbook": "Bu çift için bir orderbook oluşturmak için tıklayın.",
     "createOrderbookDescription": "Bir orderbook pool oluşturmak, Osmosis'te bu işlem çifti için limit orders verilmesini sağlar."
   },
   "tradeDetails": {
