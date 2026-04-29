@@ -7,7 +7,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
-import React, { Fragment, memo, useEffect, useMemo } from "react";
+import React, { Fragment, memo, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import {
@@ -26,10 +26,13 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
 import { useOrderbookSelectableDenoms } from "~/hooks/limit-orders/use-orderbook";
 import { AddFundsModal } from "~/modals/add-funds";
+import { CreateOrderbookModal } from "~/modals/create-orderbook";
 import { useStore } from "~/stores";
 import { formatFiatPrice } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
@@ -426,6 +429,193 @@ function HighestBalanceAssetsIcons({
   );
 }
 
+/** Handles a single disabled quote item that may be creatable as a new orderbook. */
+const CreatableQuoteItem = observer(
+  ({
+    base,
+    baseCoinImageUrl,
+    baseSymbol,
+    coinMinimalDenom,
+    logoURIs,
+    name,
+    symbol,
+    isSelected,
+  }: {
+    base: string;
+    baseCoinImageUrl?: string;
+    baseSymbol?: string;
+    coinMinimalDenom: string;
+    logoURIs?: Asset["logoURIs"];
+    name: string;
+    symbol: string;
+    isSelected: boolean;
+  }) => {
+    const { t } = useTranslation();
+    const { accountStore } = useStore();
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { onOpenWalletSelect } = useWalletSelect();
+    const [, setQuote] = useQueryState(
+      "quote",
+      parseAsString.withDefault(USDC_BASE_DENOM)
+    );
+
+    const { data: orderbookVerification, isLoading: isVerifying } =
+      api.edge.orderbooks.verifyOrderbookCreation.useQuery({
+        baseDenom: base,
+        quoteDenom: coinMinimalDenom,
+      });
+
+    // Fetch prices to apply the 18-decimal ratio guard
+    const { data: baseAssetData } = api.edge.assets.getUserAsset.useQuery({
+      findMinDenomOrSymbol: base,
+    });
+    const { data: quoteAssetData } = api.edge.assets.getUserAsset.useQuery({
+      findMinDenomOrSymbol: coinMinimalDenom,
+    });
+
+    const is18DecimalBase =
+      baseAssetData?.coinDecimals === 18 && quoteAssetData?.coinDecimals === 6;
+
+    const { data: basePrice, isLoading: isBasePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom: base },
+        { enabled: is18DecimalBase }
+      );
+    const { data: quotePrice, isLoading: isQuotePriceLoading } =
+      api.edge.assets.getAssetPrice.useQuery(
+        { coinMinimalDenom },
+        { enabled: is18DecimalBase }
+      );
+
+    const is18DecimalMismatch =
+      is18DecimalBase &&
+      (isBasePriceLoading ||
+        isQuotePriceLoading ||
+        basePrice === undefined ||
+        quotePrice === undefined ||
+        quotePrice.toDec().isZero() ||
+        basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+
+    const canCreate =
+      !isVerifying &&
+      !is18DecimalMismatch &&
+      orderbookVerification !== undefined &&
+      !orderbookVerification.orderbookExists &&
+      orderbookVerification.endpointFunctional;
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [acknowledgeFee, setAcknowledgeFee] = useState(false);
+
+    const { createOrderbook, isCreating } = useCreateOrderbook({
+      baseDenom: base,
+      quoteDenom: coinMinimalDenom,
+    });
+
+    const handleConfirm = async () => {
+      if (!account?.isWalletConnected) {
+        setIsModalOpen(false);
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+          ],
+        });
+        return;
+      }
+      try {
+        await createOrderbook();
+        setIsModalOpen(false);
+        setAcknowledgeFee(false);
+        setQuote(coinMinimalDenom);
+      } catch {
+        // createOrderbook sets error state internally; keep modal open
+      }
+    };
+
+    return (
+      <>
+        <Menu.Item key={name}>
+          {({ active }) => (
+            <button
+              type="button"
+              onClick={() => {
+                if (canCreate) {
+                  setIsModalOpen(true);
+                }
+              }}
+              className={classNames(
+                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+                {
+                  "bg-osmoverse-700": active && canCreate,
+                  "opacity-50": !canCreate,
+                  "pointer-events-none": !canCreate,
+                  "cursor-pointer": canCreate,
+                }
+              )}
+              disabled={!canCreate}
+            >
+              <div className="flex items-center gap-3">
+                <EntityImage
+                  width={40}
+                  height={40}
+                  logoURIs={logoURIs}
+                  name={name}
+                  symbol={symbol}
+                  className="h-10 w-10"
+                />
+                <div className="flex flex-col gap-1 text-left">
+                  <p>{name}</p>
+                  <small className="text-sm leading-5 text-osmoverse-300">
+                    {symbol}
+                  </small>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex w-[80px] items-end gap-3">
+                  <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+                    <span className="body2 font-light">
+                      {canCreate
+                        ? t("limitOrders.clickToCreateOrderbook")
+                        : t("limitOrders.unavailable", {
+                            denom: baseSymbol ?? base,
+                          })}
+                    </span>
+                  </p>
+                </div>
+                <Icon
+                  id="check-mark"
+                  width={16}
+                  height={16}
+                  className={classNames(
+                    "text-white h-[16px] w-[16px] rounded-full",
+                    { "opacity-0": !isSelected }
+                  )}
+                />
+              </div>
+            </button>
+          )}
+        </Menu.Item>
+        <CreateOrderbookModal
+          isOpen={isModalOpen}
+          onRequestClose={() => {
+            setIsModalOpen(false);
+            setAcknowledgeFee(false);
+          }}
+          baseDenom={base}
+          baseSymbol={baseSymbol ?? base}
+          quoteDenom={coinMinimalDenom}
+          quoteSymbol={symbol}
+          baseCoinImageUrl={baseCoinImageUrl}
+          quoteCoinImageUrl={logoURIs?.png ?? logoURIs?.svg}
+          isCreating={isCreating}
+          acknowledgeFee={acknowledgeFee}
+          onAcknowledgeFee={setAcknowledgeFee}
+          onConfirm={handleConfirm}
+        />
+      </>
+    );
+  }
+);
+
 const SelectableQuotes = observer(
   ({
     selectableQuotes = [],
@@ -459,6 +649,10 @@ const SelectableQuotes = observer(
       [base]
     );
 
+    const { data: baseAssetWithMeta } = api.edge.assets.getUserAsset.useQuery({
+      findMinDenomOrSymbol: base,
+    });
+
     return selectableQuotes.map(
       ({ name, logoURIs, symbol, coinMinimalDenom }) => {
         const isSelected = quote === coinMinimalDenom;
@@ -473,6 +667,23 @@ const SelectableQuotes = observer(
           !selectableQuoteDenoms[base]?.some(
             (asset) => asset.coinMinimalDenom === coinMinimalDenom
           );
+
+        if (isDisabled) {
+          return (
+            <CreatableQuoteItem
+              key={name}
+              base={base}
+              baseCoinImageUrl={baseAssetWithMeta?.coinImageUrl}
+              baseSymbol={baseAsset?.symbol}
+              coinMinimalDenom={coinMinimalDenom}
+              logoURIs={logoURIs}
+              name={name}
+              symbol={symbol}
+              isSelected={isSelected}
+            />
+          );
+        }
+
         return (
           <Menu.Item key={name}>
             {({ active }) => (
@@ -483,10 +694,8 @@ const SelectableQuotes = observer(
                   "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
                   {
                     "bg-osmoverse-700": active,
-                    "opacity-50": isDisabled,
                   }
                 )}
-                disabled={isDisabled}
               >
                 <div className="flex items-center gap-3">
                   <EntityImage
@@ -505,21 +714,9 @@ const SelectableQuotes = observer(
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  {isDisabled ? (
-                    <div className="flex w-[80px] items-end gap-3">
-                      <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-                        <span className="body2 font-light">
-                          {t("limitOrders.unavailable", {
-                            denom: baseAsset?.symbol ?? base,
-                          })}
-                        </span>
-                      </p>
-                    </div>
-                  ) : (
-                    wallet?.isWalletConnected &&
+                  {wallet?.isWalletConnected &&
                     availableBalance &&
-                    !availableBalance.isZero() &&
-                    !isDisabled && (
+                    !availableBalance.isZero() && (
                       <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
                         <span
                           className={classNames({
@@ -537,8 +734,7 @@ const SelectableQuotes = observer(
                           {t("pool.available").toLowerCase()}
                         </span>
                       </p>
-                    )
-                  )}
+                    )}
                   <Icon
                     id="check-mark"
                     width={16}
