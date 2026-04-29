@@ -347,11 +347,39 @@ export const OneClickTradingSettings = ({
                   </div>
                 </div>
 
+                {standalone && hasInsufficientFeeTokensForRemove && (
+                  <div className="px-8">
+                    <div className="flex gap-3 rounded-2xl border border-osmoverse-700 p-4">
+                      <Icon
+                        id="alert-triangle"
+                        width={20}
+                        height={20}
+                        className="mt-1 min-w-[20px] text-rust-600"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="body2 text-base text-rust-500">
+                          {t("errors.insufficientFeeTokens.title")}
+                        </span>
+                        <span className="subtitle2 text-osmoverse-400">
+                          {t("errors.insufficientFeeTokens.body")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-0">
                   {standalone && (
                     <SettingRow
                       title={t("oneClickTrading.settings.enableTitle")}
                       onClick={() => {
+                        // Block toggle-off during the
+                        // "no fee token with sufficient balance to sign the
+                        // remove-authenticator tx" state — otherwise the
+                        // SettingRow click immediately fires onEndSession() and
+                        // the chain rejects the tx after signing. The inline
+                        // warning rendered above explains the disabled state.
+                        if (hasInsufficientFeeTokensForRemove) return;
                         if (hasExistingSession) onEndSession?.();
                         setTransaction1CTParams((params) => {
                           if (!params)
@@ -382,7 +410,10 @@ export const OneClickTradingSettings = ({
                           )}{" "}
                           <Switch
                             disabled={
-                              isSendingTx || isEndingSession || isLoading
+                              isSendingTx ||
+                              isEndingSession ||
+                              isLoading ||
+                              hasInsufficientFeeTokensForRemove
                             }
                             checked={
                               transaction1CTParams?.isOneClickEnabled ?? false
@@ -390,7 +421,11 @@ export const OneClickTradingSettings = ({
                           />
                         </div>
                       }
-                      isDisabled={isSendingTx || isEndingSession}
+                      isDisabled={
+                        isSendingTx ||
+                        isEndingSession ||
+                        hasInsufficientFeeTokensForRemove
+                      }
                     />
                   )}
                   <SettingRow
