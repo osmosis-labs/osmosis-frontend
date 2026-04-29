@@ -429,35 +429,28 @@ function HighestBalanceAssetsIcons({
   );
 }
 
-/** Handles a single disabled quote item that may be creatable as a new orderbook. */
+/** Renders a single disabled quote row and exposes whether creation is possible. */
 const CreatableQuoteItem = observer(
   ({
     base,
-    baseCoinImageUrl,
     baseSymbol,
     coinMinimalDenom,
     logoURIs,
     name,
     symbol,
     isSelected,
+    onOpenCreate,
   }: {
     base: string;
-    baseCoinImageUrl?: string;
     baseSymbol?: string;
     coinMinimalDenom: string;
     logoURIs?: Asset["logoURIs"];
     name: string;
     symbol: string;
     isSelected: boolean;
+    onOpenCreate: () => void;
   }) => {
     const { t } = useTranslation();
-    const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { onOpenWalletSelect } = useWalletSelect();
-    const [, setQuote] = useQueryState(
-      "quote",
-      parseAsString.withDefault(USDC_BASE_DENOM)
-    );
 
     const { data: orderbookVerification, isLoading: isVerifying } =
       api.edge.orderbooks.verifyOrderbookCreation.useQuery({
@@ -465,7 +458,6 @@ const CreatableQuoteItem = observer(
         quoteDenom: coinMinimalDenom,
       });
 
-    // Fetch prices to apply the 18-decimal ratio guard
     const { data: baseAssetData } = api.edge.assets.getUserAsset.useQuery({
       findMinDenomOrSymbol: base,
     });
@@ -503,115 +495,66 @@ const CreatableQuoteItem = observer(
       !orderbookVerification.orderbookExists &&
       orderbookVerification.endpointFunctional;
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [acknowledgeFee, setAcknowledgeFee] = useState(false);
-
-    const { createOrderbook, isCreating } = useCreateOrderbook({
-      baseDenom: base,
-      quoteDenom: coinMinimalDenom,
-    });
-
-    const handleConfirm = async () => {
-      if (!account?.isWalletConnected) {
-        setIsModalOpen(false);
-        onOpenWalletSelect({
-          walletOptions: [
-            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
-          ],
-        });
-        return;
-      }
-      try {
-        await createOrderbook();
-        setIsModalOpen(false);
-        setAcknowledgeFee(false);
-        setQuote(coinMinimalDenom);
-      } catch {
-        // createOrderbook sets error state internally; keep modal open
-      }
-    };
-
     return (
-      <>
-        <Menu.Item key={name}>
-          {({ active }) => (
-            <button
-              type="button"
-              onClick={() => {
-                if (canCreate) {
-                  setIsModalOpen(true);
-                }
-              }}
-              className={classNames(
-                "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
-                {
-                  "bg-osmoverse-700": active && canCreate,
-                  "opacity-50": !canCreate,
-                  "pointer-events-none": !canCreate,
-                  "cursor-pointer": canCreate,
-                }
-              )}
-              disabled={!canCreate}
-            >
-              <div className="flex items-center gap-3">
-                <EntityImage
-                  width={40}
-                  height={40}
-                  logoURIs={logoURIs}
-                  name={name}
-                  symbol={symbol}
-                  className="h-10 w-10"
-                />
-                <div className="flex flex-col gap-1 text-left">
-                  <p>{name}</p>
-                  <small className="text-sm leading-5 text-osmoverse-300">
-                    {symbol}
-                  </small>
-                </div>
+      <Menu.Item key={name}>
+        {({ active }) => (
+          <button
+            type="button"
+            onClick={() => {
+              if (canCreate) onOpenCreate();
+            }}
+            className={classNames(
+              "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+              {
+                "bg-osmoverse-700": active && canCreate,
+                "opacity-50": !canCreate,
+                "pointer-events-none": !canCreate,
+                "cursor-pointer": canCreate,
+              }
+            )}
+            disabled={!canCreate}
+          >
+            <div className="flex items-center gap-3">
+              <EntityImage
+                width={40}
+                height={40}
+                logoURIs={logoURIs}
+                name={name}
+                symbol={symbol}
+                className="h-10 w-10"
+              />
+              <div className="flex flex-col gap-1 text-left">
+                <p>{name}</p>
+                <small className="text-sm leading-5 text-osmoverse-300">
+                  {symbol}
+                </small>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="flex w-[80px] items-end gap-3">
-                  <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-                    <span className="body2 font-light">
-                      {canCreate
-                        ? t("limitOrders.clickToCreateOrderbook")
-                        : t("limitOrders.unavailable", {
-                            denom: baseSymbol ?? base,
-                          })}
-                    </span>
-                  </p>
-                </div>
-                <Icon
-                  id="check-mark"
-                  width={16}
-                  height={16}
-                  className={classNames(
-                    "text-white h-[16px] w-[16px] rounded-full",
-                    { "opacity-0": !isSelected }
-                  )}
-                />
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="flex w-[80px] items-end gap-3">
+                <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+                  <span className="body2 font-light">
+                    {canCreate
+                      ? t("limitOrders.clickToCreateOrderbook")
+                      : t("limitOrders.unavailable", {
+                          denom: baseSymbol ?? base,
+                        })}
+                  </span>
+                </p>
               </div>
-            </button>
-          )}
-        </Menu.Item>
-        <CreateOrderbookModal
-          isOpen={isModalOpen}
-          onRequestClose={() => {
-            setIsModalOpen(false);
-            setAcknowledgeFee(false);
-          }}
-          baseDenom={base}
-          baseSymbol={baseSymbol ?? base}
-          quoteDenom={coinMinimalDenom}
-          quoteSymbol={symbol}
-          baseCoinImageUrl={baseCoinImageUrl}
-          quoteCoinImageUrl={logoURIs?.png ?? logoURIs?.svg}
-          isCreating={isCreating}
-          acknowledgeFee={acknowledgeFee}
-          onAcknowledgeFee={setAcknowledgeFee}
-          onConfirm={handleConfirm}
-        />
-      </>
+              <Icon
+                id="check-mark"
+                width={16}
+                height={16}
+                className={classNames(
+                  "text-white h-[16px] w-[16px] rounded-full",
+                  { "opacity-0": !isSelected }
+                )}
+              />
+            </div>
+          </button>
+        )}
+      </Menu.Item>
     );
   }
 );
@@ -626,7 +569,9 @@ const SelectableQuotes = observer(
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
-    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
+    const account = accountStore.getWallet(accountStore.osmosisChainId);
+    const { onOpenWalletSelect } = useWalletSelect();
+    const wallet = account;
 
     const [base] = useQueryState(
       "from",
@@ -653,105 +598,167 @@ const SelectableQuotes = observer(
       findMinDenomOrSymbol: base,
     });
 
-    return selectableQuotes.map(
-      ({ name, logoURIs, symbol, coinMinimalDenom }) => {
-        const isSelected = quote === coinMinimalDenom;
-        const availableBalance =
-          userQuotes &&
-          (userQuotes
-            .find((u) => u?.coinMinimalDenom === coinMinimalDenom)
-            ?.amount?.toDec() ??
-            new Dec(0));
-        const isDisabled =
-          type === "limit" &&
-          !selectableQuoteDenoms[base]?.some(
-            (asset) => asset.coinMinimalDenom === coinMinimalDenom
-          );
+    // Modal state lives here so it persists when the Menu closes on item click
+    const [pendingQuote, setPendingQuote] = useState<
+      AssetWithBalance | undefined
+    >();
+    const [acknowledgeFee, setAcknowledgeFee] = useState(false);
 
-        if (isDisabled) {
-          return (
-            <CreatableQuoteItem
-              key={name}
-              base={base}
-              baseCoinImageUrl={baseAssetWithMeta?.coinImageUrl}
-              baseSymbol={baseAsset?.symbol}
-              coinMinimalDenom={coinMinimalDenom}
-              logoURIs={logoURIs}
-              name={name}
-              symbol={symbol}
-              isSelected={isSelected}
-            />
-          );
-        }
+    const { createOrderbook, isCreating } = useCreateOrderbook({
+      baseDenom: base,
+      quoteDenom: pendingQuote?.coinMinimalDenom ?? "",
+    });
 
-        return (
-          <Menu.Item key={name}>
-            {({ active }) => (
-              <button
-                type="button"
-                onClick={() => setQuote(coinMinimalDenom)}
-                className={classNames(
-                  "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
-                  {
-                    "bg-osmoverse-700": active,
+    const handleConfirm = async () => {
+      if (!account?.isWalletConnected) {
+        setPendingQuote(undefined);
+        onOpenWalletSelect({
+          walletOptions: [
+            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
+          ],
+        });
+        return;
+      }
+      try {
+        await createOrderbook();
+        if (pendingQuote) setQuote(pendingQuote.coinMinimalDenom);
+        setPendingQuote(undefined);
+        setAcknowledgeFee(false);
+      } catch {
+        // createOrderbook sets error state internally; keep modal open
+      }
+    };
+
+    return (
+      <>
+        {selectableQuotes.map(
+          ({ name, logoURIs, symbol, coinMinimalDenom }) => {
+            const isSelected = quote === coinMinimalDenom;
+            const availableBalance =
+              userQuotes &&
+              (userQuotes
+                .find((u) => u?.coinMinimalDenom === coinMinimalDenom)
+                ?.amount?.toDec() ??
+                new Dec(0));
+            const isDisabled =
+              type === "limit" &&
+              !selectableQuoteDenoms[base]?.some(
+                (asset) => asset.coinMinimalDenom === coinMinimalDenom
+              );
+
+            if (isDisabled) {
+              return (
+                <CreatableQuoteItem
+                  key={name}
+                  base={base}
+                  baseSymbol={baseAsset?.symbol}
+                  coinMinimalDenom={coinMinimalDenom}
+                  logoURIs={logoURIs}
+                  name={name}
+                  symbol={symbol}
+                  isSelected={isSelected}
+                  onOpenCreate={() =>
+                    setPendingQuote(
+                      selectableQuotes.find(
+                        (q) => q.coinMinimalDenom === coinMinimalDenom
+                      )
+                    )
                   }
-                )}
-              >
-                <div className="flex items-center gap-3">
-                  <EntityImage
-                    width={40}
-                    height={40}
-                    logoURIs={logoURIs}
-                    name={name}
-                    symbol={symbol}
-                    className="h-10 w-10"
-                  />
-                  <div className="flex flex-col gap-1 text-left">
-                    <p>{name}</p>
-                    <small className="text-sm leading-5 text-osmoverse-300">
-                      {symbol}
-                    </small>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {wallet?.isWalletConnected &&
-                    availableBalance &&
-                    !availableBalance.isZero() && (
-                      <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                        <span
-                          className={classNames({
-                            "text-white-full": availableBalance.gt(new Dec(0)),
-                          })}
-                        >
-                          {formatFiatPrice(
-                            new PricePretty(
-                              DEFAULT_VS_CURRENCY,
-                              availableBalance
-                            )
-                          )}
-                        </span>
-                        <span className="body2 font-light">
-                          {t("pool.available").toLowerCase()}
-                        </span>
-                      </p>
-                    )}
-                  <Icon
-                    id="check-mark"
-                    width={16}
-                    height={16}
+                />
+              );
+            }
+
+            return (
+              <Menu.Item key={name}>
+                {({ active }) => (
+                  <button
+                    type="button"
+                    onClick={() => setQuote(coinMinimalDenom)}
                     className={classNames(
-                      "text-white h-[16px] w-[16px] rounded-full",
+                      "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
                       {
-                        "opacity-0": !isSelected,
+                        "bg-osmoverse-700": active,
                       }
                     )}
-                  />
-                </div>
-              </button>
-            )}
-          </Menu.Item>
-        );
-      }
+                  >
+                    <div className="flex items-center gap-3">
+                      <EntityImage
+                        width={40}
+                        height={40}
+                        logoURIs={logoURIs}
+                        name={name}
+                        symbol={symbol}
+                        className="h-10 w-10"
+                      />
+                      <div className="flex flex-col gap-1 text-left">
+                        <p>{name}</p>
+                        <small className="text-sm leading-5 text-osmoverse-300">
+                          {symbol}
+                        </small>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {wallet?.isWalletConnected &&
+                        availableBalance &&
+                        !availableBalance.isZero() && (
+                          <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                            <span
+                              className={classNames({
+                                "text-white-full": availableBalance.gt(
+                                  new Dec(0)
+                                ),
+                              })}
+                            >
+                              {formatFiatPrice(
+                                new PricePretty(
+                                  DEFAULT_VS_CURRENCY,
+                                  availableBalance
+                                )
+                              )}
+                            </span>
+                            <span className="body2 font-light">
+                              {t("pool.available").toLowerCase()}
+                            </span>
+                          </p>
+                        )}
+                      <Icon
+                        id="check-mark"
+                        width={16}
+                        height={16}
+                        className={classNames(
+                          "text-white h-[16px] w-[16px] rounded-full",
+                          {
+                            "opacity-0": !isSelected,
+                          }
+                        )}
+                      />
+                    </div>
+                  </button>
+                )}
+              </Menu.Item>
+            );
+          }
+        )}
+        <CreateOrderbookModal
+          isOpen={pendingQuote !== undefined}
+          onRequestClose={() => {
+            setPendingQuote(undefined);
+            setAcknowledgeFee(false);
+          }}
+          baseDenom={base}
+          baseSymbol={baseAsset?.symbol ?? base}
+          quoteDenom={pendingQuote?.coinMinimalDenom ?? ""}
+          quoteSymbol={pendingQuote?.symbol ?? ""}
+          baseCoinImageUrl={baseAssetWithMeta?.coinImageUrl}
+          quoteCoinImageUrl={
+            pendingQuote?.logoURIs?.png ?? pendingQuote?.logoURIs?.svg
+          }
+          isCreating={isCreating}
+          acknowledgeFee={acknowledgeFee}
+          onAcknowledgeFee={setAcknowledgeFee}
+          onConfirm={handleConfirm}
+        />
+      </>
     );
   }
 );

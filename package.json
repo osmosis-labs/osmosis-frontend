@@ -88,5 +88,8 @@
     "cipher-base": "^1.0.5",
     "handlebars": "^4.7.9",
     "joi": "^17.13.4"
+  },
+  "dependencies": {
+    "@cosmos-kit/galaxy-station-extension": "^2.16.1"
   }
 }
