@@ -26,7 +26,6 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useTranslation,
-  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
 import { useCreateOrderbook } from "~/hooks/limit-orders/use-create-orderbook";
@@ -121,6 +120,15 @@ export const PriceSelector = memo(
       [quote]
     );
 
+    const baseRawAsset = useMemo(
+      () =>
+        getAssetFromAssetList({
+          assetLists: AssetLists,
+          coinMinimalDenom: base,
+        })?.rawAsset as Asset | undefined,
+      [base]
+    );
+
     useEffect(() => {
       if (quote === base) {
         setBase(ATOM_BASE_DENOM);
@@ -180,12 +188,13 @@ export const PriceSelector = memo(
             })
             .filter(Boolean)
             .toSorted(sortByAmount)
-            .toSorted((assetA) => {
-              const isAssetAAvailable = selectableQuoteDenoms[base]?.some(
-                (asset) => asset.coinMinimalDenom === assetA?.coinMinimalDenom
-              );
-
-              return isAssetAAvailable ? -1 : 1;
+            .toSorted((a, b) => {
+              const ai = UI_DEFAULT_QUOTES.indexOf(a!.coinMinimalDenom);
+              const bi = UI_DEFAULT_QUOTES.indexOf(b!.coinMinimalDenom);
+              if (ai === -1 && bi === -1) return 0;
+              if (ai === -1) return 1;
+              if (bi === -1) return -1;
+              return ai - bi;
             }) as AssetWithBalance[],
       }
     );
@@ -202,15 +211,26 @@ export const PriceSelector = memo(
      * Stablecoin balances or Add funds CTA not shown in Sell trade mode.
      * Sell trades limited to canonical USDC and alloyed USDT.
      */
-    const defaultQuotesWithBalances = useMemo(
-      () =>
+    const defaultQuotesWithBalances = useMemo(() => {
+      const filtered =
         userQuotes?.filter(({ amount, symbol }) => {
           if (UI_DEFAULT_QUOTES.includes(symbol as MainnetAssetSymbols))
             return true;
           return amount?.toDec().gt(new Dec(0)) ?? false;
-        }) ?? [],
-      [userQuotes]
-    );
+        }) ?? [];
+
+      // In limit mode, push orderbook-available quotes to the top only after
+      // the orderbook data has loaded; avoids reordering before data arrives.
+      if (tab !== "limit" || !selectableQuoteDenoms[base]) return filtered;
+
+      return [...filtered].sort((a) =>
+        selectableQuoteDenoms[base]?.some(
+          (asset) => asset.coinMinimalDenom === a.coinMinimalDenom
+        )
+          ? -1
+          : 1
+      );
+    }, [base, selectableQuoteDenoms, tab, userQuotes]);
 
     const selectableQuotes = useMemo(() => {
       return wallet?.isWalletConnected
@@ -234,10 +254,49 @@ export const PriceSelector = memo(
 
     const { isMobile } = useWindowSize(Breakpoint.sm);
 
+    // Orderbook creation modal — lives here so it survives Menu close/unmount
+    const [pendingCreateQuote, setPendingCreateQuote] = useState<
+      AssetWithBalance | undefined
+    >();
+    const [isOrderbookModalOpen, setIsOrderbookModalOpen] = useState(false);
+    const [acknowledgeOrderbookFee, setAcknowledgeOrderbookFee] =
+      useState(false);
+
+    const { createOrderbook, isCreating: isCreatingOrderbook } =
+      useCreateOrderbook({
+        baseDenom: base,
+        quoteDenom: pendingCreateQuote?.coinMinimalDenom ?? "",
+      });
+
+    const handleOpenOrderbookModal = (asset: AssetWithBalance) => {
+      setPendingCreateQuote(asset);
+      setIsOrderbookModalOpen(true);
+    };
+
+    const handleCloseOrderbookModal = () => {
+      setIsOrderbookModalOpen(false);
+      setAcknowledgeOrderbookFee(false);
+    };
+
+    const handleOrderbookConfirm = async () => {
+      if (!wallet?.isWalletConnected) {
+        handleCloseOrderbookModal();
+        return;
+      }
+      try {
+        await createOrderbook();
+        if (pendingCreateQuote) setQuote(pendingCreateQuote.coinMinimalDenom);
+        handleCloseOrderbookModal();
+        setPendingCreateQuote(undefined);
+      } catch {
+        // keep modal open on error
+      }
+    };
+
     return (
       <>
         <Menu as="div" className="relative inline-block">
-          {({ open }) => (
+          {({ open, close }) => (
             <>
               <Menu.Button className="flex items-center justify-between">
                 <div className="flex flex-1 items-center justify-between">
@@ -291,6 +350,10 @@ export const PriceSelector = memo(
                     <SelectableQuotes
                       selectableQuotes={selectableQuotes}
                       userQuotes={userQuotes}
+                      onOpenCreate={(asset) => {
+                        close();
+                        handleOpenOrderbookModal(asset);
+                      }}
                     />
                   </div>
                   <div className="flex flex-col px-5 py-2">
@@ -386,6 +449,25 @@ export const PriceSelector = memo(
           isOpen={isAddFundsModalOpen}
           onRequestClose={closeAddFundsModal}
           from="buy"
+        />
+        <CreateOrderbookModal
+          isOpen={isOrderbookModalOpen}
+          onRequestClose={handleCloseOrderbookModal}
+          baseDenom={base}
+          baseSymbol={baseRawAsset?.symbol ?? base}
+          quoteDenom={pendingCreateQuote?.coinMinimalDenom ?? ""}
+          quoteSymbol={pendingCreateQuote?.symbol ?? ""}
+          baseCoinImageUrl={
+            baseRawAsset?.logoURIs?.png ?? baseRawAsset?.logoURIs?.svg
+          }
+          quoteCoinImageUrl={
+            pendingCreateQuote?.logoURIs?.png ??
+            pendingCreateQuote?.logoURIs?.svg
+          }
+          isCreating={isCreatingOrderbook}
+          acknowledgeFee={acknowledgeOrderbookFee}
+          onAcknowledgeFee={setAcknowledgeOrderbookFee}
+          onConfirm={handleOrderbookConfirm}
         />
       </>
     );
@@ -496,65 +578,59 @@ const CreatableQuoteItem = observer(
       orderbookVerification.endpointFunctional;
 
     return (
-      <Menu.Item key={name}>
-        {({ active }) => (
-          <button
-            type="button"
-            onClick={() => {
-              if (canCreate) onOpenCreate();
-            }}
-            className={classNames(
-              "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
-              {
-                "bg-osmoverse-700": active && canCreate,
-                "opacity-50": !canCreate,
-                "pointer-events-none": !canCreate,
-                "cursor-pointer": canCreate,
-              }
-            )}
-            disabled={!canCreate}
-          >
-            <div className="flex items-center gap-3">
-              <EntityImage
-                width={40}
-                height={40}
-                logoURIs={logoURIs}
-                name={name}
-                symbol={symbol}
-                className="h-10 w-10"
-              />
-              <div className="flex flex-col gap-1 text-left">
-                <p>{name}</p>
-                <small className="text-sm leading-5 text-osmoverse-300">
-                  {symbol}
-                </small>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="flex w-[80px] items-end gap-3">
-                <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
-                  <span className="body2 font-light">
-                    {canCreate
-                      ? t("limitOrders.clickToCreateOrderbook")
-                      : t("limitOrders.unavailable", {
-                          denom: baseSymbol ?? base,
-                        })}
-                  </span>
-                </p>
-              </div>
-              <Icon
-                id="check-mark"
-                width={16}
-                height={16}
-                className={classNames(
-                  "text-white h-[16px] w-[16px] rounded-full",
-                  { "opacity-0": !isSelected }
-                )}
-              />
-            </div>
-          </button>
+      <button
+        type="button"
+        onClick={() => {
+          if (canCreate) onOpenCreate();
+        }}
+        className={classNames(
+          "flex items-center justify-between rounded-lg py-2 px-3 transition-colors",
+          {
+            "opacity-50": !canCreate,
+            "pointer-events-none": !canCreate,
+            "cursor-pointer": canCreate,
+          }
         )}
-      </Menu.Item>
+        disabled={!canCreate}
+      >
+        <div className="flex items-center gap-3">
+          <EntityImage
+            width={40}
+            height={40}
+            logoURIs={logoURIs}
+            name={name}
+            symbol={symbol}
+            className="h-10 w-10"
+          />
+          <div className="flex flex-col gap-1 text-left">
+            <p>{name}</p>
+            <small className="text-sm leading-5 text-osmoverse-300">
+              {symbol}
+            </small>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex w-[80px] items-end gap-3">
+            <p className="inline-flex flex-col items-end justify-end gap-1 text-end text-osmoverse-300">
+              <span className="body2 font-light">
+                {canCreate
+                  ? t("limitOrders.clickToCreateOrderbook")
+                  : t("limitOrders.unavailable", {
+                      denom: baseSymbol ?? base,
+                    })}
+              </span>
+            </p>
+          </div>
+          <Icon
+            id="check-mark"
+            width={16}
+            height={16}
+            className={classNames("text-white h-[16px] w-[16px] rounded-full", {
+              "opacity-0": !isSelected,
+            })}
+          />
+        </div>
+      </button>
     );
   }
 );
@@ -563,15 +639,15 @@ const SelectableQuotes = observer(
   ({
     selectableQuotes = [],
     userQuotes = [],
+    onOpenCreate,
   }: {
     selectableQuotes?: AssetWithBalance[];
     userQuotes?: AssetWithBalance[];
+    onOpenCreate: (asset: AssetWithBalance) => void;
   }) => {
     const { t } = useTranslation();
     const { accountStore } = useStore();
-    const account = accountStore.getWallet(accountStore.osmosisChainId);
-    const { onOpenWalletSelect } = useWalletSelect();
-    const wallet = account;
+    const wallet = accountStore.getWallet(accountStore.osmosisChainId);
 
     const [base] = useQueryState(
       "from",
@@ -594,171 +670,108 @@ const SelectableQuotes = observer(
       [base]
     );
 
-    const { data: baseAssetWithMeta } = api.edge.assets.getUserAsset.useQuery({
-      findMinDenomOrSymbol: base,
-    });
+    return selectableQuotes.map(
+      ({ name, logoURIs, symbol, coinMinimalDenom }) => {
+        const isSelected = quote === coinMinimalDenom;
+        const availableBalance =
+          userQuotes &&
+          (userQuotes
+            .find((u) => u?.coinMinimalDenom === coinMinimalDenom)
+            ?.amount?.toDec() ??
+            new Dec(0));
+        const isDisabled =
+          type === "limit" &&
+          !selectableQuoteDenoms[base]?.some(
+            (asset) => asset.coinMinimalDenom === coinMinimalDenom
+          );
 
-    // Modal state lives here so it persists when the Menu closes on item click
-    const [pendingQuote, setPendingQuote] = useState<
-      AssetWithBalance | undefined
-    >();
-    const [acknowledgeFee, setAcknowledgeFee] = useState(false);
+        if (isDisabled) {
+          return (
+            <CreatableQuoteItem
+              key={name}
+              base={base}
+              baseSymbol={baseAsset?.symbol}
+              coinMinimalDenom={coinMinimalDenom}
+              logoURIs={logoURIs}
+              name={name}
+              symbol={symbol}
+              isSelected={isSelected}
+              onOpenCreate={() => {
+                const asset = selectableQuotes.find(
+                  (q) => q.coinMinimalDenom === coinMinimalDenom
+                );
+                if (asset) onOpenCreate(asset);
+              }}
+            />
+          );
+        }
 
-    const { createOrderbook, isCreating } = useCreateOrderbook({
-      baseDenom: base,
-      quoteDenom: pendingQuote?.coinMinimalDenom ?? "",
-    });
-
-    const handleConfirm = async () => {
-      if (!account?.isWalletConnected) {
-        setPendingQuote(undefined);
-        onOpenWalletSelect({
-          walletOptions: [
-            { walletType: "cosmos", chainId: accountStore.osmosisChainId },
-          ],
-        });
-        return;
-      }
-      try {
-        await createOrderbook();
-        if (pendingQuote) setQuote(pendingQuote.coinMinimalDenom);
-        setPendingQuote(undefined);
-        setAcknowledgeFee(false);
-      } catch {
-        // createOrderbook sets error state internally; keep modal open
-      }
-    };
-
-    return (
-      <>
-        {selectableQuotes.map(
-          ({ name, logoURIs, symbol, coinMinimalDenom }) => {
-            const isSelected = quote === coinMinimalDenom;
-            const availableBalance =
-              userQuotes &&
-              (userQuotes
-                .find((u) => u?.coinMinimalDenom === coinMinimalDenom)
-                ?.amount?.toDec() ??
-                new Dec(0));
-            const isDisabled =
-              type === "limit" &&
-              !selectableQuoteDenoms[base]?.some(
-                (asset) => asset.coinMinimalDenom === coinMinimalDenom
-              );
-
-            if (isDisabled) {
-              return (
-                <CreatableQuoteItem
-                  key={name}
-                  base={base}
-                  baseSymbol={baseAsset?.symbol}
-                  coinMinimalDenom={coinMinimalDenom}
-                  logoURIs={logoURIs}
-                  name={name}
-                  symbol={symbol}
-                  isSelected={isSelected}
-                  onOpenCreate={() =>
-                    setPendingQuote(
-                      selectableQuotes.find(
-                        (q) => q.coinMinimalDenom === coinMinimalDenom
-                      )
-                    )
+        return (
+          <Menu.Item key={name}>
+            {({ active }) => (
+              <button
+                type="button"
+                onClick={() => setQuote(coinMinimalDenom)}
+                className={classNames(
+                  "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
+                  {
+                    "bg-osmoverse-700": active,
                   }
-                />
-              );
-            }
-
-            return (
-              <Menu.Item key={name}>
-                {({ active }) => (
-                  <button
-                    type="button"
-                    onClick={() => setQuote(coinMinimalDenom)}
-                    className={classNames(
-                      "flex items-center justify-between rounded-lg py-2 px-3 transition-colors disabled:pointer-events-none",
-                      {
-                        "bg-osmoverse-700": active,
-                      }
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <EntityImage
-                        width={40}
-                        height={40}
-                        logoURIs={logoURIs}
-                        name={name}
-                        symbol={symbol}
-                        className="h-10 w-10"
-                      />
-                      <div className="flex flex-col gap-1 text-left">
-                        <p>{name}</p>
-                        <small className="text-sm leading-5 text-osmoverse-300">
-                          {symbol}
-                        </small>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {wallet?.isWalletConnected &&
-                        availableBalance &&
-                        !availableBalance.isZero() && (
-                          <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
-                            <span
-                              className={classNames({
-                                "text-white-full": availableBalance.gt(
-                                  new Dec(0)
-                                ),
-                              })}
-                            >
-                              {formatFiatPrice(
-                                new PricePretty(
-                                  DEFAULT_VS_CURRENCY,
-                                  availableBalance
-                                )
-                              )}
-                            </span>
-                            <span className="body2 font-light">
-                              {t("pool.available").toLowerCase()}
-                            </span>
-                          </p>
-                        )}
-                      <Icon
-                        id="check-mark"
-                        width={16}
-                        height={16}
-                        className={classNames(
-                          "text-white h-[16px] w-[16px] rounded-full",
-                          {
-                            "opacity-0": !isSelected,
-                          }
-                        )}
-                      />
-                    </div>
-                  </button>
                 )}
-              </Menu.Item>
-            );
-          }
-        )}
-        <CreateOrderbookModal
-          isOpen={pendingQuote !== undefined}
-          onRequestClose={() => {
-            setPendingQuote(undefined);
-            setAcknowledgeFee(false);
-          }}
-          baseDenom={base}
-          baseSymbol={baseAsset?.symbol ?? base}
-          quoteDenom={pendingQuote?.coinMinimalDenom ?? ""}
-          quoteSymbol={pendingQuote?.symbol ?? ""}
-          baseCoinImageUrl={baseAssetWithMeta?.coinImageUrl}
-          quoteCoinImageUrl={
-            pendingQuote?.logoURIs?.png ?? pendingQuote?.logoURIs?.svg
-          }
-          isCreating={isCreating}
-          acknowledgeFee={acknowledgeFee}
-          onAcknowledgeFee={setAcknowledgeFee}
-          onConfirm={handleConfirm}
-        />
-      </>
+              >
+                <div className="flex items-center gap-3">
+                  <EntityImage
+                    width={40}
+                    height={40}
+                    logoURIs={logoURIs}
+                    name={name}
+                    symbol={symbol}
+                    className="h-10 w-10"
+                  />
+                  <div className="flex flex-col gap-1 text-left">
+                    <p>{name}</p>
+                    <small className="text-sm leading-5 text-osmoverse-300">
+                      {symbol}
+                    </small>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {wallet?.isWalletConnected &&
+                    availableBalance &&
+                    !availableBalance.isZero() && (
+                      <p className="inline-flex flex-col items-end gap-1 text-osmoverse-300">
+                        <span
+                          className={classNames({
+                            "text-white-full": availableBalance.gt(new Dec(0)),
+                          })}
+                        >
+                          {formatFiatPrice(
+                            new PricePretty(
+                              DEFAULT_VS_CURRENCY,
+                              availableBalance
+                            )
+                          )}
+                        </span>
+                        <span className="body2 font-light">
+                          {t("pool.available").toLowerCase()}
+                        </span>
+                      </p>
+                    )}
+                  <Icon
+                    id="check-mark"
+                    width={16}
+                    height={16}
+                    className={classNames(
+                      "text-white h-[16px] w-[16px] rounded-full",
+                      { "opacity-0": !isSelected }
+                    )}
+                  />
+                </div>
+              </button>
+            )}
+          </Menu.Item>
+        );
+      }
     );
   }
 );
