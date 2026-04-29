@@ -44,7 +44,8 @@ export function useCreateOrderbook({
 
       const instantiateMsgBytes = new TextEncoder().encode(
         JSON.stringify({
-          pool_asset_denoms: [baseDenom, quoteDenom],
+          base_denom: baseDenom,
+          quote_denom: quoteDenom,
         })
       );
 
