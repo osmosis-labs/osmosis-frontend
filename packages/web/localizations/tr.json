@@ -544,7 +544,9 @@
       "swapFee": "Takas Ücretini Ayarla",
       "undersandCost": "Yeni bir havuz oluşturmanın {poolCreationFee} maliyeti olacağını anlıyorum.",
       "buttonCreate": "Havuz Oluştur",
-      "buttonCreating": "Yaratmak"
+      "buttonCreating": "Yaratmak",
+      "18decimalWarning": "{symbol} 18 ondalık basamak kullanır ve 6 ondalık quote varlığıyla Supercharged havuzunda base varlık olarak kullanılamaz.",
+      "18decimalWarningAction": "Base ve quote varlıklarını değiştirmeyi deneyin ya da bunun yerine bir Weighted Pool oluşturun."
     },
     "TVL": "TVL",
     "myLiquidity": "Likiditem",

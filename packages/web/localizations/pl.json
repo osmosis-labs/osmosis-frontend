@@ -544,7 +544,9 @@
       "swapFee": "Ustaw opłatę za wymianę",
       "undersandCost": "Rozumiem, że utworzenie nowego puli będzie kosztować {poolCreationFee} .",
       "buttonCreate": "Utwórz pulę",
-      "buttonCreating": "Tworzenie"
+      "buttonCreating": "Tworzenie",
+      "18decimalWarning": "{symbol} używa 18 miejsc po przecinku i nie może być użyty jako asset bazowy w puli Supercharged z asset quote o 6 miejscach po przecinku.",
+      "18decimalWarningAction": "Spróbuj zamienić asset bazowy i quote lub zamiast tego utwórz pulę Weighted."
     },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",

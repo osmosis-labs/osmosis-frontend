@@ -544,7 +544,9 @@
       "swapFee": "Swap-Gebühr festlegen",
       "undersandCost": "Mir ist bewusst, dass das Erstellen eines neuen Pools {poolCreationFee} kostet.",
       "buttonCreate": "Pool erstellen",
-      "buttonCreating": "Erstellen"
+      "buttonCreating": "Erstellen",
+      "18decimalWarning": "{symbol} verwendet 18 Dezimalstellen und kann nicht als Basis-Asset in einem Supercharged Pool mit einem 6-Dezimalstellen-Quote verwendet werden.",
+      "18decimalWarningAction": "Versuche Basis- und Quote-Assets zu tauschen oder erstelle stattdessen einen Weighted Pool."
     },
     "TVL": "TVL",
     "myLiquidity": "Meine Liquidität",
