@@ -1,3 +1,4 @@
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { parseAsString, parseAsStringLiteral, useQueryState } from "nuqs";
 import React, { useEffect, useMemo, useState } from "react";
@@ -107,6 +108,29 @@ export const OrderTypeSelector = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type]);
 
+  const is18DecimalBase =
+    baseAsset?.coinDecimals === 18 && quoteAsset?.coinDecimals === 6;
+
+  const { data: basePrice, isLoading: isBasePriceLoading } =
+    api.edge.assets.getAssetPrice.useQuery(
+      { coinMinimalDenom: base },
+      { enabled: is18DecimalBase }
+    );
+  const { data: quotePrice, isLoading: isQuotePriceLoading } =
+    api.edge.assets.getAssetPrice.useQuery(
+      { coinMinimalDenom: quote },
+      { enabled: is18DecimalBase }
+    );
+
+  const is18DecimalMismatch =
+    is18DecimalBase &&
+    (isBasePriceLoading ||
+      isQuotePriceLoading ||
+      basePrice === undefined ||
+      quotePrice === undefined ||
+      quotePrice.toDec().isZero() ||
+      basePrice.toDec().quo(quotePrice.toDec()).lt(new Dec(100)));
+
   // Verify whether this is a real missing orderbook vs. an endpoint failure.
   // Use fetchStatus instead of isLoading — isLoading is true even when the query
   // is disabled (no data yet), which would permanently grey out the tab for tokens
@@ -143,6 +167,7 @@ export const OrderTypeSelector = ({
     !isLoading &&
     !hasOrderbook &&
     !isVerifyingInFlight &&
+    !is18DecimalMismatch &&
     orderbookVerification !== undefined &&
     !orderbookVerification.orderbookExists &&
     orderbookVerification.endpointFunctional;
