@@ -17,7 +17,6 @@ import {
 } from "react";
 import { useMeasure, useMount } from "react-use";
 
-import { InsufficientFeeTokensWarning } from "~/components/alert/insufficient-fee-tokens-warning";
 import { isOverspendErrorMessage } from "~/components/alert/prettify";
 import { Icon } from "~/components/assets";
 import {
@@ -675,7 +674,36 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
-              {shouldDisplayLowLiquidityWarning && tokenWithLowLiquidity && (
+              {/*
+                Suppress the non-blocking low-liquidity advisory while the
+                blocking fee-shortage warning (below) is showing -- the user
+                can't proceed regardless of slippage until they fund a fee
+                token, and stacking two visually identical rust-bordered
+                warnings just competes for attention with the actionable one.
+              */}
+              {!hasInsufficientFeeTokens &&
+                shouldDisplayLowLiquidityWarning &&
+                tokenWithLowLiquidity && (
+                  <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
+                    <Icon
+                      id="alert-triangle"
+                      width={20}
+                      height={20}
+                      className="text-rust-600 min-w-[20px] mt-1"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <span className="body2 text-base text-rust-500">
+                        {t("lowLiquidityAlert.title")}
+                      </span>
+                      <span className="subtitle2 text-osmoverse-400">
+                        {t("lowLiquidityAlert.description", {
+                          tokenWithLowLiquidity,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              {hasInsufficientFeeTokens && (
                 <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
                   <Icon
                     id="alert-triangle"
@@ -685,18 +713,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                   <div className="flex flex-col gap-1">
                     <span className="body2 text-base text-rust-500">
-                      {t("lowLiquidityAlert.title")}
+                      {t("errors.insufficientFeeTokens.title")}
                     </span>
                     <span className="subtitle2 text-osmoverse-400">
-                      {t("lowLiquidityAlert.description", {
-                        tokenWithLowLiquidity,
-                      })}
+                      {t("errors.insufficientFeeTokens.body")}
                     </span>
                   </div>
                 </div>
-              )}
-              {hasInsufficientFeeTokens && (
-                <InsufficientFeeTokensWarning className="mb-3" />
               )}
             </div>
           </div>
