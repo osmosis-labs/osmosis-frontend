@@ -3,7 +3,7 @@ import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { Dec, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAsync } from "react-use";
 import { create } from "zustand";
 
@@ -316,6 +316,14 @@ const AssetVariantRow: React.FC<{
 
     const isUnavailable = Boolean(simulation?.error) || isError;
 
+    // Track the last value reported up to the modal so we can clear the row's
+    // contribution on unmount only when it was set to `true`. Using a ref
+    // (rather than a cleanup on the reporter effect itself) keeps the cleanup
+    // out of the per-dep-change path, avoiding an unnecessary
+    // `true -> false -> true` flicker through the parent's per-denom map
+    // every time `simulation.error` changes.
+    const lastReportedInsufficientRef = useRef(false);
+
     useEffect(() => {
       // Always report current state (true OR false) so the modal-level banner
       // reflects the latest simulation outcome rather than getting stuck on
@@ -323,10 +331,24 @@ const AssetVariantRow: React.FC<{
       // ignored deliberately: we only want to reset on a real result, not
       // momentarily flicker the banner off mid-refetch.
       if (simulation.loading) return;
-      onInsufficientFeeTokens?.(
-        simulation?.error instanceof InsufficientBalanceForFeeError
-      );
+      const hasInsufficient =
+        simulation?.error instanceof InsufficientBalanceForFeeError;
+      lastReportedInsufficientRef.current = hasInsufficient;
+      onInsufficientFeeTokens?.(hasInsufficient);
     }, [simulation?.error, simulation.loading, onInsufficientFeeTokens]);
+
+    // Unmount-only: clear this row's contribution to the parent map so a row
+    // that unmounts while reporting `true` (e.g. the variant list shrinks, or
+    // the modal closes mid-error) doesn't leave a stale `true` entry stuck in
+    // `insufficientFeeByDenom` until the modal's own reset effect fires.
+    useEffect(() => {
+      return () => {
+        if (lastReportedInsufficientRef.current) {
+          onInsufficientFeeTokens?.(false);
+        }
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const conversionDisabled =
       isLoading ||
