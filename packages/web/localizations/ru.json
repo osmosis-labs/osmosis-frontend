@@ -284,7 +284,6 @@
     "highSwapFee": "Комиссия за своп слишком высока",
     "insufficientAmount": "Недостаточная сумма",
     "insufficientBal": "Недостаточный баланс",
-    "insufficientBalForFee": "Недостаточно баланса для оплаты",
     "insufficientLiquidity": "Недостаточная ликвидность",
     "invalidNumberAmount": "Неверная форма номера",
     "invalidScalingFactorControllerAddress": "Неверный адрес контроллера коэффициента масштабирования.",
@@ -319,7 +318,12 @@
     "noOrderbook": "Нет книги заказов для пары",
     "uhOhSomethingWentWrong": "Ой-ой, что-то пошло не так",
     "sorryForTheInconvenience": "Приносим извинения за неудобства. Пожалуйста, повторите попытку позже.",
-    "startAgain": "Начать заново"
+    "startAgain": "Начать заново",
+    "insufficientFeeTokens": {
+      "title": "Нет токенов для оплаты комиссии с достаточным балансом",
+      "body": "Внесите OSMO или другой поддерживаемый токен комиссии в Osmosis, чтобы покрыть сетевой сбор.",
+      "buttonLabel": "Недостаточный баланс для комиссии"
+    }
   },
   "estimated": "Оцененный",
   "frontierMigration": {

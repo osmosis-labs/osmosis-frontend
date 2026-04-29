@@ -284,7 +284,6 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
-    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
@@ -319,7 +318,12 @@
     "noOrderbook": "페어 주문서 없음",
     "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
     "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
-    "startAgain": "다시 시작"
+    "startAgain": "다시 시작",
+    "insufficientFeeTokens": {
+      "title": "잔액이 충분한 수수료 토큰이 없습니다",
+      "body": "네트워크 수수료를 충당하려면 Osmosis에 OSMO 또는 지원되는 다른 수수료 토큰을 입금하세요.",
+      "buttonLabel": "수수료 잔액 부족"
+    }
   },
   "estimated": "추정된",
   "frontierMigration": {

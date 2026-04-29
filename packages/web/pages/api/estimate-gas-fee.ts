@@ -1,6 +1,7 @@
 import {
   decodeAnyBase64,
   estimateGasFee,
+  InsufficientFeeError,
   SimulateNotAvailableError,
 } from "@osmosis-labs/tx";
 import { ApiClientError } from "@osmosis-labs/utils";
@@ -95,8 +96,20 @@ export default async function handler(
     });
     return res.status(200).json(gasFee);
   } catch (e) {
-    const error = e as Error | SimulateNotAvailableError | ApiClientError;
+    const error = e as
+      | Error
+      | SimulateNotAvailableError
+      | InsufficientFeeError
+      | ApiClientError;
     if (error instanceof SimulateNotAvailableError) {
+      return res.status(400).json({ message: error.message });
+    }
+
+    // The user does not hold a fee token with enough balance to pay the
+    // simulated gas. This is a client-side state issue (account balance), not
+    // a server fault, so respond with 400 + message — matching how the client
+    // expects to deserialize fee-selection errors.
+    if (error instanceof InsufficientFeeError) {
       return res.status(400).json({ message: error.message });
     }
 

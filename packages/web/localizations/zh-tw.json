@@ -284,7 +284,6 @@
     "highSwapFee": "兌換費太高",
     "insufficientAmount": "幣額不足",
     "insufficientBal": "結餘不足",
-    "insufficientBalForFee": "費用餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",
@@ -319,7 +318,12 @@
     "noOrderbook": "沒有配對訂單簿",
     "uhOhSomethingWentWrong": "呃哦，出了點問題",
     "sorryForTheInconvenience": "帶來不便敬請諒解。請稍後再試。",
-    "startAgain": "重新開始"
+    "startAgain": "重新開始",
+    "insufficientFeeTokens": {
+      "title": "沒有餘額足夠的手續費代幣",
+      "body": "請在 Osmosis 上存入 OSMO 或其他支援的手續費代幣以支付網路費用。",
+      "buttonLabel": "手續費餘額不足"
+    }
   },
   "estimated": "估計的",
   "frontierMigration": {

@@ -75,7 +75,7 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
   } else if (e instanceof InsufficientBalanceError) {
     return ["errors.insufficientBal"];
   } else if (e instanceof InsufficientBalanceForFeeError) {
-    return ["errors.insufficientBalForFee"];
+    return ["errors.insufficientFeeTokens.buttonLabel"];
   } else if (e instanceof NotInitializedError) {
     return ["errors.notInitialized"];
   } else if (e instanceof CalculatingShareOutAmountError) {

@@ -19,6 +19,8 @@ import {
   publicProcedure,
   UserOsmoAddressSchema,
 } from "@osmosis-labs/trpc";
+import { isInsufficientFeeError } from "@osmosis-labs/tx";
+import { TRPCError } from "@trpc/server";
 import { ExternalInterfaceBridgeTransferMethod } from "@osmosis-labs/types";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import {
@@ -43,6 +45,7 @@ import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
 import { BridgeLogoUrls, ExternalBridgeLogoUrls } from "~/utils/bridge";
+import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 
 export type BridgeChainWithDisplayInfo = (
   | Extract<BridgeChain, { chainType: "evm" }>
@@ -102,8 +105,33 @@ export const bridgeTransferRouter = createTRPCRouter({
 
       const quoteFn = () => bridgeProvider.getQuote(input);
 
-      /** If the bridge takes longer than 15 seconds to respond, we should timeout that quote. */
-      const quote = await timeout(quoteFn, 15 * 1000)();
+      let quote: Awaited<ReturnType<typeof quoteFn>>;
+      try {
+        /** If the bridge takes longer than 15 seconds to respond, we should timeout that quote. */
+        quote = await timeout(quoteFn, 15 * 1000)();
+      } catch (err) {
+        // For Osmosis-source withdrawals, the bridge provider's quote may fail
+        // because the user holds no fee token with sufficient balance to cover
+        // the simulated gas (e.g. ATOM fee token whose txfees routing pool has
+        // no liquidity). Surface this as a typed TRPCError so the client can
+        // render the dedicated "No fee tokens" warning instead of the generic
+        // "Something isn't working" box.
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+            ? err
+            : "";
+        const isOsmosisWithdrawal = input.fromChain.chainId === "osmosis-1";
+        if (isOsmosisWithdrawal && isInsufficientFeeError(errorMessage)) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: `${INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER}: ${errorMessage}`,
+            cause: err,
+          });
+        }
+        throw err;
+      }
 
       // Basic circuit breaker to validate some invariants
       // from input + given quote

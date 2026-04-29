@@ -284,7 +284,6 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
-    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -319,7 +318,12 @@
     "noOrderbook": "Kein Orderbuch für Paar",
     "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
-    "startAgain": "Fang nochmal an"
+    "startAgain": "Fang nochmal an",
+    "insufficientFeeTokens": {
+      "title": "Keine Gebührentoken mit ausreichendem Guthaben",
+      "body": "Zahle OSMO oder einen anderen unterstützten Gebührentoken auf Osmosis ein, um die Netzwerkgebühr zu decken.",
+      "buttonLabel": "Unzureichendes Gebührenguthaben"
+    }
   },
   "estimated": "Geschätzt",
   "frontierMigration": {

@@ -27,6 +27,7 @@ import { useEvmWalletAccount, useSendEvmTransaction } from "~/hooks/evm-wallet";
 import { useTranslation } from "~/hooks/language";
 import { useStore } from "~/stores";
 import { isSameCoinDenom } from "~/utils/denom";
+import { INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER } from "~/utils/error";
 import { getWagmiToastErrorMessage } from "~/utils/ethereum";
 import { extractFeeDetailsFromError } from "~/utils/parse-fee";
 import { api, RouterInputs } from "~/utils/trpc";
@@ -471,6 +472,18 @@ export const useBridgeQuotes = ({
     return extractFeeDetailsFromError(someError.message);
   }, [isInsufficientFee, someError]);
 
+  // Server (`getQuoteByBridge`) tags Osmosis-source withdrawals that fail
+  // because the user's account holds no fee token with sufficient balance with
+  // the `INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER` marker so we can render the
+  // dedicated shared warning instead of the generic "Something isn't working"
+  // box.
+  const hasInsufficientFeeTokensForOsmosis = useMemo(() => {
+    return (
+      someError?.message?.includes(INSUFFICIENT_FEE_TOKENS_OSMOSIS_MARKER) ??
+      false
+    );
+  }, [someError]);
+
   const isInvalidAddress = useMemo(() => {
     return someError?.message.includes("taproot");
   }, [someError]);
@@ -817,7 +830,16 @@ export const useBridgeQuotes = ({
     isDeposit && !isCorrectEvmChainSelected && fromChain?.chainType === "evm";
 
   let errorBoxMessage: { heading: string; description: string } | undefined;
-  if (isValueLossTooHigh) {
+  if (hasInsufficientFeeTokensForOsmosis) {
+    // Surface this case via the dedicated warning component rendered by the
+    // consumer (amount-screen). We still set a fallback text-only errorBox to
+    // keep `userCanAdvance` gating consistent for surfaces that don't render
+    // the dedicated component.
+    errorBoxMessage = {
+      heading: t("errors.insufficientFeeTokens.title"),
+      description: t("errors.insufficientFeeTokens.body"),
+    };
+  } else if (isValueLossTooHigh) {
     errorBoxMessage = {
       heading: t("transfer.transferAmountTooLowValueLoss"),
       description: t("transfer.valueLossTooHighToBridge"),

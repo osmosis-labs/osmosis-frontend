@@ -1,5 +1,8 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
-import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import {
+  InsufficientBalanceForFeeError,
+  ObservableSlippageConfig,
+} from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import {
@@ -222,18 +225,29 @@ export function ReviewOrder({
       limitSetPriceLock(true);
   }, [limitSetPriceLock, isOpen, orderType]);
 
+  const hasInsufficientFeeTokens =
+    gasError instanceof InsufficientBalanceForFeeError;
+
   const gasFeeError = useMemo(() => {
     if (!!gasAmount && !gasError) return;
+
+    if (hasInsufficientFeeTokens) {
+      return t("errors.insufficientFeeTokens.body");
+    }
 
     return is1CTEnabled
       ? t("swap.gas.oneClickTradingError")
       : t("swap.gas.error");
-  }, [gasAmount, is1CTEnabled, gasError, t]);
+  }, [gasAmount, is1CTEnabled, gasError, hasInsufficientFeeTokens, t]);
+
+  const gasEstimationDisclaimerTitle = hasInsufficientFeeTokens
+    ? t("errors.insufficientFeeTokens.title")
+    : t("swap.gas.gasEstimationError");
 
   const GasEstimation = useMemo(() => {
     return !!gasFeeError ? (
       <GenericDisclaimer
-        title={t("swap.gas.gasEstimationError")}
+        title={gasEstimationDisclaimerTitle}
         body={gasFeeError}
       >
         <span className="sm:caption flex items-center gap-1">
@@ -257,7 +271,14 @@ export function ReviewOrder({
         {gasAmount && gasAmount.toString()}
       </span>
     );
-  }, [gasAmount, isGasLoading, gasFeeError, isMobile, t]);
+  }, [
+    gasAmount,
+    isGasLoading,
+    gasFeeError,
+    gasEstimationDisclaimerTitle,
+    isMobile,
+    t,
+  ]);
 
   const onClose = useCallback(() => {
     reset1CTParams();
@@ -304,6 +325,24 @@ export function ReviewOrder({
               "pb-8": !diffGteSlippage,
             })}
           >
+            {hasInsufficientFeeTokens && (
+              <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-4">
+                <Icon
+                  id="alert-triangle"
+                  width={20}
+                  height={20}
+                  className="text-rust-600 min-w-[20px] mt-1"
+                />
+                <div className="flex flex-col gap-1">
+                  <span className="body2 text-base text-rust-500">
+                    {t("errors.insufficientFeeTokens.title")}
+                  </span>
+                  <span className="subtitle2 text-osmoverse-400">
+                    {t("errors.insufficientFeeTokens.body")}
+                  </span>
+                </div>
+              </div>
+            )}
             {orderType === "limit" && tab !== "swap" && (
               <div className="sm:caption flex flex-col rounded-t-2xl border border-osmoverse-700 px-4 py-2">
                 <div className="flex items-center gap-4">
@@ -775,7 +814,11 @@ export function ReviewOrder({
                     onClick={() => {
                       confirmAction();
                     }}
-                    disabled={isConfirmationDisabled || wouldExceedSpendLimit}
+                    disabled={
+                      isConfirmationDisabled ||
+                      wouldExceedSpendLimit ||
+                      hasInsufficientFeeTokens
+                    }
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>

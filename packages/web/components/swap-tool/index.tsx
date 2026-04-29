@@ -1,5 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { DEFAULT_VS_CURRENCY, getAsset } from "@osmosis-labs/server";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty, RatePretty } from "@osmosis-labs/unit";
 import { isNil } from "@osmosis-labs/utils";
@@ -303,9 +304,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       swapState.isLoadingNetworkFee ||
       swapState.isLoadingOneClickMessages;
 
+    const hasInsufficientFeeTokens =
+      swapState.networkFeeError instanceof InsufficientBalanceForFeeError;
+
     let buttonText: string;
     if (swapState.error) {
       buttonText = t(...tError(swapState.error));
+    } else if (hasInsufficientFeeTokens) {
+      // Surface the fee-token shortage even when there's also a price-impact
+      // warning — the user can't proceed regardless, and "Swap anyway" would
+      // be misleading for a fee-balance issue.
+      buttonText = t("errors.insufficientFeeTokens.buttonLabel");
     } else if (showPriceImpactWarning) {
       buttonText = t("swap.buttonError");
     } else if (
@@ -665,7 +674,36 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   </div>
                 </AssetFieldsetFooter>
               </AssetFieldset>
-              {shouldDisplayLowLiquidityWarning && tokenWithLowLiquidity && (
+              {/*
+                Suppress the non-blocking low-liquidity advisory while the
+                blocking fee-shortage warning (below) is showing -- the user
+                can't proceed regardless of slippage until they fund a fee
+                token, and stacking two visually identical rust-bordered
+                warnings just competes for attention with the actionable one.
+              */}
+              {!hasInsufficientFeeTokens &&
+                shouldDisplayLowLiquidityWarning &&
+                tokenWithLowLiquidity && (
+                  <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
+                    <Icon
+                      id="alert-triangle"
+                      width={20}
+                      height={20}
+                      className="text-rust-600 min-w-[20px] mt-1"
+                    />
+                    <div className="flex flex-col gap-1">
+                      <span className="body2 text-base text-rust-500">
+                        {t("lowLiquidityAlert.title")}
+                      </span>
+                      <span className="subtitle2 text-osmoverse-400">
+                        {t("lowLiquidityAlert.description", {
+                          tokenWithLowLiquidity,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              {hasInsufficientFeeTokens && (
                 <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mb-3">
                   <Icon
                     id="alert-triangle"
@@ -675,12 +713,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   />
                   <div className="flex flex-col gap-1">
                     <span className="body2 text-base text-rust-500">
-                      {t("lowLiquidityAlert.title")}
+                      {t("errors.insufficientFeeTokens.title")}
                     </span>
                     <span className="subtitle2 text-osmoverse-400">
-                      {t("lowLiquidityAlert.description", {
-                        tokenWithLowLiquidity,
-                      })}
+                      {t("errors.insufficientFeeTokens.body")}
                     </span>
                   </div>
                 </div>
@@ -698,6 +734,15 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       !Boolean(swapState.quote) ||
                       isSwapToolLoading ||
                       Boolean(swapState.error) ||
+                      // Fee-token shortage must hard-disable independently of
+                      // the overspend-limit short-circuit below: when 1CT is
+                      // active and a swap exceeds the spend limit we still
+                      // *let* the user click through (overspend triggers a
+                      // re-auth flow), but a wallet with no usable fee token
+                      // can't sign anything regardless, so the button must
+                      // stay disabled to match its "Insufficient fee balance"
+                      // label.
+                      hasInsufficientFeeTokens ||
                       (Boolean(swapState.networkFeeError) &&
                         !swapState.hasOverSpendLimitError)))
                 }

@@ -284,7 +284,6 @@
     "highSwapFee": "स्वैप शुल्क बहुत अधिक है",
     "insufficientAmount": "अपर्याप्त राशि",
     "insufficientBal": "अपर्याप्त शेषराशि",
-    "insufficientBalForFee": "शुल्क के लिए अपर्याप्त शेष राशि",
     "insufficientLiquidity": "अपर्याप्त तरलता",
     "invalidNumberAmount": "संख्या का अमान्य रूप",
     "invalidScalingFactorControllerAddress": "अमान्य स्केलिंग फ़ैक्टर नियंत्रक पता",
@@ -319,7 +318,12 @@
     "noOrderbook": "जोड़ी के लिए कोई ऑर्डरबुक नहीं",
     "uhOhSomethingWentWrong": "ओह ओह, कुछ ग़लत हो गया",
     "sorryForTheInconvenience": "असुविधा के लिए खेद है। कृपया बाद में पुनः प्रयास करें।",
-    "startAgain": "फिर से शुरू करें"
+    "startAgain": "फिर से शुरू करें",
+    "insufficientFeeTokens": {
+      "title": "पर्याप्त शेष राशि वाला कोई शुल्क टोकन नहीं है",
+      "body": "नेटवर्क शुल्क को कवर करने के लिए Osmosis पर OSMO या अन्य समर्थित शुल्क टोकन जमा करें।",
+      "buttonLabel": "अपर्याप्त शुल्क शेष राशि"
+    }
   },
   "estimated": "अनुमानित",
   "frontierMigration": {
