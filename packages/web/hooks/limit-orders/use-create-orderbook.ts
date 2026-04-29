@@ -44,8 +44,7 @@ export function useCreateOrderbook({
 
       const instantiateMsgBytes = new TextEncoder().encode(
         JSON.stringify({
-          quote_denom: quoteDenom,
-          base_denom: baseDenom,
+          pool_asset_denoms: [baseDenom, quoteDenom],
         })
       );
 
@@ -78,9 +77,10 @@ export function useCreateOrderbook({
       );
     } catch (e) {
       console.error("Error creating orderbook pool", e);
-      setError(
-        e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong")
-      );
+      const message =
+        e instanceof Error ? e.message : t("errors.uhOhSomethingWentWrong");
+      setError(message);
+      throw e;
     } finally {
       setIsCreating(false);
     }

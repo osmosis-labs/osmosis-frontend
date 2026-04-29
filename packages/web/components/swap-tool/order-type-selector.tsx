@@ -165,9 +165,13 @@ export const OrderTypeSelector = ({
       });
       return;
     }
-    await createOrderbook();
-    setIsModalOpen(false);
-    setAcknowledgeFee(false);
+    try {
+      await createOrderbook();
+      setIsModalOpen(false);
+      setAcknowledgeFee(false);
+    } catch {
+      // createOrderbook sets error state internally; keep modal open so user sees it
+    }
   };
 
   return (
