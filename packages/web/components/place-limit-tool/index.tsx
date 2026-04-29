@@ -936,7 +936,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           amountWithSlippage={amountWithSlippage}
           fiatAmountWithSlippage={fiatAmountWithSlippage}
           isConfirmationDisabled={
-            isSendingTx || swapState.isLoadingOneClickMessages
+            isSendingTx ||
+            swapState.isLoadingOneClickMessages ||
+            hasInsufficientFeeTokens
           }
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}

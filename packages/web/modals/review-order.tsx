@@ -814,7 +814,11 @@ export function ReviewOrder({
                     onClick={() => {
                       confirmAction();
                     }}
-                    disabled={isConfirmationDisabled || wouldExceedSpendLimit}
+                    disabled={
+                      isConfirmationDisabled ||
+                      wouldExceedSpendLimit ||
+                      hasInsufficientFeeTokens
+                    }
                     className="body2 sm:caption !rounded-2xl"
                   >
                     <h6>{t("limitOrders.confirm")}</h6>
