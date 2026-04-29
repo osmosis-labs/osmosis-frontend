@@ -249,12 +249,7 @@ export const AssetVariantsConversionModal = observer(() => {
                   key={variant.amount.currency.coinMinimalDenom}
                   variant={variant}
                   showBottomBorder={index !== variants.length - 1}
-                  onInsufficientFeeTokens={(hasInsufficient) =>
-                    reportInsufficientFeeTokens(
-                      variant.amount.currency.coinMinimalDenom,
-                      hasInsufficient
-                    )
-                  }
+                  onInsufficientFeeTokens={reportInsufficientFeeTokens}
                 />
               )
             )
@@ -268,7 +263,16 @@ export const AssetVariantsConversionModal = observer(() => {
 const AssetVariantRow: React.FC<{
   variant: AssetVariant;
   showBottomBorder?: boolean;
-  onInsufficientFeeTokens?: (hasInsufficient: boolean) => void;
+  // Row reports its own coinMinimalDenom alongside the boolean so the parent
+  // can pass a single stable callback (e.g. a `useCallback`-ed setter) without
+  // having to re-bind the denom in a fresh inline arrow on every render —
+  // which would force every row's reporter effect to re-fire on every parent
+  // render and rely on the parent's `prev === next` guard alone to prevent
+  // cascading state updates.
+  onInsufficientFeeTokens?: (
+    coinMinimalDenom: string,
+    hasInsufficient: boolean
+  ) => void;
 }> = observer(
   ({ variant, showBottomBorder = true, onInsufficientFeeTokens }) => {
     const { t } = useTranslation();
@@ -334,8 +338,16 @@ const AssetVariantRow: React.FC<{
       const hasInsufficient =
         simulation?.error instanceof InsufficientBalanceForFeeError;
       lastReportedInsufficientRef.current = hasInsufficient;
-      onInsufficientFeeTokens?.(hasInsufficient);
-    }, [simulation?.error, simulation.loading, onInsufficientFeeTokens]);
+      onInsufficientFeeTokens?.(
+        variant.amount.currency.coinMinimalDenom,
+        hasInsufficient
+      );
+    }, [
+      simulation?.error,
+      simulation.loading,
+      onInsufficientFeeTokens,
+      variant.amount.currency.coinMinimalDenom,
+    ]);
 
     // Unmount-only: clear this row's contribution to the parent map so a row
     // that unmounts while reporting `true` (e.g. the variant list shrinks, or
@@ -344,7 +356,10 @@ const AssetVariantRow: React.FC<{
     useEffect(() => {
       return () => {
         if (lastReportedInsufficientRef.current) {
-          onInsufficientFeeTokens?.(false);
+          onInsufficientFeeTokens?.(
+            variant.amount.currency.coinMinimalDenom,
+            false
+          );
         }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
