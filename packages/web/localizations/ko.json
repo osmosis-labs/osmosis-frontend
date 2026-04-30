@@ -269,6 +269,9 @@
       "weighted": "가중치",
       "concentrated": "집중된 유동성",
       "transmuter": "트랜스뮤터",
+      "orderbook": "주문서",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "인센티브 없음"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "교환 수수료가 너무 높습니다",
     "insufficientAmount": "수수료가 부족합니다",
     "insufficientBal": "잔액 부족",
-    "insufficientBalForFee": "수수료 잔액이 부족함",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
@@ -316,7 +318,12 @@
     "noOrderbook": "페어 주문서 없음",
     "uhOhSomethingWentWrong": "아, 뭔가 잘못됐어",
     "sorryForTheInconvenience": "불편을 드려 죄송합니다. 나중에 다시 시도 해주십시오.",
-    "startAgain": "다시 시작"
+    "startAgain": "다시 시작",
+    "insufficientFeeTokens": {
+      "title": "잔액이 충분한 수수료 토큰이 없습니다",
+      "body": "네트워크 수수료를 충당하려면 Osmosis에 OSMO 또는 지원되는 다른 수수료 토큰을 입금하세요.",
+      "buttonLabel": "수수료 잔액 부족"
+    }
   },
   "estimated": "추정된",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "스왑 수수료 설정",
       "undersandCost": "새 풀을 만드는 데 {poolCreationFee} 의 비용이 발생한다는 것을 알고 있습니다.",
       "buttonCreate": "풀 생성",
-      "buttonCreating": "생성"
+      "buttonCreating": "생성",
+      "18decimalWarning": "{symbol}은 18자리 소수점을 사용하며, 6자리 quote 자산과의 Supercharged 풀에서 base 자산으로 사용할 수 없습니다.",
+      "18decimalWarningAction": "base와 quote 자산을 바꾸거나 대신 Weighted Pool을 생성하세요."
     },
     "TVL": "TVL",
     "myLiquidity": "내 유동성",

@@ -269,6 +269,9 @@
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
       "transmuter": "Transmutator",
+      "orderbook": "Carnet de comandă",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Fără incentivi"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Taxa de schimb este prea mare",
     "insufficientAmount": "Suma insuficienta",
     "insufficientBal": "Balanta insuficienta",
-    "insufficientBalForFee": "Sold insuficient pentru comision",
     "insufficientLiquidity": "Lichiditate insuficientă",
     "invalidNumberAmount": "Numar invalid",
     "invalidScalingFactorControllerAddress": "Factor de scalare invalid",
@@ -316,7 +318,12 @@
     "noOrderbook": "Fără carnet de comandă pentru pereche",
     "uhOhSomethingWentWrong": "Uh oh, ceva a mers prost",
     "sorryForTheInconvenience": "Îmi pare rău pentru neplăcerile create. Vă rugăm să încercați din nou mai târziu.",
-    "startAgain": "Incepe din nou"
+    "startAgain": "Incepe din nou",
+    "insufficientFeeTokens": {
+      "title": "Niciun token de comision cu sold suficient",
+      "body": "Depune OSMO sau un alt token de comision acceptat pe Osmosis pentru a acoperi comisionul de rețea.",
+      "buttonLabel": "Sold insuficient pentru comision"
+    }
   },
   "estimated": "Estimată",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Setați taxa de schimb",
       "undersandCost": "Înțeleg că crearea unui pool nou va costa {poolCreationFee} .",
       "buttonCreate": "Creați pool",
-      "buttonCreating": "Crearea"
+      "buttonCreating": "Crearea",
+      "18decimalWarning": "{symbol} utilizează 18 zecimale și nu poate fi folosit ca activ de bază într-un pool Supercharged cu un activ quote de 6 zecimale.",
+      "18decimalWarningAction": "Încearcă să schimbi activele de bază și quote sau creează în schimb un Weighted Pool."
     },
     "TVL": "TVL",
     "myLiquidity": "Lichiditatea mea",

@@ -402,7 +402,19 @@ export async function selectFeeAmountFromBalances({
   }[] = [];
 
   for (const { amount, denom } of feeBalances) {
-    const { gasPrice: feeDenomGasPrice } = await getGasPriceByDenom(denom);
+    let feeDenomGasPrice: Dec;
+    try {
+      ({ gasPrice: feeDenomGasPrice } = await getGasPriceByDenom(denom));
+    } catch (e) {
+      // e.g. the chain-registered txfees routing pool for this denom has no
+      // liquidity, or the LCD call errored. Skip this denom and try the next
+      // fee token rather than aborting the whole selection.
+      console.warn(
+        `Skipping fee token ${denom}: failed to get gas price`,
+        e instanceof Error ? e.message : e
+      );
+      continue;
+    }
 
     // Calculate the raw fee amount first before applying Math.max
     const rawFeeAmount = feeDenomGasPrice.mul(new Dec(gasLimit)).roundUp();

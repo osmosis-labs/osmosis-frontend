@@ -269,6 +269,9 @@
       "weighted": "وزن دار",
       "concentrated": "سوپرشارژ شده",
       "transmuter": "تبدیل کننده",
+      "orderbook": "دفترچه سفارش",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "بدون انگیزه"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "کارمزد تبدیل خیلی بالاست",
     "insufficientAmount": "مقدار ناکافی است",
     "insufficientBal": "موجودی نا کافی است",
-    "insufficientBalForFee": "موجودی کافی برای کارمزد",
     "insufficientLiquidity": "نقدینگی ناکافی است",
     "invalidNumberAmount": "عدد وارد شده اشتباه است",
     "invalidScalingFactorControllerAddress": "فاکتور کنترل کننده اشتباه است",
@@ -316,7 +318,12 @@
     "noOrderbook": "بدون دفترچه سفارش برای جفت",
     "uhOhSomethingWentWrong": "اوه اوه، مشکلی پیش آمد",
     "sorryForTheInconvenience": "با عرض پوزش برای ناراحتی. لطفاً بعداً دوباره امتحان کنید.",
-    "startAgain": "دوباره شروع کن"
+    "startAgain": "دوباره شروع کن",
+    "insufficientFeeTokens": {
+      "title": "هیچ توکن کارمزدی با موجودی کافی وجود ندارد",
+      "body": "برای پوشش کارمزد شبکه، OSMO یا یک توکن کارمزد پشتیبانی‌شده دیگر را در Osmosis واریز کنید.",
+      "buttonLabel": "موجودی کارمزد کافی نیست"
+    }
   },
   "estimated": "تخمین زده",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "کارمزد مبادله را تنظیم کنید",
       "undersandCost": "من متوجه هستم که ایجاد یک استخر جدید هزینه {poolCreationFee} را در بر خواهد داشت.",
       "buttonCreate": "استخر ایجاد کنید",
-      "buttonCreating": "ایجاد"
+      "buttonCreating": "ایجاد",
+      "18decimalWarning": "{symbol} از ۱۸ رقم اعشار استفاده می‌کند و نمی‌تواند به عنوان دارایی پایه در یک استخر Supercharged با یک دارایی quote با ۶ رقم اعشار استفاده شود.",
+      "18decimalWarningAction": "سعی کنید دارایی‌های پایه و quote را جابجا کنید یا به جای آن یک Weighted Pool ایجاد کنید."
     },
     "TVL": "TVL",
     "myLiquidity": "نقدینگی های من",

@@ -269,6 +269,9 @@
       "weighted": "Pondéré",
       "concentrated": "Liquidité concentrée",
       "transmuter": "Transmutateur",
+      "orderbook": "Carnet de commandes",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Pas d'incitations"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Les frais d'échange sont trop importants",
     "insufficientAmount": "Le montant est insuffisant",
     "insufficientBal": "Solde insuffisant",
-    "insufficientBalForFee": "Solde insuffisant pour les frais",
     "insufficientLiquidity": "Liquidité insuffisante",
     "invalidNumberAmount": "Forme invalide du nombre",
     "invalidScalingFactorControllerAddress": "Adresse de contrôleur de facteur d'échelle invalide",
@@ -316,7 +318,12 @@
     "noOrderbook": "Pas de carnet de commandes pour la paire",
     "uhOhSomethingWentWrong": "Oh oh, quelque chose s'est mal passé",
     "sorryForTheInconvenience": "Désolé pour le dérangement. Veuillez réessayer plus tard.",
-    "startAgain": "Recommencer"
+    "startAgain": "Recommencer",
+    "insufficientFeeTokens": {
+      "title": "Aucun jeton de frais avec un solde suffisant",
+      "body": "Déposez de l'OSMO ou un autre jeton de frais pris en charge sur Osmosis pour couvrir les frais de réseau.",
+      "buttonLabel": "Solde de frais insuffisant"
+    }
   },
   "estimated": "Estimé",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Définir les frais de swap",
       "undersandCost": "Je comprends que la création d'un nouveau pool coûtera {poolCreationFee} .",
       "buttonCreate": "Créer une piscine",
-      "buttonCreating": "Créer"
+      "buttonCreating": "Créer",
+      "18decimalWarning": "{symbol} utilise 18 décimales et ne peut pas être utilisé comme actif de base dans un pool Supercharged avec un actif quote à 6 décimales.",
+      "18decimalWarningAction": "Essayez d'échanger les actifs de base et de quote, ou créez plutôt un pool Weighted."
     },
     "TVL": "TVL",
     "myLiquidity": "Ma liquidité",

@@ -1,4 +1,5 @@
 import { DEFAULT_VS_CURRENCY } from "@osmosis-labs/server";
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { QuoteDirection } from "@osmosis-labs/tx";
 import { Dec, DecUtils, PricePretty } from "@osmosis-labs/unit";
 import { isValidNumericalRawInput } from "@osmosis-labs/utils";
@@ -505,14 +506,27 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       fiatAmount,
     ]);
 
+    const hasInsufficientFeeTokens =
+      swapState.gas.error instanceof InsufficientBalanceForFeeError;
+
     const buttonText = useMemo(() => {
+      if (hasInsufficientFeeTokens) {
+        return t("errors.insufficientFeeTokens.buttonLabel");
+      }
       return orderDirection === "bid"
         ? t("portfolio.buy")
         : t("limitOrders.sell");
-    }, [orderDirection, t]);
+    }, [orderDirection, t, hasInsufficientFeeTokens]);
 
     const isButtonDisabled = useMemo(() => {
       if (swapState.insufficientFunds) {
+        return true;
+      }
+
+      // Block placement on both market and limit tabs when fee estimation fails
+      // because the user has no fee token with sufficient balance — the on-chain
+      // tx would otherwise fail at signing time.
+      if (hasInsufficientFeeTokens) {
         return true;
       }
 
@@ -537,6 +551,7 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
       swapState.insufficientFunds,
       swapState.marketState.error,
       swapState.marketState.networkFeeError,
+      hasInsufficientFeeTokens,
     ]);
 
     const isButtonLoading = useMemo(() => {
@@ -840,6 +855,24 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
               orderDirection={orderDirection}
             />
           )}
+          {hasInsufficientFeeTokens && (
+            <div className="flex gap-3 border border-osmoverse-700 p-4 rounded-2xl mt-3">
+              <Icon
+                id="alert-triangle"
+                width={20}
+                height={20}
+                className="text-rust-600 min-w-[20px] mt-1"
+              />
+              <div className="flex flex-col gap-1">
+                <span className="body2 text-base text-rust-500">
+                  {t("errors.insufficientFeeTokens.title")}
+                </span>
+                <span className="subtitle2 text-osmoverse-400">
+                  {t("errors.insufficientFeeTokens.body")}
+                </span>
+              </div>
+            </div>
+          )}
           <div className="flex w-full flex-col py-3">
             {!account?.isWalletConnected ? (
               <Button
@@ -903,7 +936,9 @@ export const PlaceLimitTool: FunctionComponent<PlaceLimitToolProps> = observer(
           amountWithSlippage={amountWithSlippage}
           fiatAmountWithSlippage={fiatAmountWithSlippage}
           isConfirmationDisabled={
-            isSendingTx || swapState.isLoadingOneClickMessages
+            isSendingTx ||
+            swapState.isLoadingOneClickMessages ||
+            hasInsufficientFeeTokens
           }
           isOpen={reviewOpen}
           onClose={() => setReviewOpen(false)}

@@ -269,6 +269,9 @@
       "weighted": "Gewichtet",
       "concentrated": "Aufgeladen",
       "transmuter": "Transmuter",
+      "orderbook": "Orderbuch",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Keine Anreize"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Swap-Gebühr zu hoch",
     "insufficientAmount": "Unzureichende Menge",
     "insufficientBal": "Mangelhaftes Gleichgewicht",
-    "insufficientBalForFee": "Unzureichendes Guthaben für die Gebühr",
     "insufficientLiquidity": "Unzureichende Liquidität",
     "invalidNumberAmount": "Ungültige Zahlenform",
     "invalidScalingFactorControllerAddress": "Ungültige Skalierungsfaktor-Controller-Adresse",
@@ -316,7 +318,12 @@
     "noOrderbook": "Kein Orderbuch für Paar",
     "uhOhSomethingWentWrong": "Oh oh, etwas ist schiefgelaufen",
     "sorryForTheInconvenience": "Entschuldigen Sie die Unannehmlichkeiten. Bitte versuchen Sie es später erneut.",
-    "startAgain": "Fang nochmal an"
+    "startAgain": "Fang nochmal an",
+    "insufficientFeeTokens": {
+      "title": "Keine Gebührentoken mit ausreichendem Guthaben",
+      "body": "Zahle OSMO oder einen anderen unterstützten Gebührentoken auf Osmosis ein, um die Netzwerkgebühr zu decken.",
+      "buttonLabel": "Unzureichendes Gebührenguthaben"
+    }
   },
   "estimated": "Geschätzt",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Swap-Gebühr festlegen",
       "undersandCost": "Mir ist bewusst, dass das Erstellen eines neuen Pools {poolCreationFee} kostet.",
       "buttonCreate": "Pool erstellen",
-      "buttonCreating": "Erstellen"
+      "buttonCreating": "Erstellen",
+      "18decimalWarning": "{symbol} verwendet 18 Dezimalstellen und kann nicht als Basis-Asset in einem Supercharged Pool mit einem 6-Dezimalstellen-Quote verwendet werden.",
+      "18decimalWarningAction": "Versuche Basis- und Quote-Assets zu tauschen oder erstelle stattdessen einen Weighted Pool."
     },
     "TVL": "TVL",
     "myLiquidity": "Meine Liquidität",

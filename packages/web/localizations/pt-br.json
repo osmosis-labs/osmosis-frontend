@@ -269,6 +269,9 @@
       "weighted": "Ponderado",
       "concentrated": "Liquidez concentrada",
       "transmuter": "Transmutador",
+      "orderbook": "Carteira de pedidos",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Sem incentivos"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Taxa de troca está muito alta",
     "insufficientAmount": "Quantia insuficiente",
     "insufficientBal": "Saldo insuficiente",
-    "insufficientBalForFee": "Saldo insuficiente para taxa",
     "insufficientLiquidity": "Liquidez Insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Endereço controlador de fator de escala inválido",
@@ -316,7 +318,12 @@
     "noOrderbook": "Sem carteira de pedidos para par",
     "uhOhSomethingWentWrong": "Ah, ah, algo deu errado",
     "sorryForTheInconvenience": "Desculpe pela inconveniência. Por favor, tente novamente mais tarde.",
-    "startAgain": "Comece de novo"
+    "startAgain": "Comece de novo",
+    "insufficientFeeTokens": {
+      "title": "Nenhum token de taxa com saldo suficiente",
+      "body": "Deposite OSMO ou outro token de taxa compatível na Osmosis para cobrir a taxa de rede.",
+      "buttonLabel": "Saldo de taxa insuficiente"
+    }
   },
   "estimated": "Estimado",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Definir taxa de swap",
       "undersandCost": "Entendo que criar um novo pool custará {poolCreationFee} .",
       "buttonCreate": "Criar Pool",
-      "buttonCreating": "Criando"
+      "buttonCreating": "Criando",
+      "18decimalWarning": "{symbol} usa 18 casas decimais e não pode ser usado como ativo base em um pool Supercharged com um ativo quote de 6 casas decimais.",
+      "18decimalWarningAction": "Tente trocar os ativos base e quote, ou crie um Weighted Pool em vez disso."
     },
     "TVL": "TVL",
     "myLiquidity": "Minha Liquidez",

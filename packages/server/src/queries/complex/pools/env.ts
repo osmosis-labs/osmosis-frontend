@@ -8,6 +8,8 @@ export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 export const AlloyedPoolCodeIds = getAlloyedPoolCodeIds(IS_TESTNET);
 const AstroportPclPoolCodeIds = IS_TESTNET ? ["8611"] : ["842"];
 const WhitewhalePoolCodeIds = IS_TESTNET ? ["?"] : ["503", "641"];
+/** Cosmwasm Code Ids confirmed to be orderbook pools in current env. */
+export const OrderbookPoolCodeIds = IS_TESTNET ? ["?"] : ["885"];
 
 export function getCosmwasmPoolTypeFromCodeId(
   codeId: string
@@ -16,6 +18,7 @@ export function getCosmwasmPoolTypeFromCodeId(
   | "cosmwasm-alloyed"
   | "cosmwasm-astroport-pcl"
   | "cosmwasm-whitewhale"
+  | "cosmwasm-orderbook"
   | "cosmwasm" {
   if (TransmuterPoolCodeIds.includes(codeId)) {
     return "cosmwasm-transmuter";
@@ -28,6 +31,9 @@ export function getCosmwasmPoolTypeFromCodeId(
   }
   if (WhitewhalePoolCodeIds.includes(codeId)) {
     return "cosmwasm-whitewhale";
+  }
+  if (OrderbookPoolCodeIds.includes(codeId)) {
+    return "cosmwasm-orderbook";
   }
   return "cosmwasm";
 }

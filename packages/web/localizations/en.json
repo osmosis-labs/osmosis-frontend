@@ -269,6 +269,9 @@
       "weighted": "Weighted",
       "concentrated": "Supercharged",
       "transmuter": "Transmuter",
+      "orderbook": "Orderbook",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "No incentives"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Swap fee too high",
     "insufficientAmount": "Insufficient amount",
     "insufficientBal": "Insufficient balance",
-    "insufficientBalForFee": "Insufficient balance for fee",
     "insufficientLiquidity": "Insufficient liquidity",
     "invalidNumberAmount": "Invalid form of number",
     "invalidScalingFactorControllerAddress": "Invalid scaling factor controller address",
@@ -312,6 +314,11 @@
     "invalidAmounts": "Invalid amount(s)",
     "txTimedOutError": "Transaction timed out. Please retry.",
     "insufficientFee": "Insufficient balance for transaction fees. Please add funds to continue.",
+    "insufficientFeeTokens": {
+      "title": "No fee tokens with sufficient balance",
+      "body": "Deposit OSMO or another supported fee token on Osmosis to cover the network fee.",
+      "buttonLabel": "Insufficient fee balance"
+    },
     "noData": "No data",
     "noOrderbook": "No Orderbook for Pair",
     "uhOhSomethingWentWrong": "Uh oh, something went wrong",
@@ -541,7 +548,9 @@
       "swapFee": "Set Swap Fee",
       "undersandCost": "I understand that creating a new pool will cost {poolCreationFee}.",
       "buttonCreate": "Create Pool",
-      "buttonCreating": "Creating"
+      "buttonCreating": "Creating",
+      "18decimalWarning": "{symbol} uses 18 decimal places and cannot be used as the base asset in a Supercharged pool with a 6 decimal quote.",
+      "18decimalWarningAction": "Try swapping the base and quote assets, or create a Weighted pool instead."
     },
     "TVL": "TVL",
     "myLiquidity": "My Liquidity",

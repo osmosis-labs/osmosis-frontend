@@ -269,6 +269,9 @@
       "weighted": "Ağırlıklı",
       "concentrated": "Konsantre likidite",
       "transmuter": "Dönüştürücü",
+      "orderbook": "Sipariş Defteri",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Teşvik yok"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Takas ücreti çok yüksek",
     "insufficientAmount": "Yetersiz miktar",
     "insufficientBal": "Yetersiz bakiye",
-    "insufficientBalForFee": "Ücret bakiyesinin yetersiz olması",
     "insufficientLiquidity": "yetersiz likidite",
     "invalidNumberAmount": "Geçersiz rakam",
     "invalidScalingFactorControllerAddress": "Geçersiz ölçeklendirme faktörü denetleyici adresi",
@@ -316,7 +318,12 @@
     "noOrderbook": "Çift için Sipariş Defteri Yok",
     "uhOhSomethingWentWrong": "Ah, bir şeyler ters gitti",
     "sorryForTheInconvenience": "Rahatsızlıktan dolayı özür dileriz. Lütfen daha sonra tekrar deneyiniz.",
-    "startAgain": "Tekrar başla"
+    "startAgain": "Tekrar başla",
+    "insufficientFeeTokens": {
+      "title": "Yeterli bakiyeye sahip ücret tokeni yok",
+      "body": "Ağ ücretini karşılamak için Osmosis üzerinde OSMO veya desteklenen başka bir ücret tokeni yatırın.",
+      "buttonLabel": "Yetersiz ücret bakiyesi"
+    }
   },
   "estimated": "Tahmini",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Takas Ücretini Ayarla",
       "undersandCost": "Yeni bir havuz oluşturmanın {poolCreationFee} maliyeti olacağını anlıyorum.",
       "buttonCreate": "Havuz Oluştur",
-      "buttonCreating": "Yaratmak"
+      "buttonCreating": "Yaratmak",
+      "18decimalWarning": "{symbol} 18 ondalık basamak kullanır ve 6 ondalık quote varlığıyla Supercharged havuzunda base varlık olarak kullanılamaz.",
+      "18decimalWarningAction": "Base ve quote varlıklarını değiştirmeyi deneyin ya da bunun yerine bir Weighted Pool oluşturun."
     },
     "TVL": "TVL",
     "myLiquidity": "Likiditem",

@@ -269,6 +269,9 @@
       "weighted": "加重",
       "concentrated": "スーパーチャージャー",
       "transmuter": "トランスミューター",
+      "orderbook": "注文書",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "インセンティブなし"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "スワップ手数料が高すぎる",
     "insufficientAmount": "量が足りない",
     "insufficientBal": "残高不足",
-    "insufficientBalForFee": "手数料の残高が不足しています",
     "insufficientLiquidity": "不十分な流動性",
     "invalidNumberAmount": "数値の形式が無効です",
     "invalidScalingFactorControllerAddress": "無効なスケーリング係数コントローラーのアドレスです",
@@ -316,7 +318,12 @@
     "noOrderbook": "ペアの注文書はありません",
     "uhOhSomethingWentWrong": "ああ、何か問題が発生しました",
     "sorryForTheInconvenience": "ご不便をおかけして申し訳ございません。しばらくしてからもう一度お試しください。",
-    "startAgain": "再開する"
+    "startAgain": "再開する",
+    "insufficientFeeTokens": {
+      "title": "残高が十分な手数料トークンがありません",
+      "body": "ネットワーク手数料をカバーするため、OSMO またはサポートされている他の手数料トークンを Osmosis に入金してください。",
+      "buttonLabel": "手数料の残高が不足しています"
+    }
   },
   "estimated": "推定",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "スワップ手数料の設定",
       "undersandCost": "新しいプールを作成するには{poolCreationFee}の費用がかかることを理解しています。",
       "buttonCreate": "プールを作成",
-      "buttonCreating": "作成"
+      "buttonCreating": "作成",
+      "18decimalWarning": "{symbol}は18桁の小数点以下を使用しており、6桁のquoteアセットとのSuperchargedプールのbaseアセットとして使用することはできません。",
+      "18decimalWarningAction": "baseとquoteアセットを入れ替えるか、代わりにWeighted Poolを作成してください。"
     },
     "TVL": "TVL",
     "myLiquidity": "私の流動性",

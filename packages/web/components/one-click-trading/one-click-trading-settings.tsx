@@ -1,3 +1,4 @@
+import { InsufficientBalanceForFeeError } from "@osmosis-labs/stores";
 import { makeRemoveAuthenticatorMsg } from "@osmosis-labs/tx";
 import { OneClickTradingTransactionParams } from "@osmosis-labs/types";
 import { Dec } from "@osmosis-labs/unit";
@@ -174,12 +175,26 @@ export const OneClickTradingSettings = ({
     });
   }, [oneClickTradingInfo]);
 
-  const { data: estimateRemoveTxData, isLoading: isLoadingEstimateRemoveTx } =
-    useEstimateTxFees({
-      messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
-      chainId: chainStore.osmosis.chainId,
-      enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
-    });
+  const {
+    data: estimateRemoveTxData,
+    isLoading: isLoadingEstimateRemoveTx,
+    error: estimateRemoveTxError,
+  } = useEstimateTxFees({
+    messages: removeAuthenticatorMsg ? [removeAuthenticatorMsg] : [],
+    chainId: chainStore.osmosis.chainId,
+    enabled: !!oneClickTradingInfo && isOneClickTradingEnabled,
+  });
+
+  // Scoped to the remove path only: `useEstimateTxFees` above is gated on
+  // `oneClickTradingInfo` being present (i.e. an existing session is being
+  // ended/edited), so this signal is meaningful for the edit-session button
+  // but not for the start-session button. Plumbing fee estimation into the
+  // start path requires a deterministic equivalent of
+  // `makeCreate1CTSessionMessage` (it currently generates a fresh privKey and
+  // a clock-dependent session period on every call), which is out of scope
+  // here.
+  const hasInsufficientFeeTokensForRemove =
+    estimateRemoveTxError instanceof InsufficientBalanceForFeeError;
 
   useEffect(() => {
     if (!transaction1CTParams || initialTransaction1CTParams) return;
@@ -332,11 +347,39 @@ export const OneClickTradingSettings = ({
                   </div>
                 </div>
 
+                {standalone && hasInsufficientFeeTokensForRemove && (
+                  <div className="px-8">
+                    <div className="flex gap-3 rounded-2xl border border-osmoverse-700 p-4">
+                      <Icon
+                        id="alert-triangle"
+                        width={20}
+                        height={20}
+                        className="mt-1 min-w-[20px] text-rust-600"
+                      />
+                      <div className="flex flex-col gap-1">
+                        <span className="body2 text-base text-rust-500">
+                          {t("errors.insufficientFeeTokens.title")}
+                        </span>
+                        <span className="subtitle2 text-osmoverse-400">
+                          {t("errors.insufficientFeeTokens.body")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex flex-col gap-0">
                   {standalone && (
                     <SettingRow
                       title={t("oneClickTrading.settings.enableTitle")}
                       onClick={() => {
+                        // Block toggle-off during the
+                        // "no fee token with sufficient balance to sign the
+                        // remove-authenticator tx" state — otherwise the
+                        // SettingRow click immediately fires onEndSession() and
+                        // the chain rejects the tx after signing. The inline
+                        // warning rendered above explains the disabled state.
+                        if (hasInsufficientFeeTokensForRemove) return;
                         if (hasExistingSession) onEndSession?.();
                         setTransaction1CTParams((params) => {
                           if (!params)
@@ -367,7 +410,10 @@ export const OneClickTradingSettings = ({
                           )}{" "}
                           <Switch
                             disabled={
-                              isSendingTx || isEndingSession || isLoading
+                              isSendingTx ||
+                              isEndingSession ||
+                              isLoading ||
+                              hasInsufficientFeeTokensForRemove
                             }
                             checked={
                               transaction1CTParams?.isOneClickEnabled ?? false
@@ -375,7 +421,11 @@ export const OneClickTradingSettings = ({
                           />
                         </div>
                       }
-                      isDisabled={isSendingTx || isEndingSession}
+                      isDisabled={
+                        isSendingTx ||
+                        isEndingSession ||
+                        hasInsufficientFeeTokensForRemove
+                      }
                     />
                   )}
                   <SettingRow
@@ -457,8 +507,11 @@ export const OneClickTradingSettings = ({
                         className="w-full text-h6 font-h6"
                         onClick={onStartTrading}
                         isLoading={isSendingTx || isEndingSession}
+                        disabled={hasInsufficientFeeTokensForRemove}
                       >
-                        {t("oneClickTrading.settings.editSessionButton")}
+                        {hasInsufficientFeeTokensForRemove
+                          ? t("errors.insufficientFeeTokens.buttonLabel")
+                          : t("oneClickTrading.settings.editSessionButton")}
                       </Button>
                     </div>
                   )}
@@ -479,6 +532,7 @@ export const OneClickTradingSettings = ({
 
                 {standalone &&
                   isOneClickTradingEnabled &&
+                  !hasInsufficientFeeTokensForRemove &&
                   (isLoadingEstimateRemoveTx || !!estimateRemoveTxData) && (
                     <div className="flex flex-col gap-2">
                       <SkeletonLoader

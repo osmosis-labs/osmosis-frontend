@@ -269,6 +269,9 @@
       "weighted": "加权",
       "concentrated": "流动性集中",
       "transmuter": "转化器",
+      "orderbook": "订单簿",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "无激励"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "交易费太高",
     "insufficientAmount": "数量不足",
     "insufficientBal": "余额不足",
-    "insufficientBalForFee": "余额不足，无法支付费用",
     "insufficientLiquidity": "流动性不足",
     "invalidNumberAmount": "无效的数字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址无效",
@@ -316,7 +318,12 @@
     "noOrderbook": "暂无订单簿",
     "uhOhSomethingWentWrong": "哦，出问题了",
     "sorryForTheInconvenience": "抱歉造成不便。请稍后重试。",
-    "startAgain": "重新开始"
+    "startAgain": "重新开始",
+    "insufficientFeeTokens": {
+      "title": "没有余额足够的手续费代币",
+      "body": "请在 Osmosis 上充值 OSMO 或其他受支持的手续费代币以支付网络费用。",
+      "buttonLabel": "手续费余额不足"
+    }
   },
   "estimated": "估计的",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "设置掉期费",
       "undersandCost": "我了解创建一个新池将花费{poolCreationFee} 。",
       "buttonCreate": "创建池",
-      "buttonCreating": "创建"
+      "buttonCreating": "创建",
+      "18decimalWarning": "{symbol} 使用18位小数，不能在与6位小数报价资产配对的Supercharged池中用作基础资产。",
+      "18decimalWarningAction": "请尝试交换基础资产和报价资产，或改为创建Weighted池。"
     },
     "TVL": "TVL",
     "myLiquidity": "我的流动性",

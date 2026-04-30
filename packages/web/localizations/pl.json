@@ -269,6 +269,9 @@
       "weighted": "Ważone",
       "concentrated": "Skoncentrowana płynność",
       "transmuter": "Transmutator",
+      "orderbook": "Księga zamówień",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Brak zachęt"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Prowizja wymiany zbyt wysoka",
     "insufficientAmount": "Niewystarczające saldo",
     "insufficientBal": "Niewystarczająca ilość środków",
-    "insufficientBalForFee": "Niewystarczające saldo na opłatę",
     "insufficientLiquidity": "Niewystarczająca płynność",
     "invalidNumberAmount": "Nieprawidłowy format liczby",
     "invalidScalingFactorControllerAddress": "Nieprawidłowy adres kontrolera współczynnika skalowania",
@@ -316,7 +318,12 @@
     "noOrderbook": "Brak księgi zamówień dla pary",
     "uhOhSomethingWentWrong": "Oj, coś poszło nie tak",
     "sorryForTheInconvenience": "Przepraszam za niedogodności. Spróbuj ponownie później.",
-    "startAgain": "Zacznij jeszcze raz"
+    "startAgain": "Zacznij jeszcze raz",
+    "insufficientFeeTokens": {
+      "title": "Brak tokenów opłat z wystarczającym saldem",
+      "body": "Wpłać OSMO lub inny obsługiwany token opłat w Osmosis, aby pokryć opłatę sieciową.",
+      "buttonLabel": "Niewystarczające saldo opłat"
+    }
   },
   "estimated": "Szacowany",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Ustaw opłatę za wymianę",
       "undersandCost": "Rozumiem, że utworzenie nowego puli będzie kosztować {poolCreationFee} .",
       "buttonCreate": "Utwórz pulę",
-      "buttonCreating": "Tworzenie"
+      "buttonCreating": "Tworzenie",
+      "18decimalWarning": "{symbol} używa 18 miejsc po przecinku i nie może być użyty jako asset bazowy w puli Supercharged z asset quote o 6 miejscach po przecinku.",
+      "18decimalWarningAction": "Spróbuj zamienić asset bazowy i quote lub zamiast tego utwórz pulę Weighted."
     },
     "TVL": "TVL",
     "myLiquidity": "Moja płynność",

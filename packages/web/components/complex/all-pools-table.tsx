@@ -130,11 +130,23 @@ const TableControls = () => {
           selectedOptionIds={filters.poolTypesFilter}
           atLeastOneSelected
           options={[
-            { id: "weighted", display: t("components.table.weighted") },
-            { id: "stable", display: t("components.table.stable") },
             {
               id: "concentrated",
               display: t("components.table.concentrated"),
+            },
+            {
+              id: "cosmwasm-orderbook",
+              display: t("components.table.orderbook"),
+            },
+            { id: "weighted", display: t("components.table.weighted") },
+            { id: "stable", display: t("components.table.stable") },
+            {
+              id: "cosmwasm-astroport-pcl",
+              display: t("components.table.astroport"),
+            },
+            {
+              id: "cosmwasm-whitewhale",
+              display: t("components.table.whitewhale"),
             },
             {
               id: "cosmwasm-transmuter",

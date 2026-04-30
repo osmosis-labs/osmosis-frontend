@@ -269,6 +269,9 @@
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
       "transmuter": "transmutador",
+      "orderbook": "Libro de pedidos",
+      "astroport": "Astroport",
+      "whitewhale": "White Whale",
       "noIncentives": "Sin incentivos"
     }
   },
@@ -281,7 +284,6 @@
     "highSwapFee": "Cuota de intercambio demasiado alta",
     "insufficientAmount": "Cantidad insuficiente",
     "insufficientBal": "Saldo insuficiente",
-    "insufficientBalForFee": "Saldo insuficiente para la tarifa",
     "insufficientLiquidity": "Liquidez insuficiente",
     "invalidNumberAmount": "Forma de número inválida",
     "invalidScalingFactorControllerAddress": "Dirección de controlador de factor de escala no válida",
@@ -316,7 +318,12 @@
     "noOrderbook": "Sin libro de pedidos para el par",
     "uhOhSomethingWentWrong": "Oh oh algo salió mal",
     "sorryForTheInconvenience": "Lo siento por los inconvenientes ocasionados. Por favor, inténtelo de nuevo más tarde.",
-    "startAgain": "Empezar de nuevo"
+    "startAgain": "Empezar de nuevo",
+    "insufficientFeeTokens": {
+      "title": "No hay tokens de comisión con saldo suficiente",
+      "body": "Deposita OSMO u otro token de comisión compatible en Osmosis para cubrir la tarifa de red.",
+      "buttonLabel": "Saldo de comisión insuficiente"
+    }
   },
   "estimated": "Estimado",
   "frontierMigration": {
@@ -541,7 +548,9 @@
       "swapFee": "Establecer tarifa de intercambio",
       "undersandCost": "Entiendo que crear un nuevo grupo costará {poolCreationFee} .",
       "buttonCreate": "Crear Pool",
-      "buttonCreating": "Creando"
+      "buttonCreating": "Creando",
+      "18decimalWarning": "{symbol} utiliza 18 decimales y no puede usarse como activo base en un pool Supercharged con un activo quote de 6 decimales.",
+      "18decimalWarningAction": "Intenta intercambiar los activos base y quote, o crea un pool Weighted en su lugar."
     },
     "TVL": "TVL",
     "myLiquidity": "Mi Liquidez",
