@@ -14,7 +14,7 @@ jobs:
   fe-swap-us:
     timeout-minutes: 10
     name: prod-fe-swap-us
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -130,7 +130,10 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -145,7 +148,7 @@ jobs:
   fe-swap-eu:
     timeout-minutes: 15
     name: prod-fe-swap-eu
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -265,7 +268,10 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -280,7 +286,7 @@ jobs:
   fe-swap-sg:
     timeout-minutes: 15
     name: prod-fe-swap-sg
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
       - name: Echo IP
         run: curl -L "https://ipinfo.io" -s
@@ -402,7 +408,10 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.swap
@@ -418,7 +427,7 @@ jobs:
     timeout-minutes: 20
     needs: fe-swap-eu
     name: prod-fe-trade-eu
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -540,7 +549,10 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 180000
@@ -561,7 +573,7 @@ jobs:
     if: failure() || success()
     name: prod-fe-limit-eu
     needs: fe-trade-eu
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -689,7 +701,10 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_EU }}
           USE_TEST_PROXY: "use"
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000
@@ -709,7 +724,7 @@ jobs:
     timeout-minutes: 15
     needs: fe-swap-sg
     name: prod-fe-trade-sg
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -831,7 +846,10 @@ jobs:
           TEST_PROXY_PASSWORD: ${{ secrets.TEST_PROXY_PASSWORD }}
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_SG }}
           USE_TEST_PROXY: "use"
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -851,7 +869,7 @@ jobs:
     timeout-minutes: 10
     needs: fe-swap-us
     name: prod-fe-trade-us
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -970,7 +988,10 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.market --timeout 90000
@@ -991,7 +1012,7 @@ jobs:
     if: failure() || success()
     needs: fe-trade-us
     name: prod-fe-limit-us
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
     steps:
@@ -1116,7 +1137,10 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.TEST_PRIVATE_KEY_US }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test monitoring.limit --timeout 180000

@@ -139,7 +139,7 @@ jobs:
           fi
 
   prod-e2e-tests:
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     timeout-minutes: 20
     needs: [wait-for-deployment, check-balances]
     environment:
@@ -169,7 +169,10 @@ jobs:
         env:
           BASE_URL: "https://app.osmosis.zone"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test transactions portfolio swap.osmo.wallet
