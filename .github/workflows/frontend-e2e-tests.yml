@@ -141,7 +141,7 @@ jobs:
 
   preview-swap-osmo-tests:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     needs: [wait-for-deployment, check-balances]
     outputs:
       unexpected: ${{ steps.set-output.outputs.unexpected }}
@@ -170,7 +170,10 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test swap.osmo.wallet
@@ -190,7 +193,7 @@ jobs:
 
   preview-swap-usdc-tests:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     needs: [wait-for-deployment, preview-swap-osmo-tests, check-balances]
     steps:
       - name: Check out repository
@@ -224,7 +227,10 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test swap.usdc.wallet
@@ -239,7 +245,7 @@ jobs:
   preview-portfolio-trx-tests:
     timeout-minutes: 10
     needs: wait-for-deployment
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -264,7 +270,10 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test portfolio transactions
@@ -316,7 +325,7 @@ jobs:
 
   preview-trade-tests:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     needs:
       [wait-for-deployment, preview-swap-osmo-tests, preview-swap-usdc-tests, check-balances]
     steps:
@@ -350,7 +359,10 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test trade
@@ -364,7 +376,7 @@ jobs:
 
   preview-claim-tests:
     timeout-minutes: 10
-    runs-on: ubuntu-latest
+    runs-on: macos-14
     needs: [wait-for-deployment, check-balances]
     steps:
       - name: Check out repository
@@ -391,7 +403,10 @@ jobs:
         env:
           BASE_URL: "https://${{ needs.wait-for-deployment.outputs.environment_url }}"
           PRIVATE_KEY: ${{ secrets.E2E_PRIVATE_KEY_PREVIEW }}
-          HEADLESS: "true"
+          # Linux-headless mode (PR #4319) — disabled in favour of macos-14 above due to
+          # Keplr extension popup flakiness in headless Chromium on Linux. To retry the
+          # cheaper Linux runner, switch `runs-on:` to `ubuntu-latest` and uncomment:
+          # HEADLESS: "true"
         run: |
           cd packages/e2e
           npx playwright test claim
