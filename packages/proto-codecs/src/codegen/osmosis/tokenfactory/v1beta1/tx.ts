@@ -212,7 +212,7 @@ export interface MsgMintProtoMsg {
 export interface MsgMintAmino {
   sender?: string;
   amount?: CoinAmino;
-  mint_to_address?: string;
+  mintToAddress?: string;
 }
 export interface MsgMintSDKType {
   sender: string;
@@ -276,14 +276,14 @@ export const MsgMint = {
         denom: object.amount?.denom ?? "",
         amount: object.amount?.amount ?? "",
       },
-      mintToAddress: object.mint_to_address ?? "",
+      mintToAddress: object.mintToAddress ?? "",
     };
   },
   toAmino(message: MsgMint): MsgMintAmino {
     return {
       sender: message.sender,
       amount: { denom: message.amount.denom, amount: message.amount.amount },
-      mint_to_address: message.mintToAddress,
+      mintToAddress: message.mintToAddress,
     };
   },
   toProto(message: MsgMint): Uint8Array {
