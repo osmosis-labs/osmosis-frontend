@@ -15,11 +15,12 @@ export interface Orderbook {
   poolId: string;
 }
 
-export function getOrderbookPools() {
+function fetchOrderbookPools(forceFresh = false) {
   return cachified({
     cache: orderbookPoolsCache,
     key: `orderbookPools`,
     ttl: 1000 * 60 * 60, // 1 hour
+    forceFresh,
     getFreshValue: () =>
       queryCanonicalOrderbooks().then(async (data) => {
         return data.map((orderbook) => {
@@ -32,4 +33,12 @@ export function getOrderbookPools() {
         }) as Orderbook[];
       }),
   });
+}
+
+export function getOrderbookPools() {
+  return fetchOrderbookPools(false);
+}
+
+export function getOrderbookPoolsFresh() {
+  return fetchOrderbookPools(true);
 }

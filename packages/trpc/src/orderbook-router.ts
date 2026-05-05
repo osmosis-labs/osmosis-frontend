@@ -6,6 +6,7 @@ import {
   getOrderbookHistoricalOrders,
   getOrderbookMakerFee,
   getOrderbookPools,
+  getOrderbookPoolsFresh,
   getOrderbookState,
   MappedLimitOrder,
   maybeCachePaginatedItems,
@@ -240,14 +241,24 @@ export const orderbookRouter = createTRPCRouter({
    *  - `endpointFunctional`: true if the sidecar endpoint responded without throwing.
    */
   verifyOrderbookCreation: publicProcedure
-    .input(z.object({ baseDenom: z.string(), quoteDenom: z.string() }))
+    .input(
+      z.object({
+        baseDenom: z.string(),
+        quoteDenom: z.string(),
+        // Pass true immediately after creation to bypass the server-side LRU
+        // cache and get a fresh result from SQS.
+        fresh: z.boolean().optional(),
+      })
+    )
     .query(async ({ input }) => {
-      const { baseDenom, quoteDenom } = input;
+      const { baseDenom, quoteDenom, fresh } = input;
 
       let pools: Awaited<ReturnType<typeof getOrderbookPools>> = [];
       let endpointFunctional = false;
       try {
-        pools = await getOrderbookPools();
+        pools = fresh
+          ? await getOrderbookPoolsFresh()
+          : await getOrderbookPools();
         endpointFunctional = true;
       } catch {
         return { orderbookExists: false, endpointFunctional: false };
