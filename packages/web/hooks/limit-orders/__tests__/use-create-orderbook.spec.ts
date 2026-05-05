@@ -109,7 +109,7 @@ describe("useCreateOrderbook", () => {
       const [, , msgs] = mockSignAndBroadcast.mock.calls[0] as [
         string,
         string,
-        Array<{ typeUrl: string; value: { instantiateMsg: Uint8Array } }>,
+        Array<{ typeUrl: string; value: { instantiateMsg: Uint8Array } }>
       ];
 
       const msg = msgs[0];
@@ -117,8 +117,13 @@ describe("useCreateOrderbook", () => {
         "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool"
       );
 
-      const decoded = JSON.parse(new TextDecoder().decode(msg.value.instantiateMsg));
-      expect(decoded).toEqual({ base_denom: BASE_DENOM, quote_denom: QUOTE_DENOM });
+      const decoded = JSON.parse(
+        new TextDecoder().decode(msg.value.instantiateMsg)
+      );
+      expect(decoded).toEqual({
+        base_denom: BASE_DENOM,
+        quote_denom: QUOTE_DENOM,
+      });
     });
 
     it("uses the correct orderbook code ID", async () => {
@@ -135,7 +140,7 @@ describe("useCreateOrderbook", () => {
       const [, , msgs] = mockSignAndBroadcast.mock.calls[0] as [
         string,
         string,
-        Array<{ typeUrl: string; value: { codeId: bigint } }>,
+        Array<{ typeUrl: string; value: { codeId: bigint } }>
       ];
 
       expect(msgs[0].value.codeId).toBe(BigInt(OrderbookPoolCodeIds[0]));
