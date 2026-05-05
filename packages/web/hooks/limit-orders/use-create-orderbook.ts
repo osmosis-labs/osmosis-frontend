@@ -69,9 +69,12 @@ export function useCreateOrderbook({
           if (!tx.code) {
             // Invalidate the canonical pools cache so the new orderbook is reflected
             await apiUtils.edge.orderbooks.getPools.invalidate();
-            await apiUtils.edge.orderbooks.verifyOrderbookCreation.invalidate({
+            // Re-fetch with fresh: true to bypass the server-side LRU cache —
+            // ensures all users see the new orderbook immediately after creation.
+            await apiUtils.edge.orderbooks.verifyOrderbookCreation.fetch({
               baseDenom,
               quoteDenom,
+              fresh: true,
             });
           }
         }
