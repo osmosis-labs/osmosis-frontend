@@ -18,7 +18,7 @@ on:
       topup_multiplier:
         description: "Target = warnAmount x this (e.g. 1.5, 2, 3)"
         type: string
-        default: "1.5"
+        default: "3.0"
       reserve_osmo:
         description: "OSMO to reserve in topup account"
         type: string
@@ -26,7 +26,7 @@ on:
       reserve_usdc:
         description: "USDC to reserve in topup account"
         type: string
-        default: "500"
+        default: "100"
 
 concurrency:
   group: e2e-topup
