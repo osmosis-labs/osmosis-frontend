@@ -50,7 +50,10 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
       quoteDenom: QUOTE_DENOM,
     });
 
-    expect(result).toEqual({ orderbookExists: false, endpointFunctional: false });
+    expect(result).toEqual({
+      orderbookExists: false,
+      endpointFunctional: false,
+    });
   });
 
   it("returns orderbookExists: false and endpointFunctional: true when endpoint succeeds but pair is absent", async () => {
@@ -62,7 +65,10 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
       quoteDenom: QUOTE_DENOM,
     });
 
-    expect(result).toEqual({ orderbookExists: false, endpointFunctional: true });
+    expect(result).toEqual({
+      orderbookExists: false,
+      endpointFunctional: true,
+    });
   });
 
   it("returns orderbookExists: true when base/quote match exactly", async () => {
@@ -98,6 +104,9 @@ describe("orderbookRouter.verifyOrderbookCreation", () => {
       quoteDenom: QUOTE_DENOM,
     });
 
-    expect(result).toEqual({ orderbookExists: false, endpointFunctional: true });
+    expect(result).toEqual({
+      orderbookExists: false,
+      endpointFunctional: true,
+    });
   });
 });
