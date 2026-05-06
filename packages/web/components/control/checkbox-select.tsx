@@ -15,6 +15,7 @@ export const CheckboxSelect: FunctionComponent<
     selectedOptionIds?: string[];
     showDeselectAll?: boolean;
     menuItemsClassName?: string;
+    buttonClassName?: string;
     atLeastOneSelected?: boolean;
   } & Omit<MenuSelectProps, "selectedOptionId" | "defaultSelectedOptionId">
 > = ({
@@ -23,6 +24,7 @@ export const CheckboxSelect: FunctionComponent<
   options,
   onSelect,
   menuItemsClassName,
+  buttonClassName,
   atLeastOneSelected = false,
 }) => {
   const { isMobile } = useWindowSize();
@@ -33,10 +35,11 @@ export const CheckboxSelect: FunctionComponent<
         <>
           <MenuButton
             className={classNames(
-              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-6 text-sm transition-colors md:w-full",
-              "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[23px]",
+              "relative flex h-10 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl px-3 text-sm transition-colors md:w-full",
+              "border border-osmoverse-500 hover:border-2 hover:border-osmoverse-200 hover:px-[11px]",
               open &&
-                "border-2 border-osmoverse-200 px-[23px] text-osmoverse-200"
+                "border-2 border-osmoverse-200 px-[11px] text-osmoverse-200",
+              buttonClassName
             )}
           >
             {label}
