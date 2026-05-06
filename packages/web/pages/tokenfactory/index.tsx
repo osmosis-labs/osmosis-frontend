@@ -4,6 +4,7 @@ import { NextSeo } from "next-seo";
 import { useCallback, useState } from "react";
 
 import { CreateTokenConfig } from "~/components/complex/token/create";
+import { TokenCard } from "~/components/complex/token/manage/token-card";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -11,9 +12,16 @@ import { CreateTokenModal } from "~/modals";
 import { useStore } from "~/stores";
 
 const TokenFactory: NextPage = observer(function () {
-  const { accountStore } = useStore();
+  const { accountStore, queriesStore } = useStore();
   const { t } = useTranslation();
   const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const address = account?.address ?? "";
+
+  const queryDenomsFromCreator = queriesStore
+    .get(accountStore.osmosisChainId)
+    .osmosis?.queryDenomsFromCreator.get(address);
+
+  const userDenoms = queryDenomsFromCreator?.denoms ?? [];
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.TokenFactory.pageViewed],
@@ -65,27 +73,31 @@ const TokenFactory: NextPage = observer(function () {
 
       <div className="flex flex-col gap-8 py-10">
         <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-2">
-            <h4>{t("tokenFactory.title")}</h4>
-            <p className="body1 text-osmoverse-300">
-              {t("tokenFactory.description")}
-            </p>
-          </div>
-          <Button
-            onClick={() => setIsCreating(true)}
-            disabled={!account?.address}
-          >
+          <p className="body1 text-osmoverse-300">
+            {t("tokenFactory.description")}
+          </p>
+          <Button onClick={() => setIsCreating(true)} disabled={!address}>
             {t("tokenFactory.createButton")}
           </Button>
         </div>
 
-        {/* Token list — shows tokens created by the connected wallet */}
-        {/* TODO: wire up queryDenomsFromCreator once added to OsmosisQueries */}
-        {account?.address ? (
-          <div className="rounded-3xl bg-osmoverse-900 p-6">
-            <p className="body1 text-osmoverse-400">
-              {t("tokenFactory.noTokensYet")}
-            </p>
+        {address ? (
+          <div className="flex flex-col gap-3">
+            {userDenoms.length === 0 ? (
+              <div className="rounded-3xl bg-osmoverse-900 p-6">
+                <p className="body1 text-osmoverse-400">
+                  {t("tokenFactory.noTokensYet")}
+                </p>
+              </div>
+            ) : (
+              userDenoms.map((denom) => (
+                <TokenCard
+                  key={denom}
+                  denom={denom}
+                  walletAddress={address}
+                />
+              ))
+            )}
           </div>
         ) : (
           <div className="rounded-3xl border border-osmoverse-700 p-6 text-center">
@@ -99,7 +111,7 @@ const TokenFactory: NextPage = observer(function () {
       <CreateTokenModal
         isOpen={isCreating}
         onRequestClose={() => setIsCreating(false)}
-        walletAddress={account?.address ?? ""}
+        walletAddress={address}
         isSendingMsg={isSendingMsg}
         onCreateToken={onCreateToken}
       />
