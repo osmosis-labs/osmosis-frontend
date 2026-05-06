@@ -12,10 +12,13 @@ import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
+  useHideDustUserSetting,
   useTranslation,
+  useWalletSelect,
 } from "~/hooks";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
+import { api } from "~/utils/trpc";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore } = useStore();
@@ -26,6 +29,7 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
     useDimension<HTMLDivElement>();
@@ -33,8 +37,34 @@ const Pools: NextPage = observer(function () {
   const [myPositionsRef, { height: myPositionsHeight }] =
     useDimension<HTMLDivElement>();
 
+  const { data: positions, isLoading: isLoadingPositions } =
+    api.local.concentratedLiquidity.getUserPositions.useQuery(
+      { userOsmoAddress: account?.address ?? "" },
+      {
+        enabled: Boolean(account?.address) && !isWalletLoading,
+        trpc: { context: { skipBatch: true } },
+      }
+    );
+  const hasPositions = Boolean(positions?.length);
+
+  const { data: allMyPoolDetails, isLoading: isLoadingPools } =
+    api.edge.pools.getUserPools.useQuery(
+      { userOsmoAddress: account?.address ?? "" },
+      {
+        enabled: Boolean(account?.address),
+        trpc: { context: { skipBatch: true } },
+      }
+    );
+  const dustFilteredPools = useHideDustUserSetting(
+    allMyPoolDetails ?? [],
+    useCallback((myPool) => myPool.userValue, [])
+  );
+  const hasPools = dustFilteredPools.length > 0;
+
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
+  const openCreatePool = useCallback(() => setIsCreatingPool(true), []);
+  const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
   const createPoolConfig = useCreatePoolConfig(
     chainStore,
@@ -124,7 +154,7 @@ const Pools: NextPage = observer(function () {
       />
       <CreatePoolModal
         isOpen={isCreatingPool}
-        onRequestClose={useCallback(() => setIsCreatingPool(false), [])}
+        onRequestClose={closeCreatePool}
         title={t("pools.createPool.title")}
         createPoolConfig={createPoolConfig}
         isSendingMsg={account?.txTypeInProgress !== ""}
@@ -140,20 +170,32 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
-      {account?.address && (
+      {account?.address && (hasPositions || isLoadingPositions) && (
         <section className="pb-[3.75rem]" ref={myPositionsRef}>
           <h5>{t("clPositions.yourPositions")}</h5>
           <MyPositionsSection />
         </section>
       )}
-      <section className="pb-[3.75rem]" ref={myPoolsRef}>
-        <h5 className="md:px-3">{t("pools.myPools")}</h5>
-        <MyPoolsCardsGrid />
-      </section>
+      {account?.address && (hasPools || isLoadingPools) && (
+        <section className="pb-[3.75rem]" ref={myPoolsRef}>
+          <h5 className="md:px-3">{t("pools.myPools")}</h5>
+          <MyPoolsCardsGrid />
+        </section>
+      )}
+      {account?.address && !isLoadingPools && !hasPools && (
+        <section className="pb-8">
+          <div className="flex flex-col items-start gap-4 rounded-2xl bg-osmoverse-800 p-8 md:p-5">
+            <h5>{t("pools.lpExplainer.title")}</h5>
+            <p className="body1 whitespace-pre-line text-osmoverse-200">
+              {t("pools.lpExplainer.description")}
+            </p>
+          </div>
+        </section>
+      )}
       <section>
         <AllPoolsTable
           topOffset={myPositionsHeight + myPoolsHeight}
-          onCreatePool={useCallback(() => setIsCreatingPool(true), [])}
+          onCreatePool={openCreatePool}
           {...quickActionProps}
         />
       </section>

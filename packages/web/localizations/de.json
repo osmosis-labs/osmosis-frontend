@@ -513,6 +513,10 @@
       },
       "title": "Entdecken Sie Pools"
     },
+    "lpExplainer": {
+      "title": "Erträge durch Bereitstellung von Liquidität verdienen",
+      "description": "Fügen Sie Ihre Vermögenswerte einem Pool hinzu, um Swap-Gebühren und verfügbare Anreizbelohnungen zu verdienen. Durchsuchen Sie die Pools unten, um zu beginnen.\n\nDie Bereitstellung von Liquidität ist mit Risiken verbunden — der Wert Ihrer Position kann sowohl sinken als auch steigen."
+    },
     "APR": "APR",
     "bonded": "Gebunden",
     "createPool": {

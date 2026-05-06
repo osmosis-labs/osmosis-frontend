@@ -513,6 +513,10 @@
       },
       "title": "Todas las piscinas"
     },
+    "lpExplainer": {
+      "title": "Genera rendimiento proporcionando liquidez",
+      "description": "Añade tus activos a una piscina para ganar tarifas de intercambio y cualquier recompensa de incentivo disponible. Explora las piscinas a continuación para empezar.\n\nProporcionar liquidez conlleva riesgos — el valor de tu posición puede tanto disminuir como aumentar."
+    },
     "APR": "TPA",
     "bonded": "Abonado",
     "createPool": {

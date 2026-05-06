@@ -513,6 +513,10 @@
       },
       "title": "Toate pool-urile"
     },
+    "lpExplainer": {
+      "title": "Câștigă randament oferind lichiditate",
+      "description": "Adaugă-ți activele într-un pool pentru a câștiga taxe de swap și orice recompense de stimulente disponibile. Răsfoiește pool-urile de mai jos pentru a începe.\n\nFurnizarea de lichiditate implică riscuri — valoarea poziției tale poate scădea, dar și crește."
+    },
     "APR": "APR",
     "bonded": "Blocate",
     "createPool": {

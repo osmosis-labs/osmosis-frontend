@@ -513,6 +513,10 @@
       },
       "title": "Discover Pools"
     },
+    "lpExplainer": {
+      "title": "Earn yield by providing liquidity",
+      "description": "Add your assets to a pool to earn swap fees and any available incentive rewards. Browse pools below to get started.\n\nProviding liquidity carries risk, the value of your position can decrease as well as increase."
+    },
     "APR": "APR",
     "bonded": "Bonded",
     "createPool": {

@@ -513,6 +513,10 @@
       },
       "title": "Todas as Piscinas"
     },
+    "lpExplainer": {
+      "title": "Ganhe rendimento fornecendo liquidez",
+      "description": "Adicione seus ativos a uma pool para ganhar taxas de swap e quaisquer recompensas de incentivo disponíveis. Explore as pools abaixo para começar.\n\nFornecer liquidez envolve riscos — o valor da sua posição pode tanto diminuir quanto aumentar."
+    },
     "APR": "APR",
     "bonded": "Travado",
     "createPool": {

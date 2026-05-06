@@ -513,6 +513,10 @@
       },
       "title": "Tüm Havuzlar"
     },
+    "lpExplainer": {
+      "title": "Likidite sağlayarak getiri kazanın",
+      "description": "Takas ücretlerini ve mevcut teşvik ödüllerini kazanmak için varlıklarınızı bir havuza ekleyin. Başlamak için aşağıdaki havuzlara göz atın.\n\nLikidite sağlamak risk içerir — pozisyonunuzun değeri hem azalabilir hem de artabilir."
+    },
     "APR": "APR",
     "bonded": "Bağlı",
     "createPool": {

@@ -513,6 +513,10 @@
       },
       "title": "Tous les Bassins"
     },
+    "lpExplainer": {
+      "title": "Générez du rendement en fournissant des liquidités",
+      "description": "Ajoutez vos actifs à un pool pour gagner des frais d'échange et toute récompense incitative disponible. Parcourez les pools ci-dessous pour commencer.\n\nLa fourniture de liquidités comporte des risques — la valeur de votre position peut diminuer aussi bien qu'augmenter."
+    },
     "APR": "TAP",
     "bonded": "Cautionné",
     "createPool": {

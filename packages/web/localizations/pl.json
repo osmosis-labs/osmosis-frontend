@@ -513,6 +513,10 @@
       },
       "title": "Wszystkie Pule"
     },
+    "lpExplainer": {
+      "title": "Zarabiaj na dostarczaniu płynności",
+      "description": "Dodaj swoje aktywa do puli, aby zarabiać na opłatach swapowych i dostępnych nagrodach motywacyjnych. Przejrzyj poniższe pule, aby rozpocząć.\n\nDostarczanie płynności wiąże się z ryzykiem — wartość Twojej pozycji może zarówno spaść, jak i wzrosnąć."
+    },
     "APR": "APR",
     "bonded": "Związane",
     "createPool": {
