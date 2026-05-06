@@ -3,6 +3,7 @@ import { PropsWithChildren } from "react";
 import { CreateTokenStepProps } from "~/components/complex/token/create/types";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
+import { OSMO_ADDRESS_REGEX } from "~/utils/tokenfactory";
 
 export function StepBase({
   step,
@@ -18,7 +19,7 @@ export function StepBase({
       return (
         config.subdenom.length > 0 &&
         config.subdenom.length <= 44 &&
-        /^[a-zA-Z0-9._/-]+$/.test(config.subdenom) &&
+        /^[a-zA-Z0-9./_-]+$/.test(config.subdenom) &&
         config.name.length > 0 &&
         config.symbol.length > 0
       );
@@ -35,9 +36,15 @@ export function StepBase({
     }
     if (step === 3) {
       if (config.mintEnabled && config.mintAmount === "") return false;
+      if (
+        config.mintEnabled &&
+        config.mintRecipient !== "" &&
+        !OSMO_ADDRESS_REGEX.test(config.mintRecipient)
+      )
+        return false;
       if (config.changeAdminEnabled) {
         if (config.newAdmin === "") return false;
-        if (!/^osmo1[a-z0-9]{38}$/.test(config.newAdmin)) return false;
+        if (!OSMO_ADDRESS_REGEX.test(config.newAdmin)) return false;
       }
       return true;
     }

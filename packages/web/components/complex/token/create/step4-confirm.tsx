@@ -4,8 +4,7 @@ import { StepBase } from "~/components/complex/token/create/step-base";
 import { CreateTokenStepProps } from "~/components/complex/token/create/types";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
-
-const BURN_ADDRESS = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
+import { TOKENFACTORY_BURN_ADDRESS } from "~/utils/tokenfactory";
 
 export const Step4Confirm: FunctionComponent<CreateTokenStepProps> = (
   props
@@ -49,7 +48,7 @@ export const Step4Confirm: FunctionComponent<CreateTokenStepProps> = (
             <Row
               label={t("tokenFactory.create.confirmAdmin")}
               value={
-                config.newAdmin === BURN_ADDRESS
+                config.newAdmin === TOKENFACTORY_BURN_ADDRESS
                   ? t("tokenFactory.create.confirmAdminRenounced")
                   : config.newAdmin
               }

@@ -6,8 +6,10 @@ import { InputBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
 import { Switch } from "~/components/ui/switch";
 import { useTranslation } from "~/hooks";
-
-const BURN_ADDRESS = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
+import {
+  OSMO_ADDRESS_REGEX,
+  TOKENFACTORY_BURN_ADDRESS,
+} from "~/utils/tokenfactory";
 
 export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
   props
@@ -15,12 +17,12 @@ export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
   const { config, setConfig, walletAddress } = props;
   const { t } = useTranslation();
 
-  const isRenouncing = config.newAdmin === BURN_ADDRESS;
+  const isRenouncing = config.newAdmin === TOKENFACTORY_BURN_ADDRESS;
 
   const adminAddressError =
     config.changeAdminEnabled &&
     config.newAdmin !== "" &&
-    !/^osmo1[a-z0-9]{38}$/.test(config.newAdmin)
+    !OSMO_ADDRESS_REGEX.test(config.newAdmin)
       ? t("tokenFactory.create.errors.invalidAddress")
       : null;
 
@@ -62,7 +64,7 @@ export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
                   currentValue={config.mintAmount}
                   onInput={(val) => setConfig({ mintAmount: val })}
                   inputMode="decimal"
-                  placeholder="1000000"
+                  placeholder="100"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -143,7 +145,9 @@ export const Step3SupplyAdmin: FunctionComponent<CreateTokenStepProps> = (
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setConfig({ newAdmin: BURN_ADDRESS })}
+                  onClick={() =>
+                    setConfig({ newAdmin: TOKENFACTORY_BURN_ADDRESS })
+                  }
                 >
                   {t("tokenFactory.create.renounceAdmin")}
                 </Button>

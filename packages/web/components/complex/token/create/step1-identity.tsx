@@ -16,7 +16,7 @@ export const Step1Identity: FunctionComponent<CreateTokenStepProps> = (
     config.subdenom.length > 44
       ? t("tokenFactory.create.errors.subdenomTooLong")
       : config.subdenom.length > 0 &&
-        !/^[a-zA-Z0-9._/-]+$/.test(config.subdenom)
+        !/^[a-zA-Z0-9./_-]+$/.test(config.subdenom)
       ? t("tokenFactory.create.errors.subdenomInvalidChars")
       : null;
 

@@ -30,3 +30,9 @@ export interface CreateTokenStepProps extends CustomClasses {
   isSendingMsg?: boolean;
   advanceStep: () => void;
 }
+
+export interface CreateTokenSuccessProps {
+  config: CreateTokenConfig;
+  walletAddress: string;
+  onClose: () => void;
+}
