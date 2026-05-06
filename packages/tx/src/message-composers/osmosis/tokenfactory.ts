@@ -1,4 +1,5 @@
 import {
+  MsgBurn,
   MsgChangeAdmin,
   MsgCreateDenom,
   MsgMint,
@@ -16,6 +17,10 @@ export function makeMsgSetDenomMetadata(value: MsgSetDenomMetadata) {
 
 export function makeMsgMint(value: MsgMint) {
   return MessageComposer.withTypeUrl.mint(value);
+}
+
+export function makeMsgBurn(value: MsgBurn) {
+  return MessageComposer.withTypeUrl.burn(value);
 }
 
 export function makeMsgChangeAdmin(value: MsgChangeAdmin) {

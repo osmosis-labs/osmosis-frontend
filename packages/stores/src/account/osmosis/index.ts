@@ -16,6 +16,7 @@ import {
   makeCollectSpreadRewardsMsg,
   makeCreateBalancerPoolMsg,
   makeCreateConcentratedPoolMsg,
+  makeMsgBurn,
   makeMsgChangeAdmin,
   makeMsgCreateDenom,
   makeMsgMint,
@@ -238,10 +239,14 @@ export class OsmosisAccountImpl {
     const msgs: EncodeObject[] = [createDenom, setMetadata];
 
     if (params.mintAmount && params.mintAmount !== "") {
+      const baseMintAmount = new Dec(params.mintAmount)
+        .mul(DecUtils.getTenExponentN(params.decimals))
+        .truncate()
+        .toString();
       msgs.push(
         makeMsgMint({
           sender,
-          amount: { denom: fullDenom, amount: params.mintAmount },
+          amount: { denom: fullDenom, amount: baseMintAmount },
           mintToAddress: params.mintToAddress ?? sender,
         })
       );
@@ -270,6 +275,173 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(sender)
             .balances.forEach((bal) => bal.waitFreshResponse());
+          queries.osmosis?.queryDenomsFromCreator
+            .get(sender)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendMintTokensMsg(
+    denom: string,
+    /** Display-unit amount (e.g. "100" for 100 tokens). Converted to base units using decimals. */
+    amount: string,
+    decimals: number,
+    mintToAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sender = this.address;
+    const baseAmount = new Dec(amount)
+      .mul(DecUtils.getTenExponentN(decimals))
+      .truncate()
+      .toString();
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "mintTokens",
+      [
+        makeMsgMint({
+          sender,
+          amount: { denom, amount: baseAmount },
+          mintToAddress,
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(mintToAddress)
+            .balances.forEach((bal) => bal.waitFreshResponse());
+          queries.osmosis?.queryTotalSupply.get(denom).waitFreshResponse();
+          queries.osmosis?.queryDenomBalance
+            .getBalance(mintToAddress, denom)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendBurnTokensMsg(
+    denom: string,
+    /** Display-unit amount (e.g. "100" for 100 tokens). Converted to base units using decimals. */
+    amount: string,
+    decimals: number,
+    burnFromAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sender = this.address;
+    const baseAmount = new Dec(amount)
+      .mul(DecUtils.getTenExponentN(decimals))
+      .truncate()
+      .toString();
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "burnTokens",
+      [
+        makeMsgBurn({
+          sender,
+          amount: { denom, amount: baseAmount },
+          burnFromAddress,
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(burnFromAddress)
+            .balances.forEach((bal) => bal.waitFreshResponse());
+          queries.osmosis?.queryTotalSupply.get(denom).waitFreshResponse();
+          queries.osmosis?.queryDenomBalance
+            .getBalance(burnFromAddress, denom)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendUpdateDenomMetadataMsg(
+    denom: string,
+    metadata: {
+      name: string;
+      symbol: string;
+      description: string;
+      decimals: number;
+      uri: string;
+      uriHash: string;
+    },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sender = this.address;
+    const displayDenom = metadata.symbol;
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "updateDenomMetadata",
+      [
+        makeMsgSetDenomMetadata({
+          sender,
+          metadata: {
+            description: metadata.description,
+            denomUnits: [
+              { denom, exponent: 0, aliases: [] },
+              { denom: displayDenom, exponent: metadata.decimals, aliases: [] },
+            ],
+            base: denom,
+            display: displayDenom,
+            name: metadata.name,
+            symbol: metadata.symbol,
+            uri: metadata.uri,
+            uriHash: metadata.uriHash,
+          },
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.osmosis?.queryDenomsMetadata.waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendChangeTokenAdminMsg(
+    denom: string,
+    newAdmin: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const sender = this.address;
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "changeTokenAdmin",
+      [makeMsgChangeAdmin({ sender, denom, newAdmin })],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          const queries = this.queriesStore.get(this.chainId);
+          queries.osmosis?.queryDenomAuthorityMetadata
+            .get(denom)
+            .waitFreshResponse();
+          queries.osmosis?.queryDenomsFromCreator
+            .get(sender)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
