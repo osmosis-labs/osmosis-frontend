@@ -295,12 +295,19 @@ async function main(): Promise<void> {
 
     for (const req of resolvedReqs) {
       const current = currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
+      const warn = req.warnAmount;
       const target = req.warnAmount * multiplier;
       const deficit = target - current;
-      const status =
-        deficit <= 0
-          ? "✓ ok"
-          : `needs +${deficit.toFixed(4)}`;
+      // Hysteresis: only top up when below warnAmount. See calculateTopup() in
+      // fund-utils.ts for rationale.
+      let status: string;
+      if (current >= target) {
+        status = "✓ ok";
+      } else if (current >= warn) {
+        status = `✓ ok (above warn ${warn.toFixed(4)}, below target — no topup)`;
+      } else {
+        status = `needs +${deficit.toFixed(4)} (below warn ${warn.toFixed(4)})`;
+      }
       console.log(
         `      ${req.token}: ${current.toFixed(4)} / ${target.toFixed(4)}  ${status}`
       );

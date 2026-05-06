@@ -363,11 +363,24 @@ is capped, so all funds are utilized.
 
 ### Topup flow (ongoing)
 
-`scripts/topup-accounts.ts` — checks each account's current balance and sends only
-enough from the topup account to bring it up to `warnAmount × topup_multiplier` (default 3.0).
-With the default multiplier and the observed monitoring-wallet drain rate (~5 USDC/hr
-on US, less on EU/SG), an account is topped up to roughly 5 hours of headroom per
-trigger — striking a balance between alert frequency and the size of stranded reserves.
+`scripts/topup-accounts.ts` — for each account/token, applies a **hysteresis
+rule**: top up only when `current < warnAmount`, and when topping up, refill
+all the way to `warnAmount × topup_multiplier` (the "target", default
+`3 × warnAmount`). When `warnAmount ≤ current < target`, the script reports
+`✓ ok (above warn, below target — no topup)` and skips the token. With the
+default multiplier and the observed monitoring-wallet drain rate (~5 USDC/hr
+on US, less on EU/SG), an auto-cron topup fires roughly every ~3.4 hours and
+refills the account back to ~5 hours of headroom — striking a balance between
+alert frequency and the size of stranded reserves.
+
+The hysteresis matters because the monitoring tests are cyclic (each cron tick
+runs Buy then Sell pairs that *should* net to ~0 USDC). Mid-cycle, between a
+Buy and its matching Sell, the wallet looks transiently lower than its true
+post-cycle floor. Without hysteresis, any topup dispatched mid-test (e.g. a
+manual run while `prod-fe-trade-us` is executing) would over-top-up because
+it sees the in-flight low. With hysteresis, only a real persistent shortfall
+(below warnAmount) triggers a refill, so manual dispatches are idempotent
+above warnAmount and safe to run any time.
 
 When `reserve_usdc` / `reserve_osmo` leave less distributable than the sum of all
 accounts' targets, the post-run Slack summary annotates the affected token with
