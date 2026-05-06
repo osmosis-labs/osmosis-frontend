@@ -48,6 +48,13 @@ import {
   ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
 import { ObservableQueryNodeInfo } from "./tendermint/node-info";
+import {
+  ObservableQueryDenomAuthorityMetadata,
+  ObservableQueryDenomBalance,
+  ObservableQueryDenomsFromCreator,
+  ObservableQueryDenomsMetadata,
+  ObservableQueryTotalSupply,
+} from "./tokenfactory";
 import { ObservableQueryUsersValidatorPreferences } from "./valset-pref";
 
 export interface OsmosisQueries {
@@ -134,6 +141,12 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
   public readonly queryAccountsSuperfluidDelegatedPositions: DeepReadonly<ObservableQueryAccountsSuperfluidDelegatedClPositions>;
   public readonly queryAccountsSuperfluidUndelegatingPositions: DeepReadonly<ObservableQueryAccountsSuperfluidUndelegatingClPositions>;
+
+  public readonly queryDenomsFromCreator: DeepReadonly<ObservableQueryDenomsFromCreator>;
+  public readonly queryDenomAuthorityMetadata: DeepReadonly<ObservableQueryDenomAuthorityMetadata>;
+  public readonly queryDenomsMetadata: DeepReadonly<ObservableQueryDenomsMetadata>;
+  public readonly queryTotalSupply: DeepReadonly<ObservableQueryTotalSupply>;
+  public readonly queryDenomBalance: DeepReadonly<ObservableQueryDenomBalance>;
 
   public readonly queryUsersValidatorPreferences: DeepReadonly<ObservableQueryUsersValidatorPreferences>;
 
@@ -339,6 +352,36 @@ export class OsmosisQueriesImpl {
         chainId,
         chainGetter
       );
+
+    this.queryDenomsFromCreator = new ObservableQueryDenomsFromCreator(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryDenomAuthorityMetadata = new ObservableQueryDenomAuthorityMetadata(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryDenomsMetadata = new ObservableQueryDenomsMetadata(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryTotalSupply = new ObservableQueryTotalSupply(
+      kvStore,
+      chainId,
+      chainGetter
+    );
+
+    this.queryDenomBalance = new ObservableQueryDenomBalance(
+      kvStore,
+      chainId,
+      chainGetter
+    );
 
     this.queryUsersValidatorPreferences =
       new ObservableQueryUsersValidatorPreferences(
