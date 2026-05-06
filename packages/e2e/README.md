@@ -113,6 +113,17 @@ The checker fetches the current price from the Osmosis SQS API (`/tokens/prices`
 and converts to token amounts. `ensureBalances()` adds a 1 % buffer (configurable
 via `PRICE_BUFFER_PERCENT` env var).
 
+`fetchTokenPrices` retries up to **3 times with exponential backoff** (250 ms, 750 ms,
+2 250 ms) on transient `fetch failed` / non-2xx responses (common on cold macos-14
+GitHub runners due to DNS, TLS-handshake, or 30 s timeout hiccups). If all retries
+fail, the precursor script keeps `outcome = warn` and emits an alert worded
+`⚠️ <token> price service unavailable — couldn't verify, dispatching topup as
+precaution`. This preserves the topup safety net (false-positive topup costs ~30 s
+of CI runtime) over the alternative (silently-draining wallet). The downstream
+`topup-accounts.ts` script also calls `fetchTokenPrices`; if prices are still
+unavailable there, it gracefully skips USD-denominated tokens and tops up
+non-USD ones — no double-failure cascade.
+
 ### Running Locally
 
 ```bash
@@ -134,18 +145,25 @@ always succeeds — it's purely informational with no alerts or blocking.
 
 ### Automatic Pre-Test Checks in CI
 
-The following workflows run `check-balances.ts` as a dedicated `check-balances`
-job before any Playwright tests. All wallet-dependent test jobs depend on
-`check-balances` via `needs`, so a single check gates every test — one Slack
-alert at most per workflow run.
+The following workflows run `check-balances.ts` as a dedicated balance-gating
+job before any Playwright tests. All wallet-dependent test jobs depend on the
+balance-gate via `needs`, so a single check gates every test — one Slack
+alert at most per workflow run (or per region, for the geo-monitoring workflow).
 
-| Workflow | Check job | Gates test jobs | Account |
+| Workflow | Check job(s) | Gates test jobs | Account |
 |----------|-----------|----------------|---------|
 | `frontend-e2e-tests.yml` | `check-balances` | `preview-swap-osmo-tests`, `preview-swap-usdc-tests`, `preview-trade-tests`, `preview-claim-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
 | `prod-frontend-e2e-tests.yml` | `check-balances` | `prod-e2e-tests` | E2E Test Account (`E2E_PRIVATE_KEY_PREVIEW`) |
-| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
-| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
-| `monitoring-limit-geo-e2e-tests.yml` | per-job steps | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `preflight-sg` | `fe-swap-sg`, `fe-trade-sg` | Monitoring SG (`TEST_PRIVATE_KEY_SG`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `preflight-eu` | `fe-swap-eu`, `fe-trade-eu`, `fe-limit-eu` | Monitoring EU (`TEST_PRIVATE_KEY_EU`) |
+| `monitoring-limit-geo-e2e-tests.yml` | `preflight-us` | `fe-swap-us`, `fe-trade-us`, `fe-limit-us` | Monitoring US (`TEST_PRIVATE_KEY_US`) |
+
+Each `preflight-*` job in the geo-monitoring workflow runs the balance pipeline
+(check → alert if low → dispatch topup if low → expose `outcome` output) **once**
+per region per cron tick. Test jobs use `if: needs.preflight-XX.outputs.outcome
+!= 'fail'` to skip cleanly when the wallet is critically low — preserving the
+original fail-stop safety net while reducing per-cron-tick noise from up to
+9 Slack alerts and 3 topup dispatches down to 1 + 1 per region.
 
 ### Exit Codes
 
@@ -154,6 +172,12 @@ alert at most per workflow run.
 | `0` | All balances healthy |
 | `1` | At least one balance below `minAmount` (critical — blocks tests) |
 | `2` | All above `minAmount` but at least one below `warnAmount` (Slack warning) |
+
+The script also exits `2` (warn) when SQS pricing for any USD-denominated
+requirement is unavailable after retries — see "Price-Aware Checks" above.
+The Slack alert wording in that case calls out the cause ("price service
+unavailable — couldn't verify, dispatching topup as precaution") so it isn't
+mistaken for an actual shortage.
 
 ## Required Token Balances
 
@@ -317,8 +341,8 @@ control how much to keep in the **topup account** during distribute and topup ph
 |---|---|---|
 | `dry_run` | `true` | Simulate without broadcasting transactions |
 | `reserve_osmo` | `5` | OSMO to keep in topup account (distribute/topup phases) |
-| `reserve_usdc` | `500` | USDC to keep in topup account (distribute/topup phases) |
-| `topup_multiplier` | `1.5` | Target = warnAmount x this (topup workflow only) |
+| `reserve_usdc` | `100` | USDC to keep in topup account (distribute/topup phases) |
+| `topup_multiplier` | `3.0` | Target = warnAmount x this (topup workflow only) |
 
 ### Migration flow (one-time)
 
@@ -340,7 +364,17 @@ is capped, so all funds are utilized.
 ### Topup flow (ongoing)
 
 `scripts/topup-accounts.ts` — checks each account's current balance and sends only
-enough from the topup account to bring it up to `warnAmount × topup_multiplier` (default 1.5).
+enough from the topup account to bring it up to `warnAmount × topup_multiplier` (default 3.0).
+With the default multiplier and the observed monitoring-wallet drain rate (~5 USDC/hr
+on US, less on EU/SG), an account is topped up to roughly 5 hours of headroom per
+trigger — striking a balance between alert frequency and the size of stranded reserves.
+
+When `reserve_usdc` / `reserve_osmo` leave less distributable than the sum of all
+accounts' targets, the post-run Slack summary annotates the affected token with
+`⚠ post-reserve < target (short X)` plus a footer note explaining the meaning
+(`post-reserve = balance − reserve_<token>`). This is purely informational —
+the topup itself still runs for tokens that have enough headroom, and the
+warning suggests lowering the relevant reserve input if it becomes persistent.
 
 1. Run with dry run → see per-account balances, targets, and deficits
 2. Run live → sends only the deficits
