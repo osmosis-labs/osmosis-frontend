@@ -16,6 +16,7 @@ import {
   PoolsTable,
   PoolTypeFilter,
 } from "~/components/complex/pools-table";
+import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 
 import { CheckboxSelect } from "../control";
@@ -65,6 +66,7 @@ const useAllPoolsTable = () => {
 interface AllPoolsTableProps {
   topOffset: number;
   quickAddLiquidity: (poolId: string) => void;
+  onCreatePool: () => void;
 }
 
 export const AllPoolsTable = (props: AllPoolsTableProps) => {
@@ -100,12 +102,12 @@ export const AllPoolsTable = (props: AllPoolsTableProps) => {
       setSortDirection={setSortDirection}
       setSortKey={setSortKey}
     >
-      <TableControls />
+      <TableControls onCreatePool={props.onCreatePool} />
     </PoolsTable>
   );
 };
 
-const TableControls = () => {
+const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   const { t } = useTranslation();
 
   const { filters, setFilters } = useAllPoolsTable();
@@ -124,10 +126,18 @@ const TableControls = () => {
     <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
       <h5>{t("pools.allPools.title")}</h5>
 
-      <div className="flex h-12 flex-wrap gap-3 xl:h-fit">
+      <div className="flex h-12 flex-wrap items-center gap-3 xl:h-fit">
+        <SearchBox
+          size="small"
+          placeholder={t("assets.table.search")}
+          debounce={500}
+          currentValue={filters.searchQuery ?? undefined}
+          onInput={onSearchInput}
+        />
         <CheckboxSelect
           label={t("components.pool.title")}
           selectedOptionIds={filters.poolTypesFilter}
+          buttonClassName="!h-9"
           atLeastOneSelected
           options={[
             {
@@ -172,51 +182,13 @@ const TableControls = () => {
             }
           }}
         />
-        <CheckboxSelect
-          label={t("components.incentive.title")}
-          selectedOptionIds={filters.poolIncentivesFilter}
-          atLeastOneSelected
-          options={[
-            { id: "osmosis", display: t("pools.aprBreakdown.boost") },
-            {
-              id: "boost",
-              display: t("pools.aprBreakdown.externalBoost"),
-            },
-            {
-              id: "none",
-              display: t("components.table.noIncentives"),
-            },
-          ]}
-          onSelect={(incentiveType) => {
-            if (
-              filters.poolIncentivesFilter.includes(
-                incentiveType as PoolIncentiveFilter
-              )
-            ) {
-              setFilters((state) => ({
-                ...state,
-                poolIncentivesFilter: filters.poolIncentivesFilter.filter(
-                  (type) => type !== (incentiveType as PoolIncentiveFilter)
-                ),
-              }));
-            } else {
-              setFilters((state) => ({
-                ...state,
-                poolIncentivesFilter: [
-                  ...state.poolIncentivesFilter,
-                  incentiveType as PoolIncentiveFilter,
-                ],
-              }));
-            }
-          }}
-        />
-        <SearchBox
-          size="small"
-          placeholder={t("assets.table.search")}
-          debounce={500}
-          currentValue={filters.searchQuery ?? undefined}
-          onInput={onSearchInput}
-        />
+        <Button
+          size="md"
+          onClick={onCreatePool}
+          className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
+        >
+          {t("pools.createPool.title")}
+        </Button>
       </div>
     </div>
   );

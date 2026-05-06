@@ -597,8 +597,6 @@
     "myLiquidity": "私の流動性",
     "myPools": "あなたのプール",
     "poolId": "プール番号{id}",
-    "priceOsmo": "OSMOの価格",
-    "rewardDistribution": "での報酬の分配",
     "aprBreakdown": {
       "swapFees": "スワップ手数料",
       "boost": "ブースト",

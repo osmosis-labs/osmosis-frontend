@@ -597,8 +597,6 @@
     "myLiquidity": "Lichiditatea mea",
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
-    "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
     "aprBreakdown": {
       "swapFees": "Taxe de schimb",
       "boost": "Boost",

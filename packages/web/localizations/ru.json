@@ -597,8 +597,6 @@
     "myLiquidity": "Моя ликвидность",
     "myPools": "Ваши пулы",
     "poolId": "Пул № {id}",
-    "priceOsmo": "Цена OSMO",
-    "rewardDistribution": "Распределение вознаграждений в",
     "aprBreakdown": {
       "swapFees": "Комиссия за своп",
       "boost": "Способствовать росту",
