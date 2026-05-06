@@ -8,7 +8,6 @@ import {
 } from "@tanstack/react-table";
 import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
-import EventEmitter from "eventemitter3";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -17,7 +16,6 @@ import {
   PropsWithChildren,
   useEffect,
   useMemo,
-  useRef,
 } from "react";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -215,7 +213,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
   }, [poolsData]);
 
   // Define columns
-  const cellGroupEventEmitter = useRef(new EventEmitter()).current;
   const columns = useMemo(() => {
     const columnHelper = createColumnHelper<Pool>();
 
@@ -321,7 +318,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
           cell: ({ row }) => (
             <PoolQuickActionCell
               poolId={row.original.id}
-              cellGroupEventEmitter={cellGroupEventEmitter}
               onAddLiquidity={
                 quickAddLiquidity
                   ? () => quickAddLiquidity(row.original.id)
@@ -343,7 +339,6 @@ export const PoolsTable = (props: PropsWithChildren<PoolsTableProps>) => {
     sortParams.allPoolsSortDir,
     setSortDirection,
     setSortKey,
-    cellGroupEventEmitter,
     quickAddLiquidity,
     shouldDisplayVolumeData,
     shouldDisplayFeesData,
