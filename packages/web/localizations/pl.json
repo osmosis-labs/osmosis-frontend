@@ -556,8 +556,6 @@
     "myLiquidity": "Moja płynność",
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
-    "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za",
     "aprBreakdown": {
       "swapFees": "Opłaty za zamianę",
       "boost": "Zwiększyć",

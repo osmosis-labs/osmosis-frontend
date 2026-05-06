@@ -7,7 +7,6 @@ import { useCallback, useState } from "react";
 import { AllPoolsTable } from "~/components/complex/all-pools-table";
 import { MyPoolsCardsGrid } from "~/components/complex/my-pools-card-grid";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -27,9 +26,6 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(accountStore.osmosisChainId);
-
-  const [poolsOverviewRef, { height: poolsOverviewHeight }] =
-    useDimension<HTMLDivElement>();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
     useDimension<HTMLDivElement>();
@@ -121,7 +117,7 @@ const Pools: NextPage = observer(function () {
   }, [createPoolConfig, account]);
 
   return (
-    <main className="m-auto max-w-container px-8 md:px-3">
+    <main className="m-auto max-w-container px-8 pt-8 md:px-3 md:pt-4">
       <NextSeo
         title={t("seo.pools.title")}
         description={t("seo.pools.description")}
@@ -144,12 +140,6 @@ const Pools: NextPage = observer(function () {
           onRequestClose={() => setAddLiquidityModalPoolId(null)}
         />
       )}
-      <section className="pb-10 pt-8 md:pb-5 md:pt-4" ref={poolsOverviewRef}>
-        <PoolsOverview
-          className="mx-auto"
-          setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
-        />
-      </section>
       {account?.address && (
         <section className="pb-[3.75rem]" ref={myPositionsRef}>
           <h5>{t("clPositions.yourPositions")}</h5>
@@ -162,7 +152,8 @@ const Pools: NextPage = observer(function () {
       </section>
       <section>
         <AllPoolsTable
-          topOffset={myPositionsHeight + myPoolsHeight + poolsOverviewHeight}
+          topOffset={myPositionsHeight + myPoolsHeight}
+          onCreatePool={useCallback(() => setIsCreatingPool(true), [])}
           {...quickActionProps}
         />
       </section>

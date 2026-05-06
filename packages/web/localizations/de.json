@@ -556,8 +556,6 @@
     "myLiquidity": "Meine Liquidität",
     "myPools": "Ihre Pools",
     "poolId": "Pool # {id}",
-    "priceOsmo": "OSMO-Preis",
-    "rewardDistribution": "Belohnungsverteilung in",
     "aprBreakdown": {
       "swapFees": "Swap-Gebühren",
       "boost": "Schub",
