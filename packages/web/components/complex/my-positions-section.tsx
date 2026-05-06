@@ -8,7 +8,7 @@ import { useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
-const INITIAL_POSITION_CNT = 3;
+const INITIAL_POSITION_CNT = 5;
 
 /** List of position cards for a user. Optionally show positions only for a give pool ID via `forPoolId` prop. */
 export const MyPositionsSection: FunctionComponent<{

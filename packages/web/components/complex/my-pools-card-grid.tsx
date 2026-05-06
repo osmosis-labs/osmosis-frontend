@@ -28,7 +28,7 @@ export const MyPoolsCardsGrid = observer(() => {
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
 
-  const poolCountShowMoreThreshold = isMobile ? 3 : 6;
+  const poolCountShowMoreThreshold = isMobile ? 5 : 10;
   const { data: allMyPoolDetails, isLoading: isLoadingMyPoolDetails } =
     api.edge.pools.getUserPools.useQuery(
       {
