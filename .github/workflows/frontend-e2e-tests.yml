@@ -114,9 +114,9 @@ jobs:
                 gh workflow run "E2E: Topup Test Accounts" \
                   --ref stage \
                   -f dry_run=false \
-                  -f topup_multiplier=1.5 \
+                  -f topup_multiplier=3.0 \
                   -f reserve_osmo=5 \
-                  -f reserve_usdc=500
+                  -f reserve_usdc=100
                 echo "Topup workflow dispatched (balance outcome: $OUTCOME)."
               fi
             else

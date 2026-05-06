@@ -137,12 +137,14 @@ async function sendSlackSummary(
   );
   lines.push(`${"─".repeat(maxSym)}  ${"─".repeat(16)}  ${"─".repeat(14)}`);
 
+  let anyGap = false;
   for (const b of remaining) {
     const d = Math.min(b.decimals, 8);
     const gap = gapBySymbol.get(b.symbol);
     let status = "";
     if (gap && gap.gap < -0.0001) {
-      status = `⚠ NEED SWAP (short ${Math.abs(gap.gap).toFixed(d)})`;
+      anyGap = true;
+      status = `⚠ post-reserve < target (short ${Math.abs(gap.gap).toFixed(d)})`;
     }
     lines.push(
       `${b.symbol.padEnd(maxSym)}  ${b.amount.toFixed(d).padStart(16)}  ${status}`
@@ -151,13 +153,20 @@ async function sendSlackSummary(
 
   for (const g of gaps) {
     if (g.needed > 0 && !remaining.find((b) => b.symbol === g.symbol)) {
+      anyGap = true;
       lines.push(
-        `${g.symbol.padEnd(maxSym)}  ${"0".padStart(16)}  ⚠ NEED SWAP (short ${Math.abs(g.gap).toFixed(4)})`
+        `${g.symbol.padEnd(maxSym)}  ${"0".padStart(16)}  ⚠ post-reserve < target (short ${Math.abs(g.gap).toFixed(4)})`
       );
     }
   }
 
   lines.push("```");
+
+  if (anyGap) {
+    lines.push(
+      "_Note: `post-reserve = balance − reserve_<token>`. The topup account itself may still hold plenty; the warning means the configured reserve leaves the distributable buffer below the sum of all accounts' warnAmount × multiplier targets. Lower `RESERVE_USDC` / `RESERVE_OSMO` (workflow inputs) if you want more distributable headroom._"
+    );
+  }
 
   const serverUrl = process.env.GITHUB_SERVER_URL;
   const repo = process.env.GITHUB_REPOSITORY;
@@ -286,12 +295,19 @@ async function main(): Promise<void> {
 
     for (const req of resolvedReqs) {
       const current = currentBalances.find((b) => b.symbol === req.token)?.amount ?? 0;
+      const warn = req.warnAmount;
       const target = req.warnAmount * multiplier;
       const deficit = target - current;
-      const status =
-        deficit <= 0
-          ? "✓ ok"
-          : `needs +${deficit.toFixed(4)}`;
+      // Hysteresis: only top up when below warnAmount. See calculateTopup() in
+      // fund-utils.ts for rationale.
+      let status: string;
+      if (current >= target) {
+        status = "✓ ok";
+      } else if (current >= warn) {
+        status = `✓ ok (above warn ${warn.toFixed(4)}, below target — no topup)`;
+      } else {
+        status = `needs +${deficit.toFixed(4)} (below warn ${warn.toFixed(4)})`;
+      }
       console.log(
         `      ${req.token}: ${current.toFixed(4)} / ${target.toFixed(4)}  ${status}`
       );

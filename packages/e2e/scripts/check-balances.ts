@@ -113,12 +113,14 @@ async function main(): Promise<void> {
   const denomsToPrice = [...new Set([...denomsWithBalance, ...usdRequiredDenoms])];
 
   let prices: Record<string, number> = {};
+  let priceFetchFailed = false;
   if (denomsToPrice.length > 0) {
     try {
       prices = await fetchTokenPrices(denomsToPrice);
     } catch (e) {
+      priceFetchFailed = true;
       console.log(
-        `Could not fetch prices: ${e instanceof Error ? e.message : e}\n`
+        `Could not fetch prices after retries: ${e instanceof Error ? e.message : e}\n`
       );
     }
   }
@@ -187,8 +189,19 @@ async function main(): Promise<void> {
 
     if (req.unit === "usd") {
       if (!price || price <= 0) {
+        // No price available — likely a transient SQS pricing-service outage
+        // (fetchTokenPrices already retried 3x with backoff, see price-utils.ts).
+        // We deliberately keep `hasWarning = true` so the existing
+        // alert/topup safety net still fires — preferring a wasted topup
+        // (~30s of CI runtime) over a silently-draining wallet (~1hr until
+        // the next cron tick surfaces it via test failures). The reword
+        // makes the cause-and-effect honest: it's a price-service issue,
+        // not an actual shortage, and we're dispatching topup defensively.
+        const cause = priceFetchFailed
+          ? "price service unavailable"
+          : "no price available for USD conversion";
         const line =
-          `  ⚠️  ${req.token.padEnd(14)} skipped — no price available for USD conversion`;
+          `  ⚠️  ${req.token.padEnd(14)} ${cause} — couldn't verify, dispatching topup as precaution`;
         console.log(line);
         reportLines.push(line);
         hasWarning = true;

@@ -336,9 +336,23 @@ export function calculateDistribution(
 /**
  * Calculates topup amounts for each target account.
  *
- * Target balance = `warnAmount * multiplier`. If the account's current balance
- * is already at or above the target, nothing is sent. Respects reserves in the
- * topup account so it won't overdraw.
+ * Hysteresis rule: a token is topped up **only** when the current balance is
+ * below `warnAmount`. Once that trigger fires, the deficit is sized all the
+ * way up to `warnAmount * multiplier` (the "target"). Above warnAmount the
+ * function is a no-op for that token, even if the balance is below target.
+ *
+ * Why hysteresis? The monitoring tests are cyclic (Buy then Sell each cron
+ * tick) and *should* net to ~0 USDC, but a Buy executes before its matching
+ * Sell completes, so mid-cycle the wallet is transiently lower than its
+ * true post-cycle floor. Without hysteresis, any topup dispatched mid-cycle
+ * (e.g. a manual run) sees that transient low and over-tops-up — leaving
+ * the wallet above target once the Sell legs return their USDC. With
+ * hysteresis, transient mid-cycle dips above warnAmount are ignored; only
+ * a true persistent shortfall (current below warnAmount) triggers a refill,
+ * and when it does, the refill is generous enough to last several cron
+ * ticks before the next trigger.
+ *
+ * Respects reserves in the topup account so it won't overdraw.
  *
  * @param multiplier - Multiplier applied to warnAmount to compute the target (default 1.5).
  */
@@ -382,6 +396,9 @@ export function calculateTopup(
       if (!avail || avail.lte(0)) continue;
 
       const scale = new BigNumber(10).pow(tokenInfo.decimals);
+      const warnRaw = new BigNumber(req.warnAmount)
+        .times(scale)
+        .integerValue(BigNumber.ROUND_DOWN);
       const targetRaw = new BigNumber(req.warnAmount)
         .times(multiplier)
         .times(scale)
@@ -389,8 +406,10 @@ export function calculateTopup(
       const currentRaw = new BigNumber(
         target.currentBalances.find((b) => b.symbol === req.token)?.rawAmount ?? "0"
       );
-      const deficitRaw = targetRaw.minus(currentRaw);
 
+      if (currentRaw.gte(warnRaw)) continue;
+
+      const deficitRaw = targetRaw.minus(currentRaw);
       if (deficitRaw.lte(0)) continue;
       const rawToSend = deficitRaw.lt(avail)
         ? deficitRaw
