@@ -212,7 +212,7 @@ export interface MsgMintProtoMsg {
 export interface MsgMintAmino {
   sender?: string;
   amount?: CoinAmino;
-  mintToAddress?: string;
+  mint_to_address?: string;
 }
 export interface MsgMintSDKType {
   sender: string;
@@ -276,14 +276,14 @@ export const MsgMint = {
         denom: object.amount?.denom ?? "",
         amount: object.amount?.amount ?? "",
       },
-      mintToAddress: object.mintToAddress ?? "",
+      mintToAddress: object.mint_to_address ?? "",
     };
   },
   toAmino(message: MsgMint): MsgMintAmino {
     return {
       sender: message.sender,
       amount: { denom: message.amount.denom, amount: message.amount.amount },
-      mintToAddress: message.mintToAddress,
+      mint_to_address: message.mintToAddress,
     };
   },
   toProto(message: MsgMint): Uint8Array {
@@ -293,6 +293,105 @@ export const MsgMint = {
     return {
       typeUrl: "/osmosis.tokenfactory.v1beta1.MsgMint",
       value: MsgMint.encode(message).finish(),
+    };
+  },
+};
+
+// MsgBurn
+
+export interface MsgBurn {
+  sender: string;
+  amount: Coin;
+  burnFromAddress: string;
+}
+export interface MsgBurnProtoMsg {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn";
+  value: Uint8Array;
+}
+export interface MsgBurnAmino {
+  sender?: string;
+  amount?: CoinAmino;
+  burn_from_address?: string;
+}
+export interface MsgBurnSDKType {
+  sender: string;
+  amount: CoinSDKType;
+  burn_from_address: string;
+}
+
+function createBaseMsgBurn(): MsgBurn {
+  return { sender: "", amount: { denom: "", amount: "" }, burnFromAddress: "" };
+}
+
+export const MsgBurn = {
+  typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn",
+  encode(
+    message: MsgBurn,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sender !== "") writer.uint32(10).string(message.sender);
+    if (message.amount !== undefined)
+      Coin.encode(message.amount, writer.uint32(18).fork()).ldelim();
+    if (message.burnFromAddress !== "")
+      writer.uint32(26).string(message.burnFromAddress);
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgBurn {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgBurn();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.amount = Coin.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.burnFromAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgBurn>): MsgBurn {
+    const message = createBaseMsgBurn();
+    message.sender = object.sender ?? "";
+    message.amount = object.amount
+      ? Coin.fromPartial(object.amount)
+      : createBaseMsgBurn().amount;
+    message.burnFromAddress = object.burnFromAddress ?? "";
+    return message;
+  },
+  fromAmino(object: MsgBurnAmino): MsgBurn {
+    return {
+      sender: object.sender ?? "",
+      amount: {
+        denom: object.amount?.denom ?? "",
+        amount: object.amount?.amount ?? "",
+      },
+      burnFromAddress: object.burn_from_address ?? "",
+    };
+  },
+  toAmino(message: MsgBurn): MsgBurnAmino {
+    return {
+      sender: message.sender,
+      amount: { denom: message.amount.denom, amount: message.amount.amount },
+      burn_from_address: message.burnFromAddress,
+    };
+  },
+  toProto(message: MsgBurn): Uint8Array {
+    return MsgBurn.encode(message).finish();
+  },
+  toProtoMsg(message: MsgBurn): MsgBurnProtoMsg {
+    return {
+      typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn",
+      value: MsgBurn.encode(message).finish(),
     };
   },
 };
