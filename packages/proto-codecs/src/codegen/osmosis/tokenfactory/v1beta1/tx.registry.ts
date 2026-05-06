@@ -2,6 +2,7 @@
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 
 import {
+  MsgBurn,
   MsgChangeAdmin,
   MsgCreateDenom,
   MsgMint,
@@ -12,6 +13,7 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   ["/osmosis.tokenfactory.v1beta1.MsgCreateDenom", MsgCreateDenom],
   ["/osmosis.tokenfactory.v1beta1.MsgSetDenomMetadata", MsgSetDenomMetadata],
   ["/osmosis.tokenfactory.v1beta1.MsgMint", MsgMint],
+  ["/osmosis.tokenfactory.v1beta1.MsgBurn", MsgBurn],
   ["/osmosis.tokenfactory.v1beta1.MsgChangeAdmin", MsgChangeAdmin],
 ];
 
@@ -41,6 +43,12 @@ export const MessageComposer = {
         value: MsgMint.encode(value).finish(),
       };
     },
+    burn(value: MsgBurn) {
+      return {
+        typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn",
+        value: MsgBurn.encode(value).finish(),
+      };
+    },
     changeAdmin(value: MsgChangeAdmin) {
       return {
         typeUrl: "/osmosis.tokenfactory.v1beta1.MsgChangeAdmin",
@@ -64,6 +72,12 @@ export const MessageComposer = {
     mint(value: MsgMint) {
       return {
         typeUrl: "/osmosis.tokenfactory.v1beta1.MsgMint",
+        value,
+      };
+    },
+    burn(value: MsgBurn) {
+      return {
+        typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn",
         value,
       };
     },
@@ -91,6 +105,12 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.tokenfactory.v1beta1.MsgMint",
         value: MsgMint.fromPartial(value),
+      };
+    },
+    burn(value: MsgBurn) {
+      return {
+        typeUrl: "/osmosis.tokenfactory.v1beta1.MsgBurn",
+        value: MsgBurn.fromPartial(value),
       };
     },
     changeAdmin(value: MsgChangeAdmin) {
