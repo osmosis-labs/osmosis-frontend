@@ -500,7 +500,8 @@
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
     "onlyInRangePositions": "仅适用于范围内的位置",
-    "custom": "风俗"
+    "custom": "风俗",
+    "nextRewardIn": "下次奖励"
   },
   "pools": {
     "allPools": {

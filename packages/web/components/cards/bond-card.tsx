@@ -11,7 +11,7 @@ import { FallbackImg, Icon } from "~/components/assets";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useDailyEpochCountdown, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { formatPretty } from "~/utils/formatter";
 
@@ -189,6 +189,7 @@ const Drawer: FunctionComponent<{
   toggleDetailsVisible,
 }) => {
   const { t } = useTranslation();
+  const timeRemaining = useDailyEpochCountdown();
 
   return (
     <div
@@ -263,6 +264,7 @@ const Drawer: FunctionComponent<{
         </div>
         <span className="caption text-center text-osmoverse-400">
           {t("pool.rewardDistribution")}
+          {timeRemaining && ` · ${t("pool.nextRewardIn")} ${timeRemaining}`}
         </span>
       </div>
     </div>

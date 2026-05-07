@@ -500,7 +500,8 @@
     "undelegating": "отказ от делегирования",
     "yourStats": "Ваш баланс в пуле",
     "onlyInRangePositions": "Только для позиций в диапазоне",
-    "custom": "Обычай"
+    "custom": "Обычай",
+    "nextRewardIn": "Следующая награда через"
   },
   "pools": {
     "allPools": {

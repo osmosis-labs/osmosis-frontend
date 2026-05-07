@@ -31,6 +31,7 @@ import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
+  useDailyEpochCountdown,
   useLockTokenConfig,
   useSuperfluidPool,
   useTranslation,
@@ -555,6 +556,9 @@ export const SharePool: FunctionComponent<{ pool: Pool }> = observer(
                       },
                     ]}
                   />
+                  {userSharePool.lockedValue.toDec().isPositive() && (
+                    <NextRewardLine />
+                  )}
                 </div>
               </div>
             </div>
@@ -836,6 +840,24 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
       <h5 className="md:text-h6 md:font-h6">
         {t("pool.level", { level: level.toString() })}
       </h5>
+    </div>
+  );
+};
+
+const NextRewardLine: FunctionComponent = () => {
+  const { t } = useTranslation();
+  const timeRemaining = useDailyEpochCountdown();
+
+  if (!timeRemaining) return null;
+
+  return (
+    <div className="flex items-baseline justify-between border-t border-osmoverse-700 pt-3">
+      <span className="caption text-osmoverse-300">
+        {t("pool.nextRewardIn")}
+      </span>
+      <span className="subtitle1 whitespace-nowrap bg-superfluid bg-clip-text tabular-nums text-transparent">
+        {timeRemaining}
+      </span>
     </div>
   );
 };

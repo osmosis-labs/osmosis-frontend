@@ -500,7 +500,8 @@
     "undelegating": "anulare delegare",
     "yourStats": "Statisticile tale",
     "onlyInRangePositions": "Doar pentru pozițiile din rază",
-    "custom": "Personalizat"
+    "custom": "Personalizat",
+    "nextRewardIn": "Următoarea recompensă în"
   },
   "pools": {
     "allPools": {
