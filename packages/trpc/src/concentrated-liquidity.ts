@@ -4,15 +4,29 @@ import {
   getPositionHistoricalPerformance,
   mapGetUserPositionDetails,
   mapGetUserPositions,
+  PositionStatus,
   queryClParams,
   queryPositionById,
 } from "@osmosis-labs/server";
 import { AppCurrency } from "@osmosis-labs/types";
-import { getAssetFromAssetList, sort } from "@osmosis-labs/utils";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "./api";
 import { UserOsmoAddressSchema } from "./parameter-types";
+
+// Status grouping order for the user-positions sort: surface positions that
+// need attention (out of range) first, then those approaching the boundary,
+// and bucket every other status together so they sort purely by USD size desc.
+const POSITION_STATUS_ORDER: Record<PositionStatus, number> = {
+  outOfRange: 0,
+  nearBounds: 1,
+  inRange: 2,
+  fullRange: 2,
+  unbonding: 2,
+  superfluidStaked: 2,
+  superfluidUnstaking: 2,
+};
 
 const LiquidityPositionSchema = z.object({
   position: z.object({
@@ -57,17 +71,27 @@ export const concentratedLiquidityRouter = createTRPCRouter({
     .input(
       z
         .object({
-          sortDirection: z.enum(["asc", "desc"]).default("desc"),
           forPoolId: z.string().optional(),
         })
         .merge(UserOsmoAddressSchema.required())
     )
-    .query(({ input: { userOsmoAddress, sortDirection, forPoolId }, ctx }) =>
+    .query(({ input: { userOsmoAddress, forPoolId }, ctx }) =>
       mapGetUserPositions({
         ...ctx,
         userOsmoAddress,
         forPoolId,
-      }).then((positions) => sort(positions, "joinTime", sortDirection))
+      }).then((positions) =>
+        [...positions].sort((a, b) => {
+          const aOrder = a.status ? POSITION_STATUS_ORDER[a.status] ?? 99 : 99;
+          const bOrder = b.status ? POSITION_STATUS_ORDER[b.status] ?? 99 : 99;
+          if (aOrder !== bOrder) return aOrder - bOrder;
+          // Within a status group, larger USD value first.
+          const sizeDiff = b.currentValue.toDec().sub(a.currentValue.toDec());
+          if (sizeDiff.isPositive()) return 1;
+          if (sizeDiff.isNegative()) return -1;
+          return 0;
+        })
+      )
     ),
   getPositionDetails: publicProcedure
     .input(
