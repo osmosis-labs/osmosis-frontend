@@ -34,7 +34,7 @@ export class ObservableQueryDenomsMetadata extends ObservableChainQuery<DenomsMe
       kvStore,
       chainId,
       chainGetter,
-      `/cosmos/bank/v1beta1/denoms_metadata?pagination.limit=10000`
+      `/api/tokenfactory/denoms-metadata`
     );
 
     makeObservable(this);
@@ -42,7 +42,7 @@ export class ObservableQueryDenomsMetadata extends ObservableChainQuery<DenomsMe
 
   @override
   protected get instance(): AxiosInstance {
-    return Axios.create({ baseURL: "/api/lcd" });
+    return Axios.create({ baseURL: "" });
   }
 
   getMetadataForDenom(denom: string): DenomMetadata | undefined {

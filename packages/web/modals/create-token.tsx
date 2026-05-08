@@ -1,4 +1,4 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import {
   Step1Identity,
@@ -15,6 +15,7 @@ const DEFAULT_CONFIG: CreateTokenConfig = {
   subdenom: "",
   name: "",
   symbol: "",
+  // UX convenience default for the creation form — not a protocol assumption.
   decimals: 6,
   description: "",
   uri: "",
@@ -32,15 +33,33 @@ export const CreateTokenModal: FunctionComponent<
     walletAddress: string;
     isSendingMsg?: boolean;
     onCreateToken: (config: CreateTokenConfig) => void;
+    /** Called after the modal closes following a confirmed successful tx. */
     onCreated?: () => void;
+    /**
+     * When true the modal advances from step 4 → 5 (tx confirmed on-chain).
+     * When a non-empty string, shows that string as an error on step 4.
+     * Parent resets this to null after the modal handles it.
+     */
+    txResult?: "success" | string | null;
   }
 > = (props) => {
-  const { walletAddress, isSendingMsg, onCreateToken, onCreated } = props;
+  const { walletAddress, isSendingMsg, onCreateToken, onCreated, txResult } =
+    props;
   const { t } = useTranslation();
   const [curStep, setCurStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [completedConfig, setCompletedConfig] =
     useState<CreateTokenConfig | null>(null);
   const [config, setConfigState] = useState<CreateTokenConfig>(DEFAULT_CONFIG);
+  const [txError, setTxError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (txResult === "success" && curStep === 4) {
+      setCurStep(5);
+      setTxError(null);
+    } else if (txResult && txResult !== "success" && curStep === 4) {
+      setTxError(txResult);
+    }
+  }, [txResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const setConfig = (patch: Partial<CreateTokenConfig>) =>
     setConfigState((prev) => ({ ...prev, ...patch }));
@@ -49,9 +68,11 @@ export const CreateTokenModal: FunctionComponent<
     if (curStep < 4) {
       setCurStep((prev) => (prev + 1) as 1 | 2 | 3 | 4 | 5);
     } else {
+      // Capture config and fire tx — do NOT advance to step 5 yet.
+      // The parent sets txResult="success" after confirmed on-chain success.
       setCompletedConfig(config);
+      setTxError(null);
       onCreateToken(config);
-      setCurStep(5);
     }
   };
 
@@ -65,6 +86,7 @@ export const CreateTokenModal: FunctionComponent<
     setCurStep(1);
     setConfigState(DEFAULT_CONFIG);
     setCompletedConfig(null);
+    setTxError(null);
     props.onRequestClose();
   };
 
@@ -86,7 +108,16 @@ export const CreateTokenModal: FunctionComponent<
       {curStep === 1 && <Step1Identity {...stepProps} />}
       {curStep === 2 && <Step2Details {...stepProps} />}
       {curStep === 3 && <Step3SupplyAdmin {...stepProps} />}
-      {curStep === 4 && <Step4Confirm {...stepProps} />}
+      {curStep === 4 && (
+        <>
+          <Step4Confirm {...stepProps} />
+          {txError && (
+            <p className="caption mt-3 text-center text-missionError">
+              {txError}
+            </p>
+          )}
+        </>
+      )}
       {curStep === 5 && completedConfig && (
         <Step5Success
           config={completedConfig}

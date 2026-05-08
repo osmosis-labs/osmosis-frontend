@@ -813,7 +813,17 @@ export const TokenCard: FunctionComponent<Props> = observer(
                 currentValue={mintRecipient}
                 onInput={setMintRecipient}
                 placeholder={t("tokenFactory.create.mintRecipientHint")}
+                style={
+                  mintRecipient && !OSMO_ADDRESS_REGEX.test(mintRecipient)
+                    ? "error"
+                    : "enabled"
+                }
               />
+              {mintRecipient && !OSMO_ADDRESS_REGEX.test(mintRecipient) && (
+                <span className="caption text-missionError">
+                  {t("tokenFactory.create.errors.invalidAddress")}
+                </span>
+              )}
             </div>
             <div className="flex gap-2 justify-end">
               <Button variant="outline" size="md" onClick={closeAction}>
@@ -823,7 +833,10 @@ export const TokenCard: FunctionComponent<Props> = observer(
                 size="md"
                 onClick={handleMint}
                 disabled={
-                  !mintAmount || metadataDecimals === undefined || isSending
+                  !mintAmount ||
+                  metadataDecimals === undefined ||
+                  isSending ||
+                  (!!mintRecipient && !OSMO_ADDRESS_REGEX.test(mintRecipient))
                 }
               >
                 {t("tokenFactory.manage.mint")}

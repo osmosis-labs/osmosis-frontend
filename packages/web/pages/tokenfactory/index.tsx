@@ -29,10 +29,12 @@ const TokenFactory: NextPage = observer(function () {
 
   const [isCreating, setIsCreating] = useState(false);
   const [isSendingMsg, setIsSendingMsg] = useState(false);
+  const [txResult, setTxResult] = useState<"success" | string | null>(null);
 
   const onCreateToken = useCallback(
     async (config: CreateTokenConfig) => {
       setIsSendingMsg(true);
+      setTxResult(null);
       try {
         await account?.osmosis.sendCreateTokenFactoryDenomMsg(
           {
@@ -51,17 +53,22 @@ const TokenFactory: NextPage = observer(function () {
             newAdmin: config.changeAdminEnabled ? config.newAdmin : undefined,
           },
           undefined,
-          () => {
+          (tx) => {
             setIsSendingMsg(false);
-            setIsCreating(false);
+            if (!tx.code) {
+              setTxResult("success");
+            } else {
+              setTxResult(t("tokenFactory.create.errors.txFailed"));
+            }
           }
         );
       } catch (e) {
         setIsSendingMsg(false);
+        setTxResult(t("tokenFactory.create.errors.txFailed"));
         console.error(e);
       }
     },
-    [account]
+    [account, t]
   );
 
   return (
@@ -91,11 +98,7 @@ const TokenFactory: NextPage = observer(function () {
               </div>
             ) : (
               userDenoms.map((denom) => (
-                <TokenCard
-                  key={denom}
-                  denom={denom}
-                  walletAddress={address}
-                />
+                <TokenCard key={denom} denom={denom} walletAddress={address} />
               ))
             )}
           </div>
@@ -110,10 +113,15 @@ const TokenFactory: NextPage = observer(function () {
 
       <CreateTokenModal
         isOpen={isCreating}
-        onRequestClose={() => setIsCreating(false)}
+        onRequestClose={() => {
+          setIsCreating(false);
+          setTxResult(null);
+        }}
         walletAddress={address}
         isSendingMsg={isSendingMsg}
         onCreateToken={onCreateToken}
+        txResult={txResult}
+        onCreated={() => setTxResult(null)}
       />
     </main>
   );

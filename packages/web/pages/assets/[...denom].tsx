@@ -1,3 +1,4 @@
+import { fromBech32 } from "@cosmjs/encoding";
 import {
   getActiveCoingeckoCoins,
   getAssetMarketActivity,
@@ -16,7 +17,7 @@ import { useRouter } from "next/router";
 import Script from "next/script";
 import { NextSeo } from "next-seo";
 import { useQueryState } from "nuqs";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useLocalStorage, useUnmount } from "react-use";
 
 import { AlloyedAssetsSection } from "~/components/alloyed-assets";
@@ -49,6 +50,9 @@ import { useAssetInfo } from "~/hooks/use-asset-info";
 import { AssetInfoViewProvider } from "~/hooks/use-asset-info-view";
 import { PreviousTrade, SwapPreviousTradeKey } from "~/pages";
 import { trpcHelpers } from "~/utils/helpers";
+
+const TOKENFACTORY_BURN_ADDRESS = "osmo1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqmcn030";
+const GOVERNANCE_MODULE_ADDRESS = "osmo10d07y265gmmuvt4z0w9aw880jnsr700jjeq4qp";
 
 type AssetInfoPageStaticProps = InferGetStaticPropsType<typeof getStaticProps>;
 
@@ -89,6 +93,35 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
       description,
       denom: routerDenom,
     } = useAssetInfo();
+
+    const isTokenFactory = asset?.coinMinimalDenom?.startsWith("factory/");
+    const [admin, setAdmin] = useState<string | undefined>(undefined);
+    useEffect(() => {
+      if (!isTokenFactory || !asset?.coinMinimalDenom) return;
+      fetch(
+        `/api/tokenfactory/authority-metadata?denom=${encodeURIComponent(
+          asset.coinMinimalDenom
+        )}`
+      )
+        .then((r) => r.json())
+        .then((data) => setAdmin(data?.authority_metadata?.admin ?? ""))
+        .catch(() => setAdmin(undefined));
+    }, [isTokenFactory, asset?.coinMinimalDenom]);
+    // 20-byte bech32 payload = plain wallet; 32-byte = contract/multisig
+    const isPlainWalletAdmin = (addr: string) => {
+      try {
+        return fromBech32(addr).data.length === 20;
+      } catch {
+        return false;
+      }
+    };
+    const showAdminWarning =
+      isTokenFactory &&
+      admin !== undefined &&
+      admin !== "" &&
+      admin !== TOKENFACTORY_BURN_ADDRESS &&
+      admin !== GOVERNANCE_MODULE_ADDRESS &&
+      isPlainWalletAdmin(admin);
 
     useEffect(() => {
       if (asset?.coinMinimalDenom && routerDenom !== asset.coinMinimalDenom) {
@@ -223,6 +256,33 @@ const AssetInfoView: FunctionComponent<AssetInfoPageStaticProps> = observer(
                     text={asset.tooltipMessage}
                     className="body2 text-osmoverse-200"
                   />
+                </div>
+              )}
+              {showAdminWarning && (
+                <div className="flex items-start gap-3 rounded-2xl border border-rust-500/40 bg-rust-500/10 p-4">
+                  <Icon
+                    id="alert-triangle"
+                    className="mt-0.5 h-5 w-5 shrink-0 text-rust-400"
+                  />
+                  <div className="flex flex-col gap-1">
+                    <p className="body2 font-semibold text-rust-300">
+                      {t("tokenInfos.adminWarningTitle")}
+                    </p>
+                    <p className="body2 text-osmoverse-200">
+                      {t("tokenInfos.adminWarningBody")}
+                    </p>
+                    <p className="body2 text-osmoverse-400">
+                      {t("tokenInfos.adminWarningAddress")}:{" "}
+                      <a
+                        href={`https://www.mintscan.io/osmosis/address/${admin}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-wosmongton-300 underline"
+                      >
+                        {admin}
+                      </a>
+                    </p>
+                  </div>
                 </div>
               )}
               <AssetDetails />

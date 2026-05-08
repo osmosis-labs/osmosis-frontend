@@ -30,14 +30,14 @@ export class ObservableQueryDenomBalanceInner extends ObservableChainQuery<Balan
       kvStore,
       chainId,
       chainGetter,
-      `/cosmos/bank/v1beta1/balances/${address}/by_denom?denom=${encodeURIComponent(denom)}`
+      `/api/tokenfactory/denom-balance?address=${encodeURIComponent(address)}&denom=${encodeURIComponent(denom)}`
     );
     makeObservable(this);
   }
 
   @override
   protected get instance(): AxiosInstance {
-    return Axios.create({ baseURL: "/api/lcd" });
+    return Axios.create({ baseURL: "" });
   }
 
   protected canFetch(): boolean {
@@ -88,14 +88,14 @@ export class ObservableQueryTotalSupplyInner extends ObservableChainQuery<Supply
       kvStore,
       chainId,
       chainGetter,
-      `/cosmos/bank/v1beta1/supply/by_denom?denom=${encodeURIComponent(denom)}`
+      `/api/tokenfactory/total-supply?denom=${encodeURIComponent(denom)}`
     );
     makeObservable(this);
   }
 
   @override
   protected get instance(): AxiosInstance {
-    return Axios.create({ baseURL: "/api/lcd" });
+    return Axios.create({ baseURL: "" });
   }
 
   protected canFetch(): boolean {

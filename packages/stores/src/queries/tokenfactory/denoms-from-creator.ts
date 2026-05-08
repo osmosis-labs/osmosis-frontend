@@ -22,7 +22,7 @@ export class ObservableQueryDenomsFromCreatorInner extends ObservableChainQuery<
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/tokenfactory/v1beta1/denoms_from_creator/${bech32Address}`
+      `/api/tokenfactory/denoms-from-creator?creator=${encodeURIComponent(bech32Address)}`
     );
 
     makeObservable(this);
@@ -30,7 +30,7 @@ export class ObservableQueryDenomsFromCreatorInner extends ObservableChainQuery<
 
   @override
   protected get instance(): AxiosInstance {
-    return Axios.create({ baseURL: "/api/lcd" });
+    return Axios.create({ baseURL: "" });
   }
 
   protected canFetch(): boolean {

@@ -24,14 +24,14 @@ export class ObservableQueryDenomAuthorityMetadataInner extends ObservableChainQ
       kvStore,
       chainId,
       chainGetter,
-      `/osmosis/tokenfactory/v1beta1/denoms/${encodeURIComponent(denom)}/authority_metadata`
+      `/api/tokenfactory/authority-metadata?denom=${encodeURIComponent(denom)}`
     );
     makeObservable(this);
   }
 
   @override
   protected get instance(): AxiosInstance {
-    return Axios.create({ baseURL: "/api/lcd" });
+    return Axios.create({ baseURL: "" });
   }
 
   protected canFetch(): boolean {
