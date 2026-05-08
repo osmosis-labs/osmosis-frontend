@@ -62,8 +62,8 @@ import {
   chainTypesRequiringManualAddress,
 } from "./bridge-wallet-select-modal";
 import {
+  ExternalOnlyProviderList,
   MoreBridgeOptionsModal,
-  OnlyExternalBridgeSuggest,
 } from "./more-bridge-options";
 import {
   BridgeProviderDropdownRow,
@@ -115,7 +115,6 @@ interface AmountScreenProps {
   quote: BridgeQuote;
 
   onConfirm: () => void;
-  onClose: () => void;
 }
 
 export const AmountScreen = observer(
@@ -157,7 +156,6 @@ export const AmountScreen = observer(
     quote,
 
     onConfirm,
-    onClose,
   }: AmountScreenProps) => {
     const { setCurrentScreen } = useScreenManager();
     const { accountStore } = useStore();
@@ -934,31 +932,124 @@ export const AmountScreen = observer(
         hasBalanceError ||
         !quote.enabled)
     ) {
+      // When there are no supported chains (e.g. external-interface-only assets like
+      // NAM), fromAsset/toAsset/fromChain/toChain are all undefined. Build fallbacks
+      // from canonicalAsset so the MoreBridgeOptionsModal can still fire its query and
+      // surface any external_interface transfer methods from the asset list.
+      const canonicalAssetFallback = canonicalAsset
+        ? {
+            address: canonicalAsset.coinMinimalDenom,
+            decimals: canonicalAsset.coinDecimals,
+            denom: canonicalAsset.coinDenom,
+            coinGeckoId: canonicalAsset.coinGeckoId,
+          }
+        : undefined;
+      const osmosisChainFallback: BridgeChainWithDisplayInfo = {
+        chainId: accountStore.osmosisChainId,
+        chainType: "cosmos" as const,
+        bech32Prefix: "osmo",
+        prettyName: "Osmosis",
+      };
+
+      const fallbackFromAsset = fromAsset ?? canonicalAssetFallback;
+      const fallbackToAsset = toAsset ?? canonicalAssetFallback;
+      const fallbackFromChain =
+        fromChain ??
+        (direction === "withdraw" ? osmosisChainFallback : undefined);
+      const fallbackToChain =
+        toChain ?? (direction === "deposit" ? osmosisChainFallback : undefined);
+
+      // External-interface-only assets (e.g. NAM): no supported quote chains, no
+      // disabled flag. Show the provider list inline without a button/modal.
+      if (!hasSupportedChains && !areAssetTransfersDisabled) {
+        return (
+          <div className="flex w-full flex-col items-center justify-center p-4 text-white-full md:py-2 md:px-0">
+            <div className="mb-6 flex w-full items-center justify-center gap-3 text-h5 font-h5 md:text-h6 md:font-h6">
+              {!canonicalAsset ? (
+                <SkeletonLoader className="h-8 w-full max-w-sm md:h-4" />
+              ) : (
+                <>
+                  <span>
+                    {direction === "deposit"
+                      ? t("transfer.deposit")
+                      : t("transfer.withdraw")}
+                  </span>{" "}
+                  <button
+                    className="flex items-center gap-3"
+                    onClick={() => setCurrentScreen(BridgeScreen.Asset)}
+                  >
+                    <div className="h-8 w-8 shrink-0 overflow-hidden rounded-full">
+                      <EntityImage
+                        logoURIs={getLogoURIs(canonicalAsset.coinImageUrl)}
+                        name={canonicalAsset.coinName}
+                        symbol={canonicalAsset.coinDenom}
+                        width={32}
+                        height={32}
+                      />
+                    </div>
+                    <span>{canonicalAsset.coinDenom}</span>
+                  </button>
+                </>
+              )}
+            </div>
+            <ExternalOnlyProviderList
+              assetDenom={canonicalAsset?.coinDenom ?? ""}
+              direction={direction}
+              fromAsset={fallbackFromAsset}
+              toAsset={fallbackToAsset}
+              fromChain={fallbackFromChain}
+              toChain={fallbackToChain}
+              toAddress={toAddress}
+              bridges={supportedBridgeInfo.allBridges}
+            />
+          </div>
+        );
+      }
+
       return (
         <>
           {hasSupportedChains && chainSelection}
-          <OnlyExternalBridgeSuggest
-            direction={direction}
-            toChain={toChain}
-            toAsset={
-              // If we haven't supported a chain, we can't suggest an asset
-              // so we use the canonical asset as a fallback
-              canonicalAsset && !toAsset && !hasSupportedChains
-                ? {
-                    address: canonicalAsset?.coinMinimalDenom,
-                    decimals: canonicalAsset?.coinDecimals,
-                    denom: canonicalAsset?.coinDenom,
-                    coinGeckoId: canonicalAsset?.coinGeckoId,
-                  }
-                : toAsset
-            }
-            canonicalAssetDenom={canonicalAsset?.coinDenom}
-            fromChain={fromChain}
-            fromAsset={fromAsset}
-            toAddress={toAddress}
-            bridges={supportedBridgeInfo.allBridges}
-            onDone={onClose}
-          />
+          <div className="flex flex-col gap-3">
+            {areAssetTransfersDisabled && (
+              <div className="flex animate-[fadeIn_0.25s] gap-3 rounded-[20px] border-2 border-rust-600 p-5 py-3">
+                <Icon
+                  id="alert-triangle"
+                  className="h-6 w-6 shrink-0 text-rust-600"
+                />
+                <div className="flex flex-col">
+                  <h1 className="body2">{t("transfer.ibcConnectionDown")}</h1>
+                  <p className="body2 text-osmoverse-300">
+                    {t("transfer.ibcConnectionDownDescription", {
+                      asset: canonicalAsset?.coinDenom ?? "",
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
+            <Button
+              variant="default"
+              className="w-full md:h-12"
+              onClick={() => setAreMoreOptionsVisible(true)}
+              disabled={isNil(fallbackFromAsset) || isNil(fallbackToAsset)}
+            >
+              <div className="md:subtitle1 text-h6 font-h6">
+                {direction === "deposit"
+                  ? t("transfer.moreDepositOptions")
+                  : t("transfer.moreWithdrawOptions")}
+              </div>
+            </Button>
+            <MoreBridgeOptionsModal
+              direction={direction}
+              isOpen={areMoreOptionsVisible}
+              fromAsset={fallbackFromAsset}
+              toAsset={fallbackToAsset}
+              fromChain={fallbackFromChain}
+              toChain={fallbackToChain}
+              toAddress={toAddress}
+              bridges={supportedBridgeInfo.allBridges}
+              onRequestClose={() => setAreMoreOptionsVisible(false)}
+            />
+          </div>
         </>
       );
     }
