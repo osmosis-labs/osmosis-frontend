@@ -245,13 +245,6 @@ export const NavBar: FunctionComponent<
                     onClick={handleTradeClicked}
                     variant="ghost"
                   >
-                    <Image
-                      className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
-                      height={24}
-                      src="/images/tfm-logo.png"
-                      width={24}
-                      alt="TFM Logo"
-                    />
                     {t("menu.trade")}
                   </Button>
                 </a>
