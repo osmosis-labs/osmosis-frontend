@@ -492,6 +492,17 @@ export function makePoolFromChainPool({
   const balancesSynthed =
     balances === null && "current_sqrt_price" in chainPool;
 
+  // Concentrated liquidity pools only set `current_sqrt_price` (and any
+  // `current_tick_liquidity`) when the first position is created. If both are
+  // zero, the pool genuinely has no liquidity and TVL is known to be zero
+  // rather than unknown. Without this, chain-fallback CL pools whose tokens
+  // lack an SQS price route would be misclassified as inactive instead of
+  // uninitialized, sending users into the wrong add-liquidity flow.
+  const isUninitializedConcentratedPool =
+    "current_sqrt_price" in chainPool &&
+    parseFloat(chainPool.current_sqrt_price) === 0 &&
+    parseFloat(chainPool.current_tick_liquidity) === 0;
+
   const effectiveBalances =
     balances ??
     (balancesSynthed
@@ -538,7 +549,7 @@ export function makePoolFromChainPool({
     spreadFactor: new RatePretty(spreadFactor),
     reserveCoins,
     totalFiatValueLocked: new PricePretty(DEFAULT_VS_CURRENCY, 0),
-    tvlUnknown: balancesSynthed,
+    tvlUnknown: balancesSynthed && !isUninitializedConcentratedPool,
     // No incentives or market data available from chain
     incentives: {
       aprBreakdown: undefined,
