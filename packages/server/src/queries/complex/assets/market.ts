@@ -81,6 +81,7 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   excludeVariants = false,
   excludeStablecoins = false,
   minLiquidity,
+  minVolume24h,
   ...params
 }: {
   assetLists: AssetList[];
@@ -92,6 +93,8 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   excludeStablecoins?: boolean;
   /** Minimum liquidity threshold in USD. If provided, only assets with liquidity >= this value will be included. */
   minLiquidity?: number;
+  /** Minimum 24h volume threshold in USD. If provided, only assets with volume24h >= this value will be included. */
+  minVolume24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
@@ -125,15 +128,22 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
     assets.map((asset) => getMarketAsset({ asset, ...params }))
   );
 
-  // Filter for assets that meet liquidity requirements
+  // Filter for assets that meet liquidity and volume requirements
   return marketAssets.filter((asset) => {
     const liquidityDec = asset.liquidity?.toDec() ?? new Dec(0);
 
     if (minLiquidity !== undefined) {
-      return liquidityDec.gte(new Dec(minLiquidity));
+      if (!liquidityDec.gte(new Dec(minLiquidity))) return false;
+    } else if (!liquidityDec.isPositive()) {
+      return false;
     }
 
-    return liquidityDec.isPositive();
+    if (minVolume24h !== undefined) {
+      const volumeDec = asset.volume24h?.toDec() ?? new Dec(0);
+      if (!volumeDec.gte(new Dec(minVolume24h))) return false;
+    }
+
+    return true;
   });
 }
 
