@@ -270,6 +270,7 @@ export const assetsRouter = createTRPCRouter({
           excludeStablecoins: z.boolean().optional(),
           minLiquidity: z.number().optional(),
           minVolume24h: z.number().optional(),
+          maxPriceChange24h: z.number().optional(),
         })
       )
     )
@@ -288,6 +289,7 @@ export const assetsRouter = createTRPCRouter({
           excludeStablecoins,
           minLiquidity,
           minVolume24h,
+          maxPriceChange24h,
         },
         ctx,
       }) =>
@@ -303,6 +305,7 @@ export const assetsRouter = createTRPCRouter({
               excludeStablecoins,
               minLiquidity,
               minVolume24h,
+              maxPriceChange24h,
             });
 
             // sorting
@@ -345,6 +348,7 @@ export const assetsRouter = createTRPCRouter({
             excludeStablecoins,
             minLiquidity,
             minVolume24h,
+            maxPriceChange24h,
           }),
           cursor,
           limit,

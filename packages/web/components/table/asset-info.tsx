@@ -207,6 +207,7 @@ export const AssetsInfoTable: FunctionComponent<{
       minLiquidity:
         selectedCategory === "topGainers" ? 5000 : searchQuery ? 0 : undefined,
       minVolume24h: selectedCategory === "topGainers" ? 1000 : undefined,
+      maxPriceChange24h: selectedCategory === "topGainers" ? 1000 : undefined,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,

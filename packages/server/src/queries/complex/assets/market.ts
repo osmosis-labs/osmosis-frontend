@@ -82,6 +82,7 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   excludeStablecoins = false,
   minLiquidity,
   minVolume24h,
+  maxPriceChange24h,
   ...params
 }: {
   assetLists: AssetList[];
@@ -95,6 +96,8 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
   minLiquidity?: number;
   /** Minimum 24h volume threshold in USD. If provided, only assets with volume24h >= this value will be included. */
   minVolume24h?: number;
+  /** Maximum 24h price change in percent. If provided, assets with priceChange24h above this are excluded (sanity cap for stale data / shallow-pool blips). */
+  maxPriceChange24h?: number;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = getAssets({ ...params }) as TAsset[];
 
@@ -141,6 +144,13 @@ export async function mapGetMarketAssets<TAsset extends MinimalAsset>({
     if (minVolume24h !== undefined) {
       const volumeDec = asset.volume24h?.toDec() ?? new Dec(0);
       if (!volumeDec.gte(new Dec(minVolume24h))) return false;
+    }
+
+    if (maxPriceChange24h !== undefined && asset.priceChange24h) {
+      // RatePretty stores rates as fractions (50% => 0.5), so the percent
+      // cap is divided by 100 before comparison.
+      const cap = new Dec(maxPriceChange24h).quo(new Dec(100));
+      if (asset.priceChange24h.toDec().gt(cap)) return false;
     }
 
     return true;
