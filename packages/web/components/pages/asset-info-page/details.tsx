@@ -1,3 +1,4 @@
+import { fromBech32 } from "@cosmjs/encoding";
 import { Dec, PricePretty } from "@osmosis-labs/unit";
 import { shorten } from "@osmosis-labs/utils";
 import classNames from "classnames";
@@ -9,13 +10,44 @@ import { Icon } from "~/components/assets";
 import { ClipboardButton } from "~/components/buttons/clipboard-button";
 import { SkeletonLoader } from "~/components/loaders";
 import { Markdown } from "~/components/markdown";
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { Button } from "~/components/ui/button";
 import { EventName } from "~/config";
+import {
+  GOVERNANCE_MODULE_ADDRESS,
+  TOKENFACTORY_BURN_ADDRESS,
+} from "~/config/tokenfactory";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useAssetInfo } from "~/hooks/use-asset-info";
 import { formatPretty } from "~/utils/formatter";
 import { api } from "~/utils/trpc";
+
+type AdminState =
+  | { kind: "alloyed" }
+  | { kind: "renounced" }
+  | { kind: "governance" }
+  | { kind: "contract" }
+  | { kind: "wallet" };
+
+function classifyAdmin(
+  admin: string,
+  isAlloyed: boolean
+): AdminState | undefined {
+  if (isAlloyed) return { kind: "alloyed" };
+  if (admin === "" || admin === TOKENFACTORY_BURN_ADDRESS)
+    return { kind: "renounced" };
+  if (admin === GOVERNANCE_MODULE_ADDRESS) return { kind: "governance" };
+
+  try {
+    const length = fromBech32(admin).data.length;
+    if (length === 32) return { kind: "contract" };
+    if (length === 20) return { kind: "wallet" };
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
 
 const TEXT_CHAR_LIMIT = 450;
 
@@ -37,6 +69,29 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
     asset,
     description,
   } = useAssetInfo();
+
+  const isTokenFactory =
+    asset?.coinMinimalDenom?.startsWith("factory/") ?? false;
+  // Detect alloyed via either the asset-list flag or the canonical
+  // `factory/{creator}/alloyed/{sub}` denom path. The path check guards
+  // against the flag occasionally not propagating through the trpc layer.
+  const isAlloyed =
+    (asset?.isAlloyed ?? false) ||
+    (isTokenFactory &&
+      (asset?.coinMinimalDenom?.split("/")[2] ?? "") === "alloyed");
+  // Alloyed assets are governance-controlled — skip the admin query
+  const { data: authorityMetadata } =
+    api.local.tokenfactory.getDenomAuthorityMetadata.useQuery(
+      { denom: asset?.coinMinimalDenom ?? "" },
+      { enabled: isTokenFactory && !isAlloyed && !!asset?.coinMinimalDenom }
+    );
+  const admin = authorityMetadata?.admin;
+  const adminState = useMemo(() => {
+    if (!isTokenFactory || !asset?.coinMinimalDenom) return undefined;
+    if (isAlloyed) return classifyAdmin("", true);
+    if (admin === undefined) return undefined;
+    return classifyAdmin(admin, false);
+  }, [isTokenFactory, isAlloyed, admin, asset?.coinMinimalDenom]);
 
   const isExpandable = description && description.length > TEXT_CHAR_LIMIT;
 
@@ -168,6 +223,9 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
               ) : (
                 false
               )}
+              {adminState ? (
+                <AdminBadge state={adminState} admin={admin ?? ""} />
+              ) : null}
             </div>
           </div>
           {details?.description ? (
@@ -210,6 +268,102 @@ export const AssetDetails = observer(({ className }: CustomClasses) => {
     </section>
   );
 });
+
+const AdminBadge: FunctionComponent<{ state: AdminState; admin: string }> = ({
+  state,
+  admin,
+}) => {
+  const { t } = useTranslation();
+
+  const { iconId, iconClassName, titleKey, bodyKey } = (() => {
+    switch (state.kind) {
+      case "alloyed":
+        return {
+          iconId: "alloyed" as const,
+          iconClassName: "fill-osmoverse-400 text-osmoverse-400",
+          titleKey: "tokenInfos.adminBadge.alloyedTitle",
+          bodyKey: "tokenInfos.adminBadge.alloyedBody",
+        };
+      case "renounced":
+        return {
+          iconId: "check-mark-slim" as const,
+          iconClassName: "stroke-osmoverse-400 text-osmoverse-400",
+          titleKey: "tokenInfos.adminBadge.renouncedTitle",
+          bodyKey: "tokenInfos.adminBadge.renouncedBody",
+        };
+      case "governance":
+        return {
+          iconId: "vote" as const,
+          iconClassName: "fill-osmoverse-400 text-osmoverse-400",
+          titleKey: "tokenInfos.adminBadge.governanceTitle",
+          bodyKey: "tokenInfos.adminBadge.governanceBody",
+        };
+      case "contract":
+        return {
+          iconId: "setting" as const,
+          iconClassName: "fill-osmoverse-400 text-osmoverse-400",
+          titleKey: "tokenInfos.adminBadge.contractTitle",
+          bodyKey: "tokenInfos.adminBadge.contractBody",
+        };
+      case "wallet":
+        return {
+          iconId: "alert-triangle" as const,
+          iconClassName: "fill-rust-400 text-rust-400",
+          titleKey: "tokenInfos.adminBadge.walletTitle",
+          bodyKey: "tokenInfos.adminBadge.walletBody",
+        };
+    }
+  })();
+
+  const showLink = state.kind !== "renounced" && state.kind !== "alloyed";
+  const tooltipContent = (
+    <div className="flex max-w-[18rem] flex-col gap-1">
+      <p className="body2 font-semibold text-osmoverse-100">{t(titleKey)}</p>
+      <p className="caption text-osmoverse-300">{t(bodyKey)}</p>
+      {showLink && (
+        <p className="caption break-all text-osmoverse-400">{admin}</p>
+      )}
+    </div>
+  );
+
+  const iconEl = (
+    <Icon id={iconId} className={classNames("h-4 w-4", iconClassName)} />
+  );
+
+  if (!showLink) {
+    return (
+      <Tooltip content={tooltipContent}>
+        <Button
+          size="sm-icon"
+          variant="secondary"
+          aria-label={t(titleKey)}
+          asChild
+        >
+          <span>{iconEl}</span>
+        </Button>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Tooltip content={tooltipContent}>
+      <Button
+        size="sm-icon"
+        variant="secondary"
+        aria-label={t(titleKey)}
+        asChild
+      >
+        <Link
+          href={`https://www.mintscan.io/osmosis/address/${admin}`}
+          target="_blank"
+          rel="noopener noreferrer external"
+        >
+          {iconEl}
+        </Link>
+      </Button>
+    </Tooltip>
+  );
+};
 
 const formatCompact = (value: PricePretty | Dec | number) => {
   return formatPretty(typeof value === "number" ? new Dec(value) : value, {

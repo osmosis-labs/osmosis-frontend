@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Aktywo stopowe",
+      "alloyedBody": "To jest aktywo stopowe Osmosis. Bazowa umowa jest kontrolowana przez zarządzanie on-chain Osmosis.",
+      "renouncedTitle": "Administrator zrzeczony",
+      "renouncedBody": "Żaden adres nie może wybić, spalić ani zmienić tego tokena. Administrator został trwale przeniesiony na adres spalania.",
+      "governanceTitle": "Kontrolowane przez zarządzanie",
+      "governanceBody": "Zmiany tego tokena wymagają propozycji zarządzania on-chain Osmosis.",
+      "contractTitle": "Administrator jest umową lub multisigiem",
+      "contractBody": "Administrator jest adresem inteligentnej umowy lub multisig. Zachowanie zależy od jego kodu lub sygnatariuszy.",
+      "walletTitle": "Administrator jest pojedynczym portfelem",
+      "walletBody": "Pojedynczy portfel może w dowolnym momencie wybić nowe zasoby, spalić tokeny lub zmienić metadane. Upewnij się, że ufasz emitentowi."
+    },
     "explorePools": "Przeglądaj baseny",
     "yourBalance": "Twój balans",
     "onOsmosis": "na Osmozie",
