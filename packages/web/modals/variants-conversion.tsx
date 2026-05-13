@@ -457,7 +457,7 @@ const AssetVariantRow: React.FC<{
                           id="alloyed"
                           height={16}
                           width={16}
-                          className="text-ammelia-400"
+                          className="text-ammelia-400 opacity-50"
                         />
                       </div>
                       <div className="flex flex-col gap-1">
@@ -479,7 +479,7 @@ const AssetVariantRow: React.FC<{
                     id="alloyed"
                     height={24}
                     width={24}
-                    className="text-osmoverse-alpha-700"
+                    className="text-osmoverse-alpha-700 opacity-50"
                   />
                 </Tooltip>
               </div>
