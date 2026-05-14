@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Alloyed asset",
+      "alloyedBody": "This is an Osmosis alloyed asset. The underlying contract is controlled by on-chain Osmosis governance.",
+      "renouncedTitle": "Admin renounced",
+      "renouncedBody": "No address can mint, burn, or change this token. The admin has been permanently transferred to the burn address.",
+      "governanceTitle": "Controlled by governance",
+      "governanceBody": "Changes to this token require an on-chain Osmosis governance proposal.",
+      "contractTitle": "Admin is a contract or multisig",
+      "contractBody": "The admin is a smart contract or multisig address. Behaviour depends on its code or signers.",
+      "walletTitle": "Admin is a single wallet",
+      "walletBody": "A single wallet can mint new supply, burn tokens, or change metadata at any time. Verify you trust the issuer."
+    },
     "explorePools": "Explore Pools",
     "yourBalance": "Your balance",
     "onOsmosis": "on Osmosis",

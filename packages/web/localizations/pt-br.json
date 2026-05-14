@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Ativo aliado",
+      "alloyedBody": "Este é um ativo aliado da Osmosis. O contrato subjacente é controlado pela governança on-chain da Osmosis.",
+      "renouncedTitle": "Administrador renunciado",
+      "renouncedBody": "Nenhum endereço pode cunhar, queimar ou alterar este token. A administração foi transferida permanentemente para o endereço de queima.",
+      "governanceTitle": "Controlado pela governança",
+      "governanceBody": "Alterações neste token exigem uma proposta de governança on-chain da Osmosis.",
+      "contractTitle": "O administrador é um contrato ou multisig",
+      "contractBody": "O administrador é um endereço de contrato inteligente ou multisig. O comportamento depende de seu código ou signatários.",
+      "walletTitle": "O administrador é uma carteira única",
+      "walletBody": "Uma única carteira pode cunhar nova oferta, queimar tokens ou alterar metadados a qualquer momento. Verifique se você confia no emissor."
+    },
     "explorePools": "Explorar piscinas",
     "yourBalance": "Seu balanço",
     "onOsmosis": "em osmose",

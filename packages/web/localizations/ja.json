@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "アロイド資産",
+      "alloyedBody": "これはOsmosisアロイド資産です。基礎となるコントラクトはオンチェーンのOsmosisガバナンスによって管理されています。",
+      "renouncedTitle": "管理者放棄済み",
+      "renouncedBody": "このトークンを発行、焼却、変更できるアドレスはありません。管理者はバーンアドレスに永久に移管されました。",
+      "governanceTitle": "ガバナンスによる管理",
+      "governanceBody": "このトークンの変更には、オンチェーンのOsmosisガバナンス提案が必要です。",
+      "contractTitle": "管理者はコントラクトまたはマルチシグです",
+      "contractBody": "管理者はスマートコントラクトまたはマルチシグアドレスです。動作はそのコードまたは署名者に依存します。",
+      "walletTitle": "管理者は単一のウォレットです",
+      "walletBody": "単一のウォレットがいつでも新しい供給を発行したり、トークンを焼却したり、メタデータを変更したりできます。発行者を信頼できることを確認してください。"
+    },
     "explorePools": "プールを探索する",
     "yourBalance": "あなたのバランス",
     "onOsmosis": "浸透について",

@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "합금 자산",
+      "alloyedBody": "Osmosis 합금 자산입니다. 기본 컨트랙트는 온체인 Osmosis 거버넌스에 의해 제어됩니다.",
+      "renouncedTitle": "관리자 포기됨",
+      "renouncedBody": "어떤 주소도 이 토큰을 발행, 소각 또는 변경할 수 없습니다. 관리자는 영구적으로 소각 주소로 이전되었습니다.",
+      "governanceTitle": "거버넌스에 의해 제어됨",
+      "governanceBody": "이 토큰의 변경에는 온체인 Osmosis 거버넌스 제안이 필요합니다.",
+      "contractTitle": "관리자는 컨트랙트 또는 멀티시그입니다",
+      "contractBody": "관리자는 스마트 컨트랙트 또는 멀티시그 주소입니다. 동작은 코드 또는 서명자에 따라 다릅니다.",
+      "walletTitle": "관리자는 단일 지갑입니다",
+      "walletBody": "단일 지갑이 언제든지 새로운 공급을 발행하거나, 토큰을 소각하거나, 메타데이터를 변경할 수 있습니다. 발행자를 신뢰할 수 있는지 확인하십시오."
+    },
     "explorePools": "풀 탐색",
     "yourBalance": "귀하의 잔액",
     "onOsmosis": "삼투에",

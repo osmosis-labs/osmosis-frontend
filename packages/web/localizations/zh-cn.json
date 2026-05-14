@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "合金资产",
+      "alloyedBody": "这是 Osmosis 合金资产。底层合约由链上 Osmosis 治理控制。",
+      "renouncedTitle": "管理员已放弃",
+      "renouncedBody": "没有地址可以铸造、销毁或更改此代币。管理员已永久转移到销毁地址。",
+      "governanceTitle": "由治理控制",
+      "governanceBody": "更改此代币需要链上 Osmosis 治理提案。",
+      "contractTitle": "管理员是合约或多签",
+      "contractBody": "管理员是智能合约或多签地址。其行为取决于其代码或签名者。",
+      "walletTitle": "管理员是单一钱包",
+      "walletBody": "单一钱包可以随时铸造新供应、销毁代币或更改元数据。请确认您信任发行方。"
+    },
     "explorePools": "探索泳池",
     "yourBalance": "您的余额",
     "onOsmosis": "论渗透",

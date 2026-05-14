@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Activ aliat",
+      "alloyedBody": "Acesta este un activ aliat Osmosis. Contractul subiacent este controlat de guvernanța on-chain Osmosis.",
+      "renouncedTitle": "Administrator renunțat",
+      "renouncedBody": "Nicio adresă nu poate emite, arde sau modifica acest token. Administratorul a fost transferat permanent la adresa de ardere.",
+      "governanceTitle": "Controlat de guvernanță",
+      "governanceBody": "Modificările acestui token necesită o propunere de guvernanță on-chain Osmosis.",
+      "contractTitle": "Administratorul este un contract sau multisig",
+      "contractBody": "Administratorul este o adresă de contract inteligent sau multisig. Comportamentul depinde de codul sau semnatarii săi.",
+      "walletTitle": "Administratorul este un singur portofel",
+      "walletBody": "Un singur portofel poate emite oferta nouă, arde token-uri sau modifica metadatele oricând. Verificați că aveți încredere în emitent."
+    },
     "explorePools": "Explorați piscinele",
     "yourBalance": "Echilibrul tau",
     "onOsmosis": "pe osmoză",

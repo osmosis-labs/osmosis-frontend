@@ -10,6 +10,7 @@ import {
   portfolioRouter,
   swappedRouter,
   swapRouter,
+  tokenfactoryRouter,
 } from "@osmosis-labs/trpc";
 
 import { localBridgeTransferRouter } from "~/server/api/routers/local-bridge-transfer";
@@ -29,4 +30,5 @@ export const localRouter = createTRPCRouter({
   orderbooks: orderbookRouter,
   pools: poolsRouter,
   swapped: swappedRouter,
+  tokenfactory: tokenfactoryRouter,
 });

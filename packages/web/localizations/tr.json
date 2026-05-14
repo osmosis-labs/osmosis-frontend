@@ -975,6 +975,18 @@
     }
   },
   "tokenInfos": {
+    "adminBadge": {
+      "alloyedTitle": "Alaşımlı varlık",
+      "alloyedBody": "Bu bir Osmosis alaşımlı varlığıdır. Temel sözleşme, zincir üzerinde Osmosis yönetişimi tarafından kontrol edilir.",
+      "renouncedTitle": "Yönetici feragat etti",
+      "renouncedBody": "Hiçbir adres bu tokeni basamaz, yakamaz veya değiştiremez. Yönetici, yakma adresine kalıcı olarak aktarıldı.",
+      "governanceTitle": "Yönetişim tarafından kontrol ediliyor",
+      "governanceBody": "Bu token üzerindeki değişiklikler, zincir üzerinde bir Osmosis yönetişim önerisi gerektirir.",
+      "contractTitle": "Yönetici bir sözleşme veya çoklu imzadır",
+      "contractBody": "Yönetici bir akıllı sözleşme veya çoklu imza adresidir. Davranış, koduna veya imzacılarına bağlıdır.",
+      "walletTitle": "Yönetici tek bir cüzdandır",
+      "walletBody": "Tek bir cüzdan istediği zaman yeni arz basabilir, token yakabilir veya meta verileri değiştirebilir. İhraç edenin güvenilir olduğunu doğrulayın."
+    },
     "explorePools": "Havuzları Keşfedin",
     "yourBalance": "Bakiyeniz",
     "onOsmosis": "Osmoz üzerinde",

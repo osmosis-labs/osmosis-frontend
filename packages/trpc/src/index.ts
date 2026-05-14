@@ -14,4 +14,5 @@ export * from "./portfolio";
 export * from "./staking";
 export * from "./swap";
 export * from "./swapped";
+export * from "./tokenfactory";
 export * from "./transactions";
