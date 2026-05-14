@@ -572,10 +572,9 @@ const PoolCompositionCell: PoolCellComponent = ({
                     "text-ion-400": Boolean(type === "concentrated"),
                     "text-bullish-300": Boolean(type === "stable"),
                     "text-rust-300": Boolean(
-                      type === "cosmwasm-transmuter" ||
-                        type === "cosmwasm-alloyed" ||
-                        type === "cosmwasm"
+                      type === "cosmwasm-transmuter" || type === "cosmwasm"
                     ),
+                    "text-osmoverse-300": Boolean(type === "cosmwasm-alloyed"),
                     "text-wosmongton-300": Boolean(
                       type === "cosmwasm-orderbook"
                     ),
@@ -610,7 +609,7 @@ const PoolCompositionCell: PoolCellComponent = ({
                     <Icon id="custom-pool" width={16} height={16} />
                   )}
                   {type === "cosmwasm-alloyed" && (
-                    <Icon id="custom-pool" width={16} height={16} />
+                    <Icon id="alloyed" width={16} height={16} />
                   )}
                   {type === "cosmwasm-orderbook" && (
                     <Icon id="open-book" width={16} height={16} />
