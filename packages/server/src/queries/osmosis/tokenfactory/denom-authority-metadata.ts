@@ -33,17 +33,13 @@ export async function queryDenomAuthorityMetadata({
   const data = encodeQueryRequest(denom);
   const path = "/osmosis.tokenfactory.v1beta1.Query/DenomAuthorityMetadata";
 
-  const attempts = rpcEndpoints.map(({ address }) =>
-    queryAbci(address, path, data)
-  );
-
+  // Iterate RPC endpoints sequentially; on the first success, short-circuit.
+  // Lazy iteration (not Promise.all/Promise.any) avoids leaking orphan promises
+  // that could trigger unhandled rejections after we've already returned.
   let lastError: unknown;
-  // Promise.any would be ideal but isn't universally available in our targets.
-  // Race endpoints sequentially with a tiny stagger to keep the budget bounded
-  // without hammering every RPC at once.
-  for (const attempt of attempts) {
+  for (const { address } of rpcEndpoints) {
     try {
-      return { admin: await attempt };
+      return { admin: await queryAbci(address, path, data) };
     } catch (err) {
       lastError = err;
     }
@@ -73,12 +69,26 @@ async function queryAbci(
   if (!res.ok) throw new Error(`RPC ${endpoint} returned ${res.status}`);
 
   const json = (await res.json()) as {
-    result?: { response?: { value?: string; code?: number } };
+    result?: { response?: { value?: string; code?: number; log?: string } };
     error?: unknown;
   };
   if (json.error) throw new Error(`RPC error: ${JSON.stringify(json.error)}`);
 
-  const value = json.result?.response?.value;
+  // ABCI returns the application-level error separately from HTTP status.
+  // A non-zero `code` means the chain rejected the query (e.g. module error
+  // after a chain upgrade, stale RPC). Throwing here lets the outer loop try
+  // the next endpoint instead of silently returning "" — which would otherwise
+  // be misclassified as a renounced admin and hide a real wallet admin.
+  const response = json.result?.response;
+  if (response?.code !== undefined && response.code !== 0) {
+    throw new Error(
+      `RPC ${endpoint} returned ABCI code ${response.code}: ${
+        response.log ?? "(no log)"
+      }`
+    );
+  }
+
+  const value = response?.value;
   if (!value) return "";
 
   const responseBytes = base64ToBytes(value);
