@@ -2,12 +2,12 @@ import { observer } from "mobx-react-lite";
 import { PropsWithChildren } from "react";
 
 import { Info } from "~/components/alert";
-import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { tError } from "~/components/localization";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { usePoolCreationFee } from "~/hooks/use-pool-creation-fee";
 
 export const StepBase = observer(
   ({
@@ -19,6 +19,7 @@ export const StepBase = observer(
   }: PropsWithChildren<{ step: 1 | 2 | 3 } & StepProps>) => {
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
+    const { display: poolCreationFeeDisplay } = usePoolCreationFee();
 
     const canAdvance =
       (step === 1 &&
@@ -74,11 +75,14 @@ export const StepBase = observer(
             : null}{" "}
         </span>
         <div>{children}</div>
-        {step === 1 && (
+        {step === 1 && poolCreationFeeDisplay !== null && (
+          // Hold the banner until the fee resolves so the value never renders
+          // empty next to "Pool creation fee" - matches the SkeletonLoader
+          // treatment on step 3.
           <Info
             titleTranslationKey={t("pools.createPool.infoMessage")}
             captionTranslationKey={t("pools.createPool.infoCaption")}
-            data={POOL_CREATION_FEE}
+            data={poolCreationFeeDisplay}
             isMobile={isMobile}
           />
         )}

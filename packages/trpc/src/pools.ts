@@ -1,6 +1,7 @@
 import {
   createSortSchema,
   CursorPaginationSchema,
+  getAsset,
   getCachedPoolIncentivesMap,
   getCachedTransmuterTotalPoolLiquidity,
   getPool,
@@ -12,6 +13,7 @@ import {
   getUserSharePools,
   IncentivePoolFilterSchema,
   PoolFilterSchema,
+  queryPoolmanagerParams,
 } from "@osmosis-labs/server";
 import { sort } from "@osmosis-labs/utils";
 import { z } from "zod";
@@ -136,4 +138,36 @@ export const poolsRouter = createTRPCRouter({
         ctx.assetLists
       )
     ),
+  /** Returns the on-chain pool creation fee from poolmanager params,
+   *  resolved against the asset list so the caller has display symbol +
+   *  decimals alongside the raw chain amount. Same fee applies to all
+   *  pool types (Balancer, Stableswap, CL). */
+  getPoolCreationFee: publicProcedure.query(({ ctx }) =>
+    queryPoolmanagerParams({
+      chainList: ctx.chainList,
+      chainId: ctx.chainList[0].chain_id,
+    }).then(({ params }) =>
+      params.pool_creation_fee.map((coin) => {
+        let symbol: string | undefined;
+        let coinDecimals: number | undefined;
+        try {
+          const asset = getAsset({
+            assetLists: ctx.assetLists,
+            anyDenom: coin.denom,
+          });
+          symbol = asset.coinDenom;
+          coinDecimals = asset.coinDecimals;
+        } catch {
+          // Asset not in list; fall through with raw denom/amount so the
+          // UI can still render something rather than throwing.
+        }
+        return {
+          coinMinimalDenom: coin.denom,
+          amount: coin.amount,
+          coinDenom: symbol,
+          coinDecimals,
+        };
+      })
+    )
+  ),
 });

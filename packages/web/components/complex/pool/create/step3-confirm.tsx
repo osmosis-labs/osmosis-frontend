@@ -8,17 +8,19 @@ import {
   HIGHCHART_LEGEND_GRADIENTS,
   PieChart,
 } from "~/components/chart";
-import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
+import { SkeletonLoader } from "~/components/loaders";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import { usePoolCreationFee } from "~/hooks/use-pool-creation-fee";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;
   const { isMobile } = useWindowSize();
   const { t } = useTranslation();
+  const { display: poolCreationFeeDisplay } = usePoolCreationFee();
 
   const series = useMemo(() => {
     return generateCoinProportionSeries(
@@ -123,17 +125,30 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
             <Checkbox
               variant="destructive"
               checked={config.acknowledgeFee}
-              onClick={() => (config.acknowledgeFee = !config.acknowledgeFee)}
+              disabled={poolCreationFeeDisplay === null}
+              onClick={() => {
+                if (poolCreationFeeDisplay === null) return;
+                config.acknowledgeFee = !config.acknowledgeFee;
+              }}
             />
-            <label className="cursor-pointer pl-3 md:pl-1">
-              {isMobile ? (
-                <div className="mx-auto w-2/3">
-                  {t("pools.createPool.undersandCost", { POOL_CREATION_FEE })}
-                </div>
-              ) : (
-                t("pools.createPool.undersandCost", { POOL_CREATION_FEE })
-              )}
-            </label>
+            <SkeletonLoader
+              isLoaded={poolCreationFeeDisplay !== null}
+              className="pl-3 md:pl-1"
+            >
+              <label className="cursor-pointer">
+                {isMobile ? (
+                  <div className="mx-auto w-2/3">
+                    {t("pools.createPool.undersandCost", {
+                      POOL_CREATION_FEE: poolCreationFeeDisplay ?? "",
+                    })}
+                  </div>
+                ) : (
+                  t("pools.createPool.undersandCost", {
+                    POOL_CREATION_FEE: poolCreationFeeDisplay ?? "",
+                  })
+                )}
+              </label>
+            </SkeletonLoader>
           </div>
         </div>
       </div>

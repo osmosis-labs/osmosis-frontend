@@ -18,6 +18,7 @@ import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import { usePoolCreationFee } from "~/hooks/use-pool-creation-fee";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -45,6 +46,7 @@ export const SetBaseInfos = observer(
     setPoolId,
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
+    const { display: poolCreationFeeDisplay } = usePoolCreationFee();
 
     const { accountStore } = useStore();
     const showUnverifiedAssets = useUserSettingsStore(
@@ -163,9 +165,12 @@ export const SetBaseInfos = observer(
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-6">
-          <Field className="flex items-center gap-3">
+          <Field
+            className="flex items-center gap-3"
+            disabled={poolCreationFeeDisplay === null}
+          >
             <Checkbox
-              className="group flex h-[26px] w-[26px] items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors data-[checked]:bg-osmoverse-400"
+              className="group flex h-[26px] w-[26px] items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors data-[checked]:bg-osmoverse-400 data-[disabled]:opacity-50"
               checked={isAgreementChecked}
               onChange={setIsAgreementChecked}
             >
@@ -185,11 +190,17 @@ export const SetBaseInfos = observer(
                 />
               </svg>
             </Checkbox>
-            <Label className="body2">
-              {t("pools.createSupercharged.undersandCost", {
-                poolCreationFee: "20 USDC",
-              })}
-            </Label>
+            {poolCreationFeeDisplay !== null ? (
+              <Label className="body2">
+                {t("pools.createSupercharged.undersandCost", {
+                  poolCreationFee: poolCreationFeeDisplay,
+                })}
+              </Label>
+            ) : (
+              <SkeletonLoader className="h-5 w-[280px]">
+                <span />
+              </SkeletonLoader>
+            )}
           </Field>
           {is18DecimalMismatch && (
             <div className="body2 text-center text-rust-400">
@@ -205,7 +216,10 @@ export const SetBaseInfos = observer(
           )}
           <Button
             disabled={
-              !isAgreementChecked || !selectedBase || is18DecimalMismatch
+              !isAgreementChecked ||
+              !selectedBase ||
+              is18DecimalMismatch ||
+              poolCreationFeeDisplay === null
             }
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {
