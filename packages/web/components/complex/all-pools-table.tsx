@@ -17,7 +17,7 @@ import {
   PoolTypeFilter,
 } from "~/components/complex/pools-table";
 import { Button } from "~/components/ui/button";
-import { useTranslation } from "~/hooks";
+import { Breakpoint, useTranslation, useWindowSize } from "~/hooks";
 
 import { CheckboxSelect } from "../control";
 import { SearchBox } from "../input";
@@ -109,6 +109,8 @@ export const AllPoolsTable = (props: AllPoolsTableProps) => {
 
 const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   const { t } = useTranslation();
+  const { width } = useWindowSize();
+  const isWide = width === 0 || width > Breakpoint.xl;
 
   const { filters, setFilters } = useAllPoolsTable();
 
@@ -122,76 +124,94 @@ const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
     [setFilters]
   );
 
-  return (
-    <div className="flex w-full flex-wrap items-center gap-x-5 gap-y-3">
-      <h5 className="order-1 mr-auto">{t("pools.allPools.title")}</h5>
+  const searchBox = (
+    <SearchBox
+      size="small"
+      placeholder={t("assets.table.search")}
+      debounce={500}
+      currentValue={filters.searchQuery ?? undefined}
+      onInput={onSearchInput}
+      className={isWide ? undefined : "!w-full"}
+    />
+  );
 
-      <SearchBox
-        size="small"
-        placeholder={t("assets.table.search")}
-        debounce={500}
-        currentValue={filters.searchQuery ?? undefined}
-        onInput={onSearchInput}
-        className="order-3 !w-full xl:order-2 xl:!w-max"
+  const filterAndCreate = (
+    <div className="flex flex-none items-center gap-3">
+      <CheckboxSelect
+        label={t("components.pool.title")}
+        selectedOptionIds={filters.poolTypesFilter}
+        buttonClassName="!h-9 md:!w-auto"
+        atLeastOneSelected
+        options={[
+          {
+            id: "concentrated",
+            display: t("components.table.concentrated"),
+          },
+          {
+            id: "cosmwasm-orderbook",
+            display: t("components.table.orderbook"),
+          },
+          { id: "weighted", display: t("components.table.weighted") },
+          { id: "stable", display: t("components.table.stable") },
+          {
+            id: "cosmwasm-astroport-pcl",
+            display: t("components.table.astroport"),
+          },
+          {
+            id: "cosmwasm-whitewhale",
+            display: t("components.table.whitewhale"),
+          },
+          {
+            id: "cosmwasm-transmuter",
+            display: t("components.table.transmuter"),
+          },
+        ]}
+        onSelect={(poolType) => {
+          if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
+            setFilters((state) => ({
+              ...state,
+              poolTypesFilter: state.poolTypesFilter.filter(
+                (type) => type !== poolType
+              ),
+            }));
+          } else {
+            setFilters((state) => ({
+              ...state,
+              poolTypesFilter: [
+                ...state.poolTypesFilter,
+                poolType as PoolTypeFilter,
+              ],
+            }));
+          }
+        }}
       />
+      <Button
+        size="md"
+        onClick={onCreatePool}
+        className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
+      >
+        {t("pools.createPool.title")}
+      </Button>
+    </div>
+  );
 
-      <div className="order-2 flex flex-none items-center gap-3 xl:order-3">
-        <CheckboxSelect
-          label={t("components.pool.title")}
-          selectedOptionIds={filters.poolTypesFilter}
-          buttonClassName="!h-9"
-          atLeastOneSelected
-          options={[
-            {
-              id: "concentrated",
-              display: t("components.table.concentrated"),
-            },
-            {
-              id: "cosmwasm-orderbook",
-              display: t("components.table.orderbook"),
-            },
-            { id: "weighted", display: t("components.table.weighted") },
-            { id: "stable", display: t("components.table.stable") },
-            {
-              id: "cosmwasm-astroport-pcl",
-              display: t("components.table.astroport"),
-            },
-            {
-              id: "cosmwasm-whitewhale",
-              display: t("components.table.whitewhale"),
-            },
-            {
-              id: "cosmwasm-transmuter",
-              display: t("components.table.transmuter"),
-            },
-          ]}
-          onSelect={(poolType) => {
-            if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: state.poolTypesFilter.filter(
-                  (type) => type !== poolType
-                ),
-              }));
-            } else {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: [
-                  ...state.poolTypesFilter,
-                  poolType as PoolTypeFilter,
-                ],
-              }));
-            }
-          }}
-        />
-        <Button
-          size="md"
-          onClick={onCreatePool}
-          className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
-        >
-          {t("pools.createPool.title")}
-        </Button>
+  if (isWide) {
+    return (
+      <div className="flex w-full items-center gap-5">
+        <h5 className="mr-auto">{t("pools.allPools.title")}</h5>
+        {searchBox}
+        {filterAndCreate}
       </div>
+    );
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex w-full items-center gap-5">
+        <h5 className="mr-auto">{t("pools.allPools.title")}</h5>
+        {filterAndCreate}
+      </div>
+      {searchBox}
     </div>
   );
 };
