@@ -17,9 +17,16 @@ export const CreatePoolModal: FunctionComponent<
     createPoolConfig: ObservableCreatePoolConfig;
     isSendingMsg?: boolean;
     onCreatePool: () => void;
+    /** Invoked when the duplicate-pool callout's "Provide liquidity instead" CTA is clicked. */
+    onUseExistingPool?: (poolId: string) => void;
   }
 > = observer((props) => {
-  const { createPoolConfig: config, isSendingMsg, onCreatePool } = props;
+  const {
+    createPoolConfig: config,
+    isSendingMsg,
+    onCreatePool,
+    onUseExistingPool,
+  } = props;
   const [curStep, setCurStep] = useState<1 | 2 | 3 | 0>(
     config.poolType ? 1 : 0
   );
@@ -84,6 +91,7 @@ export const CreatePoolModal: FunctionComponent<
             setCurStep(1);
             props.onRequestClose();
           }}
+          onUseExistingPool={onUseExistingPool}
         />
       ) : (
         <>
@@ -91,6 +99,7 @@ export const CreatePoolModal: FunctionComponent<
             <Step1SetRatios
               createPoolConfig={config}
               advanceStep={advanceStep}
+              onUseExistingPool={onUseExistingPool}
             />
           )}
           {curStep === 2 && (

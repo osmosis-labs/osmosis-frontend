@@ -10,14 +10,16 @@ import {
 } from "@headlessui/react";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets/icon";
 import { SelectionToken } from "~/components/complex/pool/create/cl-pool";
+import { DuplicatePoolCallout } from "~/components/complex/pool/create/duplicate-pool-callout";
 import { SkeletonLoader, Spinner } from "~/components/loaders";
 import { Button } from "~/components/ui/button";
 import { EntityImage } from "~/components/ui/entity-image";
 import { useDisclosure, useFilteredData, useTranslation } from "~/hooks";
+import { useDuplicatePoolCheck } from "~/hooks/use-duplicate-pool-check";
 import { useShowPreviewAssets } from "~/hooks/use-show-preview-assets";
 import { TokenSelectModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -33,7 +35,10 @@ interface SetBaseInfosProps {
   setSelectedBase: (value: SelectionToken) => void;
   setSelectedQuote: (value: SelectionToken) => void;
   setPoolId: (value: string) => void;
+  onUseExistingPool?: (poolId: string) => void;
 }
+
+const CL_TICK_SPACING = 100;
 
 export const SetBaseInfos = observer(
   ({
@@ -43,6 +48,7 @@ export const SetBaseInfos = observer(
     setSelectedBase,
     setSelectedQuote,
     setPoolId,
+    onUseExistingPool,
   }: SetBaseInfosProps) => {
     const { t } = useTranslation();
 
@@ -81,7 +87,33 @@ export const SetBaseInfos = observer(
     );
 
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
+    const [isDuplicateAcknowledged, setIsDuplicateAcknowledged] =
+      useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
+
+    const baseDenom = selectedBase?.token.coinMinimalDenom;
+    const quoteDenom = selectedQuote?.token.coinMinimalDenom;
+    const duplicateProposed = useMemo(() => {
+      if (!baseDenom || !quoteDenom) return null;
+      return {
+        kind: "concentrated" as const,
+        denom0: baseDenom,
+        denom1: quoteDenom,
+        spreadFactor: selectedSpread,
+        tickSpacing: CL_TICK_SPACING,
+      };
+    }, [baseDenom, quoteDenom, selectedSpread]);
+    const duplicateCheck = useDuplicatePoolCheck({
+      proposed: duplicateProposed,
+      enabled: Boolean(baseDenom && quoteDenom),
+    });
+    const isDuplicateBlocked = duplicateCheck.exactMatches.length > 0;
+
+    // Reset acknowledgement when the proposed pair / fee changes so the user
+    // sees a fresh decision for each new candidate.
+    useEffect(() => {
+      setIsDuplicateAcknowledged(false);
+    }, [baseDenom, quoteDenom, selectedSpread]);
 
     const is18DecimalBase =
       selectedBase?.token.coinDecimals === 18 &&
@@ -163,6 +195,20 @@ export const SetBaseInfos = observer(
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-6">
+          {selectedBase && (
+            <div className="w-full max-w-[641px]">
+              <DuplicatePoolCallout
+                status={duplicateCheck.status}
+                exactMatches={duplicateCheck.exactMatches}
+                similarMatches={duplicateCheck.similarMatches}
+                acknowledged={isDuplicateAcknowledged}
+                onToggleAcknowledged={() =>
+                  setIsDuplicateAcknowledged((v) => !v)
+                }
+                onUseExistingPool={onUseExistingPool}
+              />
+            </div>
+          )}
           <Field className="flex items-center gap-3">
             <Checkbox
               className="group flex h-[26px] w-[26px] items-center justify-center rounded-lg border-2 border-solid border-osmoverse-400 transition-colors data-[checked]:bg-osmoverse-400"
@@ -205,7 +251,10 @@ export const SetBaseInfos = observer(
           )}
           <Button
             disabled={
-              !isAgreementChecked || !selectedBase || is18DecimalMismatch
+              !isAgreementChecked ||
+              !selectedBase ||
+              is18DecimalMismatch ||
+              (isDuplicateBlocked && !isDuplicateAcknowledged)
             }
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {

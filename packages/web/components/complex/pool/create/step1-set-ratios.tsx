@@ -1,8 +1,10 @@
+import { Dec } from "@osmosis-labs/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 
+import { DuplicatePoolCallout } from "~/components/complex/pool/create/duplicate-pool-callout";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { TokenSelect } from "~/components/control";
@@ -10,12 +12,93 @@ import { InputBox } from "~/components/input";
 import { Button } from "~/components/ui/button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import {
+  type ProposedPool,
+  useDuplicatePoolCheck,
+} from "~/hooks/use-duplicate-pool-check";
 
-export const Step1SetRatios: FunctionComponent<StepProps> = observer(
+interface Step1Props extends StepProps {
+  onUseExistingPool?: (poolId: string) => void;
+}
+
+export const Step1SetRatios: FunctionComponent<Step1Props> = observer(
   (props) => {
-    const { createPoolConfig: config } = props;
+    const { createPoolConfig: config, onUseExistingPool } = props;
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
+
+    // Build the discriminated-union proposed-pool shape from the live config.
+    // Returns null until the inputs are valid enough to compare against
+    // existing pools (all percentages set / scaling factors set, valid fee).
+    // Build a primitive signature of the inputs that affect duplicate matching.
+    // `config.assets` is a MobX observable.shallow array; when the user swaps a
+    // token within an existing slot, the array reference doesn't change, only
+    // the inner `sendCurrency` does. Depending on the array reference alone
+    // would miss those swaps, so we read the relevant primitives eagerly
+    // (within the observer's tracked render) and key the memo off them.
+    const assetSignature = config.assets
+      .map(
+        (a) =>
+          `${a.amountConfig.sendCurrency.coinMinimalDenom}:${
+            a.percentage ?? ""
+          }:${a.scalingFactor ?? ""}`
+      )
+      .join("|");
+    const proposed = useMemo<ProposedPool | null>(() => {
+      if (config.poolType === "weighted") {
+        const weights: Record<string, number> = {};
+        const denoms: string[] = [];
+        for (const asset of config.assets) {
+          if (!asset.percentage) return null;
+          const pct = Number(asset.percentage);
+          if (!Number.isFinite(pct) || pct <= 0) return null;
+          const denom = asset.amountConfig.sendCurrency.coinMinimalDenom;
+          denoms.push(denom);
+          weights[denom] = pct;
+        }
+        if (denoms.length < 2) return null;
+        let swapFeeDec: string;
+        try {
+          swapFeeDec = new Dec(config.swapFee).quo(new Dec(100)).toString();
+        } catch {
+          return null;
+        }
+        return { kind: "weighted", denoms, weights, swapFee: swapFeeDec };
+      }
+      if (config.poolType === "stable") {
+        const scalingFactors: Record<string, number> = {};
+        const denoms: string[] = [];
+        for (const asset of config.assets) {
+          if (!asset.scalingFactor) return null;
+          const denom = asset.amountConfig.sendCurrency.coinMinimalDenom;
+          denoms.push(denom);
+          scalingFactors[denom] = asset.scalingFactor;
+        }
+        if (denoms.length < 2) return null;
+        let swapFeeDec: string;
+        try {
+          swapFeeDec = new Dec(config.swapFee).quo(new Dec(100)).toString();
+        } catch {
+          return null;
+        }
+        return { kind: "stable", denoms, scalingFactors, swapFee: swapFeeDec };
+      }
+      return null;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [config.poolType, config.swapFee, assetSignature]);
+
+    const { status, exactMatches, similarMatches } = useDuplicatePoolCheck({
+      proposed,
+      enabled: true,
+    });
+
+    // Sync the gate flag onto the config so step-base can disable Next when
+    // there's an unacknowledged exact duplicate.
+    useEffect(() => {
+      const hasExact = exactMatches.length > 0;
+      config.duplicateBlocking = hasExact;
+      if (!hasExact) config.duplicateAcknowledged = false;
+    }, [config, exactMatches.length]);
 
     return (
       <StepBase step={1} {...props}>
@@ -45,6 +128,28 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                   }}
                 />
                 <div className="md:subtitle1 flex items-center gap-2.5 text-h6 font-h6 md:gap-1">
+                  {index >= 2 && (
+                    <button
+                      type="button"
+                      aria-label={t("pools.createPool.removeToken")}
+                      onClick={() => config.removeAssetAt(index)}
+                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-osmoverse-800 text-osmoverse-300 transition-colors hover:bg-osmoverse-700 hover:text-white-full"
+                    >
+                      <svg
+                        viewBox="0 0 10 10"
+                        className="h-2.5 w-2.5"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M1 1L9 9M9 1L1 9"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    </button>
+                  )}
                   {config.poolType === "weighted" && (
                     <Button
                       size="sm"
@@ -148,6 +253,16 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             </div>
           )}
         </div>
+        <DuplicatePoolCallout
+          status={status}
+          exactMatches={exactMatches}
+          similarMatches={similarMatches}
+          acknowledged={config.duplicateAcknowledged}
+          onToggleAcknowledged={() =>
+            (config.duplicateAcknowledged = !config.duplicateAcknowledged)
+          }
+          onUseExistingPool={onUseExistingPool}
+        />
       </StepBase>
     );
   }
