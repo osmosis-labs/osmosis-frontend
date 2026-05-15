@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "OSMO、USDCをサポート",
       "moonpayCountrySupport": "165か国以上"
     },
-    "incentive": {
-      "title": "インセンティブの種類"
-    },
     "MAX": "マックス",
     "pool": {
       "title": "プールの種類"
@@ -271,8 +268,7 @@
       "transmuter": "トランスミューター",
       "orderbook": "注文書",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "インセンティブなし"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "ウォレットを接続する",

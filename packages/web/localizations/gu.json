@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "OSMO, USDC ને સપોર્ટ કરે છે",
       "moonpayCountrySupport": "165+ દેશો"
     },
-    "incentive": {
-      "title": "પ્રોત્સાહન પ્રકારો"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "પૂલ પ્રકારો"
@@ -271,8 +268,7 @@
       "transmuter": "ટ્રાન્સમ્યુટર",
       "orderbook": "ઓર્ડરબુક",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "કોઈ પ્રોત્સાહન નથી"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "વૉલેટ કનેક્ટ કરો",

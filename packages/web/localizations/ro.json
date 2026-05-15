@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "Suporta OSMO, USDC",
       "moonpayCountrySupport": "Peste 165 de țări"
     },
-    "incentive": {
-      "title": "Tipuri de stimulente"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Tipuri de piscine"
@@ -271,8 +268,7 @@
       "transmuter": "Transmutator",
       "orderbook": "Carnet de comandă",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Fără incentivi"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Conecteaza Portofel",
