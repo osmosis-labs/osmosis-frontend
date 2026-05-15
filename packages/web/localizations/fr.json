@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "Prend en charge OSMO, USDC",
       "moonpayCountrySupport": "Plus de 165 pays"
     },
-    "incentive": {
-      "title": "Types d'incitations"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Types de piscines"
@@ -271,8 +268,7 @@
       "transmuter": "Transmutateur",
       "orderbook": "Carnet de commandes",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Pas d'incitations"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connecter le portefeuille",

@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "پشتیبانی از OSMO، USDC",
       "moonpayCountrySupport": "165+ کشور"
     },
-    "incentive": {
-      "title": "انواع مشوق"
-    },
     "MAX": "حداکثر",
     "pool": {
       "title": "استخرها"
@@ -271,8 +268,7 @@
       "transmuter": "تبدیل کننده",
       "orderbook": "دفترچه سفارش",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "بدون انگیزه"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "اتصال کیف پول",

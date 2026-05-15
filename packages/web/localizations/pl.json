@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "Obsługuje OSMO, USDC",
       "moonpayCountrySupport": "165+ krajów"
     },
-    "incentive": {
-      "title": "Rodzaje zachęt"
-    },
     "MAX": "MAKSIMUM",
     "pool": {
       "title": "Typy basenów"
@@ -271,8 +268,7 @@
       "transmuter": "Transmutator",
       "orderbook": "Księga zamówień",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "Brak zachęt"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Połącz portfel",

@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "支持OSMO、USDC",
       "moonpayCountrySupport": "165+ 个国家"
     },
-    "incentive": {
-      "title": "激励类型"
-    },
     "MAX": "最大",
     "pool": {
       "title": "游泳池類型"
@@ -271,8 +268,7 @@
       "transmuter": "转化器",
       "orderbook": "订单簿",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "无激励"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "连接钱包",

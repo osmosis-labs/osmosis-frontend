@@ -246,9 +246,6 @@
       "onrampMoneySubtitle": "Supports OSMO, USDC",
       "moonpayCountrySupport": "165+ countries"
     },
-    "incentive": {
-      "title": "Incentive types"
-    },
     "MAX": "MAX",
     "pool": {
       "title": "Pool types"
@@ -271,8 +268,7 @@
       "transmuter": "Transmuter",
       "orderbook": "Orderbook",
       "astroport": "Astroport",
-      "whitewhale": "White Whale",
-      "noIncentives": "No incentives"
+      "whitewhale": "White Whale"
     }
   },
   "connectWallet": "Connect wallet",
