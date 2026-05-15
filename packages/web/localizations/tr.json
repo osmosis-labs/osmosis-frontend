@@ -521,6 +521,7 @@
       "buttonAddToken": "Yeni token ekle",
       "buttonCreate": "Havuz Oluştur",
       "buttonNext": "Sonraki",
+      "removeToken": "Tokeni kaldır",
       "infoCaption": "Osmosis topluluk havuzuna transfer edilir",
       "infoMessage": "Havuz Oluşturma Ücreti",
       "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
@@ -537,7 +538,21 @@
       "title": "Yeni Havuz Oluştur",
       "token": "Token",
       "undersandCost": "Yeni havuz oluşturmanın, {POOL_CREATION_FEE} 'ya mâl olacağını anlıyorum.",
-      "weightedPool": "Ağırlıklı havuz"
+      "weightedPool": "Ağırlıklı havuz",
+      "duplicateCheck": {
+        "exactTitle": "Bu parametrelere sahip bir havuz zaten var",
+        "exactCaption": "Bir kopya oluşturmak likiditeyi böler ve hacmi parçalar. Havuzlar oluşturulduktan sonra kaldırılamaz, bu yüzden mevcut havuza likidite eklemeyi düşünün.",
+        "similarTitle": "Benzer havuzlar zaten var",
+        "similarCaption": "Bu havuzlar aynı varlıkları paylaşır ancak farklı parametreler kullanır. Yeni bir tane oluşturmadan önce inceleyin.",
+        "poolRow": "Havuz #{poolId}",
+        "poolRowWithSymbols": "Havuz #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Ücret",
+        "viewPool": "Havuzu görüntüle",
+        "useExistingPool": "Onun yerine likidite ekle",
+        "acknowledge": "Bu parametrelere sahip bir havuzun zaten var olduğunu anlıyorum ve yine de bir kopya oluşturmak istiyorum.",
+        "checking": "Mevcut havuzlar kontrol ediliyor…"
+      }
     },
     "createSupercharged": {
       "createNew": "Yeni Süper Şarjlı Havuz Oluşturun",

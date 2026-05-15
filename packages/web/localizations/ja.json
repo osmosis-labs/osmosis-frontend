@@ -521,6 +521,7 @@
       "buttonAddToken": "新しいトークンを追加する",
       "buttonCreate": "プールの作成",
       "buttonNext": "次",
+      "removeToken": "トークンを削除",
       "infoCaption": "Osmosis コミュニティプールに転送",
       "infoMessage": "プール作成料金",
       "scalingFactorController": "スケーリング係数コントローラーの設定 (オプション)",
@@ -537,7 +538,21 @@
       "title": "新しいプールの作成",
       "token": "トークン",
       "undersandCost": "新しいプールの作成に{POOL_CREATION_FEE}費用がかかることを理解しています。",
-      "weightedPool": "加重プール"
+      "weightedPool": "加重プール",
+      "duplicateCheck": {
+        "exactTitle": "これらのパラメータを持つプールはすでに存在します",
+        "exactCaption": "重複を作成すると流動性が分割され、ボリュームが断片化します。プールは作成後に削除できないため、代わりに既存のプールに流動性を提供することを検討してください。",
+        "similarTitle": "類似のプールがすでに存在します",
+        "similarCaption": "これらのプールは同じassetを使用していますが、異なるパラメータを使用しています。新しく作成する前に確認してください。",
+        "poolRow": "プール #{poolId}",
+        "poolRowWithSymbols": "プール #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "手数料",
+        "viewPool": "プールを表示",
+        "useExistingPool": "代わりに流動性を提供",
+        "acknowledge": "これらのパラメータを持つプールがすでに存在することを理解した上で、重複を作成したいと思います。",
+        "checking": "既存のプールを確認中…"
+      }
     },
     "createSupercharged": {
       "createNew": "新しいスーパーチャージプールを作成する",

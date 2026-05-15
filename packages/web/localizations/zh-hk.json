@@ -521,6 +521,7 @@
       "buttonAddToken": "加入新代幣",
       "buttonCreate": "建立新池",
       "buttonNext": "下一步",
+      "removeToken": "移除代幣",
       "infoCaption": "已被傳送到 Osmosis 社群資金池",
       "infoMessage": "流動性池建立費",
       "scalingFactorController": "比例因子控制器（可選)",
@@ -537,7 +538,21 @@
       "title": "建立新流動性池",
       "token": "代幣",
       "undersandCost": "我明白建立一個新流動性池會需要費用 {POOL_CREATION_FEE}",
-      "weightedPool": "加權流動性池"
+      "weightedPool": "加權流動性池",
+      "duplicateCheck": {
+        "exactTitle": "已經存在具有呢啲參數嘅池",
+        "exactCaption": "建立重複會分散流動性同分割交易量。池建立後無法移除，請考慮向現有池加入流動性。",
+        "similarTitle": "已經存在類似嘅池",
+        "similarCaption": "呢啲池用相同嘅資產但參數唔同。請喺建立新池之前檢查一下。",
+        "poolRow": "池 #{poolId}",
+        "poolRowWithSymbols": "池 #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "費用",
+        "viewPool": "查看池",
+        "useExistingPool": "改為加入流動性",
+        "acknowledge": "我知道已經存在具有呢啲參數嘅池，但仍然想建立重複。",
+        "checking": "正在搜尋現有嘅池…"
+      }
     },
     "createSupercharged": {
       "createNew": "建立新的增壓池",

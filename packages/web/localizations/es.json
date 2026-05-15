@@ -521,6 +521,7 @@
       "buttonAddToken": "Agregar token nuevo",
       "buttonCreate": "Crear Piscina",
       "buttonNext": "Siguiente",
+      "removeToken": "Eliminar token",
       "infoCaption": "Transferido a la piscina comunitaria de Osmosis",
       "infoMessage": "Tarifa de creación de piscina",
       "scalingFactorController": "Establecer controlador de factor de escala (opcional)",
@@ -537,7 +538,21 @@
       "title": "Crea una nueva Piscina",
       "token": "Token",
       "undersandCost": "Entiendo que crear una nueva piscina costará {POOL_CREATION_FEE}.",
-      "weightedPool": "Grupo ponderado"
+      "weightedPool": "Grupo ponderado",
+      "duplicateCheck": {
+        "exactTitle": "Ya existe un pool con estos parámetros",
+        "exactCaption": "Crear un duplicado divide la liquidez y fragmenta el volumen. Los pools no se pueden eliminar una vez creados, así que considera aportar liquidez al pool existente.",
+        "similarTitle": "Ya existen pools similares",
+        "similarCaption": "Estos pools comparten los mismos activos pero usan parámetros distintos. Revísalos antes de crear uno nuevo.",
+        "poolRow": "Pool #{poolId}",
+        "poolRowWithSymbols": "Pool #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Comisión",
+        "viewPool": "Ver pool",
+        "useExistingPool": "Aportar liquidez en su lugar",
+        "acknowledge": "Entiendo que ya existe un pool con estos parámetros y aun así quiero crear un duplicado.",
+        "checking": "Buscando pools existentes…"
+      }
     },
     "createSupercharged": {
       "createNew": "Crear un nuevo grupo de supercargadores",

@@ -521,6 +521,7 @@
       "buttonAddToken": "새로운 토큰 추가히기",
       "buttonCreate": "풀 생성하기",
       "buttonNext": "다음",
+      "removeToken": "토큰 제거",
       "infoCaption": "Osmosis 커뮤니티풀로 전송됩니다",
       "infoMessage": "풀 생성 수수료",
       "scalingFactorController": "단위조정인수 제어자 설정(선택 사항)",
@@ -537,7 +538,21 @@
       "title": "새로운 풀 만들기",
       "token": "토큰",
       "undersandCost": "새 풀을 만드는데 {POOL_CREATION_FEE} 만큼의 비용이 든다는 것을 이해했습니다.",
-      "weightedPool": "가중비율 풀"
+      "weightedPool": "가중비율 풀",
+      "duplicateCheck": {
+        "exactTitle": "이러한 매개변수를 가진 풀이 이미 존재합니다",
+        "exactCaption": "중복을 생성하면 유동성이 분산되고 거래량이 분할됩니다. 풀은 생성 후 제거할 수 없으므로, 기존 풀에 유동성을 추가하는 것을 고려하세요.",
+        "similarTitle": "유사한 풀이 이미 존재합니다",
+        "similarCaption": "이 풀들은 동일한 asset을 공유하지만 다른 매개변수를 사용합니다. 새로 생성하기 전에 확인하세요.",
+        "poolRow": "풀 #{poolId}",
+        "poolRowWithSymbols": "풀 #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "수수료",
+        "viewPool": "풀 보기",
+        "useExistingPool": "대신 유동성 추가",
+        "acknowledge": "이러한 매개변수를 가진 풀이 이미 존재함을 이해하며, 그래도 중복을 생성하고 싶습니다.",
+        "checking": "기존 풀 확인 중…"
+      }
     },
     "createSupercharged": {
       "createNew": "새로운 슈퍼차지 풀 생성",

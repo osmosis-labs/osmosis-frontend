@@ -521,6 +521,7 @@
       "buttonAddToken": "添加新的代币",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
+      "removeToken": "移除代币",
       "infoCaption": "已发送到 Osmosis 社区池",
       "infoMessage": "资金池创建费",
       "scalingFactorController": "设置比例因子控制器（可选）",
@@ -537,7 +538,21 @@
       "title": "创建新的资金池",
       "token": "代币",
       "undersandCost": "我已理解创建资金池将会花费 {POOL_CREATION_FEE}.",
-      "weightedPool": "加权池"
+      "weightedPool": "加权池",
+      "duplicateCheck": {
+        "exactTitle": "已存在具有这些参数的池",
+        "exactCaption": "创建重复会分散流动性并分割交易量。池创建后无法移除，请考虑向现有池添加流动性。",
+        "similarTitle": "已存在类似的池",
+        "similarCaption": "这些池使用相同的资产但参数不同。请在创建新池之前查看。",
+        "poolRow": "池 #{poolId}",
+        "poolRowWithSymbols": "池 #{poolId}: {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "费用",
+        "viewPool": "查看池",
+        "useExistingPool": "改为添加流动性",
+        "acknowledge": "我知道已存在具有这些参数的池，但仍希望创建重复。",
+        "checking": "正在检查现有池…"
+      }
     },
     "createSupercharged": {
       "createNew": "创建新的增压池",

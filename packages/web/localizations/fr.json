@@ -521,6 +521,7 @@
       "buttonAddToken": "Ajouter un nouveau jeton",
       "buttonCreate": "Créer le bassin",
       "buttonNext": "Suivant",
+      "removeToken": "Retirer le jeton",
       "infoCaption": "Transféré au bassin communautaire d'Osmosis",
       "infoMessage": "Frais de création de bassin",
       "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
@@ -537,7 +538,21 @@
       "title": "Créer un nouveau bassin",
       "token": "Jeton",
       "undersandCost": "Je comprends que la création d'un nouveau bassin coûtera {POOL_CREATION_FEE}.",
-      "weightedPool": "Piscine pondérée"
+      "weightedPool": "Piscine pondérée",
+      "duplicateCheck": {
+        "exactTitle": "Un pool avec ces paramètres existe déjà",
+        "exactCaption": "Créer un doublon divise la liquidité et fragmente le volume. Les pools ne peuvent pas être supprimés une fois créés, préférez ajouter de la liquidité au pool existant.",
+        "similarTitle": "Des pools similaires existent déjà",
+        "similarCaption": "Ces pools partagent les mêmes actifs mais utilisent des paramètres différents. Vérifiez-les avant d'en créer un nouveau.",
+        "poolRow": "Pool n°{poolId}",
+        "poolRowWithSymbols": "Pool n°{poolId} : {symbols}",
+        "tvlLabel": "TVL",
+        "feeLabel": "Frais",
+        "viewPool": "Voir le pool",
+        "useExistingPool": "Ajouter de la liquidité à la place",
+        "acknowledge": "Je comprends qu'un pool avec ces paramètres existe déjà et je souhaite tout de même créer un doublon.",
+        "checking": "Recherche des pools existants…"
+      }
     },
     "createSupercharged": {
       "createNew": "Créer un nouveau pool suralimenté",
