@@ -123,72 +123,89 @@ const TableControls = ({ onCreatePool }: { onCreatePool: () => void }) => {
   );
 
   return (
-    <div className="flex w-full place-content-between items-center gap-5 xl:flex-col xl:items-start">
-      <h5>{t("pools.allPools.title")}</h5>
+    <div className="flex w-full flex-col gap-3">
+      <div className="flex w-full place-content-between items-center gap-5">
+        <h5>{t("pools.allPools.title")}</h5>
 
-      <div className="flex h-12 flex-wrap items-center gap-3 xl:h-fit">
+        <div className="flex h-12 flex-wrap items-center justify-end gap-3 xl:h-fit">
+          <div className="xl:hidden">
+            <SearchBox
+              size="small"
+              placeholder={t("assets.table.search")}
+              debounce={500}
+              currentValue={filters.searchQuery ?? undefined}
+              onInput={onSearchInput}
+            />
+          </div>
+          <CheckboxSelect
+            label={t("components.pool.title")}
+            selectedOptionIds={filters.poolTypesFilter}
+            buttonClassName="!h-9"
+            atLeastOneSelected
+            options={[
+              {
+                id: "concentrated",
+                display: t("components.table.concentrated"),
+              },
+              {
+                id: "cosmwasm-orderbook",
+                display: t("components.table.orderbook"),
+              },
+              { id: "weighted", display: t("components.table.weighted") },
+              { id: "stable", display: t("components.table.stable") },
+              {
+                id: "cosmwasm-astroport-pcl",
+                display: t("components.table.astroport"),
+              },
+              {
+                id: "cosmwasm-whitewhale",
+                display: t("components.table.whitewhale"),
+              },
+              {
+                id: "cosmwasm-transmuter",
+                display: t("components.table.transmuter"),
+              },
+            ]}
+            onSelect={(poolType) => {
+              if (
+                filters.poolTypesFilter.includes(poolType as PoolTypeFilter)
+              ) {
+                setFilters((state) => ({
+                  ...state,
+                  poolTypesFilter: state.poolTypesFilter.filter(
+                    (type) => type !== poolType
+                  ),
+                }));
+              } else {
+                setFilters((state) => ({
+                  ...state,
+                  poolTypesFilter: [
+                    ...state.poolTypesFilter,
+                    poolType as PoolTypeFilter,
+                  ],
+                }));
+              }
+            }}
+          />
+          <Button
+            size="md"
+            onClick={onCreatePool}
+            className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
+          >
+            {t("pools.createPool.title")}
+          </Button>
+        </div>
+      </div>
+
+      <div className="hidden w-full xl:block">
         <SearchBox
           size="small"
           placeholder={t("assets.table.search")}
           debounce={500}
           currentValue={filters.searchQuery ?? undefined}
           onInput={onSearchInput}
+          className="!w-full"
         />
-        <CheckboxSelect
-          label={t("components.pool.title")}
-          selectedOptionIds={filters.poolTypesFilter}
-          buttonClassName="!h-9"
-          atLeastOneSelected
-          options={[
-            {
-              id: "concentrated",
-              display: t("components.table.concentrated"),
-            },
-            {
-              id: "cosmwasm-orderbook",
-              display: t("components.table.orderbook"),
-            },
-            { id: "weighted", display: t("components.table.weighted") },
-            { id: "stable", display: t("components.table.stable") },
-            {
-              id: "cosmwasm-astroport-pcl",
-              display: t("components.table.astroport"),
-            },
-            {
-              id: "cosmwasm-whitewhale",
-              display: t("components.table.whitewhale"),
-            },
-            {
-              id: "cosmwasm-transmuter",
-              display: t("components.table.transmuter"),
-            },
-          ]}
-          onSelect={(poolType) => {
-            if (filters.poolTypesFilter.includes(poolType as PoolTypeFilter)) {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: state.poolTypesFilter.filter(
-                  (type) => type !== poolType
-                ),
-              }));
-            } else {
-              setFilters((state) => ({
-                ...state,
-                poolTypesFilter: [
-                  ...state.poolTypesFilter,
-                  poolType as PoolTypeFilter,
-                ],
-              }));
-            }
-          }}
-        />
-        <Button
-          size="md"
-          onClick={onCreatePool}
-          className="!h-9 !rounded-xl !bg-osmoverse-700 !py-1.5 hover:!bg-osmoverse-600"
-        >
-          {t("pools.createPool.title")}
-        </Button>
       </div>
     </div>
   );
