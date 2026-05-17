@@ -360,7 +360,9 @@ describe("findWormchainRecvTx", () => {
     });
     expect(hash).toBe(WORMCHAIN_HASH);
     const calledUrl = fetchMock.mock.calls[0][0] as string;
-    expect(calledUrl).toContain("https://wormchain-rpc.example/tx_search?query=");
+    expect(calledUrl).toContain(
+      "https://wormchain-rpc.example/tx_search?query="
+    );
     // The quoted query value should be URL-encoded (quote -> %22, etc.)
     expect(decodeURIComponent(calledUrl.split("query=")[1])).toBe(
       `"recv_packet.packet_sequence='43411' AND recv_packet.packet_src_channel='channel-2186'"`

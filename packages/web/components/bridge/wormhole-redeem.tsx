@@ -220,7 +220,8 @@ export async function lookupOsmosisIbcPacket(
       const sendPackets = events.filter((e) => e.type === "send_packet");
       const gatewayPacket =
         sendPackets.find(
-          (e) => getAttr(e, "packet_src_channel") ===
+          (e) =>
+            getAttr(e, "packet_src_channel") ===
             OSMOSIS_WORMHOLE_GATEWAY_CHANNEL
         ) ?? sendPackets[0];
       if (!gatewayPacket) return null;
@@ -300,9 +301,7 @@ interface ResolvedOperation {
   derivedFromOsmosis: boolean;
 }
 
-async function fetchOperation(
-  txHash: string
-): Promise<OperationData | null> {
+async function fetchOperation(txHash: string): Promise<OperationData | null> {
   const json = await apiClient<{ operations?: OperationData[] }>(
     `${WORMHOLESCAN_API}/operations?txHash=${encodeURIComponent(txHash)}`
   );
@@ -499,8 +498,11 @@ export const WormholeRedeem: FunctionComponent = () => {
     setDerivedFromOsmosis(false);
 
     try {
-      const { operation: op, resolvedTxHash: wormHash, derivedFromOsmosis: derived } =
-        await resolveOperation(hash);
+      const {
+        operation: op,
+        resolvedTxHash: wormHash,
+        derivedFromOsmosis: derived,
+      } = await resolveOperation(hash);
 
       if (!op.vaa?.raw) {
         throw new Error(
@@ -541,18 +543,15 @@ export const WormholeRedeem: FunctionComponent = () => {
     }
   }, [txHash]);
 
-  const copyToClipboard = useCallback(
-    async (value: string, hint: string) => {
-      try {
-        await navigator.clipboard.writeText(value);
-        setCopyHint(hint);
-        setTimeout(() => setCopyHint(null), 2000);
-      } catch {
-        // ignore - clipboard may be unavailable in some environments
-      }
-    },
-    []
-  );
+  const copyToClipboard = useCallback(async (value: string, hint: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopyHint(hint);
+      setTimeout(() => setCopyHint(null), 2000);
+    } catch {
+      // ignore - clipboard may be unavailable in some environments
+    }
+  }, []);
 
   const connectWallet = useCallback(async () => {
     if (!phantom) {
@@ -818,7 +817,9 @@ export const WormholeRedeem: FunctionComponent = () => {
 
                 {derivedFromOsmosis && resolvedTxHash && (
                   <>
-                    <span className="text-osmoverse-400">Wormchain receive</span>
+                    <span className="text-osmoverse-400">
+                      Wormchain receive
+                    </span>
                     <span className="text-right">
                       <a
                         href={`${WORMHOLESCAN_UI}/#/tx/${encodeURIComponent(
@@ -847,45 +848,46 @@ export const WormholeRedeem: FunctionComponent = () => {
               </div>
             )}
 
-            {status === "already_redeemed" && (() => {
-              const toChainId = operation.content.payload.toChain;
-              const destHash = operation.targetChain?.transaction?.txHash;
-              const destExplorerUrl = destHash
-                ? getDestinationExplorerUrl(toChainId, destHash)
-                : null;
-              const wormholescanHash =
-                resolvedTxHash ||
-                operation.sourceChain.attribute?.value?.originTxHash ||
-                lookedUpTxHash;
-              return (
-                <div className="rounded-lg border border-bullish-600 bg-bullish-600/10 p-3 text-sm text-bullish-200">
-                  This transfer has already been redeemed on{" "}
-                  {getChainLabel(toChainId)}.
-                  {destExplorerUrl ? (
-                    <a
-                      href={destExplorerUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-1 underline"
-                    >
-                      View on{" "}
-                      {toChainId === CHAIN_ID.solana ? "Solscan" : "Suiscan"}
-                    </a>
-                  ) : (
-                    <a
-                      href={`${WORMHOLESCAN_UI}/#/tx/${encodeURIComponent(
-                        wormholescanHash
-                      )}?network=Mainnet`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="ml-1 underline"
-                    >
-                      View on Wormholescan
-                    </a>
-                  )}
-                </div>
-              );
-            })()}
+            {status === "already_redeemed" &&
+              (() => {
+                const toChainId = operation.content.payload.toChain;
+                const destHash = operation.targetChain?.transaction?.txHash;
+                const destExplorerUrl = destHash
+                  ? getDestinationExplorerUrl(toChainId, destHash)
+                  : null;
+                const wormholescanHash =
+                  resolvedTxHash ||
+                  operation.sourceChain.attribute?.value?.originTxHash ||
+                  lookedUpTxHash;
+                return (
+                  <div className="rounded-lg border border-bullish-600 bg-bullish-600/10 p-3 text-sm text-bullish-200">
+                    This transfer has already been redeemed on{" "}
+                    {getChainLabel(toChainId)}.
+                    {destExplorerUrl ? (
+                      <a
+                        href={destExplorerUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 underline"
+                      >
+                        View on{" "}
+                        {toChainId === CHAIN_ID.solana ? "Solscan" : "Suiscan"}
+                      </a>
+                    ) : (
+                      <a
+                        href={`${WORMHOLESCAN_UI}/#/tx/${encodeURIComponent(
+                          wormholescanHash
+                        )}?network=Mainnet`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-1 underline"
+                      >
+                        View on Wormholescan
+                      </a>
+                    )}
+                  </div>
+                );
+              })()}
 
             {status === "ready" &&
               operation.content.payload.toChain === CHAIN_ID.solana && (
