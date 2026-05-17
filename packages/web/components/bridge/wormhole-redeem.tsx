@@ -218,12 +218,11 @@ export async function lookupOsmosisIbcPacket(
       const events = json.tx_response?.events ?? [];
 
       const sendPackets = events.filter((e) => e.type === "send_packet");
-      const gatewayPacket =
-        sendPackets.find(
-          (e) =>
-            getAttr(e, "packet_src_channel") ===
-            OSMOSIS_WORMHOLE_GATEWAY_CHANNEL
-        ) ?? sendPackets[0];
+      const gatewayPacket = sendPackets.find(
+        (e) =>
+          getAttr(e, "packet_src_channel") ===
+          OSMOSIS_WORMHOLE_GATEWAY_CHANNEL
+      );
       if (!gatewayPacket) return null;
 
       const sequence = getAttr(gatewayPacket, "packet_sequence");
