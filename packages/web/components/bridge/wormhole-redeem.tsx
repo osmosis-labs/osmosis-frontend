@@ -204,12 +204,19 @@ export async function lookupOsmosisIbcPacket(
   osmosisTxHash: string,
   lcds: readonly string[] = OSMOSIS_LCDS
 ): Promise<OsmosisSendPacket | null> {
+  let seenNotFound = false;
   let lastError: unknown = null;
   for (const lcd of lcds) {
     try {
       const res = await fetch(
         `${lcd}/cosmos/tx/v1beta1/txs/${encodeURIComponent(osmosisTxHash)}`
       );
+      if (res.status === 404) {
+        // Could be a wrong/unknown hash, or this provider has simply pruned
+        // older blocks. Try the next LCD before deciding it's truly missing.
+        seenNotFound = true;
+        continue;
+      }
       if (!res.ok) {
         lastError = new Error(`${lcd} returned ${res.status}`);
         continue;
@@ -217,11 +224,13 @@ export async function lookupOsmosisIbcPacket(
       const json = (await res.json()) as CosmosTxResponse;
       const events = json.tx_response?.events ?? [];
 
+      // Only accept a send_packet that actually uses the Wormhole gateway
+      // channel. Any other IBC transfer in this tx is unrelated and would
+      // resolve to a different (irrelevant) Wormchain packet.
       const sendPackets = events.filter((e) => e.type === "send_packet");
       const gatewayPacket = sendPackets.find(
         (e) =>
-          getAttr(e, "packet_src_channel") ===
-          OSMOSIS_WORMHOLE_GATEWAY_CHANNEL
+          getAttr(e, "packet_src_channel") === OSMOSIS_WORMHOLE_GATEWAY_CHANNEL
       );
       if (!gatewayPacket) return null;
 
@@ -255,6 +264,15 @@ export async function lookupOsmosisIbcPacket(
     } catch (err) {
       lastError = err;
     }
+  }
+  // If every LCD we tried returned 404 and nothing else failed, the tx
+  // genuinely does not exist (or none of the configured providers retain
+  // it). Surface a tx-not-found error rather than a generic provider
+  // outage so the user can correct the hash.
+  if (!lastError && seenNotFound) {
+    throw new Error(
+      "Osmosis transaction not found. Double-check the hash and that it was broadcast on Osmosis mainnet."
+    );
   }
   if (lastError) {
     throw new Error(

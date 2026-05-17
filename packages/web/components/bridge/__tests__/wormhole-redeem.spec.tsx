@@ -325,7 +325,7 @@ describe("lookupOsmosisIbcPacket", () => {
     expect(global.fetch).toHaveBeenCalledTimes(2);
   });
 
-  it("throws when every LCD fails", async () => {
+  it("throws a provider-outage error when every LCD returns 5xx", async () => {
     global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 503 });
 
     await expect(
@@ -334,6 +334,44 @@ describe("lookupOsmosisIbcPacket", () => {
         "https://lcd-b.example",
       ])
     ).rejects.toThrow(/Could not fetch Osmosis tx/);
+  });
+
+  it("throws a tx-not-found error when every LCD returns 404", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+
+    await expect(
+      lookupOsmosisIbcPacket(OSMOSIS_HASH, [
+        "https://lcd-a.example",
+        "https://lcd-b.example",
+      ])
+    ).rejects.toThrow(/Osmosis transaction not found/);
+  });
+
+  it("returns null when the tx exists but has no Wormhole gateway send_packet", async () => {
+    global.fetch = jest.fn().mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({
+        tx_response: {
+          events: [
+            {
+              type: "send_packet",
+              attributes: [
+                { key: "packet_sequence", value: "1" },
+                // A different IBC channel, not the Wormhole gateway. We must
+                // not silently follow this packet to wormchain.
+                { key: "packet_src_channel", value: "channel-0" },
+                { key: "packet_dst_channel", value: "channel-141" },
+              ],
+            },
+          ],
+        },
+      }),
+    });
+
+    const packet = await lookupOsmosisIbcPacket(OSMOSIS_HASH, [
+      "https://lcd-a.example",
+    ]);
+    expect(packet).toBeNull();
   });
 });
 
