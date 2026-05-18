@@ -8,6 +8,7 @@ import {
   ListboxOptions,
   Transition,
 } from "@headlessui/react";
+import { ObservableCreatePoolConfig } from "@osmosis-labs/stores/build/ui-config/create-pool";
 import { Dec, RatePretty } from "@osmosis-labs/unit";
 import { observer } from "mobx-react-lite";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
@@ -29,6 +30,7 @@ import { getLogoURIs } from "~/utils/logo-uri";
 import { api } from "~/utils/trpc";
 
 interface SetBaseInfosProps {
+  config: ObservableCreatePoolConfig;
   advanceStep?: () => void;
   selectedBase?: SelectionToken;
   selectedQuote: SelectionToken;
@@ -42,6 +44,7 @@ const CL_TICK_SPACING = 100;
 
 export const SetBaseInfos = observer(
   ({
+    config,
     advanceStep,
     selectedBase,
     selectedQuote,
@@ -87,8 +90,6 @@ export const SetBaseInfos = observer(
     );
 
     const [isAgreementChecked, setIsAgreementChecked] = useState(false);
-    const [isDuplicateAcknowledged, setIsDuplicateAcknowledged] =
-      useState(false);
     const [isTxLoading, setIsTxLoading] = useState(false);
 
     const baseDenom = selectedBase?.token.coinMinimalDenom;
@@ -107,13 +108,17 @@ export const SetBaseInfos = observer(
       proposed: duplicateProposed,
       enabled: Boolean(baseDenom && quoteDenom),
     });
-    const isDuplicateBlocked = duplicateCheck.exactMatches.length > 0;
+    const hasExactDuplicate = duplicateCheck.exactMatches.length > 0;
 
-    // Reset acknowledgement when the proposed pair / fee changes so the user
-    // sees a fresh decision for each new candidate.
+    // Sync gate flag onto the config so step-base / the create button can
+    // disable when an exact duplicate is unacknowledged. Resetting the
+    // acknowledgement on hasExactDuplicate=false also covers the pair / fee
+    // change case: the underlying query re-runs and exactMatches updates,
+    // which clears the prior acknowledgement.
     useEffect(() => {
-      setIsDuplicateAcknowledged(false);
-    }, [baseDenom, quoteDenom, selectedSpread]);
+      config.duplicateBlocking = hasExactDuplicate;
+      if (!hasExactDuplicate) config.duplicateAcknowledged = false;
+    }, [config, hasExactDuplicate]);
 
     const is18DecimalBase =
       selectedBase?.token.coinDecimals === 18 &&
@@ -201,9 +206,9 @@ export const SetBaseInfos = observer(
                 status={duplicateCheck.status}
                 exactMatches={duplicateCheck.exactMatches}
                 similarMatches={duplicateCheck.similarMatches}
-                acknowledged={isDuplicateAcknowledged}
+                acknowledged={config.duplicateAcknowledged}
                 onToggleAcknowledged={() =>
-                  setIsDuplicateAcknowledged((v) => !v)
+                  (config.duplicateAcknowledged = !config.duplicateAcknowledged)
                 }
                 onUseExistingPool={onUseExistingPool}
               />
@@ -254,7 +259,7 @@ export const SetBaseInfos = observer(
               !isAgreementChecked ||
               !selectedBase ||
               is18DecimalMismatch ||
-              (isDuplicateBlocked && !isDuplicateAcknowledged)
+              (config.duplicateBlocking && !config.duplicateAcknowledged)
             }
             isLoading={isLoadingTokens || isTxLoading}
             onClick={() => {

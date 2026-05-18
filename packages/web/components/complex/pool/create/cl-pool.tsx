@@ -40,6 +40,7 @@ const USDC_ASSET: SelectionToken = {
 
 export const CreateCLPool = observer(
   ({
+    config,
     onBack,
     onClose,
     currentStep,
@@ -58,6 +59,7 @@ export const CreateCLPool = observer(
         case 1:
           return (
             <SetBaseInfos
+              config={config}
               advanceStep={advanceStep}
               selectedBase={selectedBase}
               selectedQuote={selectedQuote}
@@ -78,6 +80,7 @@ export const CreateCLPool = observer(
           );
       }
     }, [
+      config,
       advanceStep,
       currentStep,
       fullClose,
