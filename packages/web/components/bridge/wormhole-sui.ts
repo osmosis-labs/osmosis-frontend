@@ -362,11 +362,24 @@ export async function executeSuiRedeem({
 
   const { signAndExecuteTransaction } = await import("@mysten/wallet-standard");
 
+  // The wallet may have switched accounts (or locked entirely) between
+  // `connectSlush()` and now, so re-resolve the account before signing
+  // instead of trusting the cached one with a non-null assertion.
+  const account = slush.wallet.accounts.find(
+    (a) => a.address === slush.address
+  );
+  if (!account) {
+    throw new SuiRedeemError(
+      "wallet_rejected",
+      "The connected Slush account is no longer available. Reconnect and try again."
+    );
+  }
+
   let digest: string;
   try {
     const result = await signAndExecuteTransaction(slush.wallet, {
       transaction: tx,
-      account: slush.wallet.accounts.find((a) => a.address === slush.address)!,
+      account,
       chain: SUI_MAINNET_CHAIN,
     });
     digest = result.digest;

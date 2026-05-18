@@ -22,7 +22,6 @@ import {
 const WORMHOLESCAN_API = "https://api.wormholescan.io/api/v1";
 const WORMHOLESCAN_UI = "https://wormholescan.io";
 const SOLANA_RPC = "https://solana-rpc.publicnode.com";
-const WORMCHAIN_RPC = "https://wormchain-rpc.polkachu.com";
 
 // Wormhole gateway channel from Osmosis -> Wormchain (the IBC translator).
 // MsgTransfer's source_channel on Osmosis is `channel-2186`; on Wormchain
@@ -37,6 +36,37 @@ const OSMOSIS_LCDS = [
   "https://osmosis-rest.publicnode.com",
   "https://lcd.osmosis.zone",
 ];
+
+// Wormchain RPC fallbacks. Same rationale as `OSMOSIS_LCDS`: a single
+// provider going down would otherwise break recovery for every user.
+const WORMCHAIN_RPCS = [
+  "https://wormchain-rpc.polkachu.com",
+  "https://wormchain-rpc.publicnode.com",
+];
+
+const FETCH_TIMEOUT_MS = 5000;
+
+/**
+ * `fetch` with a hard timeout. A hung LCD/RPC would otherwise block the
+ * whole resolution path and leave the widget stuck in `looking_up`.
+ */
+async function fetchWithTimeout(
+  url: string,
+  {
+    timeoutMs = FETCH_TIMEOUT_MS,
+    ...init
+  }: RequestInit & {
+    timeoutMs?: number;
+  } = {}
+): Promise<Response> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 const TOKEN_BRIDGE_PROGRAM_ID = "wormDTUJ6AWPNvk59vGQbDvGJmqbDTdgWgAqcLBCgUb";
 
@@ -218,7 +248,7 @@ export async function lookupOsmosisIbcPacket(
   let lastError: unknown = null;
   for (const lcd of lcds) {
     try {
-      const res = await fetch(
+      const res = await fetchWithTimeout(
         `${lcd}/cosmos/tx/v1beta1/txs/${encodeURIComponent(osmosisTxHash)}`
       );
       if (res.status === 404) {
@@ -298,25 +328,42 @@ export async function lookupOsmosisIbcPacket(
  * Find the Wormchain `recv_packet` tx that corresponds to an Osmosis
  * send_packet. Wormholescan indexes Wormhole VAAs under this tx hash
  * (the Osmosis hash is never indexed for gateway transfers).
+ *
+ * Iterates the configured Wormchain RPCs and returns on the first
+ * provider that responds successfully, so a single endpoint outage
+ * doesn't break recovery. Throws only if every provider fails.
  */
 export async function findWormchainRecvTx({
   sequence,
   srcChannel,
-  wormchainRpc = WORMCHAIN_RPC,
+  wormchainRpcs = WORMCHAIN_RPCS,
 }: {
   sequence: string;
   srcChannel: string;
-  wormchainRpc?: string;
+  wormchainRpcs?: readonly string[];
 }): Promise<string | null> {
   // Tendermint RPC requires the query value to be a quoted string.
   const query = `"recv_packet.packet_sequence='${sequence}' AND recv_packet.packet_src_channel='${srcChannel}'"`;
-  const url = `${wormchainRpc}/tx_search?query=${encodeURIComponent(query)}`;
-  const res = await fetch(url);
-  if (!res.ok) {
-    throw new Error(`Wormchain tx_search returned ${res.status}`);
+  let lastError: unknown = null;
+  for (const rpc of wormchainRpcs) {
+    try {
+      const url = `${rpc}/tx_search?query=${encodeURIComponent(query)}`;
+      const res = await fetchWithTimeout(url);
+      if (!res.ok) {
+        lastError = new Error(`${rpc} returned ${res.status}`);
+        continue;
+      }
+      const json = (await res.json()) as WormchainTxSearchResponse;
+      return json.result?.txs?.[0]?.hash ?? null;
+    } catch (err) {
+      lastError = err;
+    }
   }
-  const json = (await res.json()) as WormchainTxSearchResponse;
-  return json.result?.txs?.[0]?.hash ?? null;
+  throw new Error(
+    `Could not query Wormchain RPC: ${
+      lastError instanceof Error ? lastError.message : String(lastError)
+    }`
+  );
 }
 
 interface ResolvedOperation {
@@ -359,7 +406,25 @@ export async function resolveOperation(
     );
   }
 
-  const packet = await lookupOsmosisIbcPacket(userHash);
+  // The hash format alone can't tell us whether this is an Osmosis tx or
+  // an as-yet-unindexed Wormchain receive — they're both 64-char hex.
+  // Catch the "not found on Osmosis" path and surface both possibilities
+  // so the user can wait-and-retry rather than thinking they typed the
+  // wrong hash.
+  let packet: OsmosisSendPacket | null;
+  try {
+    packet = await lookupOsmosisIbcPacket(userHash);
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      err.message.startsWith("Osmosis transaction not found")
+    ) {
+      throw new Error(
+        "Transaction not found on Wormholescan and no matching Osmosis transaction was located. If this is a Wormchain receive hash, the guardians may still be signing — try again in a minute. Otherwise, double-check the hash."
+      );
+    }
+    throw err;
+  }
   if (!packet) {
     throw new Error(
       "Transaction not found on Wormholescan and no Wormhole gateway IBC transfer was found in this Osmosis transaction."
@@ -627,6 +692,7 @@ export const WormholeRedeem: FunctionComponent = () => {
     setOperation(null);
     setError(null);
     setRedeemTxHashes([]);
+    setSuiRedeemTxDigest(null);
     setLookedUpTxHash(hash);
     setResolvedTxHash(null);
     setDerivedFromOsmosis(false);
@@ -1124,6 +1190,7 @@ export const WormholeRedeem: FunctionComponent = () => {
               )}
 
             {status !== "already_redeemed" &&
+              status !== "success" &&
               operation.content.payload.toChain === CHAIN_ID.sui &&
               resolvedTxHash && (
                 <SuiRedeemPanel

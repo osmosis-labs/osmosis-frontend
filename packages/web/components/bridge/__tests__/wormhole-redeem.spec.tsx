@@ -401,7 +401,7 @@ describe("findWormchainRecvTx", () => {
     const hash = await findWormchainRecvTx({
       sequence: "43411",
       srcChannel: "channel-2186",
-      wormchainRpc: "https://wormchain-rpc.example",
+      wormchainRpcs: ["https://wormchain-rpc.example"],
     });
     expect(hash).toBe(WORMCHAIN_HASH);
     const calledUrl = fetchMock.mock.calls[0][0] as string;
@@ -425,6 +425,43 @@ describe("findWormchainRecvTx", () => {
       srcChannel: "channel-2186",
     });
     expect(hash).toBeNull();
+  });
+
+  it("falls back to the next Wormchain RPC on a non-200 response", async () => {
+    const fetchMock = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 502 })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ result: { txs: [{ hash: WORMCHAIN_HASH }] } }),
+      });
+    global.fetch = fetchMock;
+
+    const hash = await findWormchainRecvTx({
+      sequence: "43411",
+      srcChannel: "channel-2186",
+      wormchainRpcs: [
+        "https://wormchain-rpc-a.example",
+        "https://wormchain-rpc-b.example",
+      ],
+    });
+    expect(hash).toBe(WORMCHAIN_HASH);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("throws when every Wormchain RPC is down", async () => {
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 503 });
+
+    await expect(
+      findWormchainRecvTx({
+        sequence: "1",
+        srcChannel: "channel-2186",
+        wormchainRpcs: [
+          "https://wormchain-rpc-a.example",
+          "https://wormchain-rpc-b.example",
+        ],
+      })
+    ).rejects.toThrow(/Could not query Wormchain RPC/);
   });
 });
 
@@ -529,5 +566,17 @@ describe("resolveOperation", () => {
     await expect(
       resolveOperation("not-a-cosmos-hash-just-some-garbage-input")
     ).rejects.toThrow(/Transaction not found/);
+  });
+
+  it("surfaces both possibilities when a 64-byte hex hash is on neither Wormholescan nor any Osmosis LCD", async () => {
+    // The hash format alone can't disambiguate: it could be a wrong
+    // Osmosis hash, or a valid Wormchain receive that Wormholescan
+    // simply hasn't indexed yet. The error must say so.
+    mockedApiClient.mockResolvedValueOnce({ operations: [] });
+    global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+
+    await expect(resolveOperation(OSMOSIS_HASH)).rejects.toThrow(
+      /Wormchain receive hash/i
+    );
   });
 });
