@@ -43,6 +43,8 @@
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@moonpay/moonpay-node": "^0.2.7",
     "@moonpay/moonpay-react": "^1.8.2",
+    "@mysten/sui": "^1",
+    "@mysten/wallet-standard": "^0",
     "@next/bundle-analyzer": "^14.2.35",
     "@osmosis-labs/bridge": "^1.0.0",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",

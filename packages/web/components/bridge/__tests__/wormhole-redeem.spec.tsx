@@ -40,6 +40,13 @@ jest.mock("@osmosis-labs/utils", () => ({
   ),
 }));
 
+// `@mysten/wallet-standard` ships as ESM-only and isn't run through Jest's
+// transform pipeline, so we stub the surface our code touches.
+jest.mock("@mysten/wallet-standard", () => ({
+  getWallets: jest.fn(() => ({ get: () => [] })),
+  signAndExecuteTransaction: jest.fn(),
+}));
+
 import {
   checkIfRedeemed,
   findWormchainRecvTx,
