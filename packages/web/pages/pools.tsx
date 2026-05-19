@@ -13,6 +13,7 @@ import {
   useCreatePoolConfig,
   useDimension,
   useTranslation,
+  useWalletSelect,
 } from "~/hooks";
 import { AddLiquidityModal, CreatePoolModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -26,6 +27,7 @@ const Pools: NextPage = observer(function () {
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(accountStore.osmosisChainId);
+  const { onOpenWalletSelect } = useWalletSelect();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
     useDimension<HTMLDivElement>();
@@ -35,7 +37,15 @@ const Pools: NextPage = observer(function () {
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
-  const openCreatePool = useCallback(() => setIsCreatingPool(true), []);
+  const openCreatePool = useCallback(() => {
+    if (!account?.address) {
+      onOpenWalletSelect({
+        walletOptions: [{ walletType: "cosmos", chainId }],
+      });
+      return;
+    }
+    setIsCreatingPool(true);
+  }, [account?.address, chainId, onOpenWalletSelect]);
   const closeCreatePool = useCallback(() => setIsCreatingPool(false), []);
 
   const createPoolConfig = useCreatePoolConfig(
