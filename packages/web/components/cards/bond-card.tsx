@@ -189,7 +189,6 @@ const Drawer: FunctionComponent<{
   toggleDetailsVisible,
 }) => {
   const { t } = useTranslation();
-  const timeRemaining = useDailyEpochCountdown();
 
   return (
     <div
@@ -262,12 +261,21 @@ const Drawer: FunctionComponent<{
           ))}
           <SwapFeeBreakdownRow swapFeeApr={swapFeeApr} />
         </div>
-        <span className="caption text-center text-osmoverse-400">
-          {t("pool.rewardDistribution")}
-          {timeRemaining && ` · ${t("pool.nextRewardIn")} ${timeRemaining}`}
-        </span>
+        <DrawerRewardCaption />
       </div>
     </div>
+  );
+};
+
+const DrawerRewardCaption = () => {
+  const { t } = useTranslation();
+  const timeRemaining = useDailyEpochCountdown();
+
+  return (
+    <span className="caption text-center text-osmoverse-400">
+      {t("pool.rewardDistribution")}
+      {timeRemaining && ` · ${t("pool.nextRewardIn")} ${timeRemaining}`}
+    </span>
   );
 };
 
