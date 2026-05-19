@@ -170,7 +170,7 @@ const Pools: NextPage = observer(function () {
       )}
       <section>
         <AllPoolsTable
-          topOffset={myPositionsHeight + myPoolsHeight}
+          topOffset={account?.address ? myPositionsHeight + myPoolsHeight : 0}
           onCreatePool={openCreatePool}
           {...quickActionProps}
         />
